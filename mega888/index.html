@@ -135,7 +135,8 @@
 
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 15px;">
   <label for="gameSelect">Game:</label>
-  <select id="gameSelect" style="height: 38px; font-size: 16px;">
+  <select id="gameSelect" style="height: 38px; font-size: 16px;" onchange="updateBetOptions()">
+    <option value="">-- Pilih Game --</option>
     <option value="Great88">Great88</option>
     <option value="LuckyBall">LuckyBall</option>
     <option value="MegaReel">MegaReel</option>
@@ -143,10 +144,16 @@
     <option value="SevenWin">SevenWin</option>
   </select>
 
-  <label for="betValue">Bet:</label>
-  <input type="number" id="betValue" value="2.50" step="0.01" min="0.01" max="9999.99"
-         style="height: 38px; font-size: 16px; padding: 6px 12px;" />
-  <select id="pecahanSelect"></select>
+  <label for="betSelect">Bet:</label>
+  <select id="betSelect" style="height: 38px; font-size: 16px;" onchange="updatePecahanOptions()">
+    <option value="">-- Pilih Bet --</option>
+  </select>
+
+  <label for="pecahanSelect">Pecahan:</label>
+  <select id="pecahanSelect" style="height: 38px; font-size: 16px;">
+    <option value="">-- Pilih Pecahan --</option>
+  </select>
+</div>
 
   <button onclick="setNow()" style="height: 48px; padding: 6px 12px; font-size: 16px;">Click Now</button>
 
@@ -180,11 +187,11 @@
 <script>
   const gameData = {
   Great88: {
-    bets: [2.5, 5, 10],
+    bets: [2.50, 5.00, 10.00],
     pecahan: {
-      "2.50": [10, 20, 12, 15],
-      "5.00": [25, 35, 45],
-      "10.00": [40, 60, 80]
+      "2.50": [10.00, 20.00, 12.86, 15.15],
+      "5.00": [25.00, 35.00, 45.00],
+      "10.00": [40.00, 60.00, 80.00]
     }
   },
   LuckyBall: {
@@ -198,36 +205,45 @@
   // Tambah game lain
 };
 
-  function updatePecahanDropdown() {
-    const game = document.getElementById("gameSelect").value;
-    const bet = document.getElementById("betValue").value;
-    const pecahanSelect = document.getElementById("pecahanSelect");
+  function updateBetOptions() {
+  const gameSelect = document.getElementById('gameSelect');
+  const betSelect = document.getElementById('betSelect');
+  const pecahanSelect = document.getElementById('pecahanSelect');
 
-    pecahanSelect.innerHTML = ""; // Kosongkan dulu
+  const game = gameSelect.value;
 
-    if (gameBetOptions[game] && gameBetOptions[game][bet]) {
-      const pecahans = gameBetOptions[game][bet];
-      pecahans.forEach(p => {
-        const option = document.createElement("option");
-        option.value = p;
-        option.textContent = p;
-        pecahanSelect.appendChild(option);
-      });
-    } else {
-      // Kalau tidak ada, beri default 2x bet
-      const option = document.createElement("option");
-      option.value = bet * 2;
-      option.textContent = bet * 2;
-      pecahanSelect.appendChild(option);
-    }
-  }
+  // Clear bet & pecahan options
+  betSelect.innerHTML = '<option value="">-- Pilih Bet --</option>';
+  pecahanSelect.innerHTML = '<option value="">-- Pilih Pecahan --</option>';
 
-  // Event listener untuk update otomatis
-  document.getElementById("gameSelect").addEventListener("change", updatePecahanDropdown);
-  document.getElementById("betValue").addEventListener("change", updatePecahanDropdown);
+  if (!game || !gameData[game]) return;
 
-  // Panggil sekali saat page load untuk set pecahan default
-  updatePecahanDropdown();
+  gameData[game].bets.forEach(bet => {
+    const opt = document.createElement('option');
+    opt.value = bet.toFixed(2);
+    opt.textContent = bet.toFixed(2);
+    betSelect.appendChild(opt);
+  });
+}
+
+function updatePecahanOptions() {
+  const game = document.getElementById('gameSelect').value;
+  const bet = document.getElementById('betSelect').value;
+  const pecahanSelect = document.getElementById('pecahanSelect');
+
+  pecahanSelect.innerHTML = '<option value="">-- Pilih Pecahan --</option>';
+
+  if (!game || !bet || !gameData[game]) return;
+
+  const pecahanList = gameData[game].pecahan[bet] || [];
+
+  pecahanList.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = p;
+    pecahanSelect.appendChild(opt);
+  });
+}
 
  function setNow() {
   const now = new Date();
