@@ -127,15 +127,6 @@
       font-size: 26px;
       white-space: nowrap;
     }
-    .dot {
-     display: inline-block;
-     width: 8px;
-     height: 8px;
-     border-radius: 50%;
-     background-color: #333;
-     margin: 0 4px;
-    vertical-align: middle;
-   }
   </style>
 </head>
 <body>
@@ -279,14 +270,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const h = String(date.getHours()).padStart(2, '0');
   const min = String(date.getMinutes()).padStart(2, '0');
   const s = String(date.getSeconds()).padStart(2, '0');
-
-  // Format waktu string, contoh: 2025-05-16 18:30:45
-  let datetime = `${y}-${m}-${d} ${h}:${min}:${s}`;
-
-  // Ganti semua ':' dan '.' jadi bulatan kecil <span>
-  datetime = datetime.replace(/[:.]/g, '<span class="dot"></span>');
-
-  return datetime;
+  return `${y}-${m}-${d} ${h}:${min}:${s}`;
  }
  
   function generateLog() {
