@@ -205,7 +205,16 @@
   function rnd(min, max, dec = 2){
     return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
   }
-
+  function formatDateTimeLocal(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+  return `${y}-${m}-${d} ${h}:${min}:${s}`;
+ }
+ 
   function generateLog(){
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betValue").value);
@@ -250,7 +259,7 @@
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
 
-    const formattedTime = baseTime.toISOString().replace("T", " ").substring(0, 19);
+    const formattedTime = formatDateTimeLocal(baseTime);
 
     logs.push({
       game,
