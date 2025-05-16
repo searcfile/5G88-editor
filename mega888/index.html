@@ -273,13 +273,12 @@ document.getElementById("betSelect").addEventListener("change", function () {
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
  }
  
-  function generateLog(){
+  function generateLog() {
   const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(document.getElementById("betValue").value);
+  const bet = parseFloat(document.getElementById("betSelect").value);
+  const pecahanSelect = document.getElementById("pecahanSelect");
+  const selectedPecahan = parseFloat(pecahanSelect.value);
   const tbody = document.querySelector("#gameLog tbody");
-
-  const pecahanList = betToPecahan[bet.toFixed(2)] || [bet * 2];
-  const selectedPecahan = pecahanList[Math.floor(Math.random() * pecahanList.length)];
 
   let logs = [];
   let balance = rnd(3000, 4000);
@@ -287,36 +286,35 @@ document.getElementById("betSelect").addEventListener("change", function () {
   // Ambil waktu dasar dari input manual atau globalTime
   const manualInput = document.getElementById("manualTime").value.trim();
   let baseTime;
- if (manualInput) {
-  const parts = manualInput.split(" ");
-  if (parts.length === 2) {
-    const [datePart, timePart] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const [hour, minute, second] = timePart.split(":").map(Number);
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
-  } else {
-    baseTime = new Date(); // fallback jika input salah format
-  }
-} else if (globalTime) {
-  const parts = globalTime.split(" ");
-  if (parts.length === 2) {
-    const [datePart, timePart] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const [hour, minute, second] = timePart.split(":").map(Number);
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
+  if (manualInput) {
+    const parts = manualInput.split(" ");
+    if (parts.length === 2) {
+      const [datePart, timePart] = parts;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute, second] = timePart.split(":").map(Number);
+      baseTime = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      baseTime = new Date(); // fallback
+    }
+  } else if (globalTime) {
+    const parts = globalTime.split(" ");
+    if (parts.length === 2) {
+      const [datePart, timePart] = parts;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute, second] = timePart.split(":").map(Number);
+      baseTime = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      baseTime = new Date();
+    }
   } else {
     baseTime = new Date();
   }
-} else {
-  baseTime = new Date();
-}
 
-  // Buat 10 log dengan waktu mundur 3–60 detik tiap baris
+  // Buat 10 log
   for (let i = 0; i < 10; i++) {
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-
     const formattedTime = formatDateTimeLocal(baseTime);
 
     logs.push({
@@ -330,14 +328,11 @@ document.getElementById("betSelect").addEventListener("change", function () {
     });
 
     balance = endMoney;
-
-    // Mundurkan waktu 3–60 detik acak untuk log selanjutnya
     baseTime.setSeconds(baseTime.getSeconds() - Math.floor(Math.random() * 58 + 3));
   }
 
-  // Tampilkan log (log paling atas = waktu terbaru)
+  // Set Score
   const setScoreMoney = logs[0].endMoney;
-
   let rows = `
     <tr class="set-score-row">
       <td>-</td>
