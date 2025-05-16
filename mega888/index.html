@@ -146,7 +146,6 @@
 <input type="number" id="betValue" value="2.50" step="0.01" min="0.01" max="9999.99" />
 
 <button onclick="setNow()">Now (Current Time)</button>
-<span id="nowTime">No time set</span>
 <br><br>
 <label for="manualTime">Edit Manual Waktu:</label>
 <input type="text" id="manualTime" placeholder="YYYY-MM-DD HH:MM:SS" style="width: 200px;" />
@@ -192,8 +191,6 @@
 
   // Gabungkan jadi format YYYY-MM-DD HH:MM:SS
   globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-
-  document.getElementById("nowTime").innerText = globalTime;
   document.getElementById("manualTime").value = globalTime;
 }
   function rnd(min, max, dec = 2){
