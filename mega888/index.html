@@ -341,12 +341,15 @@ document.getElementById("betSelect").addEventListener("change", function () {
     const stepSec = Math.floor(Math.random() * 18) + 3;   // 3‑20
     baseTime = new Date(baseTime.getTime() + stepSec * 1000);
   }
-
-  // Sekarang kita tampilkan logs urut dari paling baru (akhir array) ke paling lama (awal array)
-  logs.reverse();
+  const newestTime = new Date(logs[logs.length - 1].dateTime);
 
   // Set Score dari log paling atas (waktu paling baru)
   const setScoreMoney = logs[0].endMoney;
+  const extra = Math.floor(Math.random() * 6) + 5;
+  const setScoreDateTime = formatDateTimeLocal(new Date(newestTime.getTime() + extra * 1000))
+  const setScoreMoney = logs[0].endMoney;
+  
+  logs.reverse();
 
   let rows = `
     <tr class="set-score-row">
