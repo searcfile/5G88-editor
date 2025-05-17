@@ -287,38 +287,21 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   let logs = [];
 
-  // Ambil waktu dasar dari input manual atau globalTime
   const manualInput = document.getElementById("manualTime").value.trim();
   let baseTime;
   if (manualInput) {
-    const parts = manualInput.split(" ");
-    if (parts.length === 2) {
-      const [datePart, timePart] = parts;
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute, second] = timePart.split(":").map(Number);
-      baseTime = new Date(year, month - 1, day, hour, minute, second);
-    } else {
-      baseTime = new Date();
-    }
-  } else if (globalTime) {
-    const parts = globalTime.split(" ");
-    if (parts.length === 2) {
-      const [datePart, timePart] = parts;
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute, second] = timePart.split(":").map(Number);
-      baseTime = new Date(year, month - 1, day, hour, minute, second);
-    } else {
-      baseTime = new Date();
-    }
+    const [datePart, timePart] = manualInput.split(" ");
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hour, minute, second] = timePart.split(":").map(Number);
+    baseTime = new Date(year, month - 1, day, hour, minute, second);
   } else {
     baseTime = new Date();
   }
 
-  // Karena kita mau generate dari waktu awal (paling lama) ke waktu akhir (paling baru),
-  // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
+  // Mundur ke waktu paling lama dulu
   baseTime.setSeconds(baseTime.getSeconds() - (10 * 30));
 
-  let balance = rnd(3000, 4000); // saldo awal random
+  let balance = rnd(3000, 4000);
 
   for (let i = 0; i < 10; i++) {
     const beginMoney = balance;
@@ -337,14 +320,11 @@ document.getElementById("betSelect").addEventListener("change", function () {
     });
 
     balance = endMoney;
-    // Naikkan waktu + beberapa detik supaya waktu naik ke atas nanti
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * (20 - 3 + 1)) + 3);
   }
 
-  // Sekarang kita tampilkan logs urut dari paling baru (akhir array) ke paling lama (awal array)
   logs.reverse();
 
-  // Set Score dari log paling atas (waktu paling baru)
   const setScoreMoney = logs[0].endMoney;
 
   let rows = `
