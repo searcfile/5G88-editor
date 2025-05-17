@@ -165,6 +165,8 @@
 
 <br><br>
 <button onclick="generateLog()">Change</button>
+<label for="manualScore">Tambah Score (opsional):</label>
+<input type="number" id="manualScore" value="0" style="width: 100px; font-size: 18px; padding: 4px 8px;">
 
 <table id="gameLog">
   <thead>
@@ -318,6 +320,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
   baseTime.setSeconds(baseTime.getSeconds() - (10 * 30));
 
+   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
    let balance = rnd(3000, 4000); // saldo awal random
    for (let i = 0; i < 10; i++) {
     const beginMoney = balance;
