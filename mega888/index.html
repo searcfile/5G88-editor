@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Game Log Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     body {
       -webkit-font-smoothing: antialiased;
@@ -27,66 +27,40 @@
       background: #3c8dbc;
       color: white;
       text-align: center;
-    
     }
     td {
-     padding: 22px 26px; /* kurangi tinggi baris */
-     border: 1px solid #ddd; /* Tipis */
-     border: 1px solid rgba(0, 0, 0, 0.05);
-     text-align: center;
+      padding: 22px 26px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      text-align: center;
+      white-space: nowrap;
     }
     #gameLog tbody td {
-     padding-top: 10px;
-     padding-bottom: 10px;
-     line-height: 1.1;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      line-height: 1.1;
     }
     .log-row {
-     color: rgb(51, 51, 51);
-     font-size: 26px; 
-     white-space: nowrap;
-  }
-   th:nth-child(2),
-   td:nth-child(2) {
-     width: 0px; /* Lebar kolom TableID */
-  }
-   th:nth-child(7),
-   td:nth-child(7) {
-     width: 5px; /* Lebar kolom DateTime */
-  }
-  #gameLog td:nth-child(5),
-  #gameLog th:nth-child(5) {
-    width: 5px; /* atau berapa pun yang kamu mau */
-  }
-  #gameLog th:first-child,
-  #gameLog td:first-child {
-    width: 5px; /* beginmoney */
-    white-space: nowrap;
-  }
-  #gameLog th:nth-child(6),
-  #gameLog td:nth-child(6) {
-    width: 5px; /* endmoney */
-  }
-  #gameLog th:nth-child(3),
-  #gameLog td:nth-child(3) {
-    width: 5px; /* bet*/
-  }
-  #gameLog th:nth-child(4),
-  #gameLog td:nth-child(4) {
-    width: 5px; /* win */
-  }
- .table-id-highlight {
-  width: 36.5px;               /* Panjang */
-  height: 32.5px;              /* Tinggi - sama untuk bulatan */
-  background-color: #d2d6de; /* Warna latar */
-  color: #000;               /* Warna teks */
-  font-weight: bold;         /* Teks tebal */
-  font-size: 24px;           /* Saiz teks */
-  border-radius: 46.5%;        /* Buat bentuk bulat */
-  display: flex;             /* Flexbox untuk center teks */
-  justify-content: center;   /* Center secara horizontal */
-  align-items: center;       /* Center secara vertical */
-  margin: 10px auto;         /* Tengah & ada jarak */
-  }
+      color: rgb(51, 51, 51);
+      font-size: 26px; 
+      white-space: nowrap;
+    }
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 50px;
+    }
+    .table-id-highlight {
+      width: 36.5px;
+      height: 32.5px;
+      background-color: #d2d6de;
+      color: #000;
+      font-weight: bold;
+      font-size: 24px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 10px auto;
+    }
     button {
       padding: 5px 10px;
       font-size: 14px;
@@ -111,32 +85,10 @@
       margin-left: 10px;
       color: #0073e6;
     }
-
-    .set-score-row td {
-      color: rgb(51, 51, 51);
-      font-size: 27px;
-      padding-top: 22px !important;
-      padding-bottom: 22px !important;
-      line-height: 1.1 !important;
-      white-space: nowrap;
-      
-    }
-    .set-score-row td.negatif {
-      color: #dd4b39;
-      font-weight: bold;
-      font-size: 26px;
-    }
-    .set-score-row td.setscore {
-      color: #dd4b39;
-      font-weight: 750;;
-      font-size: 26px;
-      white-space: nowrap;
-    }
   </style>
 </head>
 <body>
-
-<h2>Game Log Generator</h2>
+   <h2>Game Log Generator</h2>
 
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 15px;">
   <label for="gameSelect">Game:</label>
@@ -153,21 +105,16 @@
   <select id="pecahanSelect" style="height: 38px; font-size: 16px;"></select>
 </div>
 
+<div style="margin-bottom: 10px;">
   <button onclick="setNow()" style="height: 48px; padding: 6px 12px; font-size: 16px;">Click Now</button>
-
-  <label for="manualTime">Set Time:</label>
+  <label for="manualTime" style="margin-left: 20px;">Set Time:</label>
   <input type="text" id="manualTime" placeholder="YYYY-MM-DD HH:MM:SS"
          style="width: 240px; font-size: 22px; padding: 6px 12px; height: 38px;" />
 </div>
 
-
-
-
-<br><br>
-<div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
-  <button onclick="generateLog()" style="height: 48px; padding: 6px 12px; font-size: 16px;">Change</button>
-  
-  <label for="initialBalance" style="font-size: 16px; margin: 0;">Initial Balance:</label>
+<div style="margin-bottom: 10px;">
+  <button id="btnChange" style="height: 48px;">Change</button>
+  <label for="initialBalance" style="font-size: 16px; margin-left: 20px;">Initial Balance:</label>
   <input type="number" id="initialBalance" value="3500" step="0.01" style="width: 150px; font-size: 16px; padding: 5px;" />
 </div>
 
@@ -183,214 +130,184 @@
       <th>DateTime</th>
     </tr>
   </thead>
-  <tbody>
-  </tbody>
+  <tbody></tbody>
 </table>
 
 <script>
   let globalTime = null;
   const gameData = {
-  Great88: {
-    bets: [1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.25: [2.00, 4.00, 6.00, 8.00, 10.00, 12.50,],
-      1.75: [10.00, 20.00, 30.00, 40.00, 50.00],
-      2.50: [20.00, 40.00, 60.00, 80.00],
-      3.00: [30.00, 60.00, 90.00, 120.00],
-      3.75: [40.00, 80.00, 120.00, 160.00],
-      5.00: [10.00, 20.00, 30.00, 40.00, 50.00],
-      7.50: [10.00, 20.00, 30.00, 40.00, 50.00],
-      12.50: [10.00, 20.00, 30.00, 40.00, 50.00],
-      15.00: [10.00, 20.00, 30.00, 40.00, 50.00],
-      25.00: [10.00, 20.00, 30.00, 40.00, 50.00]
+    Great88: {
+      bets: [1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
+      pecahan: {
+        1.25: [2.00, 4.00, 6.00, 8.00, 10.00, 12.50],
+        1.75: [10.00, 20.00, 30.00, 40.00, 50.00],
+        2.50: [20.00, 40.00, 60.00, 80.00],
+        3.00: [30.00, 60.00, 90.00, 120.00],
+        3.75: [40.00, 80.00, 120.00, 160.00],
+        5.00: [10.00, 20.00, 30.00, 40.00, 50.00],
+        7.50: [10.00, 20.00, 30.00, 40.00, 50.00],
+        12.50: [10.00, 20.00, 30.00, 40.00, 50.00],
+        15.00: [10.00, 20.00, 30.00, 40.00, 50.00],
+        25.00: [10.00, 20.00, 30.00, 40.00, 50.00]
+      }
+    },
+    LuckyBall: {
+      bets: [2.50, 5.00],
+      pecahan: {
+        2.50: [25.00, 50.00, 75.00, 100.00],
+        5.00: [50.00, 100.00, 150.00, 200.00]
+      }
     }
-  },
-  LuckyBall: {
-    bets: [2.50, 5.00],
-    pecahan: {
-      2.50: [25.00, 50.00, 75.00, 100.00],
-      5.00: [50.00, 100.00, 150.00, 200.00]
+  };
+
+  function formatDateTimeLocal(d) {
+    if (!d) return '';
+    const pad = (n) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+
+  // Parsing manual input "YYYY-MM-DD HH:mm:ss"
+  function parseManualTime(str) {
+    if (!str) return null;
+    const parts = str.trim().split(" ");
+    if (parts.length !== 2) return null;
+    const [datePart, timePart] = parts;
+    const dateParts = datePart.split("-");
+    const timeParts = timePart.split(":");
+    if (dateParts.length !== 3 || timeParts.length !== 3) return null;
+
+    const year = parseInt(dateParts[0], 10);
+    const month = parseInt(dateParts[1], 10) - 1;
+    const day = parseInt(dateParts[2], 10);
+    const hours = parseInt(timeParts[0], 10);
+    const minutes = parseInt(timeParts[1], 10);
+    const seconds = parseInt(timeParts[2], 10);
+
+    const d = new Date(year, month, day, hours, minutes, seconds);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  // Mengisi opsi betSelect sesuai game
+  function fillBetOptions(game) {
+    const betSelect = document.getElementById('betSelect');
+    betSelect.innerHTML = '';
+    if (!game || !gameData[game]) return;
+    for (const bet of gameData[game].bets) {
+      const opt = document.createElement('option');
+      opt.value = bet;
+      opt.textContent = bet.toFixed(2);
+      betSelect.appendChild(opt);
     }
   }
-};
 
- document.getElementById("btnChange").addEventListener("click", () => {
-      const addAmount = parseFloat(document.getElementById("initialBalance").value) || 0;
-      const rows = document.querySelectorAll("#gameLog tbody tr");
-
-      rows.forEach(row => {
-        const beginCell = row.cells[4]; // BeginMoney
-        const endCell = row.cells[5];   // EndMoney
-
-        const beginVal = parseFloat(beginCell.textContent) || 0;
-        const endVal = parseFloat(endCell.textContent) || 0;
-
-        beginCell.textContent = (beginVal + addAmount).toFixed(2);
-        endCell.textContent = (endVal + addAmount).toFixed(2);
-      });
-    });
-  document.getElementById("gameSelect").addEventListener("change", function () {
-  const game = this.value;
-  const betSelect = document.getElementById("betSelect");
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  betSelect.innerHTML = "";
-  pecahanSelect.innerHTML = "";
-
-  if (game && gameData[game]) {
-    gameData[game].bets.forEach(bet => {
-      const option = document.createElement("option");
-      option.value = bet;
-      option.textContent = bet.toFixed(2);
-      betSelect.appendChild(option);
-    });
-
-    // Trigger update pecahan otomatis untuk bet pertama
-    betSelect.dispatchEvent(new Event("change"));
+  // Mengisi opsi pecahanSelect sesuai bet dan game
+  function fillPecahanOptions(game, bet) {
+    const pecahanSelect = document.getElementById('pecahanSelect');
+    pecahanSelect.innerHTML = '';
+    if (!game || !bet || !gameData[game]) return;
+    const pecahanArr = gameData[game].pecahan[bet];
+    if (!pecahanArr) return;
+    for (const p of pecahanArr) {
+      const opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = p.toFixed(2);
+      pecahanSelect.appendChild(opt);
+    }
   }
-});
 
-// Update pecahan berdasarkan bet
-document.getElementById("betSelect").addEventListener("change", function () {
-  const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(this.value);
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  pecahanSelect.innerHTML = "";
-
-  if (gameData[game] && gameData[game].pecahan[bet]) {
-    const pecahanList = gameData[game].pecahan[bet];
-
-    // Acak pecahan dan ambil minimal 4
-    const shuffled = pecahanList.sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 4);
-
-    selected.forEach(p => {
-      const option = document.createElement("option");
-      option.value = p;
-      option.textContent = p.toFixed(2);
-      pecahanSelect.appendChild(option);
-    });
+  // Set waktu sekarang dan update input manualTime
+  function setNow() {
+    globalTime = new Date();
+    document.getElementById("manualTime").value = formatDateTimeLocal(globalTime);
+    generateLog();
   }
-});
 
- function setNow() {
-  const now = new Date();
-
-  // Ambil bagian tahun, bulan, hari, jam, menit, detik dari waktu lokal
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Bulan mulai dari 0
-  const day = String(now.getDate()).padStart(2, '0');
-  const hour = String(now.getHours()).padStart(2, '0'); // JAM lokal
-  const minute = String(now.getMinutes()).padStart(2, '0');
-  const second = String(now.getSeconds()).padStart(2, '0');
-
-  // Gabungkan jadi format YYYY-MM-DD HH:MM:SS
-  globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-  document.getElementById("manualTime").value = globalTime;
-}
- 
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-  function formatDateTimeLocal(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const h = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const s = String(date.getSeconds()).padStart(2, '0');
-  return `${y}-${m}-${d} ${h}:${min}:${s}`;
- }
- 
+  // Generate log table
   function generateLog() {
-  const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(document.getElementById("betSelect").value);
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  const selectedPecahan = parseFloat(pecahanSelect.value);
-  const tbody = document.querySelector("#gameLog tbody");
+    const tbody = document.querySelector("#gameLog tbody");
+    tbody.innerHTML = "";
 
-  let logs = [];
-  const initialBalanceInput = document.getElementById("initialBalance").value.trim();
-  let balance = initialBalanceInput ? parseFloat(initialBalanceInput) : rnd(3000, 4000);
+    const game = document.getElementById("gameSelect").value;
+    const bet = parseFloat(document.getElementById("betSelect").value);
+    const pecahan = parseFloat(document.getElementById("pecahanSelect").value);
+    const initialBalance = parseFloat(document.getElementById("initialBalance").value) || 0;
 
-  // Ambil waktu dasar dari input manual atau globalTime
-  const manualInput = document.getElementById("manualTime").value.trim();
-  let baseTime;
-  if (manualInput) {
-    const parts = manualInput.split(" ");
-    if (parts.length === 2) {
-      const [datePart, timePart] = parts;
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute, second] = timePart.split(":").map(Number);
-      baseTime = new Date(year, month - 1, day, hour, minute, second);
-    } else {
-      baseTime = new Date(); // fallback
+    if (!game || isNaN(bet) || isNaN(pecahan)) return;
+
+    // Ambil waktu dari manual input atau globalTime
+    let currentTime = parseManualTime(document.getElementById("manualTime").value) || globalTime || new Date();
+
+    let balance = initialBalance;
+    for (let i = 1; i <= 10; i++) {
+      const beginMoney = balance;
+      const win = -pecahan; // Win selalu negatif pecahan
+      const endMoney = beginMoney + win;
+
+      // Waktu maju tiap menit
+      const logTime = new Date(currentTime.getTime() + (i - 1) * 60000);
+      const dateTimeStr = formatDateTimeLocal(logTime);
+
+      const tr = document.createElement("tr");
+      tr.classList.add("log-row");
+
+      const tdGameName = document.createElement("td");
+      tdGameName.textContent = game;
+
+      const tdTableID = document.createElement("td");
+      tdTableID.innerHTML = `<div class="table-id-highlight">${i}</div>`;
+
+      const tdBet = document.createElement("td");
+      tdBet.textContent = bet.toFixed(2);
+
+      const tdWin = document.createElement("td");
+      tdWin.textContent = win.toFixed(2);
+
+      const tdBeginMoney = document.createElement("td");
+      tdBeginMoney.textContent = beginMoney.toFixed(2);
+
+      const tdEndMoney = document.createElement("td");
+      tdEndMoney.textContent = endMoney.toFixed(2);
+
+      const tdDateTime = document.createElement("td");
+      tdDateTime.textContent = dateTimeStr;
+
+      tr.appendChild(tdGameName);
+      tr.appendChild(tdTableID);
+      tr.appendChild(tdBet);
+      tr.appendChild(tdWin);
+      tr.appendChild(tdBeginMoney);
+      tr.appendChild(tdEndMoney);
+      tr.appendChild(tdDateTime);
+
+      tbody.appendChild(tr);
+
+      balance = endMoney;
     }
-  } else if (globalTime) {
-    const parts = globalTime.split(" ");
-    if (parts.length === 2) {
-      const [datePart, timePart] = parts;
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute, second] = timePart.split(":").map(Number);
-      baseTime = new Date(year, month - 1, day, hour, minute, second);
-    } else {
-      baseTime = new Date();
-    }
-  } else {
-    baseTime = new Date();
   }
 
-  // Buat 10 log
-  for (let i = 0; i < 10; i++) {
-    const beginMoney = balance;
-    const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
-    const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-    const formattedTime = formatDateTimeLocal(baseTime);
-
-    logs.push({
-      game,
-      tableID: `<span class="table-id-highlight">0</span>`,
-      bet: bet.toFixed(2),
-      win: win.toFixed(2),
-      beginMoney: beginMoney.toFixed(2),
-      endMoney: endMoney.toFixed(2),
-      dateTime: formattedTime
-    });
-
-    balance = endMoney;
-    baseTime.setSeconds(baseTime.getSeconds() - Math.floor(Math.random() * 58 + 3));
-  }
-
-  // Set Score
-  const setScoreMoney = logs[0].endMoney;
-  let rows = `
-    <tr class="set-score-row">
-      <td>-</td>
-      <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td>${logs[0].dateTime}</td>
-    </tr>
-  `;
-
-  logs.forEach(log => {
-    rows += `
-      <tr class="log-row">
-        <td>${log.game}</td>
-        <td>${log.tableID}</td>
-        <td>${log.bet}</td>
-        <td>${log.win}</td>
-        <td>${log.beginMoney}</td>
-        <td>${log.endMoney}</td>
-        <td>${log.dateTime}</td>
-      </tr>
-    `;
+  // Event listeners untuk perubahan select
+  document.getElementById('gameSelect').addEventListener('change', (e) => {
+    const game = e.target.value;
+    fillBetOptions(game);
+    document.getElementById('pecahanSelect').innerHTML = '';
+    generateLog();
   });
 
-  tbody.innerHTML = rows;
-}
-</script>
+  document.getElementById('betSelect').addEventListener('change', (e) => {
+    const bet = parseFloat(e.target.value);
+    const game = document.getElementById('gameSelect').value;
+    fillPecahanOptions(game, bet);
+    generateLog();
+  });
 
+  document.getElementById('pecahanSelect').addEventListener('change', generateLog);
+
+  document.getElementById('btnChange').addEventListener('click', generateLog);
+
+  // Inisialisasi kosong bet dan pecahan saat awal load
+  document.getElementById('betSelect').innerHTML = '';
+  document.getElementById('pecahanSelect').innerHTML = '';
+
+</script>
 </body>
 </html>
