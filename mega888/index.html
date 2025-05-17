@@ -321,7 +321,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   baseTime.setSeconds(baseTime.getSeconds() - (10 * 30));
 
    const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
-   let balance = rnd(3000, 4000); // saldo awal random
+   let balance = rnd(3000, 4000); + manualScore;// saldo awal random
    for (let i = 0; i < 10; i++) {
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
