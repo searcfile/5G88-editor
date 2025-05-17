@@ -314,18 +314,14 @@ document.getElementById("betSelect").addEventListener("change", function () {
     baseTime = new Date();
   }
 
-  // Karena kita mau generate dari waktu awal (paling lama) ke waktu akhir (paling baru),
-  // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
-  baseTime.setSeconds(baseTime.getSeconds() - (10 * 30));
-
   let balance = rnd(3000, 4000); // saldo awal random
+  let currentTime = new Date(baseTime.getTime() - 10 * 30 * 1000); // mulai dari baseTime dikurangi 10*30 detik (mundur 5 menit)
 
-  let offset = 0;
-  for(let i=0; i<10; i++) {
+  for (let i = 0; i < 10; i++) {
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-    const formattedTime = formatDateTimeLocal(baseTime);
+    const formattedTime = formatDateTimeLocal(currentTime);
 
     logs.push({
       game,
@@ -339,18 +335,18 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
     balance = endMoney;
 
-    let randomSec = Math.floor(Math.random() * (20 - 3 + 1)) + 3;
-    let newDate = new Date(manualTime.getTime() - offset * 1000);
-    offset += randomSec; 
+    // Tambah waktu acak 3-20 detik ke currentTime
+    const stepSec = Math.floor(Math.random() * (20 - 3 + 1)) + 3; // 3 sampai 20 detik
+    currentTime = new Date(currentTime.getTime() + stepSec * 1000);
   }
 
-  logs.reverse();
+  // Jangan reverse logs, biar waktu urut naik
 
-  let newestTime = new Date(logs[0].dateTime);
+  // Set score tetap pakai logs[logs.length - 1] (yang paling akhir waktu paling baru)
+  let newestLog = logs[logs.length - 1];
   const extra = Math.floor(Math.random() * 6) + 5;
-  const setScoreDateTime = formatDateTimeLocal(new Date(newestTime.getTime() + extra * 1000));
-  const setScoreMoney = logs[0].endMoney;
-
+  const setScoreDateTime = formatDateTimeLocal(new Date(new Date(newestLog.dateTime).getTime() + extra * 1000));
+  const setScoreMoney = newestLog.endMoney;
 
   let rows = `
     <tr class="set-score-row">
@@ -360,7 +356,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
       <td class="negatif">-</td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
-      <td>${logs[0].dateTime}</td>
+      <td>${setScoreDateTime}</td>
     </tr>
   `;
 
