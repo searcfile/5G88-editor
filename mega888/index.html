@@ -345,23 +345,25 @@ document.getElementById("betSelect").addEventListener("change", function () {
   logs.reverse();
 
   // Set Score dari log paling atas (waktu paling baru)
+const lastEndMoney = logs[logs.length - 1]?.endMoney || 0;
+const setScoreMoney = lastEndMoney;
+
+// Ambil waktu dari logs[0]
 const baseDate = new Date(logs[0].dateTime);
 
-// Tambah 5–10 detik (acak)
-const extraSeconds = Math.floor(Math.random() * 6) + 5; // 5–10 detik
+// Tambah 5–10 detik
+const extraSeconds = Math.floor(Math.random() * 6) + 5;
 const setScoreDate = new Date(baseDate.getTime() + extraSeconds * 1000);
 
-// Fungsi bantu format waktu
+// Format waktu
 const pad = n => n.toString().padStart(2, '0');
 const formatDateTime = date => {
   return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ` +
          `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 };
-
-// Format waktu set score
 const setScoreDateTime = formatDateTime(setScoreDate);
 
-// Buat baris pertama: Set Score
+// Buat baris Set Score
 let rows = `
   <tr class="set-score-row">
     <td>-</td>
