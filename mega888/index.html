@@ -337,8 +337,9 @@ document.getElementById("betSelect").addEventListener("change", function () {
     });
 
     balance = endMoney;
-    // Naikkan waktu + beberapa detik supaya waktu naik ke atas nanti
-    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 58 + 3));
+
+    const stepSec = Math.floor(Math.random() * 18) + 3;   // 3‑20
+    baseTime = new Date(baseTime.getTime() + stepSec * 1000);
   }
 
   // Sekarang kita tampilkan logs urut dari paling baru (akhir array) ke paling lama (awal array)
