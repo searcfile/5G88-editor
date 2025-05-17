@@ -212,6 +212,22 @@
     }
   }
 };
+
+ document.getElementById("btnChange").addEventListener("click", () => {
+      const addAmount = parseFloat(document.getElementById("initialBalance").value) || 0;
+      const rows = document.querySelectorAll("#gameLog tbody tr");
+
+      rows.forEach(row => {
+        const beginCell = row.cells[4]; // BeginMoney
+        const endCell = row.cells[5];   // EndMoney
+
+        const beginVal = parseFloat(beginCell.textContent) || 0;
+        const endVal = parseFloat(endCell.textContent) || 0;
+
+        beginCell.textContent = (beginVal + addAmount).toFixed(2);
+        endCell.textContent = (endVal + addAmount).toFixed(2);
+      });
+    });
   document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
