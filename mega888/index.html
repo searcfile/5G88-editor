@@ -277,10 +277,6 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const s = String(date.getSeconds()).padStart(2, '0');
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
  }
-  const latestLogDate = new Date(logs[0].dateTime);
-  const offsetSeconds = Math.floor(Math.random() * (10 - 5 + 1)) + 5; // 5–10 detik
-  const setScoreDate = new Date(latestLogDate.getTime() + offsetSeconds * 1000);
-  const setScoreDateTime = formatDateTimeLocal(setScoreDate);
  
   function generateLog() {
   const game = document.getElementById("gameSelect").value;
@@ -359,7 +355,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
       <td class="negatif">-</td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
-      <td>${setScoreDateTime}</td>
+      <td>${logs[0].dateTime}</td>
     </tr>
   `;
 
