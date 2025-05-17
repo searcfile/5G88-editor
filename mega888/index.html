@@ -262,7 +262,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   function rnd(min, max, dec = 2){
     return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
   }
-  let baseTime;
+
   let globalTime = null;
 
   function rnd(min, max, dec = 2){
@@ -289,6 +289,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   // Ambil waktu dasar dari input manual atau globalTime
   const manualInput = document.getElementById("manualTime").value.trim();
+  let baseTime;
   if (manualInput) {
     const parts = manualInput.split(" ");
     if (parts.length === 2) {
@@ -339,65 +340,38 @@ document.getElementById("betSelect").addEventListener("change", function () {
     // Naikkan waktu + beberapa detik supaya waktu naik ke atas nanti
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 58 + 3));
   }
-  
-baseTime = new Date(logs[0].dateTime);  // hapus 'let', pakai variabel yang sudah ada
 
-// Update waktu tiap log dengan selisih random 3-10 detik
-for(let i = 0; i < logs.length; i++) {
-  let randomOffset = Math.floor(rnd(3, 10, 0)); // random 3-10 detik
-  let newTime = new Date(baseTime.getTime() + randomOffset * i * 1000);
-  logs[i].dateTime = formatDateTimeLocal(newTime);
-}}
-  // Ambil waktu dari log pertama (logs[0])
   // Sekarang kita tampilkan logs urut dari paling baru (akhir array) ke paling lama (awal array)
   logs.reverse();
 
   // Set Score dari log paling atas (waktu paling baru)
-const lastEndMoney = logs[logs.length - 1]?.endMoney || 0;
-const setScoreMoney = lastEndMoney;
+  const setScoreMoney = logs[0].endMoney;
 
-// Ambil waktu dari logs[0]
-const baseDate = new Date(logs[0].dateTime);
-
-// Tambah 5–10 detik
-const extraSeconds = Math.floor(Math.random() * 6) + 5;
-const setScoreDate = new Date(baseDate.getTime() + extraSeconds * 1000);
-
-// Format waktu
-const pad = n => n.toString().padStart(2, '0');
-const formatDateTime = date => {
-  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ` +
-         `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-};
-const setScoreDateTime = formatDateTime(setScoreDate);
-
-// Buat baris Set Score
-let rows = `
-  <tr class="set-score-row">
-    <td>-</td>
-    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${setScoreDateTime}</td>
-  </tr>
-`;
-
-// Tambahkan baris log berikutnya
-logs.forEach(log => {
-  rows += `
-    <tr class="log-row">
-      <td>${log.game}</td>
-      <td>${log.tableID}</td>
-      <td>${log.bet}</td>
-      <td>${log.win}</td>
-      <td>${log.beginMoney}</td>
-      <td>${log.endMoney}</td>
-      <td>${log.dateTime}</td>
+  let rows = `
+    <tr class="set-score-row">
+      <td>-</td>
+      <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td>${logs[0].dateTime}</td>
     </tr>
   `;
-});
+
+  logs.forEach(log => {
+    rows += `
+      <tr class="log-row">
+        <td>${log.game}</td>
+        <td>${log.tableID}</td>
+        <td>${log.bet}</td>
+        <td>${log.win}</td>
+        <td>${log.beginMoney}</td>
+        <td>${log.endMoney}</td>
+        <td>${log.dateTime}</td>
+      </tr>
+    `;
+  });
 
   tbody.innerHTML = rows;
 }
