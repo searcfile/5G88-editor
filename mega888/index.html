@@ -286,8 +286,6 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const tbody = document.querySelector("#gameLog tbody");
 
   let logs = [];
-  // Mulai balance dari nilai acak 3000-4000, bisa diganti sesuai kebutuhan
-  let balance = rnd(3000, 4000);
 
   // Ambil waktu dasar dari input manual atau globalTime
   const manualInput = document.getElementById("manualTime").value.trim();
@@ -316,6 +314,12 @@ document.getElementById("betSelect").addEventListener("change", function () {
     baseTime = new Date();
   }
 
+  // Karena kita mau generate dari waktu awal (paling lama) ke waktu akhir (paling baru),
+  // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
+  baseTime.setSeconds(baseTime.getSeconds() - (10 * 30));
+
+  let balance = rnd(3000, 4000); // saldo awal random
+
   for (let i = 0; i < 10; i++) {
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
@@ -332,15 +336,17 @@ document.getElementById("betSelect").addEventListener("change", function () {
       dateTime: formattedTime
     });
 
-    // Update balance untuk next row jadi endMoney ini
     balance = endMoney;
-
-    // Kurangi waktu supaya log timestamp menurun (biar log paling atas adalah yang terbaru)
-    baseTime.setSeconds(baseTime.getSeconds() - Math.floor(Math.random() * 58 + 3));
+    // Naikkan waktu + beberapa detik supaya waktu naik ke atas nanti
+    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 58 + 3));
   }
 
-  // Set Score tetap menggunakan endMoney dari baris pertama (latest)
+  // Sekarang kita tampilkan logs urut dari paling baru (akhir array) ke paling lama (awal array)
+  logs.reverse();
+
+  // Set Score dari log paling atas (waktu paling baru)
   const setScoreMoney = logs[0].endMoney;
+
   let rows = `
     <tr class="set-score-row">
       <td>-</td>
