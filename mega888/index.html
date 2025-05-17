@@ -340,7 +340,20 @@ document.getElementById("betSelect").addEventListener("change", function () {
     // Naikkan waktu + beberapa detik supaya waktu naik ke atas nanti
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 58 + 3));
   }
+  // Ambil waktu dari log pertama (logs[0])
+const originalDate = new Date(logs[0].dateTime);
 
+// Tambahkan 5–10 detik secara acak
+const randomDelay = Math.floor(Math.random() * 6) + 5; // 5 sampai 10 detik
+const newerDate = new Date(originalDate.getTime() + randomDelay * 1000);
+
+// Format jadi string waktu (misalnya: YYYY-MM-DD HH:mm:ss)
+const pad = n => n.toString().padStart(2, '0');
+const formatDateTime = date => {
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ` +
+         `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+};
+const setScoreDateTime = formatDateTime(newerDate);
   // Sekarang kita tampilkan logs urut dari paling baru (akhir array) ke paling lama (awal array)
   logs.reverse();
 
@@ -348,16 +361,16 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const setScoreMoney = logs[0].endMoney;
 
   let rows = `
-    <tr class="set-score-row">
-      <td>-</td>
-      <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td>${logs[0].dateTime}</td>
-    </tr>
-  `;
+  <tr class="set-score-row">
+    <td>-</td>
+    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td>${setScoreDateTime}</td>
+  </tr>
+`;
 
   logs.forEach(log => {
     rows += `
