@@ -286,6 +286,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const tbody = document.querySelector("#gameLog tbody");
 
   let logs = [];
+  // Mulai balance dari nilai acak 3000-4000, bisa diganti sesuai kebutuhan
   let balance = rnd(3000, 4000);
 
   // Ambil waktu dasar dari input manual atau globalTime
@@ -299,7 +300,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
       const [hour, minute, second] = timePart.split(":").map(Number);
       baseTime = new Date(year, month - 1, day, hour, minute, second);
     } else {
-      baseTime = new Date(); // fallback
+      baseTime = new Date();
     }
   } else if (globalTime) {
     const parts = globalTime.split(" ");
@@ -315,7 +316,6 @@ document.getElementById("betSelect").addEventListener("change", function () {
     baseTime = new Date();
   }
 
-  // Buat 10 log
   for (let i = 0; i < 10; i++) {
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
@@ -332,11 +332,14 @@ document.getElementById("betSelect").addEventListener("change", function () {
       dateTime: formattedTime
     });
 
+    // Update balance untuk next row jadi endMoney ini
     balance = endMoney;
+
+    // Kurangi waktu supaya log timestamp menurun (biar log paling atas adalah yang terbaru)
     baseTime.setSeconds(baseTime.getSeconds() - Math.floor(Math.random() * 58 + 3));
   }
 
-  // Set Score
+  // Set Score tetap menggunakan endMoney dari baris pertama (latest)
   const setScoreMoney = logs[0].endMoney;
   let rows = `
     <tr class="set-score-row">
