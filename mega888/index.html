@@ -114,7 +114,7 @@
 
     .set-score-row td {
       color: rgb(51, 51, 51);
-      font-size: 26px;
+      font-size: 27px;
       padding-top: 22px !important;
       padding-bottom: 22px !important;
       line-height: 1.1 !important;
@@ -270,13 +270,14 @@ document.getElementById("betSelect").addEventListener("change", function () {
   }
   function formatDateTimeLocal(date) {
   const y = date.getFullYear();
-  const m = (date.getMonth() + 1).toString().padStart(2, '0');
-  const d = date.getDate().toString().padStart(2, '0');
-  const h = date.getHours().toString().padStart(2, '0');
-  const min = date.getMinutes().toString().padStart(2, '0');
-  const s = date.getSeconds().toString().padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
-}
+ }
+ 
   function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
@@ -286,48 +287,64 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   let logs = [];
 
-  // Ambil waktu manual atau waktu sekarang
+  // Ambil waktu dasar dari input manual atau globalTime
   const manualInput = document.getElementById("manualTime").value.trim();
-  let currentTime;
+  let baseTime;
   if (manualInput) {
-    const [datePart, timePart] = manualInput.split(" ");
-    const [year, month, day] = datePart.split("-").map(Number);
-    const [hour, minute, second] = timePart.split(":").map(Number);
-    currentTime = new Date(year, month - 1, day, hour, minute, second);
+    const parts = manualInput.split(" ");
+    if (parts.length === 2) {
+      const [datePart, timePart] = parts;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute, second] = timePart.split(":").map(Number);
+      baseTime = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      baseTime = new Date();
+    }
+  } else if (globalTime) {
+    const parts = globalTime.split(" ");
+    if (parts.length === 2) {
+      const [datePart, timePart] = parts;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute, second] = timePart.split(":").map(Number);
+      baseTime = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      baseTime = new Date();
+    }
   } else {
-    currentTime = new Date();
+    baseTime = new Date();
   }
 
-  let balance = rnd(3000, 4000);
+  // Karena kita mau generate dari waktu awal (paling lama) ke waktu akhir (paling baru),
+  // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
+  baseTime.setSeconds(baseTime.getSeconds() - (10 * 30));
+
+   let balance = rnd(3000, 4000); // saldo awal random
+
+  let logs = [];
 
   for (let i = 0; i < 10; i++) {
-  const formattedTime = formatDateTimeLocal(currentTime);
-  const beginMoney = balance;
-  const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
-  const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
+    const beginMoney = balance;
+    const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
+    const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
+    const formattedTime = formatDateTimeLocal(baseTime);
 
-  // Simpan log langsung dari paling baru ke paling lama
-  logs.unshift({
-    game,
-    tableID: `<span class="table-id-highlight">0</span>`,
-    bet: bet.toFixed(2),
-    win: win.toFixed(2),
-    beginMoney: beginMoney.toFixed(2),
-    endMoney: endMoney.toFixed(2),
-    dateTime: formattedTime
-  });
+    logs.unshift({ // masukkan log terbaru ke awal array
+      game,
+      tableID: `<span class="table-id-highlight">0</span>`,
+      bet: bet.toFixed(2),
+      win: win.toFixed(2),
+      beginMoney: beginMoney.toFixed(2),
+      endMoney: endMoney.toFixed(2),
+      dateTime: formattedTime
+    });
 
-  balance = endMoney;
+    balance = endMoney;
+    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 58 + 3)); // waktu bertambah acak
+  }
 
-  // Mundurkan waktu log berikutnya
-  const offset = Math.floor(Math.random() * (20 - 3 + 1)) + 3;
-  currentTime.setSeconds(currentTime.getSeconds() - offset);
-}
+  // Set Score dari log paling atas (waktu paling baru)
+  const setScoreMoney = logs[0].endMoney;
 
-  // Set Score pakai log terakhir (yang waktunya paling lama, yaitu paling bawah)
-  const setScoreMoney = logs[logs.length - 1].endMoney;
-
-  // Render log ke HTML
   let rows = `
     <tr class="set-score-row">
       <td>-</td>
@@ -336,7 +353,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
       <td class="negatif">-</td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
-      <td>${logs[logs.length - 1].dateTime}</td>
+      <td>${logs[0].dateTime}</td>
     </tr>
   `;
 
