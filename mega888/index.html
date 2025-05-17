@@ -319,10 +319,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   baseTime.setSeconds(baseTime.getSeconds() - (10 * 30));
 
    let balance = rnd(3000, 4000); // saldo awal random
-
-  let logs = [];
-
-  for (let i = 0; i < 10; i++) {
+   for (let i = 0; i < 10; i++) {
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
