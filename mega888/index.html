@@ -165,6 +165,8 @@
 
 <br><br>
 <button onclick="generateLog()">Change</button>
+<label for="scoreAmount" style="margin-left: 12px; font-weight: 600; font-size: 16px;">Tambah Amount:</label>
+<input type="number" id="scoreAmount" value="0" style="width: 100px; font-size: 16px; padding: 6px 8px;" />
 
 <table id="gameLog">
   <thead>
@@ -293,6 +295,8 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   let logs = [];
   let balance = rnd(3000, 4000);
+  const scoreAmountInput = parseFloat(document.getElementById("scoreAmount").value) || 0;
+  balance += scoreAmountInput;
 
   // Ambil waktu dasar dari input manual atau globalTime
   const manualInput = document.getElementById("manualTime").value.trim();
@@ -333,8 +337,8 @@ document.getElementById("betSelect").addEventListener("change", function () {
       tableID: `<span class="table-id-highlight">0</span>`,
       bet: bet.toFixed(2),
       win: win.toFixed(2),
-      beginMoney: beginMoney.toFixed(2),
-      endMoney: endMoney.toFixed(2),
+      beginMoney: (beginMoney + scoreAmountInput).toFixed(2),
+      endMoney: (endMoney + scoreAmountInput).toFixed(2),
       dateTime: formattedTime
     });
 
