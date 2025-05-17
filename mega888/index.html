@@ -194,9 +194,9 @@
       1.75: [20.00, 40.00, 60.00, 80.00],
       2.50: [20.00, 40.00, 60.00, 80.00],
       3.00: [20.00, 40.00, 60.00, 80.00],
-      3.75; [20.00, 40.00, 60.00, 80.00],
-      5.00; [20.00, 40.00, 60.00, 80.00],
-      7.50; [20.00, 40.00, 60.00, 80.00],
+      3.75: [20.00, 40.00, 60.00, 80.00],
+      5.00: [20.00, 40.00, 60.00, 80.00],
+      7.50: [20.00, 40.00, 60.00, 80.00],
       12.50: [20.00, 40.00, 60.00, 80.00],
       15.00: [20.00, 40.00, 60.00, 80.00],
       25.00: [20.00, 40.00, 60.00, 80.00]
@@ -252,17 +252,14 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
  function setNow() {
   const now = new Date();
-
-  // Ambil bagian tahun, bulan, hari, jam, menit, detik dari waktu lokal
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Bulan mulai dari 0
+  const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
-  const hour = String(now.getHours()).padStart(2, '0'); // JAM lokal
+  const hour = String(now.getHours()).padStart(2, '0');
   const minute = String(now.getMinutes()).padStart(2, '0');
   const second = String(now.getSeconds()).padStart(2, '0');
 
-  // Gabungkan jadi format YYYY-MM-DD HH:MM:SS
-  globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  const globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   document.getElementById("manualTime").value = globalTime;
 }
   function rnd(min, max, dec = 2){
@@ -325,7 +322,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   baseTime.setSeconds(baseTime.getSeconds() - (10 * 30));
 
    const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
-   let balance = rnd(3000, 4000) + manualScore;// saldo awal random
+   let balance = rnd(3000, 4000) + manualScore;
    for (let i = 0; i < 10; i++) {
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
