@@ -237,14 +237,11 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const pecahanSelect = document.getElementById("pecahanSelect");
   pecahanSelect.innerHTML = "";
 
-  if (gameData[game] && gameData[game].pecahan[bet]) {
+    // Acak pecahan dan ambil minimal 4
+    if (gameData[game] && gameData[game].pecahan[bet]) {
     const pecahanList = gameData[game].pecahan[bet];
 
-    // Acak pecahan dan ambil minimal 4
-    const shuffled = pecahanList.sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 4);
-
-    selected.forEach(p => {
+    pecahanList.forEach(p => {
       const option = document.createElement("option");
       option.value = p;
       option.textContent = p.toFixed(2);
