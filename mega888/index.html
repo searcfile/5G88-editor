@@ -343,13 +343,14 @@ document.getElementById("betSelect").addEventListener("change", function () {
   }
   const newestTime = new Date(logs[logs.length - 1].dateTime);
 
-  // Set Score dari log paling atas (waktu paling baru)
-  const setScoreMoney = logs[0].endMoney;
+  logs.reverse();
+
+  const newestTime = new Date(logs[0].dateTime);
   const extra = Math.floor(Math.random() * 6) + 5;
+
   const setScoreDateTime = formatDateTimeLocal(new Date(newestTime.getTime() + extra * 1000))
   const setScoreMoney = logs[0].endMoney;
-  
-  logs.reverse();
+
 
   let rows = `
     <tr class="set-score-row">
