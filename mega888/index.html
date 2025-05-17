@@ -344,7 +344,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   logs.reverse();
 
-  const newestTime = new Date(logs[0].dateTime);
+  let newestTime = new Date(logs[0].dateTime);
   const extra = Math.floor(Math.random() * 6) + 5;
   const setScoreDateTime = formatDateTimeLocal(new Date(newestTime.getTime() + extra * 1000));
   const setScoreMoney = logs[0].endMoney;
