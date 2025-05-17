@@ -188,6 +188,7 @@
 </table>
 
 <script>
+  let globalTime = null;
   const gameData = {
   Great88: {
     bets: [1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
@@ -286,12 +287,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   document.getElementById("manualTime").value = globalTime;
 }
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-
-  let globalTime = null;
-
+ 
   function rnd(min, max, dec = 2){
     return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
   }
