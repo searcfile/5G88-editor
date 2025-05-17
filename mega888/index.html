@@ -340,6 +340,14 @@ document.getElementById("betSelect").addEventListener("change", function () {
     // Naikkan waktu + beberapa detik supaya waktu naik ke atas nanti
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 58 + 3));
   }
+  let baseTime = new Date(logs[0].dateTime);
+
+// Update waktu tiap log dengan selisih random 3-10 detik
+for(let i = 0; i < logs.length; i++) {
+  let randomOffset = Math.floor(rnd(3, 10, 0)); // random 3-10 detik
+  let newTime = new Date(baseTime.getTime() + randomOffset * i * 1000);
+  logs[i].dateTime = formatDateTimeLocal(newTime);
+}
   // Ambil waktu dari log pertama (logs[0])
   // Sekarang kita tampilkan logs urut dari paling baru (akhir array) ke paling lama (awal array)
   logs.reverse();
