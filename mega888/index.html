@@ -715,11 +715,16 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   // Karena kita mau generate dari waktu awal (paling lama) ke waktu akhir (paling baru),
   // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
-  baseTime.setSeconds(baseTime.getSeconds() - (10 * 30));
+  baseTime.setSeconds(baseTime.getSeconds() - (11 * 40));
 
    const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
    let balance = rnd(3000, 4000) + manualScore;
    for (let i = 0; i < 10; i++) {
+    const gap = Math.floor(Math.random() * (40 - 3 + 1)) + 3;
+    totalSeconds += gap;
+    const logTime = new Date();
+    logTime.setSeconds(logTime.getSeconds() - totalSeconds);
+
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
