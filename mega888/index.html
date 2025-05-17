@@ -133,7 +133,7 @@
       white-space: nowrap;
     }
     #gameSelect {
-     max-height: 100px;
+     max-height: 50px;
      overflow-y: auto;
     }
   </style>
@@ -164,6 +164,8 @@
     <option value="CocktailNights">CocktailNights</option>
     <option value="FiveDragons">FiveDragons</option>
     <option value="SteamTower">SteamTower</option>
+    <option value="Alice">Alice</option>
+    <option value="GreatStars">GreatStars</option>
   </select>
 
   <label for="betSelect">Bet:</label>
@@ -206,7 +208,8 @@
 
 <script>
   const gameData = {
-  "Great88": {
+  
+"Great88": {
     bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
     pecahan: {
       1.00: [30.00, 50.00, 100.00, 130.00],
@@ -220,6 +223,26 @@
       12.50: [350.00, 400.00, 450.00, 500.00],
       15.00: [500.00, 550.00, 600.00, 650.00],
       25.00: [650.00, 700.00, 750.00, 800.00]
+    }
+    },
+    "GreatStars": {
+    bets: [2.25, 4.50, 9.00, 45.00],
+    pecahan: {
+      2.25: [30.00, 50.00, 100.00, 130.00],
+      4.50: [50.00, 80.00, 100.00, 150.00],
+      9.00: [80.00, 100.00, 130.00, 180.00],
+      45.00: [100.00, 150.00, 200.00, 300.00]
+    }
+    },
+    "Alice": {
+    bets: [1.50, 3.00, 4.50, 9.00, 15.00, 30.00],
+    pecahan: {
+      1.50: [30.00, 50.00, 100.00, 130.00],
+      3.00: [50.00, 80.00, 100.00, 150.00],
+      4.50: [80.00, 100.00, 130.00, 180.00],
+      9.00: [100.00, 130.00, 150.00, 200.00],
+      15.00: [130.00, 150.00, 180.00, 300.00],
+      30.00: [150.00, 180.00, 200.00, 500.00]
     }
     },
    "Lion Dance": {
