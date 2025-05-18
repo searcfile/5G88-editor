@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>918KISS Generator</title>
+  <title>MEGA888 Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -138,7 +138,7 @@
 </head>
 <body>
 
-<h2>918KISS SYSTEM RANDOM</h2>
+<h2>MEGA888 SYSTEM RANDOM</h2>
 
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 15px;">
   <label for="gameSelect">Game:</label>
@@ -912,6 +912,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const pecahanSelect = document.getElementById("pecahanSelect");
   const selectedPecahan = parseFloat(pecahanSelect.value);
   const tbody = document.querySelector("#gameLog tbody");
+  const manualTimeInput = document.getElementById('manualTime').value;
 
   let logs = [];
 
@@ -948,9 +949,10 @@ if (manualInput) {
 } else {
   baseTime = new Date();
 }
+
   // Karena kita mau generate dari waktu awal (paling lama) ke waktu akhir (paling baru),
   // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
-   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
+  baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
 
    const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
    let balance = rnd(3000, 4000) + manualScore;
@@ -987,7 +989,7 @@ if (manualInput) {
 
 // Buat objek Date baru berdasarkan waktu log terbaru
 let setScoreTime = new Date(logs[0].dateTime);
-const extraSeconds = [2, 3, 7, 10, 15];
+const extraSeconds = [2, 3, 7, 10];
 const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
 setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset); // tambah 4 detik (atau sesuai keinginan)
 
