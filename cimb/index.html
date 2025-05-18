@@ -209,23 +209,17 @@
 
 <script>
   function updateDisplay() {
-    const date = document.getElementById("input-date").value;
-    const amount = document.getElementById("input-amount").value;
-    const refStart = document.getElementById("input-ref").value;
+  const date = document.getElementById("input-date").value;
+  const amount = document.getElementById("input-amount").value;
+  const refStart = document.getElementById("input-ref").value;
 
-    document.getElementById("transfer-date").textContent = date;
-    document.getElementById("amount").textContent = amount;
-    document.getElementById("ref-number").textContent = refStart;
-  }
+  document.getElementById("transfer-date").textContent = date;
+  document.getElementById("ref-number").textContent = refStart;
 
-  function randomRef() {
-    let ref = "";
-    for (let i = 0; i < 9; i++) {
-      ref += Math.floor(Math.random() * 10);
-    }
-    document.getElementById("ref-number").textContent = ref;
-  }
+  const parts = amount.split(".");
+  document.getElementById("main-amount").textContent = parts[0];
+  document.querySelector(".cents").textContent = "." + (parts[1] || "00");
+}
 </script>
-
 </body>
 </html>
