@@ -8,16 +8,15 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: Helvetica, Arial, sans-serif;
-      background-color: #f4f4f4;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f2f2f2;
     }
     .receipt-container {
       max-width: 700px;
       margin: 30px auto;
       background-color: #ffffff;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      border-radius: 6px;
     }
     .header {
       padding: 20px;
@@ -25,11 +24,11 @@
       font-weight: bold;
     }
     .status-bar {
-      background-color: #eeeeee;
+      background-color: #f4f4f4;
       padding: 15px 20px;
+      font-size: 14px;
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
     }
     .status-bar .success {
       color: #4CAF50;
@@ -45,36 +44,34 @@
     }
     .left-section .label {
       font-weight: bold;
-      margin-bottom: 6px;
+      margin-top: 12px;
     }
-    .left-section .info {
-      margin-bottom: 12px;
+    .left-section .value {
+      margin-bottom: 8px;
     }
     .right-section {
-      width: 35%;
+      width: 40%;
+      text-align: right;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      align-items: flex-end;
-      position: relative;
     }
-    .amount-label {
-      font-size: 12px;
-      color: #333;
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-    .amount-value {
-      font-size: 26px;
+    .right-section .amount-label {
       font-weight: bold;
-      margin-top: 25px;
+      margin-bottom: 5px;
     }
-    .bank-charge {
-      font-size: 12px;
-      color: #333;
-      align-self: flex-end;
-      margin-top: auto;
+    .right-section .amount-value {
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .right-section .currency {
+      font-size: 16px;
+      vertical-align: super;
+      margin-right: 4px;
+    }
+    .right-section .bank-charge {
+      font-size: 13px;
+      margin-top: 40px;
     }
   </style>
 </head>
@@ -87,26 +84,18 @@
     </div>
     <div class="content">
       <div class="left-section">
-        <div class="info">
-          <div class="label">To</div>
-        </div>
-        <div class="info">
-          <div class="label">Account Number</div>
-          <div>7002795979</div>
-        </div>
-        <div class="info">
-          <div class="label">Account Name</div>
-          <div>SA PASSBOOK</div>
-        </div>
-        <div class="info">
-          <div class="label">Recipient Name</div>
-          <div>MOHD IRWAN BIN MOHD ZAIBI</div>
-        </div>
+        <div class="label">To</div>
+        <div class="label">Account Number</div>
+        <div class="value">7002795979</div>
+        <div class="label">Account Name</div>
+        <div class="value">SA PASSBOOK</div>
+        <div class="label">Recipient Name</div>
+        <div class="value">MOHD IRWAN BIN MOHD ZAIBI</div>
       </div>
       <div class="right-section">
         <div class="amount-label">Amount</div>
-        <div class="amount-value">MYR 300.00</div>
-        <div class="bank-charge">Bank charges 0.00</div>
+        <div class="amount-value"><span class="currency">MYR</span>300.<sup>00</sup></div>
+        <div class="bank-charge">Bank charges 0.<sup>00</sup></div>
       </div>
     </div>
   </div>
