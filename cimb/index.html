@@ -14,7 +14,7 @@
     .receipt-container {
       max-width: 700px;
       margin: 30px auto;
-      background-color: #fafafa;
+      background-color: #ffffff;
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
       border-radius: 6px;
       overflow: hidden;
@@ -25,7 +25,7 @@
       font-weight: bold;
     }
     .status-bar {
-      background-color: #eeeeee;
+      background-color: #e0f4e4;
       padding: 15px 20px;
       font-size: 14px;
       display: flex;
@@ -35,12 +35,18 @@
     .status-bar .success {
       color: #4CAF50;
       font-weight: bold;
+      display: flex;
+      align-items: center;
     }
     .status-bar .success::before {
       content: '\2713';
-      color: #4CAF50;
-      font-weight: bold;
-      margin-right: 6px;
+      color: white;
+      background-color: #4CAF50;
+      border-radius: 50%;
+      padding: 2px 6px;
+      margin-right: 8px;
+      font-size: 12px;
+      display: inline-block;
     }
     .content {
       display: flex;
@@ -69,21 +75,19 @@
     }
     .right-section .amount-line {
       display: flex;
-      align-items: baseline;
-      gap: 5px;
-    }
-    .right-section .currency {
-      font-size: 16px;
+      justify-content: space-between;
+      width: 100%;
       font-weight: bold;
     }
-    .right-section .amount-number {
-      font-size: 28px;
+    .right-section .amount-line .label {
       font-weight: bold;
+    }
+    .right-section .amount-line .value {
+      font-size: 26px;
     }
     .right-section .bank-charge {
-      font-size: 13px;
-      font-weight: normal;
-      margin-top: 5px;
+      margin-top: 8px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -107,8 +111,8 @@
       <div class="right-section">
         <div class="amount-label">Amount</div>
         <div class="amount-line">
-          <div class="currency">MYR</div>
-          <div class="amount-number">300.<sup>00</sup></div>
+          <span class="label">MYR</span>
+          <span class="value">300.<sup>00</sup></span>
         </div>
         <div class="bank-charge">Bank charges 0.<sup>00</sup></div>
       </div>
