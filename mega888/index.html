@@ -944,37 +944,37 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   // Karena kita mau generate dari waktu awal (paling lama) ke waktu akhir (paling baru),
   // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
-  baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
+ baseTime.setSeconds(baseTime.getSeconds() - (11 * 4)); // permulaan, mundurkan 44s dulu
 
-   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
-   let balance = rnd(3000, 4000) + manualScore;
+const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
+let balance = rnd(3000, 4000) + manualScore;
 
-   let totalSeconds = 0;
+let totalSeconds = 0;
 
-   for (let i = 0; i < 10; i++) {
-    const gap = Math.floor(Math.random() * 3) + 3; // akan hasilkan 3, 4, atau 5
-    totalSeconds += gap;
-    const logTime = new Date();
-    logTime.setSeconds(logTime.getSeconds() - totalSeconds);
+for (let i = 0; i < 10; i++) {
+  const gap = Math.floor(Math.random() * 3) + 3; // 3, 4, atau 5 saat
+  totalSeconds += gap;
 
-    const beginMoney = balance;
-    const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
-    const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-    const formattedTime = formatDateTimeLocal(baseTime);
+  const logTime = new Date(baseTime.getTime());
+  logTime.setSeconds(logTime.getSeconds() - totalSeconds); // mundur ikut total gap
 
-    logs.unshift({ // masukkan log terbaru ke awal array
-      game,
-      tableID: `<span class="table-id-highlight">0</span>`,
-      bet: bet.toFixed(2),
-      win: win.toFixed(2),
-      beginMoney: beginMoney.toFixed(2),
-      endMoney: endMoney.toFixed(2),
-      dateTime: formattedTime
-    });
+  const beginMoney = balance;
+  const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
+  const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
+  const formattedTime = formatDateTimeLocal(logTime); // Guna logTime, bukan baseTime
 
-    balance = endMoney;
-    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 58 + 3)); // waktu bertambah acak
-  }
+  logs.unshift({
+    game,
+    tableID: `<span class="table-id-highlight">0</span>`,
+    bet: bet.toFixed(2),
+    win: win.toFixed(2),
+    beginMoney: beginMoney.toFixed(2),
+    endMoney: endMoney.toFixed(2),
+    dateTime: formattedTime
+  });
+
+  balance = endMoney;
+}
 
   // Set Score dari log paling atas (waktu paling baru)
  const setScoreMoney = logs[0].endMoney;
