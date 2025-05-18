@@ -952,18 +952,17 @@ let balance = rnd(3000, 4000) + manualScore;
 let totalSeconds = 0;
 
 for (let i = 0; i < 10; i++) {
-  const gap = Math.floor(Math.random() * 3) + 3; // 3, 4, atau 5 saat
+  const gap = Math.floor(Math.random() * 3) + 3; // 3-5 detik
   totalSeconds += gap;
-
-  const logTime = new Date(baseTime.getTime());
-  logTime.setSeconds(logTime.getSeconds() - totalSeconds); // mundur ikut total gap
+  const logTime = new Date();
+  logTime.setSeconds(logTime.getSeconds() - totalSeconds);
 
   const beginMoney = balance;
   const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
   const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-  const formattedTime = formatDateTimeLocal(logTime); // Guna logTime, bukan baseTime
+  const formattedTime = formatDateTimeLocal(logTime); // gunakan logTime
 
-  logs.unshift({
+  logs.push({ // gunakan push, bukan unshift
     game,
     tableID: `<span class="table-id-highlight">0</span>`,
     bet: bet.toFixed(2),
@@ -975,7 +974,6 @@ for (let i = 0; i < 10; i++) {
 
   balance = endMoney;
 }
-
   // Set Score dari log paling atas (waktu paling baru)
  const setScoreMoney = logs[0].endMoney;
 
