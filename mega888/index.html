@@ -997,16 +997,6 @@ let rows = `
   </tr>
 `;
 
-gameLog.insertAdjacentHTML("beforeend", row);
-
-  // Update semua kolom datetime jika waktu manual diisi
-  if (customTime) {
-    const allDateCells = gameLog.querySelectorAll("tr td:last-child");
-    allDateCells.forEach(cell => {
-      cell.textContent = customTime;
-    });
-  }
-
   logs.forEach(log => {
     rows += `
       <tr class="log-row">
