@@ -9,12 +9,12 @@
       margin: 0;
       padding: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background-color: #f2f2f2;
+      background-color: #f4f4f4;
     }
     .receipt-container {
       max-width: 700px;
       margin: 30px auto;
-      background-color: #ffffff;
+      background-color: #f9f9f9;
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
       border-radius: 6px;
     }
@@ -24,7 +24,7 @@
       font-weight: bold;
     }
     .status-bar {
-      background-color: #f4f4f4;
+      background-color: #eeeeee;
       padding: 15px 20px;
       font-size: 14px;
       display: flex;
@@ -54,24 +54,26 @@
       text-align: right;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      align-items: flex-end;
     }
     .right-section .amount-label {
       font-weight: bold;
       margin-bottom: 5px;
     }
-    .right-section .amount-value {
-      font-size: 28px;
+    .right-section .amount {
+      display: flex;
+      align-items: baseline;
       font-weight: bold;
+      font-size: 28px;
     }
     .right-section .currency {
       font-size: 16px;
-      vertical-align: super;
       margin-right: 4px;
     }
     .right-section .bank-charge {
       font-size: 13px;
-      margin-top: 40px;
+      margin-top: 5px;
+      font-weight: normal;
     }
   </style>
 </head>
@@ -94,7 +96,7 @@
       </div>
       <div class="right-section">
         <div class="amount-label">Amount</div>
-        <div class="amount-value"><span class="currency">MYR</span>300.<sup>00</sup></div>
+        <div class="amount"><span class="currency">MYR</span>300.<sup>00</sup></div>
         <div class="bank-charge">Bank charges 0.<sup>00</sup></div>
       </div>
     </div>
