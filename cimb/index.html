@@ -9,14 +9,15 @@
       margin: 0;
       padding: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background-color: #f4f4f4;
+      background-color: #f0f0f0;
     }
     .receipt-container {
       max-width: 700px;
       margin: 30px auto;
-      background-color: #f9f9f9;
+      background-color: #fafafa;
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
       border-radius: 6px;
+      overflow: hidden;
     }
     .header {
       padding: 20px;
@@ -29,15 +30,22 @@
       font-size: 14px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
     .status-bar .success {
       color: #4CAF50;
       font-weight: bold;
     }
+    .status-bar .success::before {
+      content: '\2713';
+      color: #4CAF50;
+      font-weight: bold;
+      margin-right: 6px;
+    }
     .content {
       display: flex;
       justify-content: space-between;
-      padding: 20px;
+      padding: 25px 20px 35px 20px;
     }
     .left-section {
       width: 60%;
@@ -50,8 +58,7 @@
       margin-bottom: 8px;
     }
     .right-section {
-      width: 40%;
-      text-align: right;
+      width: 38%;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
@@ -60,20 +67,23 @@
       font-weight: bold;
       margin-bottom: 5px;
     }
-    .right-section .amount {
+    .right-section .amount-line {
       display: flex;
       align-items: baseline;
-      font-weight: bold;
-      font-size: 28px;
+      gap: 5px;
     }
     .right-section .currency {
       font-size: 16px;
-      margin-right: 4px;
+      font-weight: bold;
+    }
+    .right-section .amount-number {
+      font-size: 28px;
+      font-weight: bold;
     }
     .right-section .bank-charge {
       font-size: 13px;
-      margin-top: 5px;
       font-weight: normal;
+      margin-top: 5px;
     }
   </style>
 </head>
@@ -96,7 +106,10 @@
       </div>
       <div class="right-section">
         <div class="amount-label">Amount</div>
-        <div class="amount"><span class="currency">MYR</span>300.<sup>00</sup></div>
+        <div class="amount-line">
+          <div class="currency">MYR</div>
+          <div class="amount-number">300.<sup>00</sup></div>
+        </div>
         <div class="bank-charge">Bank charges 0.<sup>00</sup></div>
       </div>
     </div>
