@@ -1,143 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIMB Editor</title>
+  <meta charset="UTF-8">
+  <title>DuitNow Receipt</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
+      margin: 0;
       padding: 20px;
+      font-family: Helvetica, Arial, sans-serif;
+      background-color: #f3f3f3;
     }
 
-    .receipt {
-      background: white;
-      padding: 20px;
-      max-width: 500px;
+    .receipt-container {
+      max-width: 600px;
+      background-color: #ffffff;
       margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 8px;
+      padding: 0;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      overflow: hidden;
     }
 
     .header {
-      font-size: 18px;
+      padding: 20px;
+      font-size: 22px;
       font-weight: bold;
-      margin-bottom: 10px;
+      color: #000;
     }
 
-    .status {
+    .status-bar {
+      background-color: #f2f2f2;
+      padding: 15px 20px;
       display: flex;
       justify-content: space-between;
-      background: #f0f0f0;
-      padding: 10px;
-      margin-bottom: 20px;
+      align-items: center;
+      font-size: 16px;
     }
 
-    .status span {
+    .status-bar .success {
+      color: green;
       font-weight: bold;
+    }
+
+    .content {
+      padding: 20px;
     }
 
     .section {
       margin-bottom: 20px;
     }
 
-    .section label {
+    .section-title {
       font-weight: bold;
-      display: block;
-      margin-top: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
     }
 
-    .amount {
-      text-align: right;
-      font-size: 24px;
+    .info-line {
+      margin-bottom: 10px;
+    }
+
+    .info-line strong {
+      display: block;
       font-weight: bold;
-      margin-top: 10px;
+    }
+
+    .amount-section {
+      text-align: right;
+    }
+
+    .amount-section .amount {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .amount-section .bank-charge {
+      font-size: 14px;
     }
 
     .form-section {
-      margin-top: 30px;
+      padding: 20px;
+      border-top: 1px solid #ddd;
+      background-color: #f9f9f9;
     }
 
-    input {
+    .form-section label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .form-section input {
       width: 100%;
-      padding: 6px;
-      margin-top: 5px;
+      padding: 8px;
+      margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 4px;
+      font-size: 14px;
     }
 
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background: #007bff;
-      border: none;
+    .form-section button {
+      background-color: #d71921;
       color: white;
-      font-weight: bold;
+      padding: 10px 20px;
+      border: none;
       border-radius: 4px;
+      font-weight: bold;
       cursor: pointer;
     }
 
-    button:hover {
-      background: #0056b3;
+    .form-section button:hover {
+      background-color: #b3161d;
+    }
+
+    .red-link {
+      color: #d71921;
+      font-size: 14px;
+      padding: 0 20px 20px;
     }
   </style>
 </head>
 <body>
 
-<div class="receipt">
+<div class="receipt-container">
   <div class="header">DuitNow / Transfer Money Acknowledgement</div>
-  <div class="status">
-    <div>✅ <span>Successful</span> Ref 655784946</div>
+  <div class="status-bar">
+    <div><span class="success">Successful</span> Ref 655784946</div>
     <div id="transferTime">18 May 2025, 03:26:30 pm</div>
   </div>
+  <div class="content">
+    <div class="section">
+      <div class="section-title">To</div>
+      <div class="info-line">
+        <strong>Account Number</strong>
+        <div>7002795979</div>
+      </div>
+      <div class="info-line">
+        <strong>Account Name</strong>
+        <div>SA PASSBOOK</div>
+      </div>
+      <div class="info-line">
+        <strong>Recipient Name</strong>
+        <div>MOHD IRWAN BIN MOHD ZAIBI</div>
+      </div>
+    </div>
 
-  <div class="section">
-    <label>To</label>
-    <div><strong>Account Number</strong><br>7002795979</div>
-    <div><strong>Account Name</strong><br>SA PASSBOOK</div>
-    <div><strong>Recipient Name</strong><br>MOHD IRWAN BIN MOHD ZAIBI</div>
+    <div class="amount-section">
+      <div class="amount">MYR <span id="amount">300.00</span></div>
+      <div class="bank-charge">Bank charges 0.00</div>
+    </div>
   </div>
 
-  <div class="amount">
-    MYR <span id="amount">300.00</span>
-    <div style="font-size: 14px; font-weight: normal;">Bank charges 0.00</div>
+  <div class="red-link">
+    <a href="#" style="color: #d71921; text-decoration: none;">More transfer details ›</a>
   </div>
 
   <div class="form-section">
-    <label for="dateInput">Tanggal dan Waktu Transfer</label>
-    <input type="datetime-local" id="dateInput" />
+    <label for="datetime">Change Date & Time</label>
+    <input type="datetime-local" id="datetime">
 
-    <label for="amountInput">Amount (MYR)</label>
-    <input type="number" id="amountInput" step="0.01" placeholder="Contoh: 300.00" />
+    <label for="amountInput">Change Amount (MYR)</label>
+    <input type="number" id="amountInput" step="0.01" placeholder="Enter amount">
 
-    <button onclick="updateReceipt()">Update</button>
+    <button onclick="updateValues()">Apply Changes</button>
   </div>
 </div>
 
 <script>
-  function updateReceipt() {
-    const dateInput = document.getElementById("dateInput").value;
-    const amountInput = document.getElementById("amountInput").value;
+  function updateValues() {
+    const dateTime = document.getElementById('datetime').value;
+    const amount = document.getElementById('amountInput').value;
 
-    // Update waktu
-    if (dateInput) {
-      const dateObj = new Date(dateInput);
-      const options = { day: '2-digit', month: 'short', year: 'numeric' };
-      const dateStr = dateObj.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
-      let hours = dateObj.getHours();
-      const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-      const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+    if (dateTime) {
+      const dt = new Date(dateTime);
+      const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+      const dateStr = dt.toLocaleDateString('en-GB', dateOptions).replace(/ /g, ' ');
+      let hours = dt.getHours();
+      const minutes = String(dt.getMinutes()).padStart(2, '0');
+      const seconds = String(dt.getSeconds()).padStart(2, '0');
       const ampm = hours >= 12 ? 'pm' : 'am';
       hours = hours % 12 || 12;
-      const timeStr = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
-      document.getElementById("transferTime").textContent = `${dateStr}, ${timeStr}`;
+      const timeStr = `${hours.toString().padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+      document.getElementById('transferTime').textContent = `${dateStr}, ${timeStr}`;
     }
 
-    // Update jumlah
-    if (amountInput) {
-      const formattedAmount = parseFloat(amountInput).toFixed(2);
-      document.getElementById("amount").textContent = formattedAmount;
+    if (amount) {
+      document.getElementById('amount').textContent = parseFloat(amount).toFixed(2);
     }
   }
 </script>
