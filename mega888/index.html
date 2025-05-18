@@ -962,15 +962,15 @@ for (let i = 0; i < 10; i++) {
   const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
   const formattedTime = formatDateTimeLocal(logTime); // gunakan logTime
 
-  logs.push({ // gunakan push, bukan unshift
-    game,
-    tableID: `<span class="table-id-highlight">0</span>`,
-    bet: bet.toFixed(2),
-    win: win.toFixed(2),
-    beginMoney: beginMoney.toFixed(2),
-    endMoney: endMoney.toFixed(2),
-    dateTime: formattedTime
-  });
+  logs.unshift({ // masukkan log terbaru ke awal array
+      game,
+      tableID: `<span class="table-id-highlight">0</span>`,
+      bet: bet.toFixed(2),
+      win: win.toFixed(2),
+      beginMoney: beginMoney.toFixed(2),
+      endMoney: endMoney.toFixed(2),
+      dateTime: formattedTime
+    });
 
   balance = endMoney;
 }
