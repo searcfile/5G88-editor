@@ -912,35 +912,43 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const pecahanSelect = document.getElementById("pecahanSelect");
   const selectedPecahan = parseFloat(pecahanSelect.value);
   const tbody = document.querySelector("#gameLog tbody");
+  const manualTimeInput = document.getElementById('manualTime').value;
 
   let logs = [];
 
   // Ambil waktu dasar dari input manual atau globalTime
   const manualInput = document.getElementById("manualTime").value.trim();
   let baseTime;
-  if (manualInput) {
-    const parts = manualInput.split(" ");
-    if (parts.length === 2) {
-      const [datePart, timePart] = parts;
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute, second] = timePart.split(":").map(Number);
-      baseTime = new Date(year, month - 1, day, hour, minute, second);
-    } else {
-      baseTime = new Date();
-    }
-  } else if (globalTime) {
-    const parts = globalTime.split(" ");
-    if (parts.length === 2) {
-      const [datePart, timePart] = parts;
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute, second] = timePart.split(":").map(Number);
-      baseTime = new Date(year, month - 1, day, hour, minute, second);
-    } else {
-      baseTime = new Date();
-    }
+if (manualInput) {
+  const parts = manualInput.includes("T")
+    ? manualInput.split("T")
+    : manualInput.split(" ");
+
+  if (parts.length === 2) {
+    const [datePart, timePartRaw] = parts;
+    const [year, month, day] = datePart.split("-").map(Number);
+    const timePart = timePartRaw.trim();
+    const timeParts = timePart.split(":").map(Number);
+    const hour = timeParts[0] || 0;
+    const minute = timeParts[1] || 0;
+    const second = timeParts[2] || 0;
+    baseTime = new Date(year, month - 1, day, hour, minute, second);
   } else {
     baseTime = new Date();
   }
+} else if (globalTime) {
+  const parts = globalTime.split(" ");
+  if (parts.length === 2) {
+    const [datePart, timePart] = parts;
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hour, minute, second] = timePart.split(":").map(Number);
+    baseTime = new Date(year, month - 1, day, hour, minute, second);
+  } else {
+    baseTime = new Date();
+  }
+} else {
+  baseTime = new Date();
+}
 
   // Karena kita mau generate dari waktu awal (paling lama) ke waktu akhir (paling baru),
   // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
