@@ -8,16 +8,15 @@
       margin: 0;
       padding: 20px;
       font-family: Helvetica, Arial, sans-serif;
-      background-color: #f3f3f3;
+      background-color: #f9f9f9;
     }
 
-    .receipt-container {
-      max-width: 600px;
-      background-color: #ffffff;
+    .receipt {
+      max-width: 700px;
+      background: #fff;
       margin: auto;
-      padding: 0;
       border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       overflow: hidden;
     }
 
@@ -28,26 +27,37 @@
       color: #000;
     }
 
-    .status-bar {
-      background-color: #f2f2f2;
+    .status {
+      background: #eee;
       padding: 15px 20px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      font-size: 16px;
+      font-size: 15px;
     }
 
-    .status-bar .success {
-      color: green;
+    .status .success {
+      color: #4CAF50;
       font-weight: bold;
     }
 
     .content {
+      display: flex;
+      justify-content: space-between;
       padding: 20px;
+      border-top: 1px solid #ddd;
+    }
+
+    .left {
+      flex: 1;
+    }
+
+    .right {
+      text-align: right;
+      width: 150px;
     }
 
     .section {
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
 
     .section-title {
@@ -56,98 +66,96 @@
       margin-bottom: 10px;
     }
 
-    .info-line {
-      margin-bottom: 10px;
+    .info {
+      margin-bottom: 8px;
     }
 
-    .info-line strong {
+    .info strong {
       display: block;
       font-weight: bold;
     }
 
-    .amount-section {
-      text-align: right;
-    }
-
-    .amount-section .amount {
-      font-size: 28px;
+    .amount-value {
+      font-size: 24px;
       font-weight: bold;
     }
 
-    .amount-section .bank-charge {
+    .bank-charge {
       font-size: 14px;
     }
 
-    .form-section {
-      padding: 20px;
-      border-top: 1px solid #ddd;
-      background-color: #f9f9f9;
+    .red-link {
+      color: #d71921;
+      padding: 0 20px 20px;
+      display: inline-block;
+      font-size: 14px;
     }
 
-    .form-section label {
+    .form-area {
+      background: #f7f7f7;
+      border-top: 1px solid #ddd;
+      padding: 20px;
+    }
+
+    .form-area label {
       display: block;
       margin-bottom: 6px;
-      font-weight: bold;
       font-size: 14px;
+      font-weight: bold;
     }
 
-    .form-section input {
-      width: 100%;
+    .form-area input {
       padding: 8px;
+      width: 100%;
       margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      font-size: 14px;
     }
 
-    .form-section button {
+    .form-area button {
       background-color: #d71921;
       color: white;
-      padding: 10px 20px;
       border: none;
+      padding: 10px 20px;
       border-radius: 4px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    .form-section button:hover {
+    .form-area button:hover {
       background-color: #b3161d;
-    }
-
-    .red-link {
-      color: #d71921;
-      font-size: 14px;
-      padding: 0 20px 20px;
     }
   </style>
 </head>
 <body>
 
-<div class="receipt-container">
+<div class="receipt">
   <div class="header">DuitNow / Transfer Money Acknowledgement</div>
-  <div class="status-bar">
+
+  <div class="status">
     <div><span class="success">Successful</span> Ref 655784946</div>
     <div id="transferTime">18 May 2025, 03:26:30 pm</div>
   </div>
+
   <div class="content">
-    <div class="section">
+    <div class="left">
       <div class="section-title">To</div>
-      <div class="info-line">
+      <div class="info">
         <strong>Account Number</strong>
         <div>7002795979</div>
       </div>
-      <div class="info-line">
+      <div class="info">
         <strong>Account Name</strong>
         <div>SA PASSBOOK</div>
       </div>
-      <div class="info-line">
+      <div class="info">
         <strong>Recipient Name</strong>
         <div>MOHD IRWAN BIN MOHD ZAIBI</div>
       </div>
     </div>
-
-    <div class="amount-section">
-      <div class="amount">MYR <span id="amount">300.00</span></div>
+    <div class="right">
+      <div class="section-title">Amount</div>
+      <div class="amount-value">MYR <span id="amount">300.00</span></div>
       <div class="bank-charge">Bank charges 0.00</div>
     </div>
   </div>
@@ -156,7 +164,7 @@
     <a href="#" style="color: #d71921; text-decoration: none;">More transfer details ›</a>
   </div>
 
-  <div class="form-section">
+  <div class="form-area">
     <label for="datetime">Change Date & Time</label>
     <input type="datetime-local" id="datetime">
 
@@ -174,8 +182,8 @@
 
     if (dateTime) {
       const dt = new Date(dateTime);
-      const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-      const dateStr = dt.toLocaleDateString('en-GB', dateOptions).replace(/ /g, ' ');
+      const options = { year: 'numeric', month: 'short', day: '2-digit' };
+      const dateStr = dt.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
       let hours = dt.getHours();
       const minutes = String(dt.getMinutes()).padStart(2, '0');
       const seconds = String(dt.getSeconds()).padStart(2, '0');
