@@ -1,130 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Receipt Clone</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DuitNow Acknowledgement</title>
   <style>
     body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
       margin: 0;
-      padding: 0;
-      font-family: Open Sans, Verdana, Helvetica, sans-serif;
-      background-color: #f5f5f5;
+      padding: 20px;
     }
-    .receipt-container {
-      max-width: 720px;
-      margin: 40px auto;
-      background-color: #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       border-radius: 6px;
       overflow: hidden;
     }
     .header {
       padding: 20px;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
+      border-bottom: 1px solid #ccc;
     }
-    .ref-number {
-     margin-left: 20px; /* Tambah spasi dari "Successful" */
-     color: #000;        /* Warna normal */
-     font-weight: normal; 
-     font-size: 14px;    /* Boleh sesuaikan ukuran */
-   }
-    .status-bar {
-      background-color: #e6f4ea;
+    .success-box {
+      background: #e8f5e9;
+      color: #388e3c;
       padding: 15px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 14px;
+      font-size: 16px;
     }
-    .success {
-      color: #4CAF50;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-    }
-    .success::before {
-      content: '\2713';
-      display: inline-block;
-      color: #fff;
-      background-color: #4CAF50;
-      border-radius: 50%;
-      font-size: 12px;
-      padding: 3px 6px;
-      margin-right: 8px;
-    }
-    .content {
+    .details {
+      padding: 20px;
       display: flex;
       justify-content: space-between;
-      padding: 25px 20px 35px 20px;
     }
-    .left-section {
-      width: 65%;
+    .left, .right {
+      width: 48%;
     }
-    .left-section .label {
-      font-weight: bold;
-      margin-top: 14px;
-    }
-    .left-section .value {
-      margin-bottom: 6px;
-    }
-    .right-section {
-      width: 30%;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      text-align: right;
-    }
-    .right-section .amount-label {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .right-section .myr-amount {
-      display: flex;
-      gap: 4px;
-      font-weight: bold;
-      font-size: 26px;
-    }
-    .right-section .myr-amount span:first-child {
-      font-size: 15px;
-      margin-top: 6px;
-    }
-    .right-section .bank-charge {
+    .label {
       font-size: 14px;
-      margin-top: 8px;
+      color: #555;
+    }
+    .value {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .amount {
+      font-size: 28px;
+      font-weight: bold;
+      color: #000;
+    }
+    .footer {
+      padding: 15px 20px;
+      background: #f5f5f5;
+      color: red;
+      font-size: 14px;
+      border-top: 1px solid #ccc;
+    }
+    .form-section {
+      max-width: 600px;
+      margin: auto;
+      margin-top: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    .form-section input {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+    .form-section button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    .form-section button:hover {
+      background-color: #0d47a1;
     }
   </style>
 </head>
 <body>
-  <div class="receipt-container">
-    <div class="header">DuitNow / Transfer Money Acknowledgement</div>
-    <div class="status-bar">
-  <div class="success">
-    Successful
-    <span class="ref-number">Ref 655784946</span>
+
+<div class="container">
+  <div class="header">DuitNow / Transfer Money Acknowledgement</div>
+  <div class="success-box">
+    <div><strong>✓ Successful</strong> Ref <span id="ref-number">1234</span></div>
+    <div id="transfer-date">18 May 2025, 03:26:30 pm</div>
   </div>
-  <div id="transferTime">18 May 2025, 03:26:30 pm</div>
-</div>
-    <div class="content">
-      <div class="left-section">
-        <div class="label">To</div>
-        <div class="label">Account Number</div>
-        <div class="value">7002795979</div>
-        <div class="label">Account Name</div>
-        <div class="value">SA PASSBOOK</div>
-        <div class="label">Recipient Name</div>
-        <div class="value">MOHD IRWAN BIN MOHD ZAIBI</div>
-      </div>
-      <div class="right-section">
-        <div class="amount-label">Amount</div>
-        <div class="myr-amount">
-          <span>MYR</span>
-          <span>300.<sup>00</sup></span>
-        </div>
-        <div class="bank-charge">Bank charges 0.<sup>00</sup></div>
-      </div>
+  <div class="details">
+    <div class="left">
+      <div class="label">Account Number</div>
+      <div class="value">7002795979</div>
+
+      <div class="label">Account Name</div>
+      <div class="value">SA PASSBOOK</div>
+
+      <div class="label">Recipient Name</div>
+      <div class="value">MOHD IRWAN BIN MOHD ZAIBI</div>
+    </div>
+    <div class="right" style="text-align: right;">
+      <div class="label">Amount</div>
+      <div class="amount">MYR <span id="amount">300.00</span></div>
+      <div class="label">Bank charges <strong>0.00</strong></div>
     </div>
   </div>
+  <div class="footer">
+    More transfer details &nbsp; →
+  </div>
+</div>
+
+<div class="form-section">
+  <label>Manual Date & Time (e.g., 18 May 2025, 03:26:30 pm)</label>
+  <input type="text" id="input-date" value="18 May 2025, 03:26:30 pm" />
+
+  <label>Amount (e.g., 300.00)</label>
+  <input type="text" id="input-amount" value="300.00" />
+
+  <label>4-digit Start Ref Number (e.g., 1234)</label>
+  <input type="text" id="input-ref" maxlength="4" value="1234" />
+
+  <button onclick="updateDisplay()">Update Info</button>
+  <button onclick="randomRef()">Change Ref No</button>
+</div>
+
+<script>
+  function updateDisplay() {
+    const date = document.getElementById("input-date").value;
+    const amount = document.getElementById("input-amount").value;
+    const refStart = document.getElementById("input-ref").value;
+
+    document.getElementById("transfer-date").textContent = date;
+    document.getElementById("amount").textContent = amount;
+    document.getElementById("ref-number").textContent = refStart;
+  }
+
+  function randomRef() {
+    let ref = "";
+    for (let i = 0; i < 9; i++) {
+      ref += Math.floor(Math.random() * 10);
+    }
+    document.getElementById("ref-number").textContent = ref;
+  }
+</script>
+
 </body>
 </html>
