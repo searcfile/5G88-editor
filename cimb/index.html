@@ -45,6 +45,7 @@
       justify-content: space-between;
       padding: 20px;
       border-top: 1px solid #ddd;
+      position: relative;
     }
 
     .left {
@@ -52,12 +53,33 @@
     }
 
     .right {
-      text-align: right;
-      width: 150px;
+      width: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      position: relative;
     }
 
-    .section {
-      margin-bottom: 12px;
+    .right .label-top {
+      font-size: 14px;
+      font-weight: bold;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .right .amount-value {
+      font-size: 26px;
+      font-weight: bold;
+      margin-top: 30px;
+      margin-bottom: 20px;
+    }
+
+    .right .bank-charge {
+      font-size: 14px;
+      color: #333;
+      align-self: flex-end;
     }
 
     .section-title {
@@ -73,15 +95,6 @@
     .info strong {
       display: block;
       font-weight: bold;
-    }
-
-    .amount-value {
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .bank-charge {
-      font-size: 14px;
     }
 
     .red-link {
@@ -153,8 +166,9 @@
         <div>MOHD IRWAN BIN MOHD ZAIBI</div>
       </div>
     </div>
+
     <div class="right">
-      <div class="section-title">Amount</div>
+      <div class="label-top">Amount</div>
       <div class="amount-value">MYR <span id="amount">300.00</span></div>
       <div class="bank-charge">Bank charges 0.00</div>
     </div>
