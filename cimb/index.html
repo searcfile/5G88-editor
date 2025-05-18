@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIMB Editor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+
+    .receipt {
+      background: white;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    .header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      display: flex;
+      justify-content: space-between;
+      background: #f0f0f0;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+
+    .status span {
+      font-weight: bold;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .amount {
+      text-align: right;
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .form-section {
+      margin-top: 30px;
+    }
+
+    input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #007bff;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="receipt">
+  <div class="header">DuitNow / Transfer Money Acknowledgement</div>
+  <div class="status">
+    <div>✅ <span>Successful</span> Ref 655784946</div>
+    <div id="transferTime">18 May 2025, 03:26:30 pm</div>
+  </div>
+
+  <div class="section">
+    <label>To</label>
+    <div><strong>Account Number</strong><br>7002795979</div>
+    <div><strong>Account Name</strong><br>SA PASSBOOK</div>
+    <div><strong>Recipient Name</strong><br>MOHD IRWAN BIN MOHD ZAIBI</div>
+  </div>
+
+  <div class="amount">
+    MYR <span id="amount">300.00</span>
+    <div style="font-size: 14px; font-weight: normal;">Bank charges 0.00</div>
+  </div>
+
+  <div class="form-section">
+    <label for="dateInput">Tanggal dan Waktu Transfer</label>
+    <input type="datetime-local" id="dateInput" />
+
+    <label for="amountInput">Amount (MYR)</label>
+    <input type="number" id="amountInput" step="0.01" placeholder="Contoh: 300.00" />
+
+    <button onclick="updateReceipt()">Update</button>
+  </div>
+</div>
+
+<script>
+  function updateReceipt() {
+    const dateInput = document.getElementById("dateInput").value;
+    const amountInput = document.getElementById("amountInput").value;
+
+    // Update waktu
+    if (dateInput) {
+      const dateObj = new Date(dateInput);
+      const options = { day: '2-digit', month: 'short', year: 'numeric' };
+      const dateStr = dateObj.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
+      let hours = dateObj.getHours();
+      const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+      const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'pm' : 'am';
+      hours = hours % 12 || 12;
+      const timeStr = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+      document.getElementById("transferTime").textContent = `${dateStr}, ${timeStr}`;
+    }
+
+    // Update jumlah
+    if (amountInput) {
+      const formattedAmount = parseFloat(amountInput).toFixed(2);
+      document.getElementById("amount").textContent = formattedAmount;
+    }
+  }
+</script>
+
+</body>
+</html>
