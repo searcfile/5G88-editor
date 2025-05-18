@@ -952,7 +952,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
    let totalSeconds = 0;
 
    for (let i = 0; i < 10; i++) {
-    const gap = Math.floor(Math.random() * (4 - 3 + 1)) + 3;
+    const gap = Math.floor(Math.random() * 3) + 3; // akan hasilkan 3, 4, atau 5
     totalSeconds += gap;
     const logTime = new Date();
     logTime.setSeconds(logTime.getSeconds() - totalSeconds);
@@ -981,7 +981,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
 // Buat objek Date baru berdasarkan waktu log terbaru
 let setScoreTime = new Date(logs[0].dateTime);
-const extraSeconds = [2, 3, 7, 10, 15];
+const extraSeconds = [2, 3, 7, 10];
 const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
 setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset); // tambah 4 detik (atau sesuai keinginan)
 
