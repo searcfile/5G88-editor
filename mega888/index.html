@@ -916,7 +916,19 @@ document.getElementById("betSelect").addEventListener("change", function () {
   let logs = [];
 
   // Ambil waktu dasar dari input manual atau globalTime
-  const manualInput = document.getElementById("manualTime").value.trim();
+  const customTime = document.getElementById("manualTime").value;
+  if (customTime) {
+  const formattedTime = customTime.slice(0, 16);
+  const rows = gameLog.querySelectorAll("tr");
+   rows.forEach((row, index) => {
+    if (index < 11) {
+      const datetimeCell = row.querySelector("td:last-child");
+      if (datetimeCell) {
+        datetimeCell.textContent = formattedTime.replace("T", " ");
+      }
+    }
+  });
+}
   let baseTime;
   if (manualInput) {
     const parts = manualInput.split(" ");
