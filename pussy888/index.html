@@ -912,6 +912,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const pecahanSelect = document.getElementById("pecahanSelect");
   const selectedPecahan = parseFloat(pecahanSelect.value);
   const tbody = document.querySelector("#gameLog tbody");
+  const manualTimeInput = document.getElementById('manualTime').value;
 
   let logs = [];
 
@@ -988,7 +989,7 @@ if (manualInput) {
 
 // Buat objek Date baru berdasarkan waktu log terbaru
 let setScoreTime = new Date(logs[0].dateTime);
-const extraSeconds = [2, 3, 7, 10, 15];
+const extraSeconds = [2, 3, 7, 10];
 const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
 setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset); // tambah 4 detik (atau sesuai keinginan)
 
@@ -998,7 +999,7 @@ let rows = `
     <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
     <td class="negatif">-</td>
     <td class="negatif">-</td>
-    <td>${(Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+    <td>${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
     <td>0.00</td>
     <td>${formatDateTimeLocal(setScoreTime)}</td>
   </tr>
