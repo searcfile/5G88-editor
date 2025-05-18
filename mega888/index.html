@@ -949,30 +949,31 @@ document.getElementById("betSelect").addEventListener("change", function () {
 const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
 let balance = rnd(3000, 4000) + manualScore;
 
+let tempBalance = balance;
 let totalSeconds = 0;
 
-for (let i = 0; i < 10; i++) {
-  const gap = Math.floor(Math.random() * 3) + 3; // 3-5 detik
+for (let i = 9; i >= 0; i--) {
+  const gap = Math.floor(Math.random() * 3) + 3;
   totalSeconds += gap;
   const logTime = new Date();
   logTime.setSeconds(logTime.getSeconds() - totalSeconds);
 
-  const beginMoney = balance;
+  const beginMoney = tempBalance;
   const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
   const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-  const formattedTime = formatDateTimeLocal(logTime); // gunakan logTime
+  const formattedTime = formatDateTimeLocal(logTime);
 
-  logs.unshift({ // masukkan log terbaru ke awal array
-      game,
-      tableID: `<span class="table-id-highlight">0</span>`,
-      bet: bet.toFixed(2),
-      win: win.toFixed(2),
-      beginMoney: beginMoney.toFixed(2),
-      endMoney: endMoney.toFixed(2),
-      dateTime: formattedTime
-    });
+  logs.unshift({ // masuk ke depan supaya urutan log tetap terbaru → paling atas
+    game,
+    tableID: `<span class="table-id-highlight">0</span>`,
+    bet: bet.toFixed(2),
+    win: win.toFixed(2),
+    beginMoney: beginMoney.toFixed(2),
+    endMoney: endMoney.toFixed(2),
+    dateTime: formattedTime
+  });
 
-  balance = endMoney;
+  tempBalance = endMoney; // balance turunkan untuk kira log sebelum ini
 }
   // Set Score dari log paling atas (waktu paling baru)
  const setScoreMoney = logs[0].endMoney;
