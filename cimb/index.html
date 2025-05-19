@@ -242,9 +242,14 @@
 </head>
 <body>
   <div class="top-inputs">
-  <div class="input-group">
-    <input type="text" id="input-date" placeholder="Date & Time" value="18 May 2025, 03:26:30 pm" />
-    <div class="input-label">Tarikh & Masa</div>
+  <div class="input-group" style="display: flex; align-items: center;">
+    <button id="btn-date" style="margin-right: 8px; height: 30px; padding: 4px 10px; background-color: #ec1d23; color: white; border: none; border-radius: 4px; cursor: pointer;">
+      Pilih
+    </button>
+    <div style="display: flex; flex-direction: column;">
+      <input type="text" id="input-date" placeholder="Date & Time" value="18 May 2025, 03:26:30 pm" />
+      <div class="input-label">Tarikh & Masa</div>
+    </div>
   </div>
   <div class="input-group">
     <input type="text" id="input-amount" placeholder="Amount" value="300.00" />
@@ -252,6 +257,7 @@
   </div>
   <button class="btn-update" onclick="updateDisplay()">Update Info</button>
 </div>
+
 
 <div class="container">
   <div class="header">DuitNow / Transfer Money Acknowledgement</div>
