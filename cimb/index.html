@@ -309,26 +309,42 @@
   </div>
 
 <script>
-    document.getElementById("btn-date").addEventListener("click", function() {
-  const now = new Date();
+    function getFormattedDateTime() {
+    const now = new Date();
 
-  // Format waktu: contoh "19 May 2025, 03:26:30 pm"
-  const options = {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true
-  };
+    const day = now.getDate().toString().padStart(2, '0');
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const month = monthNames[now.getMonth()];
+    const year = now.getFullYear();
 
-  // Format ke lokal Inggris untuk sesuai format yang kamu mau
-  const formatted = now.toLocaleString('en-GB', options).replace(',', '');
+    let hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
 
-  // Masukkan ke input
-  document.getElementById("input-date").value = formatted;
-});
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // hour 0 should be 12
+
+    const formattedTime = `${day} ${month} ${year}, ${hours.toString().padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+    return formattedTime;
+  }
+
+  document.getElementById("btn-date").addEventListener("click", function () {
+    const now = getFormattedDateTime();
+    document.getElementById("input-date").value = now;
+  });
+
+  function updateDisplay() {
+    const date = document.getElementById("input-date").value;
+    const amount = document.getElementById("input-amount").value;
+
+    document.getElementById("transfer-date").textContent = date;
+
+    const parts = amount.split(".");
+    document.getElementById("main-amount").textContent = parts[0] + ".";
+    document.querySelector(".sen").textContent = parts[1] || "00";
+  }
   
   function updateDisplay() {
   const date = document.getElementById("input-date").value;
