@@ -171,7 +171,7 @@
     }
     .input-label {
       font-size: 15px;
-      color: #ec1d23;
+      color: #666;
       margin-top: 4px;
       text-align: center;
     }
@@ -179,7 +179,7 @@
       width: 155px;
       padding: 6px 8px;
       font-size: 13px;
-      border: 1px solid #ec1d23;
+      border: 1px solid #ccc;
       border-radius: 4px;
     }
     .top-inputs button {
@@ -233,6 +233,7 @@
     #transfer-date, #ref-number {
       font-family: Open Sans;
       font-size: 14px;
+      
     }
     @media (max-width: 600px) {
       .left, .right {
@@ -242,10 +243,11 @@
   </style>
 </head>
 <body>
+  <div class="top-inputs">
   <div class="input-group">
-  <input type="text" id="input-date" placeholder="Date & Time" value="18 May 2025, 03:26:30 pm" />
-  <div class="input-label">Tarikh & Masa</div>
-</div>
+    <input type="text" id="input-date" placeholder="Date & Time" value="18 May 2025, 03:26:30 pm" />
+    <div class="input-label">Date & Time</div>
+  </div>
   <div class="input-group">
     <input type="text" id="input-amount" placeholder="Amount" value="300.00" />
     <div class="input-label">Add Amount</div>
@@ -259,7 +261,7 @@
   <div class="status-bar">
     <div class="left">
       <div class="check-icon">✔</div>
-      <span><strong class="success-text">Successful</strong> Ref <span id="ref-number">0000000000</span></span>
+      <span><strong class="success-text">Successful</strong> Ref <span id="ref-number">1234</span></span>
     </div>
     <div id="transfer-date">18 May 2025, 03:26:30 pm</div>
   </div>
@@ -293,24 +295,13 @@
   </div>
 
 <script>
-  function setNow() {
-  const now = new Date();
-  const options = { day: '2-digit', month: 'short', year: 'numeric' };
-  const datePart = now.toLocaleDateString('en-GB', options).replace(/ /g, ' ');
-  const timePart = now.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true
-  }).toLowerCase();
-  document.getElementById("input-date").value = `${datePart}, ${timePart}`;
-}
-
   function updateDisplay() {
   const date = document.getElementById("input-date").value;
   const amount = document.getElementById("input-amount").value;
+  const refStart = document.getElementById("input-ref").value;
 
   document.getElementById("transfer-date").textContent = date;
+  document.getElementById("ref-number").textContent = refStart;
 
   const parts = amount.split(".");
   document.getElementById("main-amount").textContent = parts[0] + ".";
