@@ -243,7 +243,6 @@
   </style>
 </head>
 <body>
-  
   <div class="top-inputs">
   <div class="input-group">
     <input type="text" id="input-date" placeholder="Date & Time" value="18 May 2025, 03:26:30 pm" />
@@ -253,12 +252,7 @@
     <input type="text" id="input-amount" placeholder="Amount" value="300.00" />
     <div class="input-label">Add Amount</div>
   </div>
-  <div style="display: flex; align-items: center; gap: 10px;">
-  <button type="button" onclick="setNow()" style="padding: 6px 10px;">Now</button>
-  <input type="text" id="dateTimeInput" />
-  <input type="text" id="amountInput" />
-  <button>Create</button>
-</div>
+  <button class="btn-update" onclick="updateDisplay()">Create</button>
 </div>
 
 <div class="container">
@@ -301,21 +295,6 @@
   </div>
 
 <script>
-function setNow() {
-  const now = new Date();
-  const options = {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true
-  };
-  const formatted = now.toLocaleString('en-GB', options).replace(',', '');
-  document.getElementById("dateTimeInput").value = formatted;
-}
-  
   function updateDisplay() {
   const date = document.getElementById("input-date").value;
   const amount = document.getElementById("input-amount").value;
