@@ -243,6 +243,11 @@
   </style>
 </head>
 <body>
+  <div style="display: flex; align-items: center; gap: 5px;">
+  <button type="button" onclick="setNow()" style="padding: 6px 10px;">Now</button>
+  <input type="text" id="dateTimeInput" />
+</div>
+  
   <div class="top-inputs">
   <div class="input-group">
     <input type="text" id="input-date" placeholder="Date & Time" value="18 May 2025, 03:26:30 pm" />
@@ -295,6 +300,21 @@
   </div>
 
 <script>
+function setNow() {
+  const now = new Date();
+  const options = {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  };
+  const formatted = now.toLocaleString('en-GB', options).replace(',', '');
+  document.getElementById("dateTimeInput").value = formatted;
+}
+  
   function updateDisplay() {
   const date = document.getElementById("input-date").value;
   const amount = document.getElementById("input-amount").value;
