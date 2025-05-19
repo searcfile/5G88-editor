@@ -149,21 +149,38 @@
       font-weight: 500;
       border-top: 1px solid #ccc;
     }
-    .date-top-right {
-      max-width: 700px;
-      margin: 10px auto;
-      display: flex;
-      justify-content: flex-end;
-      padding-right: 20px;
-    }
-    #input-date {
-      width: 220px;
-      padding: 6px 10px;
-      font-size: 13px;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-     }
+    .top-inputs {
+  max-width: 700px;
+  margin: 10px auto 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 20px;
+}
+
+.top-inputs input {
+  width: 140px;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.top-inputs button {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  background-color: #800000; /* maroon */
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.top-inputs button:hover {
+  background-color: rgba(0, 0, 0, 0.6); /* hitam transparent */
+}
     .form-section {
       max-width: 700px;
       margin: 30px auto;
@@ -211,8 +228,12 @@
   </style>
 </head>
 <body>
-  <div class="date-top-right">
-  <input type="text" id="input-date" value="18 May 2025, 03:26:30 pm" />
+  <div class="top-inputs">
+  <input type="text" id="input-date" placeholder="Date & Time" value="18 May 2025, 03:26:30 pm" />
+  <input type="text" id="input-amount" placeholder="Amount" value="300.00" />
+  <input type="text" id="input-ref" maxlength="4" placeholder="Ref No" value="1234" />
+  <button class="btn-update" onclick="updateDisplay()">Update Info</button>
+  <button class="btn-ref" onclick="randomRef()">Change Ref No</button>
 </div>
 
 <div class="container">
@@ -253,20 +274,6 @@
    <div class="footer">
     More transfer details →
   </div>
-
-<div class="form-section">
-  <label>Manual Date & Time (e.g., 18 May 2025, 03:26:30 pm)</label>
-  <input type="text" id="input-date" value="18 May 2025, 03:26:30 pm" />
-
-  <label>Amount (e.g., 300.00)</label>
-  <input type="text" id="input-amount" value="300.00" />
-
-  <label>4-digit Start Ref Number (e.g., 1234)</label>
-  <input type="text" id="input-ref" maxlength="4" value="1234" />
-
-  <button onclick="updateDisplay()">Update Info</button>
-  <button onclick="randomRef()">Change Ref No</button>
-</div>
 
 <script>
   function updateDisplay() {
