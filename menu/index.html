@@ -93,10 +93,29 @@
       box-sizing: border-box;
       scrollbar-width: none;
       -ms-overflow-style: none;
+      overflow: visible;
     }
     .menu-container::-webkit-scrollbar {
       display: none;                /* Chrome, Safari, Opera */
     }
+    .menu-container::before {
+  content: "";
+  position: absolute;
+  top: -5px; left: -5px; right: -5px; bottom: -5px; /* keluar sedikit dari container */
+  border-radius: 25px; /* harus lebih besar dari container */
+  border: 3px solid transparent;
+  border-top-color: gold;
+  border-right-color: gold;
+  animation: spin 2s linear infinite;
+  pointer-events: none; /* supaya tidak menghalangi klik */
+  box-shadow: 0 0 10px gold;
+  z-index: 10;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
     @media (max-width: 768px) {
      .menu-container {
       max-height: 80vh;
