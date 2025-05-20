@@ -203,15 +203,13 @@
       font-weight: 700;
     }
     .details {
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 20px;
+      pposition: relative;
+      min-height: 120px;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
     }
-    .left, .right {
-      width: 48%;
+    .left {
+     padding-right: 140px; /* Sisain ruang buat yang kanan */
     }
     .label {
       font-size: 14px;
@@ -392,12 +390,12 @@
      color: #fff;
     }
     .right {
-  width: 48%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
       text-align: right;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      text-align: right;
+      transform: translateY(-50%);
 }
     @keyframes rotate360 {
     from { transform: rotate(0deg); }
