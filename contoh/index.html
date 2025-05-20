@@ -1,47 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Amount Display</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Amount Input Manual</title>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
   <style>
     * {
       font-family: 'Open Sans', sans-serif;
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
     }
 
     body {
-      background-color: #f5f5f5;
+      background-color: #ffffff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
-      color: #000;
+      padding: 30px 20px;
     }
 
     .header {
-      background-color: #eeeeee;
-      padding: 15px 25px;
-      font-size: 20px;
-      font-weight: 400;
       width: 100%;
+      background-color: #eeeeee;
       text-align: center;
+      padding: 15px 0;
+      font-size: 18px;
+      color: #000;
       margin-bottom: 30px;
-      border-radius: 8px;
     }
 
-    .amount-box {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 320px;
+    .content {
       text-align: center;
+      color: #000;
     }
 
-    .amount-box h2 {
+    .content h2 {
       font-size: 24px;
       font-weight: 700;
       margin-bottom: 20px;
@@ -49,31 +44,39 @@
 
     .amount {
       font-size: 36px;
-      font-weight: 700;
+      font-weight: bold;
       margin-bottom: 10px;
     }
 
     .charges {
-      font-size: 16px;
-      color: #333;
+      font-size: 18px;
     }
 
-    .btn-group {
-      margin-top: 25px;
+    .inputs {
+      margin-top: 40px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 15px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    input {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
 
     button {
-      padding: 12px 18px;
+      padding: 12px 20px;
       font-size: 16px;
-      border: none;
-      border-radius: 6px;
       background-color: #444;
       color: white;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: 0.3s;
     }
 
     button:hover {
@@ -83,43 +86,60 @@
 </head>
 <body>
 
+  <!-- HEADER -->
   <div class="header" id="datetime">Loading date...</div>
 
-  <div class="amount-box">
+  <!-- MAIN CONTENT -->
+  <div class="content">
     <h2><strong>Amount</strong></h2>
-    <div class="amount">MYR <span id="amount">1,000.00</span></div>
+    <div class="amount">MYR <span id="amount-display">1,000.00</span></div>
     <div class="charges">Bank Charges MYR <span id="charges">0.00</span></div>
+  </div>
 
-    <div class="btn-group">
-      <button onclick="updateDateTime()">Update Date & Time</button>
-      <button onclick="increaseAmount()">Tambah Amount</button>
-    </div>
+  <!-- INPUT SECTION -->
+  <div class="inputs">
+    <input type="datetime-local" id="input-date" />
+    <input type="number" id="input-amount" placeholder="Masukkan amount (contoh: 1500.00)" step="0.01" />
+    <button onclick="updateManual()">Update Manual</button>
+    <button onclick="resetDefault()">Reset ke Default</button>
   </div>
 
   <script>
-    function updateDateTime() {
-      const now = new Date();
-      const options = { 
-        day: '2-digit', month: 'long', year: 'numeric',
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
-        hour12: true 
-      };
-      const formatted = now.toLocaleString('en-GB', options).replace(',', '');
-      document.getElementById('datetime').textContent = formatted;
+    function updateManual() {
+      const inputDate = document.getElementById('input-date').value;
+      const inputAmount = document.getElementById('input-amount').value;
+
+      if (inputDate) {
+        const dt = new Date(inputDate);
+        const options = { 
+          day: '2-digit', month: 'long', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: true 
+        };
+        const formattedDate = dt.toLocaleString('en-GB', options).replace(',', '');
+        document.getElementById('datetime').textContent = formattedDate;
+      }
+
+      if (inputAmount) {
+        const amount = parseFloat(inputAmount);
+        document.getElementById('amount-display').textContent = amount.toLocaleString('en-MY', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
     }
 
-    function increaseAmount() {
-      const amountEl = document.getElementById('amount');
-      let currentAmount = parseFloat(amountEl.textContent.replace(/,/g, ''));
-      currentAmount += 100.00;
-      amountEl.textContent = currentAmount.toLocaleString('en-MY', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+    function resetDefault() {
+      document.getElementById('input-date').value = '';
+      document.getElementById('input-amount').value = '';
+      document.getElementById('datetime').textContent = '20 May 2025, 01:35:31 pm';
+      document.getElementById('amount-display').textContent = '1,000.00';
     }
 
-    // Initialize
-    updateDateTime();
+    // Set default on load
+    window.onload = function() {
+      resetDefault();
+    };
   </script>
 
 </body>
