@@ -185,6 +185,9 @@
       font-size: 16px;
       cursor: pointer;
       text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      position: relative;
     }
     .menu-item:hover {
       color: white;
@@ -195,6 +198,47 @@
     .menu-item:hover .icon-wrapper img {
       filter: brightness(1.2);
     }
+    .menu-item::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: conic-gradient(
+    from 0deg,
+    #ff0000,
+    #00ff00,
+    #0000ff,
+    #ff00ff,
+    #ff0000
+  );
+  z-index: -1;
+  border-radius: 22px;
+  animation: rotateLED 3s linear infinite;
+  padding: 2px;
+  box-sizing: border-box;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: destination-out;
+}
+
+@keyframes rotateLED {
+  0% {
+    transform: rotate(0turn);
+  }
+  100% {
+    transform: rotate(1turn);
+  }
+}
+    .menu-item:hover {
+  box-shadow: 0 0 15px gold, 0 0 30px rgba(255, 215, 0, 0.7);
+}
     .icon-wrapper {
       width: 120px;
       height: 120px;
