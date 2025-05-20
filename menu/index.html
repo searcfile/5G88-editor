@@ -93,74 +93,12 @@
       box-sizing: border-box;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      z-index: 9999;
+     
       
     }
     .menu-container::-webkit-scrollbar {
       display: none;                /* Chrome, Safari, Opera */
     }
-   .glow-container {
-  position: relative;
-  padding: 2rem;
-  border-radius: 22px;
-  background-color: #111;
-  color: white;
-  z-index: 1;
-  overflow: hidden;
-  height: 100%;
-  margin: 3px;
-     padding: 2px;
-      display: inline-block;
-    
-  
-}
-
-.glow-container::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 730%;
-  height: 610%;
-  background: conic-gradient(
-    from 0deg,
-    #0ff,
-    #00f,
-    #0ff,
-    #0f0,
-    #ff0,
-    #f00,
-    #f0f,
-    #0ff
-  );
-  animation: rotateGlow 4s linear infinite;
-  z-index: -1;
-  border-radius: 22px;
-  filter: blur(4px);
-}
-
-.glow-container::after {
-  content: '';
-  position: relative;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  border-radius: 16px;
-  background: #111;
-  z-index: -9999;
-}
-
-/* Rotating animation for glowing effect */
-@keyframes rotateGlow {
-  0% {
-    transform: rotate(0turn);
-  }
-  100% {
-    transform: rotate(1turn);
-  }
-}
     @media (max-width: 768px) {
      .menu-container {
       max-height: 80vh;
