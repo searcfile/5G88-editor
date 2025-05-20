@@ -102,13 +102,15 @@
    .glow-container {
   position: relative;
   padding: 2rem;
-  border-radius: 16px;
+  border-radius: 22px;
   background-color: #111;
   color: white;
   z-index: 1;
   overflow: hidden;
   height: 100%;
   margin: 3px;
+     padding: 2px;
+      display: inline-block;
     
   
 }
@@ -118,8 +120,8 @@
   position: absolute;
   top: -50%;
   left: -50%;
-  width: 730px;
-  height: 610px;
+  width: 200%;
+  height: 200%;
   background: conic-gradient(
     from 0deg,
     #0ff,
@@ -133,7 +135,8 @@
   );
   animation: rotateGlow 4s linear infinite;
   z-index: -1;
-  filter: blur(40px);
+  border-radius: 22px;
+  filter: blur(4px);
 }
 
 .glow-container::after {
