@@ -15,74 +15,6 @@
       overflow: hidden;
       position: relative;
     }
-    .background-container {
-     position: relative;
-     width: 100%;
-     height: 100vh;
-   }
-   .bg-img {
-    position: absolute;
-    z-index: -1;
-   }
-   .corner-img.right {right: -1vw;}
-   .corner-img.left {left: -1vw;}
-   .corner-img {position: fixed; top: -5vw; width: 40vw; height: auto;}
-   .img1 {position: fixed; object-fit: cover; top: 0; height: 100vh; left: 0; width: auto; }
-   .img2 {position: fixed; object-fit: cover; top: 0; height: 100vh; right: 0; width: auto; }
-   .img3 {position: fixed; object-fit: cover; height: 100vh; top: 50%; left: 0; transform: translateY(-50%); width: auto; }
-   .img4 {position: fixed; object-fit: cover; height: 100vh; top: 50%; right: 0; transform: translateY(-50%); width: auto; }
-   .img7 {position: fixed; object-fit: content; top: -3vw; left: 50%; transform: translateX(-50%); width: 26vw; }
-   .img8 {position: fixed; top: 2.5vw; left: 50%; transform: translateX(-50%); width: 13vw; }
-   .img9 {position: fixed; top: -1vw; left: 50%; transform: translateX(-50%); width: 8vw; }
-   .img10 {position: fixed; object-fit: cover; bottom: -3vw; left: 0; width: 35vw; }
-   .img11 {position: fixed; object-fit: cover; bottom: -5vw; left: 0; width: 100vw; }
-    .floating-dots {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      top: 0;
-      left: 0;
-      z-index: -1; /* Pastikan ia di belakang semua elemen */
-   }
-
-    .floating-dots::before,
-    .floating-dots::after {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      background: radial-gradient(circle, gold 2px, transparent 2px) 0 0 / 50px 50px,
-              radial-gradient(circle, gold 2px, transparent 2px) 25px 25px / 50px 50px;
-      animation: floatDots 30s linear infinite;
-      opacity: 0.2;
-    }
-    .floating-dots::after {
-      animation-delay: 15s;
-      opacity: 0.1;
-    }
-    @keyframes floatDots {
-      0% {
-    transform: translateY(0);
-    }
-      100% {
-      transform: translateY(-100%);
-    }
-    }
-    .pixel-glow {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      background: repeating-radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 2px);
-      background-size: 50px 50px;
-      animation: moveGlow 30s linear infinite;
-      z-index: -1;
-    }
-
     @keyframes moveGlow {
       0% {
       background-position: 0 0;
@@ -278,20 +210,6 @@
   </style>
 </head>
 <body>
- <div class="background-container">
-  <img src="https://i.imgur.com/tbgEfYb.png" class="bg-img img1">
-  <img src="https://i.imgur.com/UUIOKtv.png" class="bg-img img2">
-  <img src="https://i.imgur.com/bGqb6dJ.png" class="bg-img img3">
-  <img src="https://i.imgur.com/MfhKshi.png" class="bg-img img4">
-  <img src="https://i.imgur.com/yPw48fJ.png" class="corner-img left">
-  <img src="https://i.imgur.com/yIjuipR.png" class="corner-img right">
-  <img src="https://i.imgur.com/4wtJTHy.png" class="bg-img img7">
-  <img src="https://i.imgur.com/GXvcbau.png" class="bg-img img8">
-  <img src="https://i.imgur.com/QtwH03L.png" class="bg-img img9">
-  <img src="https://i.imgur.com/3rMNNXg.png" class="bg-img img10">
-  <img src="https://i.imgur.com/9xfotwK.png" class="bg-img img11">
- </div>
-  <div class="floating-dots"></div>
   <div class="pixel-glow"></div>
   <div class="menu-container">
     <div class="header">
