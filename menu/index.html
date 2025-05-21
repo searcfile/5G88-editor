@@ -14,6 +14,7 @@
       height: 100vh;
       overflow: hidden;
       position: relative;
+      pointer-events: none;
     }
     @media (max-width: 768px) {
   .menu-container {
@@ -94,10 +95,12 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
       justify-content: space-between;
-      overflow: hidden;
-     
+      z-index: 1000;
       
     }
+    .menu-container, .menu-item, .icon-wrapper, .footer {
+  pointer-events: auto; /* Aktifkan klik hanya di area konten */
+}
     .menu-container::-webkit-scrollbar {
       display: none;                /* Chrome, Safari, Opera */
     }
