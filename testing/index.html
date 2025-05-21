@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gold Menu Page</title>
+  <title>Gold Menu Page with Card Buttons</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Reset & Font */
     * {
       margin: 0;
       padding: 0;
@@ -35,7 +34,6 @@
       object-fit: cover;
     }
 
-    /* Burger Menu */
     .menu-icon {
       position: absolute;
       top: 20px;
@@ -84,34 +82,45 @@
       color: #111;
     }
 
-    /* Tombol Link */
+    /* Card Tombol */
     .menu-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      padding: 30px 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 20px;
+      padding: 30px 20px;
+      justify-items: center;
     }
 
-    .menu-buttons a {
-      text-align: center;
-      text-decoration: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      color: gold;
-      border: 2px solid gold;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      background: linear-gradient(145deg, #1e1e1e, #131313);
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    .card-button {
       width: 140px;
+      background: linear-gradient(145deg, #1e1e1e, #131313);
+      border: 2px solid gold;
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      color: gold;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
     }
 
-    .menu-buttons a:hover {
+    .card-button:hover {
       background: gold;
       color: #111;
-      box-shadow: 0 0 15px gold;
+      box-shadow: 0 0 20px gold;
       transform: scale(1.05);
+    }
+
+    .card-button img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .card-button span {
+      display: block;
+      padding: 10px;
+      font-size: 16px;
     }
   </style>
 </head>
@@ -131,14 +140,32 @@
     <img src="https://via.placeholder.com/500x200.png?text=Product+Image" alt="Product">
   </div>
 
-  <!-- Menu Tombol -->
+  <!-- Card Tombol Menu -->
   <div class="menu-buttons">
-    <a href="#">🏆 Menu 1</a>
-    <a href="#">🎰 Menu 2</a>
-    <a href="#">💰 Menu 3</a>
-    <a href="#">🧧 Menu 4</a>
-    <a href="#">🔥 Menu 5</a>
-    <a href="#">🎮 Menu 6</a>
+    <a href="#" class="card-button">
+      <img src="https://via.placeholder.com/140x100.png?text=Game+1" alt="Game 1">
+      <span>🏆 Menu 1</span>
+    </a>
+    <a href="#" class="card-button">
+      <img src="https://via.placeholder.com/140x100.png?text=Game+2" alt="Game 2">
+      <span>🎰 Menu 2</span>
+    </a>
+    <a href="#" class="card-button">
+      <img src="https://via.placeholder.com/140x100.png?text=Game+3" alt="Game 3">
+      <span>💰 Menu 3</span>
+    </a>
+    <a href="#" class="card-button">
+      <img src="https://via.placeholder.com/140x100.png?text=Game+4" alt="Game 4">
+      <span>🧧 Menu 4</span>
+    </a>
+    <a href="#" class="card-button">
+      <img src="https://via.placeholder.com/140x100.png?text=Game+5" alt="Game 5">
+      <span>🔥 Menu 5</span>
+    </a>
+    <a href="#" class="card-button">
+      <img src="https://via.placeholder.com/140x100.png?text=Game+6" alt="Game 6">
+      <span>🎮 Menu 6</span>
+    </a>
   </div>
 
   <script>
