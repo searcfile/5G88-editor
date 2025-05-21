@@ -3,128 +3,185 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Game Search | 5G88</title>
+  <title>Game Platform Filter</title>
   <style>
     body {
+      background-color: #1b1b1b;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #1b1b1b;
-      color: gold;
-    }
-
-    .header {
-      text-align: center;
-      padding: 20px;
-      font-size: 24px;
-      font-weight: bold;
+      overflow-x: hidden;
     }
 
     .search-container {
       text-align: center;
-      margin-bottom: 20px;
+      padding: 20px;
     }
 
     .search-container input {
-      padding: 10px 20px;
+      padding: 10px;
       font-size: 16px;
-      border: 2px solid gold;
-      border-radius: 8px;
+      width: 250px;
+      border-radius: 5px;
+      border: 1px solid gold;
       background-color: #111;
       color: gold;
-      width: 300px;
-      max-width: 80%;
     }
 
-    .game-wrapper {
-      display: flex;
-      justify-content: center;
-    }
-
-    .game-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 120px);
-      gap: 20px;
-      justify-content: center;
-      padding: 0 20px 40px;
-    }
-
-    .game-item {
+    .filter-tabs {
       text-align: center;
+      margin-bottom: 10px;
     }
 
-    .game-item img {
+    .filter-tabs button {
+      background-color: #111;
+      color: gold;
+      border: 1px solid gold;
+      padding: 8px 16px;
+      margin: 0 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-tabs button.active,
+    .filter-tabs button:hover {
+      background-color: gold;
+      color: #111;
+    }
+
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .game-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #111;
+      border: 2px solid gold;
+      border-radius: 10px;
+      padding: 16px;
+      transition: transform 0.2s ease;
+      position: relative;
+      top: 10px;
+    }
+
+    .game-logo img {
       width: 100px;
       height: 100px;
       object-fit: contain;
-      border: 2px solid gold;
-      border-radius: 10px;
-      background-color: #111;
-      padding: 5px;
-      transition: transform 0.3s;
+      margin-bottom: 10px;
     }
 
-    .game-item img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 10px gold;
-    }
-
-    .game-name {
-      margin-top: 8px;
+    .game-logo span {
+      color: gold;
       font-size: 14px;
+      text-align: center;
     }
 
-    @media (max-width: 640px) {
-      .game-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      }
+    .game-logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px gold;
     }
   </style>
 </head>
 <body>
-  <div class="header">🎮 Game Platform Search</div>
 
   <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search platform... (e.g. mega888, pussy888)">
+    <input type="text" id="searchInput" placeholder="Search platform (e.g., mega888)" onkeyup="filterGames()" />
   </div>
 
-  <div class="game-wrapper">
-    <div class="game-grid" id="gameGrid">
-      <!-- Game logos will be injected here -->
-    </div>
+  <div class="filter-tabs">
+    <button onclick="setFilter('all')" class="active">All</button>
+    <button onclick="setFilter('slot')">Slot</button>
+    <button onclick="setFilter('live')">Live Game</button>
+    <button onclick="setFilter('table')">Table Game</button>
+  </div>
+
+  <div class="logo-grid" id="gameGrid">
+    <!-- Game logos will be inserted here -->
   </div>
 
   <script>
     const games = [
-      { name: 'Mega Game 1', platform: 'mega888', image: 'https://xe88.info/images/game-33.png' },
-      { name: '918Kiss Game 1', platform: '918kiss', image: 'https://xe88.info/images/game-34.png' },
-      { name: 'Pussy888 Game 1', platform: 'pussy888', image: 'https://xe88.info/images/game-35.png' },
-      { name: 'Pussy888 Game 2', platform: 'pussy888', image: 'https://xe88.info/images/game-36.png' },
-      { name: 'GoldenTour', platform: 'pussy888', image: 'https://xe88.info/images/game-41.png' }
+      {
+        name: "Golden Tour",
+        image: "https://xe88.info/images/game-41.png",
+        platform: "mega888",
+        type: "slot"
+      },
+      {
+        name: "Ocean King",
+        image: "https://xe88.info/images/game-33.png",
+        platform: "918kiss",
+        type: "slot"
+      },
+      {
+        name: "Panda Party",
+        image: "https://xe88.info/images/game-34.png",
+        platform: "pussy888",
+        type: "slot"
+      },
+      {
+        name: "Live Baccarat",
+        image: "https://xe88.info/images/game-35.png",
+        platform: "pussy888",
+        type: "live"
+      },
+      {
+        name: "Dragon Tiger",
+        image: "https://xe88.info/images/game-36.png",
+        platform: "pussy888",
+        type: "table"
+      }
     ];
 
-    const gameGrid = document.getElementById('gameGrid');
-    const searchInput = document.getElementById('searchInput');
+    let currentType = "all";
 
-    function displayGames(filter = '') {
-      gameGrid.innerHTML = '';
-      const filtered = games.filter(game => game.platform.toLowerCase().includes(filter.toLowerCase()));
+    function renderGames() {
+      const grid = document.getElementById("gameGrid");
+      const searchText = document.getElementById("searchInput").value.toLowerCase();
+      grid.innerHTML = "";
+
+      const filtered = games.filter(game => {
+        const matchType = currentType === "all" || game.type === currentType;
+        const matchSearch = game.platform.toLowerCase().includes(searchText);
+        return matchType && matchSearch;
+      });
+
       filtered.forEach(game => {
-        const item = document.createElement('div');
-        item.className = 'game-item';
-        item.innerHTML = `
+        const div = document.createElement("div");
+        div.className = "game-logo";
+        div.innerHTML = `
           <img src="${game.image}" alt="${game.name}">
-          <div class="game-name">${game.name}</div>
+          <span>${game.name}</span>
         `;
-        gameGrid.appendChild(item);
+        grid.appendChild(div);
       });
     }
 
-    searchInput.addEventListener('input', (e) => {
-      displayGames(e.target.value);
-    });
+    function filterGames() {
+      renderGames();
+    }
 
-    displayGames(); // Load all games initially
+    function setFilter(type) {
+      currentType = type;
+      document.querySelectorAll('.filter-tabs button').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderGames();
+    }
+
+    // Initial render
+    renderGames();
   </script>
+
 </body>
 </html>
