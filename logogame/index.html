@@ -36,11 +36,16 @@
       max-width: 80%;
     }
 
+    .game-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+
     .game-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      grid-template-columns: repeat(5, 120px);
       gap: 20px;
-      justify-items: center;
+      justify-content: center;
       padding: 0 20px 40px;
     }
 
@@ -68,6 +73,12 @@
       margin-top: 8px;
       font-size: 14px;
     }
+
+    @media (max-width: 640px) {
+      .game-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+    }
   </style>
 </head>
 <body>
@@ -77,8 +88,10 @@
     <input type="text" id="searchInput" placeholder="Search platform... (e.g. mega888, pussy888)">
   </div>
 
-  <div class="game-grid" id="gameGrid">
-    <!-- Game logos will be injected here -->
+  <div class="game-wrapper">
+    <div class="game-grid" id="gameGrid">
+      <!-- Game logos will be injected here -->
+    </div>
   </div>
 
   <script>
