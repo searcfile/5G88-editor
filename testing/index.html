@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gold Menu Page with Card Buttons</title>
+  <title>Gold Button Menu with Image</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * {
@@ -17,7 +17,7 @@
       color: #fff;
     }
 
-    /* Header Gambar */
+    /* Header */
     .header {
       position: relative;
       width: 100%;
@@ -34,6 +34,7 @@
       object-fit: cover;
     }
 
+    /* Sidebar */
     .menu-icon {
       position: absolute;
       top: 20px;
@@ -44,7 +45,6 @@
       z-index: 1001;
     }
 
-    /* Sidebar */
     .sidebar {
       position: fixed;
       top: 0;
@@ -82,45 +82,45 @@
       color: #111;
     }
 
-    /* Card Tombol */
+    /* Tombol dengan gambar di atas */
     .menu-buttons {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 20px;
-      padding: 30px 20px;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      padding: 30px 15px;
       justify-items: center;
     }
 
-    .card-button {
-      width: 140px;
-      background: linear-gradient(145deg, #1e1e1e, #131313);
-      border: 2px solid gold;
-      border-radius: 10px;
-      overflow: hidden;
+    .button-container {
       text-align: center;
-      color: gold;
+      margin: 4px;
+    }
+
+    .button-container img {
+      width: 60px; /* ubah ukuran sesuai kebutuhan */
+      height: 60px;
+      object-fit: contain;
+      margin-bottom: 5px;
+    }
+
+    .button-container a {
+      display: inline-block;
       text-decoration: none;
+      padding: 10px 16px;
+      font-size: 14px;
+      color: gold;
+      border: 2px solid gold;
+      border-radius: 8px;
+      background: linear-gradient(145deg, #1e1e1e, #131313);
       transition: all 0.3s ease;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+      box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
     }
 
-    .card-button:hover {
-      background: gold;
+    .button-container a:hover {
+      background-color: gold;
       color: #111;
-      box-shadow: 0 0 20px gold;
+      box-shadow: 0 0 12px gold;
       transform: scale(1.05);
-    }
-
-    .card-button img {
-      width: 100%;
-      height: 100px;
-      object-fit: cover;
-    }
-
-    .card-button span {
-      display: block;
-      padding: 10px;
-      font-size: 16px;
     }
   </style>
 </head>
@@ -140,32 +140,32 @@
     <img src="https://via.placeholder.com/500x200.png?text=Product+Image" alt="Product">
   </div>
 
-  <!-- Card Tombol Menu -->
+  <!-- Tombol dengan gambar di luar -->
   <div class="menu-buttons">
-    <a href="#" class="card-button">
-      <img src="https://via.placeholder.com/140x100.png?text=Game+1" alt="Game 1">
-      <span>🏆 Menu 1</span>
-    </a>
-    <a href="#" class="card-button">
-      <img src="https://via.placeholder.com/140x100.png?text=Game+2" alt="Game 2">
-      <span>🎰 Menu 2</span>
-    </a>
-    <a href="#" class="card-button">
-      <img src="https://via.placeholder.com/140x100.png?text=Game+3" alt="Game 3">
-      <span>💰 Menu 3</span>
-    </a>
-    <a href="#" class="card-button">
-      <img src="https://via.placeholder.com/140x100.png?text=Game+4" alt="Game 4">
-      <span>🧧 Menu 4</span>
-    </a>
-    <a href="#" class="card-button">
-      <img src="https://via.placeholder.com/140x100.png?text=Game+5" alt="Game 5">
-      <span>🔥 Menu 5</span>
-    </a>
-    <a href="#" class="card-button">
-      <img src="https://via.placeholder.com/140x100.png?text=Game+6" alt="Game 6">
-      <span>🎮 Menu 6</span>
-    </a>
+    <div class="button-container">
+      <img src="https://via.placeholder.com/60.png?text=G1" alt="Icon 1">
+      <a href="#">🏆 Menu 1</a>
+    </div>
+    <div class="button-container">
+      <img src="https://via.placeholder.com/60.png?text=G2" alt="Icon 2">
+      <a href="#">🎰 Menu 2</a>
+    </div>
+    <div class="button-container">
+      <img src="https://via.placeholder.com/60.png?text=G3" alt="Icon 3">
+      <a href="#">💰 Menu 3</a>
+    </div>
+    <div class="button-container">
+      <img src="https://via.placeholder.com/60.png?text=G4" alt="Icon 4">
+      <a href="#">🧧 Menu 4</a>
+    </div>
+    <div class="button-container">
+      <img src="https://via.placeholder.com/60.png?text=G5" alt="Icon 5">
+      <a href="#">🔥 Menu 5</a>
+    </div>
+    <div class="button-container">
+      <img src="https://via.placeholder.com/60.png?text=G6" alt="Icon 6">
+      <a href="#">🎮 Menu 6</a>
+    </div>
   </div>
 
   <script>
