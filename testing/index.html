@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Gold Button Menu with Image</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gold Menu Page</title>
   <style>
     * {
       margin: 0;
@@ -15,34 +15,19 @@
     body {
       background-color: #1b1b1b;
       color: #fff;
-    }
-
-    /* Header */
-    .header {
-      position: relative;
-      width: 100%;
-      height: 200px;
-      background: #111;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .header img {
-      max-height: 100%;
-      object-fit: cover;
+      overflow-x: hidden;
     }
 
     /* Sidebar */
-    .menu-icon {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 30px;
-      color: gold;
-      cursor: pointer;
-      z-index: 1001;
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 999;
     }
 
     .sidebar {
@@ -50,15 +35,19 @@
       top: 0;
       left: -260px;
       width: 260px;
-      height: 100%;
+      height: 100vh;
       background: #111;
       padding: 20px;
-      transition: 0.3s ease-in-out;
+      transition: 0.3s;
       z-index: 1000;
     }
 
     .sidebar.active {
       left: 0;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
     }
 
     .sidebar h2 {
@@ -68,111 +57,176 @@
 
     .sidebar a {
       display: block;
-      margin-bottom: 15px;
-      text-decoration: none;
+      margin: 10px 0;
       color: gold;
+      text-decoration: none;
       font-size: 18px;
-      padding: 10px;
+      padding: 8px;
       border-radius: 5px;
       transition: background 0.2s;
     }
 
     .sidebar a:hover {
-      background-color: gold;
+      background: gold;
       color: #111;
     }
 
-    /* Tombol dengan gambar di atas */
+    .close-btn {
+      background: gold;
+      color: #111;
+      border: none;
+      padding: 8px 12px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    /* Header */
+    .header {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .header img {
+      max-height: 100%;
+    }
+
+    .menu-icon {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 28px;
+      color: gold;
+      cursor: pointer;
+      z-index: 1100;
+    }
+
+    /* Main container */
+    .container {
+      transition: margin-left 0.3s ease;
+      padding: 20px;
+    }
+
+    .container.shrink {
+      margin-left: 260px;
+    }
+
     .menu-buttons {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 10px;
-      padding: 30px 15px;
+      gap: 12px;
       justify-items: center;
     }
 
     .button-container {
       text-align: center;
-      margin: 4px;
     }
 
     .button-container img {
-      width: 60px; /* ubah ukuran sesuai kebutuhan */
+      width: 60px;
       height: 60px;
-      object-fit: contain;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
     }
 
     .button-container a {
       display: inline-block;
-      text-decoration: none;
-      padding: 10px 16px;
+      padding: 10px 18px;
       font-size: 14px;
       color: gold;
       border: 2px solid gold;
       border-radius: 8px;
+      text-decoration: none;
       background: linear-gradient(145deg, #1e1e1e, #131313);
-      transition: all 0.3s ease;
       box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+      transition: 0.3s;
     }
 
     .button-container a:hover {
       background-color: gold;
       color: #111;
-      box-shadow: 0 0 12px gold;
+      box-shadow: 0 0 10px gold;
       transform: scale(1.05);
+    }
+
+    @media (max-width: 600px) {
+      .container.shrink {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- Overlay -->
+  <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
+    <button class="close-btn" onclick="closeSidebar()">✖ Close</button>
     <h2>Menu</h2>
-    <a href="database.html">📁 Database</a>
-    <a href="info.html">ℹ️ Info</a>
-    <a href="login.html">🔐 Login</a>
+    <a href="#">📁 Database</a>
+    <a href="#">ℹ️ Info</a>
+    <a href="#">🔐 Login</a>
   </div>
 
   <!-- Header -->
   <div class="header">
-    <div class="menu-icon" onclick="toggleSidebar()">☰</div>
-    <img src="https://via.placeholder.com/500x200.png?text=Product+Image" alt="Product">
+    <div class="menu-icon" onclick="openSidebar()">☰</div>
+    <img src="https://via.placeholder.com/500x180.png?text=Product+Image" alt="Product">
   </div>
 
-  <!-- Tombol dengan gambar di luar -->
-  <div class="menu-buttons">
-    <div class="button-container">
-      <img src="https://via.placeholder.com/60.png?text=G1" alt="Icon 1">
-      <a href="#">🏆 Menu 1</a>
-    </div>
-    <div class="button-container">
-      <img src="https://via.placeholder.com/60.png?text=G2" alt="Icon 2">
-      <a href="#">🎰 Menu 2</a>
-    </div>
-    <div class="button-container">
-      <img src="https://via.placeholder.com/60.png?text=G3" alt="Icon 3">
-      <a href="#">💰 Menu 3</a>
-    </div>
-    <div class="button-container">
-      <img src="https://via.placeholder.com/60.png?text=G4" alt="Icon 4">
-      <a href="#">🧧 Menu 4</a>
-    </div>
-    <div class="button-container">
-      <img src="https://via.placeholder.com/60.png?text=G5" alt="Icon 5">
-      <a href="#">🔥 Menu 5</a>
-    </div>
-    <div class="button-container">
-      <img src="https://via.placeholder.com/60.png?text=G6" alt="Icon 6">
-      <a href="#">🎮 Menu 6</a>
+  <!-- Main Content -->
+  <div class="container" id="mainContainer">
+    <div class="menu-buttons">
+      <div class="button-container">
+        <img src="https://via.placeholder.com/60.png?text=1" alt="1">
+        <a href="#">🏆 Menu 1</a>
+      </div>
+      <div class="button-container">
+        <img src="https://via.placeholder.com/60.png?text=2" alt="2">
+        <a href="#">🎰 Menu 2</a>
+      </div>
+      <div class="button-container">
+        <img src="https://via.placeholder.com/60.png?text=3" alt="3">
+        <a href="#">💰 Menu 3</a>
+      </div>
+      <div class="button-container">
+        <img src="https://via.placeholder.com/60.png?text=4" alt="4">
+        <a href="#">🧧 Menu 4</a>
+      </div>
+      <div class="button-container">
+        <img src="https://via.placeholder.com/60.png?text=5" alt="5">
+        <a href="#">🔥 Menu 5</a>
+      </div>
+      <div class="button-container">
+        <img src="https://via.placeholder.com/60.png?text=6" alt="6">
+        <a href="#">🎮 Menu 6</a>
+      </div>
     </div>
   </div>
 
   <script>
-    function toggleSidebar() {
-      document.getElementById("sidebar").classList.toggle("active");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const container = document.getElementById("mainContainer");
+
+    function openSidebar() {
+      sidebar.classList.add("active");
+      overlay.classList.add("active");
+      container.classList.add("shrink");
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+      container.classList.remove("shrink");
     }
   </script>
-
 </body>
 </html>
