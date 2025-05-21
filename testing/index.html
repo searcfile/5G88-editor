@@ -122,7 +122,7 @@
     .menu-buttons {
       display: grid;
       flex-wrap: nowrap;
-      grid-template-columns: repeat(6, 100px);
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 90px;
       justify-content: center;
     }
@@ -140,14 +140,9 @@
       height: 155px;
       object-fit: contain;
     }
-    .menu-btn {
-      padding: 15px 25px; /* tambah lebar kiri-kanan */
-      min-width: 100px; /* atau atur lebar minimum */
-      font-size: 14px;
-    }
     .button-container a {
       display: inline-block;
-      padding: 8px 12px;
+      padding: 12px 24px;
       font-size: 14px;
       color: gold;
       border: 2px solid gold;
@@ -155,6 +150,8 @@
       text-decoration: none;
       background: #111;
       transition: all 0.3s ease;
+      min-width: 120px;
+      text-align: center;
     }
 
     .button-container a:hover {
