@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gold Menu Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Reset & Font */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: #1b1b1b;
+      color: #fff;
+    }
+
+    /* Header Gambar */
+    .header {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .header img {
+      max-height: 100%;
+      object-fit: cover;
+    }
+
+    /* Burger Menu */
+    .menu-icon {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 30px;
+      color: gold;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 300px;
+      height: 100%;
+      background: #111;
+      padding: 20px;
+      transition: 0.3s ease-in-out;
+      z-index: 1000;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar h2 {
+      color: gold;
+      margin-bottom: 20px;
+    }
+
+    .sidebar p {
+      color: #ccc;
+    }
+
+    /* Tombol Link */
+    .menu-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 30px 20px;
+    }
+
+    .menu-buttons a {
+      text-align: center;
+      text-decoration: none;
+      padding: 15px;
+      font-size: 18px;
+      color: gold;
+      border: 2px solid gold;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      background: linear-gradient(145deg, #1e1e1e, #131313);
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .menu-buttons a:hover {
+      background: gold;
+      color: #111;
+      box-shadow: 0 0 20px gold;
+      transform: scale(1.05);
+    }
+
+    @media (min-width: 600px) {
+      .menu-buttons {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h2>User Panel</h2>
+    <p>Data akan tampil di sini setelah login dengan Gmail.</p>
+    <!-- Kamu bisa isi dengan data Gmail login nanti -->
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+    <img src="https://via.placeholder.com/500x200.png?text=Product+Image" alt="Product">
+  </div>
+
+  <!-- Menu Tombol -->
+  <div class="menu-buttons">
+    <a href="#">🏆 Menu 1</a>
+    <a href="#">🎰 Menu 2</a>
+    <a href="#">💰 Menu 3</a>
+    <a href="#">🧧 Menu 4</a>
+    <a href="#">🔥 Menu 5</a>
+    <a href="#">🎮 Menu 6</a>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+  </script>
+
+</body>
+</html>
