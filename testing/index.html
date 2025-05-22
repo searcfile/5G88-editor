@@ -319,19 +319,65 @@
     }
   }
 
-  function renderTabs() {
-    tabBar.innerHTML = "";
+  let dragSrcEl = null;
+
+function handleDragStart(e) {
+  dragSrcEl = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', this.outerHTML);
+  this.classList.add('dragging');
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  return false;
+}
+
+tabElement.setAttribute('draggable', true);
+tabElement.addEventListener('dragstart', handleDragStart);
+tabElement.addEventListener('dragover', handleDragOver);
+tabElement.addEventListener('drop', handleDrop);
+    
+function handleDrop(e) {
+  e.stopPropagation();
+  if (dragSrcEl !== this) {
     const tabs = getTabs();
-    tabs.forEach(tab => {
-      const tabElement = document.createElement('div');
-      tabElement.className = 'tab';
-      tabElement.innerHTML = `
-        ${tab.label}
-        <button class="close-tab" onclick="closeTab('${tab.label}')">×</button>
-      `;
-      tabBar.appendChild(tabElement);
-    });
+    const fromLabel = dragSrcEl.textContent.trim().replace('×', '');
+    const toLabel = this.textContent.trim().replace('×', '');
+
+    const fromIndex = tabs.findIndex(t => t.label === fromLabel);
+    const toIndex = tabs.findIndex(t => t.label === toLabel);
+
+    if (fromIndex !== -1 && toIndex !== -1) {
+      // Tukar kedudukan
+      const movedTab = tabs.splice(fromIndex, 1)[0];
+      tabs.splice(toIndex, 0, movedTab);
+      saveTabs(tabs);
+      renderTabs();
+    }
   }
+  return false;
+}
+    
+  function renderTabs() {
+  tabBar.innerHTML = "";
+  const tabs = getTabs();
+  tabs.forEach(tab => {
+    const tabElement = document.createElement('div');
+    tabElement.className = 'tab';
+    tabElement.setAttribute('draggable', true);
+    tabElement.addEventListener('dragstart', handleDragStart);
+    tabElement.addEventListener('dragover', handleDragOver);
+    tabElement.addEventListener('drop', handleDrop);
+
+    tabElement.innerHTML = `
+      ${tab.label}
+      <button class="close-tab" onclick="closeTab('${tab.label}')">×</button>
+    `;
+    tabBar.appendChild(tabElement);
+  });
+}
 
  function loadPage(url, label = "") {
   pageFrame.src = url;
