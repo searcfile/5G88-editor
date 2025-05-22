@@ -240,6 +240,7 @@ const pageFrame = document.getElementById("pageFrame");
 // Styling for tabBar
 tabBar.style.display = "flex";
 tabBar.style.alignItems = "center";
+tabBar.style.padding = "10px 20px";
 tabBar.style.background = "#111";
 
 // Sidebar controls
@@ -293,21 +294,21 @@ function renderTabs() {
   tabs.forEach((tab, index) => {
     const tabElement = document.createElement("div");
     tabElement.className = "tab";
-    tabElement.draggable = true;
+    tabElement.draggable = false; // Disable drag behavior
     tabElement.dataset.index = index;
     tabElement.style.background = "#222";
     tabElement.style.color = "gold";
+    tabElement.style.padding = "4px 8px";
     tabElement.style.marginRight = "10px";
-    tabElement.style.borderRadius = "8px";
+    tabElement.style.borderRadius = "5px";
     tabElement.style.border = "1px solid gold";
     tabElement.style.display = "flex";
     tabElement.style.alignItems = "center";
     tabElement.style.fontSize = "14px";
     tabElement.style.userSelect = "none";
     tabElement.style.cursor = "pointer";
-    tabElement.style.pointerEvents = "auto";
 
-    // Full clickable
+    // Full clickable area
     tabElement.onclick = () => loadPage(tab.url);
 
     const title = document.createElement("span");
@@ -317,18 +318,18 @@ function renderTabs() {
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-tab";
     closeBtn.textContent = "×";
-    closeBtn.style.marginLeft = "8px";
+    closeBtn.style.marginLeft = "6px";
     closeBtn.style.cursor = "pointer";
     closeBtn.style.background = "none";
     closeBtn.style.border = "none";
     closeBtn.style.color = "red";
-    closeBtn.style.fontSize = "16px";
+    closeBtn.style.fontSize = "14px";
     closeBtn.style.transition = "all 0.2s ease";
-    closeBtn.style.padding = "0 2px";
+    closeBtn.style.padding = "0";
 
     closeBtn.onmouseover = () => {
       closeBtn.style.color = "#ff1a1a";
-      closeBtn.style.transform = "scale(1.3)";
+      closeBtn.style.transform = "scale(1.2)";
     };
     closeBtn.onmouseout = () => {
       closeBtn.style.color = "red";
@@ -342,32 +343,6 @@ function renderTabs() {
 
     tabElement.appendChild(title);
     tabElement.appendChild(closeBtn);
-
-    // DRAG EVENTS
-    tabElement.addEventListener("dragstart", function (e) {
-      e.dataTransfer.setData("text/plain", index);
-      tabElement.style.opacity = "0.5";
-    });
-    tabElement.addEventListener("dragend", function () {
-      tabElement.style.opacity = "1";
-    });
-    tabElement.addEventListener("dragover", function (e) {
-      e.preventDefault();
-    });
-    tabElement.addEventListener("drop", function (e) {
-      e.preventDefault();
-      const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
-      const toIndex = index;
-
-      if (fromIndex !== toIndex) {
-        const updatedTabs = getTabs();
-        const [movedTab] = updatedTabs.splice(fromIndex, 1);
-        updatedTabs.splice(toIndex, 0, movedTab);
-        saveTabs(updatedTabs);
-        renderTabs();
-      }
-    });
-
     tabBar.appendChild(tabElement);
   });
 }
