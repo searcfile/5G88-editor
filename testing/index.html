@@ -294,19 +294,47 @@ function renderTabs() {
   tabs.forEach((tab, index) => {
     const tabElement = document.createElement("div");
     tabElement.className = "tab";
-    tabElement.draggable = false; // Disable drag behavior
+    tabElement.draggable = true;
     tabElement.dataset.index = index;
     tabElement.style.background = "#222";
     tabElement.style.color = "gold";
-    tabElement.style.padding = "4px 8px";
-    tabElement.style.marginRight = "10px";
+    tabElement.style.padding = "2px 6px";
+    tabElement.style.marginRight = "8px";
     tabElement.style.borderRadius = "5px";
     tabElement.style.border = "1px solid gold";
-    tabElement.style.display = "flex";
+    tabElement.style.display = "inline-flex";
     tabElement.style.alignItems = "center";
     tabElement.style.fontSize = "14px";
     tabElement.style.userSelect = "none";
     tabElement.style.cursor = "pointer";
+
+    // DRAG EVENTS
+    tabElement.addEventListener("dragstart", function (e) {
+      e.dataTransfer.setData("text/plain", index);
+      tabElement.style.opacity = "0.5";
+    });
+
+    tabElement.addEventListener("dragend", function () {
+      tabElement.style.opacity = "1";
+    });
+
+    tabElement.addEventListener("dragover", function (e) {
+      e.preventDefault();
+    });
+
+    tabElement.addEventListener("drop", function (e) {
+      e.preventDefault();
+      const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+      const toIndex = index;
+
+      if (fromIndex !== toIndex) {
+        const updatedTabs = getTabs();
+        const [movedTab] = updatedTabs.splice(fromIndex, 1);
+        updatedTabs.splice(toIndex, 0, movedTab);
+        saveTabs(updatedTabs);
+        renderTabs();
+      }
+    });
 
     // Full clickable area
     tabElement.onclick = () => loadPage(tab.url);
@@ -350,11 +378,6 @@ function renderTabs() {
 function loadPage(url, label = "") {
   pageFrame.src = url;
   closeSidebar();
-}
-
-function showTab(label, url) {
-  // Optional helper if you want to show only 1 tab
-  // Not used in current setup
 }
 
 window.onload = () => {
