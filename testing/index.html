@@ -230,7 +230,6 @@
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
   const container = document.getElementById("mainContainer");
-  const tabBar = document.createElement("div");
   tabBar.id = "tabBar";
   tabBar.style.display = "flex";
   tabBar.style.alignItems = "center";
@@ -253,11 +252,6 @@
     container.classList.remove("shrink");
   }
 
-  function loadPage(url, label) {
-    document.getElementById('pageFrame').src = url;
-    closeSidebar();
-    showTab(label, url);
-  }
 
   function showTab(label, url) {
     // Clear existing tab
@@ -338,10 +332,11 @@
     });
   }
 
-  function loadPage(url) {
-    pageFrame.src = url;
-    closeSidebar();
-  }
+ function loadPage(url, label = "") {
+  pageFrame.src = url;
+  closeSidebar();
+  if (label) showTab(label, url);
+}
 
   window.onload = () => {
     renderTabs();
