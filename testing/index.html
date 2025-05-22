@@ -229,7 +229,7 @@
   </div>
 
   <script>
-  // DOM references
+// DOM references
 const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
 const sidebar = document.getElementById("sidebar");
@@ -309,6 +309,8 @@ function renderTabs() {
 
     const title = document.createElement("span");
     title.textContent = tab.label;
+    title.style.cursor = "pointer";
+    title.onclick = () => loadPage(tab.url);
 
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-tab";
@@ -357,7 +359,6 @@ function renderTabs() {
 function loadPage(url, label = "") {
   pageFrame.src = url;
   closeSidebar();
-  if (label) showTab(label, url);
 }
 
 function showTab(label, url) {
@@ -372,6 +373,7 @@ window.onload = () => {
     loadPage(tabs[tabs.length - 1].url);
   }
 }
+
   </script>
 </body>
 </html>
