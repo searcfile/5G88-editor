@@ -226,7 +226,18 @@
 
   <script>
   
-   const sidebar = document.getElementById("sidebar");
+  function loadPage(url) {
+    document.getElementById('pageFrame').src = url;
+    closeSidebar();
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+    container.classList.remove("shrink");
+  }
+
+  const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
   const container = document.getElementById("mainContainer");
 
@@ -234,12 +245,6 @@
     sidebar.classList.add("active");
     overlay.classList.add("active");
     container.classList.add("shrink");
-  }
-
-  function closeSidebar() {
-    sidebar.classList.remove("active");
-    overlay.classList.remove("active");
-    container.classList.remove("shrink");
   }
 
   function openTab(title, url) {
