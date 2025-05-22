@@ -365,47 +365,45 @@ function handleDrop(e) {
   const tabs = getTabs();
 
   tabs.forEach((tab, index) => {
-    const tabElement = document.createElement('div');
-    tabElement.className = 'tab';
-    tabElement.setAttribute('draggable', true);
+    const tabElement = document.createElement("div");
+    tabElement.className = "tab";
+    tabElement.draggable = true;
     tabElement.dataset.index = index;
-
-    tabElement.addEventListener('dragstart', handleDragStart);
-    tabElement.addEventListener('dragover', handleDragOver);
-    tabElement.addEventListener('drop', handleDrop);
-
     tabElement.innerHTML = `
       ${tab.label}
       <button class="close-tab" onclick="closeTab('${tab.label}')">×</button>
     `;
+
+    // DRAG EVENTS
+    tabElement.addEventListener("dragstart", function (e) {
+      e.dataTransfer.setData("text/plain", index);
+      tabElement.style.opacity = "0.5";
+    });
+
+    tabElement.addEventListener("dragend", function () {
+      tabElement.style.opacity = "1";
+    });
+
+    tabElement.addEventListener("dragover", function (e) {
+      e.preventDefault();
+    });
+
+    tabElement.addEventListener("drop", function (e) {
+      e.preventDefault();
+      const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+      const toIndex = index;
+
+      if (fromIndex !== toIndex) {
+        const updatedTabs = getTabs();
+        const [movedTab] = updatedTabs.splice(fromIndex, 1);
+        updatedTabs.splice(toIndex, 0, movedTab);
+        saveTabs(updatedTabs);
+        renderTabs();
+      }
+    });
+
     tabBar.appendChild(tabElement);
   });
-  }
-
-    let draggedTabIndex = null;
-
-function handleDragStart(e) {
-  draggedTabIndex = +this.dataset.index;
-  e.dataTransfer.effectAllowed = "move";
-  this.style.opacity = "0.5";
-}
-
-function handleDragOver(e) {
-  e.preventDefault();
-  return false;
-}
-
-function handleDrop(e) {
-  e.stopPropagation();
-
-  const droppedTabIndex = +this.dataset.index;
-  if (draggedTabIndex === null || draggedTabIndex === droppedTabIndex) return;
-
-  const tabs = getTabs();
-  const [draggedTab] = tabs.splice(draggedTabIndex, 1);
-  tabs.splice(droppedTabIndex, 0, draggedTab);
-  saveTabs(tabs);
-  renderTabs();
 }
 
  function loadPage(url, label = "") {
