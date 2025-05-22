@@ -298,12 +298,12 @@ function renderTabs() {
     tabElement.dataset.index = index;
     tabElement.style.background = "#222";
     tabElement.style.color = "gold";
-    tabElement.style.padding = "4px 8px";
-    tabElement.style.marginRight = "6px";
-    tabElement.style.borderRadius = "5px";
+    tabElement.style.padding = "2px 6px";
+    tabElement.style.marginRight = "5px";
+    tabElement.style.borderRadius = "4px";
     tabElement.style.display = "flex";
     tabElement.style.alignItems = "center";
-    tabElement.style.fontSize = "12px";
+    tabElement.style.fontSize = "10px";
     tabElement.style.border = "1px solid gold";
     tabElement.style.cursor = "move";
 
@@ -315,12 +315,22 @@ function renderTabs() {
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-tab";
     closeBtn.textContent = "×";
-    closeBtn.style.marginLeft = "8px";
+    closeBtn.style.marginLeft = "6px";
     closeBtn.style.cursor = "pointer";
     closeBtn.style.background = "none";
     closeBtn.style.border = "none";
     closeBtn.style.color = "red";
-    closeBtn.style.fontSize = "14px";
+    closeBtn.style.fontSize = "12px";
+    closeBtn.style.transition = "all 0.2s ease";
+
+    closeBtn.onmouseover = () => {
+      closeBtn.style.color = "#ff4d4d";
+      closeBtn.style.transform = "scale(1.2)";
+    };
+    closeBtn.onmouseout = () => {
+      closeBtn.style.color = "red";
+      closeBtn.style.transform = "scale(1)";
+    };
 
     closeBtn.onclick = () => closeTab(tab.label);
 
@@ -373,7 +383,6 @@ window.onload = () => {
     loadPage(tabs[tabs.length - 1].url);
   }
 }
-
   </script>
 </body>
 </html>
