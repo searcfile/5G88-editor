@@ -145,13 +145,13 @@
       {
         name: "Panda",
         image: "https://xe88.info/images/game-77.png",
-        platform: "pussy888","mega888","918kiss",
+        platform: ["pussy888","mega888","918kiss"],
         type: "slot"
       },
       {
         name: "Panda",
         image: "https://xe88.info/images/game-77.png",
-        platform: "pussy888","mega888","918kiss",
+        platform: ["pussy888","mega888","918kiss"],
         type: "slot"
       }
     ];
@@ -165,7 +165,9 @@
 
       const filtered = games.filter(game => {
         const matchType = currentType === "all" || game.type === currentType;
-        const matchSearch = game.platform.toLowerCase().includes(searchText);
+        const matchSearch = Array.isArray(game.platform)
+        ? game.platform.some(p => p.toLowerCase().includes(searchText))
+        : game.platform.toLowerCase().includes(searchText);
         return matchType && matchSearch;
       });
 
