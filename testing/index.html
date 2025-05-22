@@ -226,9 +226,22 @@
 
   <script>
   
-  function loadPage(url) {
-    document.getElementById('pageFrame').src = url;
-    closeSidebar();
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const container = document.getElementById("mainContainer");
+  const tabBar = document.createElement("div");
+  tabBar.id = "tabBar";
+  tabBar.style.display = "flex";
+  tabBar.style.alignItems = "center";
+  tabBar.style.padding = "10px 20px";
+  tabBar.style.background = "#111";
+  tabBar.style.borderBottom = "1px solid gold";
+  document.body.insertBefore(tabBar, container);
+
+  function openSidebar() {
+    sidebar.classList.add("active");
+    overlay.classList.add("active");
+    container.classList.add("shrink");
   }
 
   function closeSidebar() {
@@ -237,43 +250,42 @@
     container.classList.remove("shrink");
   }
 
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  const container = document.getElementById("mainContainer");
-
-  function openSidebar() {
-    sidebar.classList.add("active");
-    overlay.classList.add("active");
-    container.classList.add("shrink");
-  }
-
-  function openTab(title, url) {
-    const tabBar = document.getElementById('tabBar');
-    const existingTab = document.querySelector(`.tab[data-title="${title}"]`);
-
-    if (!existingTab) {
-      const tab = document.createElement('div');
-      tab.classList.add('tab');
-      tab.setAttribute('data-title', title);
-
-      const span = document.createElement('span');
-      span.textContent = title;
-
-      const closeBtn = document.createElement('button');
-      closeBtn.classList.add('close-tab');
-      closeBtn.textContent = '✖';
-      closeBtn.onclick = function () {
-        tab.remove();
-        document.getElementById('pageFrame').src = '';
-      };
-
-      tab.appendChild(span);
-      tab.appendChild(closeBtn);
-      tabBar.appendChild(tab);
-    }
-
+  function loadPage(url, label) {
     document.getElementById('pageFrame').src = url;
     closeSidebar();
+    showTab(label, url);
+  }
+
+  function showTab(label, url) {
+    // Clear existing tab
+    tabBar.innerHTML = "";
+
+    const tab = document.createElement("div");
+    tab.style.background = "#222";
+    tab.style.color = "gold";
+    tab.style.padding = "8px 12px";
+    tab.style.marginRight = "10px";
+    tab.style.borderRadius = "5px";
+    tab.style.display = "flex";
+    tab.style.alignItems = "center";
+
+    const title = document.createElement("span");
+    title.textContent = label;
+
+    const closeBtn = document.createElement("span");
+    closeBtn.textContent = " ✖";
+    closeBtn.style.marginLeft = "10px";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.style.color = "red";
+
+    closeBtn.onclick = () => {
+      tabBar.innerHTML = "";
+      document.getElementById('pageFrame').src = "";
+    };
+
+    tab.appendChild(title);
+    tab.appendChild(closeBtn);
+    tabBar.appendChild(tab);
   }
   </script>
 </body>
