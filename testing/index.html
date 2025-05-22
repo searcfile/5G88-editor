@@ -194,10 +194,10 @@
   <div class="sidebar" id="sidebar">
     <button class="close-btn" onclick="closeSidebar()">✖ Close</button>
     <h2>Menu</h2>
-    <a href="#" onclick="loadPage('https://searcfile.github.io/5G88-editor/mega888/')">📁 MEGA888</a>
+    <a href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/')">📁 MEGA888</a>
     <a href="#">📁 PUSSY888</a>
     <a href="#">📁 918KISS</a>
-    <a href="#" onclick="loadPage('https://searcfile.github.io/5G88-editor/logogame/')">📁 LOGO GAME</a>
+    <a href="#" onclick="addTab('LOGO GAME', 'https://searcfile.github.io/5G88-editor/logogame/')">📁 LOGO GAME</a>
     <a href="#">📁 TIPS GAME</a>
     <a href="#">📁 FIND GAME</a>
     <a href="#">📁 LINK DOWNLOAD</a>
@@ -207,7 +207,7 @@
   <div class="header">
     <div class="menu-icon" onclick="openSidebar()">☰</div>
     <img src="https://i.imgur.com/QrxyBjc.png" alt="Product">
-    <div class="tab-bar" id="tabBar"></div>
+    <div id="tabBar" class="tab-bar" style="position: absolute; bottom: 0; left: 0;"></div>
   </div>
   
 
@@ -287,6 +287,66 @@
     tab.appendChild(title);
     tab.appendChild(closeBtn);
     tabBar.appendChild(tab);
+  }
+
+     const tabBar = document.getElementById('tabBar');
+  const pageFrame = document.getElementById('pageFrame');
+
+  function saveTabs(tabs) {
+    localStorage.setItem('openTabs', JSON.stringify(tabs));
+  }
+
+  function getTabs() {
+    return JSON.parse(localStorage.getItem('openTabs')) || [];
+  }
+
+  function addTab(label, url) {
+    const existingTabs = getTabs();
+    const exists = existingTabs.some(tab => tab.label === label);
+    if (!exists) {
+      existingTabs.push({ label, url });
+      saveTabs(existingTabs);
+    }
+    renderTabs();
+    loadPage(url);
+  }
+
+  function closeTab(label) {
+    let tabs = getTabs().filter(tab => tab.label !== label);
+    saveTabs(tabs);
+    renderTabs();
+    if (tabs.length > 0) {
+      loadPage(tabs[tabs.length - 1].url);
+    } else {
+      pageFrame.src = "";
+    }
+  }
+
+  function renderTabs() {
+    tabBar.innerHTML = "";
+    const tabs = getTabs();
+    tabs.forEach(tab => {
+      const tabElement = document.createElement('div');
+      tabElement.className = 'tab';
+      tabElement.innerHTML = `
+        ${tab.label}
+        <button class="close-tab" onclick="closeTab('${tab.label}')">×</button>
+      `;
+      tabBar.appendChild(tabElement);
+    });
+  }
+
+  function loadPage(url) {
+    pageFrame.src = url;
+    closeSidebar();
+  }
+
+  window.onload = () => {
+    renderTabs();
+    const tabs = getTabs();
+    if (tabs.length > 0) {
+      loadPage(tabs[tabs.length - 1].url);
+    }
   }
   </script>
 </body>
