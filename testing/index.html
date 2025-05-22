@@ -298,7 +298,7 @@ function renderTabs() {
     tabElement.dataset.index = index;
     tabElement.style.background = "#222";
     tabElement.style.color = "gold";
-    tabElement.style.padding = "2px 6px";
+    tabElement.style.padding = "2px 8px";
     tabElement.style.marginRight = "8px";
     tabElement.style.borderRadius = "5px";
     tabElement.style.border = "1px solid gold";
@@ -346,7 +346,7 @@ function renderTabs() {
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-tab";
     closeBtn.textContent = "×";
-    closeBtn.style.marginLeft = "6px";
+    closeBtn.style.marginLeft = "4px";
     closeBtn.style.cursor = "pointer";
     closeBtn.style.background = "none";
     closeBtn.style.border = "none";
@@ -354,6 +354,7 @@ function renderTabs() {
     closeBtn.style.fontSize = "14px";
     closeBtn.style.transition = "all 0.2s ease";
     closeBtn.style.padding = "0";
+    closeBtn.style.pointerEvents = "auto";
 
     closeBtn.onmouseover = () => {
       closeBtn.style.color = "#ff1a1a";
