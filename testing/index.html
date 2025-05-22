@@ -229,138 +229,65 @@
   </div>
 
   <script>
-  const tabBar = document.getElementById('tabBar');
-  const menuIcon = document.getElementById("menuIcon");
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  const container = document.getElementById("mainContainer");
-  tabBar.id = "tabBar";
-  tabBar.style.display = "flex";
-  tabBar.style.alignItems = "center";
-  tabBar.style.padding = "10px 20px";
-  tabBar.style.background = "#111";
-    
-     menuIcon.addEventListener("click", openSidebar);
+  // DOM references
+const tabBar = document.getElementById("tabBar");
+const menuIcon = document.getElementById("menuIcon");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const container = document.getElementById("mainContainer");
+const pageFrame = document.getElementById("pageFrame");
 
-  function openSidebar() {
-    sidebar.classList.add("active");
-    overlay.classList.add("active");
-    container.classList.add("shrink");
-  }
+// Styling for tabBar
+tabBar.style.display = "flex";
+tabBar.style.alignItems = "center";
+tabBar.style.padding = "10px 20px";
+tabBar.style.background = "#111";
 
-  function closeSidebar() {
-    sidebar.classList.remove("active");
-    overlay.classList.remove("active");
-    container.classList.remove("shrink");
-  }
-
-
-  function showTab(label, url) {
-    // Clear existing tab
-    tabBar.innerHTML = "";
-
-    const tab = document.createElement("div");
-    tab.style.background = "#222";
-    tab.style.color = "gold";
-    tab.style.padding = "8px 12px";
-    tab.style.marginRight = "10px";
-    tab.style.borderRadius = "5px";
-    tab.style.display = "flex";
-    tab.style.alignItems = "center";
-
-    const title = document.createElement("span");
-    title.textContent = label;
-
-    const closeBtn = document.createElement("span");
-    closeBtn.textContent = " ✖";
-    closeBtn.style.marginLeft = "10px";
-    closeBtn.style.cursor = "pointer";
-    closeBtn.style.color = "red";
-
-    closeBtn.onclick = () => {
-      tabBar.innerHTML = "";
-      document.getElementById('pageFrame').src = "";
-    };
-
-    tab.appendChild(title);
-    tab.appendChild(closeBtn);
-    tabBar.appendChild(tab);
-  }
-
-  const pageFrame = document.getElementById('pageFrame');
-
-  function saveTabs(tabs) {
-    localStorage.setItem('openTabs', JSON.stringify(tabs));
-  }
-
-  function getTabs() {
-    return JSON.parse(localStorage.getItem('openTabs')) || [];
-  }
-
-  function addTab(label, url) {
-    const existingTabs = getTabs();
-    const exists = existingTabs.some(tab => tab.label === label);
-    if (!exists) {
-      existingTabs.push({ label, url });
-      saveTabs(existingTabs);
-    }
-    renderTabs();
-    loadPage(url);
-  }
-
-  function closeTab(label) {
-    let tabs = getTabs().filter(tab => tab.label !== label);
-    saveTabs(tabs);
-    renderTabs();
-    if (tabs.length > 0) {
-      loadPage(tabs[tabs.length - 1].url);
-    } else {
-      pageFrame.src = "";
-    }
-  }
-
-  let dragSrcEl = null;
-
-function handleDragStart(e) {
-  dragSrcEl = this;
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/html', this.outerHTML);
-  this.classList.add('dragging');
+// Sidebar controls
+menuIcon.addEventListener("click", openSidebar);
+function openSidebar() {
+  sidebar.classList.add("active");
+  overlay.classList.add("active");
+  container.classList.add("shrink");
+}
+function closeSidebar() {
+  sidebar.classList.remove("active");
+  overlay.classList.remove("active");
+  container.classList.remove("shrink");
 }
 
-function handleDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  return false;
+// LocalStorage helpers
+function saveTabs(tabs) {
+  localStorage.setItem("openTabs", JSON.stringify(tabs));
+}
+function getTabs() {
+  return JSON.parse(localStorage.getItem("openTabs")) || [];
 }
 
-tabElement.setAttribute('draggable', true);
-tabElement.addEventListener('dragstart', handleDragStart);
-tabElement.addEventListener('dragover', handleDragOver);
-tabElement.addEventListener('drop', handleDrop);
-    
-function handleDrop(e) {
-  e.stopPropagation();
-  if (dragSrcEl !== this) {
-    const tabs = getTabs();
-    const fromLabel = dragSrcEl.textContent.trim().replace('×', '');
-    const toLabel = this.textContent.trim().replace('×', '');
-
-    const fromIndex = tabs.findIndex(t => t.label === fromLabel);
-    const toIndex = tabs.findIndex(t => t.label === toLabel);
-
-    if (fromIndex !== -1 && toIndex !== -1) {
-      // Tukar kedudukan
-      const movedTab = tabs.splice(fromIndex, 1)[0];
-      tabs.splice(toIndex, 0, movedTab);
-      saveTabs(tabs);
-      renderTabs();
-    }
+// Tab management
+function addTab(label, url) {
+  const existingTabs = getTabs();
+  const exists = existingTabs.some(tab => tab.label === label);
+  if (!exists) {
+    existingTabs.push({ label, url });
+    saveTabs(existingTabs);
   }
-  return false;
+  renderTabs();
+  loadPage(url);
 }
-    
-  function renderTabs() {
+
+function closeTab(label) {
+  let tabs = getTabs().filter(tab => tab.label !== label);
+  saveTabs(tabs);
+  renderTabs();
+  if (tabs.length > 0) {
+    loadPage(tabs[tabs.length - 1].url);
+  } else {
+    pageFrame.src = "";
+  }
+}
+
+function renderTabs() {
   tabBar.innerHTML = "";
   const tabs = getTabs();
 
@@ -369,25 +296,46 @@ function handleDrop(e) {
     tabElement.className = "tab";
     tabElement.draggable = true;
     tabElement.dataset.index = index;
-    tabElement.innerHTML = `
-      ${tab.label}
-      <button class="close-tab" onclick="closeTab('${tab.label}')">×</button>
-    `;
+    tabElement.style.background = "#222";
+    tabElement.style.color = "gold";
+    tabElement.style.padding = "4px 8px";
+    tabElement.style.marginRight = "6px";
+    tabElement.style.borderRadius = "5px";
+    tabElement.style.display = "flex";
+    tabElement.style.alignItems = "center";
+    tabElement.style.fontSize = "12px";
+    tabElement.style.border = "1px solid gold";
+    tabElement.style.cursor = "move";
+
+    const title = document.createElement("span");
+    title.textContent = tab.label;
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "close-tab";
+    closeBtn.textContent = "×";
+    closeBtn.style.marginLeft = "8px";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.style.background = "none";
+    closeBtn.style.border = "none";
+    closeBtn.style.color = "red";
+    closeBtn.style.fontSize = "14px";
+
+    closeBtn.onclick = () => closeTab(tab.label);
+
+    tabElement.appendChild(title);
+    tabElement.appendChild(closeBtn);
 
     // DRAG EVENTS
     tabElement.addEventListener("dragstart", function (e) {
       e.dataTransfer.setData("text/plain", index);
       tabElement.style.opacity = "0.5";
     });
-
     tabElement.addEventListener("dragend", function () {
       tabElement.style.opacity = "1";
     });
-
     tabElement.addEventListener("dragover", function (e) {
       e.preventDefault();
     });
-
     tabElement.addEventListener("drop", function (e) {
       e.preventDefault();
       const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
@@ -406,19 +354,24 @@ function handleDrop(e) {
   });
 }
 
- function loadPage(url, label = "") {
+function loadPage(url, label = "") {
   pageFrame.src = url;
   closeSidebar();
   if (label) showTab(label, url);
 }
 
-  window.onload = () => {
-    renderTabs();
-    const tabs = getTabs();
-    if (tabs.length > 0) {
-      loadPage(tabs[tabs.length - 1].url);
-    }
+function showTab(label, url) {
+  // Optional helper if you want to show only 1 tab
+  // Not used in current setup
+}
+
+window.onload = () => {
+  renderTabs();
+  const tabs = getTabs();
+  if (tabs.length > 0) {
+    loadPage(tabs[tabs.length - 1].url);
   }
+}
   </script>
 </body>
 </html>
