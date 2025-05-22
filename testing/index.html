@@ -298,18 +298,18 @@ function renderTabs() {
     tabElement.dataset.index = index;
     tabElement.style.background = "#222";
     tabElement.style.color = "gold";
-    tabElement.style.padding = "2px 6px";
+    tabElement.style.padding = "5px 10px";
     tabElement.style.marginRight = "5px";
     tabElement.style.borderRadius = "4px";
     tabElement.style.display = "flex";
     tabElement.style.alignItems = "center";
-    tabElement.style.fontSize = "10px";
+    tabElement.style.fontSize = "11px";
     tabElement.style.border = "1px solid gold";
     tabElement.style.cursor = "move";
 
     const title = document.createElement("span");
     title.textContent = tab.label;
-    title.style.cursor = "pointer";
+    title.style.cursor = "default";
     title.onclick = () => loadPage(tab.url);
 
     const closeBtn = document.createElement("button");
@@ -320,12 +320,12 @@ function renderTabs() {
     closeBtn.style.background = "none";
     closeBtn.style.border = "none";
     closeBtn.style.color = "red";
-    closeBtn.style.fontSize = "12px";
+    closeBtn.style.fontSize = "13px";
     closeBtn.style.transition = "all 0.2s ease";
 
     closeBtn.onmouseover = () => {
-      closeBtn.style.color = "#ff4d4d";
-      closeBtn.style.transform = "scale(1.2)";
+      closeBtn.style.color = "#ff1a1a";
+      closeBtn.style.transform = "scale(1.3)";
     };
     closeBtn.onmouseout = () => {
       closeBtn.style.color = "red";
