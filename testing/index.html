@@ -298,14 +298,15 @@ function renderTabs() {
     tabElement.dataset.index = index;
     tabElement.style.background = "#222";
     tabElement.style.color = "gold";
-    tabElement.style.padding = "6px 12px";
-    tabElement.style.marginRight = "6px";
-    tabElement.style.borderRadius = "6px";
+    tabElement.style.padding = "8px 16px";
+    tabElement.style.marginRight = "8px";
+    tabElement.style.borderRadius = "8px";
+    tabElement.style.border = "1px solid gold";
     tabElement.style.display = "flex";
     tabElement.style.alignItems = "center";
-    tabElement.style.fontSize = "12px";
-    tabElement.style.cursor = "move";
+    tabElement.style.fontSize = "14px";
     tabElement.style.userSelect = "none";
+    tabElement.style.cursor = "default"; // Disable drag pointer
 
     const title = document.createElement("span");
     title.textContent = tab.label;
@@ -315,12 +316,12 @@ function renderTabs() {
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-tab";
     closeBtn.textContent = "×";
-    closeBtn.style.marginLeft = "6px";
+    closeBtn.style.marginLeft = "8px";
     closeBtn.style.cursor = "pointer";
     closeBtn.style.background = "none";
     closeBtn.style.border = "none";
     closeBtn.style.color = "red";
-    closeBtn.style.fontSize = "16px";
+    closeBtn.style.fontSize = "18px";
     closeBtn.style.transition = "all 0.2s ease";
 
     closeBtn.onmouseover = () => {
