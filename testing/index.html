@@ -363,10 +363,13 @@ function handleDrop(e) {
   function renderTabs() {
   tabBar.innerHTML = "";
   const tabs = getTabs();
-  tabs.forEach(tab => {
+
+  tabs.forEach((tab, index) => {
     const tabElement = document.createElement('div');
     tabElement.className = 'tab';
     tabElement.setAttribute('draggable', true);
+    tabElement.dataset.index = index;
+
     tabElement.addEventListener('dragstart', handleDragStart);
     tabElement.addEventListener('dragover', handleDragOver);
     tabElement.addEventListener('drop', handleDrop);
@@ -377,6 +380,31 @@ function handleDrop(e) {
     `;
     tabBar.appendChild(tabElement);
   });
+
+    let draggedTabIndex = null;
+
+function handleDragStart(e) {
+  draggedTabIndex = +this.dataset.index;
+  e.dataTransfer.effectAllowed = "move";
+  this.style.opacity = "0.5";
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  return false;
+}
+
+function handleDrop(e) {
+  e.stopPropagation();
+
+  const droppedTabIndex = +this.dataset.index;
+  if (draggedTabIndex === null || draggedTabIndex === droppedTabIndex) return;
+
+  const tabs = getTabs();
+  const [draggedTab] = tabs.splice(draggedTabIndex, 1);
+  tabs.splice(droppedTabIndex, 0, draggedTab);
+  saveTabs(tabs);
+  renderTabs();
 }
 
  function loadPage(url, label = "") {
