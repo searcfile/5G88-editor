@@ -121,6 +121,26 @@
         margin-left: 0;
       }
     }
+    .marquee-container {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  position: absolute;
+  bottom: 10px;
+}
+
+.marquee-text {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 15s linear infinite;
+  color: gold;
+  font-size: 18px;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
   </style>
 </head>
 <body>
@@ -147,6 +167,12 @@
     <img src="https://i.imgur.com/QrxyBjc.png" alt="Product">
   </div>
 
+  <div class="marquee-container">
+  <div class="marquee-text">
+    Selamat datang ke 5G88 - Platform Terbaik Untuk MEGA888, PUSSY888 & 918KISS!
+  </div>
+</div>
+  
   <!-- Main Content -->
   <div class="container" id="mainContainer">
   <iframe id="pageFrame" src="" style="width: 100%; height: 100vh; border: none;"></iframe>
