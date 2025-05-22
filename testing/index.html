@@ -298,8 +298,8 @@ function renderTabs() {
     tabElement.dataset.index = index;
     tabElement.style.background = "#222";
     tabElement.style.color = "gold";
-    tabElement.style.padding = "8px 18px";
-    tabElement.style.marginRight = "8px";
+    tabElement.style.padding = "10px 20px";
+    tabElement.style.marginRight = "10px";
     tabElement.style.borderRadius = "8px";
     tabElement.style.border = "1px solid gold";
     tabElement.style.display = "flex";
@@ -307,11 +307,14 @@ function renderTabs() {
     tabElement.style.fontSize = "14px";
     tabElement.style.userSelect = "none";
     tabElement.style.cursor = "pointer";
+    tabElement.style.pointerEvents = "auto";
+
+    // Full clickable
+    tabElement.onclick = () => loadPage(tab.url);
 
     const title = document.createElement("span");
     title.textContent = tab.label;
-    title.style.cursor = "pointer";
-    title.onclick = () => loadPage(tab.url);
+    title.style.pointerEvents = "none";
 
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-tab";
@@ -321,8 +324,9 @@ function renderTabs() {
     closeBtn.style.background = "none";
     closeBtn.style.border = "none";
     closeBtn.style.color = "red";
-    closeBtn.style.fontSize = "18px";
+    closeBtn.style.fontSize = "16px";
     closeBtn.style.transition = "all 0.2s ease";
+    closeBtn.style.padding = "0 4px";
 
     closeBtn.onmouseover = () => {
       closeBtn.style.color = "#ff1a1a";
