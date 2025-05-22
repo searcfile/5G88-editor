@@ -149,15 +149,44 @@
   height: calc(100vh - 150px); /* Sesuaikan ikut tinggi header */
   border: none;
 }
- 
+ .tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: #222;
+  border-bottom: 2px solid gold;
+  min-height: 50px;
+}
+
+.tab {
+  background: gold;
+  color: #111;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+}
+
+.tab .close-tab {
+  background: #111;
+  color: gold;
+  border: none;
+  font-size: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
   </style>
 </head>
 <body>
-
-  <div class="floating-tab" id="floatingTab">
-  <button class="close-floating" onclick="closeFloatingTab()">✖ Close</button>
-  <iframe id="floatingFrame" src="" frameborder="0"></iframe>
-  </div>
   <!-- Overlay -->
   <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 
@@ -179,6 +208,7 @@
     <div class="menu-icon" onclick="openSidebar()">☰</div>
     <img src="https://i.imgur.com/QrxyBjc.png" alt="Product">
   </div>
+  <div class="tab-bar" id="tabBar"></div>
 
   <div class="marquee-container">
   <div class="marquee-text">
@@ -196,25 +226,41 @@
 
   <script>
   
-    function loadPage(url) {
-     document.getElementById('pageFrame').src = url;
-     closeSidebar(); // supaya sidebar menutup otomatis
-    }
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const container = document.getElementById("mainContainer");
+    function openTab(title, url) {
+    const tabBar = document.getElementById('tabBar');
+    const existingTab = document.querySelector(`.tab[data-title="${title}"]`);
 
-    function openSidebar() {
-      sidebar.classList.add("active");
-      overlay.classList.add("active");
-      container.classList.add("shrink");
+    // Kalau tab dah ada, hanya tukar iframe sahaja
+    if (!existingTab) {
+      // Buat tab baru
+      const tab = document.createElement('div');
+      tab.classList.add('tab');
+      tab.setAttribute('data-title', title);
+
+      const span = document.createElement('span');
+      span.textContent = title;
+
+      const closeBtn = document.createElement('button');
+      closeBtn.classList.add('close-tab');
+      closeBtn.textContent = '✖';
+      closeBtn.onclick = function () {
+        tab.remove();
+        // Jika tab yang dibuang adalah yang aktif, kosongkan iframe
+        const frame = document.getElementById('pageFrame');
+        frame.src = '';
+      };
+
+      tab.appendChild(span);
+      tab.appendChild(closeBtn);
+      tabBar.appendChild(tab);
     }
 
-    function closeSidebar() {
-      sidebar.classList.remove("active");
-      overlay.classList.remove("active");
-      container.classList.remove("shrink");
-    }
+    // Tunjukkan halaman dalam iframe
+    const frame = document.getElementById('pageFrame');
+    frame.src = url;
+
+    closeSidebar();
+  }
   </script>
 </body>
 </html>
