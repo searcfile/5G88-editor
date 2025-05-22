@@ -226,13 +226,27 @@
 
   <script>
   
-    function openTab(title, url) {
+   const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const container = document.getElementById("mainContainer");
+
+  function openSidebar() {
+    sidebar.classList.add("active");
+    overlay.classList.add("active");
+    container.classList.add("shrink");
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+    container.classList.remove("shrink");
+  }
+
+  function openTab(title, url) {
     const tabBar = document.getElementById('tabBar');
     const existingTab = document.querySelector(`.tab[data-title="${title}"]`);
 
-    // Kalau tab dah ada, hanya tukar iframe sahaja
     if (!existingTab) {
-      // Buat tab baru
       const tab = document.createElement('div');
       tab.classList.add('tab');
       tab.setAttribute('data-title', title);
@@ -245,9 +259,7 @@
       closeBtn.textContent = '✖';
       closeBtn.onclick = function () {
         tab.remove();
-        // Jika tab yang dibuang adalah yang aktif, kosongkan iframe
-        const frame = document.getElementById('pageFrame');
-        frame.src = '';
+        document.getElementById('pageFrame').src = '';
       };
 
       tab.appendChild(span);
@@ -255,10 +267,7 @@
       tabBar.appendChild(tab);
     }
 
-    // Tunjukkan halaman dalam iframe
-    const frame = document.getElementById('pageFrame');
-    frame.src = url;
-
+    document.getElementById('pageFrame').src = url;
     closeSidebar();
   }
   </script>
