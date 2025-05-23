@@ -86,6 +86,7 @@
       margin-bottom: 20px;
       border-bottom: 2px solid gold;
     }
+
     /* Header */
     .header {
       position: relative;
@@ -155,9 +156,8 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  cursor: pointer;
+  cursor: default;
   transition: background-color 0.2s ease;
-  user-select: none;
 }
 
 .tab .close-tab {
@@ -175,7 +175,7 @@
 }
   .tab.active-tab {
   background: gold;
-  color: #000;
+  color: #111;
   font-weight: bold;
 }
 
@@ -251,26 +251,25 @@ tabBar.style.alignItems = "center";
 tabBar.style.padding = "10px 20px";
 tabBar.style.background = "#111";
 
+
 // Sidebar controls
 menuIcon.addEventListener("click", openSidebar);
 overlay.addEventListener("click", closeSidebar);
-
 function openSidebar() {
   sidebar.classList.add("active");
   overlay.classList.add("active");
   container.classList.add("shrink");
-  document.querySelector(".floating-logo")?.classList.add("shrink");
-  document.querySelector('.header')?.classList.add('shrink');
-  tabBar.classList.add('shrink');
+  document.querySelector(".floating-logo").classList.add("shrink");
+  document.querySelector('.header').classList.add('shrink');
+  document.getElementById("tabBar").classList.add('shrink');
 }
-
 function closeSidebar() {
   sidebar.classList.remove("active");
   overlay.classList.remove("active");
   container.classList.remove("shrink");
-  document.querySelector(".floating-logo")?.classList.remove("shrink");
-  document.querySelector('.header')?.classList.remove('shrink');
-  tabBar.classList.remove('shrink');
+  document.querySelector(".floating-logo").classList.remove("shrink");
+  document.querySelector('.header').classList.remove('shrink');
+  document.getElementById("tabBar").classList.remove('shrink');
 }
 
 // LocalStorage helpers
@@ -313,7 +312,18 @@ function renderTabs() {
     tabElement.className = "tab";
     tabElement.draggable = true;
     tabElement.dataset.index = index;
-
+    tabElement.style.background = "#222";
+    tabElement.style.color = "gold";
+    tabElement.style.padding = "2px 3px";
+    tabElement.style.marginRight = "0px";
+    tabElement.style.borderRadius = "5px";
+    tabElement.style.border = "1px solid gold";
+    tabElement.style.display = "inline-flex";
+    tabElement.style.alignItems = "center";
+    tabElement.style.fontSize = "14px";
+    tabElement.style.userSelect = "none";
+    tabElement.style.cursor = "pointer";
+    
     // DRAG EVENTS
     tabElement.addEventListener("dragstart", function (e) {
       e.dataTransfer.setData("text/plain", index);
@@ -342,8 +352,14 @@ function renderTabs() {
       }
     });
 
+    // Full clickable area
     tabElement.onclick = () => loadPage(tab.url);
 
+    if (tab.url === pageFrame.src) {
+      tabElement.classList.add("active-tab");
+    }
+
+    // **Tambahkan title dan close button di sini**
     const title = document.createElement("span");
     title.textContent = tab.label;
     title.style.pointerEvents = "none";
@@ -351,6 +367,25 @@ function renderTabs() {
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-tab";
     closeBtn.textContent = "×";
+    closeBtn.style.marginLeft = "4px";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.style.background = "none";
+    closeBtn.style.border = "none";
+    closeBtn.style.color = "red";
+    closeBtn.style.fontSize = "14px";
+    closeBtn.style.transition = "all 0.2s ease";
+    closeBtn.style.padding = "0";
+    closeBtn.style.pointerEvents = "auto";
+
+    closeBtn.onmouseover = () => {
+      closeBtn.style.color = "#ff1a1a";
+      closeBtn.style.transform = "scale(1.2)";
+    };
+    closeBtn.onmouseout = () => {
+      closeBtn.style.color = "red";
+      closeBtn.style.transform = "scale(1)";
+    };
+
     closeBtn.onclick = (e) => {
       e.stopPropagation();
       closeTab(tab.label);
@@ -360,31 +395,25 @@ function renderTabs() {
     tabElement.appendChild(closeBtn);
     tabBar.appendChild(tabElement);
   });
-
-  // Update active tab appearance
-  highlightActiveTab(pageFrame.src);
 }
 
 function loadPage(url) {
   pageFrame.src = url;
   closeSidebar();
 
-  // Highlight tab after iframe loads (to match pageFrame.src)
-  pageFrame.onload = () => {
-    highlightActiveTab(url);
-  };
-}
-
-function highlightActiveTab(url) {
+  // Hapus class active-tab dari semua tab
   document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.remove("active-tab");
   });
 
+  // Tambahkan class active-tab ke tab yang sesuai
   const tabs = getTabs();
   const tabElements = document.querySelectorAll(".tab");
   tabs.forEach((tab, index) => {
-    if (tab.url === url && tabElements[index]) {
-      tabElements[index].classList.add("active-tab");
+    if (tab.url === url) {
+      if (tabElements[index]) {
+        tabElements[index].classList.add("active-tab");
+      }
     }
   });
 }
