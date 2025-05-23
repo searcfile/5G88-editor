@@ -137,9 +137,9 @@
  .tab-bar {
   position: absolute;
   top: 10px;  
-   left: 60px;   
+   left: 60px; 
    right: 10px;  
-  background: #222;
+  background: transparent;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -194,8 +194,8 @@
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
     <img src="https://i.imgur.com/QrxyBjc.png" alt="Product">
+    <div id="tabBar" class="tab-bar"></div>
   </div>
-  <div id="tabBar" class="tab-bar"></div>
   
   <!-- Main Content -->
   <div class="container" id="mainContainer">
@@ -218,7 +218,7 @@ tabBar.style.display = "flex";
 tabBar.style.alignItems = "center";
 tabBar.style.padding = "10px 20px";
 tabBar.style.background = "#111";
-tabBar.style.bottom = "0";
+
 
 // Sidebar controls
 menuIcon.addEventListener("click", openSidebar);
