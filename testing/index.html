@@ -178,6 +178,11 @@
   transform: translateX(-50%);
   height: 30px;
   z-index: 1102; /* Lebih tinggi dari sidebar dan header */
+      transition: left 0.3s ease, transform 0.3s ease;
+}
+    .floating-logo.shrink {
+  left: 260px;      /* lebar sidebar */
+  transform: translateX(0);
 }
     .header.shrink {
   margin-left: 260px;
@@ -243,7 +248,7 @@ function openSidebar() {
   sidebar.classList.add("active");
   overlay.classList.add("active");
   container.classList.add("shrink");
-  document.querySelector(".floating-logo").style.display = "none";
+  document.querySelector(".floating-logo").classList.add("shrink");
   document.querySelector('.header').classList.add('shrink');
   document.getElementById("tabBar").classList.add('shrink');
 }
@@ -251,7 +256,7 @@ function closeSidebar() {
   sidebar.classList.remove("active");
   overlay.classList.remove("active");
   container.classList.remove("shrink");
-  document.querySelector(".floating-logo").style.display = "block";
+  document.querySelector(".floating-logo").classList.remove("shrink");
   document.querySelector('.header').classList.remove('shrink');
   document.getElementById("tabBar").classList.remove('shrink');
 }
