@@ -177,7 +177,16 @@
   left: 50%;
   transform: translateX(-50%);
   height: 30px;
-  z-index: 1100; /* Lebih tinggi dari sidebar dan header */
+  z-index: 1102; /* Lebih tinggi dari sidebar dan header */
+}
+    .header.shrink {
+  margin-left: 260px;
+  transition: margin-left 0.3s;
+}
+
+.tab-bar.shrink {
+  margin-left: 260px;
+  transition: margin-left 0.3s;
 }
   </style>
 </head>
@@ -235,12 +244,16 @@ function openSidebar() {
   overlay.classList.add("active");
   container.classList.add("shrink");
   document.querySelector(".floating-logo").style.display = "none";
+  document.querySelector('.header').classList.add('shrink');
+  document.getElementById("tabBar").classList.add('shrink');
 }
 function closeSidebar() {
   sidebar.classList.remove("active");
   overlay.classList.remove("active");
   container.classList.remove("shrink");
   document.querySelector(".floating-logo").style.display = "block";
+  document.querySelector('.header').classList.remove('shrink');
+  document.getElementById("tabBar").classList.remove('shrink');
 }
 
 // LocalStorage helpers
