@@ -172,11 +172,11 @@
   align-items: center;
   justify-content: center;
 }
-    .tab-bar:hover {
-     background: gold;
-      color: #000;
-      font-weight: bold;
-    }
+    ..tab.active-tab {
+  background: gold;
+  color: #111;
+  font-weight: bold;
+}
       
     .floating-logo {
   position: fixed;
@@ -389,6 +389,21 @@ function renderTabs() {
 function loadPage(url, label = "") {
   pageFrame.src = url;
   closeSidebar();
+
+  // Hapus class active-tab dari semua tab
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.classList.remove("active-tab");
+  });
+
+  // Tambahkan class active-tab ke tab yang sesuai
+  const tabs = getTabs();
+  const tabIndex = tabs.findIndex(tab => tab.url === url);
+  if (tabIndex !== -1) {
+    const tabElements = document.querySelectorAll(".tab");
+    if (tabElements[tabIndex]) {
+      tabElements[tabIndex].classList.add("active-tab");
+    }
+  }
 }
 
 window.onload = () => {
