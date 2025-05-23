@@ -355,6 +355,13 @@ function renderTabs() {
     // Full clickable area
     tabElement.onclick = () => loadPage(tab.url);
 
+    if (tab.url === pageFrame.src) {
+      tabElement.classList.add("active-tab");
+    }
+    
+        tabBar.appendChild(tabElement);
+  });
+}
     const title = document.createElement("span");
     title.textContent = tab.label;
     title.style.pointerEvents = "none";
@@ -392,7 +399,7 @@ function renderTabs() {
   });
 }
 
-function loadPage(url, label = "") {
+function loadPage(url) {
   pageFrame.src = url;
   closeSidebar();
 
@@ -403,13 +410,14 @@ function loadPage(url, label = "") {
 
   // Tambahkan class active-tab ke tab yang sesuai
   const tabs = getTabs();
-  const tabIndex = tabs.findIndex(tab => tab.url === url);
-  if (tabIndex !== -1) {
-    const tabElements = document.querySelectorAll(".tab");
-    if (tabElements[tabIndex]) {
-      tabElements[tabIndex].classList.add("active-tab");
+  const tabElements = document.querySelectorAll(".tab");
+  tabs.forEach((tab, index) => {
+    if (tab.url === url) {
+      if (tabElements[index]) {
+        tabElements[index].classList.add("active-tab");
+      }
     }
-  }
+  });
 }
 
 window.onload = () => {
