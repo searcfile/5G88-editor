@@ -93,6 +93,10 @@
       transform: scale(1.05);
       box-shadow: 0 0 12px gold;
     }
+    .platform-filters {
+  text-align: center;
+  margin-bottom: 20px;
+}
   </style>
 </head>
 <body>
@@ -107,6 +111,13 @@
     <button onclick="setFilter('live')">Live Game</button>
     <button onclick="setFilter('table')">Table Game</button>
   </div>
+  <div class="filter-tabs platform-filters">
+  <button onclick="setPlatform('all')" class="active">All Platforms</button>
+  <button onclick="setPlatform('918kiss')">918kiss</button>
+  <button onclick="setPlatform('mega888')">mega888</button>
+  <button onclick="setPlatform('pussy888')">pussy888</button>
+  <button onclick="setPlatform('xe88')">xe88</button>
+</div>
 
   <div class="logo-grid" id="gameGrid">
     <!-- Game logos will be inserted here -->
@@ -159,6 +170,7 @@
     ];
 
     let currentType = "all";
+    let currentPlatform = "all";
 
     function renderGames() {
   const grid = document.getElementById("gameGrid");
@@ -172,7 +184,12 @@
       (Array.isArray(game.platform)
         ? game.platform.some(p => p.toLowerCase().includes(searchText))
         : game.platform.toLowerCase().includes(searchText));
-    return matchType && matchSearch;
+    const matchPlatform = currentPlatform === "all" ||
+      (Array.isArray(game.platform)
+        ? game.platform.includes(currentPlatform)
+        : game.platform === currentPlatform);
+
+    return matchType && matchSearch && matchPlatform;
   });
 
   filtered.forEach(game => {
@@ -186,16 +203,23 @@
   });
 }
 
+function setPlatform(platform) {
+  currentPlatform = platform;
+  document.querySelectorAll('.platform-filters button').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  renderGames();
+}
+    
     function filterGames() {
       renderGames();
     }
 
     function setFilter(type) {
-      currentType = type;
-      document.querySelectorAll('.filter-tabs button').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      renderGames();
-    }
+  currentType = type;
+  document.querySelectorAll('.filter-tabs button').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  renderGames();
+}
 
     // Initial render
     renderGames();
