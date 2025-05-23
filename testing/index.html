@@ -103,6 +103,9 @@
     .container {
       transition: margin-left 0.3s ease;
       padding: 0;
+      max-height: calc(100vh - 150px);
+      box-sizing: border-box;
+      overflow-y: auto;
     }
     .container.shrink {
       margin-left: 260px;
@@ -122,21 +125,16 @@
         margin-left: 0;
       }
     }
-    #mainContainer {
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  overflow: auto; /* atau scroll jika diperlukan */
-}
     html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+      overflow: hidden;
 }
     #pageFrame {
-  height: 100%;
+  height: 100vh;
   width: 100%;
-  height: calc(100vh - 80px); /* Sesuaikan ikut tinggi header */
+  height: calc(100vh - 100px); /* Sesuaikan ikut tinggi header */
   border: none;
 }
  .tab-bar {
