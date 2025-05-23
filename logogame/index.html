@@ -167,9 +167,11 @@
 
       const filtered = games.filter(game => {
         const matchType = currentType === "all" || game.type === currentType;
-        const matchSearch = Array.isArray(game.platform)
-        ? game.platform.some(p => p.toLowerCase().includes(searchText))
-        : game.platform.toLowerCase().includes(searchText);
+        const matchSearch = (
+       game.name.toLowerCase().includes(searchText) ||
+       (Array.isArray(game.platform)
+    ? game.platform.some(p => p.toLowerCase().includes(searchText))
+    : game.platform.toLowerCase().includes(searchText))
         return matchType && matchSearch;
       });
 
