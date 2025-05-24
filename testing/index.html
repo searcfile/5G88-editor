@@ -333,8 +333,9 @@ function renderTabs() {
       tabElement.style.color = "gold";
     }
 
+
     
-   // DRAG EVENTS
+    // DRAG EVENTS
     tabElement.addEventListener("dragstart", function (e) {
       e.dataTransfer.setData("text/plain", index);
       tabElement.style.opacity = "0.5";
@@ -360,14 +361,7 @@ function renderTabs() {
     });
 
 
-    // Full clickable area
-    tabElement.onclick = () => loadPage(tab.url);
-
-    if (tab.url === pageFrame.src) {
-      tabElement.classList.add("active-tab");
-    }
-
-    // **Tambahkan title dan close button di sini**
+    // Klik tab
     tabElement.addEventListener("click", () => {
       loadPage(tab.url);
     });
@@ -389,6 +383,7 @@ function renderTabs() {
     closeBtn.style.transition = "all 0.2s ease";
     closeBtn.style.padding = "0";
     closeBtn.style.pointerEvents = "auto";
+
     closeBtn.onmouseover = () => {
       closeBtn.style.color = "#ff1a1a";
       closeBtn.style.transform = "scale(1.2)";
@@ -411,7 +406,7 @@ function renderTabs() {
 function loadPage(url) {
   pageFrame.src = url;
   closeSidebar();
-  renderTabs(); // otomatis atur ulang gaya aktif saat load halaman
+  renderTabs(); // perbarui tampilan tab aktif
 }
 
   // Hapus class active-tab dari semua tab
