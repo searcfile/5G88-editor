@@ -352,6 +352,23 @@ function renderTabs() {
       }
     });
 
+     // Tambahkan event untuk klik tab
+    tabElement.addEventListener("click", () => {
+        // Hapus class active dari semua tab
+        document.querySelectorAll(".tab").forEach(t => {
+            t.classList.remove("active");
+            t.style.background = "#222";
+        });
+
+        // Tambahkan class active ke tab yang diklik
+        tabElement.classList.add("active");
+        tabElement.style.background = "gold";
+        tabElement.style.color = "#000";
+    });
+
+    document.body.appendChild(tabElement);
+});
+
     // Full clickable area
     tabElement.onclick = () => loadPage(tab.url);
 
