@@ -41,11 +41,8 @@
     .platform-tags {
       display: flex;
       gap: 15px;
-      text-align: center;
-      align-items: center;
       justify-content: center;
       margin-top: 20px;
-      position: sticky;
     }
     .platform-tags div {
       padding: 8px 16px;
@@ -53,7 +50,6 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 12px;
-      gap: 3px;
     }
     .platform-tags div.active-tag,
     .platform-tags div:hover {
@@ -207,7 +203,16 @@
       font-size: 12px;
       padding: 2px 6px;
       border-radius: 5px;
-    } 
+    }
+    .tag-container {
+     display: flex;
+     gap: 5px;
+     justify-content: center;
+     margin: 0;
+     font-size: 12px;
+     padding: 2px 6px;
+     flex-wrap: wrap;
+    }
     .tag-item {
       padding: 6px 12px;
       border-radius: 6px;
@@ -292,7 +297,7 @@
     </div>
       <div class="platform-box">
       <div class="platform-title">PLATFORM</div>
-      <div id="gameTags" class="platform-tags div"></div>
+      <div id="gameTags" class="tag-container"></div>
     </div>
       <div class="bet-values-box" id="betValues"></div>
       <div class="line-controls">
