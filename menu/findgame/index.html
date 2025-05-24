@@ -2647,29 +2647,36 @@
 
   // Fungsi untuk menampilkan detail game
   function showGameDetail(game) {
-    gameImg.src = game.image;
-    gameTitle.textContent = game.name;
-    gameName.textContent = `GameName: ${game.alias || game.name}`;
-    gameType.textContent = "Type: " + game.type;
-    gamePayline.textContent = "Paylines: " + game.payline;
-    gameAdjustable.textContent = "Adjustable Lines: " + (game.adjustable ? "Yes" : "No");
-    
-    
-    selectedLine = 1;
-    updateLineDisplay();
-    displayBetValues(game);
+  gameImg.src = game.image;
+  gameTitle.textContent = game.name;
+  gameName.textContent = `GameName: ${game.alias || game.name}`;
+  gameType.textContent = "Type: " + game.type;
+  gamePayline.textContent = "Paylines: " + game.payline;
+  gameAdjustable.textContent = "Adjustable Lines: " + (game.adjustable ? "Yes" : "No");
 
-    gameTags.innerHTML = "";
-    game.tags.forEach(tag => {
-      const tagDiv = document.createElement("div");
-      tagDiv.className = `tag-item tag-${tag.toLowerCase()}`;
-      tagDiv.textContent = tag;
-      gameTags.appendChild(tagDiv);
-    });
+  selectedLine = 1;
+  updateLineDisplay();
+  displayBetValues(game);
 
-    gameDetail.classList.add("active");
-    gameDetail.dataset.gameName = game.name; // Simpan game aktif untuk referensi line/bet
+  gameTags.innerHTML = "";
+  game.tags.forEach(tag => {
+    const tagDiv = document.createElement("div");
+    tagDiv.className = `tag-item tag-${tag.toLowerCase()}`;
+    tagDiv.textContent = tag;
+    gameTags.appendChild(tagDiv);
+  });
+
+  gameDetail.classList.add("active");
+  gameDetail.dataset.gameName = game.name;
+
+  // ⬇️ Tambahkan bagian ini di akhir
+  const allGameItems = document.querySelectorAll('.game-item');
+  allGameItems.forEach(item => item.classList.remove('active-game'));
+  const selectedItem = Array.from(allGameItems).find(item => item.textContent === game.name);
+  if (selectedItem) {
+    selectedItem.classList.add('active-game');
   }
+}
 
   // Update tampilan jumlah garis
   function updateLineDisplay() {
