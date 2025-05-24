@@ -306,14 +306,13 @@ function closeTab(label) {
 function renderTabs() {
   tabBar.innerHTML = "";
   const tabs = getTabs();
+  const currentURL = pageFrame.src;
 
   tabs.forEach((tab, index) => {
     const tabElement = document.createElement("div");
     tabElement.className = "tab";
     tabElement.draggable = true;
     tabElement.dataset.index = index;
-    tabElement.style.background = "#222";
-    tabElement.style.color = "gold";
     tabElement.style.padding = "2px 3px";
     tabElement.style.marginRight = "0px";
     tabElement.style.borderRadius = "5px";
@@ -323,21 +322,29 @@ function renderTabs() {
     tabElement.style.fontSize = "14px";
     tabElement.style.userSelect = "none";
     tabElement.style.cursor = "pointer";
+    tabElement.style.transition = "all 0.2s ease";
+
+    // Style aktif atau tidak
+    if (tab.url === currentURL) {
+      tabElement.style.background = "gold";
+      tabElement.style.color = "#000";
+    } else {
+      tabElement.style.background = "#222";
+      tabElement.style.color = "gold";
+    }
+
     
-    // DRAG EVENTS
+   // DRAG EVENTS
     tabElement.addEventListener("dragstart", function (e) {
       e.dataTransfer.setData("text/plain", index);
       tabElement.style.opacity = "0.5";
     });
-
     tabElement.addEventListener("dragend", function () {
       tabElement.style.opacity = "1";
     });
-
     tabElement.addEventListener("dragover", function (e) {
       e.preventDefault();
     });
-
     tabElement.addEventListener("drop", function (e) {
       e.preventDefault();
       const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
@@ -352,6 +359,7 @@ function renderTabs() {
       }
     });
 
+
     // Full clickable area
     tabElement.onclick = () => loadPage(tab.url);
 
@@ -360,6 +368,11 @@ function renderTabs() {
     }
 
     // **Tambahkan title dan close button di sini**
+    tabElement.addEventListener("click", () => {
+      loadPage(tab.url);
+    });
+
+    // Judul dan tombol close
     const title = document.createElement("span");
     title.textContent = tab.label;
     title.style.pointerEvents = "none";
@@ -376,7 +389,6 @@ function renderTabs() {
     closeBtn.style.transition = "all 0.2s ease";
     closeBtn.style.padding = "0";
     closeBtn.style.pointerEvents = "auto";
-
     closeBtn.onmouseover = () => {
       closeBtn.style.color = "#ff1a1a";
       closeBtn.style.transform = "scale(1.2)";
@@ -385,7 +397,6 @@ function renderTabs() {
       closeBtn.style.color = "red";
       closeBtn.style.transform = "scale(1)";
     };
-
     closeBtn.onclick = (e) => {
       e.stopPropagation();
       closeTab(tab.label);
@@ -400,6 +411,8 @@ function renderTabs() {
 function loadPage(url) {
   pageFrame.src = url;
   closeSidebar();
+  renderTabs(); // otomatis atur ulang gaya aktif saat load halaman
+}
 
   // Hapus class active-tab dari semua tab
   document.querySelectorAll(".tab").forEach(tab => {
