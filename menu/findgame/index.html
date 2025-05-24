@@ -16,7 +16,7 @@
       justify-content: center;
       display: flex;
       height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     .container {
@@ -88,12 +88,18 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
-      margin-top: 50px;
+      margin-top: 55px;
       align-items: center;
       text-align: left;
       max-height: 850px;
       min-height: 850px;
-      overflow-y: auto;
+      overflow-y: scroll;
+    }
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    }
+    .game-list::-webkit-scrollbar {
+     display: none;
     }
     .no-result {
       text-align: center;
