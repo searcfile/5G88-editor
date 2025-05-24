@@ -406,25 +406,24 @@ function renderTabs() {
 function loadPage(url) {
   pageFrame.src = url;
   closeSidebar();
-  renderTabs(); // perbarui tampilan tab aktif
-}
 
   // Hapus class active-tab dari semua tab
   document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.remove("active-tab");
   });
 
-  // Tambahkan class active-tab ke tab yang sesuai
   const tabs = getTabs();
   const tabElements = document.querySelectorAll(".tab");
+  const currentUrl = pageFrame.src;  // <- gunakan ini
+
   tabs.forEach((tab, index) => {
-    if (tab.url === url) {
+    if (tab.url === currentUrl) {
       if (tabElements[index]) {
         tabElements[index].classList.add("active-tab");
       }
     }
   });
-
+}
 window.onload = () => {
   renderTabs();
   const tabs = getTabs();
