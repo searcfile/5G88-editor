@@ -16,48 +16,38 @@
        overflow-x: hidden;
        height: 100vh;
      }
-      .rain {
+  .gold-rain {
+  pointer-events: none;
   position: fixed;
-  width: 100%;
-  height: 100%;
   top: 0;
   left: 0;
-  pointer-events: none;
-  z-index: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Letak di belakang elemen depan */
+  overflow: hidden;
 }
 
-/* Titisan emas */
-.rain::before, .rain::after {
-  content: '';
+.gold-rain::after {
+  content: "";
   position: absolute;
-  width: 300%;
-  height: 300%;
-  background-image:
-    radial-gradient(2px 8px at 10% 20%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 15% 25%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 20% 10%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 30% 40%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 35% 20%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 40% 30%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 50% 20%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 60% 50%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 70% 30%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 80% 40%, rgba(255,215,0,0.4) 60%, transparent 61%),
-    radial-gradient(2px 8px at 90% 60%, rgba(255,215,0,0.4) 60%, transparent 61%);
-  background-repeat: repeat;
-  animation: rain 0.6s linear infinite;
+  width: 100%;
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 215, 0, 0.2) 0px,
+    rgba(255, 215, 0, 0.2) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  animation: rainAnim 0.5s linear infinite;
 }
 
-.rain::after {
-  animation-delay: 0.3s;
-}
-
-@keyframes rain {
+@keyframes rainAnim {
   0% {
-    transform: translateY(-100%);
+    background-position: 0 -100%;
   }
   100% {
-    transform: translateY(100%);
+    background-position: 0 100%;
   }
 }
      .search-title {
@@ -380,7 +370,7 @@
   </style>
 </head>
 <body>
-  <div class="rain"></div>
+  <div class="gold-rain"></div>
   <h1 class="search-title">
   <img src="https://i.imgur.com/q8PUjo7.png" class="gold-emoji-img" alt="Gold Emoji" />
   FIND GAME
