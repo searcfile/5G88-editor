@@ -23,7 +23,7 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: -99999;
+  z-index: 99999;
   overflow: hidden;
 }
 
@@ -35,6 +35,19 @@
   opacity: 0.8;
   animation: fall linear infinite;
   border-radius: 50px;
+  box-shadow: 0 0 6px gold;
+  filter: blur(0.2px);
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: gold;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: sparkleFall linear infinite;
+  box-shadow: 0 0 5px gold;
 }
 
 @keyframes fall {
@@ -43,6 +56,20 @@
     opacity: 0;
   }
   30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkleFall {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  50% {
     opacity: 1;
   }
   100% {
@@ -5032,19 +5059,32 @@
     const drop = document.createElement('div');
     drop.className = 'rain';
     drop.style.left = Math.random() * window.innerWidth + 'px';
-    drop.style.animationDuration = (0.5 + Math.random() * 0.8) + 's';
+    drop.style.animationDuration = (0.4 + Math.random() * 1.2) + 's';
     drop.style.opacity = Math.random() * 0.6 + 0.4;
+    drop.style.width = (1 + Math.random() * 2) + 'px';
+    drop.style.height = (10 + Math.random() * 20) + 'px';
     rainContainer.appendChild(drop);
 
-    setTimeout(() => {
-      drop.remove();
-    }, 2000);
+    setTimeout(() => drop.remove(), 2000);
   }
 
-  // Generate banyak drop secara berulang
+  function createSparkle() {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.style.left = Math.random() * window.innerWidth + 'px';
+    sparkle.style.animationDuration = (0.8 + Math.random() * 1.5) + 's';
+    sparkle.style.opacity = Math.random() * 0.5 + 0.3;
+    sparkle.style.width = sparkle.style.height = (2 + Math.random() * 3) + 'px';
+    rainContainer.appendChild(sparkle);
+
+    setTimeout(() => sparkle.remove(), 2500);
+  }
+
+  // Loop hujan + sparkle
   setInterval(() => {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       createDrop();
+      if (Math.random() > 0.5) createSparkle();
     }
   }, 100);
 </script>
