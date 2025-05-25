@@ -250,28 +250,36 @@
        color: white;              /* Tukar teks ke hitam */
      }
      .marquee-container {
-       overflow: hidden;
-       white-space: nowrap;
-       width: 100%;
-       box-sizing: border-box;
-       background: #000;
-       padding: 8px 0;
-       border-top: 1px solid gold;
-       border-bottom: 1px solid gold;
-       margin-bottom: 10px;
-     }
-     .marquee-text {
-      display: inline-block;
-      color: white;
-      font-weight: bold;
-      font-size: 16px;
-      padding-left: 100%;
-      animation: marquee 15s linear infinite;
-     }
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+  border-top: 1px solid gold;
+  border-bottom: 1px solid gold;
+  padding: 8px 0;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
 
-@keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 20s linear infinite;
+}
+
+.marquee-content {
+  color: gold;
+  font-size: 14px;
+  white-space: nowrap;
+  padding-right: 100px; /* jarak antara dua content */
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
      @media (max-width: 768px) {
      body, html {
@@ -316,9 +324,12 @@
 </head>
 <body>
   <div class="marquee-container">
-  <div class="marquee-wrapper">
-    <div class="marquee-text">
-      📢 Welcome To Finding Game 5G88 Casino Online Malaysian - Hope you enjoy the games we've prepared for you. Thanks! 📢 Welcome To Finding Game 5G88 Casino Online Malaysian - Hope you enjoy the games we've prepared for you. Thanks!
+  <div class="marquee-track">
+    <div class="marquee-content">
+      📢 Welcome To Finding Game 5G88 Casino Online Malaysian - Hope you enjoy the games we've prepared for you. Thanks!
+    </div>
+    <div class="marquee-content">
+      📢 Welcome To Finding Game 5G88 Casino Online Malaysian - Hope you enjoy the games we've prepared for you. Thanks!
     </div>
   </div>
 </div>
