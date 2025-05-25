@@ -23,17 +23,6 @@
     75% { transform: rotateZ(15deg) translateX(3px); }
     100% { transform: rotateZ(-10deg) translateX(0); }
   }
- .shake {
-    animation: shake 0.3s ease-in-out;
-  }
- @keyframes shake {
-    0% { transform: translate(0, 0); }
-    20% { transform: translate(-5px, 5px); }
-    40% { transform: translate(5px, -5px); }
-    60% { transform: translate(-5px, 5px); }
-    80% { transform: translate(5px, -5px); }
-    100% { transform: translate(0, 0); }
-  }
    #lightning-flash {
     position: fixed;
     top: 0; left: 0;
@@ -5185,12 +5174,6 @@
         bolt.remove();
       }, 400);
     }
-
-    // Efek goyang layar
-    body.classList.add('shake');
-    setTimeout(() => {
-      body.classList.remove('shake');
-    }, 300);
 
     // Trigger petir seterusnya random antara 3-8 detik
     const next = Math.random() * 5000 + 3000;
