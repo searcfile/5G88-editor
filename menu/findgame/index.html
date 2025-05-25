@@ -16,6 +16,23 @@
        overflow-x: hidden;
        height: 100vh;
      }
+     .search-title {
+      font-size: 30px;
+      font-weight: bold;
+      color: gold;
+      animation: blinkColor 0.3s infinite;
+      margin-top: 20px;
+      text-align: center;
+      letter-spacing: 2px;
+     }
+     .gold-emoji {
+      color: gold;
+     }
+     @keyframes blinkColor {
+      0% { color: white; }
+      50% { color: gold; }
+      100% { color: white; }
+     }
      .searchBox {
        text-align: center;
        margin-top: 10px;
@@ -291,6 +308,7 @@
   </style>
 </head>
 <body>
+  <h1 class="search-title">FIND GAME <span class="gold-emoji">🔍</span></h1>
   <div class="searchBox">
     <input type="text" id="searchBox" placeholder="Search game...">
   </div> 
