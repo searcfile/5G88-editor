@@ -16,6 +16,17 @@
        overflow-x: hidden;
        height: 100vh;
      }
+    .shake {
+  animation: screenShake 0.3s ease-in-out;
+}
+
+@keyframes screenShake {
+  0% { transform: translate(0px, 0px); }
+  25% { transform: translate(-5px, 5px); }
+  50% { transform: translate(5px, -5px); }
+  75% { transform: translate(-5px, -5px); }
+  100% { transform: translate(0px, 0px); }
+}
     #lightning-flash {
   position: fixed;
   top: 0;
@@ -5149,6 +5160,43 @@
 
 // Start the lightning loop
 triggerLightningEffect();
+
+    function triggerLightningEffect() {
+  const flash = document.getElementById('lightning-flash');
+  const boltContainer = document.getElementById('lightning-bolt-container');
+  const body = document.body;
+
+  // Flash kilat
+  flash.style.opacity = 0.7;
+  setTimeout(() => flash.style.opacity = 0, 150);
+
+  // Petir zig-zag
+  const bolt = document.createElement('div');
+  bolt.className = 'lightning-bolt';
+  bolt.style.left = Math.random() * window.innerWidth + 'px';
+  bolt.style.top = Math.random() * (window.innerHeight / 2) + 'px';
+  boltContainer.appendChild(bolt);
+  setTimeout(() => {
+    boltContainer.removeChild(bolt);
+  }, 400);
+
+  // ✨ Efek gegaran (screen shake)
+  body.classList.add('shake');
+  setTimeout(() => {
+    body.classList.remove('shake');
+  }, 300);
+
+  // 💥 Suara petir (opsyenal)
+  const thunderAudio = document.getElementById('thunder');
+  if (thunderAudio) {
+    thunderAudio.currentTime = 0;
+    thunderAudio.play().catch(()=>{});
+  }
+
+  // Jadualkan petir seterusnya
+  const next = Math.random() * 5000 + 3000;
+  setTimeout(triggerLightningEffect, next);
+}
 </script>
 </body>
 </html>
