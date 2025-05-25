@@ -17,47 +17,53 @@
        height: 100vh;
      }
     @keyframes zigzag {
-  0% { transform: rotateZ(-15deg) translateX(0); }
-  25% { transform: rotateZ(10deg) translateX(4px); }
-  50% { transform: rotateZ(-20deg) translateX(-6px); }
-  75% { transform: rotateZ(15deg) translateX(3px); }
-  100% { transform: rotateZ(-10deg) translateX(0); }
-}
-    .shake {
-  animation: screenShake 0.3s ease-in-out;
-}
-
-@keyframes screenShake {
-  0% { transform: translate(0px, 0px); }
-  25% { transform: translate(-5px, 5px); }
-  50% { transform: translate(5px, -5px); }
-  75% { transform: translate(-5px, -5px); }
-  100% { transform: translate(0px, 0px); }
-}
-    #lightning-flash {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  opacity: 0;
-  z-index: -99997;
-  pointer-events: none;
-}
-
+    0% { transform: rotateZ(-15deg) translateX(0); }
+    25% { transform: rotateZ(10deg) translateX(4px); }
+    50% { transform: rotateZ(-20deg) translateX(-6px); }
+    75% { transform: rotateZ(15deg) translateX(3px); }
+    100% { transform: rotateZ(-10deg) translateX(0); }
+  }
+ .shake {
+    animation: shake 0.3s ease-in-out;
+  }
+ @keyframes shake {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-5px, 5px); }
+    40% { transform: translate(5px, -5px); }
+    60% { transform: translate(-5px, 5px); }
+    80% { transform: translate(5px, -5px); }
+    100% { transform: translate(0, 0); }
+  }
+   #lightning-flash {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10000;
+    transition: opacity 0.15s ease-out;
+  }
+#lightning-bolt-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 10001;
+    overflow: visible;
+  }
 .lightning-bolt {
-  position: absolute;
-  width: 4px;
-  height: 120px;
-  background: linear-gradient(to bottom, gold, white, gold);
-  box-shadow: 0 0 12px gold, 0 0 24px white;
-  transform: rotateZ(-10deg);
-  animation: zigzag 0.2s ease-in-out infinite alternate;
-  z-index: 100000;
-  opacity: 1;
-  border-radius: 2px;
-}
+    position: absolute;
+    width: 4px;
+    background: linear-gradient(to bottom, white, #ddd, white);
+    box-shadow: 0 0 12px white, 0 0 24px #eee;
+    border-radius: 2px;
+    animation: zigzag 0.2s ease-in-out infinite alternate;
+    opacity: 1;
+    z-index: 10002;
+  }
 
 @keyframes boltFade {
   0% {
@@ -451,8 +457,8 @@
 </head>
 <body>
   <div id="rain-container"></div>
-  <div id="lightning-flash"></div>
-  <div id="lightning-bolt-container"></div>
+<div id="lightning-flash"></div>
+<div id="lightning-bolt-container"></div>
   <h1 class="search-title">
   <img src="https://i.imgur.com/q8PUjo7.png" class="gold-emoji-img" alt="Gold Emoji" />
   FIND GAME
@@ -5143,46 +5149,57 @@
     }
   }, 100);
 
-    function triggerLightningEffect() {
-  const flash = document.getElementById('lightning-flash');
-  const boltContainer = document.getElementById('lightning-bolt-container');
-  const body = document.body;
+   const rainContainer = document.getElementById('rain-container');
+  const rainCount = 150;
+  for (let i = 0; i < rainCount; i++) {
+    const drop = document.createElement('div');
+    drop.classList.add('rain');
+    drop.style.left = Math.random() * window.innerWidth + 'px';
+    drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+    drop.style.animationDelay = (Math.random() * 5) + 's';
+    rainContainer.appendChild(drop);
+  }
 
-  // Flash
-  flash.style.opacity = 0.7;
-  setTimeout(() => flash.style.opacity = 0, 150);
+  // Petir & flash
+  function triggerLightningEffect() {
+    const flash = document.getElementById('lightning-flash');
+    const boltContainer = document.getElementById('lightning-bolt-container');
+    const body = document.body;
 
-  // Banyak petir sekaligus
-  const bolts = Math.floor(Math.random() * 2) + 2; // 2–3 bolt
-  for (let i = 0; i < bolts; i++) {
-    const bolt = document.createElement('div');
-    bolt.className = 'lightning-bolt';
-    bolt.style.left = Math.random() * window.innerWidth + 'px';
-    bolt.style.top = Math.random() * (window.innerHeight / 2) + 'px';
-    bolt.style.height = (100 + Math.random() * 100) + 'px'; // lebih tinggi
-    boltContainer.appendChild(bolt);
+    // Flash putih
+    flash.style.opacity = 0.7;
     setTimeout(() => {
-      bolt.remove();
-    }, 400);
+      flash.style.opacity = 0;
+    }, 150);
+
+    // Buat 2-3 petir zigzag besar warna putih
+    const bolts = Math.floor(Math.random() * 2) + 2; // 2 or 3
+    for (let i = 0; i < bolts; i++) {
+      const bolt = document.createElement('div');
+      bolt.className = 'lightning-bolt';
+      bolt.style.left = Math.random() * window.innerWidth + 'px';
+      bolt.style.top = Math.random() * (window.innerHeight / 2) + 'px';
+      bolt.style.height = (100 + Math.random() * 100) + 'px';
+      boltContainer.appendChild(bolt);
+
+      setTimeout(() => {
+        bolt.remove();
+      }, 400);
+    }
+
+    // Efek goyang layar
+    body.classList.add('shake');
+    setTimeout(() => {
+      body.classList.remove('shake');
+    }, 300);
+
+    // Trigger petir seterusnya random antara 3-8 detik
+    const next = Math.random() * 5000 + 3000;
+    setTimeout(triggerLightningEffect, next);
   }
 
-  // Shake
-  body.classList.add('shake');
-  setTimeout(() => {
-    body.classList.remove('shake');
-  }, 300);
-
-  // Sound (optional)
-  const thunderAudio = document.getElementById('thunder');
-  if (thunderAudio) {
-    thunderAudio.currentTime = 0;
-    thunderAudio.play().catch(() => {});
-  }
-
-  // Trigger semula
-  const next = Math.random() * 5000 + 3000;
-  setTimeout(triggerLightningEffect, next);
-}
+  // Mulakan effect petir
+  triggerLightningEffect();
 </script>
 </body>
 </html>
