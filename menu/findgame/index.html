@@ -2692,7 +2692,8 @@
   gamePayline.textContent = "Paylines: " + game.payline;
   gameAdjustable.textContent = "Adjustable Lines: " + (game.adjustable ? "Yes" : "No");
 
-  selectedLine = 1;
+  const availableLines = Object.keys(game.bets).map(Number);
+  selectedLine = Math.max(...availableLines); // Line paling besar dulu
   updateLineDisplay();
   displayBetValues(game);
 
