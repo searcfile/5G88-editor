@@ -262,20 +262,20 @@
 
 .marquee-track {
   display: flex;
-  width: max-content;
-  animation: marqueeScroll 20s linear infinite;
-}
-
-.marquee-content {
-  color: white;
-  font-size: 14px;
+  animation: scroll-left 15s linear infinite;
   white-space: nowrap;
-  padding-right: 10px; /* jarak antara dua content */
 }
 
-@keyframes marqueeScroll {
+..marquee-text {
+  color: gold;
+  font-size: 14px;
+  font-weight: bold;
+  padding-right: 100px; /* jarak antara 2 teks */
+}
+
+@keyframes scroll-left {
   0% {
-    transform: translateX(0);
+   transform: translateX(0%);
   }
   100% {
     transform: translateX(-50%);
@@ -325,9 +325,11 @@
 <body>
   <div class="marquee-container">
   <div class="marquee-track">
+    <div class="marquee-text">
     <span>📢 Welcome To Finding Game 5G88 Casino Online Malaysian - Hope you enjoy the games we've prepared for you. Thanks!</span>
     <span>📢 Welcome To Finding Game 5G88 Casino Online Malaysian - Hope you enjoy the games we've prepared for you. Thanks!</span>
   </div>
+</div>
 </div>
   
   <div class="searchBox">
