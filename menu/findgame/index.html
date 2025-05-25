@@ -262,29 +262,33 @@
   position: relative;
 }
 
-.marquee-content {
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+  border-top: 1px solid gold;
+  border-bottom: 1px solid gold;
+  padding: 8px 0;
+  box-sizing: border-box;
+}
+
+.marquee-track {
   display: inline-block;
   white-space: nowrap;
-  animation: scrollMarquee 15s linear infinite;
+  animation: marqueeScroll 20s linear infinite;
 }
 
-
-.marquee-content span {
+.marquee-track span {
   display: inline-block;
+  padding-right: 100px; /* Jarak antar duplikat */
   color: gold;
-  font-weight: bold;
   font-size: 14px;
-  padding-right: 50px;
+  font-weight: bold;
 }
 
-
-@keyframes scrollMarquee {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
      @media (max-width: 768px) {
      body, html {
@@ -328,8 +332,8 @@
   </style>
 </head>
 <body>
-  <div class="marquee-wrapper">
-  <div class="marquee-content">
+  <div class="marquee-container">
+  <div class="marquee-track">
     <span>📢 Welcome To Finding Game 5G88 Casino Online Malaysian - Hope you enjoy the games we've prepared for you. Thanks!</span>
     <span>📢 Welcome To Finding Game 5G88 Casino Online Malaysian - Hope you enjoy the games we've prepared for you. Thanks!</span>
   </div>
