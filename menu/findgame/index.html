@@ -16,7 +16,7 @@
        overflow-x: hidden;
        height: 100vh;
      }
-    #lightning {
+    #lightning-flash {
   position: fixed;
   top: 0;
   left: 0;
@@ -24,9 +24,29 @@
   height: 100%;
   background: white;
   opacity: 0;
-  z-index: 99998; /* di bawah hujan */
+  z-index: 99997;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+}
+
+.lightning-bolt {
+  position: absolute;
+  width: 2px;
+  height: 100px;
+  background: gold;
+  box-shadow: 0 0 10px gold, 0 0 20px yellow;
+  animation: boltFade 0.4s ease-out forwards;
+  z-index: 99998;
+}
+
+@keyframes boltFade {
+  0% {
+    opacity: 1;
+    transform: scaleY(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1.2) rotate(10deg);
+  }
 }
   #rain-container {
   position: fixed;
@@ -410,7 +430,8 @@
 </head>
 <body>
   <div id="rain-container"></div>
-  <div id="lightning"></div>
+  <div id="lightning-flash"></div>
+  <div id="lightning-bolt-container"></div>
   <h1 class="search-title">
   <img src="https://i.imgur.com/q8PUjo7.png" class="gold-emoji-img" alt="Gold Emoji" />
   FIND GAME
@@ -5101,24 +5122,33 @@
     }
   }, 100);
 
-    function triggerLightning() {
-    const lightning = document.getElementById('lightning');
+    function triggerLightningEffect() {
+  const flash = document.getElementById('lightning-flash');
+  const boltContainer = document.getElementById('lightning-bolt-container');
 
-    // Petir menyambar secara rawak antara 5-10 saat
-    const nextLightning = Math.random() * 5000 + 5000;
+  // Flash effect
+  flash.style.opacity = 0.7;
+  setTimeout(() => flash.style.opacity = 0, 150);
 
-    // Efek kilat sekejap
-    lightning.style.opacity = 0.8;
-    setTimeout(() => {
-      lightning.style.opacity = 0;
-    }, 100 + Math.random() * 200); // kilat pendek
+  // Create lightning bolt at random x position
+  const bolt = document.createElement('div');
+  bolt.className = 'lightning-bolt';
+  bolt.style.left = Math.random() * window.innerWidth + 'px';
+  bolt.style.top = Math.random() * (window.innerHeight / 2) + 'px';
+  boltContainer.appendChild(bolt);
 
-    // Ulang petir
-    setTimeout(triggerLightning, nextLightning);
-  }
+  // Remove bolt after animation
+  setTimeout(() => {
+    boltContainer.removeChild(bolt);
+  }, 400);
 
-  // Mulakan petir
-  triggerLightning();
+  // Random delay before next lightning
+  const next = Math.random() * 5000 + 3000;
+  setTimeout(triggerLightningEffect, next);
+}
+
+// Start the lightning loop
+triggerLightningEffect();
 </script>
 </body>
 </html>
