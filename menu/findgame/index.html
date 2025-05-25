@@ -249,6 +249,28 @@
        background: gold;         /* Tukar latar belakang ke putih */
        color: white;              /* Tukar teks ke hitam */
      }
+     .marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+  background: #000;
+  padding: 8px 0;
+}
+
+.marquee-text {
+  display: inline-block;
+  color: gold;
+  font-weight: bold;
+  font-size: 12px;
+  padding-left: 100%;
+  animation: marquee 15s linear infinite;
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
      @media (max-width: 768px) {
      body, html {
        display: flex;
@@ -291,6 +313,10 @@
   </style>
 </head>
 <body>
+  <marquee behavior="scroll" direction="left" style="color: gold; font-weight: bold; font-size: 18px; margin: 10px 0;">
+  🎰 Welcome to 5G88 - The Best Slot Experience! 🔥 Enjoy MEGA888, 918KISS, PUSSY888 and more! 🏆
+</marquee>
+  
   <div class="searchBox">
     <input type="text" id="searchBox" placeholder="Search game...">
   </div> 
