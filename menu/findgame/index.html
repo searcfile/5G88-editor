@@ -16,38 +16,38 @@
        overflow-x: hidden;
        height: 100vh;
      }
-  .gold-rain {
-  pointer-events: none;
+  #rain-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1; /* Letak di belakang elemen depan */
+  pointer-events: none;
+  z-index: 99999;
   overflow: hidden;
 }
 
-.gold-rain::after {
-  content: "";
+.rain {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 215, 0, 0.2) 0px,
-    rgba(255, 215, 0, 0.2) 2px,
-    transparent 2px,
-    transparent 6px
-  );
-  animation: rainAnim 0.5s linear infinite;
+  width: 2px;
+  height: 15px;
+  background: gold;
+  opacity: 0.8;
+  animation: fall linear infinite;
+  border-radius: 50px;
 }
 
-@keyframes rainAnim {
+@keyframes fall {
   0% {
-    background-position: 0 -100%;
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
   }
   100% {
-    background-position: 0 100%;
+    transform: translateY(100vh);
+    opacity: 0;
   }
 }
      .search-title {
@@ -5025,6 +5025,28 @@
      function goToPage(page) {
      window.location.href = page;
    }
+
+    const rainContainer = document.getElementById('rain-container');
+
+  function createDrop() {
+    const drop = document.createElement('div');
+    drop.className = 'rain';
+    drop.style.left = Math.random() * window.innerWidth + 'px';
+    drop.style.animationDuration = (0.5 + Math.random() * 0.8) + 's';
+    drop.style.opacity = Math.random() * 0.6 + 0.4;
+    rainContainer.appendChild(drop);
+
+    setTimeout(() => {
+      drop.remove();
+    }, 2000);
+  }
+
+  // Generate banyak drop secara berulang
+  setInterval(() => {
+    for (let i = 0; i < 5; i++) {
+      createDrop();
+    }
+  }, 100);
 </script>
 </body>
 </html>
