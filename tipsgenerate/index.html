@@ -176,10 +176,25 @@
   color: #000; /* tukar ke #FFD700 kalau nak warna emas */
   text-align: center;
 }
+    .title-blink {
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  color: #FFD700; /* emas */
+  text-shadow: 0 0 5px #fff, 0 0 10px #FFD700;
+  animation: goldBlink 1.5s infinite;
+}
+
+/* Animasi berulang emas-putih-emas */
+@keyframes goldBlink {
+  0% { color: #FFD700; text-shadow: 0 0 5px #fff, 0 0 10px #FFD700; }
+  50% { color: #ffffff; text-shadow: 0 0 8px #FFD700, 0 0 12px #fff; }
+  100% { color: #FFD700; text-shadow: 0 0 5px #fff, 0 0 10px #FFD700; }
+}
   </style>
 </head>
 <body>
-  <h1 style="color: gold;">TIPS GENERATOR</h1>
+  <div class="title-blink">🎰 Tips Generator 🎰</div>
   <div class="platform-row" id="row-1"></div>
   <div class="platform-row" id="row-2"></div>
 
