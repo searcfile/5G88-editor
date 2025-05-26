@@ -40,6 +40,15 @@
       width: 100%;
     }
 
+    .search-input {
+      width: 80%;
+      padding: 6px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid black;
+      text-align: center;
+    }
+
     .tip-list {
       font-size: 14px;
       line-height: 1.6;
@@ -149,6 +158,7 @@
 </head>
 <body>
   <h1 style="color: gold;">TIPS GENERATOR</h1>
+  <input type="text" class="search-input" id="searchBox" placeholder="Search platform...">
   <div class="container" id="platforms"></div>
 
   <script>
@@ -164,6 +174,7 @@
     function createPlatform(name, tips) {
       const container = document.createElement('div');
       container.className = 'platform-box';
+      container.dataset.platform = name.toLowerCase();
 
       container.innerHTML = `
         <div class="platform-header">${name}</div>
@@ -226,6 +237,15 @@
     }
 
     Object.entries(platformData).forEach(([name, tips]) => createPlatform(name, tips));
+
+    document.getElementById('searchBox').addEventListener('input', function () {
+      const search = this.value.toLowerCase();
+      const platforms = document.querySelectorAll('.platform-box');
+      platforms.forEach(platform => {
+        const platformName = platform.dataset.platform;
+        platform.style.display = platformName.includes(search) ? 'flex' : 'none';
+      });
+    });
   </script>
 </body>
 </html>
