@@ -2,146 +2,185 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tips Generator</title>
+  <title>Tips Generator GOLD</title>
   <style>
     body {
-      background: #111;
-      color: gold;
+      background: #000;
       font-family: Arial, sans-serif;
+      color: gold;
       padding: 20px;
     }
-    h2 {
-      color: gold;
-    }
-    .platform {
+    .platform-box {
+      background: #222;
       border: 2px solid gold;
       border-radius: 10px;
       padding: 15px;
       margin-bottom: 30px;
-    }
-    .header {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      gap: 10px;
+      align-items: flex-start;
+      position: relative;
+    }
+    .platform-header {
+      background: goldenrod;
+      color: white;
+      padding: 8px;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+      font-weight: bold;
       margin-bottom: 10px;
+    }
+    .tip-list {
+      background: #fffa90;
+      color: #000;
+      padding: 10px;
+      border-radius: 10px;
+      min-width: 200px;
+      font-weight: bold;
+      white-space: pre-line;
     }
     .controls {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
     }
-    .controls button {
-      background: gold;
-      color: black;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
     }
+    .controls input[type="checkbox"],
+    .controls input[type="number"],
     .controls input[type="text"] {
       padding: 5px;
       border: 1px solid gold;
-      border-radius: 5px;
-      width: 150px;
+      border-radius: 4px;
       background: black;
       color: gold;
+      width: 50px;
+      text-align: center;
     }
-    .tips-list {
-      background: #222;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 16px;
+    .controls button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
     }
-    .tips-list li {
-      margin-bottom: 5px;
+    .btn-refresh {
+      background: #444;
+      color: white;
+    }
+    .btn-copy {
+      background: #28a745;
+      color: white;
+    }
+    .timestamp {
+      font-size: 12px;
+      margin-top: 10px;
+      font-style: italic;
+      text-align: center;
+    }
+    .search-box {
+      margin-bottom: 10px;
+    }
+    .search-box input {
+      padding: 5px;
+      width: 100%;
+      border: 1px solid gold;
+      border-radius: 4px;
+      background: black;
+      color: gold;
     }
   </style>
 </head>
 <body>
 
-<div id="platforms-container"></div>
+<div id="platforms"></div>
 
 <script>
-const platforms = {
-  MEGA888: ["Great Blue", "Ocean King", "Highway Kings", "Monkey Thunderbolt", "Safari Heat"],
-  "918KISS": ["Panther Moon", "Dolphin Reef", "Burning Pearl", "God of Wealth", "Robin Hood"],
-  PUSSY888: ["Aladdin Wishes", "Pirate Ship", "Thai Paradise", "Queen of the Nile", "King Derby"],
-  XE88: ["Five Dragon", "Captain Treasure", "Silver Bullet", "Bonus Bears", "Lucky Lion"]
+const platformData = {
+  MEGA888: ["FORTUNE TIGER", "WONG CHOY", "CELEBRATION OF", "FORTUNE PANDA", "BIG WIN CAT"],
+  918KISS: ["DOLPHIN REEF", "BURNING PEARL", "GREAT BLUE", "QUEEN OF THE NILE", "ALADDIN WISHES"],
+  PUSSY888: ["THAI PARADISE", "LUCKY KOI", "GOD OF WEALTH", "ROBIN HOOD", "SAFARI HEAT"],
+  XE88: ["BONUS BEARS", "SILVER BULLET", "5 DRAGONS", "WITCHES CHARM", "LUCKY LION"]
 };
 
-const autoTimers = {};
+const timers = {};
 
-function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
 }
 
-function createPlatformBlock(name, index) {
+function createPlatform(name, games) {
   const container = document.createElement('div');
-  container.className = 'platform';
-  container.id = `platform-${name}`;
+  container.className = 'platform-box';
+  container.id = `box-${name}`;
 
-  container.innerHTML = `
-    <div class="header">
-      <h2>${index}. ${name}</h2>
-      <input type="text" placeholder="Search..." oninput="filterGames('${name}', this.value)">
-    </div>
-    <div class="controls">
-      <button onclick="toggleAuto('${name}', this)">Auto: OFF</button>
-      <button onclick="copyTips('${name}')">Copy Tips</button>
-      <button onclick="shuffleTips('${name}')">Ganti List</button>
-    </div>
-    <ul class="tips-list" id="tips-${name}"></ul>
+  const listBox = document.createElement('div');
+  listBox.innerHTML = `<div class="platform-header">${name}</div>
+  <div class="search-box"><input type="text" placeholder="Search..." oninput="searchGame('${name}', this.value)"></div>
+  <div class="tip-list" id="tips-${name}"></div>
+  <div class="timestamp" id="time-${name}">Last Updated on --</div>`;
+  container.appendChild(listBox);
+
+  const controlBox = document.createElement('div');
+  controlBox.className = 'controls';
+  controlBox.innerHTML = `
+    <label>🕒 <input type="checkbox" onchange="toggleAuto('${name}', this)"></label>
+    <input type="number" value="1" min="1" id="duration-${name}">
+    <button class="btn-refresh" onclick="refreshList('${name}')">🔄</button>
+    <button class="btn-copy" onclick="copyTips('${name}')">📋</button>
   `;
+  container.appendChild(controlBox);
 
-  document.getElementById('platforms-container').appendChild(container);
-  renderTips(name, platforms[name]);
+  document.getElementById('platforms').appendChild(container);
+
+  renderTips(name, games);
 }
 
-function renderTips(platform, gameList) {
-  const ul = document.getElementById(`tips-${platform}`);
-  ul.innerHTML = '';
-  gameList.forEach((game, i) => {
-    const li = document.createElement('li');
-    li.textContent = `${i + 1}. ${game}`;
-    ul.appendChild(li);
-  });
+function renderTips(platform, games) {
+  const list = document.getElementById(`tips-${platform}`);
+  list.textContent = games.join('\n');
+
+  const now = new Date();
+  const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dateString = now.toLocaleDateString('en-GB');
+  document.getElementById(`time-${platform}`).textContent = `Last Updated on ${timeString} ${dateString}`;
 }
 
-function shuffleTips(platform) {
-  platforms[platform] = shuffle([...platforms[platform]]);
-  renderTips(platform, platforms[platform]);
-}
-
-function toggleAuto(platform, btn) {
-  if (autoTimers[platform]) {
-    clearInterval(autoTimers[platform]);
-    delete autoTimers[platform];
-    btn.textContent = 'Auto: OFF';
-  } else {
-    autoTimers[platform] = setInterval(() => {
-      shuffleTips(platform);
-    }, 60000);
-    btn.textContent = 'Auto: ON';
-  }
+function refreshList(platform) {
+  platformData[platform] = shuffle(platformData[platform]);
+  renderTips(platform, platformData[platform]);
 }
 
 function copyTips(platform) {
-  const list = platforms[platform].map((g, i) => `${i + 1}. ${g}`).join('\n');
-  navigator.clipboard.writeText(list).then(() => {
-    alert(`Tips ${platform} copied!`);
+  const text = platformData[platform].join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    alert(`${platform} tips copied!`);
   });
 }
 
-function filterGames(platform, query) {
-  const filtered = platforms[platform].filter(game => game.toLowerCase().includes(query.toLowerCase()));
+function toggleAuto(platform, checkbox) {
+  if (checkbox.checked) {
+    const duration = parseInt(document.getElementById(`duration-${platform}`).value) || 1;
+    timers[platform] = setInterval(() => refreshList(platform), duration * 60000);
+  } else {
+    clearInterval(timers[platform]);
+  }
+}
+
+function searchGame(platform, query) {
+  const filtered = platformData[platform].filter(g =>
+    g.toLowerCase().includes(query.toLowerCase())
+  );
   renderTips(platform, filtered);
 }
 
-// Initialize
-let index = 1;
-for (const name in platforms) {
-  createPlatformBlock(name, index++);
+for (const [name, games] of Object.entries(platformData)) {
+  createPlatform(name, games);
 }
 </script>
 
