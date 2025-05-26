@@ -2,231 +2,233 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tips Generator Gold</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gold Tips Generator</title>
   <style>
     body {
-      background: #000;
-      font-family: Arial, sans-serif;
+      background: black;
       color: gold;
+      font-family: Arial, sans-serif;
+      text-align: center;
       padding: 20px;
     }
 
-    #platforms {
+    .container {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
       justify-content: center;
+      gap: 20px;
     }
 
     .platform-box {
-      background: #222;
+      background: #111;
       border: 2px solid gold;
-      border-radius: 10px;
-      padding: 15px;
-      width: 320px;
+      border-radius: 12px;
+      padding: 10px;
+      width: 280px;
+      min-height: 300px;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      justify-content: space-between;
     }
 
     .platform-header {
-      background: goldenrod;
-      color: white;
-      padding: 10px;
-      border-radius: 6px;
-      text-align: center;
+      font-size: 20px;
       font-weight: bold;
       margin-bottom: 10px;
-      width: 100%;
-    }
-
-    .search-box {
-      display: flex;
-      justify-content: center;
-      width: 100%;
-      margin-bottom: 10px;
+      border-bottom: 1px solid gold;
+      padding-bottom: 5px;
     }
 
     .search-box input {
-      padding: 6px;
-      width: 80%;
+      padding: 4px 10px;
+      border-radius: 6px;
       border: 1px solid gold;
-      border-radius: 4px;
       background: black;
       color: gold;
-      text-align: center;
+      margin-bottom: 10px;
+      width: 80%;
     }
 
-    .tip-area {
+    .top-control-row {
       display: flex;
-      justify-content: space-between;
-      width: 100%;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .auto-toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+    }
+    .auto-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: red;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    .auto-toggle input:checked + .slider {
+      background-color: green;
+    }
+    .auto-toggle input:checked + .slider:before {
+      transform: translateX(18px);
     }
 
     .tip-list {
-      background: #fffa90;
-      color: #000;
-      padding: 10px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 14px;
-      width: 200px;
-      height: 130px;
-      overflow-y: auto;
-      white-space: pre-line;
+      font-size: 16px;
+      line-height: 1.6;
+      text-align: left;
+      padding: 0 10px;
+      min-height: 100px;
     }
 
     .controls {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .auto-control {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .controls input[type="number"] {
-      width: 40px;
-      text-align: center;
+    .btn-refresh, .btn-copy {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-size: 22px;
       background: black;
-      color: gold;
-      border: 1px solid gold;
-      border-radius: 4px;
-    }
-
-    .btn {
-      padding: 6px 12px;
       border: none;
-      border-radius: 5px;
+      color: gold;
       cursor: pointer;
-      font-weight: bold;
-      font-size: 14px;
-      width: 100%;
     }
 
-    .btn-refresh {
-      background: #444;
-      color: white;
-    }
-
-    .btn-copy {
-      background: #28a745;
-      color: white;
+    .btn-refresh:active, .btn-copy:active {
+      transform: scale(1.2);
+      box-shadow: 0 0 12px gold;
     }
 
     .timestamp {
+      margin-top: 10px;
       font-size: 12px;
-      margin-top: 12px;
-      font-style: italic;
-      text-align: center;
-      width: 100%;
-    }
-
-    @media (max-width: 600px) {
-      .platform-box {
-        width: 100%;
-      }
-      .tip-area {
-        flex-direction: column;
-        align-items: center;
-      }
+      color: gold;
     }
   </style>
 </head>
 <body>
+  <h1 style="color: gold;">TIPS GENERATOR</h1>
+  <div class="container" id="platforms"></div>
 
-<div id="platforms"></div>
+  <script>
+    const platformData = {
+      'MEGA888': [
+        'FORTUNE TIGER', 'WONG CHOY', 'CELEBRATION OF', 'FORTUNE PANDA', 'BIG WIN CAT'
+      ],
+      '918KISS': [
+        'DRAGON GOLD', 'LUCKY GOD', 'GREAT BLUE', 'DOLPHIN REEF', 'HIGHWAY KING'
+      ],
+      'PUSSY888': [
+        'ALADDIN', 'PANTHER MOON', 'ROBIN HOOD', 'WHITE KING', 'THUNDER GOD'
+      ],
+      'XE88': [
+        '5 DRAGONS', 'FAFAFA', 'LUCKY PANDA', 'MONKEY THUNDERBOLT', 'CANDY BURST'
+      ]
+    };
 
-<script>
-const platformData = {
-  MEGA888: ["FORTUNE TIGER", "WONG CHOY", "CELEBRATION OF", "FORTUNE PANDA", "BIG WIN CAT"],
-  "918KISS": ["DOLPHIN REEF", "BURNING PEARL", "GREAT BLUE", "QUEEN OF THE NILE", "ALADDIN WISHES"],
-  PUSSY888: ["THAI PARADISE", "LUCKY KOI", "GOD OF WEALTH", "ROBIN HOOD", "SAFARI HEAT"],
-  XE88: ["BONUS BEARS", "SILVER BULLET", "5 DRAGONS", "WITCHES CHARM", "LUCKY LION"]
-};
+    const autoIntervals = {};
 
-const timers = {};
+    function createPlatform(name, tips) {
+      const container = document.createElement('div');
+      container.className = 'platform-box';
 
-function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
-
-function renderTips(platform, tips) {
-  const tipList = document.getElementById(`tips-${platform}`);
-  const title = `${platform}\n========\n`;
-  tipList.textContent = title + tips.join("\n");
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const dateStr = now.toLocaleDateString('en-GB');
-  document.getElementById(`time-${platform}`).textContent = `Last Updated on ${timeStr} ${dateStr}`;
-}
-
-function refreshList(platform) {
-  const count = parseInt(document.getElementById(`count-${platform}`).value) || 3;
-  const shuffled = shuffle([...platformData[platform]]);
-  const selected = shuffled.slice(0, count);
-  renderTips(platform, selected);
-}
-
-function copyTips(platform) {
-  const text = document.getElementById(`tips-${platform}`).textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    alert(`${platform} tips copied!`);
-  });
-}
-
-function toggleAuto(platform, checkbox) {
-  if (checkbox.checked) {
-    const duration = parseInt(document.getElementById(`duration-${platform}`).value) || 1;
-    timers[platform] = setInterval(() => refreshList(platform), duration * 60000);
-  } else {
-    clearInterval(timers[platform]);
-  }
-}
-
-function searchGame(platform, value) {
-  const allGames = platformData[platform];
-  const filtered = allGames.filter(g => g.toLowerCase().includes(value.toLowerCase()));
-  renderTips(platform, filtered);
-}
-
-function createPlatform(name, tips) {
-  const container = document.createElement('div');
-  container.className = 'platform-box';
-
-  container.innerHTML = `
-    <div class="platform-header">${name}</div>
-    <div class="search-box">
-      <input type="text" placeholder="Search..." oninput="searchGame('${name}', this.value)">
-    </div>
-    <div class="tip-area">
-      <div class="tip-list" id="tips-${name}"></div>
-      <div class="controls">
-        <input type="number" id="count-${name}" value="3" min="1" max="${tips.length}" title="How many games?">
-        <div class="auto-control">
-          <label>🕒 <input type="checkbox" onchange="toggleAuto('${name}', this)"></label>
-          <input type="number" value="1" min="1" id="duration-${name}" title="Minutes">
+      container.innerHTML = `
+        <div class="platform-header">${name}</div>
+        <div class="search-box">
+          <input type="text" placeholder="Search..." oninput="searchGame('${name}', this.value)">
         </div>
-        <button class="btn btn-refresh" onclick="refreshList('${name}')">🔄</button>
-        <button class="btn btn-copy" onclick="copyTips('${name}')">📋</button>
-      </div>
-    </div>
-    <div class="timestamp" id="time-${name}">Last Updated on --</div>
-  `;
+        <div class="top-control-row">
+          <input type="number" id="count-${name}" value="3" min="1" max="${tips.length}" title="How many games?">
+          <span style="color: gold; font-size: 20px;">⏱️</span>
+          <div class="auto-toggle">
+            <input type="checkbox" id="auto-${name}" onchange="toggleAuto('${name}')">
+            <span class="slider"></span>
+          </div>
+          <input type="number" value="1" min="1" id="duration-${name}" title="Minutes" style="width: 40px;">
+        </div>
+        <div class="tip-list" id="tips-${name}"></div>
+        <div class="controls">
+          <button class="btn-refresh" onclick="refreshList('${name}')">🔁</button>
+          <button class="btn-copy" onclick="copyTips('${name}')">📋</button>
+        </div>
+        <div class="timestamp" id="time-${name}">Last Updated on --</div>
+      `;
 
-  document.getElementById('platforms').appendChild(container);
-  renderTips(name, tips.slice(0, 3)); // default 3 tips
-}
+      document.getElementById('platforms').appendChild(container);
+      renderTips(name, tips.slice(0, 3));
+    }
 
-// Init
-for (const [platform, tips] of Object.entries(platformData)) {
-  createPlatform(platform, tips);
-}
-</script>
+    function renderTips(name, tips) {
+      const el = document.getElementById('tips-' + name);
+      el.innerHTML = `<strong>${name}</strong><br>========<br>` + tips.map(t => t).join('<br>');
+      updateTime(name);
+    }
 
+    function refreshList(name) {
+      const count = parseInt(document.getElementById('count-' + name).value) || 3;
+      const list = platformData[name];
+      const random = list.sort(() => 0.5 - Math.random()).slice(0, count);
+      renderTips(name, random);
+    }
+
+    function copyTips(name) {
+      const text = document.getElementById('tips-' + name).innerText;
+      navigator.clipboard.writeText(text);
+    }
+
+    function toggleAuto(name) {
+      const checkbox = document.getElementById('auto-' + name);
+      if (checkbox.checked) {
+        const duration = parseInt(document.getElementById('duration-' + name).value) || 1;
+        autoIntervals[name] = setInterval(() => refreshList(name), duration * 60000);
+      } else {
+        clearInterval(autoIntervals[name]);
+      }
+    }
+
+    function updateTime(name) {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dateString = now.toLocaleDateString('en-GB');
+      document.getElementById('time-' + name).innerText = `Last Updated on ${timeString} ${dateString}`;
+    }
+
+    function searchGame(name, keyword) {
+      const lower = keyword.toLowerCase();
+      const filtered = platformData[name].filter(g => g.toLowerCase().includes(lower));
+      const count = parseInt(document.getElementById('count-' + name).value) || 3;
+      renderTips(name, filtered.slice(0, count));
+    }
+
+    // Inisialisasi semua platform
+    Object.entries(platformData).forEach(([name, tips]) => createPlatform(name, tips));
+  </script>
 </body>
 </html>
