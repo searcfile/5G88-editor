@@ -151,6 +151,17 @@
       text-align: center;
       margin-top: 6px;
     }
+    .duration-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.duration-label {
+  font-size: 12px;
+  margin-top: 2px;
+  color: #000; /* ubah ikut tema, contoh: emas (#FFD700) */
+}
 
   </style>
 </head>
@@ -200,7 +211,10 @@
                 <span class="slider"></span>
               </label>
             </div>
+            <div class="duration-wrapper">
             <input class="duration-input" type="number" value="1" min="1" id="${durationId}" title="Minutes">
+            <div class="duration-label">Time</div>
+          </div>
           </div>
           <div class="timestamp" id="${timeId}">Last Updated on --</div>
         </div>
