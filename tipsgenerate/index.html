@@ -188,13 +188,13 @@
       `;
 
       document.getElementById('platforms').appendChild(container);
-      renderTips(name, tips.slice(0, 3));
+      refreshList(name);
     }
 
     function renderTips(name, tips) {
       const el = document.getElementById('tips-' + name);
       let content = `<strong>${name}</strong><br>=======<br>`;
-      tips.forEach((t) => content += `${t}<br>`);
+      tips.forEach((t, i) => content += `${i + 1}. ${t}<br>`);
       el.innerHTML = content;
       updateTime(name);
     }
@@ -202,7 +202,8 @@
     function refreshList(name) {
       const count = parseInt(document.getElementById('count-' + name).value) || 3;
       const list = platformData[name];
-      const random = list.sort(() => 0.5 - Math.random()).slice(0, count);
+      const shuffled = list.sort(() => 0.5 - Math.random());
+      const random = shuffled.slice(0, count);
       renderTips(name, random);
     }
 
