@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tips Generator GOLD</title>
+  <title>Tips Generator Gold</title>
   <style>
     body {
       background: #000;
@@ -10,89 +10,113 @@
       color: gold;
       padding: 20px;
     }
+
+    #platforms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
     .platform-box {
       background: #222;
       border: 2px solid gold;
       border-radius: 10px;
       padding: 15px;
-      margin-bottom: 30px;
+      width: 280px;
       display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      position: relative;
+      flex-direction: column;
+      align-items: stretch;
     }
+
     .platform-header {
       background: goldenrod;
       color: white;
-      padding: 8px;
+      padding: 10px;
+      border-radius: 6px;
       text-align: center;
-      border-radius: 8px 8px 0 0;
       font-weight: bold;
       margin-bottom: 10px;
     }
-    .tip-list {
-      background: #fffa90;
-      color: #000;
-      padding: 10px;
-      border-radius: 10px;
-      min-width: 200px;
-      font-weight: bold;
-      white-space: pre-line;
-    }
-    .controls {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: center;
-    }
-    .controls label {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 14px;
-    }
-    .controls input[type="checkbox"],
-    .controls input[type="number"],
-    .controls input[type="text"] {
-      padding: 5px;
+
+    .search-box input {
+      padding: 6px;
+      width: 100%;
       border: 1px solid gold;
       border-radius: 4px;
       background: black;
       color: gold;
-      width: 50px;
-      text-align: center;
+      margin-bottom: 10px;
     }
-    .controls button {
-      padding: 5px 10px;
+
+    .tip-list {
+      background: #fffa90;
+      color: #000;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      min-height: 60px;
+      font-size: 14px;
+    }
+
+    .tip-list span {
+      display: inline-block;
+      margin: 2px 5px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .controls input[type="number"] {
+      width: 40px;
+      text-align: center;
+      background: black;
+      color: gold;
+      border: 1px solid gold;
+      border-radius: 4px;
+    }
+
+    .controls label {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn {
+      padding: 6px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 14px;
     }
+
     .btn-refresh {
       background: #444;
       color: white;
     }
+
     .btn-copy {
       background: #28a745;
       color: white;
     }
+
     .timestamp {
       font-size: 12px;
       margin-top: 10px;
       font-style: italic;
       text-align: center;
     }
-    .search-box {
-      margin-bottom: 10px;
-    }
-    .search-box input {
-      padding: 5px;
-      width: 100%;
-      border: 1px solid gold;
-      border-radius: 4px;
-      background: black;
-      color: gold;
+
+    @media (max-width: 600px) {
+      .platform-box {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -110,45 +134,17 @@ const platformData = {
 
 const timers = {};
 
-function shuffle(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
 }
 
-function createPlatform(name, games) {
-  const container = document.createElement('div');
-  container.className = 'platform-box';
-  container.id = `box-${name}`;
-
-  const listBox = document.createElement('div');
-  listBox.innerHTML = `<div class="platform-header">${name}</div>
-  <div class="search-box"><input type="text" placeholder="Search..." oninput="searchGame('${name}', this.value)"></div>
-  <div class="tip-list" id="tips-${name}"></div>
-  <div class="timestamp" id="time-${name}">Last Updated on --</div>`;
-  container.appendChild(listBox);
-
-  const controlBox = document.createElement('div');
-  controlBox.className = 'controls';
-  controlBox.innerHTML = `
-    <label>🕒 <input type="checkbox" onchange="toggleAuto('${name}', this)"></label>
-    <input type="number" value="1" min="1" id="duration-${name}">
-    <button class="btn-refresh" onclick="refreshList('${name}')">🔄</button>
-    <button class="btn-copy" onclick="copyTips('${name}')">📋</button>
-  `;
-  container.appendChild(controlBox);
-
-  document.getElementById('platforms').appendChild(container);
-
-  renderTips(name, games);
-}
-
-function renderTips(platform, games) {
-  const list = document.getElementById(`tips-${platform}`);
-  list.textContent = games.join('\n');
-
+function renderTips(platform, tips) {
+  const tipList = document.getElementById(`tips-${platform}`);
+  tipList.innerHTML = tips.map((tip, i) => `<span>${i + 1}. ${tip}</span>`).join(' ');
   const now = new Date();
-  const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const dateString = now.toLocaleDateString('en-GB');
-  document.getElementById(`time-${platform}`).textContent = `Last Updated on ${timeString} ${dateString}`;
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('en-GB');
+  document.getElementById(`time-${platform}`).textContent = `Last Updated on ${timeStr} ${dateStr}`;
 }
 
 function refreshList(platform) {
@@ -157,7 +153,7 @@ function refreshList(platform) {
 }
 
 function copyTips(platform) {
-  const text = platformData[platform].join('\n');
+  const text = platformData[platform].map((tip, i) => `${i + 1}. ${tip}`).join(' ');
   navigator.clipboard.writeText(text).then(() => {
     alert(`${platform} tips copied!`);
   });
@@ -172,15 +168,37 @@ function toggleAuto(platform, checkbox) {
   }
 }
 
-function searchGame(platform, query) {
-  const filtered = platformData[platform].filter(g =>
-    g.toLowerCase().includes(query.toLowerCase())
-  );
+function searchGame(platform, value) {
+  const filtered = platformData[platform].filter(g => g.toLowerCase().includes(value.toLowerCase()));
   renderTips(platform, filtered);
 }
 
-for (const [name, games] of Object.entries(platformData)) {
-  createPlatform(name, games);
+function createPlatform(name, tips) {
+  const container = document.createElement('div');
+  container.className = 'platform-box';
+
+  container.innerHTML = `
+    <div class="platform-header">${name}</div>
+    <div class="search-box">
+      <input type="text" placeholder="Search..." oninput="searchGame('${name}', this.value)">
+    </div>
+    <div class="tip-list" id="tips-${name}"></div>
+    <div class="controls">
+      <label>🕒 <input type="checkbox" onchange="toggleAuto('${name}', this)"></label>
+      <input type="number" value="1" min="1" id="duration-${name}">
+      <button class="btn btn-refresh" onclick="refreshList('${name}')">🔄</button>
+      <button class="btn btn-copy" onclick="copyTips('${name}')">📋</button>
+    </div>
+    <div class="timestamp" id="time-${name}">Last Updated on --</div>
+  `;
+
+  document.getElementById('platforms').appendChild(container);
+  renderTips(name, tips);
+}
+
+// Init
+for (const [platform, tips] of Object.entries(platformData)) {
+  createPlatform(platform, tips);
 }
 </script>
 
