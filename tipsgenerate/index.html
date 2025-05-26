@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tips Generator</title>
+  <style>
+    body {
+      background: #111;
+      color: gold;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h2 {
+      color: gold;
+    }
+    .platform {
+      border: 2px solid gold;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 30px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .controls button {
+      background: gold;
+      color: black;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .controls input[type="text"] {
+      padding: 5px;
+      border: 1px solid gold;
+      border-radius: 5px;
+      width: 150px;
+      background: black;
+      color: gold;
+    }
+    .tips-list {
+      background: #222;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .tips-list li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="platforms-container"></div>
+
+<script>
+const platforms = {
+  MEGA888: ["Great Blue", "Ocean King", "Highway Kings", "Monkey Thunderbolt", "Safari Heat"],
+  "918KISS": ["Panther Moon", "Dolphin Reef", "Burning Pearl", "God of Wealth", "Robin Hood"],
+  PUSSY888: ["Aladdin Wishes", "Pirate Ship", "Thai Paradise", "Queen of the Nile", "King Derby"],
+  XE88: ["Five Dragon", "Captain Treasure", "Silver Bullet", "Bonus Bears", "Lucky Lion"]
+};
+
+const autoTimers = {};
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+function createPlatformBlock(name, index) {
+  const container = document.createElement('div');
+  container.className = 'platform';
+  container.id = `platform-${name}`;
+
+  container.innerHTML = `
+    <div class="header">
+      <h2>${index}. ${name}</h2>
+      <input type="text" placeholder="Search..." oninput="filterGames('${name}', this.value)">
+    </div>
+    <div class="controls">
+      <button onclick="toggleAuto('${name}', this)">Auto: OFF</button>
+      <button onclick="copyTips('${name}')">Copy Tips</button>
+      <button onclick="shuffleTips('${name}')">Ganti List</button>
+    </div>
+    <ul class="tips-list" id="tips-${name}"></ul>
+  `;
+
+  document.getElementById('platforms-container').appendChild(container);
+  renderTips(name, platforms[name]);
+}
+
+function renderTips(platform, gameList) {
+  const ul = document.getElementById(`tips-${platform}`);
+  ul.innerHTML = '';
+  gameList.forEach((game, i) => {
+    const li = document.createElement('li');
+    li.textContent = `${i + 1}. ${game}`;
+    ul.appendChild(li);
+  });
+}
+
+function shuffleTips(platform) {
+  platforms[platform] = shuffle([...platforms[platform]]);
+  renderTips(platform, platforms[platform]);
+}
+
+function toggleAuto(platform, btn) {
+  if (autoTimers[platform]) {
+    clearInterval(autoTimers[platform]);
+    delete autoTimers[platform];
+    btn.textContent = 'Auto: OFF';
+  } else {
+    autoTimers[platform] = setInterval(() => {
+      shuffleTips(platform);
+    }, 60000);
+    btn.textContent = 'Auto: ON';
+  }
+}
+
+function copyTips(platform) {
+  const list = platforms[platform].map((g, i) => `${i + 1}. ${g}`).join('\n');
+  navigator.clipboard.writeText(list).then(() => {
+    alert(`Tips ${platform} copied!`);
+  });
+}
+
+function filterGames(platform, query) {
+  const filtered = platforms[platform].filter(game => game.toLowerCase().includes(query.toLowerCase()));
+  renderTips(platform, filtered);
+}
+
+// Initialize
+let index = 1;
+for (const name in platforms) {
+  createPlatformBlock(name, index++);
+}
+</script>
+
+</body>
+</html>
