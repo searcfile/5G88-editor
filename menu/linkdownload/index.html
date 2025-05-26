@@ -142,30 +142,34 @@
             animation: blink 0.3s infinite;
         }
 .marquee-container {
-      width: 100%;
-      border-top: 2px solid gold;   /* Outline atas */
-      border-bottom: 2px solid gold; /* Outline bawah */
-      box-sizing: border-box;
-      background: #000;
-      margin-bottom: 30px;
-      position: relative;
-      
-    }
+  width: 100%;
+  border-top: 2px solid gold;
+  border-bottom: 2px solid gold;
+  box-sizing: border-box;
+  background: #000;
+  margin-bottom: 30px;
+  overflow: hidden;
+  position: relative;
+}
 
-    .marquee-text {
-      display: inline-block;
-      white-space: nowrap;
-      color: white;
-      font-size: 16px;
-      padding-left: 100%;
-      animation: marquee 20s linear infinite;
-    }
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  color: white;
+  font-size: 16px;
+  padding-left: 0;
+  animation: marquee 20s linear infinite;
+  will-change: transform;
+}
 
-    @keyframes marquee {
-      0%   { transform: translateX(0%); }
-      100% { transform: translateX(-100%); }
-    }
-   
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
 </style>
 </head>
 <body>
