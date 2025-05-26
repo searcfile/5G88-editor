@@ -30,7 +30,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 200px;
+      width: 280px;
     }
 
     .platform-header {
@@ -143,10 +143,22 @@
       text-align: center;
       margin-top: 6px;
     }
+
+    .search-input {
+      margin: 20px auto;
+      padding: 8px;
+      font-size: 14px;
+      width: 200px;
+      border-radius: 6px;
+      border: 1px solid gold;
+      background-color: black;
+      color: gold;
+    }
   </style>
 </head>
 <body>
   <h1 style="color: gold;">TIPS GENERATOR</h1>
+  <input class="search-input" type="text" placeholder="Search platform..." onkeyup="filterPlatforms(this.value)">
   <div class="platform-row" id="row-1"></div>
   <div class="platform-row" id="row-2"></div>
 
@@ -167,6 +179,7 @@
     function createPlatform(name, tips, rowId) {
       const container = document.createElement('div');
       container.className = 'platform-box';
+      container.setAttribute('data-platform', name.toLowerCase());
 
       const tipListId = `tips-${name}`;
       const countId = `count-${name}`;
@@ -237,7 +250,16 @@
       document.getElementById('time-' + name).innerText = `Last Updated on ${timeString} ${dateString}`;
     }
 
-    const allPlatforms = ['MEGA888', '918KISS', 'PUSSY888', 'XE88', 'NEWTOWN', 'SCR888H5', 'EVO888', 'WF GAMING'];
+    function filterPlatforms(query) {
+      const allBoxes = document.querySelectorAll('.platform-box');
+      query = query.trim().toLowerCase();
+      allBoxes.forEach(box => {
+        const name = box.getAttribute('data-platform');
+        box.style.display = name.includes(query) ? '' : 'none';
+      });
+    }
+
+    const allPlatforms = Object.keys(platformData);
     allPlatforms.forEach((name, i) => {
       const rowId = i < 4 ? 'row-1' : 'row-2';
       createPlatform(name, platformData[name], rowId);
