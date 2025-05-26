@@ -14,10 +14,10 @@
     }
 
     .platform-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      display: flex;
+      flex-wrap: wrap;
       justify-content: center;
+      gap: 16px;
       margin-bottom: 20px;
     }
 
@@ -30,8 +30,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      max-width: 280px;
-      margin: 0 auto;
+      width: 280px;
     }
 
     .platform-header {
@@ -143,12 +142,6 @@
       color: black;
       text-align: center;
       margin-top: 6px;
-    }
-
-    @media (max-width: 1000px) {
-      .platform-row {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      }
     }
   </style>
 </head>
