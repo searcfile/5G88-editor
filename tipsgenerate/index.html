@@ -13,11 +13,12 @@
       padding: 20px;
     }
 
-    .container {
+    .platform-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 20px;
       justify-content: center;
+      margin-bottom: 40px;
     }
 
     .platform-box {
@@ -140,7 +141,7 @@
     }
 
     @media (max-width: 1000px) {
-      .container {
+      .platform-row {
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       }
     }
@@ -148,7 +149,8 @@
 </head>
 <body>
   <h1 style="color: gold;">TIPS GENERATOR</h1>
-  <div class="container" id="platforms"></div>
+  <div class="platform-row" id="row-1"></div>
+  <div class="platform-row" id="row-2"></div>
 
   <script>
     const platformData = {
@@ -164,7 +166,7 @@
 
     const autoIntervals = {};
 
-    function createPlatform(name, tips) {
+    function createPlatform(name, tips, rowId) {
       const container = document.createElement('div');
       container.className = 'platform-box';
 
@@ -184,17 +186,17 @@
           </div>
           <div class="row-center">
             <input class="count-input" type="number" id="${countId}" value="3" min="1" max="${tips.length}" title="Game Count">
-            <input class="duration-input" type="number" value="1" min="1" id="${durationId}" title="Minutes">
             <div class="auto-toggle">
               <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
               <span class="slider"></span>
             </div>
+            <input class="duration-input" type="number" value="1" min="1" id="${durationId}" title="Minutes">
           </div>
           <div class="timestamp" id="${timeId}">Last Updated on --</div>
         </div>
       `;
 
-      document.getElementById('platforms').appendChild(container);
+      document.getElementById(rowId).appendChild(container);
       refreshList(name);
     }
 
@@ -235,7 +237,11 @@
       document.getElementById('time-' + name).innerText = `Last Updated on ${timeString} ${dateString}`;
     }
 
-    Object.entries(platformData).forEach(([name, tips]) => createPlatform(name, tips));
+    const topPlatforms = ['MEGA888', '918KISS', 'PUSSY888', 'XE88'];
+    const bottomPlatforms = ['NEWTOWN', 'SCR888H5', 'EVO888', 'WF GAMING'];
+
+    topPlatforms.forEach(name => createPlatform(name, platformData[name], 'row-1'));
+    bottomPlatforms.forEach(name => createPlatform(name, platformData[name], 'row-2'));
   </script>
 </body>
 </html>
