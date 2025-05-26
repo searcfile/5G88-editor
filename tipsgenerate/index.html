@@ -23,10 +23,10 @@
       border: 2px solid gold;
       border-radius: 10px;
       padding: 15px;
-      width: 280px;
+      width: 320px;
       display: flex;
       flex-direction: column;
-      align-items: stretch;
+      align-items: center;
     }
 
     .platform-header {
@@ -37,16 +37,30 @@
       text-align: center;
       font-weight: bold;
       margin-bottom: 10px;
+      width: 100%;
+    }
+
+    .search-box {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 10px;
     }
 
     .search-box input {
       padding: 6px;
-      width: 100%;
+      width: 80%;
       border: 1px solid gold;
       border-radius: 4px;
       background: black;
       color: gold;
-      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .tip-area {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
     }
 
     .tip-list {
@@ -55,8 +69,10 @@
       padding: 10px;
       border-radius: 8px;
       font-weight: bold;
-      min-height: 60px;
       font-size: 14px;
+      width: 200px; /* Ganti sesuai keinginan */
+      height: 120px; /* Ganti sesuai keinginan */
+      overflow-y: auto;
     }
 
     .tip-list span {
@@ -66,9 +82,19 @@
 
     .controls {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 8px;
       align-items: center;
-      margin-top: 10px;
+    }
+
+    .auto-control {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .auto-control input[type="checkbox"] {
+      transform: scale(1.2);
     }
 
     .controls input[type="number"] {
@@ -80,20 +106,14 @@
       border-radius: 4px;
     }
 
-    .controls label {
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
     .btn {
-      padding: 6px;
+      padding: 6px 12px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-weight: bold;
       font-size: 14px;
+      width: 100%;
     }
 
     .btn-refresh {
@@ -108,14 +128,19 @@
 
     .timestamp {
       font-size: 12px;
-      margin-top: 10px;
+      margin-top: 12px;
       font-style: italic;
       text-align: center;
+      width: 100%;
     }
 
     @media (max-width: 600px) {
       .platform-box {
         width: 100%;
+      }
+      .tip-area {
+        flex-direction: column;
+        align-items: center;
       }
     }
   </style>
@@ -182,12 +207,16 @@ function createPlatform(name, tips) {
     <div class="search-box">
       <input type="text" placeholder="Search..." oninput="searchGame('${name}', this.value)">
     </div>
-    <div class="tip-list" id="tips-${name}"></div>
-    <div class="controls">
-      <label>🕒 <input type="checkbox" onchange="toggleAuto('${name}', this)"></label>
-      <input type="number" value="1" min="1" id="duration-${name}">
-      <button class="btn btn-refresh" onclick="refreshList('${name}')">🔄</button>
-      <button class="btn btn-copy" onclick="copyTips('${name}')">📋</button>
+    <div class="tip-area">
+      <div class="tip-list" id="tips-${name}"></div>
+      <div class="controls">
+        <div class="auto-control">
+          <label>🕒 <input type="checkbox" onchange="toggleAuto('${name}', this)"></label>
+          <input type="number" value="1" min="1" id="duration-${name}">
+        </div>
+        <button class="btn btn-refresh" onclick="refreshList('${name}')">🔄</button>
+        <button class="btn btn-copy" onclick="copyTips('${name}')">📋</button>
+      </div>
     </div>
     <div class="timestamp" id="time-${name}">Last Updated on --</div>
   `;
