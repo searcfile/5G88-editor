@@ -14,10 +14,10 @@
     }
 
     .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 20px;
+      justify-content: center;
     }
 
     .platform-box {
@@ -26,10 +26,11 @@
       border: 2px solid #000;
       border-radius: 12px;
       padding: 10px;
-      width: 220px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      max-width: 260px;
+      margin: 0 auto;
     }
 
     .platform-header {
@@ -49,15 +50,15 @@
       color: black;
       border-radius: 6px;
       min-height: 100px;
-      width: 180px;
+      width: 100%;
       margin-bottom: 10px;
     }
 
     .bottom-controls {
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 100%;
     }
 
     .row-center {
@@ -65,8 +66,8 @@
       justify-content: center;
       align-items: center;
       gap: 6px;
-      flex-wrap: wrap;
       margin-bottom: 6px;
+      flex-wrap: wrap;
     }
 
     .count-input, .duration-input {
