@@ -432,7 +432,12 @@
 
       document.getElementById(rowId).appendChild(container);
       refreshList(name);
+
+      const autoCheckbox = document.getElementById(`auto-${name}`);
+      if (autoCheckbox.checked) {
+      toggleAuto(name);
     }
+  
 
     function renderTips(name, tips) {
       const el = document.getElementById('tips-' + name);
