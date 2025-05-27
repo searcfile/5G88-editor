@@ -136,6 +136,27 @@
     transform: translateX(-100%);
   }
 }
+      .gif-kiri, .gif-kanan {
+  position: fixed;
+  width: 500px;
+  bottom: 10px;
+}
+
+.gif-kiri {
+  left: 10px;
+  z-index: 9999;
+}
+
+.gif-kanan {
+  right: 10px;
+  z-index: -90;
+}
+    @media (max-width: 768px) {
+  .gif-kiri,
+  .gif-kanan {
+    display: none;
+  }
+}
   </style>
 </head>
 <body>
@@ -170,7 +191,8 @@
   <div class="logo-grid" id="gameGrid">
     <!-- Game logos will be inserted here -->
   </div>
-
+   <img src="https://i.imgur.com/3qOL65q.gif" alt="GIF Kiri" class="gif-kiri">
+    <img src="https://i.imgur.com/3qOL65q.gif" alt="GIF Kanan" class="gif-kanan">
   <script>
     const games = [
       {
