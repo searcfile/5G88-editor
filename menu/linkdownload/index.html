@@ -97,39 +97,124 @@
         width: 100%;
       }
     }
-   .rain {
-      position: absolute;
-      width: 2px;
-      height: 15px;
-      background: gold;
-      animation: fall linear infinite;
-      opacity: 0.8;
-      z-index: 9999;
-    }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(-100px);
-        opacity: 0;
-      }
-      30% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(100vh);
-        opacity: 0;
-      }
-    }
-   #rain-container {
+   @keyframes zigzag {
+    0% { transform: rotateZ(-15deg) translateX(0); }
+    25% { transform: rotateZ(10deg) translateX(4px); }
+    50% { transform: rotateZ(-20deg) translateX(-6px); }
+    75% { transform: rotateZ(15deg) translateX(3px); }
+    100% { transform: rotateZ(-10deg) translateX(0); }
+  }
+   #lightning-flash {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* supaya tidak mengganggu klik elemen lain */
-    z-index: 99999; /* pastikan di atas segalanya */
-    overflow: hidden;
-   }
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10000;
+    transition: opacity 0.15s ease-out;
+  }
+#lightning-bolt-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 10001;
+    overflow: visible;
+  }
+.lightning-bolt {
+    position: absolute;
+    width: 4px;
+    background: linear-gradient(to bottom, white, #ddd, white);
+    box-shadow: 0 0 12px white, 0 0 24px #eee;
+    border-radius: 2px;
+    animation: zigzag 0.2s ease-in-out infinite alternate;
+    opacity: 1;
+    z-index: 10002;
+  }
+
+@keyframes boltFade {
+  0% {
+    opacity: 1;
+    transform: scaleY(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1.2) rotate(10deg);
+  }
+}
+  #rain-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -199999;
+  overflow: hidden;
+}
+
+.rain {
+  position: absolute;
+  width: 2px;
+  height: 15px;
+  background: gold;
+  opacity: 0.8;
+  animation: fall linear infinite;
+  border-radius: 50px;
+  box-shadow: 0 0 6px gold;
+  filter: blur(0.2px);
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: gold;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: sparkleFall linear infinite;
+  box-shadow: 0 0 5px gold;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkleFall {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+     .search-title {
+      font-size: 30px;
+      font-weight: bold;
+      color: gold;
+      animation: blinkColor 0.3s infinite;
+      margin-top: 30px;
+      text-align: center;
+      letter-spacing: 1px;
+     }
   @keyframes blink {
             0% { color: white; }
             50% { color: gold; }
@@ -459,22 +544,84 @@ function copyLink(event, element) {
      function goToPage(page) {
      window.location.href = page;
    }
- function createRainDrop() {
+ function createDrop() {
     const drop = document.createElement('div');
     drop.className = 'rain';
-    drop.style.left = Math.random() * 100 + 'vw';
-    drop.style.animationDuration = (0.5 + Math.random()) + 's';
-    drop.style.animationDelay = Math.random() + 's';
+    drop.style.left = Math.random() * window.innerWidth + 'px';
+    drop.style.animationDuration = (0.4 + Math.random() * 1.2) + 's';
+    drop.style.opacity = Math.random() * 0.6 + 0.4;
+    drop.style.width = (1 + Math.random() * 2) + 'px';
+    drop.style.height = (10 + Math.random() * 20) + 'px';
+    rainContainer.appendChild(drop);
 
-    const container = document.getElementById('rain-container');
-    container.appendChild(drop);
-
-    setTimeout(() => {
-      drop.remove();
-    }, 2000);
+    setTimeout(() => drop.remove(), 2000);
   }
 
-  setInterval(createRainDrop, 30);
+  function createSparkle() {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.style.left = Math.random() * window.innerWidth + 'px';
+    sparkle.style.animationDuration = (0.8 + Math.random() * 1.5) + 's';
+    sparkle.style.opacity = Math.random() * 0.5 + 0.3;
+    sparkle.style.width = sparkle.style.height = (2 + Math.random() * 3) + 'px';
+    rainContainer.appendChild(sparkle);
+
+    setTimeout(() => sparkle.remove(), 2500);
+  }
+
+  // Loop hujan + sparkle
+  setInterval(() => {
+    for (let i = 0; i < 6; i++) {
+      createDrop();
+      if (Math.random() > 0.5) createSparkle();
+    }
+  }, 100);
+
+   const rainContainer = document.getElementById('rain-container');
+  const rainCount = 150;
+  for (let i = 0; i < rainCount; i++) {
+    const drop = document.createElement('div');
+    drop.classList.add('rain');
+    drop.style.left = Math.random() * window.innerWidth + 'px';
+    drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+    drop.style.animationDelay = (Math.random() * 5) + 's';
+    rainContainer.appendChild(drop);
+  }
+
+  // Petir & flash
+  function triggerLightningEffect() {
+    const flash = document.getElementById('lightning-flash');
+    const boltContainer = document.getElementById('lightning-bolt-container');
+    const body = document.body;
+
+    // Flash putih
+    flash.style.opacity = 0.7;
+    setTimeout(() => {
+      flash.style.opacity = 0;
+    }, 150);
+
+    // Buat 2-3 petir zigzag besar warna putih
+    const bolts = Math.floor(Math.random() * 2) + 2; // 2 or 3
+    for (let i = 0; i < bolts; i++) {
+      const bolt = document.createElement('div');
+      bolt.className = 'lightning-bolt';
+      bolt.style.left = Math.random() * window.innerWidth + 'px';
+      bolt.style.top = Math.random() * (window.innerHeight / 2) + 'px';
+      bolt.style.height = (100 + Math.random() * 100) + 'px';
+      boltContainer.appendChild(bolt);
+
+      setTimeout(() => {
+        bolt.remove();
+      }, 400);
+    }
+
+    // Trigger petir seterusnya random antara 3-8 detik
+    const next = Math.random() * 5000 + 3000;
+    setTimeout(triggerLightningEffect, next);
+  }
+
+  // Mulakan effect petir
+  triggerLightningEffect();
 </script>
 </body>
 </html>
