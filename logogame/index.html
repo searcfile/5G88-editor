@@ -180,6 +180,13 @@
       margin: 0 auto;
     }
 
+.game-alias {
+  font-weight: bold;
+  color: gold;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
     .game-logo {
       display: flex;
       flex-direction: column;
@@ -349,7 +356,8 @@
     <img src="https://i.imgur.com/3qOL65q.gif" alt="GIF Kanan" class="gif-kanan">
   <script>
     const games = [
-      {
+      { 
+        alias: "GOD OF WEALTH",
         name: "GodofWealth",
         image: "https://i.imgur.com/a6R6znR.png",
         platform: ["pussy888","mega888","918kiss"],
@@ -1071,10 +1079,11 @@
   const filtered = games.filter(function(game) {
     const matchType = currentType === "all" || game.type === currentType;
     const matchSearch =
-      game.name.toLowerCase().includes(searchText) ||
-      (Array.isArray(game.platform)
-        ? game.platform.some(p => p.toLowerCase().includes(searchText))
-        : game.platform.toLowerCase().includes(searchText));
+  game.name.toLowerCase().includes(searchText) ||
+  (game.alias && game.alias.toLowerCase().includes(searchText)) ||
+  (Array.isArray(game.platform)
+    ? game.platform.some(p => p.toLowerCase().includes(searchText))
+    : game.platform.toLowerCase().includes(searchText));
     const matchPlatform = currentPlatform === "all" ||
       (Array.isArray(game.platform)
         ? game.platform.includes(currentPlatform)
@@ -1087,9 +1096,10 @@
     const div = document.createElement("div");
     div.className = "game-logo";
     div.innerHTML = `
-      <img src="${game.image}" alt="${game.name}">
-      <span>${game.name}</span>
-    `;
+  <span class="game-alias">${game.alias || ''}</span>
+  <img src="${game.image}" alt="${game.name}">
+  <span class="game-name">${game.name}</span>
+`;
     grid.appendChild(div);
   });
 }
