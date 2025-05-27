@@ -433,12 +433,14 @@
       document.getElementById(rowId).appendChild(container);
       refreshList(name);
 
-      const autoCheckbox = document.getElementById(`auto-${name}`);
-      if (autoCheckbox.checked) {
-      toggleAuto(name);
-    }
+     // ⬇️ Tambah kod ini selepas semua element dah append
+  const autoCheckbox = document.getElementById(`auto-${name}`);
+  const savedStatus = localStorage.getItem(`auto-${name}`);
+  if (savedStatus === 'on') {
+    autoCheckbox.checked = true;
+    toggleAuto(name); // aktifkan auto balik
   }
-
+}
     function renderTips(name, tips) {
       const el = document.getElementById('tips-' + name);
       let content = `<strong>${name}</strong><br>=========<br>`;
@@ -463,6 +465,7 @@
     function toggleAuto(name) {
       const checkbox = document.getElementById('auto-' + name);
       clearInterval(autoIntervals[name]);
+      localStorage.setItem(`auto-${name}`, checkbox.checked ? 'on' : 'off');
       if (checkbox.checked) {
         const duration = parseInt(document.getElementById('duration-' + name).value) || 1;
         autoIntervals[name] = setInterval(() => refreshList(name), duration * 60000);
