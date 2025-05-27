@@ -101,20 +101,41 @@
   color: gold;
   font-weight: bold;
   margin-bottom: 30px;
+      text-align: center;
+      font-size: 30px;
 }
-    .logo-game-section {
-  text-align: center;
-  margin-bottom: 10px;
-}
+    
+    .blink-text {
+    animation: blinkGoldWhite 1.5s infinite;
+  }
+
+  .blink-text-small {
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 5px;
+    animation: blinkGoldWhite 0.3s infinite;
+  }
+
+  @keyframes blinkGoldWhite {
+    0% { color: gold; }
+    50% { color: white; }
+    100% { color: gold; }
+  }
   </style>
 </head>
 <body>
   <div class="logo-game-section">
-  <h2 class="logo-title">LOGO GAME</h2>
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
+  <h2 class="logo-title" style="text-align: center; color: gold; font-weight: bold; margin-bottom: 10px;">LOGO GAME</h2>
+  
+  <!-- Teks di atas input -->
+  <div style="text-align: center; font-size: 14px; color: white; margin-bottom: 5px;">
+    🎰 LOGO GAME 🎰
   </div>
-    </div>
+
+  <div class="search-container" style="text-align: center;">
+    <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" style="padding: 8px; width: 250px;" />
+  </div>
+</div>
 
   <div class="filter-tabs">
     <button onclick="setFilter('all')" class="active">All</button>
