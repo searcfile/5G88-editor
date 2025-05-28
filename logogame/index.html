@@ -14,42 +14,42 @@
       overflow-x: hidden;
     }
     @keyframes zigzag {
-    0% { transform: rotateZ(-15deg) translateX(0); }
-    25% { transform: rotateZ(10deg) translateX(4px); }
-    50% { transform: rotateZ(-20deg) translateX(-6px); }
-    75% { transform: rotateZ(15deg) translateX(3px); }
-    100% { transform: rotateZ(-10deg) translateX(0); }
-  }
-   #lightning-flash {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: white;
-    opacity: 0;
-    pointer-events: none;
-    z-index: -10000;
-    transition: opacity 0.15s ease-out;
-  }
-#lightning-bolt-container {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: -10001;
-    overflow: visible;
-  }
-.lightning-bolt {
-    position: absolute;
-    width: 4px;
-    background: linear-gradient(to bottom, white, #ddd, white);
-    box-shadow: 0 0 12px white, 0 0 24px #eee;
-    border-radius: 2px;
-    animation: zigzag 0.3s ease-in-out infinite alternate;
-    opacity: 1;
-    z-index: 109992;
-  }
+      0% { transform: rotateZ(-15deg) translateX(0); }
+      25% { transform: rotateZ(10deg) translateX(4px); }
+      50% { transform: rotateZ(-20deg) translateX(-6px); }
+      75% { transform: rotateZ(15deg) translateX(3px); }
+      100% { transform: rotateZ(-10deg) translateX(0); }
+    }
+    #lightning-flash {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: white;
+      opacity: 0;
+      pointer-events: none;
+      z-index: -10000;
+      transition: opacity 0.15s ease-out;
+    }
+    #lightning-bolt-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -10001;
+      overflow: visible;
+    }
+    .lightning-bolt {
+      position: absolute;
+      width: 4px;
+      background: linear-gradient(to bottom, white, #ddd, white);
+      box-shadow: 0 0 12px white, 0 0 24px #eee;
+      border-radius: 2px;
+      animation: zigzag 0.3s ease-in-out infinite alternate;
+      opacity: 1;
+      z-index: 199999;
+    }
 
 @keyframes boltFade {
   0% {
