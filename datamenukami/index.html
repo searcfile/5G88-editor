@@ -1,190 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - 5G88</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      background-color: #000;
-      color: #fff;
-    }
-
-    .sidebar {
-      width: 220px;
-      background-color: #111;
-      padding-top: 20px;
-      border-right: 2px solid gold;
-      height: 100vh;
-    }
-
-    .sidebar h2 {
-      color: gold;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .sidebar ul li {
-      padding: 15px 20px;
-      cursor: pointer;
-      border-bottom: 1px solid #444;
-      color: white;
-    }
-
-    .sidebar ul li:hover, .sidebar ul li.active {
-      background-color: gold;
-      color: black;
-    }
-
-    .main {
-      flex-grow: 1;
-      padding: 20px;
-      position: relative;
-    }
-
-    .tab-bar {
-      background-color: #222;
-      padding: 10px 20px;
-      color: gold;
-      font-weight: bold;
-      margin-bottom: 20px;
-      display: none;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background-color: #111;
-    }
-
-    th, td {
-      border: 1px solid #333;
-      padding: 10px;
-      text-align: left;
-    }
-
-    th {
-      background-color: gold;
-      color: black;
-    }
-
-    td {
-      color: white;
-    }
-
-    .hidden {
-      display: none;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>User Gmail Save & Display</title>
+<style>
+  /* WARNA: gold, putih, hitam */
+  body {
+    background-color: #0a0a0a;
+    color: #f9f6f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .container {
+    background: linear-gradient(135deg, #bfa94e 0%, #fff9d0 100%);
+    border-radius: 15px;
+    padding: 30px 40px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 0 20px #bfa94e88;
+    text-align: center;
+  }
+  h1 {
+    color: #d4af37; /* gold */
+    margin-bottom: 20px;
+    font-weight: 900;
+    text-shadow: 0 0 8px #d4af37aa;
+  }
+  .user-info {
+    background-color: #111;
+    border-radius: 10px;
+    padding: 20px;
+    color: #fff;
+    box-shadow: 0 0 10px #d4af37bb;
+    margin-bottom: 25px;
+  }
+  .user-info p {
+    margin: 8px 0;
+    font-size: 1.1em;
+  }
+  .btn-save {
+    background: #d4af37;
+    color: #111;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    box-shadow: 0 0 10px #d4af37cc;
+  }
+  .btn-save:hover {
+    background: #b3871e;
+    box-shadow: 0 0 20px #b3871e;
+  }
+  .status {
+    margin-top: 15px;
+    font-style: italic;
+    color: #fff;
+    text-shadow: 0 0 6px #d4af37cc;
+  }
+</style>
 </head>
 <body>
 
-  <div class="sidebar">
-    <h2>5G88 Admin</h2>
-    <ul id="menuList">
-      <li class="active" onclick="switchTab('Dashboard')">Dashboard</li>
-      <li onclick="switchTab('Users')">Users</li>
-      <li onclick="switchTab('Games')">Games</li>
-      <li onclick="switchTab('Reports')">Reports</li>
-      <li onclick="switchTab('Settings')">Settings</li>
-    </ul>
+<div class="container">
+  <h1>User Gmail Info</h1>
+  <div id="userInfo" class="user-info">
+    <p><strong>Name:</strong> <span id="userName">-</span></p>
+    <p><strong>Email:</strong> <span id="userEmail">-</span></p>
   </div>
+  <button id="saveBtn" class="btn-save">Save Gmail Data</button>
+  <div id="status" class="status"></div>
+</div>
 
-  <div class="main">
-    <div class="tab-bar" id="tabBar">Dashboard</div>
-    
-    <div id="Dashboard" class="tabContent">
-      <h2>Selamat datang di Admin Panel</h2>
-      <p>Pilih menu di sebelah kiri untuk melihat data.</p>
-    </div>
+<script>
+  // Ambil data user dari localStorage (harus ada di halaman login)
+  function getUserDataFromLocal() {
+    try {
+      const userDataStr = localStorage.getItem('userGmail');
+      if(!userDataStr) return null;
+      return JSON.parse(userDataStr);
+    } catch(e) {
+      console.error('Gagal parsing data user:', e);
+      return null;
+    }
+  }
 
-    <div id="Users" class="tabContent hidden">
-      <h2>Data Gmail Login Pengguna</h2>
-      <table id="gmailTable">
-        <thead>
-          <tr>
-            <th>Waktu</th>
-            <th>Nama</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td colspan="3">Memuat data...</td></tr>
-        </tbody>
-      </table>
-    </div>
+  // Tampilkan user info di halaman
+  function showUserInfo(user) {
+    if(!user) {
+      document.getElementById('userName').textContent = 'Tidak ditemukan';
+      document.getElementById('userEmail').textContent = 'Tidak ditemukan';
+      return;
+    }
+    document.getElementById('userName').textContent = user.name || '-';
+    document.getElementById('userEmail').textContent = user.email || '-';
+  }
 
-    <div id="Games" class="tabContent hidden">
-      <h2>Games Panel</h2>
-      <p>Daftar games akan ditampilkan di sini.</p>
-    </div>
+  // Kirim data Gmail user ke backend Google Apps Script untuk disimpan
+  async function saveUserData(user) {
+    // Ganti URL dengan Web App Google Apps Script kamu
+    const scriptUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
 
-    <div id="Reports" class="tabContent hidden">
-      <h2>Reports</h2>
-      <p>Data laporan pengguna atau sistem.</p>
-    </div>
+    try {
+      const params = new URLSearchParams();
+      params.append('name', user.name);
+      params.append('email', user.email);
 
-    <div id="Settings" class="tabContent hidden">
-      <h2>Settings</h2>
-      <p>Pengaturan admin panel.</p>
-    </div>
-  </div>
+      const res = await fetch(scriptUrl + '?' + params.toString(), {
+        method: 'GET', // GET bisa juga POST, sesuaikan dengan GAS-mu
+      });
+      if (!res.ok) throw new Error('Response not OK');
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error('Gagal kirim data ke server:', err);
+      throw err;
+    }
+  }
 
-  <script>
-    const menuItems = document.querySelectorAll('#menuList li');
-    const tabBar = document.getElementById('tabBar');
-    const tabContents = document.querySelectorAll('.tabContent');
+  // Inisialisasi halaman
+  async function init() {
+    const user = getUserDataFromLocal();
+    showUserInfo(user);
 
-    function switchTab(tabName) {
-      tabContents.forEach(el => el.classList.add('hidden'));
-      document.getElementById(tabName).classList.remove('hidden');
-      tabBar.innerText = tabName;
-      tabBar.style.display = 'block';
-      menuItems.forEach(item => item.classList.remove('active'));
-      const activeItem = Array.from(menuItems).find(i => i.innerText === tabName);
-      if (activeItem) activeItem.classList.add('active');
+    const statusEl = document.getElementById('status');
+    const saveBtn = document.getElementById('saveBtn');
+
+    if(!user) {
+      saveBtn.disabled = true;
+      statusEl.textContent = 'User belum login atau data tidak ditemukan di localStorage.';
+      return;
     }
 
-    // Load Gmail data from your Web App
-    async function loadGmailData() {
-      const sheetURL = "https://script.google.com/macros/s/AKfycbxeCVi7gNQXYKz9ALVfk6i82rwE35UymICrz9dV-4-xD00HK7xVpNfs2BwgCPO2Az1-/exec";
+    saveBtn.addEventListener('click', async () => {
+      statusEl.textContent = 'Menyimpan data...';
+      saveBtn.disabled = true;
       try {
-        const response = await fetch(sheetURL);
-        const data = await response.json(); // Assumes JSON output
-        const table = document.querySelector("#gmailTable tbody");
-        table.innerHTML = "";
-
-        if (Array.isArray(data)) {
-          data.forEach(row => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td>${row.timestamp || ''}</td>
-              <td>${row.name || ''}</td>
-              <td>${row.email || ''}</td>
-            `;
-            table.appendChild(tr);
-          });
+        const result = await saveUserData(user);
+        if(result.status === 'success') {
+          statusEl.textContent = 'Data Gmail berhasil disimpan!';
         } else {
-          table.innerHTML = "<tr><td colspan='3'>Tidak ada data.</td></tr>";
+          statusEl.textContent = 'Gagal menyimpan data: ' + (result.message || 'Unknown error');
         }
-      } catch (error) {
-        console.error(error);
-        document.querySelector("#gmailTable tbody").innerHTML = "<tr><td colspan='3'>Gagal memuat data.</td></tr>";
+      } catch {
+        statusEl.textContent = 'Error saat menyimpan data.';
       }
-    }
+      saveBtn.disabled = false;
+    });
+  }
 
-    // Auto load Gmail data on Users tab
-    document.querySelector("li:nth-child(2)").addEventListener("click", loadGmailData);
-  </script>
+  // Jalankan saat halaman siap
+  window.addEventListener('DOMContentLoaded', init);
+</script>
 
 </body>
 </html>
