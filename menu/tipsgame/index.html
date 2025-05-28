@@ -351,6 +351,21 @@
     for (const name in tipsList) {
       createGameCard(name);
     }
+
+    window.onload = () => {
+    // Cek apakah user sudah login (misal pakai key 'userEmail' di localStorage)
+    if (!localStorage.getItem('userEmail')) {
+      alert('Anda harus login dulu!');
+      // Redirect ke halaman login
+      window.location.href = '/https://searcfile.github.io/5G88-editor/login/'; // sesuaikan path login kamu
+    }
+  }
+
+    <button id="logoutBtn">Logout</button>
+  document.getElementById('logoutBtn').onclick = () => {
+    localStorage.removeItem('userEmail');
+    window.location.href = 'https://searcfile.github.io/5G88-editor/menu/tipsgame/';
+  }
   </script>
 </body>
 </html>
