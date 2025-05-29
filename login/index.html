@@ -1,87 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>5G88 Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4/build/cjs/index.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5G88 login</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
       background-color: #000;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-image: radial-gradient(circle at top left, #333 0%, #000 80%);
-    }
-    .login-card {
-      background-color: #111;
-      border: 2px solid gold;
-      border-radius: 20px;
-      padding: 40px 60px;
+      color: #fff;
       text-align: center;
-      box-shadow: 0 0 20px gold;
     }
-    .login-card h1 {
+
+    header {
+      background-color: #111;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(255, 215, 0, 0.2);
+    }
+
+    h1 {
       color: gold;
-      margin-bottom: 20px;
+      font-size: 2em;
     }
-    .login-card p {
-      color: #ccc;
-      margin-bottom: 30px;
+
+    .content {
+      padding: 30px;
     }
-    .g_id_signin {
-      margin-top: 20px;
+
+    button {
+      padding: 10px 20px;
+      background: gold;
+      border: none;
+      border-radius: 5px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
     }
+
+    button:hover {
+      background: #ffd700cc;
+    }
+
     .footer {
-      margin-top: 30px;
+      margin-top: 50px;
       font-size: 0.9em;
-      color: #888;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
 
-  <div class="login-card">
-    <h1>Welcome to 5G88</h1>
-    <p>Please sign in with your Google account to continue.</p>
+  <header>
+    <h1>Welcome to Tips Game</h1>
+  </header>
 
-    <div id="g_id_onload"
-         data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
-         data-context="signin"
-         data-ux_mode="popup"
-         data-callback="handleCredentialResponse"
-         data-auto_prompt="false">
-    </div>
+  <div class="content">
+    <p>Hanya pengguna yang sah boleh akses halaman ini.</p>
+    <button onclick="logout()">Logout</button>
+  </div>
 
-    <div class="g_id_signin"
-         data-type="standard"
-         data-shape="rectangular"
-         data-theme="outline"
-         data-text="signin_with"
-         data-size="large"
-         data-logo_alignment="left">
-    </div>
-
-    <div class="footer">© 2025 5G88. All rights reserved.</div>
+  <div class="footer">
+    &copy; 2025 5G88 Editor | All rights reserved
   </div>
 
   <script>
-    function handleCredentialResponse(response) {
-      const data = jwt_decode(response.credential);
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: data.name,
-        email: data.email
-      }));
+    const allowedAdmins = ["5g88.offical@gmail.com", "5g88.offical@gmail.com"]; // Ganti dengan email admin sebenar
+    const data = localStorage.getItem("gmailLogin");
 
-      // Redirect ke halaman yang dikunci
-      window.location.href = "https://searcfile.github.io/5G88-editor/menu/tipsgame/";
+    if (!data) {
+      // Check URL ?admin=
+      const urlParams = new URLSearchParams(window.location.search);
+      const adminBypass = urlParams.get("admin");
+
+      if (allowedAdmins.includes(adminBypass)) {
+        // Simulasi auto-login untuk admin
+        localStorage.setItem("gmailLogin", JSON.stringify({
+          name: "Admin",
+          email: adminBypass
+        }));
+        window.location.href = window.location.pathname; // reload bersih
+      } else {
+        // Redirect ke halaman login kalau bukan admin
+        window.location.href = "5g88-login.vercel.app";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("gmailLogin");
+      window.location.href = "5g88-login.vercel.app";
     }
   </script>
 
