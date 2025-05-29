@@ -120,12 +120,10 @@
     };
 
     if (user.email && user.name) {
-      localStorage.setItem("gmailLogin", JSON.stringify(user));
-      window.location.href = "https://searcfile.github.io/5G88-editor/menu/tipsgame/";
-    } else {
-      alert("Login failed. Please try again.");
-    }
-  }
+  const name = encodeURIComponent(user.name);
+  const email = encodeURIComponent(user.email);
+  window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
+}
 
   function parseJwt(token) {
     const base64Url = token.split('.')[1];
