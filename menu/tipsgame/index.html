@@ -390,11 +390,29 @@ if (!data) {
   }
 }
     
-  function logout() {
+    document.addEventListener('DOMContentLoaded', () => {
+    const loginData = localStorage.getItem("gmailLogin");
+
+    if (!loginData) {
+      // Kalau belum login, langsung balik ke halaman login
+      window.location.href = "https://5g88-home.vercel.app"; // Ganti dengan URL halaman login kamu
+      return;
+    }
+
+    // Kalau sudah login, kamu bisa parsing data user-nya kalau perlu
+    const user = JSON.parse(loginData);
+    console.log("User sudah login:", user);
+
+    // Contoh menampilkan nama user di halaman
+    const userNameElem = document.getElementById("userName");
+    if (userNameElem) {
+      userNameElem.textContent = user.name;
+    }
+  });
+    function logout() {
     localStorage.removeItem("gmailLogin");
     window.location.href = "https://5g88-home.vercel.app";
   }
-
   </script>
 </body>
 </html>
