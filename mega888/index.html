@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>MEGA888 Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <style>
     body {
       -webkit-font-smoothing: antialiased;
@@ -145,16 +144,6 @@
      max-height: 30px;
      overflow-y: auto;
     }
-  /* Centerkan input search di dropdown Select2 */
-.select2-container .select2-dropdown .select2-search--dropdown {
-  display: flex;
-  justify-content: center;
-}
-
-.select2-container .select2-dropdown .select2-search--dropdown .select2-search__field {
-  width: 80%; /* Atur lebar input search di tengah */
-  text-align: center;
-}
   </style>
 </head>
 <body>
@@ -271,9 +260,6 @@
   </tbody>
 </table>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
   const gameData = {
   
@@ -1328,13 +1314,7 @@ let rows = `
 
   tbody.innerHTML = rows;
 }
-
-   $(document).ready(function() {
-    $('#gameSelect').select2({
-      width: '180px',        // Atur lebar select2
-      placeholder: "-- Search game --"
-    });
-  });
+  
 </script>
 
 </body>
