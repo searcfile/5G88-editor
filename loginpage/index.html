@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -85,7 +85,7 @@
 
   <div class="content">
     <div class="box">
-      <p>Please sign in with your Gmail to continue</p>
+      <p>Silakan login dengan Gmail Anda untuk melanjutkan</p>
 
       <!-- Google Sign-In -->
       <div id="g_id_onload"
@@ -112,38 +112,38 @@
   </div>
 
   <script>
-   function parseJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join(''));
-    return JSON.parse(jsonPayload);
-  }
+    // Fungsi decode token Google
+    function parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join(''));
+      return JSON.parse(jsonPayload);
+    }
 
-  // Fungsi callback ketika berhasil login dengan Google
-  function handleCredentialResponse(response) {
-    const data = parseJwt(response.credential);
-    const user = {
-      name: data.name,
-      email: data.email
-    };
+    // Ketika user berhasil login
+    function handleCredentialResponse(response) {
+      const data = parseJwt(response.credential);
+      const user = {
+        name: data.name,
+        email: data.email
+      };
 
-    // Simpan data ke localStorage
-    localStorage.setItem("gmailLogin", JSON.stringify(user));
+      // Simpan data login ke localStorage
+      localStorage.setItem("gmailLogin", JSON.stringify(user));
 
-    // Redirect ke halaman tujuan dengan parameter nama dan email
-    const name = encodeURIComponent(user.name);
-    const email = encodeURIComponent(user.email);
-    window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
-  }
+      // Arahkan ke halaman tips dengan data nama & email
+      const name = encodeURIComponent(user.name);
+      const email = encodeURIComponent(user.email);
+      window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
+    }
 
-  // Cek apakah pengguna sudah login sebelumnya
-  const existingUser = localStorage.getItem("gmailLogin");
-  if (existingUser) {
-    // Langsung redirect jika sudah login
-    window.location.href = "https://searcfile.github.io/5G88-editor/menu/tipsgame/";
-  }
-  </script>
-</body>
-</html>
+    // Cek apakah user sudah login sebelumnya
+    document.addEventListener('DOMContentLoaded', () => {
+      const existingUser = localStorage.getItem("gmailLogin");
+      if (existingUser) {
+        // Redirect langsung ke halaman tips jika sudah login
+        window.location.href = "https://searcfile.github.io/5G88-editor/menu/tipsgame/";
+      }
+    });
