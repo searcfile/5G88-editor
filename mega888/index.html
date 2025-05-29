@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>MEGA888 Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <style>
     body {
       -webkit-font-smoothing: antialiased;
@@ -151,7 +152,7 @@
 
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 15px;">
   <label for="gameSelect" style="color: gold;">Game:</label>
-  <select id="gameSelect" style="height: 38px; font-size: 16px; color: white;">
+  <select id="gameSelect" class="select2" style="height: 38px; font-size: 16px; color: white;">
     <option value="">-- Choose --</option>
     <option value="Great88">Great88</option>
     <option value="Lion Dance">Lion Dance</option>
@@ -260,6 +261,9 @@
   </tbody>
 </table>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
   const gameData = {
   
@@ -1314,6 +1318,14 @@ let rows = `
 
   tbody.innerHTML = rows;
 }
+
+   $(document).ready(function() {
+    $('#gameSelect').select2({
+      width: '300px',        // Atur lebar select2
+      placeholder: "-- Choose --",
+      allowClear: true       // Bisa clear pilihan
+    });
+  });
 </script>
 
 </body>
