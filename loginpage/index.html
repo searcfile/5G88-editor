@@ -113,27 +113,34 @@
 
   <script>
     function handleCredentialResponse(response) {
-      const data = parseJwt(response.credential);
-      const user = {
-        name: data.name,
-        email: data.email
-      };
+    const data = parseJwt(response.credential);
+    const user = {
+      name: data.name,
+      email: data.email
+    };
 
-      if (user.email && user.name) {
-        localStorage.setItem("gmailLogin", JSON.stringify(user));
-        window.location.href = "https://searcfile.github.io/5G88-editor/menu/tipsgame/";
-      } else {
-        alert("Login failed. Please try again.");
-      }
+    if (user.email && user.name) {
+      localStorage.setItem("gmailLogin", JSON.stringify(user));
+      window.location.href = "https://searcfile.github.io/5G88-editor/menu/tipsgame/";
+    } else {
+      alert("Login failed. Please try again.");
     }
+  }
 
-    function parseJwt(token) {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      ).join(''));
-      return JSON.parse(jsonPayload);
+  function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    ).join(''));
+    return JSON.parse(jsonPayload);
+  }
+
+  // Cek apakah pengguna sudah login
+  const existingUser = localStorage.getItem("gmailLogin");
+  if (existingUser) {
+    window.location.href = "https://searcfile.github.io/5G88-editor/menu/tipsgame/";
+  }return JSON.parse(jsonPayload);
     }
   </script>
 </body>
