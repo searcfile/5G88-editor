@@ -1,118 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Login 5G88</title>
-<style>
-  body {
-    margin: 0; padding: 0;
-    background: linear-gradient(135deg, #d4af37, #000, #fff);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #fff;
-    display: flex; justify-content: center; align-items: center;
-    height: 100vh;
-  }
-  #login-box {
-    background: #111;
-    border: 3px solid #d4af37;
-    border-radius: 15px;
-    padding: 40px;
-    text-align: center;
-    width: 320px;
-    box-shadow: 0 0 20px #d4af37;
-  }
-  h1 {
-    color: #d4af37;
-    margin-bottom: 20px;
-    font-weight: 700;
-  }
-  #g_id_signin {
-    margin-top: 20px;
-    width: 100% !important;
-  }
-  #loading {
-    display: none;
-    margin-top: 20px;
-    color: #d4af37;
-  }
-  #error-msg {
-    margin-top: 15px;
-    color: #ff3333;
-  }
-</style>
-
-<!-- Load Google Identity Services -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
+  <meta charset="UTF-8">
+  <title>5G88 Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@4/build/cjs/index.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: radial-gradient(circle at top left, #333 0%, #000 80%);
+    }
+    .login-card {
+      background-color: #111;
+      border: 2px solid gold;
+      border-radius: 20px;
+      padding: 40px 60px;
+      text-align: center;
+      box-shadow: 0 0 20px gold;
+    }
+    .login-card h1 {
+      color: gold;
+      margin-bottom: 20px;
+    }
+    .login-card p {
+      color: #ccc;
+      margin-bottom: 30px;
+    }
+    .g_id_signin {
+      margin-top: 20px;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9em;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
 
-<div id="login-box">
-  <h1>Login to 5G88</h1>
+  <div class="login-card">
+    <h1>Welcome to 5G88</h1>
+    <p>Please sign in with your Google account to continue.</p>
 
-  <!-- Google Sign-In button container -->
-  <div id="g_id_signin"></div>
+    <div id="g_id_onload"
+         data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+         data-context="signin"
+         data-ux_mode="popup"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
 
-  <div id="loading">Processing login...</div>
-  <div id="error-msg"></div>
-</div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="signin_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
 
-<script>
-  // Your Google client ID
-  const CLIENT_ID = '1077973104587-1d9iuflh7t9nhb3pojmoh8kjq4lla2gh.apps.googleusercontent.com';
+    <div class="footer">© 2025 5G88. All rights reserved.</div>
+  </div>
 
-  const scriptUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+  <script>
+    function handleCredentialResponse(response) {
+      const data = jwt_decode(response.credential);
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name: data.name,
+        email: data.email
+      }));
 
-  // Initialize Google Sign-In button
-  window.onload = function () {
-    google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      callback: handleCredentialResponse,
-      ux_mode: 'popup'
-    });
-    google.accounts.id.renderButton(
-      document.getElementById('g_id_signin'),
-      { theme: 'filled_black', size: 'large', width: '100%' }
-    );
-  };
-
-  // Handle the Google ID token after user logs in
-  function handleCredentialResponse(response) {
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('error-msg').textContent = '';
-
-    // Decode JWT token to get user info (simple base64 decode)
-    const base64Url = response.credential.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const decodedPayload = JSON.parse(atob(base64));
-
-    const userName = decodedPayload.name;
-    const userEmail = decodedPayload.email;
-
-    // Send data to Google Apps Script with POST
-    fetch(scriptUrl, {
-      method: 'POST',
-      body: JSON.stringify({ name: userName, email: userEmail }),
-      headers: { 'Content-Type': 'application/json' }
-    })
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById('loading').style.display = 'none';
-      if(data.status === "success" && data.redirect) {
-        // Redirect ke halaman tips dengan email
-        window.location.href = data.redirect;
-      } else {
-        document.getElementById('error-msg').textContent = 'Login gagal, coba lagi.';
-      }
-    })
-    .catch(err => {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('error-msg').textContent = 'Error jaringan, coba lagi.';
-      console.error(err);
-    });
-  }
-</script>
+      // Redirect ke halaman yang dikunci
+      window.location.href = "https://searcfile.github.io/5G88-editor/menu/tipsgame/";
+    }
+  </script>
 
 </body>
 </html>
