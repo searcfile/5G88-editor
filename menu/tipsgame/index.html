@@ -227,7 +227,7 @@
 
   // Jika ada data dari URL, simpan ke localStorage dan bersihkan URL
   if (name && email) {
-    localStorage.setItem("gmailLogin", JSON.stringify({ name, email }));
+    localStorage.setItem("gmailLogin", JSON.stringify({ name: name, email: email }));
     window.history.replaceState(null, "", window.location.pathname);
   }
 
@@ -237,7 +237,9 @@
   // Fungsi untuk validasi admin
   function isAdminUser(userData) {
     if (!userData || !userData.email) return false;
-    return ADMIN_EMAILS.some(admin => admin.toLowerCase() === userData.email.toLowerCase());
+    return ADMIN_EMAILS.some(function(admin) {
+      return admin.toLowerCase() === userData.email.toLowerCase();
+    });
   }
 
   // Cek akses
