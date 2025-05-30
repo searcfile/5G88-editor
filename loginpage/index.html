@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>5G88 Gold Login</title>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     body {
       margin: 0;
@@ -112,44 +111,38 @@
   </div>
 
   <script>
-    // Fungsi decode token Google
     function parseJwt(token) {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      ).join(''));
-      return JSON.parse(jsonPayload);
-    }
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    ).join(''));
+    return JSON.parse(jsonPayload);
+  }
 
-    // Ketika user berhasil login
-    function handleCredentialResponse(response) {
-      const data = parseJwt(response.credential);
-      const user = {
-        name: data.name,
-        email: data.email
-      };
-
-      // Simpan data login ke localStorage
-      localStorage.setItem("gmailLogin", JSON.stringify(user));
-
-      // Arahkan ke halaman tips dengan data nama & email
-      const name = encodeURIComponent(user.name);
-      const email = encodeURIComponent(user.email);
-      window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const existingUser = localStorage.getItem("gmailLogin");
-      console.log("Data dari localStorage:", existingUser);
-      if (existingUser) {
-    const user = JSON.parse(existingUser);
+  function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
+    const user = {
+      name: data.name,
+      email: data.email
+    };
+    localStorage.setItem("gmailLogin", JSON.stringify(user));
     const name = encodeURIComponent(user.name);
     const email = encodeURIComponent(user.email);
     window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
-    console.log("Login berhasil, data disimpan:", user);
   }
-});
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const existingUser = localStorage.getItem("gmailLogin");
+    if (existingUser) {
+      const user = JSON.parse(existingUser);
+      const name = encodeURIComponent(user.name);
+      const email = encodeURIComponent(user.email);
+      console.log("Login berhasil, redirecting...");
+      window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
+    }
+  });
  </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>
