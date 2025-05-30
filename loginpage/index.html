@@ -45,36 +45,36 @@
 
   <script>
     function parseJwt(token) {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-  ).join(''));
-  return JSON.parse(jsonPayload);
-}
-
-function handleCredentialResponse(response) {
-  const data = parseJwt(response.credential);
-
-  // ✅ Simpan ke localStorage
-  localStorage.setItem("gmailLogin", JSON.stringify({
-    name: data.name,
-    email: data.email
-  }));
-
- document.addEventListener('DOMContentLoaded', () => {
-  const existingUser = localStorage.getItem("gmailLogin");
-  if (existingUser) {
-    const user = JSON.parse(existingUser);
-    const name = encodeURIComponent(user.name);
-    const email = encodeURIComponent(user.email);
-
-    setTimeout(() => {
-      window.location.href = `https://5g88-tipsgame.vercel.app/?name=${name}&email=${email}`;
-    }, 1000);
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    ).join(''));
+    return JSON.parse(jsonPayload);
   }
-});
-}
+
+  function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
+
+    // ✅ Simpan ke localStorage
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: data.name,
+      email: data.email
+    }));
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const existingUser = localStorage.getItem("gmailLogin");
+      if (existingUser) {
+        const user = JSON.parse(existingUser);
+        const name = encodeURIComponent(user.name);
+        const email = encodeURIComponent(user.email);
+
+        setTimeout(() => {
+          window.location.href = `https://5g88-tipsgame.vercel.app/?name=${name}&email=${email}`;
+        }, 1000);
+      }
+    });
+  }
   </script>
 </body>
 </html>
