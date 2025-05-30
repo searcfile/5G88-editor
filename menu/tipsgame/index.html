@@ -376,77 +376,64 @@
       }
     }, 60000);
 
-// Daftar admin yang boleh bypass login dengan param ?admin=...
 const allowedAdmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
 
-function checkLogin() {
-  const data = localStorage.getItem("gmailLogin");
-  if (!data) {
-    const params = new URLSearchParams(window.location.search);
-    const adminBypass = params.get("admin");
-
-    if (allowedAdmins.includes(adminBypass)) {
-      // Simpan admin ke localStorage
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: "Admin",
-        email: adminBypass
-      }));
-
-      // Bersihkan URL tanpa query param
-      const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, cleanUrl);
-
-      return true;
-    } else {
-      // Redirect ke login jika bukan admin dan belum login
-      window.location.href = "https://5g88-login.vercel.app/";
-      return false;
-    }
-  }
-  return true;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  // Cek login dulu lewat fungsi
-  if (!checkLogin()) return;
-
-  // Ambil param name & email dari URL (hasil login dari Google)
+// Cek dan simpan dari query param jika ada
+function initLoginFromQuery() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
   const email = params.get("email");
+  const adminBypass = params.get("admin");
 
-  // Kalau ada param dan belum ada data localStorage, simpan
-  if (name && email && !localStorage.getItem("gmailLogin")) {
+  // Case 1: Login biasa via Google
+  if (name && email) {
     localStorage.setItem("gmailLogin", JSON.stringify({
       name: decodeURIComponent(name),
       email: decodeURIComponent(email)
     }));
-
-    // Bersihkan URL agar gak looping redirect
-    const cleanUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState({}, document.title, cleanUrl);
+    window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  // Ambil data login dari localStorage
+  // Case 2: Bypass login via ?admin=email
+  if (adminBypass && allowedAdmins.includes(adminBypass)) {
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: "Admin",
+      email: adminBypass
+    }));
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
+
+// Cek apakah user login valid
+function checkLogin() {
+  const data = localStorage.getItem("gmailLogin");
+  if (!data) {
+    window.location.href = "https://5g88-login.vercel.app/";
+    return false;
+  }
+
+  const user = JSON.parse(data);
+  // (Optional) Validasi lagi kalau perlu
+  return true;
+}
+
+// Setelah halaman siap
+document.addEventListener("DOMContentLoaded", () => {
+  initLoginFromQuery();
+
+  if (!checkLogin()) return;
+
+  // Tampilkan nama user jika ada elemennya
   const loginData = localStorage.getItem("gmailLogin");
-  if (!loginData) {
-    // Kalau tetap tidak ada, redirect ke login (safety)
-    setTimeout(() => {
-      window.location.href = "https://5g88-login.vercel.app/";
-    }, 100);
-    return;
-  }
-
-  // Parse data user
   const user = JSON.parse(loginData);
-
-  // Tampilkan nama user kalau ada elemen #userName
   const userNameElem = document.getElementById("userName");
-  if (userNameElem) {
-    userNameElem.textContent = user.name;
-  }
+  if (userNameElem) userNameElem.textContent = user.name;
 
-  // Pasang event logout kalau ada tombol #logoutBtn
+  // Tampilkan konten tips container
+  const tipsContainer = document.getElementById("tipsContainer");
+  if (tipsContainer) tipsContainer.style.display = "block";
+
+  // Event tombol logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
@@ -455,7 +442,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // TODO: Tambahkan inisialisasi halaman lain seperti buat game card dll di sini
+  // Jalankan fungsi inisialisasi lainnya (contoh buat kartu tips)
+  for (const name in tipsList) {
+    createGameCard(name); // pastikan fungsi ini ada
+  }
 });
   </script>
 </body>
