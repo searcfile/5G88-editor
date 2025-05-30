@@ -350,6 +350,23 @@
 
 const allowedAdmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
 
+function saveLoginFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+  const email = params.get("email");
+
+  if (name && email) {
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: decodeURIComponent(name),
+      email: decodeURIComponent(email)
+    }));
+
+    // Hapus query agar tidak looping
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+}
+
 function checkLogin() {
   const data = localStorage.getItem("gmailLogin");
 
@@ -363,7 +380,6 @@ function checkLogin() {
         email: adminBypass
       }));
 
-      // Hapus query ?admin=... dan reload
       const cleanUrl = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, cleanUrl);
       return true;
@@ -376,61 +392,36 @@ function checkLogin() {
   return true;
 }
 
-// Jalankan ketika halaman dimuat
 document.addEventListener('DOMContentLoaded', () => {
+  // ✅ Langkah 1: Simpan dari URL (jika ada)
+  saveLoginFromURL();
+
+  // ✅ Langkah 2: Validasi login
   if (!checkLogin()) return;
 
-  // Cek jika login redirect via parameter Google
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
-  const email = params.get("email");
+  // ✅ Langkah 3: Tampilkan dan proses data login
+  const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
+  const userNameElem = document.getElementById("userName");
+  if (userNameElem) userNameElem.textContent = loginData.name;
 
-  if (name && email) {
-    // Simpan ke localStorage jika belum ada
-    if (!localStorage.getItem("gmailLogin")) {
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: decodeURIComponent(name),
-        email: decodeURIComponent(email)
-      }));
-    }
+  // ✅ Langkah 4: Kirim ke Google Sheet
+  fetch("https://script.google.com/macros/s/AKfycbxZi2W1wwpap7Q4g0HyMmMVVoHTqM7ACqvq8bDJUlgXhu1fiuscUzycWFf9qUkt6zfh/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: loginData.name,
+      email: loginData.email
+    })
+  });
 
-    // Hapus query param agar tidak looping
-    const cleanUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState({}, document.title, cleanUrl);
+  // ✅ Jalankan fitur utama (tips)
+  for (const name in tipsList) {
+    createGameCard(name);
   }
 
-  // Ambil data dari localStorage
-  const loginData = localStorage.getItem("gmailLogin");
-  if (!loginData) {
-    // Jika masih kosong, redirect balik ke login
-    setTimeout(() => {
-      window.location.href = "https://5g88-login.vercel.app/";
-    }, 200);
-  } else {
-    const user = JSON.parse(loginData);
-
-    const userNameElem = document.getElementById("userName");
-    if (userNameElem) userNameElem.textContent = user.name;
-
-    // Kirim data user ke Google Sheet
-    fetch("https://script.google.com/macros/s/AKfycbxZi2W1wwpap7Q4g0HyMmMVVoHTqM7ACqvq8bDJUlgXhu1fiuscUzycWFf9qUkt6zfh/exec", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: user.name,
-        email: user.email
-      })
-    });
-
-    // Jalankan fungsi inisialisasi lainnya (misalnya buat kartu tips)
-    for (const name in tipsList) {
-      createGameCard(name); // pastikan fungsi ini tersedia
-    }
-  }
-
-  // Logout handler
+  // ✅ Logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
