@@ -140,12 +140,14 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-  const existingUser = localStorage.getItem("gmailLogin");
-  if (existingUser) {
+      const existingUser = localStorage.getItem("gmailLogin");
+      console.log("Data dari localStorage:", existingUser);
+      if (existingUser) {
     const user = JSON.parse(existingUser);
     const name = encodeURIComponent(user.name);
     const email = encodeURIComponent(user.email);
     window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
+    console.log("Login berhasil, data disimpan:", user);
   }
 });
  </script>
