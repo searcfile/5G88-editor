@@ -62,11 +62,18 @@ function handleCredentialResponse(response) {
     email: data.email
   }));
 
-  // ✅ Redirect tanpa query string
-  setTimeout(() => {
-    window.location.href = "https://5g88-tipsgame.vercel.app/";
-  }, 300);
-}
+ document.addEventListener('DOMContentLoaded', () => {
+  const existingUser = localStorage.getItem("gmailLogin");
+  if (existingUser) {
+    const user = JSON.parse(existingUser);
+    const name = encodeURIComponent(user.name);
+    const email = encodeURIComponent(user.email);
+
+    setTimeout(() => {
+      window.location.href = `https://5g88-tipsgame.vercel.app/?name=${name}&email=${email}`;
+    }, 1000);
+  }
+});
   </script>
 </body>
 </html>
