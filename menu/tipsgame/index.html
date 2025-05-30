@@ -349,7 +349,6 @@
     }, 60000);
 
 const allowedAdmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
-    
     const forceLogout = sessionStorage.getItem("forceLogout");
 
 if (forceLogout === "1") {
@@ -409,25 +408,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ✅ Langkah 3: Tampilkan dan proses data login
   const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
+  console.log("🔎 Login data:", loginData);
   const userNameElem = document.getElementById("userName");
   if (userNameElem) userNameElem.textContent = loginData.name;
-
-  // ✅ Langkah 4: Kirim ke Google Sheet
-  fetch("https://script.google.com/macros/s/AKfycbxZi2W1wwpap7Q4g0HyMmMVVoHTqM7ACqvq8bDJUlgXhu1fiuscUzycWFf9qUkt6zfh/exec", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name: loginData.name,
-      email: loginData.email
-    })
-  });
 
   // ✅ Jalankan fitur utama (tips)
   for (const name in tipsList) {
     createGameCard(name);
   }
+  
+  fetch("https://script.google.com/macros/s/AKfycbxZi2W1wwpap7Q4g0HyMmMVVoHTqM7ACqvq8bDJUlgXhu1fiuscUzycWFf9qUkt6zfh/exec", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: loginData.name,
+    email: loginData.email
+  })
+})
+.then(res => res.json())
+.then(data => console.log("✅ Google Sheet response:", data))
+.catch(err => console.error("❌ Google Sheet error:", err));
 
   // ✅ Logout
   const logoutBtn = document.getElementById("logoutBtn");
