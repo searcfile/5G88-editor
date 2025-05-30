@@ -127,11 +127,12 @@
       email: data.email
     };
     localStorage.setItem("gmailLogin", JSON.stringify(user));
+    setTimeout(() => {
     const name = encodeURIComponent(user.name);
     const email = encodeURIComponent(user.email);
     window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
-  }
-
+  }, 300); // delay 300ms
+}
   document.addEventListener('DOMContentLoaded', () => {
     const existingUser = localStorage.getItem("gmailLogin");
     if (existingUser) {
