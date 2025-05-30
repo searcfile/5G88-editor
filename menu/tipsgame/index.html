@@ -215,6 +215,8 @@
   </div>
   <div id="gameSection"></div>
   </div>
+
+  <span id="userName"></span>
   <button id="logoutBtn" style="background-color: gold; color: black; padding: 10px 16px; border-radius: 5px; border: none; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); right: 20px; top: 20px; position: fixed;">
   Logout</button>
 
@@ -374,28 +376,29 @@
       }
     }, 60000);
 
- const allowedAdmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
+// Daftar admin yang boleh bypass login dengan param ?admin=...
+const allowedAdmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
 
-    function checkLogin() {
+function checkLogin() {
   const data = localStorage.getItem("gmailLogin");
   if (!data) {
     const params = new URLSearchParams(window.location.search);
     const adminBypass = params.get("admin");
 
     if (allowedAdmins.includes(adminBypass)) {
-      // Simpan ke localStorage
+      // Simpan admin ke localStorage
       localStorage.setItem("gmailLogin", JSON.stringify({
         name: "Admin",
         email: adminBypass
       }));
 
-          // Buang query parameter `?admin=...` dari URL
-         const cleanUrl = window.location.origin + window.location.pathname;
+      // Bersihkan URL tanpa query param
+      const cleanUrl = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, cleanUrl);
 
-          // Reload selepas dibersihkan
-            return true;
+      return true;
     } else {
+      // Redirect ke login jika bukan admin dan belum login
       window.location.href = "https://5g88-login.vercel.app/";
       return false;
     }
@@ -403,37 +406,47 @@
   return true;
 }
 
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
+  // Cek login dulu lewat fungsi
+  if (!checkLogin()) return;
+
+  // Ambil param name & email dari URL (hasil login dari Google)
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
   const email = params.get("email");
 
-  if (name && email) {
-    // Simpan ke localStorage jika belum ada
-    if (!localStorage.getItem("gmailLogin")) {
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: decodeURIComponent(name),
-        email: decodeURIComponent(email)
-      }));
-    }
+  // Kalau ada param dan belum ada data localStorage, simpan
+  if (name && email && !localStorage.getItem("gmailLogin")) {
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: decodeURIComponent(name),
+      email: decodeURIComponent(email)
+    }));
 
-    // Hapus query param agar tidak looping
+    // Bersihkan URL agar gak looping redirect
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl);
   }
 
+  // Ambil data login dari localStorage
   const loginData = localStorage.getItem("gmailLogin");
   if (!loginData) {
+    // Kalau tetap tidak ada, redirect ke login (safety)
     setTimeout(() => {
       window.location.href = "https://5g88-login.vercel.app/";
     }, 100);
-  } else {
-    const user = JSON.parse(loginData);
-    document.getElementById("userName").textContent = user.name;
-    // lanjutkan inisialisasi...
+    return;
   }
-});
-    document.addEventListener('DOMContentLoaded', () => {
+
+  // Parse data user
+  const user = JSON.parse(loginData);
+
+  // Tampilkan nama user kalau ada elemen #userName
+  const userNameElem = document.getElementById("userName");
+  if (userNameElem) {
+    userNameElem.textContent = user.name;
+  }
+
+  // Pasang event logout kalau ada tombol #logoutBtn
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
@@ -441,6 +454,8 @@
       window.location.href = "https://5g88-login.vercel.app/";
     });
   }
+
+  // TODO: Tambahkan inisialisasi halaman lain seperti buat game card dll di sini
 });
   </script>
 </body>
