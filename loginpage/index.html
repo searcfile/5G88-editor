@@ -112,41 +112,45 @@
 
   <script>
   function parseJwt(token) {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-        ).join(''));
-        return JSON.parse(jsonPayload);
-      }
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+  ).join(''));
+  return JSON.parse(jsonPayload);
+}
 
-      // Tangani respon dari Google setelah login
-      function handleCredentialResponse(response) {
-        const data = parseJwt(response.credential);
-        const name = encodeURIComponent(data.name);
-        const email = encodeURIComponent(data.email);
+function handleCredentialResponse(response) {
+  const data = parseJwt(response.credential);
+  const name = encodeURIComponent(data.name);
+  const email = encodeURIComponent(data.email);
 
-        // Simpan ke localStorage
-        localStorage.setItem("gmailLogin", JSON.stringify({
-          name: data.name,
-          email: data.email
-        }));
+  // ✅ Simpan data dulu ke localStorage
+  localStorage.setItem("gmailLogin", JSON.stringify({
+    name: data.name,
+    email: data.email
+  }));
 
-        // Redirect ke halaman tipsgame (dengan query param untuk backup)
-        window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
-      }
+  // ✅ Delay redirect 300ms agar localStorage sempat tersimpan
+  setTimeout(() => {
+    window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
+  }, 300);
+}
 
-      // Cek apakah user sudah login
-      document.addEventListener('DOMContentLoaded', () => {
-        const existingUser = localStorage.getItem("gmailLogin");
-        if (existingUser) {
-          // Sudah login → redirect ke tipsgame
-          const user = JSON.parse(existingUser);
-          const name = encodeURIComponent(user.name);
-          const email = encodeURIComponent(user.email);
-          window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
-        }
-      });
+// ✅ Cek jika user sudah login (langsung redirect)
+document.addEventListener('DOMContentLoaded', () => {
+  const existingUser = localStorage.getItem("gmailLogin");
+  if (existingUser) {
+    const user = JSON.parse(existingUser);
+    const name = encodeURIComponent(user.name);
+    const email = encodeURIComponent(user.email);
+    console.log("Sudah login, redirect ke tipsgame...");
+    
+    setTimeout(() => {
+      window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
+    }, 300); // Tambahkan delay agar aman
+  }
+});
  </script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
