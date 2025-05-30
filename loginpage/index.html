@@ -139,11 +139,15 @@
       window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
     }
 
-    // Cek apakah user sudah login sebelumnya
     document.addEventListener('DOMContentLoaded', () => {
-      const existingUser = localStorage.getItem("gmailLogin");
-      if (existingUser) {
-        // Redirect langsung ke halaman tips jika sudah login
-        window.location.href = "https://searcfile.github.io/5G88-editor/menu/tipsgame/";
-      }
-    });
+  const existingUser = localStorage.getItem("gmailLogin");
+  if (existingUser) {
+    const user = JSON.parse(existingUser);
+    const name = encodeURIComponent(user.name);
+    const email = encodeURIComponent(user.email);
+    window.location.href = `https://searcfile.github.io/5G88-editor/menu/tipsgame/?name=${name}&email=${email}`;
+  }
+});
+ </script>
+</body>
+</html>
