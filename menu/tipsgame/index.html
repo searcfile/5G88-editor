@@ -395,23 +395,24 @@ const allowedAdmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
   }
 
   function sendLoginToGoogleSheet(name, email) {
-    fetch("https://script.google.com/macros/s/AKfycbxZi2W1wwpap7Q4g0HyMmMVVoHTqM7ACqvq8bDJUlgXhu1fiuscUzycWFf9qUkt6zfh/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    name: "5G 88",
-    email: "5g88@b88gaming.page"
+  fetch("https://script.google.com/macros/s/AKfycbxZi2W1wwpap7Q4g0HyMmMVVoHTqM7ACqvq8bDJUlgXhu1fiuscUzycWFf9qUkt6zfh/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: "5G 88",
+      email: "5g88@b88gaming.page"
+    })
   })
-})
-.then(res => res.json())
-.then(data => {
-  console.log("✅ Success:", data);
-})
-.catch(err => {
-  console.error("❌ Error:", err);
-});
+  .then(res => res.json())
+  .then(data => {
+    console.log("✅ Success:", data);
+  })
+  .catch(err => {
+    console.error("❌ Error:", err);
+  });
+}
 
   document.addEventListener("DOMContentLoaded", () => {
     const forceLogout = sessionStorage.getItem("forceLogout");
