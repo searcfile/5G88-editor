@@ -404,8 +404,8 @@
       return true;
     }
 
-    if (checkLogin()) {
-  document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
+  if (checkLogin()) {
     const loginData = localStorage.getItem("gmailLogin");
     const user = JSON.parse(loginData);
 
@@ -423,8 +423,8 @@
       localStorage.removeItem("gmailLogin");
       window.location.href = "https://5g88-login.vercel.app";
     });
-  });
-}
+  }
+});
   </script>
 </body>
 </html>
