@@ -219,9 +219,9 @@
 
   <button id="logoutBtn" style="background-color: gold; color: black; padding: 10px 16px; border-radius: 5px; border: none; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); right: 20px; top: 20px; position: fixed;">
   Logout</button>
-  <div style="margin-top: 10px; color: gold; font-size: 20px;">
-  <h1>Welcome, <span id="userName">Pengguna</span></h1>
-  <p>Your Gmail: <span id="userEmail"></span></p>
+  <div style="position: fixed; right: 20px; top: 20px; color: gold; font-size: 16px; text-align: right; z-index: 999;">
+  <h1 style="margin: 0;">Welcome, <span id="userName">Pengguna</span></h1>
+  <p style="margin: 0;">Your Gmail: <span id="userEmail"></span></p>
 </div>
   <script>
     const tipsList = {
@@ -358,13 +358,13 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-// Hapus URL parameter setelah login supaya bersih
+// Bersihkan URL parameter setelah login
 function cleanUrl() {
   const cleanUrl = window.location.origin + window.location.pathname;
   window.history.replaceState({}, document.title, cleanUrl);
 }
 
-// Simpan login dari URL params
+// Simpan login dari URL parameter
 function saveLoginFromURL() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
@@ -401,7 +401,7 @@ function checkLogin() {
   return true;
 }
 
-// Kirim data login ke Airtable (ganti token/base/table sesuai kebutuhan)
+// Kirim data login ke Airtable
 function sendLoginToAirtable(name, email) {
   fetch("https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins", {
     method: "POST",
@@ -432,7 +432,6 @@ function sendLoginToAirtable(name, email) {
 
 // MAIN
 document.addEventListener("DOMContentLoaded", () => {
-  // Handle forced logout flag
   const forceLogout = sessionStorage.getItem("forceLogout");
   if (forceLogout === "1") {
     sessionStorage.removeItem("forceLogout");
@@ -445,21 +444,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
 
-  // Update UI
+  // ✅ Update UI dengan nama dan email
   const userNameElem = document.getElementById("userName");
   if (userNameElem) userNameElem.textContent = loginData.name;
 
-  // Send to Airtable
+  const userEmailElem = document.getElementById("userEmail");
+  if (userEmailElem) userEmailElem.textContent = loginData.email;
+
+  // ✅ Kirim ke Airtable
   sendLoginToAirtable(loginData.name, loginData.email);
 
-  // Pasang event logout dengan cek object google dulu
+  // ✅ Handle tombol logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("gmailLogin");
       sessionStorage.setItem("forceLogout", "1");
 
-      if (window.google && google.accounts && google.accounts.id) {
+      if (window.google && google.accounts?.id) {
         google.accounts.id.disableAutoSelect();
       }
 
@@ -467,9 +469,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Contoh penggunaan tipsList (pastikan variabel tipsList dan fungsi createGameCard sudah ada)
-  for (const name in tipsList) {
-    createGameCard(name);
+  // ✅ Jika kamu pakai tipsList:
+  if (typeof tipsList !== 'undefined') {
+    for (const name in tipsList) {
+      if (typeof createGameCard === 'function') {
+        createGameCard(name);
+      }
+    }
   }
 });
 </script>
