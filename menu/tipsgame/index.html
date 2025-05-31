@@ -448,15 +448,16 @@ document.addEventListener("DOMContentLoaded", () => {
   sendLoginToAirtable(loginData.name, loginData.email);
 
   // ✅ Tombol Logout
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("gmailLogin");
-      sessionStorage.setItem("forceLogout", "1");
-      google.accounts.id.disableAutoSelect(); // agar auto login dimatikan
-      window.location.href = "https://5g88-login.vercel.app/";
-    });
+  logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("gmailLogin");
+  sessionStorage.setItem("forceLogout", "1");
+
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
   }
+
+  window.location.href = "https://5g88-login.vercel.app/";
+});
 
   // ✅ Tampilkan konten (contoh)
   for (const name in tipsList) {
