@@ -351,119 +351,124 @@
 
 const allowedAdmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
 
-// ✅ Validasi Email
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-// ✅ Hapus URL Parameter
-function cleanUrl() {
-  const cleanUrl = window.location.origin + window.location.pathname;
-  window.history.replaceState({}, document.title, cleanUrl);
-}
-
-// ✅ Simpan Login dari URL
-function saveLoginFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
-  const email = params.get("email");
-
-  if (name && email && isValidEmail(email)) {
-    localStorage.setItem("gmailLogin", JSON.stringify({
-      name: decodeURIComponent(name),
-      email: decodeURIComponent(email)
-    }));
-    cleanUrl();
-  }
-}
-
-// ✅ Cek Login
-function checkLogin() {
-  const data = localStorage.getItem("gmailLogin");
-  if (!data) {
-    const params = new URLSearchParams(window.location.search);
-    const adminBypass = params.get("admin");
-
-    if (adminBypass && allowedAdmins.includes(adminBypass)) {
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: "Admin",
-        email: adminBypass
-      }));
-      cleanUrl();
-      return true;
-    } else {
-      window.location.href = "https://5g88-login.vercel.app/";
-      return false;
+    // Validasi Email
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
-  }
-  return true;
-}
 
-// ✅ Kirim ke Airtable (ubah sesuai token/base/table bro)
-function sendLoginToAirtable(name, email) {
-  fetch("https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad"
-    },
-    body: JSON.stringify({
-      fields: {
-        Name: name,
-        Email: email,
-        Timestamp: new Date().toISOString() // auto isi waktu
+    // Hapus URL Parameter
+    function cleanUrl() {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+
+    // Simpan Login dari URL
+    function saveLoginFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const name = params.get("name");
+      const email = params.get("email");
+
+      if (name && email && isValidEmail(email)) {
+        localStorage.setItem("gmailLogin", JSON.stringify({
+          name: decodeURIComponent(name),
+          email: decodeURIComponent(email)
+        }));
+        cleanUrl();
       }
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.error) {
-      console.error("❌ Gagal kirim ke Airtable:", data.error);
-    } else {
-      console.log("✅ Terkirim ke Airtable:", data);
     }
-  })
-  .catch(err => {
-    console.error("❌ Error fetch:", err);
-  });
-}
 
-document.addEventListener("DOMContentLoaded", () => {
-  const forceLogout = sessionStorage.getItem("forceLogout");
-  if (forceLogout === "1") {
-    sessionStorage.removeItem("forceLogout");
-    cleanUrl();
-  }
+    // Cek Login
+    function checkLogin() {
+      const data = localStorage.getItem("gmailLogin");
+      if (!data) {
+        const params = new URLSearchParams(window.location.search);
+        const adminBypass = params.get("admin");
 
-  saveLoginFromURL();
+        if (adminBypass && allowedAdmins.includes(adminBypass)) {
+          localStorage.setItem("gmailLogin", JSON.stringify({
+            name: "Admin",
+            email: adminBypass
+          }));
+          cleanUrl();
+          return true;
+        } else {
+          window.location.href = "https://5g88-login.vercel.app/";
+          return false;
+        }
+      }
+      return true;
+    }
 
-  if (!checkLogin()) return;
+    // Kirim ke Airtable
+    function sendLoginToAirtable(name, email) {
+      fetch("https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad"
+        },
+        body: JSON.stringify({
+          fields: {
+            Name: name,
+            Email: email,
+            Timestamp: new Date().toISOString()
+          }
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          console.error("❌ Gagal kirim ke Airtable:", data.error);
+        } else {
+          console.log("✅ Terkirim ke Airtable:", data);
+        }
+      })
+      .catch(err => {
+        console.error("❌ Error fetch:", err);
+      });
+    }
 
-  const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
+    document.addEventListener("DOMContentLoaded", () => {
+      // Bersihkan forceLogout jika ada
+      const forceLogout = sessionStorage.getItem("forceLogout");
+      if (forceLogout === "1") {
+        sessionStorage.removeItem("forceLogout");
+        cleanUrl();
+      }
 
-  const userNameElem = document.getElementById("userName");
-  if (userNameElem) userNameElem.textContent = loginData.name;
+      saveLoginFromURL();
 
-  // ✅ Kirim ke Airtable setelah login
-  sendLoginToAirtable(loginData.name, loginData.email);
+      if (!checkLogin()) return;
 
-  // ✅ Tombol Logout
-  logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("gmailLogin");
-  sessionStorage.setItem("forceLogout", "1");
+      const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
 
-  if (window.google && google.accounts && google.accounts.id) {
-    google.accounts.id.disableAutoSelect();
-  }
+      // Tampilkan nama user
+      const userNameElem = document.getElementById("userName");
+      if (userNameElem) userNameElem.textContent = loginData.name;
 
-  window.location.href = "https://5g88-login.vercel.app/";
-});
+      // Kirim data login ke Airtable
+      sendLoginToAirtable(loginData.name, loginData.email);
 
-  // ✅ Tampilkan konten (contoh)
-  for (const name in tipsList) {
-    createGameCard(name);
-  }
-});
+      // Pasang event listener logout
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          localStorage.removeItem("gmailLogin");
+          sessionStorage.setItem("forceLogout", "1");
+
+          if (window.google && google.accounts && google.accounts.id) {
+            google.accounts.id.disableAutoSelect();
+          }
+
+          window.location.href = "https://5g88-login.vercel.app/";
+        });
+      }
+
+      // Kalau kamu ada variabel tipsList dan fungsi createGameCard, bisa panggil di sini
+       for (const name in tipsList) {
+         createGameCard(name);
+      }
+    });
 </script>
 </body>
 </html>
