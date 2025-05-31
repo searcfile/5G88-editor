@@ -409,16 +409,21 @@ function sendLoginToAirtable(name, email) {
     body: JSON.stringify({
       fields: {
         Name: name,
-        Email: email
+        Email: email,
+        Timestamp: new Date().toISOString() // auto isi waktu
       }
     })
   })
   .then(res => res.json())
   .then(data => {
-    console.log("✅ Terkirim ke Airtable:", data);
+    if (data.error) {
+      console.error("❌ Gagal kirim ke Airtable:", data.error);
+    } else {
+      console.log("✅ Terkirim ke Airtable:", data);
+    }
   })
   .catch(err => {
-    console.error("❌ Gagal kirim ke Airtable:", err);
+    console.error("❌ Error fetch:", err);
   });
 }
 
