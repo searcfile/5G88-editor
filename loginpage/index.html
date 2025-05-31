@@ -105,11 +105,40 @@
     color: black;
     font-weight: bold;
   }
-    
+    .marquee-container {
+  width: 100%;
+  overflow: hidden;
+  background: black;
+  border-top: 1px solid gold;
+  border-bottom: 1px solid gold;
+  padding: 10px 0;
+}
+
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  color: white;
+  font-size: 12px;
+  animation: scroll-left 15s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
   </style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+  <div class="marquee-container">
+  <div class="marquee-text">
+    🎉 Welcome to 5G88 — Login now and enjoy the ultimate gaming experience! 🎰🔥
+  </div>
+</div>
 
 <div id="popupOverlay">
   <div id="popupBox">
