@@ -105,19 +105,23 @@
      font-weight: bold;
     }
     .marquee-container {
-    width: 100vw;
-    overflow: hidden;
-    background: black;
-    border-top: 2px solid gold;
-    border-bottom: 2px solid gold;
-   }
-   .marquee-text {
-    display: inline-block;
-    white-space: nowrap;
-    color: white;
-    font-size: 16px;
-    animation: scroll-left 20s linear infinite;
-   }
+      width: 100vw;
+      overflow: hidden;
+      background: black;
+      border-top: 2px solid gold;
+      border-bottom: 2px solid gold;
+      margin: 0;
+      padding: 0;
+    }
+    .marquee-text {
+     display: inline-block;
+     white-space: nowrap;
+     color: white;
+     font-size: 16px;
+     animation: scroll-left 20s linear infinite;
+     padding-left: 100%;
+     box-sizing: border-box;
+    }
 
 @keyframes scroll-left {
   0% {
