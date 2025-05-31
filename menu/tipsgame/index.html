@@ -403,30 +403,95 @@ function checkLogin() {
 
 // Kirim data login ke Airtable
 function sendLoginToAirtable(name, email) {
-  fetch("https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins", {
-    method: "POST",
+  const airtableUrl = "https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins";
+  const apiKey = "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad";
+
+  function getCurrentFormattedTimestamp() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  const timestampNow = getCurrentFormattedTimestamp();
+
+  // Filter: cari record dengan Email dan Name sama
+  const filterFormula = `AND({Email}='${email}',{Name}='${name}')`;
+
+  fetch(`${airtableUrl}?filterByFormula=${encodeURIComponent(filterFormula)}`, {
     headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad"
-    },
-    body: JSON.stringify({
-      fields: {
-        Name: name,
-        Email: email,
-        Timestamp: new Date().toISOString()
-      }
-    })
+      "Authorization": apiKey,
+      "Content-Type": "application/json"
+    }
   })
   .then(res => res.json())
   .then(data => {
-    if (data.error) {
-      console.error("❌ Gagal kirim ke Airtable:", data.error);
+    if (data.records && data.records.length > 0) {
+      // Update Timestamp
+      const recordId = data.records[0].id;
+
+      fetch(`${airtableUrl}/${recordId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": apiKey
+        },
+        body: JSON.stringify({
+          fields: {
+            Timestamp: timestampNow
+          }
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          console.error("❌ Gagal update Airtable:", data.error);
+        } else {
+          console.log("✅ Update Timestamp di Airtable:", data);
+        }
+      })
+      .catch(err => {
+        console.error("❌ Error fetch PATCH:", err);
+      });
+
     } else {
-      console.log("✅ Terkirim ke Airtable:", data);
+      // Buat baru
+      fetch(airtableUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": apiKey
+        },
+        body: JSON.stringify({
+          fields: {
+            Name: name,
+            Email: email,
+            Timestamp: timestampNow
+          }
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          console.error("❌ Gagal kirim ke Airtable:", data.error);
+        } else {
+          console.log("✅ Terkirim ke Airtable:", data);
+        }
+      })
+      .catch(err => {
+        console.error("❌ Error fetch POST:", err);
+      });
     }
   })
   .catch(err => {
-    console.error("❌ Error fetch:", err);
+    console.error("❌ Error fetch GET:", err);
   });
 }
 
