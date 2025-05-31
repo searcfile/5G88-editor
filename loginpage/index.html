@@ -105,32 +105,32 @@
       font-weight: bold;
     }
     .marquee-container {
-      width: 100vw;
+      width: 100%;
+      overflow: hidden;
       background: black;
       border-top: 2px solid gold;
       border-bottom: 2px solid gold;
       margin: 0;
       padding: 0;
+     }
+     .marquee-text {
+      padding-right: 5px;
+      white-space: nowrap;
+      color: white;
+      font-size: 16px;
     }
-    .marquee-text {
-     display: inline-block;
-     white-space: nowrap;
-     color: white;
-     font-size: 16px;
-     animation: scroll-left 15s linear infinite;
-     box-sizing: border-box;
+    .marquee-track {
+      display: flex;
+      width: fit-content;
+      animation: scroll-left 20s linear infinite;
+      will-change: transform;
     }
-    .marquee-wrapper {
-     display: inline-block;
-     padding-left: 100vw; /* ini ganti padding-left: 100% */
+    @keyframes scroll-left {
+      0% {
+      transform: translateX(0);
     }
-
-@keyframes scroll-left {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
+      100% {
+      transform: translateX(-50%);
   }
 }
   </style>
@@ -138,10 +138,13 @@
 </head>
 <body>
   <div class="marquee-container">
-  <div class="marquee-wrapper">
-    <div class="marquee-text">
-     🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks! - 🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks!
-    </div>
+  <div class="marquee-track">
+    <span class="marquee-text">
+      🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks! - 🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks!
+    </span>
+    <span class="marquee-text">
+      🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks! - 🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks!
+    </span>
   </div>
 </div>
 
