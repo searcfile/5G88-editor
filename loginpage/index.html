@@ -24,30 +24,75 @@
     h1 {
       margin-bottom: 30px;
     }
+    /* Background overlay */
+  .popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; /* Hidden awalnya */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+    /* Popup box */
+  .popupBox {
+    background-color: gold;
+    color: gold;
+    border: 2px solid white;
+    border-radius: 12px;
+    padding: 60px 90px;
+    width: 600px;
+    position: relative;
+    animation: zoomIn 0.2s ease;
+    text-align: center;
+  }
+    /* Zoom animation */
+  @keyframes zoomIn {
+    from {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+    .popupClose {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+  }
+    /* OK button */
+  .popupOkBtn {
+    margin-top: 20px;
+    background-color: gold;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
   </style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-  <!-- POPUP OVERLAY -->
-<div id="popupOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-     background-color: rgba(0, 0, 0, 0.5); display: none; justify-content: center; align-items: center; z-index: 9999;">
-
-  <!-- POPUP BOX -->
-  <div id="popupBox" style="background-color: gold; padding: 60px 90px; border-radius: 12px; position: relative; max-width: 600px; text-align: center; border: 2px solid white;">
-
-    <!-- Close (X) -->
-    <span id="popupClose" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-weight: bold; font-size: 20px;">&times;</span>
-
-    <!-- Message -->
+<div id="popupOverlay">
+  <div id="popupBox">
+    <span id="popupClose">&times;</span>
     <h3 style="color: black; margin-bottom: 15px;">Welcome to 5G88</h3>
     <p style="color: #333;">Please login using your Gmail to continue.</p>
-
-    <!-- OK Button -->
-    <button id="popupOkBtn" style="margin-top: 20px; padding: 8px 16px; background-color: gold; color: black; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
-      OK
-    </button>
-
+    <button id="popupOkBtn">OK</button>
   </div>
 </div>
   
