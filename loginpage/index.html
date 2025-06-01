@@ -218,26 +218,28 @@
   }
 
   function handleCredentialResponse(response) {
-    const data = parseJwt(response.credential);
+  console.log("Google Credential Response:", response);
+  const data = parseJwt(response.credential);
+  console.log("Decoded JWT data:", data);
 
-    // ✅ Simpan ke localStorage
-    localStorage.setItem("gmailLogin", JSON.stringify({
-      name: data.name,
-      email: data.email
-    }));
+  // Simpan ke localStorage
+  localStorage.setItem("gmailLogin", JSON.stringify({
+    name: data.name,
+    email: data.email
+  }));
 
-    // Ambil user dari localStorage langsung, dan redirect
-    const existingUser = localStorage.getItem("gmailLogin");
-    if (existingUser) {
-      const user = JSON.parse(existingUser);
-      const name = encodeURIComponent(user.name);
-      const email = encodeURIComponent(user.email);
+  // Redirect
+  const existingUser = localStorage.getItem("gmailLogin");
+  if (existingUser) {
+    const user = JSON.parse(existingUser);
+    const name = encodeURIComponent(user.name);
+    const email = encodeURIComponent(user.email);
 
-      setTimeout(() => {
-        window.location.href = `https://5g88-home.vercel.app/?name=${name}&email=${email}`;
-      }, 300);
-    }
+    setTimeout(() => {
+      window.location.href = `https://5g88-home.vercel.app/?name=${name}&email=${email}`;
+    }, 300);
   }
+}
   </script>
 </body>
 </html>
