@@ -193,36 +193,33 @@
   50% { color: white; }
   100% { color: gold; }
 }
-     .marquee-container {
-  width: 100vw;
-       margin: 0;
-       padding: 0;
-  border-top: 2px solid gold;
-  border-bottom: 2px solid gold;
-  box-sizing: border-box;
-  background: #000;
-  margin-bottom: 30px;
-  overflow: hidden;
-  position: relative;
-}
-
-.marquee-text {
-  display: inline-block;
-  white-space: nowrap;
-  color: white;
-  font-size: 16px;
-  padding-left: 0;
-  animation: marquee 20s linear infinite;
-  will-change: transform;
-  width: 100%;
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
+  .marquee-container {
+      width: 100%;
+      overflow: hidden;
+      background: black;
+      border-top: 2px solid gold;
+      border-bottom: 2px solid gold;
+      margin-bottom: 40px;
+      padding: 0;
+     }
+     .marquee-text {
+      padding-right: 5px;
+      white-space: nowrap;
+      color: white;
+      font-size: 16px;
+    }
+    .marquee-track {
+      display: flex;
+      width: fit-content;
+      animation: scroll-left 20s linear infinite;
+      will-change: transform;
+    }
+    @keyframes scroll-left {
+      0% {
+      transform: translateX(0);
+    }
+      100% {
+      transform: translateX(-50%);
   }
 }
      .gif-kiri, .gif-kanan {
@@ -363,10 +360,15 @@
   <div id="rain-container"></div>
   <div class="title-blink">🎰 TIPS GENERATOR 🎰</div>
   <div class="marquee-container">
-    <div class="marquee-text">
-    📢 Selamat datang ke laman 5G88 Tips Game! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
-    </div>
+  <div class="marquee-track">
+    <span class="marquee-text">
+      📢 Selamat datang ke laman 5G88 Tips Game! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
+    </span>
+    <span class="marquee-text">
+      📢 Selamat datang ke laman 5G88 Tips Game! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
+    </span>
   </div>
+</div>
   <div class="platform-row" id="row-1"></div>
   <div class="platform-row" id="row-2"></div>
   <div class="platform-row" id="row-3"></div>
