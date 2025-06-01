@@ -204,7 +204,9 @@
   });
 });
     
-    // Parse JWT token
+    // 🔒 Disable auto-login SEAWAL MUNGKIN
+    google.accounts.id.disableAutoSelect();
+
     function parseJwt(token) {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -214,13 +216,13 @@
       return JSON.parse(jsonPayload);
     }
 
-    // On credential response
     function handleCredentialResponse(response) {
       const data = parseJwt(response.credential);
       localStorage.setItem("gmailLogin", JSON.stringify({
         name: data.name,
         email: data.email
       }));
+
       const name = encodeURIComponent(data.name);
       const email = encodeURIComponent(data.email);
 
@@ -230,33 +232,32 @@
     }
 
     function logout() {
+      // 🧹 Bersihkan data & nonaktif auto login
       localStorage.removeItem("gmailLogin");
       google.accounts.id.disableAutoSelect();
 
-      // Delay clear & reload supaya betul2 hilang
+      // Reload lepas delay
       setTimeout(() => {
-        window.location.reload();
+        location.reload();
       }, 200);
     }
 
-    // Jalankan seawal page load
     window.onload = () => {
-      google.accounts.id.disableAutoSelect(); // Matikan auto-prompt
+      google.accounts.id.disableAutoSelect();
 
-      const userData = localStorage.getItem("gmailLogin");
-      const userBox = document.getElementById("user-box");
-      const googleSignInSection = document.getElementById("googleSignInSection");
-      const logoutBtn = document.getElementById("logoutBtn");
+      const user = JSON.parse(localStorage.getItem("gmailLogin") || "null");
+      const signinBox = document.getElementById("signin-box");
+      const userInfo = document.getElementById("user-info");
+      const logoutBtn = document.getElementById("logout-btn");
 
-      if (userData) {
-        const user = JSON.parse(userData);
-        userBox.innerText = "Signed in as: " + user.email;
+      if (user) {
+        signinBox.style.display = "none";
         logoutBtn.style.display = "inline-block";
-        googleSignInSection.style.display = "none";
+        userInfo.textContent = `Signed in as: ${user.email}`;
       } else {
-        userBox.innerText = "";
+        signinBox.style.display = "block";
         logoutBtn.style.display = "none";
-        googleSignInSection.style.display = "block";
+        userInfo.textContent = "";
       }
     };
   </script>
