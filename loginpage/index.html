@@ -138,6 +138,9 @@
       transform: translateX(-50%);
   }
 }
+    #user-box {
+      margin-top: 20px;
+    }
   </style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -164,23 +167,22 @@
   </div>
 </div>
   
-  <div class="login-box">
-    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo" style="max-width: 300px; margin-bottom: 10px;">
-    <div id="g_id_onload"
-         data-client_id="383307556387-3kdcpv4eiu8bep327pv11vp05li96pm7.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse"
-         data-auto_prompt="false">
-    </div>
+  <div id="signin-box">
+      <div id="g_id_onload"
+           data-client_id="383307556387-3kdcpv4eiu8bep327pv11vp05li96pm7.apps.googleusercontent.com"
+           data-callback="handleCredentialResponse"
+           data-auto_prompt="false">
+      </div>
     <div class="g_id_signin"
-         data-type="standard"
-         data-shape="pill"
-         data-theme="filled_black"
-         data-text="sign_in_with"
-         data-size="large"
-         data-logo_alignment="left">
+           data-type="standard"
+           data-shape="pill"
+           data-theme="filled_black"
+           data-text="sign_in_with"
+           data-size="large"
+           data-logo_alignment="left">
+      </div>
     </div>
-  </div>
-  <div id="user-box"></div>
+  <div id="user-box" style="display: none;"></div>
 
   <script>
    document.addEventListener("DOMContentLoaded", () => {
@@ -204,7 +206,6 @@
   });
 });
     
-    // 🔒 Disable auto-login SEAWAL MUNGKIN
     google.accounts.id.disableAutoSelect();
 
     function parseJwt(token) {
@@ -232,11 +233,15 @@
     }
 
     function logout() {
-      // 🧹 Bersihkan data & nonaktif auto login
       localStorage.removeItem("gmailLogin");
       google.accounts.id.disableAutoSelect();
 
-      // Reload lepas delay
+      // Sembunyikan tampilan user info dan tombol logout
+      document.getElementById("user-box").style.display = "none";
+      document.getElementById("logout-btn").style.display = "none";
+      document.getElementById("signin-box").style.display = "block";
+
+      // Refresh halaman setelah delay
       setTimeout(() => {
         location.reload();
       }, 200);
@@ -246,18 +251,20 @@
       google.accounts.id.disableAutoSelect();
 
       const user = JSON.parse(localStorage.getItem("gmailLogin") || "null");
+
       const signinBox = document.getElementById("signin-box");
-      const userInfo = document.getElementById("user-info");
+      const userBox = document.getElementById("user-box");
       const logoutBtn = document.getElementById("logout-btn");
 
       if (user) {
         signinBox.style.display = "none";
+        userBox.style.display = "block";
         logoutBtn.style.display = "inline-block";
-        userInfo.textContent = `Signed in as: ${user.email}`;
+        userBox.innerHTML = `<p>Signed in as: ${user.email}</p>`;
       } else {
         signinBox.style.display = "block";
+        userBox.style.display = "none";
         logoutBtn.style.display = "none";
-        userInfo.textContent = "";
       }
     };
   </script>
