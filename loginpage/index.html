@@ -138,23 +138,6 @@
       transform: translateX(-50%);
   }
 }
-    #logout-btn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: gold;
-      color: black;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #logout-btn:hover {
-      background: white;
-    }
-    #user-box {
-      margin-top: 20px;
-    }
   </style>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -162,10 +145,10 @@
   <div class="marquee-container">
   <div class="marquee-track">
     <span class="marquee-text">
-       📢 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks! - 🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks!
+      🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks! - 🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks!
     </span>
     <span class="marquee-text">
-       📢 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks! - 🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks!
+      🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks! - 🎉 Welcome To 5G88 — Login now and enjoy the ultimate gaming experience! - Please Sign in With You Google Account To Access This Page Thanks!
     </span>
   </div>
 </div>
@@ -181,23 +164,22 @@
   </div>
 </div>
   
-  <div id="signin-box">
-      <div id="g_id_onload"
-           data-client_id="383307556387-3kdcpv4eiu8bep327pv11vp05li96pm7.apps.googleusercontent.com"
-           data-callback="handleCredentialResponse"
-           data-auto_prompt="false">
-      </div>
-    <div class="g_id_signin"
-           data-type="standard"
-           data-shape="pill"
-           data-theme="filled_black"
-           data-text="sign_in_with"
-           data-size="large"
-           data-logo_alignment="left">
-      </div>
+  <div class="login-box">
+    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo" style="max-width: 300px; margin-bottom: 10px;">
+    <div id="g_id_onload"
+         data-client_id="383307556387-3kdcpv4eiu8bep327pv11vp05li96pm7.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
     </div>
-  <div id="user-box" style="display: none;"></div>
-  <button id="logout-btn" style="display: none;" onclick="logout()">Logout</button>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="pill"
+         data-theme="filled_black"
+         data-text="sign_in_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
+  </div>
 
   <script>
    document.addEventListener("DOMContentLoaded", () => {
@@ -221,67 +203,41 @@
   });
 });
     
+   window.onload = () => {
+    // 🛑 Nonaktifkan auto login agar user yang logout tak langsung auto-login lagi
     google.accounts.id.disableAutoSelect();
+  }
 
-    function parseJwt(token) {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      ).join(''));
-      return JSON.parse(jsonPayload);
-    }
+  function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    ).join(''));
+    return JSON.parse(jsonPayload);
+  }
 
-    function handleCredentialResponse(response) {
-      const data = parseJwt(response.credential);
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: data.name,
-        email: data.email
-      }));
+  function handleCredentialResponse(response) {
+    const data = parseJwt(response.credential);
 
-      const name = encodeURIComponent(data.name);
-      const email = encodeURIComponent(data.email);
+    // ✅ Simpan ke localStorage
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: data.name,
+      email: data.email
+    }));
+
+    // Ambil user dari localStorage langsung, dan redirect
+    const existingUser = localStorage.getItem("gmailLogin");
+    if (existingUser) {
+      const user = JSON.parse(existingUser);
+      const name = encodeURIComponent(user.name);
+      const email = encodeURIComponent(user.email);
 
       setTimeout(() => {
         window.location.href = `https://5g88-tipsgame.vercel.app/?name=${name}&email=${email}`;
       }, 300);
     }
-
-    function logout() {
-      localStorage.removeItem("gmailLogin");
-      google.accounts.id.disableAutoSelect();
-
-      // Sembunyikan tampilan user info dan tombol logout
-      document.getElementById("user-box").style.display = "none";
-      document.getElementById("logout-btn").style.display = "none";
-      document.getElementById("signin-box").style.display = "block";
-
-      // Refresh halaman setelah delay
-      setTimeout(() => {
-        location.reload();
-      }, 200);
-    }
-
-    window.onload = () => {
-      google.accounts.id.disableAutoSelect();
-
-      const user = JSON.parse(localStorage.getItem("gmailLogin") || "null");
-
-      const signinBox = document.getElementById("signin-box");
-      const userBox = document.getElementById("user-box");
-      const logoutBtn = document.getElementById("logout-btn");
-
-      if (user) {
-        signinBox.style.display = "none";
-        userBox.style.display = "block";
-        logoutBtn.style.display = "inline-block";
-        userBox.innerHTML = `<p>Signed in as: ${user.email}</p>`;
-      } else {
-        signinBox.style.display = "block";
-        userBox.style.display = "none";
-        logoutBtn.style.display = "none";
-      }
-    };
+  }
   </script>
 </body>
 </html>
