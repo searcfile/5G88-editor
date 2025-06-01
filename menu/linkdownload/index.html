@@ -227,32 +227,32 @@
             animation: blink 0.3s infinite;
         }
 .marquee-container {
-  width: 100%;
-  border-top: 2px solid gold;
-  border-bottom: 2px solid gold;
-  box-sizing: border-box;
-  background: #000;
-  margin-bottom: 30px;
-  overflow: hidden;
-  position: relative;
-}
-
-.marquee-text {
-  display: inline-block;
-  white-space: nowrap;
-  color: white;
-  font-size: 16px;
-  padding-left: 0;
-  animation: marquee 20s linear infinite;
-  will-change: transform;
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
+      width: 100%;
+      overflow: hidden;
+      background: black;
+      border-top: 2px solid gold;
+      border-bottom: 2px solid gold;
+      margin-bottom: 30px;
+      padding: 0;
+     }
+     .marquee-text {
+      padding-right: 5px;
+      white-space: nowrap;
+      color: white;
+      font-size: 16px;
+    }
+    .marquee-track {
+      display: flex;
+      width: fit-content;
+      animation: scroll-left 20s linear infinite;
+      will-change: transform;
+    }
+    @keyframes scroll-left {
+      0% {
+      transform: translateX(0);
+    }
+      100% {
+      transform: translateX(-50%);
   }
 }
     .gif-kiri, .gif-kanan {
@@ -284,10 +284,14 @@
   <div id="rain-container"></div>
 <h1 style="text-align:center; color:gold; margin-bottom: 30px;"><span class="blinker">🎰 LINK DOWNLOAD 🎰</span></h1>
  <div class="marquee-container">
-    <div class="marquee-text">
-    📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
-    </div>
+  <div class="marquee-track">
+    <span class="marquee-text">
+      📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
+    </span>
+    <span class="marquee-text">
+      📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
   </div>
+</div>
 
 <div class="container">
   <!-- CARD 1 -->
