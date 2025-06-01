@@ -203,41 +203,56 @@
   });
 });
     
-   window.onload = () => {
-    // 🛑 Nonaktifkan auto login agar user yang logout tak langsung auto-login lagi
-    google.accounts.id.disableAutoSelect();
-  }
+    window.onload = () => {
+      // Nonaktifkan auto-login Google jika logout sebelumnya
+      google.accounts.id.disableAutoSelect();
 
-  function parseJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join(''));
-    return JSON.parse(jsonPayload);
-  }
+      // Cek user yang sudah login
+      const userData = localStorage.getItem("gmailLogin");
+      const userBox = document.getElementById("user-box");
 
-  function handleCredentialResponse(response) {
-    const data = parseJwt(response.credential);
+      if (userData) {
+        const user = JSON.parse(userData);
+        userBox.innerText = "Signed in as: " + user.email;
+      } else {
+        userBox.innerText = ""; // Kosongkan jika belum login
+      }
+    };
 
-    // ✅ Simpan ke localStorage
-    localStorage.setItem("gmailLogin", JSON.stringify({
-      name: data.name,
-      email: data.email
-    }));
+    function parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join(''));
+      return JSON.parse(jsonPayload);
+    }
 
-    // Ambil user dari localStorage langsung, dan redirect
-    const existingUser = localStorage.getItem("gmailLogin");
-    if (existingUser) {
-      const user = JSON.parse(existingUser);
-      const name = encodeURIComponent(user.name);
-      const email = encodeURIComponent(user.email);
+    function handleCredentialResponse(response) {
+      const data = parseJwt(response.credential);
+
+      // Simpan ke localStorage
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name: data.name,
+        email: data.email
+      }));
+
+      // Redirect ke halaman utama selepas login
+      const name = encodeURIComponent(data.name);
+      const email = encodeURIComponent(data.email);
 
       setTimeout(() => {
         window.location.href = `https://5g88-tipsgame.vercel.app/?name=${name}&email=${email}`;
       }, 300);
     }
-  }
+
+    function logout() {
+      // Buang data login
+      localStorage.removeItem("gmailLogin");
+      google.accounts.id.disableAutoSelect();
+      // Reload page atau redirect ke halaman login
+      window.location.href = "https://5g88-login.vercel.app";
+    }
   </script>
 </body>
 </html>
