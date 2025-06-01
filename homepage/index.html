@@ -250,6 +250,15 @@
     </div>
   </div>
 
+  <button id="logoutBtn" style="background-color: gold; color: black; padding: 10px 16px; border-radius: 5px; border: none; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); right: 20px; top: 20px; position: fixed;">
+  Logout</button>
+
+  <div style="position: fixed; top: 20px; right: 60px; z-index: 9999; display: flex; gap: 15px;">
+     <div id="userName" style="position: fixed; top: 10px; right: 300px; color: gold; font-weight: bold; z-index: 9999; font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"">:</div>
+     <div id="userEmail" style="position: fixed; top: 10px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;></div></div>
+
+    <div id="userName" style="position: fixed; top: 20px; right: 100px; color: gold; font-weight: bold; z-index: 9999; display: flex; gap: 10px; justify-content: flex-end;"></div>
+
   <script>
 // DOM references
 const tabBar = document.getElementById("tabBar");
@@ -439,6 +448,189 @@ window.onload = () => {
     loadPage(tabs[tabs.length - 1].url);
   }
 }
+const allowedAdmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
+
+// Validasi email sederhana
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Bersihkan URL parameter setelah login
+function cleanUrl() {
+  const cleanUrl = window.location.origin + window.location.pathname;
+  window.history.replaceState({}, document.title, cleanUrl);
+}
+
+// Simpan login dari URL parameter
+function saveLoginFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+  const email = params.get("email");
+
+  if (name && email && isValidEmail(email)) {
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: decodeURIComponent(name),
+      email: decodeURIComponent(email)
+    }));
+    cleanUrl();
+  }
+}
+
+// Cek login valid, jika tidak redirect ke login page
+function checkLogin() {
+  const data = localStorage.getItem("gmailLogin");
+  if (!data) {
+    const params = new URLSearchParams(window.location.search);
+    const adminBypass = params.get("admin");
+
+    if (adminBypass && allowedAdmins.includes(adminBypass)) {
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name: "Admin",
+        email: adminBypass
+      }));
+      cleanUrl();
+      return true;
+    } else {
+      window.location.href = "https://5g88-login.vercel.app/";
+      return false;
+    }
+  }
+  return true;
+}
+
+// Kirim data login ke Airtable
+function sendLoginToAirtable(name, email) {
+  const airtableUrl = "https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins";
+  const apiKey = "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad";
+
+  function getCurrentFormattedTimestamp() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  const timestampNow = getCurrentFormattedTimestamp();
+
+  // Filter: cari record dengan Email dan Name sama
+  const filterFormula = `AND({Email}='${email}',{Name}='${name}')`;
+
+  fetch(`${airtableUrl}?filterByFormula=${encodeURIComponent(filterFormula)}`, {
+    headers: {
+      "Authorization": apiKey,
+      "Content-Type": "application/json"
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.records && data.records.length > 0) {
+      // Update Timestamp
+      const recordId = data.records[0].id;
+
+      fetch(`${airtableUrl}/${recordId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": apiKey
+        },
+        body: JSON.stringify({
+          fields: {
+            Timestamp: timestampNow
+          }
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          console.error("❌ Gagal update Airtable:", data.error);
+        } else {
+          console.log("✅ Update Timestamp di Airtable:", data);
+        }
+      })
+      .catch(err => {
+        console.error("❌ Error fetch PATCH:", err);
+      });
+
+    } else {
+      // Buat baru
+      fetch(airtableUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": apiKey
+        },
+        body: JSON.stringify({
+          fields: {
+            Name: name,
+            Email: email,
+            Timestamp: timestampNow
+          }
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          console.error("❌ Gagal kirim ke Airtable:", data.error);
+        } else {
+          console.log("✅ Terkirim ke Airtable:", data);
+        }
+      })
+      .catch(err => {
+        console.error("❌ Error fetch POST:", err);
+      });
+    }
+  })
+  .catch(err => {
+    console.error("❌ Error fetch GET:", err);
+  });
+}
+
+// MAIN
+document.addEventListener("DOMContentLoaded", () => {
+  const forceLogout = sessionStorage.getItem("forceLogout");
+  if (forceLogout === "1") {
+    sessionStorage.removeItem("forceLogout");
+    cleanUrl();
+  }
+
+  saveLoginFromURL();
+
+  if (!checkLogin()) return;
+
+  const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
+
+  // ✅ Update UI dengan nama dan email
+  const userNameElem = document.getElementById("userName");
+  if (userNameElem) userNameElem.textContent = loginData.name;
+
+  const userEmailElem = document.getElementById("userEmail");
+  if (userEmailElem) userEmailElem.textContent = loginData.email;
+
+  // ✅ Kirim ke Airtable
+  sendLoginToAirtable(loginData.name, loginData.email);
+
+  // ✅ Handle tombol logout
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("gmailLogin");
+      sessionStorage.setItem("forceLogout", "1");
+
+      if (window.google && google.accounts?.id) {
+        google.accounts.id.disableAutoSelect();
+      }
+
+      window.location.href = "https://5g88-login.vercel.app/";
+    });
+  }
+});
   </script>
 </body>
 </html>
