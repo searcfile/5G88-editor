@@ -258,8 +258,15 @@
      <div id="userEmail" style="position: fixed; top: 10px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;></div></div>
 
     <div id="userName" style="position: fixed; top: 20px; right: 100px; color: gold; font-weight: bold; z-index: 9999; display: flex; gap: 10px; justify-content: flex-end;"></div>
-
+    
+  <script src="script-obf.js"></script>
   <script>
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.onkeydown = function (e) {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
+      return false;
+    }
+  };
 // DOM references
 const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
