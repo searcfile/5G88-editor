@@ -375,10 +375,12 @@ function saveLoginFromURL() {
   const email = params.get("email");
 
   if (name && email && isValidEmail(email)) {
-    localStorage.setItem("gmailLogin", JSON.stringify({
+    const loginData = {
       name: decodeURIComponent(name),
       email: decodeURIComponent(email)
-    }));
+    };
+    localStorage.setItem("gmailLogin", JSON.stringify(loginData));
+    localStorage.setItem("gmailEmail", decodeURIComponent(email)); // Untuk logout bersih
     cleanUrl();
   }
 }
@@ -395,6 +397,7 @@ function checkLogin() {
         name: "Admin",
         email: adminBypass
       }));
+      localStorage.setItem("gmailEmail", adminBypass);
       cleanUrl();
       return true;
     } else {
@@ -412,21 +415,16 @@ function sendLoginToAirtable(name, email) {
 
   function getCurrentFormattedTimestamp() {
     const now = new Date();
-
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
-
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
 
   const timestampNow = getCurrentFormattedTimestamp();
-
-  // Filter: cari record dengan Email dan Name sama
   const filterFormula = `AND({Email}='${email}',{Name}='${name}')`;
 
   fetch(`${airtableUrl}?filterByFormula=${encodeURIComponent(filterFormula)}`, {
@@ -438,9 +436,7 @@ function sendLoginToAirtable(name, email) {
   .then(res => res.json())
   .then(data => {
     if (data.records && data.records.length > 0) {
-      // Update Timestamp
       const recordId = data.records[0].id;
-
       fetch(`${airtableUrl}/${recordId}`, {
         method: "PATCH",
         headers: {
@@ -448,25 +444,10 @@ function sendLoginToAirtable(name, email) {
           "Authorization": apiKey
         },
         body: JSON.stringify({
-          fields: {
-            Timestamp: timestampNow
-          }
+          fields: { Timestamp: timestampNow }
         })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          console.error("❌ Gagal update Airtable:", data.error);
-        } else {
-          console.log("✅ Update Timestamp di Airtable:", data);
-        }
-      })
-      .catch(err => {
-        console.error("❌ Error fetch PATCH:", err);
       });
-
     } else {
-      // Buat baru
       fetch(airtableUrl, {
         method: "POST",
         headers: {
@@ -480,22 +461,8 @@ function sendLoginToAirtable(name, email) {
             Timestamp: timestampNow
           }
         })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          console.error("❌ Gagal kirim ke Airtable:", data.error);
-        } else {
-          console.log("✅ Terkirim ke Airtable:", data);
-        }
-      })
-      .catch(err => {
-        console.error("❌ Error fetch POST:", err);
       });
     }
-  })
-  .catch(err => {
-    console.error("❌ Error fetch GET:", err);
   });
 }
 
@@ -513,32 +480,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
 
-  // ✅ Update UI dengan nama dan email
+  // Tampilkan nama dan email
   const userNameElem = document.getElementById("userName");
   if (userNameElem) userNameElem.textContent = loginData.name;
 
   const userEmailElem = document.getElementById("userEmail");
   if (userEmailElem) userEmailElem.textContent = loginData.email;
 
-  // ✅ Kirim ke Airtable
+  // Kirim ke Airtable
   sendLoginToAirtable(loginData.name, loginData.email);
 
-  // ✅ Handle tombol logout
+  // Logout handler
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
+      const email = localStorage.getItem("gmailEmail");
       localStorage.removeItem("gmailLogin");
+      localStorage.removeItem("gmailEmail");
       sessionStorage.setItem("forceLogout", "1");
 
-      if (window.google && google.accounts?.id) {
-        google.accounts.id.disableAutoSelect();
+      if (window.google && google.accounts?.id && email) {
+        google.accounts.id.revoke(email, () => {
+          google.accounts.id.disableAutoSelect();
+          window.location.href = "https://5g88-login.vercel.app/";
+        });
+      } else {
+        window.location.href = "https://5g88-login.vercel.app/";
       }
-
-      window.location.href = "https://5g88-login.vercel.app/";
     });
   }
 
-  // ✅ Jika kamu pakai tipsList:
+  // Buat tips game (jika tersedia)
   if (typeof tipsList !== 'undefined') {
     for (const name in tipsList) {
       if (typeof createGameCard === 'function') {
