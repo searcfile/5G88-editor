@@ -549,10 +549,7 @@ function sendLoginToAirtable(name, email) {
       .then(res => res.json())
       .then(data => {
         if (data.error) {
-          console.error("❌ Gagal update Airtable:", data.error);
-        } else {
-          console.log("✅ Update Timestamp di Airtable:", data);
-        }
+          console.error("❌ Error At:", data.error);
       })
       .catch(err => {
         console.error("❌ Error fetch PATCH:", err);
