@@ -127,7 +127,7 @@
 }
     #pageFrame {
   width: 100%;
-  height: calc(100vh - 95px); /* Sesuaikan ikut tinggi header */
+  height: calc(100vh - 95px); 
   border: none;
     }
      .tab-bar {
@@ -184,7 +184,7 @@
    left: 50%;
    transform: translateX(-50%);
    height: 40px;
-   z-index: 1103; /* Lebih tinggi dari sidebar dan header */
+   z-index: 1103; 
    }
   .floating-logo.shrink {
    transform: translateX(calc(-50% + 130px));
@@ -201,10 +201,8 @@
 </head>
 <body>
   <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
-  <!-- Overlay -->
   <div class="sidebar-overlay" id="overlay"></div>
 
-  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
   <button class="close-btn" onclick="closeSidebar()">✖ Close</button>
   <h2>Menu list</h2>
@@ -243,7 +241,6 @@
   </div>
    <div id="tabBar" class="tab-bar"></div>
   
-  <!-- Main Content -->
   <div class="container" id="mainContainer">
   <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
 </div>
@@ -269,7 +266,6 @@
       return false;
     }
   };
-// DOM references
 const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
 const sidebar = document.getElementById("sidebar");
@@ -277,14 +273,12 @@ const overlay = document.getElementById("overlay");
 const container = document.getElementById("mainContainer");
 const pageFrame = document.getElementById("pageFrame");
 
-// Styling for tabBar
 tabBar.style.display = "flex";
 tabBar.style.alignItems = "center";
 tabBar.style.padding = "10px 20px";
 tabBar.style.background = "#111";
 
 
-// Sidebar controls
 menuIcon.addEventListener("click", openSidebar);
 overlay.addEventListener("click", closeSidebar);
 function openSidebar() {
@@ -304,7 +298,6 @@ function closeSidebar() {
   document.getElementById("tabBar").classList.remove('shrink');
 }
 
-// LocalStorage helpers
 function saveTabs(tabs) {
   localStorage.setItem("openTabs", JSON.stringify(tabs));
 }
@@ -312,7 +305,6 @@ function getTabs() {
   return JSON.parse(localStorage.getItem("openTabs")) || [];
 }
 
-// Tab management
 function addTab(label, url) {
   const existingTabs = getTabs();
   const exists = existingTabs.some(tab => tab.label === label);
@@ -356,7 +348,6 @@ function renderTabs() {
     tabElement.style.userSelect = "none";
     tabElement.style.cursor = "pointer";
     
-    // DRAG EVENTS
     tabElement.addEventListener("dragstart", function (e) {
       e.dataTransfer.setData("text/plain", index);
       tabElement.style.opacity = "0.5";
@@ -384,14 +375,11 @@ function renderTabs() {
       }
     });
 
-    // Full clickable area
     tabElement.onclick = () => loadPage(tab.url);
 
     if (tab.url === pageFrame.src) {
       tabElement.classList.add("active-tab");
     }
-
-    // **Tambahkan title dan close button di sini**
     const title = document.createElement("span");
     title.textContent = tab.label;
     title.style.pointerEvents = "none";
@@ -432,13 +420,9 @@ function renderTabs() {
 function loadPage(url) {
   pageFrame.src = url;
   closeSidebar();
-
-  // Hapus class active-tab dari semua tab
   document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.remove("active-tab");
   });
-
-  // Tambahkan class active-tab ke tab yang sesuai
   const tabs = getTabs();
   const tabElements = document.querySelectorAll(".tab");
   tabs.forEach((tab, index) => {
@@ -457,20 +441,15 @@ window.onload = () => {
     loadPage(tabs[tabs.length - 1].url);
   }
 }
-const allowedAdmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
-
-// Validasi email sederhana
+const _0xadmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
+const allowedAdmins = [_0xadmins[0],_0xadmins[1]];
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
-
-// Bersihkan URL parameter setelah login
 function cleanUrl() {
   const cleanUrl = window.location.origin + window.location.pathname;
   window.history.replaceState({}, document.title, cleanUrl);
 }
-
-// Simpan login dari URL parameter
 function saveLoginFromURL() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
@@ -484,8 +463,6 @@ function saveLoginFromURL() {
     cleanUrl();
   }
 }
-
-// Cek login valid, jika tidak redirect ke login page
 function checkLogin() {
   const data = localStorage.getItem("gmailLogin");
   if (!data) {
@@ -501,106 +478,87 @@ function checkLogin() {
       return true;
     } else {
       window.location.href = "https://5g88-login.vercel.app/";
-      return false;
+      return false;}}
+return true;}
+function _0x1a2b(name,email){
+  const _0x5c9f=["https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins",
+    "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad",
+    "Authorization","Content-Type","application/json","filterByFormula",
+    "records","length","id","PATCH","fields","Timestamp","error",
+    "❌ Error At:","❌ Error fetch PATCH:","POST","Name","Email",
+    "Succes Login:","❌ Gagal kirim ke Airtable:","❌ Error fetch POST:",
+    "❌ Error fetch GET:","json","then","catch","log"];
+
+  function getCurrentFormattedTimestamp(){
+    const now=new Date();
+    const year=now.getFullYear();
+    const month=String(now.getMonth()+1).padStart(2,"0");
+    const day=String(now.getDate()).padStart(2,"0");
+    const hours=String(now.getHours()).padStart(2,"0");
+    const minutes=String(now.getMinutes()).padStart(2,"0");
+    const seconds=String(now.getSeconds()).padStart(2,"0");
+    return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+  }
+
+  const timestampNow=getCurrentFormattedTimestamp();
+
+  const filterFormula=`AND({${_0x5c9f[16]}}='${email}',{${_0x5c9f[15]}}='${name}')`;
+
+  fetch(`${_0x5c9f[0]}?${_0x5c9f[5]}=${encodeURIComponent(filterFormula)}`,{
+    headers:{
+      [_0x5c9f[2]]:_0x5c9f[1],
+      [_0x5c9f[3]]:_0x5c9f[4]
     }
-  }
-  return true;
-}
-
-// Kirim data login ke Airtable
-function sendLoginToAirtable(name, email) {
-  const airtableUrl = "https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins";
-  const apiKey = "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad";
-
-  function getCurrentFormattedTimestamp() {
-    const now = new Date();
-
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  }
-
-  const timestampNow = getCurrentFormattedTimestamp();
-
-  // Filter: cari record dengan Email dan Name sama
-  const filterFormula = `AND({Email}='${email}',{Name}='${name}')`;
-
-  fetch(`${airtableUrl}?filterByFormula=${encodeURIComponent(filterFormula)}`, {
-    headers: {
-      "Authorization": apiKey,
-      "Content-Type": "application/json"
-    }
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.records && data.records.length > 0) {
-      // Update Timestamp
-      const recordId = data.records[0].id;
-
-      fetch(`${airtableUrl}/${recordId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": apiKey
+  })[_0x5c9f[23]](res=>res[_0x5c9f[21]]())[_0x5c9f[22]](data=>{
+    if(data[_0x5c9f[6]] && data[_0x5c9f[6]][_0x5c9f[7]]>0){
+      const recordId=data[_0x5c9f[6]][0][_0x5c9f[8]];
+      fetch(`${_0x5c9f[0]}/${recordId}`,{
+        method:_0x5c9f[9],
+        headers:{
+          [_0x5c9f[3]]:_0x5c9f[4],
+          [_0x5c9f[2]]:_0x5c9f[1]
         },
-        body: JSON.stringify({
-  fields: {
-    Timestamp: timestampNow
-  }
-})
-})
-.then(res => res.json())
-.then(data => {
-  if (data.error) {
-    console.error("❌ Error At:", data.error);
-  }
-  // Jika Anda tidak ingin log saat berhasil, jangan letak apa-apa di sini
-})
-.catch(err => {
-  console.error("❌ Error fetch PATCH:", err);
-});
-
-    } else {
-      // Buat baru
-      fetch(airtableUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": apiKey
-        },
-        body: JSON.stringify({
-          fields: {
-            Name: name,
-            Email: email,
-            Timestamp: timestampNow
+        body:JSON.stringify({
+          [_0x5c9f[10]]:{
+            [_0x5c9f[11]]:timestampNow
           }
         })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          console.error("❌ Gagal kirim ke Airtable:", data.error);
-        } else {
-          console.log("✅ Terkirim ke Airtable:", data);
+      })[_0x5c9f[23]](res=>res[_0x5c9f[21]]())[_0x5c9f[22]](data=>{
+        if(data[_0x5c9f[12]]){
+          console.error(_0x5c9f[13],data[_0x5c9f[12]]);
         }
-      })
-      .catch(err => {
-        console.error("❌ Error fetch POST:", err);
+      })[_0x5c9f[24]](err=>{
+        console.error(_0x5c9f[14],err);
+      });
+    } else {
+      fetch(_0x5c9f[0],{
+        method:_0x5c9f[15+1],
+        headers:{
+          [_0x5c9f[3]]:_0x5c9f[4],
+          [_0x5c9f[2]]:_0x5c9f[1]
+        },
+        body:JSON.stringify({
+          [_0x5c9f[10]]:{
+            [_0x5c9f[15]]:name,
+            [_0x5c9f[16]]:email,
+            [_0x5c9f[11]]:timestampNow
+          }
+        })
+      })[_0x5c9f[23]](res=>res[_0x5c9f[21]]())[_0x5c9f[22]](data=>{
+        if(data[_0x5c9f[12]]){
+          console.error(_0x5c9f[18],data[_0x5c9f[12]]);
+        } else {
+          console[_0x5c9f[25]](_0x5c9f[17],data);
+        }
+      })[_0x5c9f[24]](err=>{
+        console.error(_0x5c9f[19],err);
       });
     }
-  })
-  .catch(err => {
-    console.error("❌ Error fetch GET:", err);
+  })[_0x5c9f[24]](err=>{
+    console.error(_0x5c9f[20],err);
   });
 }
 
-// MAIN
 document.addEventListener("DOMContentLoaded", () => {
   const forceLogout = sessionStorage.getItem("forceLogout");
   if (forceLogout === "1") {
@@ -614,17 +572,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
 
-  // ✅ Update UI dengan nama dan email
   const userNameElem = document.getElementById("userName");
   if (userNameElem) userNameElem.textContent = loginData.name;
 
   const userEmailElem = document.getElementById("userEmail");
   if (userEmailElem) userEmailElem.textContent = loginData.email;
 
-  // ✅ Kirim ke Airtable
   sendLoginToAirtable(loginData.name, loginData.email);
 
-  // ✅ Handle tombol logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
