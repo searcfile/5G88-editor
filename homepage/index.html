@@ -437,15 +437,22 @@ window.onload = () => {
     loadPage(tabs[tabs.length - 1].url);
   }
 }
-const _0xadmins = ["admin1@gmail.com", "5g88.offical@gmail.com"];
-const allowedAdmins = [_0xadmins[0],_0xadmins[1]];
+const encodedAdmins = [
+  "YWRtaW4xQGdtYWlsLmNvbQ==",        
+  "NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="
+];
+const _0xadmins = encodedAdmins.map(e => atob(e));
+const allowedAdmins = [..._0xadmins];
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
 function cleanUrl() {
   const cleanUrl = window.location.origin + window.location.pathname;
   window.history.replaceState({}, document.title, cleanUrl);
 }
+
 function saveLoginFromURL() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
@@ -459,6 +466,7 @@ function saveLoginFromURL() {
     cleanUrl();
   }
 }
+
 function checkLogin() {
   const data = localStorage.getItem("gmailLogin");
   if (!data) {
@@ -474,8 +482,11 @@ function checkLogin() {
       return true;
     } else {
       window.location.href = "https://5g88-login.vercel.app/";
-      return false;}}
-return true;}
+      return false;
+    }
+  }
+  return true;
+}
 function _0x1a2b(name,email){
   const _0x5c9f=["https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins",
     "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad",
