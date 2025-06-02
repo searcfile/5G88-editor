@@ -246,15 +246,12 @@
   <!-- Main Content -->
   <div class="container" id="mainContainer">
   <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
-</div>
-    </div>
   </div>
   <button id="logoutBtn" style="background-color: gold; color: black; padding: 10px 16px; border-radius: 5px; border: none; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); right: 20px; top: 20px; position: fixed;">Logout</button>
   <div style="position: fixed; top: 20px; right: 60px; z-index: 9999; display: flex; gap: 15px;">
   <div id="userName" style="position: fixed; top: 10px; right: 270px; color: gold; font-weight: bold; z-index: 9999; font-size: 13px; display: flex; gap: 10px; justify-content: flex-end;"">:</div>
-  <div id="userEmail" style="position: fixed; top: 10px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 13px; display: flex; gap: 10px; justify-content: flex-end;></div></div>
-  <div id="userName" style="position: fixed; top: 20px; right: 100px; color: gold; font-weight: bold; z-index: 9999; display: flex; gap: 10px; justify-content: flex-end;"></div>
-  <script src="/js/script-obf.js"></script><script>
+  <div id="userEmail" style="position: fixed; top: 10px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 13px; display: flex; gap: 10px; justify-content: flex-end;"></div></div>
+  <script>
   console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
   document.addEventListener("contextmenu", e => e.preventDefault());
   document.onkeydown = function (e) {
@@ -361,21 +358,19 @@ function loadPage(url) {
   pageFrame.src = url;
   closeSidebar();
 
-  // Hapus class active-tab dari semua tab
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.classList.remove("active-tab");
-  });
+  // Remove active from all
+  document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active-tab"));
 
-  // Tambahkan class active-tab ke tab yang sesuai
+  // Set active to current
   const tabs = getTabs();
-  const tabElements = document.querySelectorAll(".tab");
-  tabs.forEach((tab, index) => {
-    if (tab.url === url) {
-      if (tabElements[index]) {
-        tabElements[index].classList.add("active-tab");
-      }
+  const currentTab = tabs.find(tab => tab.url === url);
+  if (currentTab) {
+    const tabElements = document.querySelectorAll(".tab");
+    const index = tabs.indexOf(currentTab);
+    if (tabElements[index]) {
+      tabElements[index].classList.add("active-tab");
     }
-  });
+  }
 }
 
 window.onload = () => {
@@ -437,8 +432,8 @@ function checkLogin() {
 
 // Kirim data login ke Airtable
 function sendLoginToAirtable(name, email) {
-  const airtableUrl = "https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins";
-  const apiKey = "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad";
+  const airtableUrl = "\u0068\u0074\u0074\u0070\u0073\u003a\u002f\u002f\u0061\u0070\u0069\u002e\u0061\u0069\u0072\u0074\u0061\u0062\u006c\u0065\u002e\u0063\u006f\u006d\u002f\u0076\u0030\u002f\u0061\u0070\u0070\u0054\u0057\u004d\u0035\u0041\u0052\u0066\u0050\u0044\u0052\u0056\u0049\u004b\u0042\u002f\u004c\u006f\u0067\u0069\u006e\u0073";
+  const apiKey = "\u0042\u0065\u0061\u0072\u0065\u0072\u0020\u0070\u0061\u0074\u0061\u0076\u004e\u0043\u006f\u0059\u0059\u0032\u0036\u0059\u0052\u0062\u0042\u0073\u002e\u0032\u0037\u0064\u0038\u0034\u0031\u0033\u0034\u0034\u0039\u0037\u0066\u0036\u0061\u0030\u0063\u0064\u0035\u0035\u0034\u0038\u0032\u0035\u0065\u0062\u0066\u0035\u0032\u0065\u0064\u0038\u0063\u0064\u0031\u0031\u0035\u0065\u0034\u0033\u0034\u0036\u0063\u0037\u0034\u0035\u0033\u0032\u0038\u0061\u0037\u0034\u0063\u0036\u0061\u0064\u0064\u0039\u0033\u0065\u0037\u0066\u0062\u0061\u0064";
 
   function getCurrentFormattedTimestamp() {
     const now = new Date();
