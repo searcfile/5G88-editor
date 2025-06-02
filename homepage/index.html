@@ -249,97 +249,25 @@
 </div>
     </div>
   </div>
-
-  <button id="logoutBtn" style="background-color: gold; color: black; padding: 10px 16px; border-radius: 5px; border: none; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); right: 20px; top: 20px; position: fixed;">
-  Logout</button>
-
+  <button id="logoutBtn" style="background-color: gold; color: black; padding: 10px 16px; border-radius: 5px; border: none; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); right: 20px; top: 20px; position: fixed;">Logout</button>
   <div style="position: fixed; top: 20px; right: 60px; z-index: 9999; display: flex; gap: 15px;">
-     <div id="userName" style="position: fixed; top: 10px; right: 300px; color: gold; font-weight: bold; z-index: 9999; font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"">:</div>
-     <div id="userEmail" style="position: fixed; top: 10px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;></div></div>
-
-    <div id="userName" style="position: fixed; top: 20px; right: 100px; color: gold; font-weight: bold; z-index: 9999; display: flex; gap: 10px; justify-content: flex-end;"></div>
-    
-  <script src="script-obf.js"></script>
-  <script>
-  console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M\'cng\nPowered by  : 5G88\n--OPERATOR--\n\ (01/04/2025\)\n• System 'Updated' ");
-
+  <div id="userName" style="position: fixed; top: 10px; right: 270px; color: gold; font-weight: bold; z-index: 9999; font-size: 13px; display: flex; gap: 10px; justify-content: flex-end;"">:</div>
+  <div id="userEmail" style="position: fixed; top: 10px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 13px; display: flex; gap: 10px; justify-content: flex-end;></div></div>
+  <div id="userName" style="position: fixed; top: 20px; right: 100px; color: gold; font-weight: bold; z-index: 9999; display: flex; gap: 10px; justify-content: flex-end;"></div>
+  <script src="/js/script-obf.js"></script><script>
+  console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
   document.addEventListener("contextmenu", e => e.preventDefault());
   document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
-// DOM references
-const tabBar = document.getElementById("tabBar");
-const menuIcon = document.getElementById("menuIcon");
-const sidebar = document.getElementById("sidebar");
-const overlay = document.getElementById("overlay");
-const container = document.getElementById("mainContainer");
-const pageFrame = document.getElementById("pageFrame");
-
-// Styling for tabBar
-tabBar.style.display = "flex";
-tabBar.style.alignItems = "center";
-tabBar.style.padding = "10px 20px";
-tabBar.style.background = "#111";
-
-
-// Sidebar controls
-menuIcon.addEventListener("click", openSidebar);
-overlay.addEventListener("click", closeSidebar);
-function openSidebar() {
-  sidebar.classList.add("active");
-  overlay.classList.add("active");
-  container.classList.add("shrink");
-  document.querySelector(".floating-logo").classList.add("shrink");
-  document.querySelector('.header').classList.add('shrink');
-  document.getElementById("tabBar").classList.add('shrink');
-}
-function closeSidebar() {
-  sidebar.classList.remove("active");
-  overlay.classList.remove("active");
-  container.classList.remove("shrink");
-  document.querySelector(".floating-logo").classList.remove("shrink");
-  document.querySelector('.header').classList.remove('shrink');
-  document.getElementById("tabBar").classList.remove('shrink');
-}
-
-// LocalStorage helpers
-function saveTabs(tabs) {
-  localStorage.setItem("openTabs", JSON.stringify(tabs));
-}
-function getTabs() {
-  return JSON.parse(localStorage.getItem("openTabs")) || [];
-}
-
-// Tab management
-function addTab(label, url) {
-  const existingTabs = getTabs();
-  const exists = existingTabs.some(tab => tab.label === label);
-  if (!exists) {
-    existingTabs.push({ label, url });
-    saveTabs(existingTabs);
-  }
-  renderTabs();
-  loadPage(url);
-}
-
-function closeTab(label) {
-  let tabs = getTabs().filter(tab => tab.label !== label);
-  saveTabs(tabs);
-  renderTabs();
-  if (tabs.length > 0) {
-    loadPage(tabs[tabs.length - 1].url);
-  } else {
-    pageFrame.src = "";
-  }
-}
-
-function renderTabs() {
-  tabBar.innerHTML = "";
-  const tabs = getTabs();
-
-  tabs.forEach((tab, index) => {
+  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {return false;}};
+  const tabBar = document.getElementById("tabBar");const menuIcon = document.getElementById("menuIcon");const sidebar = document.getElementById("sidebar");const overlay = document.getElementById("overlay");const container = document.getElementById("mainContainer");const pageFrame = document.getElementById("pageFrame");
+  tabBar.style.display = "flex";tabBar.style.alignItems = "center";tabBar.style.padding = "10px 20px";tabBar.style.background = "#111";menuIcon.addEventListener("click", openSidebar);overlay.addEventListener("click", closeSidebar);
+  function openSidebar() {sidebar.classList.add("active");overlay.classList.add("active");container.classList.add("shrink");document.querySelector(".floating-logo").classList.add("shrink");document.querySelector('.header').classList.add('shrink');document.getElementById("tabBar").classList.add('shrink');}
+  function closeSidebar() {sidebar.classList.remove("active");overlay.classList.remove("active");container.classList.remove("shrink");document.querySelector(".floating-logo").classList.remove("shrink");document.querySelector('.header').classList.remove('shrink');document.getElementById("tabBar").classList.remove('shrink');}
+  function saveTabs(tabs) {localStorage.setItem("openTabs", JSON.stringify(tabs));}
+  function getTabs() {return JSON.parse(localStorage.getItem("openTabs")) || [];}
+  function addTab(label, url) {const existingTabs = getTabs();const exists = existingTabs.some(tab => tab.label === label);if (!exists) {existingTabs.push({ label, url });saveTabs(existingTabs);}renderTabs();loadPage(url);}
+  function closeTab(label) {let tabs = getTabs().filter(tab => tab.label !== label);saveTabs(tabs);renderTabs();if (tabs.length > 0) {loadPage(tabs[tabs.length - 1].url);} else {pageFrame.src = "";}}
+  function renderTabs() {tabBar.innerHTML = "";const tabs = getTabs();tabs.forEach((tab, index) => {
     const tabElement = document.createElement("div");
     tabElement.className = "tab";
     tabElement.draggable = true;
