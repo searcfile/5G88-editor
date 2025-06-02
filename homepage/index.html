@@ -244,21 +244,17 @@
   <div class="container" id="mainContainer">
   <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
 </div>
-    </div>
-  </div>
 
-  <button id="logoutBtn" style="background-color: gold; color: black; padding: 10px 16px; border-radius: 5px; border: none; font-weight: bold; z-index: 9999; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); right: 20px; top: 20px; position: fixed;">
+  <button id="logoutBtn" style="background-color: gold; color: black; padding: 10px 16px; border-radius: 5px; border: none; font-weight: bold; z-index: 99999; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); right: 20px; top: 20px; position: fixed;">
   Logout</button>
 
   <div style="position: fixed; top: 20px; right: 60px; z-index: 9999; display: flex; gap: 15px;">
-     <div id="userName" style="position: fixed; top: 10px; right: 300px; color: gold; font-weight: bold; z-index: 9999; font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"">:</div>
-     <div id="userEmail" style="position: fixed; top: 10px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;></div></div>
+     <div id="userName" style="position: fixed; top: 10px; right: 300px; color: gold; font-weight: bold; z-index: 9999; font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;""></div>
+     <div id="userEmail" style="position: fixed; top: 10px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"></div>
+  </div>
 
-    <div id="userName" style="position: fixed; top: 20px; right: 100px; color: gold; font-weight: bold; z-index: 9999; display: flex; gap: 10px; justify-content: flex-end;"></div>
-    
-  <script src="script-obf.js"></script>
   <script>
-  console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M\'cng\nPowered by  : 5G88\n--OPERATOR--\n\ (01/04/2025\)\n• System 'Updated' ");
+  console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 
   document.addEventListener("contextmenu", e => e.preventDefault());
   document.onkeydown = function (e) {
@@ -578,11 +574,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const userEmailElem = document.getElementById("userEmail");
   if (userEmailElem) userEmailElem.textContent = loginData.email;
 
-  sendLoginToAirtable(loginData.name, loginData.email);
+  _0x1a2b(loginData.name, loginData.email);
 
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
+    console.log("✅ Logout button found");
     logoutBtn.addEventListener("click", () => {
+      console.log("⏳ Logging out...");
       localStorage.removeItem("gmailLogin");
       sessionStorage.setItem("forceLogout", "1");
 
@@ -592,6 +590,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       window.location.href = "https://5g88-login.vercel.app/";
     });
+  } else {
+    console.warn("❌ Logout button not found");
   }
 });
   </script>
