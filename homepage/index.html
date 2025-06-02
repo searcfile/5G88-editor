@@ -487,83 +487,127 @@ function checkLogin() {
   }
   return true;
 }
-function _0x1a2b(name,email){
-  const _0x5c9f=["https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins",
+function _0x1a2b(name, email) {
+  const _0x5c9f = [
+    "https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins",
     "Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad",
-    "Authorization","Content-Type","application/json","filterByFormula",
-    "records","length","id","PATCH","fields","Timestamp","error",
-    "❌ Error At:","❌ Error fetch PATCH:","POST","Name","Email",
-    "Succes Login:","❌ Gagal kirim ke Airtable:","❌ Error fetch POST:",
-    "❌ Error fetch GET:","json","then","catch","log"];
+    "Authorization","Content-Type","application/json","filterByFormula","records","length",
+    "id","PATCH","fields","Timestamp","error",
+    "❌ Error At:",
+    "❌ Error fetch PATCH:",
+    "POST",
+    "Name",
+    "Email",
+    "Succes Login:",
+    "❌ Gagal kirim ke Airtable:",
+    "❌ Error fetch POST:",
+    "❌ Error fetch GET:",
+    "json",
+    "then",
+    "catch",
+    "log",
+  ];
 
-  function getCurrentFormattedTimestamp(){
-    const now=new Date();
-    const year=now.getFullYear();
-    const month=String(now.getMonth()+1).padStart(2,"0");
-    const day=String(now.getDate()).padStart(2,"0");
-    const hours=String(now.getHours()).padStart(2,"0");
-    const minutes=String(now.getMinutes()).padStart(2,"0");
-    const seconds=String(now.getSeconds()).padStart(2,"0");
-    return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+  function getCurrentFormattedTimestamp() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    return (
+      year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds
+    );
   }
 
-  const timestampNow=getCurrentFormattedTimestamp();
+  const timestampNow = getCurrentFormattedTimestamp();
 
-  const filterFormula=`AND({${_0x5c9f[16]}}='${email}',{${_0x5c9f[15]}}='${name}')`;
+  const filterFormula = `AND({${_0x5c9f[16]}}='${email}',{${_0x5c9f[15]}}='${name}')`;
 
-  fetch(`${_0x5c9f[0]}?${_0x5c9f[5]}=${encodeURIComponent(filterFormula)}`,{
-    headers:{
-      [_0x5c9f[2]]:_0x5c9f[1],
-      [_0x5c9f[3]]:_0x5c9f[4]
-    }
-  })[_0x5c9f[23]](res=>res[_0x5c9f[21]]())[_0x5c9f[22]](data=>{
-    if(data[_0x5c9f[6]] && data[_0x5c9f[6]][_0x5c9f[7]]>0){
-      const recordId=data[_0x5c9f[6]][0][_0x5c9f[8]];
-      fetch(`${_0x5c9f[0]}/${recordId}`,{
-        method:_0x5c9f[9],
-        headers:{
-          [_0x5c9f[3]]:_0x5c9f[4],
-          [_0x5c9f[2]]:_0x5c9f[1]
-        },
-        body:JSON.stringify({
-          [_0x5c9f[10]]:{
-            [_0x5c9f[11]]:timestampNow
-          }
+  fetch(`${_0x5c9f[0]}?${_0x5c9f[5]}=${encodeURIComponent(filterFormula)}`, {
+    headers: {
+      [_0x5c9f[2]]: _0x5c9f[1],
+      [_0x5c9f[3]]: _0x5c9f[4],
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`HTTP error GET! status: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
+    })
+    .then((data) => {
+      if (data[_0x5c9f[6]] && data[_0x5c9f[6]][_0x5c9f[7]] > 0) {
+        const recordId = data[_0x5c9f[6]][0][_0x5c9f[8]];
+        fetch(`${_0x5c9f[0]}/${recordId}`, {
+          method: _0x5c9f[9],
+          headers: {
+            [_0x5c9f[3]]: _0x5c9f[4],
+            [_0x5c9f[2]]: _0x5c9f[1],
+          },
+          body: JSON.stringify({
+            [_0x5c9f[10]]: {
+              [_0x5c9f[11]]: timestampNow,
+            },
+          }),
         })
-      })[_0x5c9f[23]](res=>res[_0x5c9f[21]]())[_0x5c9f[22]](data=>{
-        if(data[_0x5c9f[12]]){
-          console.error(_0x5c9f[13],data[_0x5c9f[12]]);
-        }
-      })[_0x5c9f[24]](err=>{
-        console.error(_0x5c9f[14],err);
-      });
-    } else {
-      fetch(_0x5c9f[0],{
-        method:_0x5c9f[15+1],
-        headers:{
-          [_0x5c9f[3]]:_0x5c9f[4],
-          [_0x5c9f[2]]:_0x5c9f[1]
-        },
-        body:JSON.stringify({
-          [_0x5c9f[10]]:{
-            [_0x5c9f[15]]:name,
-            [_0x5c9f[16]]:email,
-            [_0x5c9f[11]]:timestampNow
-          }
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(
+                `HTTP error PATCH! status: ${res.status} ${res.statusText}`
+              );
+            }
+            return res.json();
+          })
+          .then((data) => {
+            if (data[_0x5c9f[12]]) {
+              console.error(_0x5c9f[13], data[_0x5c9f[12]]);
+            } else {
+              console.log("✅ Timestamp updated successfully");
+            }
+          })
+          .catch((err) => {
+            console.error(_0x5c9f[14], err);
+          });
+      } else {
+        fetch(_0x5c9f[0], {
+          method: _0x5c9f[15 + 1],
+          headers: {
+            [_0x5c9f[3]]: _0x5c9f[4],
+            [_0x5c9f[2]]: _0x5c9f[1],
+          },
+          body: JSON.stringify({
+            [_0x5c9f[10]]: {
+              [_0x5c9f[15]]: name,
+              [_0x5c9f[16]]: email,
+              [_0x5c9f[11]]: timestampNow,
+            },
+          }),
         })
-      })[_0x5c9f[23]](res=>res[_0x5c9f[21]]())[_0x5c9f[22]](data=>{
-        if(data[_0x5c9f[12]]){
-          console.error(_0x5c9f[18],data[_0x5c9f[12]]);
-        } else {
-          console[_0x5c9f[25]](_0x5c9f[17],data);
-        }
-      })[_0x5c9f[24]](err=>{
-        console.error(_0x5c9f[19],err);
-      });
-    }
-  })[_0x5c9f[24]](err=>{
-    console.error(_0x5c9f[20],err);
-  });
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(
+                `HTTP error POST! status: ${res.status} ${res.statusText}`
+              );
+            }
+            return res.json();
+          })
+          .then((data) => {
+            if (data[_0x5c9f[12]]) {
+              console.error(_0x5c9f[18], data[_0x5c9f[12]]);
+            } else {
+              console.log(_0x5c9f[17], data);
+            }
+          })
+          .catch((err) => {
+            console.error(_0x5c9f[19], err);
+          });
+      }
+    })
+    .catch((err) => {
+      console.error(_0x5c9f[20], err);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
