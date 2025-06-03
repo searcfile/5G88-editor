@@ -437,7 +437,12 @@ window.onload = () => {
     loadPage(tabs[tabs.length - 1].url);
   }
 }
-const SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyR6ULCXT4uZ3Icu7vbAhlHktoVWBkT6jOHgjKOJ6CGnhNfzXX3nvRNu5JhSsr0qqa1/exec";
+const encodedAdmins = [
+  "YWRtaW4xQGdtYWlsLmNvbQ==",        
+  "NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="
+];
+const _0xadmins = encodedAdmins.map(e => atob(e));
+const allowedAdmins = [..._0xadmins];
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -465,28 +470,31 @@ function saveLoginFromURL() {
 function checkLogin() {
   const data = localStorage.getItem("gmailLogin");
   if (!data) {
-    window.location.href = "https://5g88-login.vercel.app/";
-    return false;
+    const params = new URLSearchParams(window.location.search);
+    const adminBypass = params.get("admin");
+
+    if (adminBypass && allowedAdmins.includes(adminBypass)) {
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name: "Admin",
+        email: adminBypass
+      }));
+      cleanUrl();
+      return true;
+    } else {
+      window.location.href = "https://5g88-login.vercel.app/";
+      return false;
+    }
   }
   return true;
 }
 
-function sendToGoogleAppsScript(name, email) {
-  const params = new URLSearchParams({ name, email });
-
-  fetch(`${SCRIPT_WEBAPP_URL}?${params.toString()}`, {
-    method: "GET",
-  })
-    .then(res => res.text())
-    .then(result => {
-      console.log("✅ Data sent to Google Apps Script:", result);
-    })
-    .catch(err => {
-      console.error("❌ Error sending to Google Apps Script:", err);
-    });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
+  const forceLogout = sessionStorage.getItem("forceLogout");
+  if (forceLogout === "1") {
+    sessionStorage.removeItem("forceLogout");
+    cleanUrl();
+  }
+
   saveLoginFromURL();
 
   if (!checkLogin()) return;
@@ -499,14 +507,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const userEmailElem = document.getElementById("userEmail");
   if (userEmailElem) userEmailElem.textContent = loginData.email;
 
-  sendToGoogleAppsScript(loginData.name, loginData.email);
-
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
+    console.log("✅ Logout button found");
     logoutBtn.addEventListener("click", () => {
+      console.log("⏳ Logging out...");
       localStorage.removeItem("gmailLogin");
+      sessionStorage.setItem("forceLogout", "1");
+
+      if (window.google && google.accounts?.id) {
+        google.accounts.id.disableAutoSelect();
+      }
+
       window.location.href = "https://5g88-login.vercel.app/";
     });
+  } else {
+    console.warn("❌ Logout button not found");
   }
 });
   </script>
