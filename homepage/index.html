@@ -219,7 +219,7 @@
   <a href="#" onclick="addTab('LOGO GAME', 'https://5g88-logogame.vercel.app/')">
     <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LOGO GAME
   </a>
-  <a href="#" onclick="addTab('TIPS GAME', 'https://5g88-tipsgenerate.vercel.app/')">
+  <a href="#" onclick="addTab('TIPS GAME', 'https://searcfile.github.io/5G88-editor/tipsgenerate/')">
     <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> TIPS GAME
   </a>
   <a href="#" onclick="addTab('FIND GAME', 'https://5g88-findgame.vercel.app')">
@@ -437,12 +437,7 @@ window.onload = () => {
     loadPage(tabs[tabs.length - 1].url);
   }
 }
-const encodedAdmins = [
-  "YWRtaW4xQGdtYWlsLmNvbQ==",        
-  "NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="
-];
-const _0xadmins = encodedAdmins.map(e => atob(e));
-const allowedAdmins = [..._0xadmins];
+const SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyR6ULCXT4uZ3Icu7vbAhlHktoVWBkT6jOHgjKOJ6CGnhNfzXX3nvRNu5JhSsr0qqa1/exec";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -470,139 +465,28 @@ function saveLoginFromURL() {
 function checkLogin() {
   const data = localStorage.getItem("gmailLogin");
   if (!data) {
-    const params = new URLSearchParams(window.location.search);
-    const adminBypass = params.get("admin");
-
-    if (adminBypass && allowedAdmins.includes(adminBypass)) {
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: "Admin",
-        email: adminBypass}));cleanUrl();return true;} else {window.location.href = "https://5g88-login.vercel.app/";return false;}}return true;}function _0x1a2b(name, email) {const _0x5c9f = ["https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins","Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad",
-    "Authorization","Content-Type","application/json","filterByFormula","records","length",
-    "id","PATCH","fields","Timestamp","error",
-    "❌ Error At:",
-    "❌ Error fetch PATCH:",
-    "POST",
-    "Name",
-    "Email",
-    "Succes Login:",
-    "❌ Gagal kirim ke Airtable:",
-    "❌ Error fetch POST:",
-    "❌ Error fetch GET:",
-    "json",
-    "then",
-    "catch",
-    "log",
-  ];
-
-  function getCurrentFormattedTimestamp() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
-    return (
-      year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds
-    );
+    window.location.href = "https://5g88-login.vercel.app/";
+    return false;
   }
+  return true;
+}
 
-  const timestampNow = getCurrentFormattedTimestamp();
+function sendToGoogleAppsScript(name, email) {
+  const params = new URLSearchParams({ name, email });
 
-  const filterFormula = `AND({Email}='${email}',{Name}='${name}')`;
-
-  fetch(`${_0x5c9f[0]}?${_0x5c9f[5]}=${encodeURIComponent(filterFormula)}`, {
-    headers: {
-      [_0x5c9f[2]]: _0x5c9f[1],
-      [_0x5c9f[3]]: _0x5c9f[4],
-    },
+  fetch(`${SCRIPT_WEBAPP_URL}?${params.toString()}`, {
+    method: "GET",
   })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error(`HTTP error GET! status: ${res.status} ${res.statusText}`);
-      }
-      return res.json();
+    .then(res => res.text())
+    .then(result => {
+      console.log("✅ Data sent to Google Apps Script:", result);
     })
-    .then((data) => {
-      if (data[_0x5c9f[6]] && data[_0x5c9f[6]][_0x5c9f[7]] > 0) {
-        const recordId = data[_0x5c9f[6]][0][_0x5c9f[8]];
-        fetch(`${_0x5c9f[0]}/${recordId}`, {
-          method: _0x5c9f[9],
-          headers: {
-            [_0x5c9f[3]]: _0x5c9f[4],
-            [_0x5c9f[2]]: _0x5c9f[1],
-          },
-          body: JSON.stringify({
-            [_0x5c9f[10]]: {
-              [_0x5c9f[11]]: timestampNow,
-            },
-          }),
-        })
-          .then((res) => {
-            if (!res.ok) {
-              throw new Error(
-                `HTTP error PATCH! status: ${res.status} ${res.statusText}`
-              );
-            }
-            return res.json();
-          })
-          .then((data) => {
-            if (data[_0x5c9f[12]]) {
-              console.error(_0x5c9f[13], data[_0x5c9f[12]]);
-            } else {
-              console.log("✅ Timestamp updated successfully");
-            }
-          })
-          .catch((err) => {
-            console.error(_0x5c9f[14], err);
-          });
-      } else {
-        fetch(_0x5c9f[0], {
-          method: _0x5c9f[15 + 1],
-          headers: {
-            [_0x5c9f[3]]: _0x5c9f[4],
-            [_0x5c9f[2]]: _0x5c9f[1],
-          },
-          body: JSON.stringify({
-            [_0x5c9f[10]]: {
-              [_0x5c9f[15]]: name,
-              [_0x5c9f[16]]: email,
-              [_0x5c9f[11]]: timestampNow,
-            },
-          }),
-        })
-          .then((res) => {
-            if (!res.ok) {
-              throw new Error(
-                `HTTP error POST! status: ${res.status} ${res.statusText}`
-              );
-            }
-            return res.json();
-          })
-          .then((data) => {
-            if (data[_0x5c9f[12]]) {
-              console.error(_0x5c9f[18], data[_0x5c9f[12]]);
-            } else {
-              console.log(_0x5c9f[17], data);
-            }
-          })
-          .catch((err) => {
-            console.error(_0x5c9f[19], err);
-          });
-      }
-    })
-    .catch((err) => {
-      console.error(_0x5c9f[20], err);
+    .catch(err => {
+      console.error("❌ Error sending to Google Apps Script:", err);
     });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const forceLogout = sessionStorage.getItem("forceLogout");
-  if (forceLogout === "1") {
-    sessionStorage.removeItem("forceLogout");
-    cleanUrl();
-  }
-
   saveLoginFromURL();
 
   if (!checkLogin()) return;
@@ -615,24 +499,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const userEmailElem = document.getElementById("userEmail");
   if (userEmailElem) userEmailElem.textContent = loginData.email;
 
-  _0x1a2b(loginData.name, loginData.email);
+  sendToGoogleAppsScript(loginData.name, loginData.email);
 
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
-    console.log("✅ Logout button found");
     logoutBtn.addEventListener("click", () => {
-      console.log("⏳ Logging out...");
       localStorage.removeItem("gmailLogin");
-      sessionStorage.setItem("forceLogout", "1");
-
-      if (window.google && google.accounts?.id) {
-        google.accounts.id.disableAutoSelect();
-      }
-
       window.location.href = "https://5g88-login.vercel.app/";
     });
-  } else {
-    console.warn("❌ Logout button not found");
   }
 });
   </script>
