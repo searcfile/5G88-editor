@@ -54,7 +54,7 @@
 </table>
 
 <script>
-  // Firebase config kamu
+ // Firebase config kamu
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
     authDomain: "logins-d615f.firebaseapp.com",
@@ -68,10 +68,14 @@
 
   const dbRef = firebase.database().ref('logins');
 
-  function formatDateTime(dateString) {
-    const d = new Date(dateString);
-    if (isNaN(d)) return '-';
-    return d.toLocaleString('en-GB', { hour12: false });
+  // Fungsi format waktu yang bisa handle string, timestamp, atau kosong
+  function formatDateTime(dateValue) {
+    if (!dateValue) return '-';
+    
+    const date = new Date(Number(dateValue));
+    if (isNaN(date)) return '-';
+    
+    return date.toLocaleString('en-GB', { hour12: false });
   }
 
   function loadLoginData() {
@@ -90,11 +94,13 @@
       for (const key in data) {
         if (data.hasOwnProperty(key)) {
           const item = data[key];
+          const formattedTime = formatDateTime(item.time);
+
           html += `<tr>
             <td>${count++}</td>
             <td>${item.name || '-'}</td>
             <td>${item.email || '-'}</td>
-            <td>${formatDateTime(item.time)}</td>
+            <td>${formattedTime}</td>
           </tr>`;
         }
       }
@@ -104,10 +110,10 @@
     });
   }
 
-  // Load data first time
+  // Load data pertama kali
   loadLoginData();
 
-  // Auto refresh every 10 seconds
+  // Auto refresh tiap 10 detik
   setInterval(loadLoginData, 10000);
 </script>
 
