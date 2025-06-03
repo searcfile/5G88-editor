@@ -220,11 +220,8 @@
   messagingSenderId: "580872784703",
   appId: "1:580872784703:web:07957551c3214f3d32618a"
 };
-
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-
 function parseJwt(token) {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -233,8 +230,6 @@ function parseJwt(token) {
   ).join(''));
   return JSON.parse(jsonPayload);
 }
-
-// Fungsi format timestamp sesuai format yang kamu mau
 function formatTimestamp(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -244,7 +239,6 @@ function formatTimestamp(date) {
   const ss = String(date.getSeconds()).padStart(2, '0');
   return `${y} - ${m} - ${d} ${hh}:${mm}:${ss}`;
 }
-
 function handleCredentialResponse(response) {
   console.log("Google Credential Response:", response);
   const data = parseJwt(response.credential);
@@ -254,19 +248,16 @@ function handleCredentialResponse(response) {
     name: data.name,
     email: data.email
   }));
-
-  // Simpan data ke Firebase Realtime Database dengan format timestamp custom
-  const safeEmail = data.email.replace(/\./g, "_"); // ganti titik jadi underscore
+  const safeEmail = data.email.replace(/\./g, "_");
   db.ref("logins/" + safeEmail).set({
     name: data.name,
     email: data.email,
-    loginAt: formatTimestamp(new Date())  // pakai formatTimestamp di sini
+    loginAt: formatTimestamp(new Date())
   }).then(() => {
     console.log("✅ Data user berhasil disimpan ke Firebase");
   }).catch((error) => {
     console.error("❌ Gagal simpan ke Firebase:", error);
   });
-
   const existingUser = localStorage.getItem("gmailLogin");
   if (existingUser) {
     const user = JSON.parse(existingUser);
@@ -278,7 +269,6 @@ function handleCredentialResponse(response) {
     }, 300);
   }
 }
-
 window.onload = () => {
   google.accounts.id.disableAutoSelect();
 }
