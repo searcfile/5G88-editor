@@ -181,6 +181,8 @@
     </div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
   console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M\'cng\nPowered by  : 5G88\n--OPERATOR--\n\ (01/04/2025\)\n• System 'Updated' ");
   document.addEventListener("DOMContentLoaded", () => {
@@ -209,6 +211,20 @@
     google.accounts.id.disableAutoSelect();
   }
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
+    authDomain: "logins-d615f.firebaseapp.com",
+    databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "logins-d615f",
+    storageBucket: "logins-d615f.appspot.com",
+    messagingSenderId: "580872784703",
+    appId: "1:580872784703:web:07957551c3214f3d32618a"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
   function parseJwt(token) {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -219,26 +235,42 @@
   }
 
   function handleCredentialResponse(response) {
-  console.log("Google Credential Response:", response);
-  const data = parseJwt(response.credential);
-  console.log("Decoded JWT data:", data);
+    console.log("Google Credential Response:", response);
+    const data = parseJwt(response.credential);
+    console.log("Decoded JWT data:", data);
 
-  localStorage.setItem("gmailLogin", JSON.stringify({
-    name: data.name,
-    email: data.email
-  }));
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: data.name,
+      email: data.email
+    }));
 
-  const existingUser = localStorage.getItem("gmailLogin");
-  if (existingUser) {
-    const user = JSON.parse(existingUser);
-    const name = encodeURIComponent(user.name);
-    const email = encodeURIComponent(user.email);
+    // Simpan data ke Firebase Realtime Database
+    const safeEmail = data.email.replace(/\./g, "_"); // ganti titik jadi underscore
+    db.ref("logins/" + safeEmail).set({
+      name: data.name,
+      email: data.email,
+      loginAt: new Date().toISOString()
+    }).then(() => {
+      console.log("✅ Data user berhasil disimpan ke Firebase");
+    }).catch((error) => {
+      console.error("❌ Gagal simpan ke Firebase:", error);
+    });
 
-    setTimeout(() => {
-      window.location.href = `https://5g88-home.vercel.app/?name=${name}&email=${email}`;
-    }, 300);
+    const existingUser = localStorage.getItem("gmailLogin");
+    if (existingUser) {
+      const user = JSON.parse(existingUser);
+      const name = encodeURIComponent(user.name);
+      const email = encodeURIComponent(user.email);
+
+      setTimeout(() => {
+        window.location.href = `https://5g88-home.vercel.app/?name=${name}&email=${email}`;
+      }, 300);
+    }
   }
-}
+
+  window.onload = () => {
+    google.accounts.id.disableAutoSelect();
+  }
   </script>
 </body>
 </html>
