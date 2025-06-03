@@ -476,23 +476,24 @@ function checkLogin() {
     if (adminBypass && allowedAdmins.includes(adminBypass)) {
       localStorage.setItem("gmailLogin", JSON.stringify({
         name: "Admin",
-        email: adminBypass}));cleanUrl();return true;} else {window.location.href = "https://5g88-login.vercel.app/";return false;}}return true;}function _0x1a2b(name, email) {const _0x5c9f = ["https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins","Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad",
-    "Authorization","Content-Type","application/json","filterByFormula","records","length",
-    "id","PATCH","fields","Timestamp","error",
-    "❌ Error At:",
-    "❌ Error fetch PATCH:",
-    "POST",
-    "Name",
-    "Email",
-    "Succes Login:",
-    "❌ Gagal kirim ke Airtable:",
-    "❌ Error fetch POST:",
-    "❌ Error fetch GET:",
-    "json",
-    "then",
-    "catch",
-    "log",
-  ];
+        email: adminBypass}));cleanUrl();return true;} else {window.location.href = "https://5g88-login.vercel.app/";return false;}}return true;}
+fetch("https://5g88-api.vercel.app/api/airtable")
+  .then((res) => res.json())
+  .then((data) => {
+    if (data.records) {
+      console.log("✅ Data dari Airtable:", data.records);
+      // Misalnya mau tampilkan di elemen tertentu:
+      data.records.forEach((record) => {
+        console.log("Nama:", record.fields.Name);
+        console.log("Email:", record.fields.Email);
+      });
+    } else {
+      console.error("❌ Data kosong atau format salah:", data);
+    }
+  })
+  .catch((err) => {
+    console.error("❌ Error fetch dari backend:", err);
+  });
 
   function getCurrentFormattedTimestamp() {
     const now = new Date();
