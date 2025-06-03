@@ -452,141 +452,161 @@ const encodedAdmins = [
   }
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
-    authDomain: "logins-d615f.firebaseapp.com",
-    databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "logins-d615f",
-    storageBucket: "logins-d615f.appspot.com",
-    messagingSenderId: "580872784703",
-    appId: "1:580872784703:web:07957551c3214f3d32618a"
-  };
+  apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
+  authDomain: "logins-d615f.firebaseapp.com",
+  databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "logins-d615f",
+  storageBucket: "logins-d615f.appspot.com",
+  messagingSenderId: "580872784703",
+  appId: "1:580872784703:web:07957551c3214f3d32618a"
+};
 
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+// Fungsi format timestamp sesuai format YYYY - MM - DD HH:mm:ss
+function formatTimestamp(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  return `${y} - ${m} - ${d} ${hh}:${mm}:${ss}`;
+}
+
+// Fungsi untuk bersihkan URL setelah login (hilangkan param)
+function cleanUrl() {
+  const cleanUrl = window.location.origin + window.location.pathname;
+  window.history.replaceState({}, document.title, cleanUrl);
+}
+
+// Fungsi validasi email sederhana
+function isValidEmail(email) {
+  // Regex sederhana validasi email
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Daftar email admin (bisa kamu sesuaikan)
+const allowedAdmins = ["admin@example.com"];
+
+// Fungsi simpan data login dari URL ke localStorage
+function saveLoginFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+  const email = params.get("email");
+
+  if (name && email && isValidEmail(email)) {
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: decodeURIComponent(name),
+      email: decodeURIComponent(email).toLowerCase()
+    }));
+    cleanUrl();
   }
+}
 
-  // Fungsi untuk bersihkan URL setelah login (hilangkan param)
-  function cleanUrl() {
-    const cleanUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState({}, document.title, cleanUrl);
-  }
-
-  // Fungsi simpan data login dari URL ke localStorage
-  function saveLoginFromURL() {
+// Fungsi validasi login, redirect ke halaman login jika belum login
+function checkLogin() {
+  const data = localStorage.getItem("gmailLogin");
+  if (!data) {
     const params = new URLSearchParams(window.location.search);
-    const name = params.get("name");
-    const email = params.get("email");
+    const adminBypass = params.get("admin");
 
-    if (name && email && isValidEmail(email)) {
+    if (adminBypass && allowedAdmins.includes(adminBypass.toLowerCase())) {
       localStorage.setItem("gmailLogin", JSON.stringify({
-        name: decodeURIComponent(name),
-        email: decodeURIComponent(email).toLowerCase()
+        name: "Admin",
+        email: adminBypass.toLowerCase()
       }));
       cleanUrl();
-    }
-  }
-
-  // Fungsi validasi login, redirect ke halaman login jika belum login
-  function checkLogin() {
-    const data = localStorage.getItem("gmailLogin");
-    if (!data) {
-      const params = new URLSearchParams(window.location.search);
-      const adminBypass = params.get("admin");
-
-      if (adminBypass && allowedAdmins.includes(adminBypass.toLowerCase())) {
-        localStorage.setItem("gmailLogin", JSON.stringify({
-          name: "Admin",
-          email: adminBypass.toLowerCase()
-        }));
-        cleanUrl();
-        return true;
-      } else {
-        window.location.href = "https://5g88-login.vercel.app/";
-        return false;
-      }
-    }
-    return true;
-  }
-
-  // Fungsi simpan data user ke Firebase Realtime Database
-  function saveUserToFirebase(user) {
-    const db = firebase.database();
-    const usersRef = db.ref("users");
-
-    // Ganti titik (.) di email supaya valid sebagai key di Firebase
-    const emailKey = user.email.replace(/\./g, ",");
-
-    usersRef.child(emailKey).set({
-      name: user.name,
-      email: user.email,
-      lastLogin: new Date().toISOString()
-    }, (error) => {
-      if (error) {
-        console.error("❌ Gagal simpan data user ke Firebase:", error);
-      } else {
-        console.log("✅ Data user berhasil disimpan ke Firebase");
-      }
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const forceLogout = sessionStorage.getItem("forceLogout");
-    if (forceLogout === "1") {
-      sessionStorage.removeItem("forceLogout");
-      cleanUrl();
-    }
-
-    saveLoginFromURL();
-
-    if (!checkLogin()) return;
-
-    const loginDataRaw = localStorage.getItem("gmailLogin");
-    let loginData = null;
-
-    try {
-      loginData = JSON.parse(loginDataRaw);
-
-      if (loginData && loginData.email) {
-        saveUserToFirebase(loginData); // Simpan data login ke Firebase
-      }
-
-    } catch (e) {
-      console.error("❌ Failed to parse login data:", e);
-      localStorage.removeItem("gmailLogin");
-      window.location.href = "https://5g88-login.vercel.app/";
-      return;
-    }
-
-    if (!loginData || !loginData.email) {
-      window.location.href = "https://5g88-login.vercel.app/";
-      return;
-    }
-
-    // Tampilkan nama & email user di elemen yang ada (jika ada)
-    const userNameElem = document.getElementById("userName");
-    if (userNameElem) userNameElem.textContent = loginData.name;
-
-    const userEmailElem = document.getElementById("userEmail");
-    if (userEmailElem) userEmailElem.textContent = loginData.email;
-
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-      console.log("✅ Logout button found");
-      logoutBtn.addEventListener("click", () => {
-        console.log("⏳ Logging out...");
-        localStorage.removeItem("gmailLogin");
-        sessionStorage.setItem("forceLogout", "1");
-
-        if (window.google && google.accounts?.id) {
-          google.accounts.id.disableAutoSelect();
-        }
-
-        window.location.href = "https://5g88-login.vercel.app/";
-      });
+      return true;
     } else {
-      console.warn("❌ Logout button not found");
+      window.location.href = "https://5g88-login.vercel.app/";
+      return false;
+    }
+  }
+  return true;
+}
+
+// Fungsi simpan data user ke Firebase Realtime Database
+function saveUserToFirebase(user) {
+  const db = firebase.database();
+  const usersRef = db.ref("users");
+
+  // Ganti titik (.) di email supaya valid sebagai key di Firebase
+  const emailKey = user.email.replace(/\./g, ",");
+
+  usersRef.child(emailKey).set({
+    name: user.name,
+    email: user.email,
+    lastLogin: formatTimestamp(new Date())  // pake format yang kamu mau
+  }, (error) => {
+    if (error) {
+      console.error("❌ Gagal simpan data user ke Firebase:", error);
+    } else {
+      console.log("✅ Data user berhasil disimpan ke Firebase");
     }
   });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const forceLogout = sessionStorage.getItem("forceLogout");
+  if (forceLogout === "1") {
+    sessionStorage.removeItem("forceLogout");
+    cleanUrl();
+  }
+
+  saveLoginFromURL();
+
+  if (!checkLogin()) return;
+
+  const loginDataRaw = localStorage.getItem("gmailLogin");
+  let loginData = null;
+
+  try {
+    loginData = JSON.parse(loginDataRaw);
+
+    if (loginData && loginData.email) {
+      saveUserToFirebase(loginData); // Simpan data login ke Firebase
+    }
+
+  } catch (e) {
+    console.error("❌ Failed to parse login data:", e);
+    localStorage.removeItem("gmailLogin");
+    window.location.href = "https://5g88-login.vercel.app/";
+    return;
+  }
+
+  if (!loginData || !loginData.email) {
+    window.location.href = "https://5g88-login.vercel.app/";
+    return;
+  }
+
+  // Tampilkan nama & email user di elemen yang ada (jika ada)
+  const userNameElem = document.getElementById("userName");
+  if (userNameElem) userNameElem.textContent = loginData.name;
+
+  const userEmailElem = document.getElementById("userEmail");
+  if (userEmailElem) userEmailElem.textContent = loginData.email;
+
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    console.log("✅ Logout button found");
+    logoutBtn.addEventListener("click", () => {
+      console.log("⏳ Logging out...");
+      localStorage.removeItem("gmailLogin");
+      sessionStorage.setItem("forceLogout", "1");
+
+      if (window.google && google.accounts?.id) {
+        google.accounts.id.disableAutoSelect();
+      }
+
+      window.location.href = "https://5g88-login.vercel.app/";
+    });
+  } else {
+    console.warn("❌ Logout button not found");
+  }
+});
   </script>
 </body>
 </html>
