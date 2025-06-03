@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin - User Login List</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #ffd700;
+    padding: 20px;
+  }
+  h1 {
+    color: gold;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #222;
+  }
+  th, td {
+    border: 1px solid #444;
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background: #333;
+  }
+  tbody tr:nth-child(even) {
+    background: #1a1a1a;
+  }
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<h1>User Login List (Admin)</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Time Logged In</th>
+    </tr>
+  </thead>
+  <tbody id="loginTableBody">
+    <tr><td colspan="4">Loading data...</td></tr>
+  </tbody>
+</table>
+
+<script>
+  // Firebase config kamu
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
+    authDomain: "logins-d615f.firebaseapp.com",
+    databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "logins-d615f",
+    storageBucket: "logins-d615f.appspot.com",
+    messagingSenderId: "580872784703",
+    appId: "1:580872784703:web:07957551c3214f3d32618a"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  const dbRef = firebase.database().ref('logins');
+
+  function formatDateTime(dateString) {
+    const d = new Date(dateString);
+    if (isNaN(d)) return '-';
+    return d.toLocaleString('en-GB', { hour12: false });
+  }
+
+  function loadLoginData() {
+    const tbody = document.getElementById('loginTableBody');
+    tbody.innerHTML = '<tr><td colspan="4">Loading data...</td></tr>';
+
+    dbRef.once('value', snapshot => {
+      const data = snapshot.val();
+      if (!data) {
+        tbody.innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
+        return;
+      }
+
+      let html = '';
+      let count = 1;
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          const item = data[key];
+          html += `<tr>
+            <td>${count++}</td>
+            <td>${item.name || '-'}</td>
+            <td>${item.email || '-'}</td>
+            <td>${formatDateTime(item.time)}</td>
+          </tr>`;
+        }
+      }
+      tbody.innerHTML = html;
+    }, error => {
+      tbody.innerHTML = `<tr><td colspan="4">Error loading data: ${error.message}</td></tr>`;
+    });
+  }
+
+  // Load data first time
+  loadLoginData();
+
+  // Auto refresh every 10 seconds
+  setInterval(loadLoginData, 10000);
+</script>
+
+</body>
+</html>
