@@ -69,52 +69,54 @@
   const dbRef = firebase.database().ref('logins');
 
   // Fungsi format waktu yang bisa handle string, timestamp, atau kosong
-  function formatDateTime(dateValue) {
-    if (!dateValue) return '-';
-    
-    const date = new Date(Number(dateValue));
-    if (isNaN(date)) return '-';
-    
-    return date.toLocaleString('en-GB', { hour12: false });
-  }
+  function formatDateTime(dateString) {
+  if (!dateString) return '-';
 
-  function loadLoginData() {
-    const tbody = document.getElementById('loginTableBody');
-    tbody.innerHTML = '<tr><td colspan="4">Loading data...</td></tr>';
+  // Hapus spasi di sekitar tanda '-'
+  const cleaned = dateString.replace(/\s*-\s*/g, '-').trim();
 
-    dbRef.once('value', snapshot => {
-      const data = snapshot.val();
-      if (!data) {
-        tbody.innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
-        return;
+  const d = new Date(cleaned);
+
+  if (isNaN(d)) return '-';
+
+  return d.toLocaleString('en-GB', { hour12: false });
+}
+
+function loadLoginData() {
+  const tbody = document.getElementById('loginTableBody');
+  tbody.innerHTML = '<tr><td colspan="4">Loading data...</td></tr>';
+
+  dbRef.once('value', snapshot => {
+    const data = snapshot.val();
+    if (!data) {
+      tbody.innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
+      return;
+    }
+
+    let html = '';
+    let count = 1;
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        const item = data[key];
+        html += `<tr>
+          <td>${count++}</td>
+          <td>${item.name || '-'}</td>
+          <td>${item.email || '-'}</td>
+          <td>${formatDateTime(item.loginAt)}</td>
+        </tr>`;
       }
+    }
+    tbody.innerHTML = html;
+  }, error => {
+    tbody.innerHTML = `<tr><td colspan="4">Error loading data: ${error.message}</td></tr>`;
+  });
+}
 
-      let html = '';
-      let count = 1;
-      for (const key in data) {
-        if (data.hasOwnProperty(key)) {
-          const item = data[key];
-          const formattedTime = formatDateTime(item.time);
+// Panggil load data pertama kali
+loadLoginData();
 
-          html += `<tr>
-            <td>${count++}</td>
-            <td>${item.name || '-'}</td>
-            <td>${item.email || '-'}</td>
-            <td>${formattedTime}</td>
-          </tr>`;
-        }
-      }
-      tbody.innerHTML = html;
-    }, error => {
-      tbody.innerHTML = `<tr><td colspan="4">Error loading data: ${error.message}</td></tr>`;
-    });
-  }
-
-  // Load data pertama kali
-  loadLoginData();
-
-  // Auto refresh tiap 10 detik
-  setInterval(loadLoginData, 10000);
+// Auto refresh tiap 10 detik
+setInterval(loadLoginData, 10000);
 </script>
 
 </body>
