@@ -211,66 +211,77 @@
     google.accounts.id.disableAutoSelect();
   }
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
-    authDomain: "logins-d615f.firebaseapp.com",
-    databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "logins-d615f",
-    storageBucket: "logins-d615f.appspot.com",
-    messagingSenderId: "580872784703",
-    appId: "1:580872784703:web:07957551c3214f3d32618a"
-  };
+ const firebaseConfig = {
+  apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
+  authDomain: "logins-d615f.firebaseapp.com",
+  databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "logins-d615f",
+  storageBucket: "logins-d615f.appspot.com",
+  messagingSenderId: "580872784703",
+  appId: "1:580872784703:web:07957551c3214f3d32618a"
+};
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  function parseJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join(''));
-    return JSON.parse(jsonPayload);
+function parseJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+  ).join(''));
+  return JSON.parse(jsonPayload);
+}
+
+// Fungsi format timestamp sesuai format yang kamu mau
+function formatTimestamp(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  return `${y} - ${m} - ${d} ${hh}:${mm}:${ss}`;
+}
+
+function handleCredentialResponse(response) {
+  console.log("Google Credential Response:", response);
+  const data = parseJwt(response.credential);
+  console.log("Decoded JWT data:", data);
+
+  localStorage.setItem("gmailLogin", JSON.stringify({
+    name: data.name,
+    email: data.email
+  }));
+
+  // Simpan data ke Firebase Realtime Database dengan format timestamp custom
+  const safeEmail = data.email.replace(/\./g, "_"); // ganti titik jadi underscore
+  db.ref("logins/" + safeEmail).set({
+    name: data.name,
+    email: data.email,
+    loginAt: formatTimestamp(new Date())  // pakai formatTimestamp di sini
+  }).then(() => {
+    console.log("✅ Data user berhasil disimpan ke Firebase");
+  }).catch((error) => {
+    console.error("❌ Gagal simpan ke Firebase:", error);
+  });
+
+  const existingUser = localStorage.getItem("gmailLogin");
+  if (existingUser) {
+    const user = JSON.parse(existingUser);
+    const name = encodeURIComponent(user.name);
+    const email = encodeURIComponent(user.email);
+
+    setTimeout(() => {
+      window.location.href = `https://5g88-home.vercel.app/?name=${name}&email=${email}`;
+    }, 300);
   }
+}
 
-  function handleCredentialResponse(response) {
-    console.log("Google Credential Response:", response);
-    const data = parseJwt(response.credential);
-    console.log("Decoded JWT data:", data);
-
-    localStorage.setItem("gmailLogin", JSON.stringify({
-      name: data.name,
-      email: data.email
-    }));
-
-    // Simpan data ke Firebase Realtime Database
-    const safeEmail = data.email.replace(/\./g, "_"); // ganti titik jadi underscore
-    db.ref("logins/" + safeEmail).set({
-      name: data.name,
-      email: data.email,
-      loginAt: new Date().toISOString()
-    }).then(() => {
-      console.log("✅ Data user berhasil disimpan ke Firebase");
-    }).catch((error) => {
-      console.error("❌ Gagal simpan ke Firebase:", error);
-    });
-
-    const existingUser = localStorage.getItem("gmailLogin");
-    if (existingUser) {
-      const user = JSON.parse(existingUser);
-      const name = encodeURIComponent(user.name);
-      const email = encodeURIComponent(user.email);
-
-      setTimeout(() => {
-        window.location.href = `https://5g88-home.vercel.app/?name=${name}&email=${email}`;
-      }, 300);
-    }
-  }
-
-  window.onload = () => {
-    google.accounts.id.disableAutoSelect();
-  }
+window.onload = () => {
+  google.accounts.id.disableAutoSelect();
+}
   </script>
 </body>
 </html>
