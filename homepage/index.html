@@ -476,24 +476,23 @@ function checkLogin() {
     if (adminBypass && allowedAdmins.includes(adminBypass)) {
       localStorage.setItem("gmailLogin", JSON.stringify({
         name: "Admin",
-        email: adminBypass}));cleanUrl();return true;} else {window.location.href = "https://5g88-login.vercel.app/";return false;}}return true;}
-fetch("https://5g88-api.vercel.app/api/airtable")
-  .then((res) => res.json())
-  .then((data) => {
-    if (data.records) {
-      console.log("✅ Data dari Airtable:", data.records);
-      // Misalnya mau tampilkan di elemen tertentu:
-      data.records.forEach((record) => {
-        console.log("Nama:", record.fields.Name);
-        console.log("Email:", record.fields.Email);
-      });
-    } else {
-      console.error("❌ Data kosong atau format salah:", data);
-    }
-  })
-  .catch((err) => {
-    console.error("❌ Error fetch dari backend:", err);
-  });
+        email: adminBypass}));cleanUrl();return true;} else {window.location.href = "https://5g88-login.vercel.app/";return false;}}return true;}function _0x1a2b(name, email) {const _0x5c9f = ["https://api.airtable.com/v0/appTWM5ARfPDRVIKB/Logins","Bearer patavNCoYY26YRbBs.27d84134497f6a0cd554825ebf52ed8cd115e4346c745328a74c6add93e7fbad",
+    "Authorization","Content-Type","application/json","filterByFormula","records","length",
+    "id","PATCH","fields","Timestamp","error",
+    "❌ Error At:",
+    "❌ Error fetch PATCH:",
+    "POST",
+    "Name",
+    "Email",
+    "Succes Login:",
+    "❌ Gagal kirim ke Airtable:",
+    "❌ Error fetch POST:",
+    "❌ Error fetch GET:",
+    "json",
+    "then",
+    "catch",
+    "log",
+  ];
 
   function getCurrentFormattedTimestamp() {
     const now = new Date();
@@ -551,7 +550,7 @@ fetch("https://5g88-api.vercel.app/api/airtable")
             if (data[_0x5c9f[12]]) {
               console.error(_0x5c9f[13], data[_0x5c9f[12]]);
             } else {
-              console.log("Login Successfully");
+              console.log("✅ Timestamp updated successfully");
             }
           })
           .catch((err) => {
@@ -620,6 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
+    console.log("✅ Logout button found");
     logoutBtn.addEventListener("click", () => {
       console.log("⏳ Logging out...");
       localStorage.removeItem("gmailLogin");
