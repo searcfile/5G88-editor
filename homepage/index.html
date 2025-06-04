@@ -196,8 +196,25 @@
    margin-left: 260px;
    transition: margin-left 0.3s;
    }
+  #logoutBtn {
+   background-color: gold;
+   color: black;
+   padding: 10px 16px;
+   border-radius: 5px;
+   border: none;
+   font-weight: bold;
+   cursor: pointer;
+   position: fixed;
+   right: 20px;
+   top: 20px;
+   z-index: 99999;
+   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+   transition: all 0.3s ease;
+  }
    #logoutBtn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #000;
+    font-weight: bold;
    }
   </style>
 </head>
@@ -247,8 +264,7 @@
   <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
 </div>
 
-  <button id="logoutBtn" style="background-color: gold; color: black; padding: 10px 16px; border-radius: 5px; border: none; font-weight: bold; z-index: 99999; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); right: 20px; top: 20px; position: fixed;">
-  Logout</button>
+  <button id="logoutBtn">Logout</button>
 
   <div style="position: fixed; top: 20px; right: 60px; z-index: 9999; display: flex; gap: 15px;">
      <div id="userName" style="position: fixed; top: 10px; right: 300px; color: gold; font-weight: bold; z-index: 9999; font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"></div>
