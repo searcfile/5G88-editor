@@ -84,13 +84,17 @@
       background: #111;
       border: 2px solid gold;
       border-radius: 10px;
-      padding: 125px 10px;
+      padding: 40px 20px 30px;
       text-align: center;
       position: relative;
       width: 90%;
       max-width: 400px;
       box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
       transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     /* Logo */
@@ -99,25 +103,43 @@
       margin-bottom: 20px;
     }
 
-    /* Buttons */
-    .popup-btn, .popup-close {
-      background: transparent;
-      border: 2px solid gold;
-      color: gold;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin: 10px;
-      transition: transform 0.3s ease, background 0.3s ease;
-    }
+    .popup-btn {
+  background: transparent;
+  border: 2px solid gold;
+  color: gold;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px auto 0; /* auto kiri kanan supaya center, margin top 10px */
+  display: inline-block;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
 
-    .popup-btn:hover,
+    .popup-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  border: none; /* hilangkan border */
+  background: transparent;
+  color: gold;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
     .popup-close:hover {
-      transform: scale(1.05);
-      background: gold;
-    }
-
+  transform: scale(1.1);
+  background: gold;
+  color: black;
+  border-radius: 5px;
+}
+   .popup-btn:hover {
+  transform: scale(1.05);
+  background: gold;
+  color: black;
+}
     /* Close X at top right */
     .popup-close {
       position: absolute;
