@@ -13,103 +13,133 @@
     margin: 0;
   }
 
-  .popup-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100vh;
-    background: rgba(0,0,0,0.7);
+  .login-box {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    animation: zoomIn 0.3s ease forwards;
-  }
-
-  @keyframes zoomIn {
-    from {
-      transform: scale(0.7);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-
-  .popup-box {
-    background: #111;
-    border: 2px solid gold;
-    border-radius: 10px;
-    padding: 40px 20px 30px;
+    justify-content: flex-start;
+    min-height: 100vh;
     text-align: center;
-    position: relative;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-    transition: transform 0.3s ease;
-  }
-
-  .popup-box img {
-    max-width: 220px;
-    margin-bottom: 20px;
-  }
-
-  .popup-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: gold;
-  }
-
-  /* Tombol close X tanpa border */
-  .popup-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 5px 10px;
-    background: transparent;
-    color: gold;
-    border: none;
-    font-weight: bold;
-    font-size: 24px;
-    cursor: pointer;
-    transition: transform 0.3s ease, color 0.3s ease;
-    line-height: 1;
-  }
-
-  .popup-close:hover {
-    transform: scale(1.2);
-    color: #fff;
-  }
-
-  /* Tombol OK dengan border gold */
-  .popup-btn {
-    background: transparent;
+    padding: 50px 20px;
     border: 2px solid gold;
-    color: gold;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    width: 350px;
+    min-height: 120px;
+    margin: 150px auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px;
+    background-color: #111;
+  }
+
+  .login-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.9);
+  }
+
+  .login-box img {
+    max-width: 300px;
+    margin-bottom: 25px;
+    margin-top: -20px;
+  }
+
+  .login-btn {
+    background: #FFD700;
+    color: #000;
+    border: 2px solid gold;
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 18px;
     border-radius: 5px;
     cursor: pointer;
-    margin: 10px auto 0;
-    display: inline-block;
-    transition: transform 0.3s ease, background 0.3s ease;
+    transition: background 0.3s ease;
+    display: block;
+    margin: 0 auto;
   }
 
-  .popup-btn:hover {
-    transform: scale(1.05);
-    background: gold;
-    color: black;
+  .login-btn:hover {
+    background: #e6c200;
   }
-</style>
+    @keyframes zoomIn {
+      from {
+        transform: scale(0.7);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .popup-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    /* Popup box */
+    .popup-box {
+      background: #111;
+      border: 2px solid gold;
+      border-radius: 10px;
+      padding: 125px 10px;
+      text-align: center;
+      position: relative;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+      transition: transform 0.3s ease;
+    }
+
+    /* Logo */
+    .popup-box img {
+      max-width: 220px;
+      margin-bottom: 20px;
+    }
+
+    /* Buttons */
+    .popup-btn, .popup-close {
+      background: transparent;
+      border: 2px solid gold;
+      color: gold;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .popup-btn:hover,
+    .popup-close:hover {
+      transform: scale(1.05);
+      background: gold;
+    }
+
+    /* Close X at top right */
+    .popup-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 5px 10px;
+    }
+    .popup-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: gold;
+}
+  </style>
 </head>
 <body>
-
-<div class="popup-overlay" id="popup">
+  
+  <div class="popup-overlay" id="popup">
   <div class="popup-box" id="popupBox">
-    <button class="popup-close" onclick="closePopup()">×</button>
+    <button class="popup-close" onclick="closePopup()">X</button>
     <p class="popup-title">Welcome to 5G88!</p>
-    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" />
+    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" class="popup-logo">
     <button class="popup-btn" onclick="closePopup()">OK</button>
   </div>
 </div>
