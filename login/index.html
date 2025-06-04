@@ -7,51 +7,65 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
-      background: #000;
-      color: #fff;
-      font-family: sans-serif;
-      margin: 0;
-    }
-    .login-box img {
-      max-width: 300px;
-      margin-bottom: 20px;
-    }
-    .login-btn {
-      background: #FFD700;
-      color: #000;
-      border: 2px solid gold;
-      padding: 10px 20px;
-      font-size: 18px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      display: block;
-      margin: 0 auto;
-    }
-    .login-btn:hover {
-      background: #e6c200;
-    }
-    .login-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      text-align: center;
-      padding-top: 50px;
-      border: 2px solid gold;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-      widht: 350px;
-      min-heght: 300px;
-    }
+    background: #000;
+    color: #fff;
+    font-family: sans-serif;
+    margin: 0;
+  }
+
+  .login-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    text-align: center;
+    padding: 50px 20px;
+    border: 2px solid gold;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    width: 350px;
+    min-height: 300px;
+    margin: 80px auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px;
+    background-color: #111;
+  }
+
+  .login-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
+  }
+
+  .login-box img {
+    max-width: 200px;
+    margin-bottom: 20px;
+  }
+
+  .login-btn {
+    background: #FFD700;
+    color: #000;
+    border: 2px solid gold;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .login-btn:hover {
+    background: #e6c200;
+  }
   </style>
 </head>
 <body>
 
-<div class="login-box">
-  <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo">
-  <button class="login-btn" onclick="signInWithGoogle()">Login with Google</button>
-</div>
+  <div class="login-box">
+    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo">
+    <button class="login-btn" onclick="signInWithGoogle()">Login with Google</button>
+  </div>
+</body>
 
 <script>
 const firebaseConfig = {
