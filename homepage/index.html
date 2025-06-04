@@ -467,20 +467,6 @@ const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvb
 const _0xadmins = encodedAdmins.map(e => atob(e));
 const allowedAdmins = [..._0xadmins, "admin@example.com"];
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
-  authDomain: "logins-d615f.firebaseapp.com",
-  databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "logins-d615f",
-  storageBucket: "logins-d615f.appspot.com",
-  messagingSenderId: "580872784703",
-  appId: "1:580872784703:web:07957551c3214f3d32618a"
-};
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
 function formatTimestamp(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -535,24 +521,6 @@ function checkLogin() {
   return true;
 }
 
-function saveUserToFirebase(user) {
-  const db = firebase.database();
-  const usersRef = db.ref("users");
-  const emailKey = user.email.replace(/\./g, ",");
-
-  usersRef.child(emailKey).set({
-    name: user.name,
-    email: user.email,
-    lastLogin: formatTimestamp(new Date())
-  }, (error) => {
-    if (error) {
-      console.error("❌ Gagal simpan data user ke Firebase:", error);
-    } else {
-      console.log("✅ Data user berhasil disimpan ke Firebase");
-    }
-  });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   const forceLogout = sessionStorage.getItem("forceLogout");
   if (forceLogout === "1") {
@@ -569,9 +537,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   try {
     loginData = JSON.parse(loginDataRaw);
-    if (loginData && loginData.email) {
-      saveUserToFirebase(loginData);
-    }
   } catch (e) {
     console.error("❌ Failed to parse login data:", e);
     localStorage.removeItem("gmailLogin");
