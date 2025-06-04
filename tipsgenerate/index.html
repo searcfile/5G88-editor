@@ -375,6 +375,7 @@
 
   <img src="https://i.imgur.com/3qOL65q.gif" alt="GIF Kiri" class="gif-kiri">
     <img src="https://i.imgur.com/3qOL65q.gif" alt="GIF Kanan" class="gif-kanan">
+</div>
   <script>
   console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
     const platformData = {
@@ -464,9 +465,63 @@
     }
 
     function copyTips(name) {
-      const text = document.getElementById('tips-' + name).innerText;
-      navigator.clipboard.writeText(text);
+  const text = document.getElementById('tips-' + name).innerText;
+  const button = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-copy`);
+
+  // Copy teks
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopyNotice(button);
+    }).catch(() => {
+      fallbackCopy();
+    });
+  } else {
+    fallbackCopy();
+  }
+
+  function fallbackCopy() {
+    const tempInput = document.createElement("textarea");
+    tempInput.value = text;
+    tempInput.style.position = "fixed";
+    tempInput.style.opacity = "0";
+    document.body.appendChild(tempInput);
+    tempInput.focus();
+    tempInput.select();
+    try {
+      document.execCommand("copy");
+    } catch (err) {}
+    document.body.removeChild(tempInput);
+    showCopyNotice(button);
+  }
+
+  function showCopyNotice(button) {
+    let notice = button.parentElement.querySelector('.copy-notice');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.className = 'copy-notice';
+      notice.innerText = 'Tersalin!';
+      notice.style.position = 'absolute';
+      notice.style.bottom = '100%';
+      notice.style.left = '50%';
+      notice.style.transform = 'translateX(-50%)';
+      notice.style.background = '#222';
+      notice.style.color = '#fff';
+      notice.style.fontSize = '11px';
+      notice.style.padding = '2px 6px';
+      notice.style.borderRadius = '4px';
+      notice.style.marginBottom = '6px';
+      notice.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+      notice.style.zIndex = '999';
+      button.parentElement.style.position = 'relative';
+      button.parentElement.appendChild(notice);
     }
+
+    notice.style.display = 'block';
+    setTimeout(() => {
+      notice.style.display = 'none';
+    }, 1500);
+  }
+}
 
     function toggleAuto(name) {
       const checkbox = document.getElementById('auto-' + name);
