@@ -58,9 +58,75 @@
   .login-btn:hover {
     background: #e6c200;
   }
+    .popup-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    /* Popup box */
+    .popup-box {
+      background: #111;
+      border: 2px solid gold;
+      border-radius: 10px;
+      padding: 30px 20px;
+      text-align: center;
+      position: relative;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+      transition: transform 0.3s ease;
+    }
+
+    /* Logo */
+    .popup-box img {
+      max-width: 180px;
+      margin-bottom: 20px;
+    }
+
+    /* Buttons */
+    .popup-btn, .popup-close {
+      background: transparent;
+      border: 2px solid gold;
+      color: gold;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .popup-btn:hover,
+    .popup-close:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Close X at top right */
+    .popup-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 5px 10px;
+    }
   </style>
 </head>
 <body>
+  
+  <div class="popup-overlay" id="popup">
+  <div class="popup-box" id="popupBox">
+    <button class="popup-close" onclick="closePopup()">X</button>
+    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo">
+    <p>Welcome to 5G88!</p>
+    <button class="popup-btn" onclick="closePopup()">OK</button>
+  </div>
+</div>
 
   <div class="login-box">
     <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo">
@@ -69,6 +135,16 @@
 </body>
 
 <script>
+  function closePopup() {
+    document.getElementById("popup").style.display = "none";
+  }
+  window.addEventListener("click", function(e) {
+    const popup = document.getElementById("popup");
+    const box = document.getElementById("popupBox");
+    if (e.target === popup) {
+      popup.style.display = "none";
+    }
+  });
 const firebaseConfig = {
   apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
   authDomain: "logins-d615f.firebaseapp.com",
