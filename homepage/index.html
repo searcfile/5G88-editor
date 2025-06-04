@@ -20,7 +20,6 @@
       height: 100vh;
     }
 
-    /* Sidebar */
     .sidebar-overlay {
       position: fixed;
       top: 0;
@@ -197,6 +196,9 @@
    margin-left: 260px;
    transition: margin-left 0.3s;
    }
+   #logoutBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+   }
   </style>
 </head>
 <body>
@@ -252,6 +254,11 @@
      <div id="userName" style="position: fixed; top: 10px; right: 300px; color: gold; font-weight: bold; z-index: 9999; font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"></div>
      <div id="userEmail" style="position: fixed; top: 10px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"></div>
   </div>
+  
+  <div id="loadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;">
+  <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Logo" style="width:100px;height:auto;margin-bottom:20px;" />
+  <div style="font-size:18px;font-weight:bold;">Loading...</div>
+</div>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -440,12 +447,9 @@ window.onload = () => {
     loadPage(tabs[tabs.length - 1].url);
   }
 }
-const encodedAdmins = [
-  "YWRtaW4xQGdtYWlsLmNvbQ==", // admin1@gmail.com
-  "NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ==" // 5g88.official@gmail.com
-];
+const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
 const _0xadmins = encodedAdmins.map(e => atob(e));
-const allowedAdmins = [..._0xadmins, "admin@example.com"]; // ✅ Diperbaiki
+const allowedAdmins = [..._0xadmins, "admin@example.com"];
 
 const firebaseConfig = {
   apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
@@ -460,6 +464,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+
 function formatTimestamp(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -467,15 +472,18 @@ function formatTimestamp(date) {
   const hh = String(date.getHours()).padStart(2, '0');
   const mm = String(date.getMinutes()).padStart(2, '0');
   const ss = String(date.getSeconds()).padStart(2, '0');
-  return `${y} - ${m} - ${d} ${hh}:${mm}:${ss}`;
+  return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
 }
+
 function cleanUrl() {
   const cleanUrl = window.location.origin + window.location.pathname;
   window.history.replaceState({}, document.title, cleanUrl);
 }
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
 function saveLoginFromURL() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
@@ -489,6 +497,7 @@ function saveLoginFromURL() {
     cleanUrl();
   }
 }
+
 function checkLogin() {
   const data = localStorage.getItem("gmailLogin");
   if (!data) {
@@ -509,6 +518,7 @@ function checkLogin() {
   }
   return true;
 }
+
 function saveUserToFirebase(user) {
   const db = firebase.database();
   const usersRef = db.ref("users");
@@ -543,11 +553,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   try {
     loginData = JSON.parse(loginDataRaw);
-
     if (loginData && loginData.email) {
       saveUserToFirebase(loginData);
     }
-
   } catch (e) {
     console.error("❌ Failed to parse login data:", e);
     localStorage.removeItem("gmailLogin");
@@ -559,6 +567,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "https://5g88-login.vercel.app/";
     return;
   }
+
   const userNameElem = document.getElementById("userName");
   if (userNameElem) userNameElem.textContent = loginData.name;
 
@@ -567,20 +576,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
-    console.log("✅ Logout button found");
     logoutBtn.addEventListener("click", () => {
-      console.log("⏳ Logging out...");
       localStorage.removeItem("gmailLogin");
       sessionStorage.setItem("forceLogout", "1");
 
-      if (window.google && google.accounts?.id) {
+      if (window.google?.accounts?.id) {
         google.accounts.id.disableAutoSelect();
       }
 
       window.location.href = "https://5g88-login.vercel.app/";
     });
-  } else {
-    console.warn("❌ Logout button not found");
+  }
+
+  const loadingScreen = document.getElementById("loadingScreen");
+  if (loadingScreen) {
+    loadingScreen.style.display = "none";
   }
 });
   </script>
