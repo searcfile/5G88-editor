@@ -58,6 +58,16 @@
   .login-btn:hover {
     background: #e6c200;
   }
+    @keyframes zoomIn {
+      from {
+        transform: scale(0.7);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
     .popup-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -74,7 +84,7 @@
       background: #111;
       border: 2px solid gold;
       border-radius: 10px;
-      padding: 30px 20px;
+      padding: 125px 10px;
       text-align: center;
       position: relative;
       width: 90%;
@@ -105,7 +115,7 @@
     .popup-btn:hover,
     .popup-close:hover {
       transform: scale(1.05);
-      background: rgba(255, 255, 255, 0.1);
+      background: gold;
     }
 
     /* Close X at top right */
@@ -122,8 +132,8 @@
   <div class="popup-overlay" id="popup">
   <div class="popup-box" id="popupBox">
     <button class="popup-close" onclick="closePopup()">X</button>
-    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo">
     <p>Welcome to 5G88!</p>
+    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo">
     <button class="popup-btn" onclick="closePopup()">OK</button>
   </div>
 </div>
