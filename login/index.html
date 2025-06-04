@@ -52,7 +52,6 @@
 </div>
 
 <script>
- // Inisialisasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
   authDomain: "logins-d615f.firebaseapp.com",
@@ -90,7 +89,6 @@ function signInWithGoogle() {
       }
       const emailKey = user.email.replace(/\./g, "_");
 
-      // Simpan data login user ke Firebase Realtime Database
       db.ref("logins/" + emailKey).set({
         name: user.displayName,
         email: user.email,
@@ -99,13 +97,11 @@ function signInWithGoogle() {
       .then(() => {
         console.log("✅ Login data saved to Firebase");
 
-        // Simpan juga di localStorage (optional)
         localStorage.setItem("gmailLogin", JSON.stringify({
           name: user.displayName,
           email: user.email
         }));
 
-        // Redirect ke halaman home, kirim param name & email
         const name = encodeURIComponent(user.displayName);
         const email = encodeURIComponent(user.email);
         window.location.href = `https://5g88-home.vercel.app/?name=${name}&email=${email}`;
