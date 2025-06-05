@@ -26,7 +26,8 @@
     text-align: left;
   }
   th {
-    background: #333;
+    background: gold;
+    color: #000;
   }
   tbody tr:nth-child(even) {
     background: #1a1a1a;
@@ -54,7 +55,6 @@
 </table>
 
 <script>
- // Firebase config kamu
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
     authDomain: "logins-d615f.firebaseapp.com",
@@ -68,11 +68,9 @@
 
   const dbRef = firebase.database().ref('logins');
 
-  // Fungsi format waktu yang bisa handle string, timestamp, atau kosong
   function formatDateTime(dateString) {
   if (!dateString) return '-';
 
-  // Hapus spasi di sekitar tanda '-'
   const cleaned = dateString.replace(/\s*-\s*/g, '-').trim();
 
   const d = new Date(cleaned);
@@ -112,10 +110,8 @@ function loadLoginData() {
   });
 }
 
-// Panggil load data pertama kali
 loadLoginData();
 
-// Auto refresh tiap 10 detik
 setInterval(loadLoginData, 10000);
 </script>
 
