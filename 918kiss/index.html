@@ -30,8 +30,8 @@
       text-align: center;
      }
     td {
-      padding: 22px 26px; /* kurangi tinggi baris */
-      border: 1px solid #ddd; /* Tipis */
+      padding: 22px 26px; 
+      border: 1px solid #ddd;
       border: 1px solid rgba(0, 0, 0, 0.05);
       text-align: center;
      }
@@ -48,45 +48,45 @@
      }
      th:nth-child(2),
      td:nth-child(2) {
-     width: 0px; /* Lebar kolom TableID */
+     width: 0px;
      }
      th:nth-child(7),
      td:nth-child(7) {
-     width: 5px; /* Lebar kolom DateTime */
+     width: 5px; 
      }
   #gameLog td:nth-child(5),
   #gameLog th:nth-child(5) {
-    width: 5px; /* atau berapa pun yang kamu mau */
+    width: 5px;
   }
   #gameLog th:first-child,
   #gameLog td:first-child {
-   width: 5px; /* beginmoney */
+   width: 5px; 
    white-space: nowrap;
   }
   #gameLog th:nth-child(6),
   #gameLog td:nth-child(6) {
-   width: 5px; /* endmoney */
+   width: 5px;
   }
   #gameLog th:nth-child(3),
   #gameLog td:nth-child(3) {
-   width: 5px; /* bet*/
+   width: 5px; 
   }
   #gameLog th:nth-child(4),
   #gameLog td:nth-child(4) {
-   width: 5px; /* win */
+   width: 5px; 
   }
  .table-id-highlight {
-   width: 38px;               /* Panjang */
-   height: 34px;              /* Tinggi - sama untuk bulatan */
-   background-color: #d2d6de; /* Warna latar */
-   color: #000;               /* Warna teks */
-   font-weight: bold;         /* Teks tebal */
-   font-size: 23.5px;           /* Saiz teks */
-   border-radius: 45%;        /* Buat bentuk bulat */
-   display: flex;             /* Flexbox untuk center teks */
-   justify-content: center;   /* Center secara horizontal */
-   align-items: center;       /* Center secara vertical */
-   margin: 10px auto;         /* Tengah & ada jarak */
+   width: 38px;               
+   height: 34px;             
+   background-color: #d2d6de; 
+   color: #000;               
+   font-weight: bold;         
+   font-size: 23.5px;          
+   border-radius: 45%;        
+   display: flex;             
+   justify-content: center;   
+   align-items: center;      
+   margin: 10px auto;         
     }
     button {
      padding: 5px 10px;
@@ -883,19 +883,19 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
       betSelect.appendChild(option);
     });
 
-    // Trigger update pecahan otomatis untuk bet pertama
+  
     betSelect.dispatchEvent(new Event("change"));
   }
 });
 
-// Update pecahan berdasarkan bet
+
 document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(this.value);
   const pecahanSelect = document.getElementById("pecahanSelect");
   pecahanSelect.innerHTML = "";
 
-    // Acak pecahan dan ambil minimal 4
+    
     if (gameData[game] && gameData[game].pecahan[bet]) {
     const pecahanList = gameData[game].pecahan[bet];
 
@@ -949,7 +949,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   let logs = [];
 
-  // Ambil waktu dasar dari input manual atau globalTime
+ 
   const manualInput = document.getElementById("manualTime").value.trim();
   let baseTime;
 if (manualInput) {
@@ -983,8 +983,7 @@ if (manualInput) {
   baseTime = new Date();
 }
 
-  // Karena kita mau generate dari waktu awal (paling lama) ke waktu akhir (paling baru),
-  // kita mundur waktu dulu 10 langkah * (avg 30 detik) supaya baseTime = waktu paling awal
+
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
 
    const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
@@ -993,7 +992,7 @@ if (manualInput) {
    let totalSeconds = 0;
 
    for (let i = 0; i < 10; i++) {
-    const gap = Math.floor(Math.random() * 3) + 3; // akan hasilkan 3, 4, atau 5
+    const gap = Math.floor(Math.random() * 3) + 3;
     totalSeconds += gap;
     const logTime = new Date();
     logTime.setSeconds(logTime.getSeconds() - totalSeconds);
@@ -1003,7 +1002,7 @@ if (manualInput) {
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
     const formattedTime = formatDateTimeLocal(baseTime);
 
-    logs.unshift({ // masukkan log terbaru ke awal array
+    logs.unshift({ 
       game,
       tableID: `<span class="table-id-highlight">0</span>`,
       bet: bet.toFixed(2),
@@ -1014,17 +1013,17 @@ if (manualInput) {
     });
 
     balance = endMoney;
-    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3)); // waktu bertambah acak
+    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
 
-  // Set Score dari log paling atas (waktu paling baru)
+ 
  const setScoreMoney = logs[0].endMoney;
 
-// Buat objek Date baru berdasarkan waktu log terbaru
+
 let setScoreTime = new Date(logs[0].dateTime);
 const extraSeconds = [2, 3, 7, 10];
 const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
-setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset); // tambah 4 detik (atau sesuai keinginan)
+setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
 
 let rows = `
   <tr class="set-score-row">
