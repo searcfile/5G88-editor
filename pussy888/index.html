@@ -237,7 +237,8 @@
 <button onclick="generateLog()">Change</button>
 <label for="manualScore" style="color: gold;">Add Score (optional):</label>
 <input type="number" id="manualScore" value="0" style="width: 100px; font-size: 18px; padding: 4px 8px; color: white;">
-
+<button onclick="deleteCents()" style="margin-left: 5px;">Delete Cents</button>
+  
 <table id="gameLog">
   <thead>
     <tr>
@@ -1100,6 +1101,39 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const s = String(date.getSeconds()).padStart(2, '0');
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
  }
+
+  function deleteCents() {
+  const tables = document.querySelectorAll("table");
+
+  tables.forEach(table => {
+    const rows = table.querySelectorAll("tr");
+
+    rows.forEach(row => {
+      const setScoreCell = row.querySelector(".setscore");
+      const endMoneyCell = row.cells[5]; // kolom ke-6 adalah Endmoney
+
+      if (setScoreCell && setScoreCell.textContent.includes("Set score：")) {
+        const parts = setScoreCell.textContent.split("Set score：");
+        const originalNumber = parseFloat(parts[1]);
+
+        if (!isNaN(originalNumber)) {
+          const intPart = Math.floor(Math.abs(originalNumber));
+          const decimalPart = Math.abs(originalNumber) - intPart;
+
+          // Update Set Score jadi tanpa sen
+          const finalSetScore = `Set score：${originalNumber < 0 ? "-" : ""}${intPart}.00`;
+          setScoreCell.textContent = finalSetScore;
+
+          // Update Endmoney untuk menampung sen
+          if (endMoneyCell) {
+            const extraCents = decimalPart.toFixed(2);
+            endMoneyCell.textContent = extraCents;
+          }
+        }
+      }
+    });
+  });
+}
  
   function generateLog() {
   const game = document.getElementById("gameSelect").value;
