@@ -56,65 +56,56 @@
 
 <script>
   const firebaseConfig = {
-      apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
-      authDomain: "logins-d615f.firebaseapp.com",
-      databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "logins-d615f",
-      storageBucket: "logins-d615f.appspot.com",
-      messagingSenderId: "580872784703",
-      appId: "1:580872784703:web:07957551c3214f3d32618a"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const dbRef = firebase.database().ref('logins');
+  apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
+  authDomain: "logins-d615f.firebaseapp.com",
+  databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "logins-d615f",
+  storageBucket: "logins-d615f.appspot.com",
+  messagingSenderId: "580872784703",
+  appId: "1:580872784703:web:07957551c3214f3d32618a"
+};
+firebase.initializeApp(firebaseConfig);
+const dbRef = firebase.database().ref('logins');
 
-    function formatDateTime(dateString) {
-      if (!dateString) return '-';
-      const cleaned = dateString.replace(/\s*-\s*/g, '-').trim();
-      const d = new Date(cleaned);
-      if (isNaN(d)) return '-';
-      return d.toLocaleString('en-GB', { hour12: false });
+function formatDateTime(dateString) {
+  if (!dateString) return '-';
+  const cleaned = dateString.replace(/\s*-\s*/g, '-').trim();
+  const d = new Date(cleaned);
+  if (isNaN(d)) return '-';
+  return d.toLocaleString('en-GB', { hour12: false });
+}
+
+function loadLoginData() {
+  const tbody = document.getElementById('loginTableBody');
+  tbody.innerHTML = '<tr><td colspan="4">Loading data...</td></tr>';
+
+  dbRef.once('value', snapshot => {
+    const data = snapshot.val();
+    if (!data) {
+      tbody.innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
+      return;
     }
 
-    function loadLoginData() {
-      const tbody = document.getElementById('loginTableBody');
-      tbody.innerHTML = '<tr><td colspan="4">Loading data...</td></tr>';
+    const dataArray = Object.values(data).reverse(); // ➤ TUKAR sini (reverse array)
 
-      dbRef.once('value', snapshot => {
-        const data = snapshot.val();
-        if (!data) {
-          tbody.innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
-          return;
-        }
+    let html = '';
+    dataArray.forEach((item, index) => {
+      html += `<tr>
+        <td>${index + 1}</td>
+        <td>${item.name || '-'}</td>
+        <td>${item.email || '-'}</td>
+        <td>${formatDateTime(item.loginAt)}</td>
+      </tr>`;
+    });
 
-      
-        const dataArray = Object.values(data);
+    tbody.innerHTML = html;
+  }, error => {
+    tbody.innerHTML = `<tr><td colspan="4">Error loading data: ${error.message}</td></tr>`;
+  });
+}
 
-        
-        dataArray.sort((a, b) => {
-          const dateA = new Date(a.loginAt);
-          const dateB = new Date(b.loginAt);
-          return dateB - dateA; 
-        });
-
-     
-        let html = '';
-        dataArray.forEach((item, index) => {
-          html += `<tr>
-            <td>${index + 1}</td>
-            <td>${item.name || '-'}</td>
-            <td>${item.email || '-'}</td>
-            <td>${formatDateTime(item.loginAt)}</td>
-          </tr>`;
-        });
-
-        tbody.innerHTML = html;
-      }, error => {
-        tbody.innerHTML = `<tr><td colspan="4">Error loading data: ${error.message}</td></tr>`;
-      });
-    }
-
-    loadLoginData();
-    setInterval(loadLoginData, 10000); 
+loadLoginData();
+setInterval(loadLoginData, 10000);
 </script>
 
 </body>
