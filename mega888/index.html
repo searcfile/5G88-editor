@@ -1334,7 +1334,25 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const s = String(date.getSeconds()).padStart(2, '0');
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
  }
- 
+ function deleteCents() {
+  const tables = document.querySelectorAll("table");
+
+  tables.forEach(table => {
+    const cells = table.querySelectorAll("td");
+
+    cells.forEach(cell => {
+      if (cell.textContent.includes("Setscore:")) {
+        const parts = cell.textContent.split("Setscore: ");
+        const number = parseFloat(parts[1]);
+
+        if (!isNaN(number)) {
+          const noCents = Math.floor(number) + ".00";
+          cell.textContent = `Setscore: ${number < 0 ? "-" : ""}${Math.abs(noCents)}`;
+        }
+      }
+    });
+  });
+}
   function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
@@ -1411,25 +1429,6 @@ if (manualInput) {
     balance = endMoney;
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
-function deleteCents() {
-  const tables = document.querySelectorAll("table");
-
-  tables.forEach(table => {
-    const cells = table.querySelectorAll("td");
-
-    cells.forEach(cell => {
-      if (cell.textContent.includes("Setscore:")) {
-        const parts = cell.textContent.split("Setscore: ");
-        const number = parseFloat(parts[1]);
-
-        if (!isNaN(number)) {
-          const noCents = Math.floor(number) + ".00";
-          cell.textContent = `Setscore: ${number < 0 ? "-" : ""}${Math.abs(noCents)}`;
-        }
-      }
-    });
-  });
-}
  
  const setScoreMoney = logs[0].endMoney;
 
