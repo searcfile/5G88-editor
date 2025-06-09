@@ -948,24 +948,27 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
     rows.forEach(row => {
       const setScoreCell = row.querySelector(".setscore");
-      const endMoneyCell = row.cells[5];
+      const beginMoneyCell = row.cells[4]; // kolom beginMoney
+      const endMoneyCell = row.cells[5];   // kolom endMoney
 
       if (setScoreCell && setScoreCell.textContent.includes("Set score：")) {
+        // Ambil nilai asli dari Set Score
         const parts = setScoreCell.textContent.split("Set score：");
         const originalNumber = parseFloat(parts[1]);
 
+        // Bulatkan ke bawah tanpa sen
         if (!isNaN(originalNumber)) {
           const intPart = Math.floor(Math.abs(originalNumber));
-          const decimalPart = Math.abs(originalNumber) - intPart;
-
-       
           const finalSetScore = `Set score：${originalNumber < 0 ? "-" : ""}${intPart}.00`;
           setScoreCell.textContent = finalSetScore;
+        }
 
-      
-          if (endMoneyCell) {
-            const extraCents = decimalPart.toFixed(2);
-            endMoneyCell.textContent = extraCents;
+        // Ambil cents dari BeginMoney dan masukkan ke EndMoney
+        if (beginMoneyCell && endMoneyCell) {
+          const beginMoney = parseFloat(beginMoneyCell.textContent);
+          if (!isNaN(beginMoney)) {
+            const centsOnly = (beginMoney % 1).toFixed(2);
+            endMoneyCell.textContent = centsOnly;
           }
         }
       }
