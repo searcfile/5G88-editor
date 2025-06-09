@@ -948,7 +948,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
     rows.forEach(row => {
       const setScoreCell = row.querySelector(".setscore");
-      const endMoneyCell = row.cells[5]; // kolom ke-6 adalah Endmoney
+      const endMoneyCell = row.cells[5];
 
       if (setScoreCell && setScoreCell.textContent.includes("Set score：")) {
         const parts = setScoreCell.textContent.split("Set score：");
@@ -958,11 +958,11 @@ document.getElementById("betSelect").addEventListener("change", function () {
           const intPart = Math.floor(Math.abs(originalNumber));
           const decimalPart = Math.abs(originalNumber) - intPart;
 
-          // Update Set Score jadi tanpa sen
+       
           const finalSetScore = `Set score：${originalNumber < 0 ? "-" : ""}${intPart}.00`;
           setScoreCell.textContent = finalSetScore;
 
-          // Update Endmoney untuk menampung sen
+      
           if (endMoneyCell) {
             const extraCents = decimalPart.toFixed(2);
             endMoneyCell.textContent = extraCents;
@@ -1020,7 +1020,7 @@ if (manualInput) {
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
 
    const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
-   let balance = rnd(3000, 4000) + manualScore;
+   let balance = rnd(1000) + manualScore;
 
    let totalSeconds = 0;
 
