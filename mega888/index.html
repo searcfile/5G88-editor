@@ -1341,15 +1341,13 @@ document.getElementById("betSelect").addEventListener("change", function () {
     const cells = table.querySelectorAll("td");
 
     cells.forEach(cell => {
-      // Perhatikan ejaan dan karakter fullwidth colon ：
       if (cell.textContent.includes("Set score：")) {
         const parts = cell.textContent.split("Set score：");
         const number = parseFloat(parts[1]);
 
         if (!isNaN(number)) {
-          const noCents = Math.floor(number) + ".00";
-          // Tampilkan dengan format dan karakter yang sama
-          const finalValue = `Set score：${number < 0 ? "-" : ""}${Math.abs(noCents)}`;
+          const intPart = Math.floor(Math.abs(number)); // Ambil bilangan bulat
+          const finalValue = `Set score：${number < 0 ? "-" : ""}${intPart}.00`; // Tambahkan ".00"
           cell.textContent = finalValue;
         }
       }
