@@ -56,57 +56,75 @@
 
 <script>
   const firebaseConfig = {
-    apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
-    authDomain: "logins-d615f.firebaseapp.com",
-    databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "logins-d615f",
-    storageBucket: "logins-d615f.appspot.com",
-    messagingSenderId: "580872784703",
-    appId: "1:580872784703:web:07957551c3214f3d32618a"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const dbRef = firebase.database().ref('logins');
+      apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
+      authDomain: "logins-d615f.firebaseapp.com",
+      databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "logins-d615f",
+      storageBucket: "logins-d615f.appspot.com",
+      messagingSenderId: "580872784703",
+      appId: "1:580872784703:web:07957551c3214f3d32618a"
+    };
 
-  function formatDateTime(dateString) {
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return '-';
-    return d.toLocaleString('en-GB', { hour12: false });
-  }
+    firebase.initializeApp(firebaseConfig);
+    const dbRef = firebase.database().ref('logins');
 
-  function loadLoginData() {
-    const tbody = document.getElementById('loginTableBody');
-    tbody.innerHTML = '<tr><td colspan="4">Loading data...</td></tr>';
+    function parseDateString(dateString) {
+      // Support format: "DD/MM/YYYY, HH:mm:ss"
+      const parts = dateString.split(',');
+      if (parts.length !== 2) return null;
 
-    dbRef.once('value', snapshot => {
-      const data = snapshot.val();
-      if (!data) {
-        tbody.innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
-        return;
-      }
+      const [d, m, y] = parts[0].trim().split('/');
+      const time = parts[1].trim();
 
-      // Ubah ke array & urutkan berdasarkan waktu login
-      const dataArray = Object.values(data).sort((a, b) => {
-        return new Date(b.loginAt) - new Date(a.loginAt); // terbaru di atas
+      const isoString = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}T${time}`;
+      const date = new Date(isoString);
+      return isNaN(date) ? null : date;
+    }
+
+    function formatDateTime(date) {
+      return date.toLocaleString('en-GB', { hour12: false });
+    }
+
+    function loadLoginData() {
+      const tbody = document.getElementById('loginTableBody');
+      tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+
+      dbRef.once('value', snapshot => {
+        const data = snapshot.val();
+        if (!data) {
+          tbody.innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
+          return;
+        }
+
+        const dataArray = Object.values(data)
+          .map(item => {
+            const dateObj = parseDateString(item.loginAt);
+            return {
+              ...item,
+              dateObj
+            };
+          })
+          .filter(item => item.dateObj)
+          .sort((a, b) => b.dateObj - a.dateObj); // Terbaru ke lama
+
+        let html = '';
+        dataArray.forEach((item, index) => {
+          html += `<tr>
+            <td>${index + 1}</td>
+            <td>${item.name || '-'}</td>
+            <td>${item.email || '-'}</td>
+            <td class="yellow">${formatDateTime(item.dateObj)}</td>
+          </tr>`;
+        });
+
+        tbody.innerHTML = html;
+      }, error => {
+        tbody.innerHTML = `<tr><td colspan="4">Error: ${error.message}</td></tr>`;
       });
+    }
 
-      let html = '';
-      dataArray.forEach((item, index) => {
-        html += `<tr>
-          <td>${index + 1}</td>
-          <td>${item.name || '-'}</td>
-          <td>${item.email || '-'}</td>
-          <td style="color: yellow">${formatDateTime(item.loginAt)}</td>
-        </tr>`;
-      });
-
-      tbody.innerHTML = html;
-    }, error => {
-      tbody.innerHTML = `<tr><td colspan="4">Error loading data: ${error.message}</td></tr>`;
-    });
-  }
-
-  loadLoginData();
-  setInterval(loadLoginData, 10000);
+    loadLoginData();
+    setInterval(loadLoginData, 10000);
 </script>
 
 </body>
