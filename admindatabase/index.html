@@ -86,7 +86,9 @@ function loadLoginData() {
       return;
     }
 
-    const dataArray = Object.values(data).reverse(); // ➤ TUKAR sini (reverse array)
+    const dataArray = Object.values(data).sort((a, b) => {
+  return new Date(b.loginAt) - new Date(a.loginAt);
+  });
 
     let html = '';
     dataArray.forEach((item, index) => {
