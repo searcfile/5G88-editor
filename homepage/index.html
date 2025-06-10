@@ -443,6 +443,7 @@ function renderTabs() {
 
 function loadPage(url) {
   pageFrame.src = url;
+  localStorage.setItem("activeTabUrl", url);
   closeSidebar();
   document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.remove("active-tab");
@@ -461,10 +462,16 @@ function loadPage(url) {
 window.onload = () => {
   renderTabs();
   const tabs = getTabs();
-  if (tabs.length > 0) {
+  const activeUrl = localStorage.getItem("activeTabUrl");
+  const match = tabs.find(tab => tab.url === activeUrl);
+
+  if (match) {
+    loadPage(match.url);
+  } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
   }
-}
+};
+
 const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
 const _0xadmins = encodedAdmins.map(e => atob(e));
 const allowedAdmins = [..._0xadmins, "admin@example.com"];
