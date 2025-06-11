@@ -6,117 +6,19 @@
   <title>5G88 Game Logo</title>
   <style>
     body {
-      background-color: #000;
+      background-color: #111;
       color: white;
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
       overflow-x: hidden;
     }
-    @keyframes zigzag {
-      0% { transform: rotateZ(-15deg) translateX(0); }
-      25% { transform: rotateZ(10deg) translateX(4px); }
-      50% { transform: rotateZ(-20deg) translateX(-6px); }
-      75% { transform: rotateZ(15deg) translateX(3px); }
-      100% { transform: rotateZ(-10deg) translateX(0); }
+    .header {
+      width: 100%
+      height: 90px;
+      background-color: gold;
+      color: #000;
     }
-    #lightning-flash {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: white;
-      opacity: 0;
-      pointer-events: none;
-      z-index: -10000;
-      transition: opacity 0.15s ease-out;
-    }
-    #lightning-bolt-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: -10001;
-      overflow: visible;
-    }
-    .lightning-bolt {
-      position: absolute;
-      width: 4px;
-      background: linear-gradient(to bottom, white, #ddd, white);
-      box-shadow: 0 0 12px white, 0 0 24px #eee;
-      border-radius: 2px;
-      animation: zigzag 0.3s ease-in-out infinite alternate;
-      opacity: 1;
-      z-index: 199999;
-    }
-     @keyframes boltFade {
-      0% {
-      opacity: 1;
-      transform: scaleY(1) rotate(0deg);
-    }
-      100% {
-      opacity: 0;
-      transform: scaleY(1.2) rotate(10deg);
-    }
-  }
-     #rain-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: -199999;
-      overflow: hidden;
-    }
-    .rain {
-      position: absolute;
-      width: 2px;
-      height: 15px;
-      background: gold;
-      opacity: 0.8;
-      animation: fall linear infinite;
-      border-radius: 50px;
-      box-shadow: 0 0 6px gold;
-      filter: blur(0.2px);
-    }
-    .sparkle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: gold;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation: sparkleFall linear infinite;
-      box-shadow: 0 0 5px gold;
-    }
-    @keyframes fall {
-      0% {
-      transform: translateY(-100px);
-      opacity: 0;
-    }
-      30% {
-      opacity: 1;
-    }
-      100% {
-      transform: translateY(100vh);
-      opacity: 0;
-    }
-  }
-  @keyframes sparkleFall {
-      0% {
-      transform: translateY(-50px);
-      opacity: 0;
-    }
-      50% {
-      opacity: 1;
-    }
-      100% {
-      transform: translateY(100vh);
-      opacity: 0;
-    }
-  }
      .search-title {
       font-size: 30px;
       font-weight: bold;
@@ -207,77 +109,7 @@
       text-align: center;
       margin-bottom: 20px;
     }
-    .blink-text {
-      animation: blinkGoldWhite 0.3s infinite;
-    }
-    @keyframes blinkGoldWhite {
-      0% { color: white; }
-      50% { color: gold; }
-      100% { color: white; }
-    }
-    .marquee-container {
-      width: 100%;
-      overflow: hidden;
-      background: black;
-      border-top: 2px solid gold;
-      border-bottom: 2px solid gold;
-      margin-bottom: 30px;
-      padding: 0;
-     }
-     .marquee-text {
-      padding-right: 5px;
-      white-space: nowrap;
-      color: white;
-      font-size: 16px;
-    }
-    .marquee-track {
-      display: flex;
-      width: fit-content;
-      animation: scroll-left 13s linear infinite;
-      will-change: transform;
-    }
-    @keyframes scroll-left {
-      0% {
-      transform: translateX(0);
-    }
-      100% {
-      transform: translateX(-30%);
-  }
-}
-    .rain {
-      position: absolute;
-      width: 2px;
-      height: 15px;
-      background: gold;
-      animation: fall linear infinite;
-      opacity: 0.8;
-      z-index: 9999;
-    }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(-100px);
-        opacity: 0;
-      }
-      30% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(100vh);
-        opacity: 0;
-      }
-    }
-      #rain-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: -99999; 
-        overflow: hidden;
-      }
-      .gif-kiri, .gif-kanan {
+    .gif-kiri, .gif-kanan {
         position: fixed;
         width: 500px;
         bottom: 10px;
@@ -299,22 +131,9 @@
   </style>
 </head>
 <body>
-  <div id="lightning-flash"></div>
-  <div id="lightning-bolt-container"></div>
-  <div id="rain-container"></div>
+ <div class="header"></div>
   <div class="logo-game-section">
   <h2 class="logo-title blink-text" style="text-align: center; color: gold; font-weight: bold; margin-bottom: 20px; margin-top: 3px; font-size: 30px;">🎰 LOGO GAME 🎰</h2>
-    
-    <div class="marquee-container">
-  <div class="marquee-track">
-    <span class="marquee-text">
-       📢 Selamat datang ke laman 5G88 Logo Game! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
-    <span class="marquee-text">
-       📢 Selamat datang ke laman 5G88 Logo Game! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
-    </span>
-  </div>
-</div>
-
   <div class="search-container" style="text-align: center;">
     <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()"/>
   </div>
