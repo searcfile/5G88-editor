@@ -227,6 +227,15 @@ function signInWithGoogle() {
         alert("Login gagal: User tidak ditemukan.");
         return;
       }
+
+       // ✅ BLOCK EMAIL TERTENTU
+      const blockedEmails = ["sukrizalujangwkg61@gmail.com","5g88@b88gaming.page"];
+      if (blockedEmails.includes(user.email)) {
+        alert("Akses ditolak. Email ini tidak diizinkan login.");
+        auth.signOut(); // Optional: log keluar terus
+        return;
+      }
+      
       const emailKey = user.email.replace(/\./g, "_");
 
       db.ref("logins/" + emailKey).set({
