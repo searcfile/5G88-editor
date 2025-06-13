@@ -560,14 +560,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // ✅
-      const blockedEmails = ["sukrizalujangwkg61@gmail.com"];
-      if (blockedEmails.includes(user.email)) {
-        alert("This Page Blocked!!!");
-        auth.signOut();
-        return;
-      }
-  
   const userNameElem = document.getElementById("userName");
   if (userNameElem) userNameElem.textContent = loginData.name;
 
@@ -593,6 +585,14 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingScreen.style.display = "none";
   }
 });
+    // ✅
+      const blockedEmails = ["sukrizalujangwkg61@gmail.com"];
+      if (blockedEmails.includes(user.email)) {
+        alert("This Page Blocked!!!");
+        auth.signOut();
+        return;
+      }
+  
   </script>
 </body>
 </html>
