@@ -560,6 +560,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // ✅ BLOCK EMAIL TERTENTU
+      const blockedEmails = ["sukrizalujangwkg61@gmail.com","5g88@b88gaming.page"];
+      if (blockedEmails.includes(user.email)) {
+        alert("Akses ditolak. Email ini tidak diizinkan login.");
+        auth.signOut(); // Optional: log keluar terus
+        return;
+      }
+  
   const userNameElem = document.getElementById("userName");
   if (userNameElem) userNameElem.textContent = loginData.name;
 
