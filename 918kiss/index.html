@@ -999,7 +999,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
     });
   });
 }
-  function generateLog() {
+function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
   const pecahanSelect = document.getElementById("pecahanSelect");
@@ -1009,60 +1009,51 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   let logs = [];
 
- 
-  const manualInput = document.getElementById("manualTime").value.trim();
+  const manualInput = manualTimeInput.trim();
   let baseTime;
-if (manualInput) {
-  const parts = manualInput.includes("T")
-    ? manualInput.split("T")
-    : manualInput.split(" ");
-
-  if (parts.length === 2) {
-    const [datePart, timePartRaw] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const timePart = timePartRaw.trim();
-    const timeParts = timePart.split(":").map(Number);
-    const hour = timeParts[0] || 0;
-    const minute = timeParts[1] || 0;
-    const second = timeParts[2] || 0;
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
+  if (manualInput) {
+    const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
+    if (parts.length === 2) {
+      const [datePart, timePartRaw] = parts;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const timePart = timePartRaw.trim();
+      const timeParts = timePart.split(":").map(Number);
+      const hour = timeParts[0] || 0;
+      const minute = timeParts[1] || 0;
+      const second = timeParts[2] || 0;
+      baseTime = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      baseTime = new Date();
+    }
+  } else if (typeof globalTime !== "undefined") {
+    const parts = globalTime.split(" ");
+    if (parts.length === 2) {
+      const [datePart, timePart] = parts;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute, second] = timePart.split(":").map(Number);
+      baseTime = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      baseTime = new Date();
+    }
   } else {
     baseTime = new Date();
   }
-} else if (globalTime) {
-  const parts = globalTime.split(" ");
-  if (parts.length === 2) {
-    const [datePart, timePart] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const [hour, minute, second] = timePart.split(":").map(Number);
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
-  } else {
-    baseTime = new Date();
-  }
-} else {
-  baseTime = new Date();
-}
-
 
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
 
-   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
-   let balance = rnd(500, 1000) + manualScore;
+  const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
+  let balance = rnd(500, 1000) + manualScore;
+  let totalSeconds = 0;
 
-   let totalSeconds = 0;
-
-   for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 10; i++) {
     const gap = Math.floor(Math.random() * 3) + 3;
     totalSeconds += gap;
-    const logTime = new Date();
-    logTime.setSeconds(logTime.getSeconds() - totalSeconds);
-
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
     const formattedTime = formatDateTimeLocal(baseTime);
 
-    logs.unshift({ 
+    logs.unshift({
       game,
       tableID: `<span class="table-id-highlight">0</span>`,
       bet: bet.toFixed(2),
@@ -1075,26 +1066,24 @@ if (manualInput) {
     balance = endMoney;
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
-    
- const setScoreMoney = logs[0].endMoney;
 
+  const setScoreMoney = logs[0].endMoney;
+  let setScoreTime = new Date(logs[0].dateTime);
+  const extraSeconds = [2, 3, 7, 10];
+  const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
+  setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
 
-let setScoreTime = new Date(logs[0].dateTime);
-const extraSeconds = [2, 3, 7, 10];
-const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
-setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
-
-let rows = `
-  <tr class="set-score-row">
-    <td>-</td>
-    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${(Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td>0.00</td>
-    <td>${formatDateTimeLocal(setScoreTime)}</td>
-  </tr>
-`;
+  let rows = `
+    <tr class="set-score-row">
+      <td>-</td>
+      <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td>${(Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+      <td>0.00</td>
+      <td>${formatDateTimeLocal(setScoreTime)}</td>
+    </tr>
+  `;
 
   logs.forEach(log => {
     rows += `
@@ -1111,8 +1100,8 @@ let rows = `
   });
 
   tbody.innerHTML = rows;
-}
 
+  // ✅ Save to localStorage here
   localStorage.setItem("gameLogData", JSON.stringify({
     html: tbody.innerHTML,
     game: game,
@@ -1122,17 +1111,17 @@ let rows = `
     manualScore: document.getElementById("manualScore").value,
     timestamp: Date.now()
   }));
+}
 
-   function restoreInputsFromStorage() {
+// ✅ Restore on page load
+function restoreInputsFromStorage() {
   const savedLog = localStorage.getItem("gameLogData");
   if (savedLog) {
     const data = JSON.parse(savedLog);
 
-    // Set input values
     document.getElementById("manualTime").value = data.manualTime || '';
     document.getElementById("manualScore").value = data.manualScore || '';
 
-    // Set selects
     if (data.game) {
       document.getElementById("gameSelect").value = data.game;
       document.getElementById("gameSelect").dispatchEvent(new Event("change"));
@@ -1143,16 +1132,16 @@ let rows = `
 
         setTimeout(() => {
           document.getElementById("pecahanSelect").value = data.pecahan.toFixed(2);
-        }, 100); // delay agar pecahan muncul dulu
-      }, 100); // delay agar bet muncul dulu
+        }, 100);
+      }, 100);
     }
 
-    // Restore table
     document.querySelector("#gameLog tbody").innerHTML = data.html;
   }
 }
 
-  function clearSavedLog() {
+// ✅ Clear saved data
+function clearSavedLog() {
   localStorage.removeItem("gameLogData");
   document.querySelector("#gameLog tbody").innerHTML = "";
   document.getElementById("gameSelect").value = "";
@@ -1161,10 +1150,9 @@ let rows = `
   document.getElementById("manualTime").value = "";
   document.getElementById("manualScore").value = "";
 }
-  
- window.addEventListener("DOMContentLoaded", function () {
-  restoreInputsFromStorage();
-});
+
+// ✅ Auto restore when page is loaded
+window.addEventListener("DOMContentLoaded", restoreInputsFromStorage);
 </script>
 
 </body>
