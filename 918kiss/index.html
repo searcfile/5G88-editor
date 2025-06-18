@@ -149,6 +149,7 @@
 <body>
 
 <h2 style="color: gold;">918KISS SYSTEM RANDOM</h2>
+<button onclick="clearSavedLog()">Reset Log</button>
 
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 15px;">
   <label for="gameSelect" style="color: gold;">Game:</label>
@@ -1081,6 +1082,10 @@ if (manualInput) {
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
 
+    localStorage.setItem("gameLogData", JSON.stringify({
+  html: tbody.innerHTML,
+  timestamp: Date.now()
+}));
  
  const setScoreMoney = logs[0].endMoney;
 
@@ -1118,6 +1123,20 @@ let rows = `
 
   tbody.innerHTML = rows;
 }
+
+  function clearSavedLog() {
+  localStorage.removeItem("gameLogData");
+  document.querySelector("#gameLog tbody").innerHTML = "";
+}
+  
+ window.addEventListener("DOMContentLoaded", function () {
+  const savedLog = localStorage.getItem("gameLogData");
+  if (savedLog) {
+    const { html } = JSON.parse(savedLog);
+    document.querySelector("#gameLog tbody").innerHTML = html;
+  }
+});
+  
 </script>
 
 </body>
