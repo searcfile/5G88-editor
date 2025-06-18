@@ -1075,7 +1075,17 @@ if (manualInput) {
     balance = endMoney;
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
- 
+    
+ localStorage.setItem("gameLogData", JSON.stringify({
+  html: tbody.innerHTML,
+  game: game,
+  bet: bet,
+  pecahan: selectedPecahan,
+  manualTime: document.getElementById("manualTime").value,
+  manualScore: document.getElementById("manualScore").value,
+  timestamp: Date.now()
+}));
+    
  const setScoreMoney = logs[0].endMoney;
 
 
@@ -1113,15 +1123,6 @@ let rows = `
   tbody.innerHTML = rows;
 }
 
-  localStorage.setItem("gameLogData", JSON.stringify({
-    html: tbody.innerHTML,
-    game: game,
-    bet: bet,
-    pecahan: selectedPecahan,
-    manualTime: document.getElementById("manualTime").value,
-    manualScore: document.getElementById("manualScore").value,
-    timestamp: Date.now()
-  }));
   
   function clearSavedLog() {
   localStorage.removeItem("gameLogData");
