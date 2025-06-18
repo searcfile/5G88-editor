@@ -250,12 +250,6 @@
 </table>
 
 <script>
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
   const gameData = {
 
@@ -1120,9 +1114,14 @@ let rows = `
 }
 
   localStorage.setItem("gameLogData", JSON.stringify({
-  html: tbody.innerHTML,
-  timestamp: Date.now()
-}));
+    html: tbody.innerHTML,
+    game: game,
+    bet: bet,
+    pecahan: selectedPecahan,
+    manualTime: document.getElementById("manualTime").value,
+    manualScore: document.getElementById("manualScore").value,
+    timestamp: Date.now()
+  }));
   
   function clearSavedLog() {
   localStorage.removeItem("gameLogData");
@@ -1132,8 +1131,13 @@ let rows = `
  window.addEventListener("DOMContentLoaded", function () {
   const savedLog = localStorage.getItem("gameLogData");
   if (savedLog) {
-    const { html } = JSON.parse(savedLog);
-    document.querySelector("#gameLog tbody").innerHTML = html;
+    const data = JSON.parse(savedLog);
+    document.querySelector("#gameLog tbody").innerHTML = data.html;
+
+    // Restore values (optional)
+    document.getElementById("manualTime").value = data.manualTime || '';
+    document.getElementById("manualScore").value = data.manualScore || '';
+    // kamu juga bisa atur kembali pilihan game, bet, pecahan di sini
   }
 });
   
