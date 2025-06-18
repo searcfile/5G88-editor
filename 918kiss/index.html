@@ -1076,16 +1076,6 @@ if (manualInput) {
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
     
- localStorage.setItem("gameLogData", JSON.stringify({
-  html: tbody.innerHTML,
-  game: game,
-  bet: bet,
-  pecahan: selectedPecahan,
-  manualTime: document.getElementById("manualTime").value,
-  manualScore: document.getElementById("manualScore").value,
-  timestamp: Date.now()
-}));
-    
  const setScoreMoney = logs[0].endMoney;
 
 
@@ -1123,25 +1113,57 @@ let rows = `
   tbody.innerHTML = rows;
 }
 
-  
-  function clearSavedLog() {
-  localStorage.removeItem("gameLogData");
-  document.querySelector("#gameLog tbody").innerHTML = "";
-}
-  
- window.addEventListener("DOMContentLoaded", function () {
+  localStorage.setItem("gameLogData", JSON.stringify({
+    html: tbody.innerHTML,
+    game,
+    bet,
+    pecahan: selectedPecahan,
+    manualTime: document.getElementById("manualTime").value,
+    manualScore: document.getElementById("manualScore").value
+  }));
+
+   function restoreInputsFromStorage() {
   const savedLog = localStorage.getItem("gameLogData");
   if (savedLog) {
     const data = JSON.parse(savedLog);
-    document.querySelector("#gameLog tbody").innerHTML = data.html;
 
-    // Restore values (optional)
+    // Set input values
     document.getElementById("manualTime").value = data.manualTime || '';
     document.getElementById("manualScore").value = data.manualScore || '';
-    // kamu juga bisa atur kembali pilihan game, bet, pecahan di sini
+
+    // Set selects
+    if (data.game) {
+      document.getElementById("gameSelect").value = data.game;
+      document.getElementById("gameSelect").dispatchEvent(new Event("change"));
+
+      setTimeout(() => {
+        document.getElementById("betSelect").value = data.bet.toFixed(2);
+        document.getElementById("betSelect").dispatchEvent(new Event("change"));
+
+        setTimeout(() => {
+          document.getElementById("pecahanSelect").value = data.pecahan.toFixed(2);
+        }, 100); // delay agar pecahan muncul dulu
+      }, 100); // delay agar bet muncul dulu
+    }
+
+    // Restore table
+    document.querySelector("#gameLog tbody").innerHTML = data.html;
   }
-});
+}
+
+  function clearSavedLog() {
+  localStorage.removeItem("gameLogData");
+  document.querySelector("#gameLog tbody").innerHTML = "";
+  document.getElementById("gameSelect").value = "";
+  document.getElementById("betSelect").innerHTML = "";
+  document.getElementById("pecahanSelect").innerHTML = "";
+  document.getElementById("manualTime").value = "";
+  document.getElementById("manualScore").value = "";
+}
   
+ window.addEventListener("DOMContentLoaded", function () {
+  restoreInputsFromStorage();
+});
 </script>
 
 </body>
