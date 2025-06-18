@@ -1115,11 +1115,12 @@ let rows = `
 
   localStorage.setItem("gameLogData", JSON.stringify({
     html: tbody.innerHTML,
-    game,
-    bet,
+    game: game,
+    bet: bet,
     pecahan: selectedPecahan,
-    manualTime: document.getElementById("manualTime").value,
-    manualScore: document.getElementById("manualScore").value
+    manualTime: manualTimeInput,
+    manualScore: document.getElementById("manualScore").value,
+    timestamp: Date.now()
   }));
 
    function restoreInputsFromStorage() {
