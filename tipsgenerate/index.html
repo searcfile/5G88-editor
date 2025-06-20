@@ -376,14 +376,22 @@
 }
 
     function toggleAuto(name) {
-      const checkbox = document.getElementById('auto-' + name);
-      clearInterval(autoIntervals[name]);
-      localStorage.setItem(`auto-${name}`, checkbox.checked ? 'on' : 'off');
-      if (checkbox.checked) {
-        const duration = parseInt(document.getElementById('duration-' + name).value) || 1;
-        autoIntervals[name] = setInterval(() => refreshList(name), duration * 60000);
-      }
+  const checkbox = document.getElementById('auto-' + name);
+  clearInterval(autoIntervals[name]);
+  localStorage.setItem(`auto-${name}`, checkbox.checked ? 'on' : 'off');
+  
+  if (checkbox.checked) {
+    let duration = parseFloat(document.getElementById('duration-' + name).value) || 1;
+
+    if (duration < 1) {
+      duration = duration * 10 * 1000;
+    } else {
+      duration = duration * 60 * 1000;
     }
+
+    autoIntervals[name] = setInterval(() => refreshList(name), duration);
+  }
+}
 
     function updateTime(name) {
       const now = new Date();
