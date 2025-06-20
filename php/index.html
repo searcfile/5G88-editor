@@ -149,6 +149,7 @@
 <body>
 
 <h2 style="color: gold;">918KISS SYSTEM RANDOM</h2>
+<button onclick="resetLog()" style="background:red; color:white;">Reset Log</button>
 
 <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 15px;">
   <label for="gameSelect" style="color: gold;">Game:</label>
@@ -1080,7 +1081,17 @@ if (manualInput) {
     balance = endMoney;
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
+    
+ const savedData = {
+    game,
+    bet,
+    pecahan: selectedPecahan,
+    manualTime: manualTimeInput,
+    manualScore: document.getElementById("manualScore").value,
+    logs: tbody.innerHTML
+  };
 
+  localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
  
  const setScoreMoney = logs[0].endMoney;
 
@@ -1118,6 +1129,43 @@ let rows = `
 
   tbody.innerHTML = rows;
 }
+  function resetLog() {
+  localStorage.removeItem("gameLogData918kiss");
+  document.getElementById("gameSelect").value = "";
+  document.getElementById("betSelect").innerHTML = "";
+  document.getElementById("pecahanSelect").innerHTML = "";
+  document.getElementById("manualTime").value = "";
+  document.getElementById("manualScore").value = "0";
+  document.querySelector("#gameLog tbody").innerHTML = "";
+}
+  window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("gameLogData918kiss");
+  if (!saved) return;
+
+  const data = JSON.parse(saved);
+
+  // Set nilai dropdown
+  document.getElementById("gameSelect").value = data.game;
+  document.getElementById("manualTime").value = data.manualTime;
+  document.getElementById("manualScore").value = data.manualScore;
+
+  // Trigger event supaya bet & pecahan muncul
+  document.getElementById("gameSelect").dispatchEvent(new Event("change"));
+
+  // Tunggu sejenak untuk memastikan bet options dimuat
+  setTimeout(() => {
+    document.getElementById("betSelect").value = data.bet;
+    document.getElementById("betSelect").dispatchEvent(new Event("change"));
+
+    // Tunggu sejenak untuk pastikan pecahan muncul
+    setTimeout(() => {
+      document.getElementById("pecahanSelect").value = data.pecahan;
+    }, 100);
+  }, 100);
+
+  // Tampilkan kembali log
+  document.querySelector("#gameLog tbody").innerHTML = data.logs;
+});
 </script>
 
 </body>
