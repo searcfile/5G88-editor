@@ -28,6 +28,13 @@
       z-index: 999;
       margin-bottom: 10px;
     }
+    .filter-bar {
+      position: sticky;
+      top: 90px;
+      background-color: #000;
+      z-index: 998;
+      padding-top: 10px;
+    }
      .search-title {
       font-size: 30px;
       font-weight: bold;
@@ -50,7 +57,7 @@
       border: 1px solid gold;
       background-color: #000;
       color: gold;
-      margin-top: 110px;
+      margin-top: 0;
     }
     .filter-tabs {
       text-align: center;
@@ -144,10 +151,10 @@
 <body>
   <div class="header">🎰 LOGO GAME 🎰</div>
 
-  <div class="search-container" style="text-align: center;">
-    <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()"/>
+  <div class="filter-bar">
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
   </div>
-</div>
 
   <div class="filter-tabs">
     <button onclick="setFilter('all')" class="active">All</button>
@@ -155,12 +162,14 @@
     <button onclick="setFilter('live')">Live Game</button>
     <button onclick="setFilter('table')">Table Game</button>
   </div>
+
   <div class="filter-tabs platform-filters">
     <button onclick="setPlatform('all')" class="active">All Platforms</button>
     <button onclick="setPlatform('918kiss')">918kiss</button>
     <button onclick="setPlatform('mega888')">MEGA888</button>
     <button onclick="setPlatform('pussy888')">PUSSY888</button>
     <button onclick="setPlatform('xe88')">XE88</button>
+  </div>
 </div>
 
   <div class="logo-grid" id="gameGrid">
