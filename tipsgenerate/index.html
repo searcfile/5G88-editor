@@ -14,7 +14,22 @@
       margin: 0 ;
       overflow-x: hidden;
     }
-
+    .header {
+      width: 100%;
+      height: 90px;
+      background: gold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: black;
+      font-weight: bold;
+      font-size: 22px;
+      position: fixed;
+      top: 0;
+      box-shadow: 0 2px 10px #ffd70088;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
     .platform-row {
       display: flex;
       flex-wrap: wrap;
@@ -146,15 +161,15 @@
     .btn-refresh:active, .btn-copy:active {
       transform: scale(1.2);
       box-shadow: 0 0 12px gold;
-    }
+}
 
-    .timestamp {
+.timestamp {
       font-size: 10px;
       color: black;
       text-align: center;
       margin-top: 6px;
-    }
-    .duration-wrapper {
+}
+.duration-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -178,51 +193,8 @@
   color: #000; 
   text-align: center;
 }
-    .title-blink {
-  font-size: 30px;
-  font-weight: bold;
-  text-align: center;
-  color: gold;
-  animation: goldBlink 0.3s infinite;
-      margin-bottom: 20px;
-}
-
-
-@keyframes goldBlink {
-  0% { color: gold; }
-  50% { color: white; }
-  100% { color: gold; }
-}
-  .marquee-container {
-      width: 100%;
-      overflow: hidden;
-      background: black;
-      border-top: 2px solid gold;
-      border-bottom: 2px solid gold;
-      margin-bottom: 40px;
-      padding: 0;
-     }
-     .marquee-text {
-      padding-right: 5px;
-      white-space: nowrap;
-      color: white;
-      font-size: 16px;
-    }
-    .marquee-track {
-      display: flex;
-      width: fit-content;
-      animation: scroll-left 12s linear infinite;
-      will-change: transform;
-    }
-    @keyframes scroll-left {
-      0% {
-      transform: translateX(0);
-    }
-      100% {
-      transform: translateX(-50%);
-  }
-}
-     .gif-kiri, .gif-kanan {
+ 
+.gif-kiri, .gif-kanan {
   position: fixed;
   width: 500px;
   bottom: 10px;
@@ -243,132 +215,11 @@
     display: none;
   }
 }
-    @keyframes zigzag {
-    0% { transform: rotateZ(-15deg) translateX(0); }
-    25% { transform: rotateZ(10deg) translateX(4px); }
-    50% { transform: rotateZ(-20deg) translateX(-6px); }
-    75% { transform: rotateZ(15deg) translateX(3px); }
-    100% { transform: rotateZ(-10deg) translateX(0); }
-  }
-   #lightning-flash {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: white;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 10000;
-    transition: opacity 0.15s ease-out;
-  }
-#lightning-bolt-container {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: -10001;
-    overflow: visible;
-  }
-.lightning-bolt {
-    position: absolute;
-    width: 4px;
-    background: linear-gradient(to bottom, white, #ddd, white);
-    box-shadow: 0 0 12px white, 0 0 24px #eee;
-    border-radius: 2px;
-    animation: zigzag 0.3s ease-in-out infinite alternate;
-    opacity: 1;
-    z-index: 199999;
-  }
-
-@keyframes boltFade {
-  0% {
-    opacity: 1;
-    transform: scaleY(1) rotate(0deg);
-  }
-  100% {
-    opacity: 0;
-    transform: scaleY(1.2) rotate(10deg);
-  }
-}
-  #rain-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -199999;
-  overflow: hidden;
-}
-
-.rain {
-  position: absolute;
-  width: 2px;
-  height: 15px;
-  background: gold;
-  opacity: 0.8;
-  animation: fall linear infinite;
-  border-radius: 50px;
-  box-shadow: 0 0 6px gold;
-  filter: blur(0.2px);
-}
-
-.sparkle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: gold;
-  border-radius: 50%;
-  opacity: 0.8;
-  animation: sparkleFall linear infinite;
-  box-shadow: 0 0 5px gold;
-}
-
-@keyframes fall {
-  0% {
-    transform: translateY(-100px);
-    opacity: 0;
-  }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh);
-    opacity: 0;
-  }
-}
-
-@keyframes sparkleFall {
-  0% {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh);
-    opacity: 0;
-  }
-}
   </style>
 </head>
 <body>
-  <div id="lightning-flash"></div>
-  <div id="lightning-bolt-container"></div>
-  <div id="rain-container"></div>
-  <div class="title-blink">🎰 TIPS GENERATOR 🎰</div>
-  <div class="marquee-container">
-  <div class="marquee-track">
-    <span class="marquee-text">
-      📢 Selamat datang ke laman 5G88 Tips Game! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
-    </span>
-    <span class="marquee-text">
-      📢 Selamat datang ke laman 5G88 Tips Game! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888! 📢 Selamat datang ke laman 5G88 Download Link! Nikmati pengalaman slot terbaik di 918KISS, MEGA888 dan PUSSY888!
-    </span>
-  </div>
-</div>
+  <div class="header">🎰 TIPS GENERATOR 🎰</div>
+  
   <div class="platform-row" id="row-1"></div>
   <div class="platform-row" id="row-2"></div>
   <div class="platform-row" id="row-3"></div>
@@ -377,12 +228,7 @@
     <img src="https://i.imgur.com/3qOL65q.gif" alt="GIF Kanan" class="gif-kanan">
 </div>
   <script>
-    document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
+  
   console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
     const platformData = {
       "MEGA888": ["LUCKY NEW YEAR", "SILENT RUN", "CHINESE LION", "BIG WIN CAT", "JACKPOT RAIDERS", "POND OF RICHES", "RALLY", "GOLDEN LOTUS", "STICKY BANDITS WILD RETURN", "STEAM TOWER", "THE GOOD LIFE", "MANIC MILLIONS", "MIDAS GOLDEN TOUCH", "IRELAND", "ALADDIN", "COOKIE POP", "SEASON GREETINGS", "FAME &", "FORTUNE", "DWARFS GONE WILD", "GOLDEN SLUT", "GOLDEN TOUR", "GOLDEN TREE", "GIFTS FROM SANTA", "WESTERN RANCH STORY", "DRAGON STRIKE", "FORTUNE TIGER", "COYOTE CASH", "VICTORY", "DIM SUM PRIZE", "FRUITY TUTTI", "FRUIT VS CANDY", "DRAGON MAIDEN", "SPARTAN", "KING OF GHOSTS", "BOYKING'S TREASURE", "BLAZE OF RA", "SUN WUKONG", "COCKTAIL NIGHTS","FORTUNE CHARM", "DA SI XI", "CLASH OF THE BEASTS", "STRIPER NIGHT", "JINGLE", "BELLS", "KIMOCHI", "SILENT SAMURAI", "HALLOWEEN PARTY", "HOTLINE", "ROBIN OF", "SHERWOOD", "STONE AGE", "WEALTH'S TREASURE", "BIG CHEF", "GOLDEN MONKEY", "CHAMPIONS OF ROME", "GREAT STARS", "NARCOS", "MAGIC SHOPPE", "SILVER BULLET", "GLAMOROUS WORLD", "DRAGON GOLD", "DRAGON HERO", "LION DANCE", "GOLDEN COLTS", "DOLPHIN", "HANZO'S DOJO", "5 DRAGONS", "HOUSE OF DOOM", "TIGER'S GLORY", "FORTUNE FIREWORKS", "EMPEROR GATE", "GREAT CHINA", "THAI", "PARADISE", "SANTA", "LUCKY NEKO", "CLEOPATRA'S GOLD", "NITRO", "SUSHI OISHI", "CRYSTAL WATERS", "SEA WORLD", "ROBIN HOOD", "NIAN NIAN YOU YU", "PIRATE", "T-REX", "RAZOR SHARK", "KING OF POP", "JAPAN FORTUNE", "MYSTIC DRAGON", "DR", "FORTUNO", "MASQUERADE", "WOLF RUN", "HIGHWAY KINGS", "CELEBRATION OF", "WEALTH", "DARK VORTEX", "WONG CHOY", "ZHAO CAI JIN BAO", "RAGING REX", "A NIGHT OUT", "JUNGLE SPIRIT", "FLOATING DRAGON", "WOLF HUNTERS", "IVAN AND THE IMMORTAL KING", "FOOTBALL CARNIVAL", "LUCKY DUCK", "LOST ISLAND", "CIRCUS", "PANTHER MOON", "WHITE SNAKE LADY", "SNOW WORLD", "GOD OF", "COOKERY", "BONUS BEARS", "GOLDEN COK", "AMAZON JUNGLE", "BIG PROSPERITY", "IRISH LUCK", "FART GIRL", "INDIAN MYTH", "MONEY FEVER", "SIX ACROBATS", "BIG SHOT", "GOLDEN BEAUTY", "LUCKY KOI", "ROYAL MASQUERADE", "FORTUNE", "CHERRY LOVE", "TOP GUN", "ICELAND", "PIRATE SHIP", "ORIENT EXPRESS", "WILD FIREWORKS", "DRAGONZ", "GREAT BLUE", "GREEN LIGHT", "TEMPLE OF WEALTH", "ZOMBIE CIRCUS", "DOLPHIN REEF", "AGENT 51", "HALLOWEEN FORTUNE", "GOD OF WEALTH", "JIN PING MAI", "THREE KINGDOMS", "ELVEN MAGIC", "LUCKY LITTLE GODS", "WILD FOX", "LIGHTS", "CAISHEN'S GOLD", "PAY DIRT", "PENGUIN CITY", "AMAZING THAILAND", "VEGAS NIGHT LIFE", "SAFARI HEAT", "FORTUNE PANDA", "GREAT88", "YIN & YANG", "CLEOPATRA'S RICHES", "ENCHANTED GARDEN", "MAGICAL SPIN", "FONG SHEN", "FORTUNE FEST", "DEEP TREK", "TEMPLE QUEST", "SHINING STARS", "DESERT GEM", "RANCH STORY", "CASH NOIRE", "TRIPLE TWISTER", "SEA CAPTAIN", "SWORD OF KHANS", "AFRICAN WILDLIFE", "CASH VANDAL", "CAPTAIN'S TREASURE", "FAIRY GARDEN PLUS", "SIZZLING SPINS", "MATSURI", "CONAN", "CHINESE NEW YEAR", "ALICE", "TREASURE ISLAND", "ZOMBIE CARNIVAL", "EASTER SURPRISE", "AZTEC'S TREASURE", "BEAST OF WEALTH", "THE DISCOVERY", "LAURA", "TALLY HO", "SPARTA", "XMAS MAGIC", "NATIVE INDIAN", "GOLD RUSH", "JIN QIAN WA", "LOTUS LEGEND", "WATER MARGIN"],
@@ -561,85 +407,6 @@ allPlatforms.forEach((name, i) => {
   const rowId = `row-${rowIndex}`;
   createPlatform(name, platformData[name], rowId);
 });
-
-     function createDrop() {
-    const drop = document.createElement('div');
-    drop.className = 'rain';
-    drop.style.left = Math.random() * window.innerWidth + 'px';
-    drop.style.animationDuration = (0.4 + Math.random() * 1.2) + 's';
-    drop.style.opacity = Math.random() * 0.6 + 0.4;
-    drop.style.width = (1 + Math.random() * 2) + 'px';
-    drop.style.height = (10 + Math.random() * 20) + 'px';
-    rainContainer.appendChild(drop);
-
-    setTimeout(() => drop.remove(), 2000);
-  }
-
-  function createSparkle() {
-    const sparkle = document.createElement('div');
-    sparkle.className = 'sparkle';
-    sparkle.style.left = Math.random() * window.innerWidth + 'px';
-    sparkle.style.animationDuration = (0.8 + Math.random() * 1.5) + 's';
-    sparkle.style.opacity = Math.random() * 0.5 + 0.3;
-    sparkle.style.width = sparkle.style.height = (2 + Math.random() * 3) + 'px';
-    rainContainer.appendChild(sparkle);
-
-    setTimeout(() => sparkle.remove(), 2500);
-  }
-
-  setInterval(() => {
-    for (let i = 0; i < 6; i++) {
-      createDrop();
-      if (Math.random() > 0.5) createSparkle();
-    }
-  }, 100);
-
-   const rainContainer = document.getElementById('rain-container');
-  const rainCount = 150;
-  for (let i = 0; i < rainCount; i++) {
-    const drop = document.createElement('div');
-    drop.classList.add('rain');
-    drop.style.left = Math.random() * window.innerWidth + 'px';
-    drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
-    drop.style.animationDelay = (Math.random() * 5) + 's';
-    rainContainer.appendChild(drop);
-  }
-
-
-  function triggerLightningEffect() {
-    const flash = document.getElementById('lightning-flash');
-    const boltContainer = document.getElementById('lightning-bolt-container');
-    const body = document.body;
-
-    
-    flash.style.opacity = 0.7;
-    setTimeout(() => {
-      flash.style.opacity = 0;
-    }, 150);
-
-   
-    const bolts = Math.floor(Math.random() * 2) + 2; 
-    for (let i = 0; i < bolts; i++) {
-      const bolt = document.createElement('div');
-      bolt.className = 'lightning-bolt';
-      bolt.style.left = Math.random() * window.innerWidth + 'px';
-      bolt.style.top = Math.random() * (window.innerHeight / 2) + 'px';
-      bolt.style.height = (100 + Math.random() * 100) + 'px';
-      boltContainer.appendChild(bolt);
-
-      setTimeout(() => {
-        bolt.remove();
-      }, 400);
-    }
-
-    
-    const next = Math.random() * 5000 + 3000;
-    setTimeout(triggerLightningEffect, next);
-  }
-
- 
-  triggerLightningEffect();
-
   </script>
 </body>
 </html>
