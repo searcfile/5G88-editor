@@ -1081,17 +1081,19 @@ if (manualInput) {
     balance = endMoney;
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
-    
- const savedData = {
-    game,
-    bet,
-    pecahan: selectedPecahan,
-    manualTime: manualTimeInput,
-    manualScore: document.getElementById("manualScore").value,
-    logs: tbody.innerHTML
-  };
 
-  localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
+ // Setelah innerHTML benar-benar di-assign, baru simpan semuanya
+  setTimeout(() => {
+    const savedData = {
+      game,
+      bet,
+      pecahan: selectedPecahan,
+      manualTime: manualTimeInput,
+      manualScore: document.getElementById("manualScore").value,
+      logs: tbody.innerHTML
+    };
+    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
+  }, 50); // cukup 50ms delay untuk memastikan DOM update
  
  const setScoreMoney = logs[0].endMoney;
 
@@ -1160,8 +1162,8 @@ let rows = `
     // Tunggu sejenak untuk pastikan pecahan muncul
     setTimeout(() => {
       document.getElementById("pecahanSelect").value = data.pecahan;
-    }, 100);
-  }, 100);
+    }, 50);
+  }, 50);
 
   // Tampilkan kembali log
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
