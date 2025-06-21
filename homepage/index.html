@@ -87,12 +87,37 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 0 20px;
     }
     .header img {
       position: absolute;
       max-height: 40px;
       top: 5px;
     }
+    .user-info {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+    .user-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+    #userName {
+  color: gold;
+  font-weight: bold;
+  font-size: 15px;
+}
+    #userEmail {
+  color: gold;
+  font-size: 14px;
+  font-weight: bold;
+}
     .container {
       transition: margin-left 0.3s ease;
       padding: 0;
@@ -201,15 +226,11 @@
   #logoutBtn {
    background-color: gold;
    color: black;
-   padding: 10px 16px;
+   padding: 6px 12px;
    border-radius: 5px;
    border: none;
    font-weight: bold;
    cursor: pointer;
-   position: fixed;
-   right: 20px;
-   top: 20px;
-   z-index: 99999;
    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
    transition: all 0.3s ease;
   }
@@ -260,15 +281,18 @@
   </a>
 </div>
 
-  <div class="header">
-    <div class="menu-icon" id="menuIcon">☰</div>
-    <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
+ <div class="header">
+  <div class="menu-icon" id="menuIcon">☰</div>
+  <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
+  
+  <div class="user-info">
+    <div class="user-text">
+      <div id="userName"></div>
+      <div id="userEmail"></div>
+    </div>
     <button id="logoutBtn">Logout</button>
-    <div style="position: fixed; top: 20px; right: 60px; z-index: 9999; display: flex; gap: 15px;">
-     <div id="userName" style="position: fixed; top: 10px; right: 120px; color: gold; font-weight: bold; z-index: 9999; font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"></div>
-     <div id="userEmail" style="position: fixed; top: 30px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 14px; display: flex; gap: 10px; justify-content: flex-end;"></div>
   </div>
-  </div>
+</div>
 
    <div id="tabBar" class="tab-bar"></div>
   
