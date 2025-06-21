@@ -2,1166 +2,583 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>918KISS Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Home | 5G88</title>
   <style>
-     body {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      font-family: 'Source Sans 3', 'Source Sans Pro', Arial, sans-serif;
-      padding: 20px;
-      font-size: 14px;
-      line-height: 1.42857;
-      color: rgb(51, 51, 51);
-      font-weight: 400;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
       background-color: #000;
-      }
-    table {
-      width: 65%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 26px;
-      }
-    th {
-      padding: 22px 26px;
-      border: 2.5px solid #ddd;
-      background: #605ca8;
-      color: white;
-      text-align: center;
-     }
-    td {
-      padding: 22px 26px; 
-      border: 1px solid #ddd;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      text-align: center;
-     }
-    #gameLog tbody td {
-      padding-top: 10px;
-      padding-bottom: 10px;
-      line-height: 1.1;
-     }
-    .log-row {
-     color: rgb(51, 51, 51);
-     font-size: 26px; 
-     white-space: nowrap;
-      background-color: #fff;
-     }
-     th:nth-child(2),
-     td:nth-child(2) {
-     width: 0px;
-     }
-     th:nth-child(7),
-     td:nth-child(7) {
-     width: 5px; 
-     }
-  #gameLog td:nth-child(5),
-  #gameLog th:nth-child(5) {
-    width: 5px;
-  }
-  #gameLog th:first-child,
-  #gameLog td:first-child {
-   width: 5px; 
-   white-space: nowrap;
-  }
-  #gameLog th:nth-child(6),
-  #gameLog td:nth-child(6) {
-   width: 5px;
-  }
-  #gameLog th:nth-child(3),
-  #gameLog td:nth-child(3) {
-   width: 5px; 
-  }
-  #gameLog th:nth-child(4),
-  #gameLog td:nth-child(4) {
-   width: 5px; 
-  }
- .table-id-highlight {
-   width: 38px;               
-   height: 34px;             
-   background-color: #d2d6de; 
-   color: #000;               
-   font-weight: bold;         
-   font-size: 23.5px;          
-   border-radius: 45%;        
-   display: flex;             
-   justify-content: center;   
-   align-items: center;      
-   margin: 10px auto;         
+      color: #fff;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
-    button {
-     padding: 5px 10px;
-     font-size: 14px;
-     margin-top: 10px;
-     margin-right: 10px;
-     background: #000;
-     color: gold;
-     border: none;
-     border-radius: 5px;
-     cursor: pointer;
-      border: 1px solid gold;
+
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 999;
     }
-    button:hover {
-     background: gold;
-     color: #000;
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 260px;
+      height: 100vh;
+      background: #111;
+      padding: 20px;
+      transition: 0.3s;
+      z-index: 1000;
     }
-    select, input {
-      padding: 3px 6px;
-      font-size: 13px;
-      margin-left: 10px;
-      border-radius: 5px;
-      background: #000;
-      border: 1px solid gold;
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+    .sidebar h2 {
       color: gold;
+      margin-bottom: 20px;
     }
-    #nowTime {
-     font-weight: bold;
-     margin-left: 10px;
-     color: gold;
+    .sidebar a {
+      display: block;
+      margin: 10px 0;
+      color: gold;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 5px;
+      transition: background 0.2s;
+      padding: 4px 8px;
+      gap: 5px;
+      white-space: nowrap;
     }
-    .set-score-row td {
-     color: rgb(51, 51, 51);
-     font-size: 26px;
-     padding-top: 22px !important;
-     padding-bottom: 22px !important;
-     line-height: 1.1 !important;
-     white-space: nowrap;
-     background-color: #fff;
+    .sidebar a:hover {
+      background: gold;
+      color: #111;
     }
-    .set-score-row td.negatif {
-     color: #dd4b39;
-     font-weight: bold;
-     font-size: 26px;
-     background-color: #fff;
+    .close-btn {
+      background: gold;
+      color: #111;
+      border: none;
+      padding: 2px 6px;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid gold;
     }
-    .set-score-row td.setscore {
-     color: #dd4b39;
-     font-weight: 750;;
-     font-size: 26px;
-     white-space: nowrap;
-     background-color: #fff;
+    .header {
+      position: relative;
+      width: 100%;
+      height: 55px;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    #gameSelect {
-     max-height: 30px;
-     overflow-y: auto;
+    .header img {
+      position: absolute;
+      max-height: 40px;
+      top: 5px;
     }
+    .container {
+      transition: margin-left 0.3s ease;
+      padding: 0;
+    }
+    .container.shrink {
+      margin-left: 260px;
+    }
+    .menu-icon {
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      font-size: 28px;
+      color: gold;
+      cursor: pointer;
+      z-index: 1100;
+    }
+    .menu-img {
+      width: 20px;
+      height: 20px;
+      vertical-align: middle;
+      margin-right: 8px;
+      border-radius: 4px;
+    }
+    @media (max-width: 600px) {
+      .container.shrink {
+        margin-left: 0;
+      }
+    }
+    html, body {
+      height: 100%;
+}
+    #pageFrame {
+  width: 100%;
+  height: calc(100vh - 95px); 
+  border: none;
+    }
+     .tab-bar {
+      position: relative;
+      width: 100%;
+      height: 40px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      z-index: 1001;
+      justify-content: flex-start;
+      white-space: nowrap; 
+   }
+  .tab {
+   background: gold;
+   color: #111;
+   padding: 5px 12px;
+   border-radius: 8px;
+   font-weight: bold;
+   display: flex;
+   align-items: center;
+   gap: 2px;
+   cursor: default;
+   transition: background-color 0.2s ease;
+   white-space: nowrap; 
+   }
+  .tab .close-tab {
+   background: #111;
+   color: gold;
+   border: none;
+   font-size: 14px;
+   border-radius: 50%;
+   cursor: pointer;
+   width: 20px;
+   height: 20px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   }
+  .tab:hover {
+   background-color: #111 !important;
+   color: #ffffff !important;
+   font-weight: bold !important;
+   border: 1px solid white !important;
+   }
+  .active-tab {
+   background-color: #111 !important;
+   color: #ffffff !important;
+   font-weight: bold;
+   border: 1px solid white !important;
+   }
+  .floating-logo {
+   position: fixed;
+   top: 5px;
+   left: 50%;
+   transform: translateX(-50%);
+   height: 40px;
+   z-index: 1103; 
+   }
+  .floating-logo.shrink {
+   transform: translateX(calc(-50% + 130px));
+   }
+  .header.shrink {
+   margin-left: 260px;
+   transition: margin-left 0.3s;
+   }
+  .tab-bar.shrink {
+   margin-left: 260px;
+   transition: margin-left 0.3s;
+   }
+  #logoutBtn {
+   background-color: gold;
+   color: black;
+   padding: 10px 16px;
+   border-radius: 5px;
+   border: none;
+   font-weight: bold;
+   cursor: pointer;
+   position: fixed;
+   right: 20px;
+   top: 20px;
+   z-index: 99999;
+   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+   transition: all 0.3s ease;
+  }
+   #logoutBtn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #000;
+    font-weight: bold;
+   }
   </style>
 </head>
 <body>
-<button onclick="resetLog()" style="background:red; color:white; margin-bottom:20px;">Reset Log</button>
-<h2 style="color: gold;">918KISS SYSTEM RANDOM</h2>
+  <div class="sidebar-overlay" id="overlay"></div>
 
-<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 15px;">
-  <label for="gameSelect" style="color: gold;">Game:</label>
-  <select id="gameSelect" style="height: 38px; font-size: 16px; color: white;">
-    <option value="">-- Choose --</option>
-    <option value="India">India</option>
-    <option value="IreLand">IreLand</option>
-    <option value="Victory">Victory</option>
-    <option value="Panda">Panda</option>
-    <option value="Twister">Twister</option>
-    <option value="PayDirt">PayDirt</option>
-    <option value="WildFox">WildFox</option>
-    <option value="PirateShip">PirateShip</option>
-    <option value="JinQianWa">JinQianWa</option>
-    <option value="Cleopatra">Cleopatra</option>
-    <option value="Garden">Garden</option>
-    <option value="FiveDragons">FiveDragons</option>
-    <option value="SteamTower">SteamTower</option>
-    <option value="Alice">Alice</option>
-    <option value="GreatStars">GreatStars</option>
-    <option value="SAFARI Heat">SAFARI Heat</option>
-    <option value="PatherMoon">PatherMoon</option>
-    <option value="Rally">Rally</option>
-    <option value="BigShot">BigShot</option>
-    <option value="Thai">Thai</option>
-    <option value="SeaCaptain">SeaCaptain</option>
-    <option value="TreasureIsland">TreasureIsland</option>
-    <option value="GoldenTree">GoldenTree</option>
-    <option value="Magician">Magician</option>
-    <option value="SeaWorld">SeaWorld</option>
-    <option value="Samurai">Samurai</option>
-    <option value="circus">circus</option>
-    <option value="TopGun">TopGun</option>
-    <option value="Boxing">Boxing</option>
-    <option value="BonusBears">BonusBears</option>
-    <option value="JAPAN">JAPAN</option>
-    <option value="Boyking">Boyking</option>
-    <option value="ShiningStars">ShiningStars</option>
-    <option value="DolphinReef">DolphinReef</option>
-    <option value="EmperorGate">EmperorGate</option>
-    <option value="IrishLuck">IrishLuck</option>
-    <option value="CookiePop">CookiePop</option>
-    <option value="Wealth">Wealth</option>
-    <option value="Celebration">Celebration</option>
-    <option value="Prosperity">Prosperity</option>
-    <option value="CoyoteCash">CoyoteCash</option>
-    <option value="FairyGarden">FairyGarden</option>
-    <option value="GoldenLotus">GoldenLotus</option>
-    <option value="Tally Ho">Tally Ho</option>
-    <option value="Girls">Girls</option>
-    <option value="Dragon Gold">Dragon Gold</option>
-    <option value="Fame">Fame</option>
-    <option value="Motorcycle">Motorcycle</option>
-    <option value="ICELAND">ICELAND</option>
-    <option value="GreatBlue">GreatBlue</option>
-    <option value="Easter">Easter</option>
-    <option value="RobinHood">RobinHood</option>
-    <option value="ShuiHu">ShuiHu</option>
-  </select>
+  <div class="sidebar" id="sidebar">
+  <button class="close-btn" onclick="closeSidebar()">✖ Close</button>
+  <h2>Menu list</h2>
 
-  <label for="betSelect" style="color: gold;">Bet:</label>
-  <select id="betSelect" style="height: 38px; font-size: 16px; color: white;"></select>
-
-  <label for="pecahanSelect" style="color: gold;">Pecahan:</label>
-  <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;"></select>
+  <a href="#" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LIVE CHAT
+  </a>
+    
+  <a href="#" onclick="addTab('MEGA888', 'https://5g88-mega888.vercel.app/')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> MEGA888
+  </a>
+  <a href="#" onclick="addTab('PUSSY888', 'https://5g88-pussy888.vercel.app/')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> PUSSY888
+  </a>
+  <a href="#" onclick="addTab('918KISS', 'https://5g88-918kiss.vercel.app/')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> 918KISS
+  </a>
+  <a href="#" onclick="addTab('LOGO GAME', 'https://5g88-logogame.vercel.app/')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LOGO GAME
+  </a>
+  <a href="#" onclick="addTab('TIPS GAME', 'https://searcfile.github.io/5G88-editor/tipsgenerate/')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> TIPS GAME
+  </a>
+  <a href="#" onclick="addTab('FIND GAME', 'https://5g88-findgame.vercel.app')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> FIND GAME
+  </a>
+  <a href="#" onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LINK DOWNLOAD
+  </a>
+  <a href="#" onclick="addTab('MAYBANK', 'https://searcfile.github.io/5G88-editor/maybank/')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> MAYBANK
+  </a>
+  <a href="#" onclick="addTab('CIMB BANK', 'https://5g88-cimb.vercel.app/')">
+    <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK
+  </a>
 </div>
 
-  <button onclick="setNow()" style="height: 30px; padding: 6px 12px; font-size: 16px;">Click Now</button>
-
-  <label for="manualTime" style="color: gold;">Set Time:</label>
-  <input type="text" id="manualTime" placeholder="Add Date & Time"
-         style="width: 207px; font-size: 22px; padding: 6px 12px; height: 30px; color: white;" />
-</div>
-
-
-
-
-<br><br>
-<button onclick="generateLog()">Change</button>
-<label for="manualScore" style="color: gold;">Add Score (optional):</label>
-<input type="number" id="manualScore" value="0" style="width: 100px; font-size: 18px; padding: 4px 8px; color: white;">
-<button onclick="deleteCents()" style="margin-left: 5px;">Delete Cents</button>
+  <div class="header">
+    <div class="menu-icon" id="menuIcon">☰</div>
+    <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
+    <button id="logoutBtn">Logout</button>
+     <div style="position: fixed; top: 20px; right: 60px; z-index: 9999; display: flex; gap: 15px;">
+     <div id="userName" style="position: fixed; top: 10px; right: 120px; color: gold; font-weight: bold; z-index: 9999; font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"></div>
+     <div id="userEmail" style="position: fixed; top: 30px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 14px; display: flex; gap: 10px; justify-content: flex-end;"></div>
+  </div>
+  </div>
   
-<table id="gameLog">
-  <thead>
-    <tr>
-      <th>GameName</th>
-      <th>TableID</th>
-      <th>Bet</th>
-      <th>Win</th>
-      <th>BeginMoney</th>
-      <th>EndMoney</th>
-      <th>DateTime</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
+   <div id="tabBar" class="tab-bar"></div>
+  
+  <div class="container" id="mainContainer">
+  <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
+</iframe>
+</div>
 
-<script>
-console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
-  const gameData = {
+  
+  <div id="loadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;">
+  <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Logo" style="width:100px;height:auto;margin-bottom:20px;" />
+  <div style="font-size:18px;font-weight:bold;">Loading...</div>
+</div>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+const tabBar = document.getElementById("tabBar");
+const menuIcon = document.getElementById("menuIcon");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const container = document.getElementById("mainContainer");
+const pageFrame = document.getElementById("pageFrame");
 
- "Magician": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "Girls": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Easter": {
-    bets: [1.00, 2.00, 4.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      4.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "RobinHood": {
-    bets: [1.50, 3.00, 4.50, 9.00, 15.00, 30.00],
-    pecahan: {
-      1.50: [30.00, 50.00, 100.00, 130.00],
-      3.00: [50.00, 80.00, 100.00, 150.00],
-      4.50: [80.00, 100.00, 130.00, 180.00],
-      9.00: [100.00, 130.00, 150.00, 200.00],
-      15.00: [130.00, 150.00, 180.00, 300.00],
-      30.00: [150.00, 180.00, 200.00, 500.00]
-    }
-    },
-    "ShuiHu": {
-    bets: [1.80, 4.50, 9.00, 18.00, 27.00],
-    pecahan: {
-      1.80: [30.00, 50.00, 70.00, 90.00],
-      4.50: [40.00, 60.00, 110.00, 160.00],
-      9.00: [60.00, 90.00, 110.00, 210.00],
-      18.00: [90.00, 110.00, 140.00, 310.00],
-      27.00: [110.00, 160.00, 210.00, 550.00]
-    }
-    },
-    "ICELAND": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "SeaWorld": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-   "Motorcycle": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "Dragon Gold": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Tally Ho": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "ShiningStars": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "TopGun": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "Celebration": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-     },
-    "FairyGarden": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "GreatStars": {
-    bets: [1.00,2.25, 4.50, 9.00, 45.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Boxing": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-     },
-    "JAPAN": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Samurai": {
-    bets: [1.00,2.25, 4.50, 9.00, 45.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Alice": {
-    bets: [1.50, 3.00, 4.50, 9.00, 15.00, 30.00],
-    pecahan: {
-      1.50: [30.00, 50.00, 100.00, 130.00],
-      3.00: [50.00, 80.00, 100.00, 150.00],
-      4.50: [80.00, 100.00, 130.00, 180.00],
-      9.00: [100.00, 130.00, 150.00, 200.00],
-      15.00: [130.00, 150.00, 180.00, 300.00],
-      30.00: [150.00, 180.00, 200.00, 500.00]
-    }
-    },
-   "IrishLuck": {
-    bets: [1.20, 1.50, 1.80, 2.10, 2.40, 2.70, 3.00, 6.00, 7.50, 15.00],
-    pecahan: {
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.50: [80.00, 100.00, 130.00, 180.00],
-      1.80: [50.00, 100.00, 200.00, 300.00],
-      2.10: [50.00, 100.00, 200.00, 300.00],
-      2.40: [50.00, 100.00, 200.00, 300.00],
-      2.70: [50.00, 100.00, 200.00, 300.00],
-      3.00: [50.00, 100.00, 200.00, 300.00],
-      6.00: [50.00, 100.00, 200.00, 300.00],
-      7.50: [80.00, 100.00, 200.00, 400.00],
-      15.00: [100.00, 300.00, 500.00, 750.00]
-    }
-    },
-   "Wealth": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Fame": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "DolphinReef": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Boyking": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "circus": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "BigShot": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Rally": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "GoldenLotus": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "GreatBlue": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "CoyoteCash": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-    "Prosperity": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-    "BonusBears": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "SeaCaptain": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "India": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-    "EmperorGate": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-   "IreLand": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-   "GoldenTree": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "SAFARI Heat": {
-    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
-    pecahan: {
-      1.05: [30.00, 50.00, 100.00, 130.00],
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.35: [80.00, 100.00, 130.00, 180.00],
-      1.50: [100.00, 130.00, 150.00, 200.00],
-      3.75: [130.00, 150.00, 180.00, 220.00],
-      7.50: [150.00, 180.00, 200.00, 250.00],
-      15.00: [180.00, 200.00, 220.00, 300.00]
-    }
-    },
-    "Thai": {
-    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
-    pecahan: {
-      1.05: [30.00, 50.00, 100.00, 130.00],
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.35: [80.00, 100.00, 130.00, 180.00],
-      1.50: [100.00, 130.00, 150.00, 200.00],
-      3.75: [130.00, 150.00, 180.00, 220.00],
-      7.50: [150.00, 180.00, 200.00, 250.00],
-      15.00: [180.00, 200.00, 220.00, 300.00]
-    }
-    },
-    "PatherMoon": {
-    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
-    pecahan: {
-      1.05: [30.00, 50.00, 100.00, 130.00],
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.35: [80.00, 100.00, 130.00, 180.00],
-      1.50: [100.00, 130.00, 150.00, 200.00],
-      3.75: [130.00, 150.00, 180.00, 220.00],
-      7.50: [150.00, 180.00, 200.00, 250.00],
-      15.00: [180.00, 200.00, 220.00, 300.00]
-    }
-    },
-   "Victory": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Panda": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-   "Twister": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-   "PayDirt": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.50: [60.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.00: [100.00, 130.00, 150.00, 200.00],
-      2.25: [130.00, 150.00, 180.00, 220.00],
-      2.50: [150.00, 180.00, 200.00, 240.00],
-      6.25: [180.00, 200.00, 220.00, 260.00],
-      12.50: [200.00, 240.00, 280.00, 320.00],
-      25.00: [350.00, 400.00, 450.00, 500.00]
-    }
-    },
-   "WildFox": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
+tabBar.style.display = "flex";
+tabBar.style.alignItems = "center";
+tabBar.style.padding = "10px 5px";
+tabBar.style.background = "#111";
+
+
+menuIcon.addEventListener("click", openSidebar);
+overlay.addEventListener("click", closeSidebar);
+function openSidebar() {
+  sidebar.classList.add("active");
+  overlay.classList.add("active");
+  container.classList.add("shrink");
+  document.querySelector(".floating-logo").classList.add("shrink");
+  document.querySelector('.header').classList.add('shrink');
+  document.getElementById("tabBar").classList.add('shrink');
+}
+function closeSidebar() {
+  sidebar.classList.remove("active");
+  overlay.classList.remove("active");
+  container.classList.remove("shrink");
+  document.querySelector(".floating-logo").classList.remove("shrink");
+  document.querySelector('.header').classList.remove('shrink');
+  document.getElementById("tabBar").classList.remove('shrink');
+}
+
+function saveTabs(tabs) {
+  localStorage.setItem("openTabs", JSON.stringify(tabs));
+}
+function getTabs() {
+  return JSON.parse(localStorage.getItem("openTabs")) || [];
+}
+
+function addTab(label, url) {
+  const existingTabs = getTabs();
+  const exists = existingTabs.some(tab => tab.label === label);
+  if (!exists) {
+    existingTabs.push({ label, url });
+    saveTabs(existingTabs);
   }
-  },
-   "PirateShip": {
-    bets: [1.20, 1.50, 2.10, 3.00, 3.60, 4.50, 6.00, 9.00, 15.00, 18.00, 30.00],
-    pecahan: {
-      1.20: [15.00, 30.00, 45.00, 60.00],
-      1.50: [30.00, 45.00, 60.00, 75.00],
-      2.10: [45.00, 60.00, 75.00, 90.00],
-      3.00: [60.00, 75.00, 90.00, 105.00],
-      3.60: [75.00, 90.00, 105.00, 120.00],
-      4.50: [90.00, 105.00, 120.00, 135.00],
-      6.00: [105.00, 120.00, 135.00, 150.00],
-      9.00: [120.00, 135.00, 150.00, 165.00],
-      15.00: [135.00, 150.00, 165.00, 180.00],
-      18.00: [150.00, 165.00, 180.00, 195.00],
-      30.00: [165.00, 180.00, 195.00, 205.00]
+  renderTabs();
+  loadPage(url);
+}
+
+function closeTab(label) {
+  let tabs = getTabs().filter(tab => tab.label !== label);
+  saveTabs(tabs);
+  renderTabs();
+  if (tabs.length > 0) {
+    loadPage(tabs[tabs.length - 1].url);
+  } else {
+    pageFrame.src = "";
+  }
+}
+
+function renderTabs() {
+  tabBar.innerHTML = "";
+  const tabs = getTabs();
+
+  tabs.forEach((tab, index) => {
+    const tabElement = document.createElement("div");
+    tabElement.className = "tab";
+    tabElement.draggable = true;
+    tabElement.dataset.index = index;
+    tabElement.style.background = "#222";
+    tabElement.style.color = "gold";
+    tabElement.style.padding = "2px 3px";
+    tabElement.style.marginRight = "0px";
+    tabElement.style.borderRadius = "3px";
+    tabElement.style.border = "1px solid gold";
+    tabElement.style.display = "inline-flex";
+    tabElement.style.alignItems = "center";
+    tabElement.style.fontSize = "14px";
+    tabElement.style.userSelect = "none";
+    tabElement.style.cursor = "pointer";
+    
+    tabElement.addEventListener("dragstart", function (e) {
+      e.dataTransfer.setData("text/plain", index);
+      tabElement.style.opacity = "0.5";
+    });
+
+    tabElement.addEventListener("dragend", function () {
+      tabElement.style.opacity = "1";
+    });
+
+    tabElement.addEventListener("dragover", function (e) {
+      e.preventDefault();
+    });
+
+    tabElement.addEventListener("drop", function (e) {
+      e.preventDefault();
+      const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+      const toIndex = index;
+
+      if (fromIndex !== toIndex) {
+        const updatedTabs = getTabs();
+        const [movedTab] = updatedTabs.splice(fromIndex, 1);
+        updatedTabs.splice(toIndex, 0, movedTab);
+        saveTabs(updatedTabs);
+        renderTabs();
+      }
+    });
+
+    tabElement.onclick = () => loadPage(tab.url);
+
+    if (tab.url === pageFrame.src) {
+      tabElement.classList.add("active-tab");
     }
-    },
-   "CookiePop": {
-    bets: [1.20, 1.50, 2.10, 3.00, 3.60, 4.50, 6.00, 9.00, 15.00, 18.00, 30.00],
-    pecahan: {
-      1.20: [15.00, 30.00, 45.00, 60.00],
-      1.50: [30.00, 45.00, 60.00, 75.00],
-      2.10: [45.00, 60.00, 75.00, 90.00],
-      3.00: [60.00, 75.00, 90.00, 105.00],
-      3.60: [75.00, 90.00, 105.00, 120.00],
-      4.50: [90.00, 105.00, 120.00, 135.00],
-      6.00: [105.00, 120.00, 135.00, 150.00],
-      9.00: [120.00, 135.00, 150.00, 165.00],
-      15.00: [135.00, 150.00, 165.00, 180.00],
-      18.00: [150.00, 165.00, 180.00, 195.00],
-      30.00: [165.00, 180.00, 195.00, 205.00]
-  }
-  },
-    "JinQianWa": {
-    bets: [1.20, 2.00, 4.00, 8.00, 12.00, 20.00],
-    pecahan: {
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      2.00: [80.00, 100.00, 130.00, 180.00],
-      4.00: [100.00, 130.00, 150.00, 200.00],
-      8.00: [180.00, 200.00, 220.00, 260.00],
-      12.00: [350.00, 400.00, 450.00, 500.00],
-      20.00: [650.00, 700.00, 750.00, 800.00]
-  }
-  },
-    "Cleopatra": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-  }
-  },
-  "Garden": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-  }
-  },
-  "FiveDragons": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.50: [60.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.00: [100.00, 130.00, 150.00, 200.00],
-      2.25: [130.00, 150.00, 180.00, 220.00],
-      2.50: [150.00, 180.00, 200.00, 240.00],
-      6.25: [180.00, 200.00, 220.00, 260.00],
-      12.50: [200.00, 240.00, 280.00, 320.00],
-      25.00: [350.00, 400.00, 450.00, 500.00]
-  }
-  },
-   "SteamTower": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
+    const title = document.createElement("span");
+    title.textContent = tab.label;
+    title.style.pointerEvents = "none";
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "close-tab";
+    closeBtn.textContent = "×";
+    closeBtn.style.marginLeft = "4px";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.style.background = "none";
+    closeBtn.style.border = "none";
+    closeBtn.style.color = "red";
+    closeBtn.style.fontSize = "14px";
+    closeBtn.style.transition = "all 0.2s ease";
+    closeBtn.style.padding = "0";
+    closeBtn.style.pointerEvents = "auto";
+
+    closeBtn.onmouseover = () => {
+      closeBtn.style.color = "#ff1a1a";
+      closeBtn.style.transform = "scale(1.2)";
+    };
+    closeBtn.onmouseout = () => {
+      closeBtn.style.color = "red";
+      closeBtn.style.transform = "scale(1)";
+    };
+
+    closeBtn.onclick = (e) => {
+      e.stopPropagation();
+      closeTab(tab.label);
+    };
+
+    tabElement.appendChild(title);
+    tabElement.appendChild(closeBtn);
+    tabBar.appendChild(tabElement);
+  });
+}
+
+function loadPage(url) {
+  pageFrame.src = url;
+  localStorage.setItem("activeTabUrl", url);
+  closeSidebar();
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.classList.remove("active-tab");
+  });
+  const tabs = getTabs();
+  const tabElements = document.querySelectorAll(".tab");
+  tabs.forEach((tab, index) => {
+    if (tab.url === url) {
+      if (tabElements[index]) {
+        tabElements[index].classList.add("active-tab");
+      }
     }
+  });
+}
+
+window.onload = () => {
+  renderTabs();
+  const tabs = getTabs();
+  const activeUrl = localStorage.getItem("activeTabUrl");
+  const match = tabs.find(tab => tab.url === activeUrl);
+
+  if (match) {
+    loadPage(match.url);
+  } else if (tabs.length > 0) {
+    loadPage(tabs[tabs.length - 1].url);
   }
 };
-  document.getElementById("gameSelect").addEventListener("change", function () {
-  const game = this.value;
-  const betSelect = document.getElementById("betSelect");
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  betSelect.innerHTML = "";
-  pecahanSelect.innerHTML = "";
 
-  if (game && gameData[game]) {
-    gameData[game].bets.forEach(bet => {
-      const option = document.createElement("option");
-      option.value = bet;
-      option.textContent = bet.toFixed(2);
-      betSelect.appendChild(option);
-    });
+const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
+const _0xadmins = encodedAdmins.map(e => atob(e));
+const allowedAdmins = [..._0xadmins, "admin@example.com"];
 
-  
-    betSelect.dispatchEvent(new Event("change"));
-  }
-});
-
-
-document.getElementById("betSelect").addEventListener("change", function () {
-  const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(this.value);
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  pecahanSelect.innerHTML = "";
-
-    
-    if (gameData[game] && gameData[game].pecahan[bet]) {
-    const pecahanList = gameData[game].pecahan[bet];
-
-    pecahanList.forEach(p => {
-      const option = document.createElement("option");
-      option.value = p;
-      option.textContent = p.toFixed(2);
-      pecahanSelect.appendChild(option);
-    });
-  }
-});
-
- function setNow() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hour = String(now.getHours()).padStart(2, '0');
-  const minute = String(now.getMinutes()).padStart(2, '0');
-  const second = String(now.getSeconds()).padStart(2, '0');
-
-  const globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-  document.getElementById("manualTime").value = globalTime;
-}
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-
-  let globalTime = null;
-
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-  function formatDateTimeLocal(date) {
+function formatTimestamp(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
-  const h = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const s = String(date.getSeconds()).padStart(2, '0');
-  return `${y}-${m}-${d} ${h}:${min}:${s}`;
- }
-  
- function deleteCents() {
-  const tables = document.querySelectorAll("table");
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+}
 
-  tables.forEach(table => {
-    const rows = table.querySelectorAll("tr");
+function cleanUrl() {
+  const cleanUrl = window.location.origin + window.location.pathname;
+  window.history.replaceState({}, document.title, cleanUrl);
+}
 
-    rows.forEach(row => {
-      const setScoreCell = row.querySelector(".setscore");
-      const beginMoneyCell = row.cells[4]; // kolom beginMoney
-      const endMoneyCell = row.cells[5];   // kolom endMoney
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
-      if (setScoreCell && setScoreCell.textContent.includes("Set score：")) {
-        // Ambil nilai asli dari Set Score
-        const parts = setScoreCell.textContent.split("Set score：");
-        const originalNumber = parseFloat(parts[1]);
+function saveLoginFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+  const email = params.get("email");
 
-        // Bulatkan ke bawah tanpa sen
-        if (!isNaN(originalNumber)) {
-          const intPart = Math.floor(Math.abs(originalNumber));
-          const finalSetScore = `Set score：${originalNumber < 0 ? "-" : ""}${intPart}.00`;
-          setScoreCell.textContent = finalSetScore;
-        }
+  if (name && email && isValidEmail(email)) {
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: decodeURIComponent(name),
+      email: decodeURIComponent(email).toLowerCase()
+    }));
+    cleanUrl();
+  }
+}
 
-        // Ambil cents dari BeginMoney dan masukkan ke EndMoney
-        if (beginMoneyCell && endMoneyCell) {
-          const beginMoney = parseFloat(beginMoneyCell.textContent);
-          if (!isNaN(beginMoney)) {
-            const centsOnly = (beginMoney % 1).toFixed(2);
-            endMoneyCell.textContent = centsOnly;
-          }
-        }
+function checkLogin() {
+  const data = localStorage.getItem("gmailLogin");
+  if (!data) {
+    const params = new URLSearchParams(window.location.search);
+    const adminBypass = params.get("admin");
+
+    if (adminBypass && allowedAdmins.includes(adminBypass.toLowerCase())) {
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name: "Admin",
+        email: adminBypass.toLowerCase()
+      }));
+      cleanUrl();
+      return true;
+    } else {
+      window.location.href = "https://5g88-login.vercel.app/";
+      return false;
+    }
+  }
+  return true;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const forceLogout = sessionStorage.getItem("forceLogout");
+  if (forceLogout === "1") {
+    sessionStorage.removeItem("forceLogout");
+    cleanUrl();
+  }
+
+  saveLoginFromURL();
+
+  if (!checkLogin()) return;
+
+  const loginDataRaw = localStorage.getItem("gmailLogin");
+  let loginData = null;
+
+  try {
+    loginData = JSON.parse(loginDataRaw);
+  } catch (e) {
+    console.error("❌ Failed to parse login data:", e);
+    localStorage.removeItem("gmailLogin");
+    window.location.href = "https://5g88-login.vercel.app/";
+    return;
+  }
+
+  if (!loginData || !loginData.email) {
+    window.location.href = "https://5g88-login.vercel.app/";
+    return;
+  }
+
+  const userNameElem = document.getElementById("userName");
+  if (userNameElem) userNameElem.textContent = loginData.name;
+
+  const userEmailElem = document.getElementById("userEmail");
+  if (userEmailElem) userEmailElem.textContent = loginData.email;
+
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("gmailLogin");
+      sessionStorage.setItem("forceLogout", "1");
+
+      if (window.google?.accounts?.id) {
+        google.accounts.id.disableAutoSelect();
       }
+
+      window.location.href = "https://5g88-login.vercel.app/";
     });
-  });
-}
-  function generateLog() {
-  const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(document.getElementById("betSelect").value);
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  const selectedPecahan = parseFloat(pecahanSelect.value);
-  const tbody = document.querySelector("#gameLog tbody");
-  const manualTimeInput = document.getElementById('manualTime').value;
-
-  let logs = [];
-
- 
-  const manualInput = document.getElementById("manualTime").value.trim();
-  let baseTime;
-if (manualInput) {
-  const parts = manualInput.includes("T")
-    ? manualInput.split("T")
-    : manualInput.split(" ");
-
-  if (parts.length === 2) {
-    const [datePart, timePartRaw] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const timePart = timePartRaw.trim();
-    const timeParts = timePart.split(":").map(Number);
-    const hour = timeParts[0] || 0;
-    const minute = timeParts[1] || 0;
-    const second = timeParts[2] || 0;
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
-  } else {
-    baseTime = new Date();
-  }
-} else if (globalTime) {
-  const parts = globalTime.split(" ");
-  if (parts.length === 2) {
-    const [datePart, timePart] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const [hour, minute, second] = timePart.split(":").map(Number);
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
-  } else {
-    baseTime = new Date();
-  }
-} else {
-  baseTime = new Date();
-}
-
-
-  baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
-
-   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
-   let balance = rnd(500, 1000) + manualScore;
-
-   let totalSeconds = 0;
-
-   for (let i = 0; i < 10; i++) {
-    const gap = Math.floor(Math.random() * 3) + 3;
-    totalSeconds += gap;
-    const logTime = new Date();
-    logTime.setSeconds(logTime.getSeconds() - totalSeconds);
-
-    const beginMoney = balance;
-    const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
-    const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-    const formattedTime = formatDateTimeLocal(baseTime);
-
-    logs.unshift({ 
-      game,
-      tableID: `<span class="table-id-highlight">0</span>`,
-      bet: bet.toFixed(2),
-      win: win.toFixed(2),
-      beginMoney: beginMoney.toFixed(2),
-      endMoney: endMoney.toFixed(2),
-      dateTime: formattedTime
-    });
-
-    balance = endMoney;
-    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
 
- // Setelah innerHTML benar-benar di-assign, baru simpan semuanya
-  setTimeout(() => {
-    const savedData = {
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore: document.getElementById("manualScore").value,
-      logs: tbody.innerHTML
-    };
-    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
-  }, 50); // cukup 50ms delay untuk memastikan DOM update
- 
- const setScoreMoney = logs[0].endMoney;
-
-
-let setScoreTime = new Date(logs[0].dateTime);
-const extraSeconds = [2, 3, 7, 10];
-const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
-setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
-
-let rows = `
-  <tr class="set-score-row">
-    <td>-</td>
-    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${(Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td>0.00</td>
-    <td>${formatDateTimeLocal(setScoreTime)}</td>
-  </tr>
-`;
-
-  logs.forEach(log => {
-    rows += `
-      <tr class="log-row">
-        <td>${log.game}</td>
-        <td>${log.tableID}</td>
-        <td>${log.bet}</td>
-        <td>${log.win}</td>
-        <td>${log.beginMoney}</td>
-        <td>${log.endMoney}</td>
-        <td>${log.dateTime}</td>
-      </tr>
-    `;
-  });
-
-  tbody.innerHTML = rows;
-}
-  function resetLog() {
-  localStorage.removeItem("gameLogData918kiss");
-  document.getElementById("gameSelect").value = "";
-  document.getElementById("betSelect").innerHTML = "";
-  document.getElementById("pecahanSelect").innerHTML = "";
-  document.getElementById("manualTime").value = "";
-  document.getElementById("manualScore").value = "0";
-  document.querySelector("#gameLog tbody").innerHTML = "";
-}
-  window.addEventListener("DOMContentLoaded", () => {
-  const saved = localStorage.getItem("gameLogData918kiss");
-  if (!saved) return;
-
-  const data = JSON.parse(saved);
-
-  // Set nilai dropdown
-  document.getElementById("gameSelect").value = data.game;
-  document.getElementById("manualTime").value = data.manualTime;
-  document.getElementById("manualScore").value = data.manualScore;
-
-  // Trigger event supaya bet & pecahan muncul
-  document.getElementById("gameSelect").dispatchEvent(new Event("change"));
-
-  // Tunggu sejenak untuk memastikan bet options dimuat
-  setTimeout(() => {
-    document.getElementById("betSelect").value = data.bet;
-    document.getElementById("betSelect").dispatchEvent(new Event("change"));
-
-    // Tunggu sejenak untuk pastikan pecahan muncul
-    setTimeout(() => {
-      document.getElementById("pecahanSelect").value = data.pecahan;
-    }, 50);
-  }, 50);
-
-  // Tampilkan kembali log
-  document.querySelector("#gameLog tbody").innerHTML = data.logs;
+  const loadingScreen = document.getElementById("loadingScreen");
+  if (loadingScreen) {
+    loadingScreen.style.display = "none";
+  }
 });
-</script>
-
+  </script>
 </body>
 </html>
