@@ -147,7 +147,7 @@
         display: none;
       }
     }
-     .copy-notice {
+   .copy-notice {
   position: absolute;
   top: -12px;
   right: -10px;
@@ -1553,7 +1553,7 @@
     div.className = "game-logo";
     div.innerHTML = `
   <span class="game-alias">${game.alias || ''}</span>
-  <img src="${game.image}" alt="${game.name}" onclick="copyImageUrl('${game.image}', this.parentElement)">
+  <img src="${game.image}" alt="${game.name}" onclick="copyImageToClipboard('${game.image}', this.parentElement)">
   <span class="game-name">${game.name}</span>
 `;
     grid.appendChild(div);
@@ -1580,33 +1580,30 @@ function setPlatform(platform) {
 
   renderGames();
 
-function copyImageUrl(imageUrl, parentElement) {
-  // Buat temporary input untuk copy
-  const tempInput = document.createElement("input");
-  tempInput.value = imageUrl;
-  document.body.appendChild(tempInput);
-  tempInput.select();
-  document.execCommand("copy");
-  document.body.removeChild(tempInput);
+async function copyImageToClipboard(imageUrl, parentElement) {
+  try {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    const item = new ClipboardItem({ [blob.type]: blob });
+    await navigator.clipboard.write([item]);
 
-  // Cek jika notifikasi sudah ada, hapus dulu
-  const existingNotice = parentElement.querySelector('.copy-notice');
-  if (existingNotice) {
-    parentElement.removeChild(existingNotice);
+    // Hapus notifikasi sebelumnya (jika ada)
+    const existing = parentElement.querySelector('.copy-notice');
+    if (existing) existing.remove();
+
+    // Tampilkan notifikasi kecil
+    const notice = document.createElement('div');
+    notice.textContent = "✔️ Gambar berhasil disalin!";
+    notice.className = 'copy-notice';
+    parentElement.appendChild(notice);
+
+    setTimeout(() => {
+      if (notice && notice.parentNode) notice.remove();
+    }, 2000);
+  } catch (err) {
+    alert("❌ Gagal salin gambar. Browser tidak mendukung atau terjadi error.");
+    console.error(err);
   }
-
-  // Buat notifikasi kecil
-  const notice = document.createElement("div");
-  notice.textContent = "✔️ Gambar berhasil disalin!";
-  notice.className = "copy-notice";
-  parentElement.appendChild(notice);
-
-  // Hapus notifikasi setelah 2 detik
-  setTimeout(() => {
-    if (notice && notice.parentNode) {
-      notice.parentNode.removeChild(notice);
-    }
-  }, 2000);
 }
   </script>
 </body>
