@@ -80,24 +80,14 @@
       border-bottom: 2px solid gold;
     }
     .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px;
-  height: 55px;
-  background: #111;
-  position: relative;
-  z-index: 1000;
-}
-    .header-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
+      position: relative;
+      width: 100%;
+      height: 55px;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
     .header img {
       position: absolute;
       max-height: 40px;
@@ -190,8 +180,13 @@
       border: 1px solid white !important;
     }
     .floating-logo {
-  max-height: 40px;
-}
+      position: fixed;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 40px;
+      z-index: 1103; 
+    }
     .floating-logo.shrink {
       transform: translateX(calc(-50% + 130px));
     }
@@ -204,43 +199,25 @@
    transition: margin-left 0.3s;
    }
   #logoutBtn {
-  margin-top: 2px;
-  background-color: gold;
-  color: black;
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 12px;
-}
-
+   background-color: gold;
+   color: black;
+   padding: 10px 16px;
+   border-radius: 5px;
+   border: none;
+   font-weight: bold;
+   cursor: pointer;
+   position: fixed;
+   right: 20px;
+   top: 20px;
+   z-index: 99999;
+   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+   transition: all 0.3s ease;
+  }
    #logoutBtn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-    @media (max-width: 600px) {
-  .user-info {
-    font-size: 11px;
-  }
-  
-  #logoutBtn {
-    padding: 4px 8px;
-    font-size: 11px;
-  }
-
-  .floating-logo {
-    max-height: 32px;
-  }
-}
-    .user-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  font-size: 13px;
-  color: gold;
-}
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #000;
+    font-weight: bold;
+   }
   </style>
 </head>
 <body>
@@ -284,18 +261,14 @@
 </div>
 
   <div class="header">
-  <div class="menu-icon" id="menuIcon">☰</div>
-  
-  <div class="header-center">
+    <div class="menu-icon" id="menuIcon">☰</div>
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
-  </div>
-  
-  <div class="user-info">
-    <div id="userName"></div>
-    <div id="userEmail"></div>
     <button id="logoutBtn">Logout</button>
+    <div style="position: fixed; top: 20px; right: 60px; z-index: 9999; display: flex; gap: 15px;">
+     <div id="userName" style="position: fixed; top: 10px; right: 120px; color: gold; font-weight: bold; z-index: 9999; font-size: 15px; display: flex; gap: 10px; justify-content: flex-end;"></div>
+     <div id="userEmail" style="position: fixed; top: 30px; right: 120px; color: gold; z-index: 9999; font-weight: bold;font-size: 14px; display: flex; gap: 10px; justify-content: flex-end;"></div>
   </div>
-</div>
+  </div>
 
    <div id="tabBar" class="tab-bar"></div>
   
