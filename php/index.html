@@ -1354,15 +1354,15 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
   }
 };
   let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
-  
+
   document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
   const pecahanSelect = document.getElementById("pecahanSelect");
   betSelect.innerHTML = "";
   pecahanSelect.innerHTML = "";
-    
-    jackpotInsertedMap[game] = false;
+
+    jackpotInsertedMap[game] = jackpotInsertedMap[game] || false;
 
   if (game && gameData[game]) {
     gameData[game].bets.forEach(bet => {
@@ -1373,7 +1373,7 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
     });
 
   
-    betSelect.dispatchEvent(new Event("change"));
+     betSelect.dispatchEvent(new Event("change"));
   }
 });
 
@@ -1384,7 +1384,6 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const pecahanSelect = document.getElementById("pecahanSelect");
   pecahanSelect.innerHTML = "";
 
-  
     if (gameData[game] && gameData[game].pecahan[bet]) {
     const pecahanList = gameData[game].pecahan[bet];
 
@@ -1397,7 +1396,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   }
 });
 
- function setNow() {
+  function setNow() {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -1499,19 +1498,6 @@ document.getElementById("betSelect").addEventListener("change", function () {
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
 
-  // Simpan semua data log
-  setTimeout(() => {
-    const savedData = {
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore: manualScore,
-      logs: tbody.innerHTML
-    };
-    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
-  }, 50);
-
   const setScoreMoney = logs[0].endMoney;
   const setScoreTime = new Date(logs[0].dateTime);
   const randomOffset = [2, 3, 7, 10][Math.floor(Math.random() * 4)];
@@ -1544,7 +1530,22 @@ document.getElementById("betSelect").addEventListener("change", function () {
   });
 
   tbody.innerHTML = rows;
+
+  setTimeout(() => {
+    const savedData = {
+      game,
+      bet,
+      pecahan: selectedPecahan,
+      manualTime: manualTimeInput,
+      manualScore: manualScore,
+      logs: tbody.innerHTML,
+      jackpotInserted: jackpotInsertedMap[game] || false
+    };
+    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
+    localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
+  }, 50);
 }
+
 
 function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
@@ -1658,7 +1659,9 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 50);
 
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
+  jackpotInsertedMap[data.game] = data.jackpotInserted || false;
 });
+
 </script>
 
 </body>
