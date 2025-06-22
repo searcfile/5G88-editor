@@ -1566,19 +1566,20 @@ function addJackpot() {
     return;
   }
 
+  // Ambil baris acak, targetRow dan prevRow
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
-  // Update win & endMoney di row sebelumnya
+  // Update win dan endMoney di prevRow (kena Jackpot)
   const oldWin = parseFloat(prevRow.children[3].textContent);
-  const newWin = (oldWin + jackpotAmount).toFixed(2);
-  prevRow.children[3].textContent = newWin;
+  const newWin = oldWin + jackpotAmount;
+  prevRow.children[3].textContent = newWin.toFixed(2);
 
   const beginMoney = parseFloat(prevRow.children[4].textContent);
   const bet = parseFloat(prevRow.children[2].textContent);
-  const newEnd = (beginMoney - bet + parseFloat(newWin)).toFixed(2);
-  prevRow.children[5].textContent = newEnd;
+  const newEnd = beginMoney - bet + newWin;
+  prevRow.children[5].textContent = newEnd.toFixed(2);
 
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
@@ -1597,28 +1598,24 @@ function addJackpot() {
   `;
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
 
-  // 🔁 Update semua row mundur (dari prevRow ke atas, termasuk set score)
-  const allRows = Array.from(tbody.querySelectorAll("tr"));
-  const jackpotRowIndex = allRows.findIndex(row => row === prevRow);
+  // 🔁 Hitung ulang baris ke atas (yang lebih baru) mulai dari prevRow sampai baris paling atas
+  for (let i = randomIndex - 1; i > 0; i--) {
+    const current = rows[i];
+    const next = rows[i - 1]; // baris sebelumnya (lebih lama)
 
-  for (let i = jackpotRowIndex; i >= 0; i--) {
-    const row = allRows[i];
-    const beginCell = row.children[4];
-    const endCell = row.children[5];
+    const bet = parseFloat(next.children[2].textContent);
+    const win = parseFloat(next.children[3].textContent);
+    const begin = parseFloat(current.children[5].textContent); // EndMoney dari current = BeginMoney next
 
-    if (beginCell && endCell) {
-      const oldBegin = parseFloat(beginCell.textContent);
-      const oldEnd = parseFloat(endCell.textContent);
-      beginCell.textContent = (oldBegin + jackpotAmount).toFixed(2);
-      endCell.textContent = (oldEnd + jackpotAmount).toFixed(2);
-    }
+    next.children[4].textContent = begin.toFixed(2); // BeginMoney
+    const end = begin - bet + win;
+    next.children[5].textContent = end.toFixed(2);   // EndMoney
   }
 
-  // ✅ Simpan status
+  // ✅ Simpan status di localStorage
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
-
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
