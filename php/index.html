@@ -1363,7 +1363,7 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
   betSelect.innerHTML = "";
   pecahanSelect.innerHTML = "";
     
-    jackpotInserted = false;
+    jackpotInsertedMap[game] = false;
 
   if (game && gameData[game]) {
     gameData[game].bets.forEach(bet => {
@@ -1572,11 +1572,14 @@ let rows = `
 
   tbody.innerHTML = rows;
 }
-  let jackpotInserted = false;
+  const jackpotInsertedMap = {}; // Menyimpan status jackpot per game
 
 function addJackpot() {
-  if (jackpotInserted) {
-    alert("Jackpot sudah ditambahkan!");
+  const currentGame = document.getElementById("gameSelect").value;
+
+  // Cek jika jackpot sudah ditambahkan untuk game ini
+  if (jackpotInsertedMap[currentGame]) {
+    alert("Jackpot sudah ditambahkan untuk game ini!");
     return;
   }
 
@@ -1610,8 +1613,6 @@ function addJackpot() {
   prevRow.children[5].textContent = newEnd;
 
   const dateTime = prevRow.children[6].textContent;
-
-  // ✅ Ambil nama game dari kolom pertama
   const gameName = prevRow.children[0].textContent;
 
   const jackpotRow = document.createElement("tr");
@@ -1627,7 +1628,9 @@ function addJackpot() {
   `;
 
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
-  jackpotInserted = true;
+
+  // Tandai jackpot sudah digunakan untuk game ini
+  jackpotInsertedMap[currentGame] = true;
 }
   function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
