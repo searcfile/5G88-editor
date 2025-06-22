@@ -1616,11 +1616,10 @@ function addJackpot() {
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
-  // Tambah bagian ini untuk update Set Score sesuai EndMoney paling atas
+// 🔁 Update Set Score berdasarkan EndMoney terbaru
 const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
 if (updatedRows.length > 0) {
   const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
-
   const setScoreRowTop = tbody.querySelector("tr.set-score-row");
   if (setScoreRowTop) {
     const scoreCell = setScoreRowTop.children[1];
