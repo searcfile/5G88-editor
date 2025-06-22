@@ -1570,10 +1570,12 @@ function addJackpot() {
     return;
   }
 
+  // Pilih baris acak selain baris pertama
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
+  // Tambah win di row sebelumnya
   const oldWin = parseFloat(prevRow.children[3].textContent);
   const newWin = (oldWin + jackpotAmount).toFixed(2);
   prevRow.children[3].textContent = newWin;
@@ -1586,6 +1588,7 @@ function addJackpot() {
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
 
+  // Sisipkan baris Jackpot
   const jackpotRow = document.createElement("tr");
   jackpotRow.classList.add("set-score-row");
   jackpotRow.innerHTML = `
@@ -1597,9 +1600,18 @@ function addJackpot() {
     <td class="negatif">-</td>
     <td>${dateTime}</td>
   `;
-
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
 
+  // ✅ Update semua row setelah jackpot (mulai dari targetRow sampai akhir)
+  for (let i = randomIndex; i < rows.length; i++) {
+    const row = rows[i];
+    const oldBegin = parseFloat(row.children[4].textContent);
+    const oldEnd = parseFloat(row.children[5].textContent);
+    row.children[4].textContent = (oldBegin + jackpotAmount).toFixed(2);
+    row.children[5].textContent = (oldEnd + jackpotAmount).toFixed(2);
+  }
+
+  // Simpan status
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
