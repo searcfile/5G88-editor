@@ -1559,17 +1559,18 @@ function addJackpot() {
 
   const tbody = document.querySelector("#gameLog tbody");
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  if (rows.length < 2) {
-    alert("Log belum cukup baris.");
+  const setScoreRow = tbody.querySelector("tr.set-score-row");
+
+  if (rows.length < 2 || !setScoreRow) {
+    alert("Log belum cukup baris atau Set Score belum tersedia.");
     return;
   }
 
-  // Pilih baris acak selain baris pertama
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
-  // Tambah win di row sebelumnya
+  // Update win & endMoney di row sebelumnya
   const oldWin = parseFloat(prevRow.children[3].textContent);
   const newWin = (oldWin + jackpotAmount).toFixed(2);
   prevRow.children[3].textContent = newWin;
@@ -1596,16 +1597,24 @@ function addJackpot() {
   `;
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
 
-  // ✅ Update semua row setelah jackpot (mulai dari targetRow sampai akhir)
-  for (let i = randomIndex; i < rows.length; i++) {
-    const row = rows[i];
-    const oldBegin = parseFloat(row.children[4].textContent);
-    const oldEnd = parseFloat(row.children[5].textContent);
-    row.children[4].textContent = (oldBegin + jackpotAmount).toFixed(2);
-    row.children[5].textContent = (oldEnd + jackpotAmount).toFixed(2);
+  // 🔁 Update semua row mundur (dari prevRow ke atas, termasuk set score)
+  const allRows = Array.from(tbody.querySelectorAll("tr"));
+  const jackpotRowIndex = allRows.findIndex(row => row === prevRow);
+
+  for (let i = jackpotRowIndex; i >= 0; i--) {
+    const row = allRows[i];
+    const beginCell = row.children[4];
+    const endCell = row.children[5];
+
+    if (beginCell && endCell) {
+      const oldBegin = parseFloat(beginCell.textContent);
+      const oldEnd = parseFloat(endCell.textContent);
+      beginCell.textContent = (oldBegin + jackpotAmount).toFixed(2);
+      endCell.textContent = (oldEnd + jackpotAmount).toFixed(2);
+    }
   }
 
-  // Simpan status
+  // ✅ Simpan status
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
