@@ -1615,7 +1615,19 @@ function addJackpot() {
   // ✅ Simpan status di localStorage
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
+
+  // Tambah bagian ini untuk update Set Score sesuai EndMoney paling atas
+const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+if (updatedRows.length > 0) {
+  const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
+
+  const setScoreRowTop = tbody.querySelector("tr.set-score-row");
+  if (setScoreRowTop) {
+    const scoreCell = setScoreRowTop.children[1];
+    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+  }
 }
+
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
