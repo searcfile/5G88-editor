@@ -1592,7 +1592,7 @@ function addJackpot() {
     return;
   }
 
-  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1; // Hindari indeks 0
+  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
@@ -1609,10 +1609,13 @@ function addJackpot() {
 
   const dateTime = prevRow.children[6].textContent;
 
+  // ✅ Ambil nama game dari kolom pertama
+  const gameName = prevRow.children[0].textContent;
+
   const jackpotRow = document.createElement("tr");
   jackpotRow.classList.add("set-score-row");
   jackpotRow.innerHTML = `
-    <td>-</td>
+    <td>${gameName}</td>
     <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
     <td class="negatif">-</td>
     <td class="negatif">-</td>
