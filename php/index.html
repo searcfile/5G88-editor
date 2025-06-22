@@ -1566,12 +1566,10 @@ function addJackpot() {
     return;
   }
 
-  // Ambil baris acak, targetRow dan prevRow
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
-  // Update win dan endMoney di prevRow (kena Jackpot)
   const oldWin = parseFloat(prevRow.children[3].textContent);
   const newWin = oldWin + jackpotAmount;
   prevRow.children[3].textContent = newWin.toFixed(2);
@@ -1584,7 +1582,6 @@ function addJackpot() {
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
 
-  // Sisipkan baris Jackpot
   const jackpotRow = document.createElement("tr");
   jackpotRow.classList.add("set-score-row");
   jackpotRow.innerHTML = `
@@ -1598,33 +1595,30 @@ function addJackpot() {
   `;
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
 
-  // 🔁 Hitung ulang baris ke atas (yang lebih baru) mulai dari prevRow sampai baris paling atas
+  // Update mundur ke atas
   for (let i = randomIndex - 1; i > 0; i--) {
     const current = rows[i];
-    const next = rows[i - 1]; // baris sebelumnya (lebih lama)
-
+    const next = rows[i - 1];
     const bet = parseFloat(next.children[2].textContent);
     const win = parseFloat(next.children[3].textContent);
-    const begin = parseFloat(current.children[5].textContent); // EndMoney dari current = BeginMoney next
-
-    next.children[4].textContent = begin.toFixed(2); // BeginMoney
-    const end = begin - bet + win;
-    next.children[5].textContent = end.toFixed(2);   // EndMoney
+    const begin = parseFloat(current.children[5].textContent);
+    next.children[4].textContent = begin.toFixed(2);
+    next.children[5].textContent = (begin - bet + win).toFixed(2);
   }
 
-  // ✅ Simpan status di localStorage
+  // 🔁 Update Set Score berdasarkan EndMoney terbaru
+  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (updatedRows.length > 0) {
+    const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
+    const setScoreRowTop = tbody.querySelector("tr.set-score-row");
+    if (setScoreRowTop) {
+      const scoreCell = setScoreRowTop.children[1];
+      scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+    }
+  }
+
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
-}
-// 🔁 Update Set Score berdasarkan EndMoney terbaru
-const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-if (updatedRows.length > 0) {
-  const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
-  const setScoreRowTop = tbody.querySelector("tr.set-score-row");
-  if (setScoreRowTop) {
-    const scoreCell = setScoreRowTop.children[1];
-    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-  }
 }
 
 function resetLog() {
