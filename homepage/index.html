@@ -289,6 +289,7 @@
     <div class="user-text">
       <div id="userName"></div>
       <div id="userEmail"></div>
+      <div id="dateTime" style="color: white; font-size: 12px;"></div>
     </div>
     <button id="logoutBtn">Logout</button>
   </div>
@@ -596,6 +597,26 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "https://5g88-login.vercel.app/";
     });
   }
+
+  function updateDateTime() {
+    const now = new Date();
+
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    const day = String(now.getDate()).padStart(2, '0');
+    const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+    const month = monthNames[now.getMonth()];
+    const year = now.getFullYear();
+
+    const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
+
+    document.getElementById('dateTime').textContent = timeString;
+  }
+
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
 
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
