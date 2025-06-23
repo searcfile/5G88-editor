@@ -296,6 +296,7 @@ document.addEventListener("contextmenu", e => e.preventDefault());
       return false;
     }
   };
+let hiddenRow = null;
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
   const gameData = {
   
@@ -1584,6 +1585,11 @@ function addJackpot() {
 
     jackpotRow.remove();
   }
+  
+  if (hiddenRow) {
+  tbody.appendChild(hiddenRow);
+  hiddenRow = null;
+} 
 
   rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) {
@@ -1620,18 +1626,26 @@ function addJackpot() {
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
-  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  for (let i = updatedRows.length - 1; i > 0; i--) {
-    const current = updatedRows[i];
-    const prev = updatedRows[i - 1];
+   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+const specialRows = tbody.querySelectorAll("tr.set-score-row");
 
-    const curEnd = parseFloat(current.children[5].textContent);
-    const prevBet = parseFloat(prev.children[2].textContent);
-    const prevWin = parseFloat(prev.children[3].textContent);
+while (allRows.length + specialRows.length > 11) {
+  const lastRow = allRows.pop(); 
+  lastRow.remove();
+}
 
-    prev.children[4].textContent = curEnd.toFixed(2);
-    prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
-  }
+const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+for (let i = updatedRows.length - 1; i > 0; i--) {
+  const current = updatedRows[i];
+  const prev = updatedRows[i - 1];
+
+  const curEnd = parseFloat(current.children[5].textContent);
+  const prevBet = parseFloat(prev.children[2].textContent);
+  const prevWin = parseFloat(prev.children[3].textContent);
+
+  prev.children[4].textContent = curEnd.toFixed(2);
+  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
+}
 
   if (updatedRows.length > 0) {
     const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
