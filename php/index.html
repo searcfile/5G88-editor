@@ -1514,8 +1514,9 @@ function generateLog() {
 
 function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
-  if (jackpotInsertedMap[currentGame]) {
-    alert("Jackpot sudah ditambahkan untuk game ini!");
+  const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
+  if (isNaN(jackpotAmount) || jackpotAmount <= 0) {
+    alert("Masukkan nilai jackpot yang valid.");
     return;
   }
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
@@ -1525,25 +1526,30 @@ function addJackpot() {
   }
   const tbody = document.querySelector("#gameLog tbody");
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  const setScoreRow = tbody.querySelector("tr.set-score-row");
-  if (rows.length < 2 || !setScoreRow) {
-    alert("Log belum cukup baris atau Set Score belum tersedia.");
+  if (rows.length < 2) {
+    alert("Log belum cukup baris.");
     return;
   }
+  tbody.querySelectorAll("tr.jackpot-row").forEach(row => row.remove());
+  
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
+
   const oldWin = parseFloat(prevRow.children[3].textContent);
   const newWin = oldWin + jackpotAmount;
   prevRow.children[3].textContent = newWin.toFixed(2);
+
   const beginMoney = parseFloat(prevRow.children[4].textContent);
   const bet = parseFloat(prevRow.children[2].textContent);
   const newEnd = beginMoney - bet + newWin;
   prevRow.children[5].textContent = newEnd.toFixed(2);
+
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
+
   const jackpotRow = document.createElement("tr");
-  jackpotRow.classList.add("set-score-row");
+  jackpotRow.classList.add("jackpot-row");
   jackpotRow.innerHTML = `
     <td>${gameName}</td>
     <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
@@ -1572,10 +1578,7 @@ function addJackpot() {
       scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
     }
   }
-  jackpotInsertedMap[currentGame] = true;
-  localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
-
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
