@@ -1550,8 +1550,7 @@ function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
 
-  if (isNaN(jackpotAmount) || jackpotAmount <= 0) {
-    alert("Masukkan nilai jackpot yang valid.");
+  if (isNaN(jackpotAmount) || jackpotAmount < 0) {
     return;
   }
 
