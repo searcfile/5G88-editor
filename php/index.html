@@ -1619,12 +1619,11 @@ function addJackpot() {
       scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
     }
   }
-}
 
+  // ✅ Letakkan di dalam sini
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
-
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
