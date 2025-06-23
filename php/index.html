@@ -1479,24 +1479,22 @@ function addJackpot() {
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) return alert("Log belum cukup baris.");
 
-  // Hapus baris jackpot lama jika ada
-  const oldJackpotRow = tbody.querySelector("tr.jackpot-row");
-  if (oldJackpotRow) oldJackpotRow.remove();
+  // Hapus baris jackpot lama
+  document.querySelectorAll("tr.jackpot-row").forEach(j => j.remove());
 
-  // Ambil data jackpot lama dan reset nilai win/endMoney
+  // Restore win & endMoney dari jackpot sebelumnya (jika ada)
   const jackpotDataOld = JSON.parse(localStorage.getItem("jackpotData918kiss"));
   if (jackpotDataOld && jackpotDataOld.prevRowIndex != null) {
     const oldRow = rows[jackpotDataOld.prevRowIndex];
     if (oldRow) {
-      oldRow.children[3].textContent = jackpotDataOld.originalWin.toFixed(2); // restore win
+      oldRow.children[3].textContent = jackpotDataOld.originalWin.toFixed(2);
       const begin = parseFloat(oldRow.children[4].textContent);
       const bet = parseFloat(oldRow.children[2].textContent);
-      const newEnd = begin - bet + jackpotDataOld.originalWin;
-      oldRow.children[5].textContent = newEnd.toFixed(2); // restore endMoney
+      oldRow.children[5].textContent = (begin - bet + jackpotDataOld.originalWin).toFixed(2);
     }
   }
 
-  // Pilih baris acak baru (selain paling atas)
+  // Pilih baris acak selain baris paling atas
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
@@ -1507,23 +1505,31 @@ function addJackpot() {
   const newWin = originalWin + jackpotAmount;
   const newEnd = beginMoney - bet + newWin;
 
-  // Update nilai jackpot baru
   prevRow.children[3].textContent = newWin.toFixed(2);
   prevRow.children[5].textContent = newEnd.toFixed(2);
 
+  // Recalculate semua baris setelah prevRow
+  for (let i = randomIndex; i < rows.length; i++) {
+    const current = rows[i];
+    const previous = rows[i - 1];
+    const b = parseFloat(current.children[2].textContent);
+    const w = parseFloat(current.children[3].textContent);
+    const newBegin = parseFloat(previous.children[5].textContent);
+    const newEnd = newBegin - b + w;
+    current.children[4].textContent = newBegin.toFixed(2);
+    current.children[5].textContent = newEnd.toFixed(2);
+  }
+
+  // Tambah baris jackpot
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
-
   const jackpotRow = document.createElement("tr");
   jackpotRow.classList.add("set-score-row", "jackpot-row");
   jackpotRow.innerHTML = `
     <td>${gameName}</td>
     <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${dateTime}</td>`;
+    <td class="negatif">-</td><td class="negatif">-</td>
+    <td class="negatif">-</td><td class="negatif">-</td><td>${dateTime}</td>`;
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
 
   // Update set score
@@ -1533,7 +1539,7 @@ function addJackpot() {
     setScoreRow.children[1].textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
   }
 
-  // Simpan data untuk restore
+  // Simpan semua data
   localStorage.setItem("jackpotData918kiss", JSON.stringify({
     amount: jackpotAmount,
     dateTime,
@@ -1543,13 +1549,13 @@ function addJackpot() {
     originalWin,
     prevRowIndex: randomIndex - 1
   }));
-
   localStorage.setItem("jackpotInputValue", jackpotAmount);
-  // Simpan ulang logs untuk restore
-const updatedLogs = document.querySelector("#gameLog tbody").innerHTML;
-const gameLogData = JSON.parse(localStorage.getItem("gameLogData918kiss")) || {};
-gameLogData.logs = updatedLogs;
-localStorage.setItem("gameLogData918kiss", JSON.stringify(gameLogData));
+
+  // Simpan log lengkap ke localStorage
+  const updatedLogs = document.querySelector("#gameLog tbody").innerHTML;
+  const gameLogData = JSON.parse(localStorage.getItem("gameLogData918kiss")) || {};
+  gameLogData.logs = updatedLogs;
+  localStorage.setItem("gameLogData918kiss", JSON.stringify(gameLogData));
 }
 
 function resetLog() {
@@ -1599,16 +1605,40 @@ window.addEventListener("DOMContentLoaded", () => {
         prevRow.children[5].textContent = jackpotData.newEnd.toFixed(2);
 
         // Tambahkan kembali baris jackpot
-        const jackpotRow = document.createElement("tr");
-        jackpotRow.classList.add("set-score-row", "jackpot-row");
-        jackpotRow.innerHTML = `
-          <td>${jackpotData.game}</td>
-          <td class="setscore">JackPot：${parseFloat(jackpotData.amount).toFixed(2)}</td>
-          <td class="negatif">-</td><td class="negatif">-</td>
-          <td class="negatif">-</td><td class="negatif">-</td>
-          <td>${jackpotData.dateTime}</td>`;
-        targetRow.insertAdjacentElement("beforebegin", jackpotRow);
-      }
+        const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
+if (jackpotData && jackpotData.game === data.game) {
+  const rows = Array.from(document.querySelectorAll("#gameLog tbody tr.log-row"));
+  const targetRow = rows[jackpotData.prevRowIndex + 1];
+  const prevRow = rows[jackpotData.prevRowIndex];
+
+  if (prevRow && targetRow) {
+    prevRow.children[3].textContent = jackpotData.newWin.toFixed(2);
+    prevRow.children[5].textContent = jackpotData.newEnd.toFixed(2);
+
+    // Rehitung semua baris setelahnya
+    for (let i = jackpotData.prevRowIndex + 1; i < rows.length; i++) {
+      const current = rows[i];
+      const previous = rows[i - 1];
+      const b = parseFloat(current.children[2].textContent);
+      const w = parseFloat(current.children[3].textContent);
+      const newBegin = parseFloat(previous.children[5].textContent);
+      const newEnd = newBegin - b + w;
+      current.children[4].textContent = newBegin.toFixed(2);
+      current.children[5].textContent = newEnd.toFixed(2);
+    }
+
+    // Tambah kembali baris jackpot
+    const jackpotRow = document.createElement("tr");
+    jackpotRow.classList.add("set-score-row", "jackpot-row");
+    jackpotRow.innerHTML = `
+      <td>${jackpotData.game}</td>
+      <td class="setscore">JackPot：${parseFloat(jackpotData.amount).toFixed(2)}</td>
+      <td class="negatif">-</td><td class="negatif">-</td>
+      <td class="negatif">-</td><td class="negatif">-</td>
+      <td>${jackpotData.dateTime}</td>`;
+    targetRow.insertAdjacentElement("beforebegin", jackpotRow);
+  }
+}
 
       // Restore input jackpot juga
       const jackpotInput = localStorage.getItem("jackpotInputValue");
