@@ -1605,10 +1605,10 @@ window.addEventListener("DOMContentLoaded", () => {
         prevRow.children[5].textContent = jackpotData.newEnd.toFixed(2);
 
         // Tambahkan kembali baris jackpot
-  document.querySelectorAll("tr.jackpot-row").forEach(j => j.remove());
+       const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
+       if (jackpotData && jackpotData.game === data.game) {
+        document.querySelectorAll("tr.jackpot-row").forEach(j => j.remove());
 
-      const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
-      if (jackpotData && jackpotData.game === data.game) {
         const rows = Array.from(document.querySelectorAll("#gameLog tbody tr.log-row"));
         const targetRow = rows[jackpotData.prevRowIndex + 1];
         const prevRow = rows[jackpotData.prevRowIndex];
