@@ -1214,9 +1214,10 @@ let rows = `
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
  const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-if (allRows.length + 2 > 11) { // 2 = setscore + jackpot
-  const lastRow = allRows[allRows.length - 1];
-  hiddenRow = lastRow.cloneNode(true);
+const specialRows = tbody.querySelectorAll("tr.set-score-row"); // termasuk jackpot & setscore
+
+while (allRows.length + specialRows.length > 11) {
+  const lastRow = allRows.pop(); // ambil & hapus baris terakhir
   lastRow.remove();
 }
 
