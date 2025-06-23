@@ -1596,47 +1596,48 @@ window.addEventListener("DOMContentLoaded", () => {
         
 
         // Tambahkan kembali baris jackpot
-       const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
-if (jackpotData && jackpotData.game === data.game) {
-  const tbody = document.querySelector("#gameLog tbody");
-  const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
+      if (jackpotData && jackpotData.game === data.game) {
+        const tbody = document.querySelector("#gameLog tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
 
-  const prevRow = rows[jackpotData.prevRowIndex];
-  const targetRow = rows[jackpotData.prevRowIndex + 1];
+        const prevRow = rows[jackpotData.prevRowIndex];
+        const targetRow = rows[jackpotData.prevRowIndex + 1];
 
-  if (prevRow && targetRow) {
-    prevRow.children[3].textContent = jackpotData.newWin.toFixed(2);
-    prevRow.children[5].textContent = jackpotData.newEnd.toFixed(2);
+        if (prevRow && targetRow) {
+          prevRow.children[3].textContent = jackpotData.newWin.toFixed(2);
+          prevRow.children[5].textContent = jackpotData.newEnd.toFixed(2);
 
-    // Rehitung ulang semua baris setelah prevRow
-    for (let i = jackpotData.prevRowIndex + 1; i < rows.length; i++) {
-      const current = rows[i];
-      const previous = rows[i - 1];
-      const b = parseFloat(current.children[2].textContent);
-      const w = parseFloat(current.children[3].textContent);
-      const newBegin = parseFloat(previous.children[5].textContent);
-      const newEnd = newBegin - b + w;
-      current.children[4].textContent = newBegin.toFixed(2);
-      current.children[5].textContent = newEnd.toFixed(2);
-    }
+          for (let i = jackpotData.prevRowIndex + 1; i < rows.length; i++) {
+            const current = rows[i];
+            const previous = rows[i - 1];
+            const b = parseFloat(current.children[2].textContent);
+            const w = parseFloat(current.children[3].textContent);
+            const newBegin = parseFloat(previous.children[5].textContent);
+            const newEnd = newBegin - b + w;
+            current.children[4].textContent = newBegin.toFixed(2);
+            current.children[5].textContent = newEnd.toFixed(2);
+          }
 
-    // Tambahkan kembali baris jackpot
-    const jackpotRow = document.createElement("tr");
-    jackpotRow.classList.add("set-score-row", "jackpot-row");
-    jackpotRow.innerHTML = `
-      <td>${jackpotData.game}</td>
-      <td class="setscore">JackPot：${parseFloat(jackpotData.amount).toFixed(2)}</td>
-      <td class="negatif">-</td><td class="negatif">-</td>
-      <td class="negatif">-</td><td class="negatif">-</td>
-      <td>${jackpotData.dateTime}</td>`;
-    targetRow.insertAdjacentElement("beforebegin", jackpotRow);
-  }
+          const jackpotRow = document.createElement("tr");
+          jackpotRow.classList.add("set-score-row", "jackpot-row");
+          jackpotRow.innerHTML = `
+            <td>${jackpotData.game}</td>
+            <td class="setscore">JackPot：${parseFloat(jackpotData.amount).toFixed(2)}</td>
+            <td class="negatif">-</td><td class="negatif">-</td>
+            <td class="negatif">-</td><td class="negatif">-</td>
+            <td>${jackpotData.dateTime}</td>`;
+          targetRow.insertAdjacentElement("beforebegin", jackpotRow);
+        }
 
-  const jackpotInput = localStorage.getItem("jackpotInputValue");
-  if (jackpotInput) {
-    document.getElementById("manualJackpot").value = jackpotInput;
-  }
-}
+        const jackpotInput = localStorage.getItem("jackpotInputValue");
+        if (jackpotInput) {
+          document.getElementById("manualJackpot").value = jackpotInput;
+        }
+      }
+    }, 50); // ← Tutup setTimeout ke-2
+  }, 50);   // ← Tutup setTimeout pertama
+});  
 </script>
 
 </body>
