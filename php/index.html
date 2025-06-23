@@ -1353,17 +1353,16 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
     }
   }
 };
- let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
-
-// ====== GAME SELECT ======
-document.getElementById("gameSelect").addEventListener("change", function () {
+  let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
+  
+  document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
   const pecahanSelect = document.getElementById("pecahanSelect");
   betSelect.innerHTML = "";
   pecahanSelect.innerHTML = "";
-
-  jackpotInsertedMap[game] = false;
+    
+    jackpotInsertedMap[game] = false;
 
   if (game && gameData[game]) {
     gameData[game].bets.forEach(bet => {
@@ -1372,19 +1371,24 @@ document.getElementById("gameSelect").addEventListener("change", function () {
       option.textContent = bet.toFixed(2);
       betSelect.appendChild(option);
     });
+
+  
     betSelect.dispatchEvent(new Event("change"));
   }
 });
 
-// ====== BET SELECT ======
+
 document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(this.value);
   const pecahanSelect = document.getElementById("pecahanSelect");
   pecahanSelect.innerHTML = "";
 
-  if (gameData[game] && gameData[game].pecahan[bet]) {
-    gameData[game].pecahan[bet].forEach(p => {
+  
+    if (gameData[game] && gameData[game].pecahan[bet]) {
+    const pecahanList = gameData[game].pecahan[bet];
+
+    pecahanList.forEach(p => {
       const option = document.createElement("option");
       option.value = p;
       option.textContent = p.toFixed(2);
@@ -1393,167 +1397,238 @@ document.getElementById("betSelect").addEventListener("change", function () {
   }
 });
 
-function setNow() {
+ function setNow() {
   const now = new Date();
-  const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
-  const h = String(now.getHours()).padStart(2,'0'), min = String(now.getMinutes()).padStart(2,'0'), s = String(now.getSeconds()).padStart(2,'0');
-  document.getElementById("manualTime").value = `${y}-${m}-${d} ${h}:${min}:${s}`;
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hour = String(now.getHours()).padStart(2, '0');
+  const minute = String(now.getMinutes()).padStart(2, '0');
+  const second = String(now.getSeconds()).padStart(2, '0');
+
+  const globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  document.getElementById("manualTime").value = globalTime;
 }
+  function rnd(min, max, dec = 2){
+    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
+  }
 
-function rnd(min, max, dec=2){ return parseFloat((Math.random()*(max-min)+min).toFixed(dec)); }
+  let globalTime = null;
 
-function formatDateTimeLocal(date) {
-  const y = date.getFullYear(), m = String(date.getMonth()+1).padStart(2,'0'), d = String(date.getDate()).padStart(2,'0');
-  const h = String(date.getHours()).padStart(2,'0'), min = String(date.getMinutes()).padStart(2,'0'), s = String(date.getSeconds()).padStart(2,'0');
+  function rnd(min, max, dec = 2){
+    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
+  }
+  function formatDateTimeLocal(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
-}
+ }
+ function deleteCents() {
+  const tables = document.querySelectorAll("table");
 
-function generateLog() {
+  tables.forEach(table => {
+    const cells = table.querySelectorAll("td");
+
+    cells.forEach(cell => {
+      if (cell.textContent.includes("Set score：")) {
+        const parts = cell.textContent.split("Set score：");
+        const number = parseFloat(parts[1]);
+
+        if (!isNaN(number)) {
+          const intPart = Math.floor(Math.abs(number));
+          const finalValue = `Set score：${number < 0 ? "-" : ""}${intPart}.00`;
+          cell.textContent = finalValue;
+        }
+      }
+    });
+  });
+}
+  function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
   const selectedPecahan = parseFloat(document.getElementById("pecahanSelect").value);
   const tbody = document.querySelector("#gameLog tbody");
-  const manualTimeInput = document.getElementById("manualTime").value;
+  const manualTimeInput = document.getElementById('manualTime').value;
   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
 
-  let logs = [], baseTime;
-  const parts = manualTimeInput.includes("T") ? manualTimeInput.split("T") : manualTimeInput.split(" ");
-  if (parts.length === 2) {
-    const [d, t] = parts;
-    const [y,m,dn] = d.split("-").map(Number);
-    const [h,min,s] = t.split(":").map(Number);
-    baseTime = new Date(y,m-1,dn,h,min,s);
-  } else baseTime = new Date();
+  let logs = [];
+  let baseTime;
+
+  const manualInput = manualTimeInput.trim();
+  if (manualInput) {
+    const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
+    if (parts.length === 2) {
+      const [datePart, timePartRaw] = parts;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute, second] = timePartRaw.trim().split(":").map(Number);
+      baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
+    } else {
+      baseTime = new Date();
+    }
+  } else {
+    baseTime = new Date();
+  }
 
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
   let balance = rnd(3000, 4000) + manualScore;
+  let totalSeconds = 0;
 
   for (let i = 0; i < 10; i++) {
-    const gap = Math.floor(Math.random()*3)+3;
+    const gap = Math.floor(Math.random() * 3) + 3;
+    totalSeconds += gap;
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
+    const formattedTime = formatDateTimeLocal(baseTime);
+
     logs.unshift({
       game,
-      tableID: `<span class="table-id-highlight">0</span>` ,
+      tableID: `<span class="table-id-highlight">0</span>`,
       bet: bet.toFixed(2),
       win: win.toFixed(2),
       beginMoney: beginMoney.toFixed(2),
       endMoney: endMoney.toFixed(2),
-      dateTime: formatDateTimeLocal(baseTime)
+      dateTime: formattedTime
     });
+
     balance = endMoney;
-    baseTime.setSeconds(baseTime.getSeconds() + gap);
+    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
+
+  // Simpan semua data log
+  setTimeout(() => {
+    const savedData = {
+      game,
+      bet,
+      pecahan: selectedPecahan,
+      manualTime: manualTimeInput,
+      manualScore: manualScore,
+      logs: tbody.innerHTML
+    };
+    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
+  }, 50);
 
   const setScoreMoney = logs[0].endMoney;
   const setScoreTime = new Date(logs[0].dateTime);
-  setScoreTime.setSeconds(setScoreTime.getSeconds() + [2,3,7,10][Math.floor(Math.random()*4)]);
+  const randomOffset = [2, 3, 7, 10][Math.floor(Math.random() * 4)];
+  setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
 
-  let rows = `<tr class="set-score-row">
-    <td>-</td><td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td class="negatif">-</td><td class="negatif">-</td><td class="negatif">-</td><td class="negatif">-</td>
-    <td>${formatDateTimeLocal(setScoreTime)}</td></tr>`;
+  let rows = `
+    <tr class="set-score-row">
+      <td>-</td>
+      <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td>${formatDateTimeLocal(setScoreTime)}</td>
+    </tr>
+  `;
 
   logs.forEach(log => {
-    rows += `<tr class="log-row">
-      <td>${log.game}</td><td>${log.tableID}</td><td>${log.bet}</td><td>${log.win}</td>
-      <td>${log.beginMoney}</td><td>${log.endMoney}</td><td>${log.dateTime}</td></tr>`;
+    rows += `
+      <tr class="log-row">
+        <td>${log.game}</td>
+        <td>${log.tableID}</td>
+        <td>${log.bet}</td>
+        <td>${log.win}</td>
+        <td>${log.beginMoney}</td>
+        <td>${log.endMoney}</td>
+        <td>${log.dateTime}</td>
+      </tr>
+    `;
   });
 
   tbody.innerHTML = rows;
-
-  setTimeout(() => {
-    localStorage.setItem("gameLogData918kiss", JSON.stringify({
-      game, bet, pecahan: selectedPecahan, manualTime: manualTimeInput, manualScore, logs: tbody.innerHTML
-    }));
-  }, 50);
 }
 
 function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
+
+  if (jackpotInsertedMap[currentGame]) {
+    alert("Jackpot sudah ditambahkan untuk game ini!");
+    return;
+  }
+
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
-  if (isNaN(jackpotAmount) || jackpotAmount <= 0) return alert("Masukkan nilai jackpot yang valid.");
+  if (isNaN(jackpotAmount) || jackpotAmount <= 0) {
+    alert("Masukkan nilai jackpot yang valid.");
+    return;
+  }
 
   const tbody = document.querySelector("#gameLog tbody");
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  if (rows.length < 2) return alert("Log belum cukup baris.");
+  const setScoreRow = tbody.querySelector("tr.set-score-row");
 
-  // Hapus baris jackpot lama (jika ada)
-  document.querySelectorAll("tr.jackpot-row").forEach(j => j.remove());
-
-  // Ambil indeks baris sebelumnya dari localStorage, jika ada
-  let jackpotDataOld = JSON.parse(localStorage.getItem("jackpotData918kiss"));
-  let prevRowIndex = jackpotDataOld && jackpotDataOld.prevRowIndex != null ? jackpotDataOld.prevRowIndex : Math.floor(Math.random() * (rows.length - 1)) + 1 - 1;
-
-  const prevRow = rows[prevRowIndex];
-  const targetRow = rows[prevRowIndex + 1];
-
-  const originalWin = parseFloat(prevRow.children[3].textContent);
-  const bet = parseFloat(prevRow.children[2].textContent);
-  const beginMoney = parseFloat(prevRow.children[4].textContent);
-  const newWin = originalWin + jackpotAmount;
-  const newEnd = beginMoney - bet + newWin;
-
-  prevRow.children[3].textContent = newWin.toFixed(2);
-  prevRow.children[5].textContent = newEnd.toFixed(2);
-
-  // Recalculate semua baris setelah prevRow
-  for (let i = prevRowIndex + 1; i < rows.length; i++) {
-    const current = rows[i];
-    const previous = rows[i - 1];
-    const b = parseFloat(current.children[2].textContent);
-    const w = parseFloat(current.children[3].textContent);
-    const newBegin = parseFloat(previous.children[5].textContent);
-    const newEnd = newBegin - b + w;
-    current.children[4].textContent = newBegin.toFixed(2);
-    current.children[5].textContent = newEnd.toFixed(2);
+  if (rows.length < 2 || !setScoreRow) {
+    alert("Log belum cukup baris atau Set Score belum tersedia.");
+    return;
   }
 
-  // Tambah baris jackpot kembali
+  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
+  const targetRow = rows[randomIndex];
+  const prevRow = rows[randomIndex - 1];
+
+  const oldWin = parseFloat(prevRow.children[3].textContent);
+  const newWin = oldWin + jackpotAmount;
+  prevRow.children[3].textContent = newWin.toFixed(2);
+
+  const beginMoney = parseFloat(prevRow.children[4].textContent);
+  const bet = parseFloat(prevRow.children[2].textContent);
+  const newEnd = beginMoney - bet + newWin;
+  prevRow.children[5].textContent = newEnd.toFixed(2);
+
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
+
   const jackpotRow = document.createElement("tr");
-  jackpotRow.classList.add("set-score-row", "jackpot-row");
+  jackpotRow.classList.add("set-score-row");
   jackpotRow.innerHTML = `
     <td>${gameName}</td>
     <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
-    <td class="negatif">-</td><td class="negatif">-</td>
-    <td class="negatif">-</td><td class="negatif">-</td><td>${dateTime}</td>`;
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td>${dateTime}</td>
+  `;
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
 
-  // Update set score
-  const topEndMoney = parseFloat(rows[0].children[5].textContent);
-  const setScoreRow = tbody.querySelector("tr.set-score-row");
-  if (setScoreRow) {
-    setScoreRow.children[1].textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+  // Update mundur ke atas
+  for (let i = randomIndex - 1; i > 0; i--) {
+    const current = rows[i];
+    const next = rows[i - 1];
+    const bet = parseFloat(next.children[2].textContent);
+    const win = parseFloat(next.children[3].textContent);
+    const begin = parseFloat(current.children[5].textContent);
+    next.children[4].textContent = begin.toFixed(2);
+    next.children[5].textContent = (begin - bet + win).toFixed(2);
   }
 
-  // Simpan jackpot ke localStorage
-  localStorage.setItem("jackpotData918kiss", JSON.stringify({
-    amount: jackpotAmount,
-    dateTime,
-    game: currentGame,
-    newWin,
-    newEnd,
-    originalWin,
-    prevRowIndex: prevRowIndex
-  }));
-  localStorage.setItem("jackpotInputValue", jackpotAmount);
+  // 🔁 Update Set Score berdasarkan EndMoney terbaru
+  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (updatedRows.length > 0) {
+    const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
+    const setScoreRowTop = tbody.querySelector("tr.set-score-row");
+    if (setScoreRowTop) {
+      const scoreCell = setScoreRowTop.children[1];
+      scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+    }
+  }
 
-  // Simpan log lengkap
-  const updatedLogs = document.querySelector("#gameLog tbody").innerHTML;
-  const gameLogData = JSON.parse(localStorage.getItem("gameLogData918kiss")) || {};
-  gameLogData.logs = updatedLogs;
-  localStorage.setItem("gameLogData918kiss", JSON.stringify(gameLogData));
+  jackpotInsertedMap[currentGame] = true;
+  localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
 
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
-  localStorage.removeItem("jackpotData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
-  localStorage.removeItem("jackpotInputValue");
   jackpotInsertedMap = {};
+
   document.getElementById("gameSelect").value = "";
   document.getElementById("betSelect").innerHTML = "";
   document.getElementById("pecahanSelect").innerHTML = "";
@@ -1579,65 +1654,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(() => {
       document.getElementById("pecahanSelect").value = data.pecahan;
-      document.querySelector("#gameLog tbody").innerHTML = data.logs;
-      
-      document.querySelectorAll("tr.jackpot-row").forEach(j => j.remove());
+    }, 50);
+  }, 50);
 
-      const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
-      if (jackpotData && jackpotData.game === data.game) {
-        const tbody = document.querySelector("#gameLog tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-        const targetRow = rows[1];
-        const prevRow = rows[0];
-
-        // Update nilai win & end kembali
-        prevRow.children[3].textContent = jackpotData.newWin.toFixed(2);
-        prevRow.children[5].textContent = jackpotData.newEnd.toFixed(2);
-        
-
-        // Tambahkan kembali baris jackpot
-const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
-      if (jackpotData && jackpotData.game === data.game) {
-        const tbody = document.querySelector("#gameLog tbody");
-        const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-
-        const prevRow = rows[jackpotData.prevRowIndex];
-        const targetRow = rows[jackpotData.prevRowIndex + 1];
-
-        if (prevRow && targetRow) {
-          prevRow.children[3].textContent = jackpotData.newWin.toFixed(2);
-          prevRow.children[5].textContent = jackpotData.newEnd.toFixed(2);
-
-          for (let i = jackpotData.prevRowIndex + 1; i < rows.length; i++) {
-            const current = rows[i];
-            const previous = rows[i - 1];
-            const b = parseFloat(current.children[2].textContent);
-            const w = parseFloat(current.children[3].textContent);
-            const newBegin = parseFloat(previous.children[5].textContent);
-            const newEnd = newBegin - b + w;
-            current.children[4].textContent = newBegin.toFixed(2);
-            current.children[5].textContent = newEnd.toFixed(2);
-          }
-
-          const jackpotRow = document.createElement("tr");
-          jackpotRow.classList.add("set-score-row", "jackpot-row");
-          jackpotRow.innerHTML = `
-            <td>${jackpotData.game}</td>
-            <td class="setscore">JackPot：${parseFloat(jackpotData.amount).toFixed(2)}</td>
-            <td class="negatif">-</td><td class="negatif">-</td>
-            <td class="negatif">-</td><td class="negatif">-</td>
-            <td>${jackpotData.dateTime}</td>`;
-          targetRow.insertAdjacentElement("beforebegin", jackpotRow);
-        }
-
-        const jackpotInput = localStorage.getItem("jackpotInputValue");
-        if (jackpotInput) {
-          document.getElementById("manualJackpot").value = jackpotInput;
-        }
-      }
-    }, 50); // ← Tutup setTimeout ke-2
-  }, 50);   // ← Tutup setTimeout pertama
-});  
+  document.querySelector("#gameLog tbody").innerHTML = data.logs;
+});
 </script>
 
 </body>
