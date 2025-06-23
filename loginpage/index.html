@@ -1408,23 +1408,19 @@ let rows = `
 
   // Update Set Score di baris paling atas
   if (updatedRows.length > 0) {
-  const topRow = updatedRows[0];
-  const topBet = parseFloat(topRow.children[2].textContent);
-  const topWin = parseFloat(topRow.children[3].textContent);
-  const topEndMoney = parseFloat(topRow.children[5].textContent);
-
-  // Tambah jackpot ke beginMoney
-  const adjustedBegin = parseFloat(topRow.children[4].textContent) + jackpotAmount;
-  const adjustedEnd = adjustedBegin - topBet + topWin;
-
-  topRow.children[4].textContent = adjustedBegin.toFixed(2);
-  topRow.children[5].textContent = adjustedEnd.toFixed(2);
-
-  // Update Set Score pakai endMoney dari top row
+  const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
   const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
   if (setScoreRowTop) {
     const scoreCell = setScoreRowTop.children[1];
-    scoreCell.textContent = `Set score：${(-Math.abs(adjustedEnd)).toFixed(2)}`;
+    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+
+    const beginCell = setScoreRowTop.children[4];
+      const oldBegin = parseFloat(beginCell.textContent);
+      const newBegin = oldBegin + jackpotAmount;
+      beginCell.textContent = newBegin.toFixed(2);
+
+      // ✅ Update ulang Set score berdasarkan beginMoney
+      scoreCell.textContent = `Set score：${(-Math.abs(newBegin)).toFixed(2)}`;
   }
 }
 
