@@ -91,8 +91,6 @@
     button {
      padding: 5px 10px;
      font-size: 14px;
-     margin-top: 10px;
-     margin-right: 10px;
      background: #000;
      color: gold;
      border: none;
@@ -216,21 +214,33 @@
   <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;"></select>
 </div>
 
-  <button onclick="setNow()" style="height: 30px; padding: 6px 12px; font-size: 16px;">Click Now</button>
+  <button onclick="setNow()" style="height: 30px; padding: 6px 12px; font-size: 16px;margin-right: 10px;">Click Now</button>
 
   <label for="manualTime" style="color: gold;">Set Time:</label>
   <input type="text" id="manualTime" placeholder="Add Date & Time"
          style="width: 207px; font-size: 22px; padding: 6px 12px; height: 30px; color: white;" />
 </div>
 
-
-
-
 <br><br>
-<button onclick="generateLog()">Change</button>
-<label for="manualScore" style="color: gold;">Add Score (optional):</label>
-<input type="number" id="manualScore" value="0" style="width: 100px; font-size: 18px; padding: 4px 8px; color: white;">
-<button onclick="deleteCents()" style="margin-left: 5px;">Delete Cents</button>
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+
+  <button onclick="generateLog()" style="height: 38px;">Change</button>
+
+  <div style="display: flex; align-items: center;">
+    <label for="manualScore" style="color: gold; height: 38px; display: flex; align-items: center;">Add Score (optional):</label>
+    <input type="number" id="manualScore" value="0"
+           style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  </div>
+
+  <div style="display: flex; align-items: center;">
+    <label for="manualJackpot" style="color: gold; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
+    <input type="number" id="manualJackpot" value="0"
+           style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  </div>
+
+  <button onclick="addJackpot()" style="height: 38px;">Set Jackpot</button>
+  <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
+ </div>
   
 <table id="gameLog">
   <thead>
@@ -249,7 +259,7 @@
 </table>
 
 <script>
-  document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("contextmenu", e => e.preventDefault());
   document.onkeydown = function (e) {
     if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
       return false;
@@ -898,12 +908,16 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
     }
   }
 };
+  
+  let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
   document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
   const pecahanSelect = document.getElementById("pecahanSelect");
   betSelect.innerHTML = "";
   pecahanSelect.innerHTML = "";
+
+  jackpotInsertedMap[game] = false;
 
   if (game && gameData[game]) {
     gameData[game].bets.forEach(bet => {
@@ -1129,29 +1143,134 @@ let rows = `
 
   tbody.innerHTML = rows;
 }
-  function resetLog() {
+  function addJackpot() {
+  const currentGame = document.getElementById("gameSelect").value;
+  const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
+
+  if (isNaN(jackpotAmount) || jackpotAmount < 0) {
+    return;
+  }
+
+  const tbody = document.querySelector("#gameLog tbody");
+  let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  let jackpotRow = tbody.querySelector("tr.set-score-row.jackpot");
+
+  if (jackpotRow) {
+    const prevJackpotText = jackpotRow.children[1].textContent;
+    const match = prevJackpotText.match(/JackPot：([\d.]+)/);
+    if (match) {
+      const oldJackpotValue = parseFloat(match[1]);
+
+     
+      const index = Array.from(tbody.children).indexOf(jackpotRow);
+      const prevRow = tbody.children[index - 1];
+      const oldWin = parseFloat(prevRow.children[3].textContent);
+      const oldEnd = parseFloat(prevRow.children[5].textContent);
+      const newWin = oldWin - oldJackpotValue;
+
+      prevRow.children[3].textContent = newWin.toFixed(2);
+      const bet = parseFloat(prevRow.children[2].textContent);
+      const beginMoney = parseFloat(prevRow.children[4].textContent);
+      const newEnd = beginMoney - bet + newWin;
+      prevRow.children[5].textContent = newEnd.toFixed(2);
+    }
+
+    jackpotRow.remove();
+  }
+
+  rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (rows.length < 2) {
+    alert("Log belum cukup baris.");
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
+  const targetRow = rows[randomIndex];
+  const prevRow = rows[randomIndex - 1];
+
+  const oldWin = parseFloat(prevRow.children[3].textContent);
+  const newWin = oldWin + jackpotAmount;
+  prevRow.children[3].textContent = newWin.toFixed(2);
+
+  const beginMoney = parseFloat(prevRow.children[4].textContent);
+  const bet = parseFloat(prevRow.children[2].textContent);
+  const newEnd = beginMoney - bet + newWin;
+  prevRow.children[5].textContent = newEnd.toFixed(2);
+
+  const dateTime = prevRow.children[6].textContent;
+  const gameName = prevRow.children[0].textContent;
+
+  const newJackpotRow = document.createElement("tr");
+  newJackpotRow.classList.add("set-score-row", "jackpot");
+  newJackpotRow.innerHTML = `
+    <td>${gameName}</td>
+    <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td>${dateTime}</td>
+  `;
+  targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
+
+  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  for (let i = updatedRows.length - 1; i > 0; i--) {
+    const current = updatedRows[i];
+    const prev = updatedRows[i - 1];
+
+    const curEnd = parseFloat(current.children[5].textContent);
+    const prevBet = parseFloat(prev.children[2].textContent);
+    const prevWin = parseFloat(prev.children[3].textContent);
+
+    prev.children[4].textContent = curEnd.toFixed(2);
+    prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
+  }
+
+  if (updatedRows.length > 0) {
+  const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
+  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+  if (setScoreRowTop) {
+    const scoreCell = setScoreRowTop.children[1];
+    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+
+    const beginCell = setScoreRowTop.children[4];
+      const oldBegin = parseFloat(beginCell.textContent);
+      const newBegin = oldBegin + jackpotAmount;
+      beginCell.textContent = newBegin.toFixed(2);
+
+    
+      scoreCell.textContent = `Set score：${(-Math.abs(newBegin)).toFixed(2)}`;
+  }
+}
+
+
+  jackpotInsertedMap[currentGame] = true;
+  localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
+}
+function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
+  localStorage.removeItem("jackpotInsertedMap");
+  jackpotInsertedMap = {};
+
   document.getElementById("gameSelect").value = "";
   document.getElementById("betSelect").innerHTML = "";
   document.getElementById("pecahanSelect").innerHTML = "";
   document.getElementById("manualTime").value = "";
   document.getElementById("manualScore").value = "0";
+  document.getElementById("manualJackpot").value = "0";
   document.querySelector("#gameLog tbody").innerHTML = "";
 }
-  window.addEventListener("DOMContentLoaded", () => {
+
+window.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("gameLogData918kiss");
   if (!saved) return;
 
   const data = JSON.parse(saved);
-
   document.getElementById("gameSelect").value = data.game;
   document.getElementById("manualTime").value = data.manualTime;
   document.getElementById("manualScore").value = data.manualScore;
-
-
   document.getElementById("gameSelect").dispatchEvent(new Event("change"));
 
-  
   setTimeout(() => {
     document.getElementById("betSelect").value = data.bet;
     document.getElementById("betSelect").dispatchEvent(new Event("change"));
@@ -1161,7 +1280,6 @@ let rows = `
     }, 50);
   }, 50);
 
- 
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
 });
 </script>
