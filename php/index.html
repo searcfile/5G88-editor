@@ -1355,6 +1355,7 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
 };
  let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
 
+// ====== GAME SELECT ======
 document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
@@ -1371,11 +1372,11 @@ document.getElementById("gameSelect").addEventListener("change", function () {
       option.textContent = bet.toFixed(2);
       betSelect.appendChild(option);
     });
-
     betSelect.dispatchEvent(new Event("change"));
   }
 });
 
+// ====== BET SELECT ======
 document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(this.value);
@@ -1383,8 +1384,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   pecahanSelect.innerHTML = "";
 
   if (gameData[game] && gameData[game].pecahan[bet]) {
-    const pecahanList = gameData[game].pecahan[bet];
-    pecahanList.forEach(p => {
+    gameData[game].pecahan[bet].forEach(p => {
       const option = document.createElement("option");
       option.value = p;
       option.textContent = p.toFixed(2);
@@ -1395,26 +1395,16 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
 function setNow() {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hour = String(now.getHours()).padStart(2, '0');
-  const minute = String(now.getMinutes()).padStart(2, '0');
-  const second = String(now.getSeconds()).padStart(2, '0');
-  document.getElementById("manualTime").value = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0'), d = String(now.getDate()).padStart(2,'0');
+  const h = String(now.getHours()).padStart(2,'0'), min = String(now.getMinutes()).padStart(2,'0'), s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById("manualTime").value = `${y}-${m}-${d} ${h}:${min}:${s}`;
 }
 
-function rnd(min, max, dec = 2) {
-  return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-}
+function rnd(min, max, dec=2){ return parseFloat((Math.random()*(max-min)+min).toFixed(dec)); }
 
 function formatDateTimeLocal(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const h = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const s = String(date.getSeconds()).padStart(2, '0');
+  const y = date.getFullYear(), m = String(date.getMonth()+1).padStart(2,'0'), d = String(date.getDate()).padStart(2,'0');
+  const h = String(date.getHours()).padStart(2,'0'), min = String(date.getMinutes()).padStart(2,'0'), s = String(date.getSeconds()).padStart(2,'0');
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
 }
 
@@ -1426,30 +1416,26 @@ function generateLog() {
   const manualTimeInput = document.getElementById("manualTime").value;
   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
 
-  let logs = [];
-  let baseTime;
-
+  let logs = [], baseTime;
   const parts = manualTimeInput.includes("T") ? manualTimeInput.split("T") : manualTimeInput.split(" ");
   if (parts.length === 2) {
-    const [datePart, timePartRaw] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const [hour, minute, second] = timePartRaw.trim().split(":").map(Number);
-    baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
-  } else {
-    baseTime = new Date();
-  }
+    const [d, t] = parts;
+    const [y,m,dn] = d.split("-").map(Number);
+    const [h,min,s] = t.split(":").map(Number);
+    baseTime = new Date(y,m-1,dn,h,min,s);
+  } else baseTime = new Date();
 
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
   let balance = rnd(3000, 4000) + manualScore;
 
   for (let i = 0; i < 10; i++) {
-    const gap = Math.floor(Math.random() * 3) + 3;
+    const gap = Math.floor(Math.random()*3)+3;
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
     logs.unshift({
       game,
-      tableID: `<span class="table-id-highlight">0</span>`,
+      tableID: `<span class="table-id-highlight">0</span>` ,
       bet: bet.toFixed(2),
       win: win.toFixed(2),
       beginMoney: beginMoney.toFixed(2),
@@ -1462,40 +1448,24 @@ function generateLog() {
 
   const setScoreMoney = logs[0].endMoney;
   const setScoreTime = new Date(logs[0].dateTime);
-  setScoreTime.setSeconds(setScoreTime.getSeconds() + [2, 3, 7, 10][Math.floor(Math.random() * 4)]);
+  setScoreTime.setSeconds(setScoreTime.getSeconds() + [2,3,7,10][Math.floor(Math.random()*4)]);
 
   let rows = `<tr class="set-score-row">
-    <td>-</td>
-    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${formatDateTimeLocal(setScoreTime)}</td>
-  </tr>`;
+    <td>-</td><td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+    <td class="negatif">-</td><td class="negatif">-</td><td class="negatif">-</td><td class="negatif">-</td>
+    <td>${formatDateTimeLocal(setScoreTime)}</td></tr>`;
 
   logs.forEach(log => {
     rows += `<tr class="log-row">
-      <td>${log.game}</td>
-      <td>${log.tableID}</td>
-      <td>${log.bet}</td>
-      <td>${log.win}</td>
-      <td>${log.beginMoney}</td>
-      <td>${log.endMoney}</td>
-      <td>${log.dateTime}</td>
-    </tr>`;
+      <td>${log.game}</td><td>${log.tableID}</td><td>${log.bet}</td><td>${log.win}</td>
+      <td>${log.beginMoney}</td><td>${log.endMoney}</td><td>${log.dateTime}</td></tr>`;
   });
 
   tbody.innerHTML = rows;
 
   setTimeout(() => {
     localStorage.setItem("gameLogData918kiss", JSON.stringify({
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore,
-      logs: tbody.innerHTML
+      game, bet, pecahan: selectedPecahan, manualTime: manualTimeInput, manualScore, logs: tbody.innerHTML
     }));
   }, 50);
 }
@@ -1503,26 +1473,18 @@ function generateLog() {
 function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
-  if (isNaN(jackpotAmount) || jackpotAmount <= 0) {
-    alert("Masukkan nilai jackpot yang valid.");
-    return;
-  }
+  if (isNaN(jackpotAmount) || jackpotAmount <= 0) return alert("Masukkan nilai jackpot yang valid.");
 
   const tbody = document.querySelector("#gameLog tbody");
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  const setScoreRow = tbody.querySelector("tr.set-score-row");
+  if (rows.length < 2) return alert("Log belum cukup baris.");
 
-  if (rows.length < 2 || !setScoreRow) {
-    alert("Log belum cukup baris atau Set Score belum tersedia.");
-    return;
-  }
-
-  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
+  const randomIndex = 1; // Tetap agar konsisten
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
-  const oldWin = parseFloat(prevRow.children[3].textContent);
-  const newWin = oldWin + jackpotAmount;
+  const originalWin = parseFloat(prevRow.children[3].textContent);
+  const newWin = originalWin + jackpotAmount;
   prevRow.children[3].textContent = newWin.toFixed(2);
 
   const beginMoney = parseFloat(prevRow.children[4].textContent);
@@ -1535,42 +1497,13 @@ function addJackpot() {
 
   const jackpotRow = document.createElement("tr");
   jackpotRow.classList.add("set-score-row", "jackpot-row");
-  jackpotRow.innerHTML = `
-    <td>${gameName}</td>
-    <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${dateTime}</td>
-  `;
+  jackpotRow.innerHTML = `<td>${gameName}</td><td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
+    <td class="negatif">-</td><td class="negatif">-</td><td class="negatif">-</td><td class="negatif">-</td><td>${dateTime}</td>`;
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
 
-  for (let i = randomIndex - 1; i > 0; i--) {
-    const current = rows[i];
-    const next = rows[i - 1];
-    const bet = parseFloat(next.children[2].textContent);
-    const win = parseFloat(next.children[3].textContent);
-    const begin = parseFloat(current.children[5].textContent);
-    next.children[4].textContent = begin.toFixed(2);
-    next.children[5].textContent = (begin - bet + win).toFixed(2);
-  }
-
-  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  if (updatedRows.length > 0) {
-    const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
-    const setScoreRowTop = tbody.querySelector("tr.set-score-row");
-    if (setScoreRowTop) {
-      setScoreRowTop.children[1].textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-    }
-  }
-
-  const jackpotData = {
-    amount: jackpotAmount,
-    dateTime,
-    game: currentGame
-  };
-  localStorage.setItem("jackpotData918kiss", JSON.stringify(jackpotData));
+  localStorage.setItem("jackpotData918kiss", JSON.stringify({
+    amount: jackpotAmount, dateTime, game: currentGame, newWin, newEnd
+  }));
 }
 
 function resetLog() {
@@ -1578,7 +1511,6 @@ function resetLog() {
   localStorage.removeItem("jackpotData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
   jackpotInsertedMap = {};
-
   document.getElementById("gameSelect").value = "";
   document.getElementById("betSelect").innerHTML = "";
   document.getElementById("pecahanSelect").innerHTML = "";
@@ -1591,7 +1523,6 @@ function resetLog() {
 window.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("gameLogData918kiss");
   if (!saved) return;
-
   const data = JSON.parse(saved);
   document.getElementById("gameSelect").value = data.game;
   document.getElementById("manualTime").value = data.manualTime;
@@ -1601,31 +1532,24 @@ window.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     document.getElementById("betSelect").value = data.bet;
     document.getElementById("betSelect").dispatchEvent(new Event("change"));
-
     setTimeout(() => {
       document.getElementById("pecahanSelect").value = data.pecahan;
       document.querySelector("#gameLog tbody").innerHTML = data.logs;
 
-      // Restore jackpot jika ada
       const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
       if (jackpotData && jackpotData.game === data.game) {
         const tbody = document.querySelector("#gameLog tbody");
         const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-        if (rows.length >= 2) {
-          const targetRow = rows[1]; // posisi tetap
-          const jackpotRow = document.createElement("tr");
-          jackpotRow.classList.add("set-score-row", "jackpot-restore");
-          jackpotRow.innerHTML = `
-            <td>${jackpotData.game}</td>
-            <td class="setscore">JackPot：${parseFloat(jackpotData.amount).toFixed(2)}</td>
-            <td class="negatif">-</td>
-            <td class="negatif">-</td>
-            <td class="negatif">-</td>
-            <td class="negatif">-</td>
-            <td>${jackpotData.dateTime}</td>
-          `;
-          targetRow.insertAdjacentElement("beforebegin", jackpotRow);
-        }
+        const targetRow = rows[1];
+        const prevRow = rows[0];
+        prevRow.children[3].textContent = jackpotData.newWin.toFixed(2);
+        prevRow.children[5].textContent = jackpotData.newEnd.toFixed(2);
+
+        const jackpotRow = document.createElement("tr");
+        jackpotRow.classList.add("set-score-row", "jackpot-restore");
+        jackpotRow.innerHTML = `<td>${jackpotData.game}</td><td class="setscore">JackPot：${parseFloat(jackpotData.amount).toFixed(2)}</td>
+        <td class="negatif">-</td><td class="negatif">-</td><td class="negatif">-</td><td class="negatif">-</td><td>${jackpotData.dateTime}</td>`;
+        targetRow.insertAdjacentElement("beforebegin", jackpotRow);
       }
     }, 50);
   }, 50);
