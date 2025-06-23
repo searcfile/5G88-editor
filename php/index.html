@@ -1545,9 +1545,10 @@ function addJackpot() {
   localStorage.setItem("jackpotInputValue", jackpotAmount);
 
   // Simpan ulang logs untuk restore
-  const data = JSON.parse(localStorage.getItem("gameLogData918kiss")) || {};
-  data.logs = tbody.innerHTML;
-  localStorage.setItem("gameLogData918kiss", JSON.stringify(data));
+const updatedLogs = document.querySelector("#gameLog tbody").innerHTML;
+const gameLogData = JSON.parse(localStorage.getItem("gameLogData918kiss")) || {};
+gameLogData.logs = updatedLogs;
+localStorage.setItem("gameLogData918kiss", JSON.stringify(gameLogData));
 }
 
 function resetLog() {
@@ -1582,6 +1583,8 @@ window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       document.getElementById("pecahanSelect").value = data.pecahan;
       document.querySelector("#gameLog tbody").innerHTML = data.logs;
+      
+      document.querySelectorAll("tr.jackpot-row").forEach(j => j.remove());
 
       const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
       if (jackpotData && jackpotData.game === data.game) {
