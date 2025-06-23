@@ -1479,47 +1479,43 @@ function addJackpot() {
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) return alert("Log belum cukup baris.");
 
-  const targetIndex = 1; // tetap di baris kedua
-  const targetRow = rows[targetIndex];
-  const prevRow = rows[targetIndex - 1];
+  // Hapus baris jackpot lama jika ada
+  const oldJackpotRow = tbody.querySelector("tr.jackpot-row");
+  if (oldJackpotRow) oldJackpotRow.remove();
 
-  // 🧹 Hapus semua jackpot-row lama dulu
-  const oldJackpots = Array.from(tbody.querySelectorAll("tr.jackpot-row"));
-  oldJackpots.forEach(jp => jp.remove());
+  // Ambil data jackpot lama dan reset win/endMoney lama
+  const jackpotDataOld = JSON.parse(localStorage.getItem("jackpotData918kiss"));
+  if (jackpotDataOld && jackpotDataOld.index != null) {
+    const prev = rows[jackpotDataOld.index];
+    if (prev) {
+      prev.children[3].textContent = jackpotDataOld.originalWin.toFixed(2);
+      const begin = parseFloat(prev.children[4].textContent);
+      const bet = parseFloat(prev.children[2].textContent);
+      const newEnd = begin - bet + jackpotDataOld.originalWin;
+      prev.children[5].textContent = newEnd.toFixed(2);
+    }
+  }
 
-  // 💰 Update nilai win dan endMoney
+  // Pilih baris acak baru (selain paling atas)
+  let randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
+
+  const targetRow = rows[randomIndex];
+  const prevRow = rows[randomIndex - 1];
+
   const originalWin = parseFloat(prevRow.children[3].textContent);
   const bet = parseFloat(prevRow.children[2].textContent);
   const beginMoney = parseFloat(prevRow.children[4].textContent);
   const newWin = originalWin + jackpotAmount;
   const newEnd = beginMoney - bet + newWin;
 
+  // Update nilai
   prevRow.children[3].textContent = newWin.toFixed(2);
   prevRow.children[5].textContent = newEnd.toFixed(2);
 
-  // 🧮 Perbarui baris-baris di atasnya (hitung ulang begin dan end)
-  for (let i = targetIndex - 1; i >= 1; i--) {
-    const current = rows[i];
-    const prev = rows[i - 1];
-    const bet = parseFloat(prev.children[2].textContent);
-    const win = parseFloat(prev.children[3].textContent);
-    const begin = parseFloat(current.children[5].textContent);
-    const end = begin - bet + win;
-
-    prev.children[4].textContent = begin.toFixed(2);
-    prev.children[5].textContent = end.toFixed(2);
-  }
-
-  // 🧮 Update juga Set Score baris atas
-  const setScoreRow = tbody.querySelector("tr.set-score-row");
-  const topEndMoney = parseFloat(rows[0].children[5].textContent);
-  if (setScoreRow) {
-    setScoreRow.children[1].textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-  }
-
-  // 🆕 Tambah baris jackpot baru
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
+
+  // Tambah baris jackpot baru
   const jackpotRow = document.createElement("tr");
   jackpotRow.classList.add("set-score-row", "jackpot-row");
   jackpotRow.innerHTML = `
@@ -1529,18 +1525,26 @@ function addJackpot() {
     <td class="negatif">-</td><td class="negatif">-</td><td>${dateTime}</td>`;
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
 
-  // 💾 Simpan ke localStorage
+  // Update set score (paling atas)
+  const topEndMoney = parseFloat(rows[0].children[5].textContent);
+  const setScoreRow = tbody.querySelector("tr.set-score-row");
+  if (setScoreRow) {
+    setScoreRow.children[1].textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+  }
+
+  // Simpan semua data yang dibutuhkan untuk restore
   localStorage.setItem("jackpotData918kiss", JSON.stringify({
+    game: currentGame,
     amount: jackpotAmount,
     dateTime,
-    game: currentGame,
+    index: randomIndex - 1, // posisi baris yang diubah
+    originalWin,
     newWin,
     newEnd
   }));
-
   localStorage.setItem("jackpotInputValue", jackpotAmount);
-  
-  // 💾 Simpan ulang isi tbody agar tetap setelah refresh
+
+  // Simpan ulang logs untuk restore
   const data = JSON.parse(localStorage.getItem("gameLogData918kiss")) || {};
   data.logs = tbody.innerHTML;
   localStorage.setItem("gameLogData918kiss", JSON.stringify(data));
