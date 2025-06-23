@@ -1213,20 +1213,26 @@ let rows = `
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
-  const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-if (allRows.length + 2 > 11) { // 2 = set-score + jackpot
+ const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+if (allRows.length + 2 > 11) { // 2 = setscore + jackpot
   const lastRow = allRows[allRows.length - 1];
   hiddenRow = lastRow.cloneNode(true);
   lastRow.remove();
 }
 
-    const curEnd = parseFloat(current.children[5].textContent);
-    const prevBet = parseFloat(prev.children[2].textContent);
-    const prevWin = parseFloat(prev.children[3].textContent);
+// ⬇️ Tambahkan loop ini supaya tidak error
+const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+for (let i = updatedRows.length - 1; i > 0; i--) {
+  const current = updatedRows[i];
+  const prev = updatedRows[i - 1];
 
-    prev.children[4].textContent = curEnd.toFixed(2);
-    prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
-  }
+  const curEnd = parseFloat(current.children[5].textContent);
+  const prevBet = parseFloat(prev.children[2].textContent);
+  const prevWin = parseFloat(prev.children[3].textContent);
+
+  prev.children[4].textContent = curEnd.toFixed(2);
+  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
+}
 
   if (updatedRows.length > 0) {
   const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
