@@ -1353,16 +1353,16 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
     }
   }
 };
-  let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
-  
-  document.getElementById("gameSelect").addEventListener("change", function () {
+ let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
+
+document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
   const pecahanSelect = document.getElementById("pecahanSelect");
   betSelect.innerHTML = "";
   pecahanSelect.innerHTML = "";
-    
-    jackpotInsertedMap[game] = false;
+
+  jackpotInsertedMap[game] = false;
 
   if (game && gameData[game]) {
     gameData[game].bets.forEach(bet => {
@@ -1372,11 +1372,9 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
       betSelect.appendChild(option);
     });
 
-  
     betSelect.dispatchEvent(new Event("change"));
   }
 });
-
 
 document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
@@ -1384,10 +1382,8 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const pecahanSelect = document.getElementById("pecahanSelect");
   pecahanSelect.innerHTML = "";
 
-  
-    if (gameData[game] && gameData[game].pecahan[bet]) {
+  if (gameData[game] && gameData[game].pecahan[bet]) {
     const pecahanList = gameData[game].pecahan[bet];
-
     pecahanList.forEach(p => {
       const option = document.createElement("option");
       option.value = p;
@@ -1397,7 +1393,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   }
 });
 
- function setNow() {
+function setNow() {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -1405,20 +1401,14 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const hour = String(now.getHours()).padStart(2, '0');
   const minute = String(now.getMinutes()).padStart(2, '0');
   const second = String(now.getSeconds()).padStart(2, '0');
-
-  const globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-  document.getElementById("manualTime").value = globalTime;
+  document.getElementById("manualTime").value = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
 }
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
 
-  let globalTime = null;
+function rnd(min, max, dec = 2) {
+  return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
+}
 
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-  function formatDateTimeLocal(date) {
+function formatDateTimeLocal(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
@@ -1426,65 +1416,37 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const min = String(date.getMinutes()).padStart(2, '0');
   const s = String(date.getSeconds()).padStart(2, '0');
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
- }
- function deleteCents() {
-  const tables = document.querySelectorAll("table");
-
-  tables.forEach(table => {
-    const cells = table.querySelectorAll("td");
-
-    cells.forEach(cell => {
-      if (cell.textContent.includes("Set score：")) {
-        const parts = cell.textContent.split("Set score：");
-        const number = parseFloat(parts[1]);
-
-        if (!isNaN(number)) {
-          const intPart = Math.floor(Math.abs(number));
-          const finalValue = `Set score：${number < 0 ? "-" : ""}${intPart}.00`;
-          cell.textContent = finalValue;
-        }
-      }
-    });
-  });
 }
-  function generateLog() {
+
+function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
   const selectedPecahan = parseFloat(document.getElementById("pecahanSelect").value);
   const tbody = document.querySelector("#gameLog tbody");
-  const manualTimeInput = document.getElementById('manualTime').value;
+  const manualTimeInput = document.getElementById("manualTime").value;
   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
 
   let logs = [];
   let baseTime;
 
-  const manualInput = manualTimeInput.trim();
-  if (manualInput) {
-    const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
-    if (parts.length === 2) {
-      const [datePart, timePartRaw] = parts;
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute, second] = timePartRaw.trim().split(":").map(Number);
-      baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
-    } else {
-      baseTime = new Date();
-    }
+  const parts = manualTimeInput.includes("T") ? manualTimeInput.split("T") : manualTimeInput.split(" ");
+  if (parts.length === 2) {
+    const [datePart, timePartRaw] = parts;
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hour, minute, second] = timePartRaw.trim().split(":").map(Number);
+    baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
   } else {
     baseTime = new Date();
   }
 
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
   let balance = rnd(3000, 4000) + manualScore;
-  let totalSeconds = 0;
 
   for (let i = 0; i < 10; i++) {
     const gap = Math.floor(Math.random() * 3) + 3;
-    totalSeconds += gap;
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-    const formattedTime = formatDateTimeLocal(baseTime);
-
     logs.unshift({
       game,
       tableID: `<span class="table-id-highlight">0</span>`,
@@ -1492,68 +1454,54 @@ document.getElementById("betSelect").addEventListener("change", function () {
       win: win.toFixed(2),
       beginMoney: beginMoney.toFixed(2),
       endMoney: endMoney.toFixed(2),
-      dateTime: formattedTime
+      dateTime: formatDateTimeLocal(baseTime)
     });
-
     balance = endMoney;
-    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
+    baseTime.setSeconds(baseTime.getSeconds() + gap);
   }
 
-  // Simpan semua data log
+  const setScoreMoney = logs[0].endMoney;
+  const setScoreTime = new Date(logs[0].dateTime);
+  setScoreTime.setSeconds(setScoreTime.getSeconds() + [2, 3, 7, 10][Math.floor(Math.random() * 4)]);
+
+  let rows = `<tr class="set-score-row">
+    <td>-</td>
+    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td>${formatDateTimeLocal(setScoreTime)}</td>
+  </tr>`;
+
+  logs.forEach(log => {
+    rows += `<tr class="log-row">
+      <td>${log.game}</td>
+      <td>${log.tableID}</td>
+      <td>${log.bet}</td>
+      <td>${log.win}</td>
+      <td>${log.beginMoney}</td>
+      <td>${log.endMoney}</td>
+      <td>${log.dateTime}</td>
+    </tr>`;
+  });
+
+  tbody.innerHTML = rows;
+
   setTimeout(() => {
-    const savedData = {
+    localStorage.setItem("gameLogData918kiss", JSON.stringify({
       game,
       bet,
       pecahan: selectedPecahan,
       manualTime: manualTimeInput,
-      manualScore: manualScore,
+      manualScore,
       logs: tbody.innerHTML
-    };
-    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
+    }));
   }, 50);
-
-  const setScoreMoney = logs[0].endMoney;
-  const setScoreTime = new Date(logs[0].dateTime);
-  const randomOffset = [2, 3, 7, 10][Math.floor(Math.random() * 4)];
-  setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
-
-  let rows = `
-    <tr class="set-score-row">
-      <td>-</td>
-      <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td>${formatDateTimeLocal(setScoreTime)}</td>
-    </tr>
-  `;
-
-  logs.forEach(log => {
-    rows += `
-      <tr class="log-row">
-        <td>${log.game}</td>
-        <td>${log.tableID}</td>
-        <td>${log.bet}</td>
-        <td>${log.win}</td>
-        <td>${log.beginMoney}</td>
-        <td>${log.endMoney}</td>
-        <td>${log.dateTime}</td>
-      </tr>
-    `;
-  });
-
-  tbody.innerHTML = rows;
 }
 
 function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
-
-  if (jackpotInsertedMap[currentGame]) {
-    alert("Jackpot sudah ditambahkan untuk game ini!");
-    return;
-  }
-
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
   if (isNaN(jackpotAmount) || jackpotAmount <= 0) {
     alert("Masukkan nilai jackpot yang valid.");
@@ -1586,7 +1534,7 @@ function addJackpot() {
   const gameName = prevRow.children[0].textContent;
 
   const jackpotRow = document.createElement("tr");
-  jackpotRow.classList.add("set-score-row");
+  jackpotRow.classList.add("set-score-row", "jackpot-row");
   jackpotRow.innerHTML = `
     <td>${gameName}</td>
     <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
@@ -1598,7 +1546,6 @@ function addJackpot() {
   `;
   targetRow.insertAdjacentElement("beforebegin", jackpotRow);
 
-  // Update mundur ke atas
   for (let i = randomIndex - 1; i > 0; i--) {
     const current = rows[i];
     const next = rows[i - 1];
@@ -1609,23 +1556,26 @@ function addJackpot() {
     next.children[5].textContent = (begin - bet + win).toFixed(2);
   }
 
-  // 🔁 Update Set Score berdasarkan EndMoney terbaru
   const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (updatedRows.length > 0) {
     const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
     const setScoreRowTop = tbody.querySelector("tr.set-score-row");
     if (setScoreRowTop) {
-      const scoreCell = setScoreRowTop.children[1];
-      scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+      setScoreRowTop.children[1].textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
     }
   }
 
-  jackpotInsertedMap[currentGame] = true;
-  localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
+  const jackpotData = {
+    amount: jackpotAmount,
+    dateTime,
+    game: currentGame
+  };
+  localStorage.setItem("jackpotData918kiss", JSON.stringify(jackpotData));
 }
 
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
+  localStorage.removeItem("jackpotData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
   jackpotInsertedMap = {};
 
@@ -1654,10 +1604,31 @@ window.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(() => {
       document.getElementById("pecahanSelect").value = data.pecahan;
+      document.querySelector("#gameLog tbody").innerHTML = data.logs;
+
+      // Restore jackpot jika ada
+      const jackpotData = JSON.parse(localStorage.getItem("jackpotData918kiss"));
+      if (jackpotData && jackpotData.game === data.game) {
+        const tbody = document.querySelector("#gameLog tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+        if (rows.length >= 2) {
+          const targetRow = rows[1]; // posisi tetap
+          const jackpotRow = document.createElement("tr");
+          jackpotRow.classList.add("set-score-row", "jackpot-restore");
+          jackpotRow.innerHTML = `
+            <td>${jackpotData.game}</td>
+            <td class="setscore">JackPot：${parseFloat(jackpotData.amount).toFixed(2)}</td>
+            <td class="negatif">-</td>
+            <td class="negatif">-</td>
+            <td class="negatif">-</td>
+            <td class="negatif">-</td>
+            <td>${jackpotData.dateTime}</td>
+          `;
+          targetRow.insertAdjacentElement("beforebegin", jackpotRow);
+        }
+      }
     }, 50);
   }, 50);
-
-  document.querySelector("#gameLog tbody").innerHTML = data.logs;
 });
 </script>
 
