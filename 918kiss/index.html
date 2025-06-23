@@ -265,6 +265,7 @@ document.addEventListener("contextmenu", e => e.preventDefault());
       return false;
     }
   };
+let hiddenRow = null;
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
   const gameData = {
 
@@ -991,22 +992,21 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
     rows.forEach(row => {
       const setScoreCell = row.querySelector(".setscore");
-      const beginMoneyCell = row.cells[4]; // kolom beginMoney
-      const endMoneyCell = row.cells[5];   // kolom endMoney
+      const beginMoneyCell = row.cells[4]; 
+      const endMoneyCell = row.cells[5];   
 
       if (setScoreCell && setScoreCell.textContent.includes("Set score：")) {
-        // Ambil nilai asli dari Set Score
+       
         const parts = setScoreCell.textContent.split("Set score：");
         const originalNumber = parseFloat(parts[1]);
 
-        // Bulatkan ke bawah tanpa sen
+      
         if (!isNaN(originalNumber)) {
           const intPart = Math.floor(Math.abs(originalNumber));
           const finalSetScore = `Set score：${originalNumber < 0 ? "-" : ""}${intPart}.00`;
           setScoreCell.textContent = finalSetScore;
         }
 
-        // Ambil cents dari BeginMoney dan masukkan ke EndMoney
         if (beginMoneyCell && endMoneyCell) {
           const beginMoney = parseFloat(beginMoneyCell.textContent);
           if (!isNaN(beginMoney)) {
@@ -1178,6 +1178,11 @@ let rows = `
     jackpotRow.remove();
   }
 
+  if (hiddenRow) {
+  tbody.appendChild(hiddenRow);
+  hiddenRow = null;
+}
+
   rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) {
     alert("Log belum cukup baris.");
@@ -1213,18 +1218,27 @@ let rows = `
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
-  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  for (let i = updatedRows.length - 1; i > 0; i--) {
-    const current = updatedRows[i];
-    const prev = updatedRows[i - 1];
+ const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+const specialRows = tbody.querySelectorAll("tr.set-score-row"); 
 
-    const curEnd = parseFloat(current.children[5].textContent);
-    const prevBet = parseFloat(prev.children[2].textContent);
-    const prevWin = parseFloat(prev.children[3].textContent);
+while (allRows.length + specialRows.length > 11) {
+  const lastRow = allRows.pop(); 
+  lastRow.remove();
+}
 
-    prev.children[4].textContent = curEnd.toFixed(2);
-    prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
-  }
+
+const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+for (let i = updatedRows.length - 1; i > 0; i--) {
+  const current = updatedRows[i];
+  const prev = updatedRows[i - 1];
+
+  const curEnd = parseFloat(current.children[5].textContent);
+  const prevBet = parseFloat(prev.children[2].textContent);
+  const prevWin = parseFloat(prev.children[3].textContent);
+
+  prev.children[4].textContent = curEnd.toFixed(2);
+  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
+}
 
   if (updatedRows.length > 0) {
   const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
