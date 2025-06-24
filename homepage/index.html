@@ -312,9 +312,18 @@
   <div class="container" id="mainContainer">
 </div>
   
-  <div id="loadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;">
-  <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Logo" style="width:100px;height:auto;margin-bottom:20px;" />
-  <div style="font-size:18px;font-weight:bold;">Loading...</div>
+  <div id="iframeLoader" style="
+  position: absolute;
+  top: 95px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 95px);
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;">
+  <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 100px; height: auto;" />
 </div>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -474,24 +483,20 @@ if (currentFrame && tab.url === currentFrame.src) {
 }
 
 function loadPage(url) {
-  const container = document.getElementById("mainContainer");
+  const iframeLoader = document.getElementById("iframeLoader");
+  const frame = document.getElementById("pageFrame");
 
-  // Hapus iframe lama jika ada
-  const oldFrame = document.getElementById("pageFrame");
-  if (oldFrame) container.removeChild(oldFrame);
+  if (!frame) return;
 
-  // Buat iframe baru dengan izin clipboard
-  const iframe = document.createElement("iframe");
-  iframe.id = "pageFrame";
-  iframe.src = url;
-  iframe.style.width = "100%";
-  iframe.style.height = "calc(100vh - 95px)";
-  iframe.style.border = "none";
-  iframe.allow = "clipboard-write"; // 💡 izinkan clipboard
+  iframeLoader.style.display = "flex";
 
-  container.appendChild(iframe);
+  frame.onload = () => {
+    iframeLoader.style.display = "none";
+  };
+
+  frame.src = url;
+
   localStorage.setItem("activeTabUrl", url);
-
   closeSidebar();
 
   document.querySelectorAll(".tab").forEach(tab => {
