@@ -432,9 +432,10 @@ function renderTabs() {
 
     tabElement.onclick = () => loadPage(tab.url);
 
-    if (tab.url === pageFrame.src) {
-      tabElement.classList.add("active-tab");
-    }
+    const currentFrame = document.getElementById("pageFrame");
+if (currentFrame && tab.url === currentFrame.src) {
+  tabElement.classList.add("active-tab");
+}
     const title = document.createElement("span");
     title.textContent = tab.label;
     title.style.pointerEvents = "none";
@@ -473,33 +474,37 @@ function renderTabs() {
 }
 
 function loadPage(url) {
-  // Hapus iframe lama
+  const container = document.getElementById("mainContainer");
+
+  // Hapus iframe lama jika ada
   const oldFrame = document.getElementById("pageFrame");
-  if (oldFrame) oldFrame.remove();
+  if (oldFrame) container.removeChild(oldFrame);
 
-  // Buat iframe baru dengan `allow="clipboard-write"`
-  const newFrame = document.createElement("iframe");
-  newFrame.id = "pageFrame";
-  newFrame.src = url;
-  newFrame.style.width = "100%";
-  newFrame.style.height = "calc(100vh - 95px)";
-  newFrame.style.border = "none";
-  newFrame.allow = "clipboard-write"; // 🔥 Ini penting supaya API copy berfungsi
+  // Buat iframe baru dengan izin clipboard
+  const iframe = document.createElement("iframe");
+  iframe.id = "pageFrame";
+  iframe.src = url;
+  iframe.style.width = "100%";
+  iframe.style.height = "calc(100vh - 95px)";
+  iframe.style.border = "none";
+  iframe.allow = "clipboard-write"; // 💡 izinkan clipboard
 
-  document.getElementById("mainContainer").appendChild(newFrame);
-
+  container.appendChild(iframe);
   localStorage.setItem("activeTabUrl", url);
+
   closeSidebar();
 
-  // Highlight tab yang aktif
   document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.remove("active-tab");
   });
+
   const tabs = getTabs();
   const tabElements = document.querySelectorAll(".tab");
   tabs.forEach((tab, index) => {
-    if (tab.url === url && tabElements[index]) {
-      tabElements[index].classList.add("active-tab");
+    if (tab.url === url) {
+      if (tabElements[index]) {
+        tabElements[index].classList.add("active-tab");
+      }
     }
   });
 }
