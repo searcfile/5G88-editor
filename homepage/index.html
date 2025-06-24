@@ -310,8 +310,6 @@
    <div id="tabBar" class="tab-bar"></div>
   
   <div class="container" id="mainContainer">
-  <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
-</iframe>
 </div>
   
   <div id="loadingScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;">
@@ -322,12 +320,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
+  
 const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
 const sidebar = document.getElementById("sidebar");
@@ -480,19 +473,33 @@ function renderTabs() {
 }
 
 function loadPage(url) {
-  pageFrame.src = url;
+  // Hapus iframe lama
+  const oldFrame = document.getElementById("pageFrame");
+  if (oldFrame) oldFrame.remove();
+
+  // Buat iframe baru dengan `allow="clipboard-write"`
+  const newFrame = document.createElement("iframe");
+  newFrame.id = "pageFrame";
+  newFrame.src = url;
+  newFrame.style.width = "100%";
+  newFrame.style.height = "calc(100vh - 95px)";
+  newFrame.style.border = "none";
+  newFrame.allow = "clipboard-write"; // 🔥 Ini penting supaya API copy berfungsi
+
+  document.getElementById("mainContainer").appendChild(newFrame);
+
   localStorage.setItem("activeTabUrl", url);
   closeSidebar();
+
+  // Highlight tab yang aktif
   document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.remove("active-tab");
   });
   const tabs = getTabs();
   const tabElements = document.querySelectorAll(".tab");
   tabs.forEach((tab, index) => {
-    if (tab.url === url) {
-      if (tabElements[index]) {
-        tabElements[index].classList.add("active-tab");
-      }
+    if (tab.url === url && tabElements[index]) {
+      tabElements[index].classList.add("active-tab");
     }
   });
 }
