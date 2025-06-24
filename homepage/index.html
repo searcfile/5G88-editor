@@ -323,8 +323,8 @@
     flex-direction: column;
     z-index: 1000;
   ">
-    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 100px; height: auto;" />
-    <div style="margin-top: 10px; color: white; font-size: 16px; font-family: sans-serif;">Loading...</div>
+    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 150px; height: auto;" />
+    <div style="margin-top: 6px; color: white; font-size: 14px; font-family: sans-serif;">Loading...</div>
   </div>
 
   <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
@@ -663,6 +663,27 @@ if (userNameElem) {
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
+  window.addEventListener("message", async function (e) {
+  const data = e.data;
+  if (data && data.action === "copy-image" && data.url) {
+    try {
+      const response = await fetch(data.url);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+      alert("✔️ Gambar disalin dari iframe!");
+    } catch (err) {
+      alert("❌ Tidak dapat salin gambar dari iframe.");
+      console.error(err);
+    }
+  }
+});
+  
+  window.addEventListener("message", async function (e) {
+  if (e.origin !== "https://5g88-logogame.vercel.app") return;
+  const data = e.data;
+});
+  
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
     loadingScreen.style.display = "none";
