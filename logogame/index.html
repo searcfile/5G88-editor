@@ -1574,28 +1574,6 @@ function setPlatform(platform) {
   renderGames();
 
 async function copyImageToClipboard(imageUrl, parentElement) {
-  // Cek apakah sedang dalam iframe
-  if (window.parent !== window) {
-    // Kirim pesan ke parent
-    window.parent.postMessage({ action: "copy-image", url: imageUrl }, "*");
-
-    // Tampilkan notis sementara
-    const existing = parentElement.querySelector('.copy-notice');
-    if (existing) existing.remove();
-
-    const notice = document.createElement('div');
-    notice.textContent = "🔁 Minta salin gambar...";
-    notice.className = 'copy-notice';
-    parentElement.appendChild(notice);
-
-    setTimeout(() => {
-      if (notice && notice.parentNode) notice.remove();
-    }, 2000);
-
-    return;
-  }
-
-  // Jika bukan dalam iframe, terus salin
   try {
     const response = await fetch(imageUrl);
     const blob = await response.blob();
@@ -1614,7 +1592,7 @@ async function copyImageToClipboard(imageUrl, parentElement) {
       if (notice && notice.parentNode) notice.remove();
     }, 2000);
   } catch (err) {
-    alert("❌ Gagal salin gambar.");
+    alert("❌ Gagal salin gambar. Browser tidak mendukung atau terjadi error.");
     console.error(err);
   }
 }
