@@ -310,20 +310,24 @@
    <div id="tabBar" class="tab-bar"></div>
   
   <div class="container" id="mainContainer">
-    <div id="iframeLoader" style="
-  position: absolute;
-  top: 95px;
-  left: 0;
-  width: 100%;
-  height: calc(100vh - 95px);
-  background: rgba(0, 0, 0, 0.8);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;">
-  <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 100px; height: auto;" />
-</div>
-<iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
+  <div id="iframeLoader" style="
+    position: absolute;
+    top: 95px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 95px);
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 1000;
+  ">
+    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 100px; height: auto;" />
+    <div style="margin-top: 10px; color: white; font-size: 16px; font-family: sans-serif;">Loading...</div>
+  </div>
+
+  <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
 </div>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
