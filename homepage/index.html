@@ -642,26 +642,6 @@ if (userNameElem) {
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
-  window.addEventListener("message", async function (e) {
-  const data = e.data;
-  if (data && data.action === "copy-image" && data.url) {
-    try {
-      const response = await fetch(data.url);
-      const blob = await response.blob();
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
-      alert("✔️ Gambar disalin dari iframe!");
-    } catch (err) {
-      alert("❌ Tidak dapat salin gambar dari iframe.");
-      console.error(err);
-    }
-  }
-});
-  
-  window.addEventListener("message", async function (e) {
-  if (e.origin !== "https://5g88-logogame.vercel.app") return;
-  const data = e.data;
-});
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
     loadingScreen.style.display = "none";
