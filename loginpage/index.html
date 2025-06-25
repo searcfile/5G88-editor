@@ -1147,7 +1147,7 @@ let rows = `
   const currentGame = document.getElementById("gameSelect").value;
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
 
-  if (isNaN(jackpotAmount) || jackpotAmount < 0) return;
+  if (isNaN(jackpotAmount) || jackpotAmount <= 0) return;
 
   const tbody = document.querySelector("#gameLog tbody");
   let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
@@ -1155,59 +1155,54 @@ let rows = `
 
   // Hapus jackpot lama (jika ada)
   if (jackpotRow) {
-    const prevJackpotText = jackpotRow.children[1].textContent;
-    const match = prevJackpotText.match(/JackPot：([\d.]+)/);
-    if (match) {
-      const oldJackpotValue = parseFloat(match[1]);
-      const index = Array.from(tbody.children).indexOf(jackpotRow);
-      const prevRow = tbody.children[index - 1];
+    const match = jackpotRow.dataset.affectedIndex;
+    if (match !== undefined) {
+      const index = parseInt(match);
+      const targetRow = rows[index];
+      const beginCell = targetRow.children[4];
+      const oldBegin = parseFloat(beginCell.textContent);
+      beginCell.textContent = (oldBegin - parseFloat(jackpotRow.dataset.amount)).toFixed(2);
 
-      const oldBegin = parseFloat(prevRow.children[4].textContent);
-      const newBegin = oldBegin - oldJackpotValue;
-      prevRow.children[4].textContent = newBegin.toFixed(2);
-
-      const bet = parseFloat(prevRow.children[2].textContent);
-      const win = parseFloat(prevRow.children[3].textContent);
-      const newEnd = newBegin - bet + win;
-      prevRow.children[5].textContent = newEnd.toFixed(2);
+      // Hitung ulang endMoney
+      const bet = parseFloat(targetRow.children[2].textContent);
+      const win = parseFloat(targetRow.children[3].textContent);
+      const newEnd = parseFloat(beginCell.textContent) - bet + win;
+      targetRow.children[5].textContent = newEnd.toFixed(2);
     }
 
     jackpotRow.remove();
   }
 
-  if (hiddenRow) {
-    tbody.appendChild(hiddenRow);
-    hiddenRow = null;
-  }
-
+  // Jika masih kurang dari 2 log, tolak
   rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) {
     alert("Log belum cukup baris.");
     return;
   }
 
+  // Pilih baris acak untuk jackpot
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
-  let prevRow = targetRow.previousElementSibling;
-while (prevRow && !prevRow.classList.contains("log-row")) {
-  prevRow = prevRow.previousElementSibling;
-}
 
-  // Tambah jackpot ke BeginMoney
-  const oldBegin = parseFloat(prevRow.children[4].textContent);
+  // Tambah jackpot ke beginMoney
+  const beginCell = targetRow.children[4];
+  const oldBegin = parseFloat(beginCell.textContent);
   const newBegin = oldBegin + jackpotAmount;
-  prevRow.children[4].textContent = newBegin.toFixed(2);
+  beginCell.textContent = newBegin.toFixed(2);
 
-  const bet = parseFloat(prevRow.children[2].textContent);
-  const win = parseFloat(prevRow.children[3].textContent);
+  const bet = parseFloat(targetRow.children[2].textContent);
+  const win = parseFloat(targetRow.children[3].textContent);
   const newEnd = newBegin - bet + win;
-  prevRow.children[5].textContent = newEnd.toFixed(2);
+  targetRow.children[5].textContent = newEnd.toFixed(2);
 
-  const dateTime = prevRow.children[6].textContent;
-  const gameName = prevRow.children[0].textContent;
+  // Tambah baris jackpot
+  const dateTime = targetRow.children[6].textContent;
+  const gameName = targetRow.children[0].textContent;
 
   const newJackpotRow = document.createElement("tr");
   newJackpotRow.classList.add("set-score-row", "jackpot");
+  newJackpotRow.dataset.affectedIndex = randomIndex;
+  newJackpotRow.dataset.amount = jackpotAmount;
   newJackpotRow.innerHTML = `
     <td>${gameName}</td>
     <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
@@ -1219,7 +1214,7 @@ while (prevRow && !prevRow.classList.contains("log-row")) {
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
-  // Hapus baris jika melebihi 11
+  // Hapus baris lebih jika melebihi 11
   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   const specialRows = tbody.querySelectorAll("tr.set-score-row");
   while (allRows.length + specialRows.length > 11) {
@@ -1227,7 +1222,7 @@ while (prevRow && !prevRow.classList.contains("log-row")) {
     lastRow.remove();
   }
 
-  // Update semua Begin & End dari bawah ke atas
+  // Update dari bawah ke atas begin/end
   const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   for (let i = updatedRows.length - 1; i > 0; i--) {
     const current = updatedRows[i];
@@ -1241,16 +1236,13 @@ while (prevRow && !prevRow.classList.contains("log-row")) {
     prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
   }
 
-  // Update Set Score atas
+  // Update Set Score baris atas
   if (updatedRows.length > 0) {
     const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
     const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
     if (setScoreRowTop) {
-      const scoreCell = setScoreRowTop.children[1];
-      const beginCell = setScoreRowTop.children[4];
-
-      beginCell.textContent = topEndMoney.toFixed(2);
-      scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+      setScoreRowTop.children[4].textContent = topEndMoney.toFixed(2);
+      setScoreRowTop.children[1].textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
     }
   }
 
