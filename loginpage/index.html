@@ -1155,16 +1155,20 @@ let rows = `
 
   // Hapus jackpot lama (jika ada)
   if (jackpotRow) {
+    const prevJackpotText = jackpotRow.children[1].textContent;
+    const match = prevJackpotText.match(/JackPot：([\d.]+)/);
+    const prevJackpotAmount = match ? parseFloat(match[1]) : 0;
+
     const index = Array.from(tbody.children).indexOf(jackpotRow);
     const prevRow = tbody.children[index - 1];
 
     const begin = parseFloat(prevRow.children[4].textContent);
-    prevRow.children[4].textContent = (begin - jackpotAmount).toFixed(2);
+    prevRow.children[4].textContent = (begin - prevJackpotAmount).toFixed(2);
 
     const bet = parseFloat(prevRow.children[2].textContent);
     const win = parseFloat(prevRow.children[3].textContent);
-    const end = parseFloat(prevRow.children[5].textContent);
-    prevRow.children[5].textContent = (begin - jackpotAmount - bet + win).toFixed(2);
+    const newEnd = (begin - prevJackpotAmount - bet + win).toFixed(2);
+    prevRow.children[5].textContent = newEnd;
 
     jackpotRow.remove();
   }
@@ -1184,7 +1188,7 @@ let rows = `
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
-  // Tambahkan jackpot ke BeginMoney (BUKAN Win)
+  // Tambah jackpot ke beginMoney
   const oldBegin = parseFloat(prevRow.children[4].textContent);
   const newBegin = oldBegin + jackpotAmount;
   prevRow.children[4].textContent = newBegin.toFixed(2);
@@ -1194,7 +1198,7 @@ let rows = `
   const newEnd = newBegin - bet + win;
   prevRow.children[5].textContent = newEnd.toFixed(2);
 
-  // Tambahkan baris jackpot
+  // Tambah baris jackpot
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
 
