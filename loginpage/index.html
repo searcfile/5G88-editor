@@ -1143,90 +1143,90 @@ let rows = `
 
   tbody.innerHTML = rows;
 }
-  function addJackpot() {
+ function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
   if (isNaN(jackpotAmount) || jackpotAmount <= 0) return;
 
   const tbody = document.querySelector("#gameLog tbody");
-  let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) {
     alert("Log belum cukup baris.");
     return;
   }
 
-  // Hapus jackpot lama (jika ada)
+  // Hapus jackpot lama
   const jackpotRow = tbody.querySelector("tr.set-score-row.jackpot");
   if (jackpotRow) {
     const nextRow = jackpotRow.nextElementSibling;
-    const jackpotText = jackpotRow.querySelector(".setscore").textContent;
-    const match = jackpotText.match(/JackPot：([\d.]+)/);
-    const prevAmount = match ? parseFloat(match[1]) : 0;
+    const match = jackpotRow.querySelector(".setscore")?.textContent.match(/JackPot：([\d.]+)/);
+    const prevJackpotAmount = match ? parseFloat(match[1]) : 0;
 
+    // Kembalikan beginMoney ke nilai asal
     if (nextRow && nextRow.classList.contains("log-row")) {
       const begin = parseFloat(nextRow.children[4].textContent);
       const bet = parseFloat(nextRow.children[2].textContent);
       const win = parseFloat(nextRow.children[3].textContent);
 
-      const newBegin = begin - prevAmount;
-      const newEnd = newBegin - bet + win;
+      const fixedBegin = begin - prevJackpotAmount;
+      const fixedEnd = fixedBegin - bet + win;
 
-      nextRow.children[4].textContent = newBegin.toFixed(2);
-      nextRow.children[5].textContent = newEnd.toFixed(2);
+      nextRow.children[4].textContent = fixedBegin.toFixed(2);
+      nextRow.children[5].textContent = fixedEnd.toFixed(2);
     }
 
     jackpotRow.remove();
   }
 
-  // Pilih row target secara acak
-  const randomIndex = Math.floor(Math.random() * rows.length);
+  // Ambil random row (kecuali paling atas)
+  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
 
-  const oldBegin = parseFloat(targetRow.children[4].textContent);
+  const beginMoney = parseFloat(targetRow.children[4].textContent);
   const bet = parseFloat(targetRow.children[2].textContent);
   const win = parseFloat(targetRow.children[3].textContent);
 
-  const newBegin = oldBegin + jackpotAmount;
+  // Tambahkan jackpot ke beginMoney baris target saja
+  const newBegin = beginMoney + jackpotAmount;
   const newEnd = newBegin - bet + win;
-
   targetRow.children[4].textContent = newBegin.toFixed(2);
   targetRow.children[5].textContent = newEnd.toFixed(2);
 
-  // Sisipkan baris jackpot sebelum targetRow
+  // Tambah baris jackpot sebelum targetRow
   const dateTime = targetRow.children[6].textContent;
   const gameName = targetRow.children[0].textContent;
 
-  const jackpotHTML = `
-    <tr class="set-score-row jackpot">
-      <td>${gameName}</td>
-      <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td>${dateTime}</td>
-    </tr>
+  const jackpotRowHTML = document.createElement("tr");
+  jackpotRowHTML.classList.add("set-score-row", "jackpot");
+  jackpotRowHTML.innerHTML = `
+    <td>${gameName}</td>
+    <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td>${dateTime}</td>
   `;
-  targetRow.insertAdjacentHTML("beforebegin", jackpotHTML);
+  targetRow.insertAdjacentElement("beforebegin", jackpotRowHTML);
 
-  // Re-update semua begin & end ke atas
-  let updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  // Re-update hanya dari bawah ke atas (tanpa ganggu row jackpot)
+  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   for (let i = updatedRows.length - 1; i > 0; i--) {
-    const cur = updatedRows[i];
+    const current = updatedRows[i];
     const prev = updatedRows[i - 1];
 
-    const curEnd = parseFloat(cur.children[5].textContent);
-    const prevBet = parseFloat(prev.children[2].textContent);
-    const prevWin = parseFloat(prev.children[3].textContent);
+    const endMoney = parseFloat(current.children[5].textContent);
+    const bet = parseFloat(prev.children[2].textContent);
+    const win = parseFloat(prev.children[3].textContent);
 
-    const newBegin = curEnd;
-    const newEnd = curEnd - prevBet + prevWin;
+    const newBegin = endMoney;
+    const newEnd = endMoney - bet + win;
 
     prev.children[4].textContent = newBegin.toFixed(2);
     prev.children[5].textContent = newEnd.toFixed(2);
   }
 
-  // Update Set Score (baris paling atas)
+  // Update Set Score baris paling atas
   const setScoreRow = tbody.querySelector("tr.set-score-row:not(.jackpot)");
   if (setScoreRow && updatedRows.length > 0) {
     const topEnd = parseFloat(updatedRows[0].children[5].textContent);
