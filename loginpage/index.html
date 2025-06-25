@@ -1147,63 +1147,50 @@ let rows = `
   const currentGame = document.getElementById("gameSelect").value;
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
 
-  if (isNaN(jackpotAmount) || jackpotAmount < 0) {
+  if (isNaN(jackpotAmount) || jackpotAmount < 0) return;
+
+  // Cegah tambah lebih dari sekali
+  if (jackpotInsertedMap[currentGame]) {
+    alert("Jackpot sudah ditambahkan untuk game ini.");
     return;
   }
 
   const tbody = document.querySelector("#gameLog tbody");
   let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  let jackpotRow = tbody.querySelector("tr.set-score-row.jackpot");
-
-  if (jackpotRow) {
-    const prevJackpotText = jackpotRow.children[1].textContent;
-    const match = prevJackpotText.match(/JackPot：([\d.]+)/);
-    if (match) {
-      const oldJackpotValue = parseFloat(match[1]);
-
-     
-      const index = Array.from(tbody.children).indexOf(jackpotRow);
-      const prevRow = tbody.children[index - 1];
-      const oldWin = parseFloat(prevRow.children[3].textContent);
-      const oldEnd = parseFloat(prevRow.children[5].textContent);
-      const newWin = oldWin - oldJackpotValue;
-
-      prevRow.children[3].textContent = newWin.toFixed(2);
-      const bet = parseFloat(prevRow.children[2].textContent);
-      const beginMoney = parseFloat(prevRow.children[4].textContent);
-      const newEnd = beginMoney - bet + newWin;
-      prevRow.children[5].textContent = newEnd.toFixed(2);
-    }
-
-    jackpotRow.remove();
-  }
-
-  if (hiddenRow) {
-  tbody.appendChild(hiddenRow);
-  hiddenRow = null;
-}
-
-  rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) {
     alert("Log belum cukup baris.");
     return;
   }
 
+  // Pilih posisi acak untuk jackpot
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
+  // Ambil nilai yang diperlukan
   const bet = parseFloat(prevRow.children[2].textContent);
-const win = parseFloat(prevRow.children[3].textContent);
+  const win = parseFloat(prevRow.children[3].textContent);
+  const oldBegin = parseFloat(prevRow.children[4].textContent);
 
-// Tambahkan jackpot ke beginMoney dari prevRow
-const oldBegin = parseFloat(prevRow.children[4].textContent);
-const newBegin = oldBegin + jackpotAmount;
-const newEnd = newBegin - bet + win;
+  // Tambahkan jackpot ke beginMoney baris sebelum jackpot
+  const newBegin = oldBegin + jackpotAmount;
+  const newEnd = newBegin - bet + win;
+  prevRow.children[4].textContent = newBegin.toFixed(2);
+  prevRow.children[5].textContent = newEnd.toFixed(2);
 
-prevRow.children[4].textContent = newBegin.toFixed(2);
-prevRow.children[5].textContent = newEnd.toFixed(2);
+  // Tambahkan jackpot ke semua baris sebelumnya juga
+  for (let i = randomIndex - 2; i >= 0; i--) {
+    const row = rows[i];
+    const oldBegin = parseFloat(row.children[4].textContent);
+    row.children[4].textContent = (oldBegin + jackpotAmount).toFixed(2);
 
+    const bet = parseFloat(row.children[2].textContent);
+    const win = parseFloat(row.children[3].textContent);
+    const newEnd = oldBegin + jackpotAmount - bet + win;
+    row.children[5].textContent = newEnd.toFixed(2);
+  }
+
+  // Tambahkan baris Jackpot
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
 
@@ -1220,46 +1207,42 @@ prevRow.children[5].textContent = newEnd.toFixed(2);
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
- const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-const specialRows = tbody.querySelectorAll("tr.set-score-row"); 
-
-while (allRows.length + specialRows.length > 11) {
-  const lastRow = allRows.pop(); 
-  lastRow.remove();
-}
-
-
-const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-for (let i = updatedRows.length - 1; i > 0; i--) {
-  const current = updatedRows[i];
-  const prev = updatedRows[i - 1];
-
-  const curEnd = parseFloat(current.children[5].textContent);
-  const prevBet = parseFloat(prev.children[2].textContent);
-  const prevWin = parseFloat(prev.children[3].textContent);
-
-  prev.children[4].textContent = curEnd.toFixed(2);
-  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
-}
-
-  if (updatedRows.length > 0) {
-  const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
-  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-  if (setScoreRowTop) {
-    const scoreCell = setScoreRowTop.children[1];
-    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-
-    const beginCell = setScoreRowTop.children[4];
-      const oldBegin = parseFloat(beginCell.textContent);
-      const newBegin = oldBegin + jackpotAmount;
-      beginCell.textContent = newBegin.toFixed(2);
-
-    
-      scoreCell.textContent = `Set score：${(-Math.abs(newBegin)).toFixed(2)}`;
+  // Hapus baris jika lebih dari 11 (log + setscore + jackpot)
+  const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  const specialRows = tbody.querySelectorAll("tr.set-score-row");
+  while (allRows.length + specialRows.length > 11) {
+    const lastRow = allRows.pop();
+    lastRow.remove();
   }
-}
 
+  // Perbarui semua balance dari bawah ke atas
+  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  for (let i = updatedRows.length - 1; i > 0; i--) {
+    const current = updatedRows[i];
+    const prev = updatedRows[i - 1];
 
+    const curEnd = parseFloat(current.children[5].textContent);
+    const prevBet = parseFloat(prev.children[2].textContent);
+    const prevWin = parseFloat(prev.children[3].textContent);
+
+    prev.children[4].textContent = curEnd.toFixed(2);
+    prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
+  }
+
+  // Update baris Set score paling atas
+  if (updatedRows.length > 0) {
+    const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
+    const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+    if (setScoreRowTop) {
+      const scoreCell = setScoreRowTop.children[1];
+      const beginCell = setScoreRowTop.children[4];
+
+      beginCell.textContent = topEndMoney.toFixed(2);
+      scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+    }
+  }
+
+  // Tandai bahwa jackpot sudah ditambahkan
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
