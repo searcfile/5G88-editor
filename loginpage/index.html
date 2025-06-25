@@ -1149,48 +1149,52 @@ let rows = `
 
   if (isNaN(jackpotAmount) || jackpotAmount < 0) return;
 
-  // Cegah tambah lebih dari sekali
-  if (jackpotInsertedMap[currentGame]) {
-    alert("Jackpot sudah ditambahkan untuk game ini.");
-    return;
-  }
-
   const tbody = document.querySelector("#gameLog tbody");
   let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  let jackpotRow = tbody.querySelector("tr.set-score-row.jackpot");
+
+  // Hapus jackpot lama (jika ada)
+  if (jackpotRow) {
+    const index = Array.from(tbody.children).indexOf(jackpotRow);
+    const prevRow = tbody.children[index - 1];
+
+    const begin = parseFloat(prevRow.children[4].textContent);
+    prevRow.children[4].textContent = (begin - jackpotAmount).toFixed(2);
+
+    const bet = parseFloat(prevRow.children[2].textContent);
+    const win = parseFloat(prevRow.children[3].textContent);
+    const end = parseFloat(prevRow.children[5].textContent);
+    prevRow.children[5].textContent = (begin - jackpotAmount - bet + win).toFixed(2);
+
+    jackpotRow.remove();
+  }
+
+  if (hiddenRow) {
+    tbody.appendChild(hiddenRow);
+    hiddenRow = null;
+  }
+
+  rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) {
     alert("Log belum cukup baris.");
     return;
   }
 
-  // Pilih posisi acak untuk jackpot
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
-  // Ambil nilai yang diperlukan
+  // Tambahkan jackpot ke BeginMoney (BUKAN Win)
+  const oldBegin = parseFloat(prevRow.children[4].textContent);
+  const newBegin = oldBegin + jackpotAmount;
+  prevRow.children[4].textContent = newBegin.toFixed(2);
+
   const bet = parseFloat(prevRow.children[2].textContent);
   const win = parseFloat(prevRow.children[3].textContent);
-  const oldBegin = parseFloat(prevRow.children[4].textContent);
-
-  // Tambahkan jackpot ke beginMoney baris sebelum jackpot
-  const newBegin = oldBegin + jackpotAmount;
   const newEnd = newBegin - bet + win;
-  prevRow.children[4].textContent = newBegin.toFixed(2);
   prevRow.children[5].textContent = newEnd.toFixed(2);
 
-  // Tambahkan jackpot ke semua baris sebelumnya juga
-  for (let i = randomIndex - 2; i >= 0; i--) {
-    const row = rows[i];
-    const oldBegin = parseFloat(row.children[4].textContent);
-    row.children[4].textContent = (oldBegin + jackpotAmount).toFixed(2);
-
-    const bet = parseFloat(row.children[2].textContent);
-    const win = parseFloat(row.children[3].textContent);
-    const newEnd = oldBegin + jackpotAmount - bet + win;
-    row.children[5].textContent = newEnd.toFixed(2);
-  }
-
-  // Tambahkan baris Jackpot
+  // Tambahkan baris jackpot
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
 
@@ -1207,7 +1211,7 @@ let rows = `
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
-  // Hapus baris jika lebih dari 11 (log + setscore + jackpot)
+  // Hapus baris jika lebih dari 11
   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   const specialRows = tbody.querySelectorAll("tr.set-score-row");
   while (allRows.length + specialRows.length > 11) {
@@ -1215,7 +1219,7 @@ let rows = `
     lastRow.remove();
   }
 
-  // Perbarui semua balance dari bawah ke atas
+  // Update semua begin & end ke atas
   const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   for (let i = updatedRows.length - 1; i > 0; i--) {
     const current = updatedRows[i];
@@ -1229,7 +1233,7 @@ let rows = `
     prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
   }
 
-  // Update baris Set score paling atas
+  // Update Set Score atas
   if (updatedRows.length > 0) {
     const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
     const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
@@ -1242,7 +1246,6 @@ let rows = `
     }
   }
 
-  // Tandai bahwa jackpot sudah ditambahkan
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
