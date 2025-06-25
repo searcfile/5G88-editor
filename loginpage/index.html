@@ -1199,12 +1199,14 @@ let rows = `
 
   // Update set score baris paling atas
   const topRow = rows[0];
-  const topBeginMoney = parseFloat(topRow.children[4].textContent);
-  const setScoreRow = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-  if (setScoreRow) {
-    setScoreRow.children[1].textContent = `Set score：${(-Math.abs(topBeginMoney)).toFixed(2)}`;
-    setScoreRow.children[4].textContent = topBeginMoney.toFixed(2);
-  }
+const topEndMoney = parseFloat(topRow.children[5].textContent);
+const setScoreRow = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+if (setScoreRow) {
+  // Set beginMoney = endMoney baris pertama log
+  setScoreRow.children[4].textContent = topEndMoney.toFixed(2);
+  // Update Set score sesuai beginMoney
+  setScoreRow.children[1].textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+}
 
   // Simpan status jackpot
   jackpotInsertedMap[currentGame] = true;
