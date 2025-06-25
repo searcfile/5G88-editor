@@ -1186,7 +1186,7 @@ let rows = `
 
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
-  const prevRow = rows[randomIndex - 1];
+  const prevRow = targetRow.previousElementSibling;
 
   // Tambah jackpot ke beginMoney
   const oldBegin = parseFloat(prevRow.children[4].textContent);
