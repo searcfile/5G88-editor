@@ -1160,20 +1160,22 @@ let rows = `
     const prevJackpotAmount = match ? parseFloat(match[1]) : 0;
 
     const index = Array.from(tbody.children).indexOf(jackpotRow);
-    const prevRow = tbody.children[index - 1];
+    const nextRow = tbody.children[index + 1];
 
-    const begin = parseFloat(prevRow.children[4].textContent);
-    prevRow.children[4].textContent = (begin - prevJackpotAmount).toFixed(2);
+    if (nextRow && nextRow.classList.contains("log-row")) {
+      const begin = parseFloat(nextRow.children[4].textContent);
+      const newBegin = begin - prevJackpotAmount;
+      nextRow.children[4].textContent = newBegin.toFixed(2);
 
-    const bet = parseFloat(prevRow.children[2].textContent);
-    const win = parseFloat(prevRow.children[3].textContent);
-    const newEnd = (begin - prevJackpotAmount - bet + win).toFixed(2);
-    prevRow.children[5].textContent = newEnd;
+      const bet = parseFloat(nextRow.children[2].textContent);
+      const win = parseFloat(nextRow.children[3].textContent);
+      nextRow.children[5].textContent = (newBegin - bet + win).toFixed(2);
+    }
 
     jackpotRow.remove();
   }
 
-  if (hiddenRow) {
+  if (typeof hiddenRow !== 'undefined' && hiddenRow) {
     tbody.appendChild(hiddenRow);
     hiddenRow = null;
   }
@@ -1186,23 +1188,19 @@ let rows = `
 
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
-  let prevRow = targetRow.previousElementSibling;
-  while (prevRow && !prevRow.classList.contains("log-row")) {
-  prevRow = prevRow.previousElementSibling;
-  }
-  // Tambah jackpot ke beginMoney
-  const oldBegin = parseFloat(prevRow.children[4].textContent);
+
+  // Tambahkan jackpot ke targetRow langsung
+  const oldBegin = parseFloat(targetRow.children[4].textContent);
   const newBegin = oldBegin + jackpotAmount;
-  prevRow.children[4].textContent = newBegin.toFixed(2);
+  targetRow.children[4].textContent = newBegin.toFixed(2);
 
-  const bet = parseFloat(prevRow.children[2].textContent);
-  const win = parseFloat(prevRow.children[3].textContent);
+  const bet = parseFloat(targetRow.children[2].textContent);
+  const win = parseFloat(targetRow.children[3].textContent);
   const newEnd = newBegin - bet + win;
-  prevRow.children[5].textContent = newEnd.toFixed(2);
+  targetRow.children[5].textContent = newEnd.toFixed(2);
 
-  // Tambah baris jackpot
-  const dateTime = prevRow.children[6].textContent;
-  const gameName = prevRow.children[0].textContent;
+  const dateTime = targetRow.children[6].textContent;
+  const gameName = targetRow.children[0].textContent;
 
   const newJackpotRow = document.createElement("tr");
   newJackpotRow.classList.add("set-score-row", "jackpot");
