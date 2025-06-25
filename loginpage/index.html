@@ -1186,7 +1186,9 @@ let rows = `
 
   const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
   const targetRow = rows[randomIndex];
-  const prevRow = targetRow.previousElementSibling;
+  let prevRow = targetRow.previousElementSibling;
+  while (prevRow && !prevRow.classList.contains("log-row")) {
+  prevRow = prevRow.previousElementSibling;
 
   // Tambah jackpot ke beginMoney
   const oldBegin = parseFloat(prevRow.children[4].textContent);
