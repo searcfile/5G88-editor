@@ -1193,13 +1193,16 @@ let rows = `
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
-  const beginMoney = parseFloat(prevRow.children[4].textContent);
-const newBeginMoney = beginMoney - jackpotAmount;
-prevRow.children[4].textContent = newBeginMoney.toFixed(2);
-
-const bet = parseFloat(prevRow.children[2].textContent);
 const win = parseFloat(prevRow.children[3].textContent);
-const newEnd = newBeginMoney - bet + win;
+const bet = parseFloat(prevRow.children[2].textContent);
+let beginMoney = parseFloat(prevRow.children[4].textContent);
+
+// Tambah jackpot ke beginMoney
+beginMoney += jackpotAmount;
+prevRow.children[4].textContent = beginMoney.toFixed(2);
+
+// Kira endMoney semula
+const newEnd = beginMoney - bet + win;
 prevRow.children[5].textContent = newEnd.toFixed(2);
 
   const dateTime = prevRow.children[6].textContent;
@@ -1248,12 +1251,8 @@ for (let i = updatedRows.length - 1; i > 0; i--) {
     scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
 
     const beginCell = setScoreRowTop.children[4];
-      const oldBegin = parseFloat(beginCell.textContent);
-      const newBegin = oldBegin + jackpotAmount;
-      beginCell.textContent = newBegin.toFixed(2);
-
-    
-      scoreCell.textContent = `Set score：${(-Math.abs(newBegin)).toFixed(2)}`;
+    const newBegin = topEndMoney; // gunakan topEndMoney terus
+    beginCell.textContent = newBegin.toFixed(2);
   }
 }
 
