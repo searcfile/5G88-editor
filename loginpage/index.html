@@ -1189,7 +1189,7 @@ let rows = `
   let prevRow = targetRow.previousElementSibling;
   while (prevRow && !prevRow.classList.contains("log-row")) {
   prevRow = prevRow.previousElementSibling;
-
+  }
   // Tambah jackpot ke beginMoney
   const oldBegin = parseFloat(prevRow.children[4].textContent);
   const newBegin = oldBegin + jackpotAmount;
