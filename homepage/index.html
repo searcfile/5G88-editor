@@ -333,8 +333,8 @@
       top: 2px;
       right: 2px;
       background: red;
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       display: none;
       border: 1px solid white;
@@ -378,9 +378,7 @@
 
   <div id="messagePopup" style="
   display: none;
-  position: fixed;
-  top: 110px;
-  right: 20px;
+  position: absolute;
   background: #222;
   color: white;
   border: 1px solid gold;
@@ -448,25 +446,27 @@ notifButton.addEventListener("click", () => {
   const message = notifButton.dataset.message;
   const timestamp = Number(notifButton.dataset.timestamp); // convert ke number
 
-  // Validasi timestamp
   const dateObj = new Date(timestamp);
   if (isNaN(dateObj.getTime())) {
     content.innerHTML = `<div>${message}</div><div style="margin-top:10px;color:#aaa;">Waktu tidak valid</div>`;
-    popup.style.display = "block";
-    notifDot.style.display = "none";
-    return;
+  } else {
+    const dateStr = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+    const timeStr = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
+
+    content.innerHTML = `
+      <div>${message}</div>
+      <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
+        ${dateStr} ${timeStr}
+      </div>
+    `;
   }
 
-  const dateStr = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
-  const timeStr = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
-
-  content.innerHTML = `
-    <div>${message}</div>
-    <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
-      ${dateStr} ${timeStr}
-    </div>
-  `;
+  // ✅ POSISI popup tepat di bawah notifButton
+  const rect = notifButton.getBoundingClientRect();
+  popup.style.top = `${rect.bottom + 6 + window.scrollY}px`;
+  popup.style.left = `${rect.left + window.scrollX}px`;
   popup.style.display = "block";
+
   notifDot.style.display = "none";
 
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
@@ -476,8 +476,13 @@ notifButton.addEventListener("click", () => {
 function closeMessage() {
   if (popup) popup.style.display = "none";
 }
-
-// Firebase listener
+    
+document.addEventListener("click", (e) => {
+    if (!popup.contains(e.target) && !notifButton.contains(e.target)) {
+      popup.style.display = "none";
+    }
+  });
+    
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
