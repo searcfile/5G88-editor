@@ -529,11 +529,6 @@ notifButton.addEventListener("click", () => {
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
 
-  // ❌ Hapus simpanan supaya tidak tampil ulang setelah refresh
-  localStorage.removeItem("latestNotifMessage");
-  localStorage.removeItem("latestNotifTimestamp");
-});
-
 // ✅ Tooltip di hover
 notifButton.addEventListener("mouseenter", () => {
   notifTooltip.style.display = "block";
@@ -557,6 +552,10 @@ db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
 
   showNotification(data.message, data.timestamp);
 });
+function closeMessage() {
+  const popup = document.getElementById("messagePopup");
+  if (popup) popup.style.display = "none";
+}
 const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
 const sidebar = document.getElementById("sidebar");
