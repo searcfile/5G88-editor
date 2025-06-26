@@ -256,6 +256,7 @@
     #notifButton:hover #notifTooltip {
   display: block !important;
   opacity: 1;
+      z-index: 10000;
 }
   </style>
 </head>
@@ -448,12 +449,27 @@ const bell = document.getElementById("notificationBell");
 const popup = document.getElementById("messagePopup");
 const content = document.getElementById("messageContent");
 
-const notifButton = document.getElementById("notifButton"); // Tombol 🔔 pojok atas
-const notifDot = document.getElementById("notifDot");       // Titik merah notifikasi
+const notifButton = document.getElementById("notifButton");
+const notifDot = document.getElementById("notifDot");
+const notifTooltip = document.getElementById("notifTooltip");
 
 const loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
 const currentEmail = loginData?.email || "guest";
 
+// ✅ Cek dari localStorage saat halaman diload
+window.addEventListener("load", () => {
+  const savedMessage = localStorage.getItem("latestNotifMessage");
+  const savedTimestamp = localStorage.getItem("latestNotifTimestamp");
+  const seenKey = `seenNotif_${savedTimestamp}_${currentEmail}`;
+
+  if (savedMessage && savedTimestamp && !localStorage.getItem(seenKey)) {
+    notifDot.style.display = "block";
+    notifButton.dataset.message = savedMessage;
+    notifButton.dataset.timestamp = savedTimestamp;
+  }
+});
+
+// ✅ Simpan dan tampilkan notifikasi jika baru
 function showNotification(message, timestamp) {
   if (!popup || !content || !notifButton || !notifDot) return;
 
@@ -464,26 +480,36 @@ function showNotification(message, timestamp) {
     notifDot.style.display = "block";
     notifButton.dataset.message = message;
     notifButton.dataset.timestamp = timestamp;
+
+    // 💾 Simpan ke localStorage agar bisa muncul lagi setelah refresh
+    localStorage.setItem("latestNotifMessage", message);
+    localStorage.setItem("latestNotifTimestamp", timestamp);
   }
 }
 
+// ✅ Event klik pada tombol notifikasi
 notifButton.addEventListener("click", () => {
-  // Jika popup sedang tampil, klik tombol akan menutup
+  const message = notifButton.dataset.message;
+  const timestamp = Number(notifButton.dataset.timestamp);
+
+  // ⛔ Jangan tampilkan popup jika data kosong
+  if (!message || !timestamp) return;
+
+  // 🔁 Toggle popup jika sedang terbuka
   if (popup.style.display === "block") {
     popup.style.display = "none";
     return;
   }
 
-  const message = notifButton.dataset.message;
-  const timestamp = Number(notifButton.dataset.timestamp);
-
   const dateObj = new Date(timestamp);
   if (isNaN(dateObj.getTime())) {
-    content.innerHTML = `<div>${message}</div><div style="margin-top:10px;color:#aaa;">Waktu tidak valid</div>`;
+    content.innerHTML = `
+      <div>${message}</div>
+      <div style="margin-top:10px;color:#aaa;">Waktu tidak valid</div>
+    `;
   } else {
     const dateStr = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
     const timeStr = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
-
     content.innerHTML = `
       <div>${message}</div>
       <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
@@ -492,6 +518,7 @@ notifButton.addEventListener("click", () => {
     `;
   }
 
+  // ✅ Tampilkan popup di kiri tombol notifikasi
   const rect = notifButton.getBoundingClientRect();
   const popupWidth = 300;
   popup.style.top = `${rect.top + window.scrollY}px`;
@@ -499,12 +526,17 @@ notifButton.addEventListener("click", () => {
   popup.style.display = "block";
 
   notifDot.style.display = "none";
+
+  // ✅ Tandai sebagai sudah dibaca
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
-});
-    
-const notifTooltip = document.getElementById("notifTooltip");
 
+  // ❌ Hapus simpanan supaya tidak tampil ulang setelah refresh
+  localStorage.removeItem("latestNotifMessage");
+  localStorage.removeItem("latestNotifTimestamp");
+});
+
+// ✅ Tooltip di hover
 notifButton.addEventListener("mouseenter", () => {
   notifTooltip.style.display = "block";
 });
@@ -512,16 +544,15 @@ notifButton.addEventListener("mouseenter", () => {
 notifButton.addEventListener("mouseleave", () => {
   notifTooltip.style.display = "none";
 });
-function closeMessage() {
-  if (popup) popup.style.display = "none";
-}
-    
+
+// ✅ Tutup popup jika klik di luar
 document.addEventListener("click", (e) => {
-    if (!popup.contains(e.target) && !notifButton.contains(e.target)) {
-      popup.style.display = "none";
-    }
-  });
-    
+  if (!popup.contains(e.target) && !notifButton.contains(e.target)) {
+    popup.style.display = "none";
+  }
+});
+
+// ✅ Ambil pesan terbaru dari Firebase
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
