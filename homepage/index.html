@@ -398,7 +398,13 @@
       cursor: pointer;
     ">×</button>
   </div>
-  <div id="messageContent" style="margin-top: 10px;"></div>
+  <div id="messageContent" style="
+  margin-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+"></div>
 </div>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -461,14 +467,13 @@ notifButton.addEventListener("click", () => {
     `;
   }
 
-  // ✅ POSISI popup tepat di bawah notifButton
   const rect = notifButton.getBoundingClientRect();
-  popup.style.top = `${rect.bottom + 6 + window.scrollY}px`;
-  popup.style.left = `${rect.left + window.scrollX}px`;
+  const popupWidth = 300; // sama dengan max-width popup
+  popup.style.top = `${rect.top + window.scrollY}px`;
+  popup.style.left = `${rect.left + window.scrollX - popupWidth - 10}px`; // 10px jarak dari tombol
   popup.style.display = "block";
 
   notifDot.style.display = "none";
-
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
 });
