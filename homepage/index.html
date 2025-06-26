@@ -449,8 +449,14 @@ function showNotification(message, timestamp) {
 }
 
 notifButton.addEventListener("click", () => {
+  // Jika popup sedang tampil, klik tombol akan menutup
+  if (popup.style.display === "block") {
+    popup.style.display = "none";
+    return;
+  }
+
   const message = notifButton.dataset.message;
-  const timestamp = Number(notifButton.dataset.timestamp); // convert ke number
+  const timestamp = Number(notifButton.dataset.timestamp);
 
   const dateObj = new Date(timestamp);
   if (isNaN(dateObj.getTime())) {
@@ -468,9 +474,9 @@ notifButton.addEventListener("click", () => {
   }
 
   const rect = notifButton.getBoundingClientRect();
-  const popupWidth = 300; // sama dengan max-width popup
+  const popupWidth = 300;
   popup.style.top = `${rect.top + window.scrollY}px`;
-  popup.style.left = `${rect.left + window.scrollX - popupWidth - 10}px`; // 10px jarak dari tombol
+  popup.style.left = `${rect.left + window.scrollX - popupWidth - 10}px`;
   popup.style.display = "block";
 
   notifDot.style.display = "none";
