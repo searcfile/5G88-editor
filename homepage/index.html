@@ -249,6 +249,14 @@
     color: #000;
     font-weight: bold;
    }
+    #notifTooltip {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+    #notifButton:hover #notifTooltip {
+  display: block !important;
+  opacity: 1;
+}
   </style>
 </head>
 <body>
@@ -339,6 +347,23 @@
       display: none;
       border: 1px solid white;
     "></span>
+    <div id="notifTooltip" style="
+    display: none;
+    position: absolute;
+    bottom: 34px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: gold;
+    padding: 4px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 10000;
+    box-shadow: 0 0 4px rgba(255, 215, 0, 0.4);
+  ">
+    Notice
+  </div>
   </div>
 
   <div id="dateTime" class="date-time"></div>
@@ -477,7 +502,16 @@ notifButton.addEventListener("click", () => {
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
 });
+    
+const notifTooltip = document.getElementById("notifTooltip");
 
+notifButton.addEventListener("mouseenter", () => {
+  notifTooltip.style.display = "block";
+});
+
+notifButton.addEventListener("mouseleave", () => {
+  notifTooltip.style.display = "none";
+});
 function closeMessage() {
   if (popup) popup.style.display = "none";
 }
