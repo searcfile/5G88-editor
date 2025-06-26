@@ -298,7 +298,7 @@
   <div class="user-info">
     <div class="user-text">
       <div style="display: flex; align-items: center; gap: 10px;">
-      <div id="notificationBell" style="
+  <div id="notificationBell" style="
     width: 18px;
     height: 18px;
     background-color: red;
@@ -311,8 +311,39 @@
     font-weight: bold;
     cursor: pointer;
   " title="You have a new message">!</div>
+
   <div id="dateTime" class="date-time"></div>
+
+  <div id="notifButton" style="
+    background: #111;
+    border: 1px solid gold;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    color: gold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+    position: relative;
+    font-size: 14px;
+  ">
+    🔔
+    <span id="notifDot" style="
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: red;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: none;
+      border: 1px solid white;
+    "></span>
+  </div>
 </div>
+
       <div class="user-details">
       <div id="userName"></div>
       <div id="userEmail"></div>
@@ -376,56 +407,75 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
    const firebaseConfig = {
-    apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
-    authDomain: "notice-83ae5.firebaseapp.com",
-    databaseURL: "https://notice-83ae5-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "notice-83ae5",
-    storageBucket: "notice-83ae5.appspot.com",
-    messagingSenderId: "268106877488",
-    appId: "1:268106877488:web:798beadfe45104297e7bf5",
-    measurementId: "G-8EY4MCZKK2"
-  };
+  apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
+  authDomain: "notice-83ae5.firebaseapp.com",
+  databaseURL: "https://notice-83ae5-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "notice-83ae5",
+  storageBucket: "notice-83ae5.appspot.com",
+  messagingSenderId: "268106877488",
+  appId: "1:268106877488:web:798beadfe45104297e7bf5",
+  measurementId: "G-8EY4MCZKK2"
+};
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  const bell = document.getElementById("notificationBell");
-  const popup = document.getElementById("messagePopup");
-  const content = document.getElementById("messageContent");
+const bell = document.getElementById("notificationBell");
+const popup = document.getElementById("messagePopup");
+const content = document.getElementById("messageContent");
 
-  const loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-  const currentEmail = loginData?.email || "guest";
+const notifButton = document.getElementById("notifButton"); // Tombol 🔔 pojok atas
+const notifDot = document.getElementById("notifDot");       // Titik merah notifikasi
 
-  function showNotification(message, timestamp) {
-    if (!bell || !popup || !content) return;
+const loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+const currentEmail = loginData?.email || "guest";
 
-    const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
-    const alreadySeen = localStorage.getItem(seenKey);
+function showNotification(message, timestamp) {
+  if (!popup || !content || !notifButton || !notifDot) return;
 
-    if (!alreadySeen) {
-      bell.style.display = "flex";
-      content.innerHTML = message;
+  const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
+  const alreadySeen = localStorage.getItem(seenKey);
 
-      bell.onclick = () => {
-        popup.style.display = "block";
-        bell.style.display = "none";
-        localStorage.setItem(seenKey, "1");
-      };
-    }
+  if (!alreadySeen) {
+    notifDot.style.display = "block";
+    notifButton.dataset.message = message;
+    notifButton.dataset.timestamp = timestamp;
   }
+}
 
-  function closeMessage() {
-    if (popup) popup.style.display = "none";
+notifButton.addEventListener("click", () => {
+  const message = notifButton.dataset.message;
+  const timestamp = notifButton.dataset.timestamp;
+
+  if (message && timestamp) {
+    const dateObj = new Date(timestamp);
+    const dateStr = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+    const timeStr = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
+
+    content.innerHTML = `
+      <div>${message}</div>
+      <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
+        ${dateStr} ${timeStr}
+      </div>
+    `;
+    popup.style.display = "block";
+    notifDot.style.display = "none";
+    localStorage.setItem(`seenNotif_${timestamp}_${currentEmail}`, "1");
   }
+});
 
-  // Dengar perubahan notifikasi
-  db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
-    const data = snapshot.val();
-    if (!data || !data.message || !data.timestamp) return;
+function closeMessage() {
+  if (popup) popup.style.display = "none";
+}
 
-    showNotification(data.message, data.timestamp);
-  });
+// Firebase listener
+db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (!data || !data.message || !data.timestamp) return;
+
+  showNotification(data.message, data.timestamp);
+});
 const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
 const sidebar = document.getElementById("sidebar");
