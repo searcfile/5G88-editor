@@ -297,7 +297,7 @@
   
   <div class="user-info">
     <div class="user-text">
-      <div style="display: flex; align-items: center; gap: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
   <div id="notificationBell" style="
     width: 18px;
     height: 18px;
@@ -311,8 +311,6 @@
     font-weight: bold;
     cursor: pointer;
   " title="You have a new message">!</div>
-
-  <div id="dateTime" class="date-time"></div>
 
   <div id="notifButton" style="
     background: #111;
@@ -342,6 +340,8 @@
       border: 1px solid white;
     "></span>
   </div>
+
+  <div id="dateTime" class="date-time"></div>
 </div>
 
       <div class="user-details">
@@ -446,23 +446,31 @@ function showNotification(message, timestamp) {
 
 notifButton.addEventListener("click", () => {
   const message = notifButton.dataset.message;
-  const timestamp = notifButton.dataset.timestamp;
+  const timestamp = Number(notifButton.dataset.timestamp); // convert ke number
 
-  if (message && timestamp) {
-    const dateObj = new Date(timestamp);
-    const dateStr = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
-    const timeStr = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
-
-    content.innerHTML = `
-      <div>${message}</div>
-      <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
-        ${dateStr} ${timeStr}
-      </div>
-    `;
+  // Validasi timestamp
+  const dateObj = new Date(timestamp);
+  if (isNaN(dateObj.getTime())) {
+    content.innerHTML = `<div>${message}</div><div style="margin-top:10px;color:#aaa;">Waktu tidak valid</div>`;
     popup.style.display = "block";
     notifDot.style.display = "none";
-    localStorage.setItem(`seenNotif_${timestamp}_${currentEmail}`, "1");
+    return;
   }
+
+  const dateStr = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+  const timeStr = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
+
+  content.innerHTML = `
+    <div>${message}</div>
+    <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
+      ${dateStr} ${timeStr}
+    </div>
+  `;
+  popup.style.display = "block";
+  notifDot.style.display = "none";
+
+  const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
+  localStorage.setItem(seenKey, "1");
 });
 
 function closeMessage() {
