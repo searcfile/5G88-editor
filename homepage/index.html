@@ -467,6 +467,7 @@ window.addEventListener("load", () => {
   }
 });
 
+// ✅ Simpan dan tampilkan notifikasi jika baru
 function showNotification(message, timestamp) {
   if (!popup || !content || !notifButton || !notifDot) return;
 
@@ -478,7 +479,6 @@ function showNotification(message, timestamp) {
     notifButton.dataset.message = message;
     notifButton.dataset.timestamp = timestamp;
 
-    // 💾 Simpan ke localStorage agar bisa muncul lagi setelah refresh
     localStorage.setItem("latestNotifMessage", message);
     localStorage.setItem("latestNotifTimestamp", timestamp);
   }
@@ -488,46 +488,50 @@ function showNotification(message, timestamp) {
 notifButton.addEventListener("click", () => {
   const message = notifButton.dataset.message;
   const timestamp = Number(notifButton.dataset.timestamp);
-
-  // ⛔ Jangan tampilkan popup jika data kosong
   if (!message || !timestamp) return;
 
-  // 🔁 Toggle popup jika sedang terbuka
   if (popup.style.display === "block") {
     popup.style.display = "none";
     return;
   }
 
   const dateObj = new Date(timestamp);
-  if (isNaN(dateObj.getTime())) {
-    content.innerHTML = `
-      <div>${message}</div>
-      <div style="margin-top:10px;color:#aaa;">Waktu tidak valid</div>
-    `;
-  } else {
-    const dateStr = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
-    const timeStr = `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
-    content.innerHTML = `
-      <div>${message}</div>
-      <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
-        ${dateStr} ${timeStr}
-      </div>
-    `;
-  }
+  const isValidDate = !isNaN(dateObj.getTime());
 
-  // ✅ Tampilkan popup di kiri tombol notifikasi
-  const rect = notifButton.getBoundingClientRect();
-  const popupWidth = 300;
-  popup.style.top = `${rect.top + window.scrollY}px`;
-  popup.style.left = `${rect.left + window.scrollX - popupWidth - 10}px`;
+  content.innerHTML = `
+    <div>${message}</div>
+    <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
+      ${isValidDate ? `
+        ${String(dateObj.getDate()).padStart(2, '0')}/
+        ${String(dateObj.getMonth() + 1).padStart(2, '0')}/
+        ${dateObj.getFullYear()} 
+        ${String(dateObj.getHours()).padStart(2, '0')}:
+        ${String(dateObj.getMinutes()).padStart(2, '0')}:
+        ${String(dateObj.getSeconds()).padStart(2, '0')}
+      ` : `Waktu tidak valid`}
+    </div>
+  `;
+
+  // ✅ Posisi popup pas di kiri tombol notifikasi
   popup.style.display = "block";
+  popup.style.visibility = "hidden";
+  popup.style.top = "0px";
+  popup.style.left = "-9999px";
+
+  setTimeout(() => {
+    const rect = notifButton.getBoundingClientRect();
+    const popupWidth = popup.offsetWidth || 300;
+    const spacing = 10;
+
+    popup.style.top = `${rect.top + window.scrollY}px`;
+    popup.style.left = `${rect.left + window.scrollX - popupWidth - spacing}px`;
+    popup.style.visibility = "visible";
+  }, 0);
 
   notifDot.style.display = "none";
-
-  // ✅ Tandai sebagai sudah dibaca
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
-}); // ✅ Ini penutup yang hilang sebelumnya!
+});
 
 // ✅ Tooltip di hover
 notifButton.addEventListener("mouseenter", () => {
@@ -548,10 +552,8 @@ document.addEventListener("click", (e) => {
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
-
   showNotification(data.message, data.timestamp);
 });
-
 // ✅ Fungsi untuk menutup popup secara manual
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
