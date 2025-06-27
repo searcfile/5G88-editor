@@ -422,7 +422,10 @@
       border: none;
       font-size: 18px;
       cursor: pointer;
-    ">×</button>
+      transition: transform 0.2s, color 0.2s;" 
+      onmouseover="this.style.transform='scale(1.3)'; this.style.color='red';"
+      onmouseout="this.style.transform='scale(1)'; this.style.color='white';"
+      >×</button>
   </div>
    <div id="messageContent" style="margin-top: 1px; white-space: normal; word-wrap: break-word; overflow-wrap: anywhere;"></div>
 </div>
@@ -442,7 +445,7 @@
   measurementId: "G-8EY4MCZKK2"
 };
 
-// Initialize Firebase
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -457,7 +460,7 @@ const notifTooltip = document.getElementById("notifTooltip");
 const loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
 const currentEmail = loginData?.email || "guest";
 
-// ✅ Cek dari localStorage saat halaman diload
+
 window.addEventListener("load", () => {
   const savedMessage = localStorage.getItem("latestNotifMessage");
   const savedTimestamp = localStorage.getItem("latestNotifTimestamp");
@@ -470,7 +473,6 @@ window.addEventListener("load", () => {
   }
 });
 
-// ✅ Simpan dan tampilkan notifikasi jika baru
 function showNotification(message, timestamp) {
   if (!popup || !content || !notifButton || !notifDot) return;
 
@@ -487,7 +489,7 @@ function showNotification(message, timestamp) {
   }
 }
 
-// ✅ Event klik pada tombol notifikasi
+
 notifButton.addEventListener("click", () => {
   const message = notifButton.dataset.message;
   const timestamp = Number(notifButton.dataset.timestamp);
@@ -515,7 +517,7 @@ notifButton.addEventListener("click", () => {
     </div>
   `;
 
-  // ✅ Posisi popup pas di kiri tombol notifikasi
+  
   popup.style.display = "block";
   popup.style.visibility = "hidden";
   popup.style.top = "0px";
@@ -536,7 +538,7 @@ notifButton.addEventListener("click", () => {
   localStorage.setItem(seenKey, "1");
 });
 
-// ✅ Tooltip di hover
+
 notifButton.addEventListener("mouseenter", () => {
   notifTooltip.style.display = "block";
 });
@@ -544,20 +546,19 @@ notifButton.addEventListener("mouseleave", () => {
   notifTooltip.style.display = "none";
 });
 
-// ✅ Tutup popup jika klik di luar
+
 document.addEventListener("click", (e) => {
   if (!popup.contains(e.target) && !notifButton.contains(e.target)) {
     popup.style.display = "none";
   }
 });
 
-// ✅ Ambil pesan terbaru dari Firebase
+
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
   showNotification(data.message, data.timestamp);
-});
-// ✅ Fungsi untuk menutup popup secara manual
+})
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
