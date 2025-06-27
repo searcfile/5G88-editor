@@ -467,7 +467,6 @@ window.addEventListener("load", () => {
   }
 });
 
-// ✅ Simpan dan tampilkan notifikasi jika baru
 function showNotification(message, timestamp) {
   if (!popup || !content || !notifButton || !notifDot) return;
 
@@ -528,12 +527,12 @@ notifButton.addEventListener("click", () => {
   // ✅ Tandai sebagai sudah dibaca
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
+}); // ✅ Ini penutup yang hilang sebelumnya!
 
 // ✅ Tooltip di hover
 notifButton.addEventListener("mouseenter", () => {
   notifTooltip.style.display = "block";
 });
-
 notifButton.addEventListener("mouseleave", () => {
   notifTooltip.style.display = "none";
 });
@@ -552,6 +551,8 @@ db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
 
   showNotification(data.message, data.timestamp);
 });
+
+// ✅ Fungsi untuk menutup popup secara manual
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
