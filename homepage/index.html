@@ -933,11 +933,19 @@ if (userNameElem) {
   }
 });
 
-  const userNameWrapper = document.getElementById("userNameWrapper");
+const userNameWrapper = document.getElementById("userNameWrapper");
+const userNameElem = document.getElementById("userName");
 const emailPopup = document.getElementById("emailPopup");
 
-if (userNameWrapper && emailPopup && loginData?.email) {
+if (loginData?.name && loginData?.email) {
+  // Set username & email
+  const nameParts = loginData.name.trim().split(" ");
+  const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
+    ? nameParts[0]
+    : loginData.name;
+  userNameElem.textContent = displayName;
   emailPopup.textContent = loginData.email;
+
 
   // Hover popup
   userNameWrapper.addEventListener("mouseenter", () => {
@@ -950,8 +958,8 @@ if (userNameWrapper && emailPopup && loginData?.email) {
 
   // Klik toggle
   userNameWrapper.addEventListener("click", () => {
-    const isShown = emailPopup.style.display === "block";
-    emailPopup.style.display = isShown ? "none" : "block";
+    const isVisible = emailPopup.style.display === "block";
+    emailPopup.style.display = isVisible ? "none" : "block";
   });
 }
   const loadingScreen = document.getElementById("loadingScreen");
