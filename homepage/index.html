@@ -367,27 +367,12 @@
   <div id="dateTime" class="date-time"></div>
 </div>
 
-      <div class="user-details" style="position: relative;">
-  <div id="userNameWrapper" style="cursor: pointer; display: inline-block; position: relative;">
-    <div id="userName" style="color: gold; font-weight: bold;"></div>
-    <div id="emailPopup" style="
-      position: absolute;
-      top: 50%;
-      left: -10px;
-      transform: translate(-100%, -50%);
-      background: #222;
-      color: gold;
-      padding: 4px 8px;
-      border: 1px solid gold;
-      border-radius: 4px;
-      display: none;
-      z-index: 999;
-      white-space: nowrap;
-    "></div>
-  </div>
-</div>
-
-<button id="logoutBtn">Logout</button>
+      <div class="user-details">
+      <div id="userName"></div>
+      <div id="userEmail"></div>
+    </div>
+      </div>
+    <button id="logoutBtn">Logout</button>
   </div>
 </div>
 
@@ -861,37 +846,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Tampilkan nama user di #userName
   const userNameElem = document.getElementById("userName");
-  if (userNameElem) {
-    const nameParts = loginData.name.trim().split(" ");
-    const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
-      ? nameParts[0]
-      : loginData.name;
-    userNameElem.textContent = displayName;
-  }
+if (userNameElem) {
+  const nameParts = loginData.name.trim().split(" ");
+  const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
+    ? nameParts[0]
+    : loginData.name;
+  userNameElem.textContent = displayName;
+}
 
-  // Email popup logic
-  const emailPopup = document.getElementById("emailPopup");
-  const userNameWrapper = document.getElementById("userNameWrapper");
+  const userEmailElem = document.getElementById("userEmail");
+  if (userEmailElem) userEmailElem.textContent = loginData.email;
 
-  if (emailPopup && loginData?.email && userNameWrapper) {
-    emailPopup.textContent = loginData.email;
-
-    userNameWrapper.addEventListener("click", () => {
-      const isVisible = emailPopup.style.display === "block";
-      emailPopup.style.display = isVisible ? "none" : "block";
-    });
-
-    // Klik di luar popup akan menutupnya
-    document.addEventListener("click", (e) => {
-      if (!userNameWrapper.contains(e.target)) {
-        emailPopup.style.display = "none";
-      }
-    });
-  }
-
-  // Logout button logic
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
@@ -905,7 +871,6 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "https://5g88-login.vercel.app/";
     });
   }
-});
 
   function updateDateTime() {
     const now = new Date();
@@ -948,6 +913,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (loadingScreen) {
     loadingScreen.style.display = "none";
   }
+});
   </script>
 </body>
 </html>
