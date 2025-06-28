@@ -258,29 +258,6 @@
   opacity: 1;
       z-index: 10000;
 }
-    .email-popup {
-  display: none;
-  position: absolute;
-  left: -10px;
-  top: 100%;
-  transform: translateX(-100%);
-  background-color: #222;
-  color: gold;
-  border: 1px solid gold;
-  border-radius: 6px;
-  padding: 4px 8px;
-  white-space: nowrap;
-  font-size: 12px;
-  z-index: 999;
-  box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
-  transition: opacity 0.3s ease;
-}
-    .user-name-wrapper {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-}
-
   </style>
 </head>
 <body>
@@ -391,10 +368,9 @@
 </div>
 
       <div class="user-details">
-      <div class="user-name-wrapper" id="userNameWrapper">
-  <div id="userName"></div>
-  <div class="email-popup" id="emailPopup"></div>
-</div>
+      <div id="userName"></div>
+      <div id="userEmail"></div>
+    </div>
       </div>
     <button id="logoutBtn">Logout</button>
   </div>
@@ -541,6 +517,7 @@ notifButton.addEventListener("click", () => {
     </div>
   `;
 
+  
   popup.style.display = "block";
   popup.style.visibility = "hidden";
   popup.style.top = "0px";
@@ -931,39 +908,12 @@ if (userNameElem) {
     }
   }
 });
-
-const userNameWrapper = document.getElementById("userNameWrapper");
-const emailPopup = document.getElementById("emailPopup");
-
-if (loginData?.name && loginData?.email) {
-  // Set username & email
-  const nameParts = loginData.name.trim().split(" ");
-  const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
-    ? nameParts[0]
-    : loginData.name;
-  userNameElem.textContent = displayName;
-  emailPopup.textContent = loginData.email;
-
-
-  // Hover popup
-  userNameWrapper.addEventListener("mouseenter", () => {
-    emailPopup.style.display = "block";
-  });
-
-  userNameWrapper.addEventListener("mouseleave", () => {
-    emailPopup.style.display = "none";
-  });
-
-  // Klik toggle
-  userNameWrapper.addEventListener("click", () => {
-    const isVisible = emailPopup.style.display === "block";
-    emailPopup.style.display = isVisible ? "none" : "block";
-  });
-}
+  
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
     loadingScreen.style.display = "none";
   }
+});
   </script>
 </body>
 </html>
