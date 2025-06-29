@@ -136,8 +136,18 @@
     });
   }
 
+  function preserveScrollAndLoad() {
+  const scrollY = window.scrollY;
+
   loadLoginData();
-  setInterval(loadLoginData, 10000);
+
+  setTimeout(() => {
+    window.scrollTo({ top: scrollY, behavior: 'instant' });
+  }, 100);
+}
+
+preserveScrollAndLoad();
+setInterval(preserveScrollAndLoad, 10000);
 </script>
 
 </body>
