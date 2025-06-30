@@ -268,44 +268,6 @@
   opacity: 1;
       z-index: 10000;
 }
-
- .dropdown {
-  position: relative;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 105%; /* Below the button */
-  right: 0;
-  background-color: #111;
-  border: 1px solid gold;
-  border-radius: 6px;
-  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
-  z-index: 1000;
-  min-width: 160px;
-  overflow: hidden;
-}
-
-.dropdown-menu .dropdown-item {
-  padding: 8px 12px;
-  color: gold;
-  background: none;
-  border: none;
-  text-align: left;
-  width: 100%;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.dropdown-menu .dropdown-item:hover {
-  background-color: gold;
-  color: #111;
-}
-
-.dropdown-menu .dropdown-item[style*="cursor: default"] {
-  cursor: default;
-}
   </style>
 </head>
 <body>
@@ -415,14 +377,12 @@
   <div id="dateTime" class="date-time"></div>
 </div>
 
-     <div class="user-details">
-  <div id="userDropdown" class="dropdown">
-    <button id="userName" onclick="toggleDropdown()">Username ▼</button>
-    <div id="dropdownMenu" class="dropdown-menu">
-      <div id="userEmail" class="dropdown-item" style="font-weight: bold; font-size: 13px; cursor: default;"></div>
-      <hr style="border: 0; border-top: 1px solid gold; margin: 4px 0;">
-      <button onclick="logout()" class="dropdown-item">Logout</button>
-    </div>
+      <div class="user-details">
+      <div id="userName"></div></div> </div>
+      <div id="userEmail"></div>
+    
+    
+    <button id="logoutBtn">Logout</button>
   </div>
 </div>
 
@@ -553,25 +513,21 @@ notifButton.addEventListener("click", () => {
   const dateObj = new Date(timestamp);
   const isValidDate = !isNaN(dateObj.getTime());
 
-  let formattedDate = "Waktu tidak valid";
-  if (isValidDate) {
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const year = dateObj.getFullYear();
-    const hour = String(dateObj.getHours()).padStart(2, '0');
-    const minute = String(dateObj.getMinutes()).padStart(2, '0');
-    const second = String(dateObj.getSeconds()).padStart(2, '0');
-
-    formattedDate = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
-  }
-
   content.innerHTML = `
     <div>${message}</div>
     <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
-      ${formattedDate}
+      ${isValidDate ? `
+        ${String(dateObj.getDate()).padStart(2, '0')}/
+        ${String(dateObj.getMonth() + 1).padStart(2, '0')}/
+        ${dateObj.getFullYear()} 
+        ${String(dateObj.getHours()).padStart(2, '0')}:
+        ${String(dateObj.getMinutes()).padStart(2, '0')}:
+        ${String(dateObj.getSeconds()).padStart(2, '0')}
+      ` : `Waktu tidak valid`}
     </div>
   `;
 
+  
   popup.style.display = "block";
   popup.style.visibility = "hidden";
   popup.style.top = "0px";
@@ -591,6 +547,7 @@ notifButton.addEventListener("click", () => {
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
 });
+
 
 notifButton.addEventListener("mouseenter", () => {
   notifTooltip.style.display = "block";
@@ -879,6 +836,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   saveLoginFromURL();
+
   if (!checkLogin()) return;
 
   const loginDataRaw = localStorage.getItem("gmailLogin");
@@ -898,98 +856,74 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // ⬇️ Fungsi toggleDropdown (dimasukkan ke window agar bisa dipanggil dari HTML)
-  function toggleDropdown() {
-    const menu = document.getElementById("dropdownMenu");
-    if (menu) {
-      menu.style.display = (menu.style.display === "block") ? "none" : "block";
-    }
-  }
-  window.toggleDropdown = toggleDropdown;
-
-  // ⬇️ Fungsi logout (juga global)
-  function logout() {
-    localStorage.removeItem("gmailLogin");
-    sessionStorage.setItem("forceLogout", "1");
-
-    if (window.google?.accounts?.id) {
-      google.accounts.id.disableAutoSelect();
-    }
-
-    window.location.href = "https://5g88-login.vercel.app/";
-  }
-  window.logout = logout;
-
-  // ⬇️ Tampilkan nama dan email user
   const userNameElem = document.getElementById("userName");
-  if (userNameElem) {
-    const nameParts = loginData.name.trim().split(" ");
-    const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
-      ? nameParts[0]
-      : loginData.name;
-    userNameElem.textContent = displayName;
-  }
+if (userNameElem) {
+  const nameParts = loginData.name.trim().split(" ");
+  const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
+    ? nameParts[0]
+    : loginData.name;
+  userNameElem.textContent = displayName;
+}
 
   const userEmailElem = document.getElementById("userEmail");
   if (userEmailElem) userEmailElem.textContent = loginData.email;
 
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
-    logoutBtn.addEventListener("click", logout);
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("gmailLogin");
+      sessionStorage.setItem("forceLogout", "1");
+
+      if (window.google?.accounts?.id) {
+        google.accounts.id.disableAutoSelect();
+      }
+
+      window.location.href = "https://5g88-login.vercel.app/";
+    });
   }
 
-  // ⬇️ Tutup dropdown jika klik di luar
-  document.addEventListener("click", function (event) {
-    const dropdown = document.getElementById("userDropdown");
-    const menu = document.getElementById("dropdownMenu");
-    if (dropdown && menu && !dropdown.contains(event.target)) {
-      menu.style.display = "none";
-    }
-  });
-
-  // ⬇️ Waktu & tanggal update
   function updateDateTime() {
     const now = new Date();
+
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
+
     const day = String(now.getDate()).padStart(2, '0');
     const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
     const month = monthNames[now.getMonth()];
     const year = now.getFullYear();
 
     const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
-    const dateTimeElem = document.getElementById('dateTime');
-    if (dateTimeElem) {
-      dateTimeElem.textContent = timeString;
-    }
+
+    document.getElementById('dateTime').textContent = timeString;
   }
 
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
-  // ⬇️ Copy image dari iframe
   window.addEventListener("message", async function (e) {
-    if (e.origin !== "https://5g88-logogame.vercel.app") return;
-    const data = e.data;
-    if (data && data.action === "copy-image" && data.url) {
-      try {
-        const response = await fetch(data.url);
-        const blob = await response.blob();
-        const item = new ClipboardItem({ [blob.type]: blob });
-        await navigator.clipboard.write([item]);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  });
+  if (e.origin !== "https://5g88-logogame.vercel.app") return;
 
-  // ⬇️ Hilangkan loading screen
+  const data = e.data;
+
+  if (data && data.action === "copy-image" && data.url) {
+    try {
+      const response = await fetch(data.url);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+});
+  
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
     loadingScreen.style.display = "none";
   }
 });
-</script>
+  </script>
 </body>
 </html>
