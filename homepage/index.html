@@ -902,6 +902,7 @@ document.addEventListener("DOMContentLoaded", () => {
       menu.style.display = (menu.style.display === "block") ? "none" : "block";
     }
   }
+  window.toggleDropdown = toggleDropdown; // agar bisa dipanggil dari onclick di HTML
 
   // ⬇️ Fungsi logout
   function logout() {
@@ -914,6 +915,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.location.href = "https://5g88-login.vercel.app/";
   }
+  window.logout = logout; // agar bisa dipanggil dari onclick di HTML
 
   // ⬇️ Tampilkan nama dan email
   const userNameElem = document.getElementById("userName");
@@ -928,13 +930,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const userEmailElem = document.getElementById("userEmail");
   if (userEmailElem) userEmailElem.textContent = loginData.email;
 
-  // ⬇️ Logout button handler
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", logout);
   }
 
-  // ⬇️ Tutup dropdown jika klik di luar
   document.addEventListener("click", function (event) {
     const dropdown = document.getElementById("userDropdown");
     const menu = document.getElementById("dropdownMenu");
@@ -942,50 +942,48 @@ document.addEventListener("DOMContentLoaded", () => {
       menu.style.display = "none";
     }
   });
-});
 
+  // ⬇️ Date Time
   function updateDateTime() {
     const now = new Date();
-
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
-
     const day = String(now.getDate()).padStart(2, '0');
     const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
     const month = monthNames[now.getMonth()];
     const year = now.getFullYear();
 
     const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
-
     document.getElementById('dateTime').textContent = timeString;
   }
 
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
+  // ⬇️ Handle message copy image
   window.addEventListener("message", async function (e) {
-  if (e.origin !== "https://5g88-logogame.vercel.app") return;
+    if (e.origin !== "https://5g88-logogame.vercel.app") return;
 
-  const data = e.data;
-
-  if (data && data.action === "copy-image" && data.url) {
-    try {
-      const response = await fetch(data.url);
-      const blob = await response.blob();
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
-    } catch (err) {
-      console.error(err);
+    const data = e.data;
+    if (data && data.action === "copy-image" && data.url) {
+      try {
+        const response = await fetch(data.url);
+        const blob = await response.blob();
+        const item = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([item]);
+      } catch (err) {
+        console.error(err);
+      }
     }
-  }
-});
-  
+  });
+
+  // ⬇️ Loading screen hilang
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
     loadingScreen.style.display = "none";
   }
 });
-  </script>
+</script>
 </body>
 </html>
