@@ -895,16 +895,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // ⬇️ Fungsi toggle dropdown
+  // ⬇️ Fungsi toggleDropdown (dimasukkan ke window agar bisa dipanggil dari HTML)
   function toggleDropdown() {
     const menu = document.getElementById("dropdownMenu");
     if (menu) {
       menu.style.display = (menu.style.display === "block") ? "none" : "block";
     }
   }
-  window.toggleDropdown = toggleDropdown; // agar bisa dipanggil dari onclick di HTML
+  window.toggleDropdown = toggleDropdown;
 
-  // ⬇️ Fungsi logout
+  // ⬇️ Fungsi logout (juga global)
   function logout() {
     localStorage.removeItem("gmailLogin");
     sessionStorage.setItem("forceLogout", "1");
@@ -915,9 +915,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.location.href = "https://5g88-login.vercel.app/";
   }
-  window.logout = logout; // agar bisa dipanggil dari onclick di HTML
+  window.logout = logout;
 
-  // ⬇️ Tampilkan nama dan email
+  // ⬇️ Tampilkan nama dan email user
   const userNameElem = document.getElementById("userName");
   if (userNameElem) {
     const nameParts = loginData.name.trim().split(" ");
@@ -935,6 +935,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutBtn.addEventListener("click", logout);
   }
 
+  // ⬇️ Tutup dropdown jika klik di luar
   document.addEventListener("click", function (event) {
     const dropdown = document.getElementById("userDropdown");
     const menu = document.getElementById("dropdownMenu");
@@ -943,7 +944,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ⬇️ Date Time
+  // ⬇️ Waktu & tanggal update
   function updateDateTime() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
@@ -955,16 +956,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const year = now.getFullYear();
 
     const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
-    document.getElementById('dateTime').textContent = timeString;
+    const dateTimeElem = document.getElementById('dateTime');
+    if (dateTimeElem) {
+      dateTimeElem.textContent = timeString;
+    }
   }
 
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
-  // ⬇️ Handle message copy image
+  // ⬇️ Copy image dari iframe
   window.addEventListener("message", async function (e) {
     if (e.origin !== "https://5g88-logogame.vercel.app") return;
-
     const data = e.data;
     if (data && data.action === "copy-image" && data.url) {
       try {
@@ -978,12 +981,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ⬇️ Loading screen hilang
+  // ⬇️ Hilangkan loading screen
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
     loadingScreen.style.display = "none";
   }
 });
+
+// ⬇️ Tambahkan ini di luar DOMContentLoaded jika belum ada
+function cleanUrl() {
+  const clean = window.location.origin + window.location.pathname;
+  window.history.replaceState({}, document.title, clean);
+}
+function saveLoginFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+  const email = params.get("email");
+  if (name && email) {
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: decodeURIComponent(name),
+      email: decodeURIComponent(email)
+    }));
+  }
+}
+function checkLogin() {
+  const data = localStorage.getItem("gmailLogin");
+  return !!data;
+}
 </script>
 </body>
 </html>
