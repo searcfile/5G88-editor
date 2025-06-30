@@ -553,21 +553,25 @@ notifButton.addEventListener("click", () => {
   const dateObj = new Date(timestamp);
   const isValidDate = !isNaN(dateObj.getTime());
 
+  let formattedDate = "Waktu tidak valid";
+  if (isValidDate) {
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = dateObj.getFullYear();
+    const hour = String(dateObj.getHours()).padStart(2, '0');
+    const minute = String(dateObj.getMinutes()).padStart(2, '0');
+    const second = String(dateObj.getSeconds()).padStart(2, '0');
+
+    formattedDate = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+  }
+
   content.innerHTML = `
     <div>${message}</div>
     <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
-      ${isValidDate ? `
-        ${String(dateObj.getDate()).padStart(2, '0')}/
-        ${String(dateObj.getMonth() + 1).padStart(2, '0')}/
-        ${dateObj.getFullYear()} 
-        ${String(dateObj.getHours()).padStart(2, '0')}:
-        ${String(dateObj.getMinutes()).padStart(2, '0')}:
-        ${String(dateObj.getSeconds()).padStart(2, '0')}
-      ` : `Waktu tidak valid`}
+      ${formattedDate}
     </div>
   `;
 
-  
   popup.style.display = "block";
   popup.style.visibility = "hidden";
   popup.style.top = "0px";
@@ -587,7 +591,6 @@ notifButton.addEventListener("click", () => {
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
 });
-
 
 notifButton.addEventListener("mouseenter", () => {
   notifTooltip.style.display = "block";
@@ -987,27 +990,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingScreen.style.display = "none";
   }
 });
-
-// ⬇️ Tambahkan ini di luar DOMContentLoaded jika belum ada
-function cleanUrl() {
-  const clean = window.location.origin + window.location.pathname;
-  window.history.replaceState({}, document.title, clean);
-}
-function saveLoginFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
-  const email = params.get("email");
-  if (name && email) {
-    localStorage.setItem("gmailLogin", JSON.stringify({
-      name: decodeURIComponent(name),
-      email: decodeURIComponent(email)
-    }));
-  }
-}
-function checkLogin() {
-  const data = localStorage.getItem("gmailLogin");
-  return !!data;
-}
 </script>
 </body>
 </html>
