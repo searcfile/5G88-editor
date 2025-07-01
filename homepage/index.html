@@ -217,7 +217,6 @@
       color: #ffffff !important;
       font-weight: bold;
       border: 1px solid white !important;
-      filter: brightness(0.5) !important;
     }
     .floating-logo {
       position: fixed;
@@ -652,7 +651,18 @@ function renderTabs() {
     tabElement.style.fontSize = "14px";
     tabElement.style.userSelect = "none";
     tabElement.style.cursor = "pointer";
-    
+
+    // ✅ Efek tekan (gelap) saat mouse click
+    tabElement.addEventListener("mousedown", () => {
+      tabElement.style.filter = "brightness(0.7)";
+    });
+    tabElement.addEventListener("mouseup", () => {
+      tabElement.style.filter = "none";
+    });
+    tabElement.addEventListener("mouseleave", () => {
+      tabElement.style.filter = "none";
+    });
+
     tabElement.addEventListener("dragstart", function (e) {
       e.dataTransfer.setData("text/plain", index);
       tabElement.style.opacity = "0.5";
@@ -683,9 +693,10 @@ function renderTabs() {
     tabElement.onclick = () => loadPage(tab.url);
 
     const currentFrame = document.getElementById("pageFrame");
-if (currentFrame && tab.url === currentFrame.src) {
-  tabElement.classList.add("active-tab");
-}
+    if (currentFrame && tab.url === currentFrame.src) {
+      tabElement.classList.add("active-tab");
+    }
+
     const title = document.createElement("span");
     title.textContent = tab.label;
     title.style.pointerEvents = "none";
