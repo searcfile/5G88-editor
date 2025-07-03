@@ -5348,7 +5348,10 @@ color: green;
   gameName.textContent = `GameName: ${game.alias || game.name}`;
   gameType.textContent = "Type: " + game.type;
   gamePayline.textContent = "Paylines: " + game.payline;
-  gameAdjustable.textContent = "Adjustable Lines: " + (game.adjustable ? "Yes" : "No");
+  const isAdjustable = game.adjustable;
+  const statusText = isAdjustable ? 'Yes' : 'No';
+  const statusColor = isAdjustable ? 'green' : 'red';
+  gameAdjustable.innerHTML = `Adjustable Lines: <span style="color:${statusColor};font-weight:bold">${statusText}</span>`;
 
   const availableLines = Object.keys(game.bets).map(Number);
   selectedLine = Math.max(...availableLines); 
