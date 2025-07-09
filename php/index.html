@@ -1195,7 +1195,8 @@ let rows = `
   const newEnd = beginMoney - bet + newWin;
 
   const now = new Date();
-  const jackpotTime = now.toISOString().replace('T', ' ').slice(0, 19);
+  const now = new Date();
+const jackpotTime = now.toLocaleString("sv-SE").replace(' ', ' ');
   const gameName = prevRow.children[0].textContent;
 
   // Baris jackpot
