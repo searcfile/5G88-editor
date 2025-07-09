@@ -1147,9 +1147,7 @@ let rows = `
   const currentGame = document.getElementById("gameSelect").value;
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
 
-  if (isNaN(jackpotAmount) || jackpotAmount < 0) {
-    return;
- }
+  if (isNaN(jackpotAmount) || jackpotAmount < 0) return;
 
   const tbody = document.querySelector("#gameLog tbody");
   let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
@@ -1176,11 +1174,11 @@ let rows = `
 
     jackpotRow.remove();
   }
-  
+
   if (hiddenRow) {
-  tbody.appendChild(hiddenRow);
-  hiddenRow = null;
-} 
+    tbody.appendChild(hiddenRow);
+    hiddenRow = null;
+  }
 
   rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) {
@@ -1217,41 +1215,42 @@ let rows = `
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
-   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-const specialRows = tbody.querySelectorAll("tr.set-score-row");
+  const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  const specialRows = tbody.querySelectorAll("tr.set-score-row");
 
-while (allRows.length + specialRows.length > 11) {
-  const lastRow = allRows.pop(); 
-  lastRow.remove();
-}
-
-const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-for (let i = updatedRows.length - 1; i > 0; i--) {
-  const current = updatedRows[i];
-  const prev = updatedRows[i - 1];
-
-  const curEnd = parseFloat(current.children[5].textContent);
-  const prevBet = parseFloat(prev.children[2].textContent);
-  const prevWin = parseFloat(prev.children[3].textContent);
-
-  prev.children[4].textContent = curEnd.toFixed(2);
-  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
-}
-
-  if (updatedRows.length > 0) {
-  const lastRow = updatedRows[updatedRows.length - 1];
-  const endMoneyLast = parseFloat(lastRow.children[5].textContent);
-
-  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-  if (setScoreRowTop) {
-    // Set BeginMoney ikut EndMoney baris terakhir
-    setScoreRowTop.children[4].textContent = endMoneyLast.toFixed(2);
-
-    // Set score ikut juga
-    const scoreCell = setScoreRowTop.children[1];
-    scoreCell.textContent = `Set score：${(-Math.abs(endMoneyLast)).toFixed(2)}`;
+  while (allRows.length + specialRows.length > 11) {
+    const lastRow = allRows.pop();
+    lastRow.remove();
   }
-}
+
+  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  for (let i = updatedRows.length - 1; i > 0; i--) {
+    const current = updatedRows[i];
+    const prev = updatedRows[i - 1];
+
+    const curEnd = parseFloat(current.children[5].textContent);
+    const prevBet = parseFloat(prev.children[2].textContent);
+    const prevWin = parseFloat(prev.children[3].textContent);
+
+    prev.children[4].textContent = curEnd.toFixed(2);
+    prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
+  }
+
+  // ✅ UPDATE BEGINMONEY BARIS ATAS IKUT ENDMONEY BARIS PALING BAWAH
+  if (updatedRows.length > 0) {
+    const lastRow = updatedRows[updatedRows.length - 1];
+    const endMoneyLast = parseFloat(lastRow.children[5].textContent);
+
+    const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+    if (setScoreRowTop) {
+      // BeginMoney baris SET SCORE ikut EndMoney paling bawah
+      setScoreRowTop.children[4].textContent = endMoneyLast.toFixed(2);
+
+      // Set score ikut juga
+      const scoreCell = setScoreRowTop.children[1];
+      scoreCell.textContent = `Set score：${(-Math.abs(endMoneyLast)).toFixed(2)}`;
+    }
+  }
 
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
