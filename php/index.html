@@ -1236,16 +1236,14 @@ let rows = `
     prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
   }
 
-  // ✅ AMBIL ENDMONEY DARI LOG PALING BAWAH (bukan urutan array, tapi urutan visual DOM)
-  const visibleLogRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  if (visibleLogRows.length > 0) {
-    const bottomRow = visibleLogRows[visibleLogRows.length - 1];
-    const endMoney = parseFloat(bottomRow.children[5].textContent);
+  // ✅ AMBIL ENDMONEY DARI BARIS LOG PERTAMA (selepas set-score)
+  const firstLogRow = tbody.querySelector("tr.log-row");
+  if (firstLogRow) {
+    const endMoney = parseFloat(firstLogRow.children[5].textContent);
 
     const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
     if (setScoreRowTop) {
-      // Set BeginMoney ikut EndMoney paling bawah
-      setScoreRowTop.children[4].textContent = endMoney.toFixed(2);
+      setScoreRowTop.children[4].textContent = endMoney.toFixed(2); // BeginMoney
       setScoreRowTop.children[1].textContent = `Set score：${(-Math.abs(endMoney)).toFixed(2)}`;
     }
   }
@@ -1253,7 +1251,6 @@ let rows = `
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 }
-
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
