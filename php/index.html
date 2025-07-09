@@ -1213,8 +1213,7 @@ let rows = `
     <td class="negatif">-</td>
     <td>${dateTime}</td>
   `;
-  targetRow.parentNode.insertBefore(newJackpotRow, targetRow);
-  targetRow.parentNode.insertBefore(targetRow, newJackpotRow.nextSibling);
+  targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   const specialRows = tbody.querySelectorAll("tr.set-score-row");
