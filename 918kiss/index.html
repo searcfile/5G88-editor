@@ -1242,9 +1242,15 @@ for (let i = updatedRows.length - 1; i > 0; i--) {
     const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
     const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
     if (setScoreRowTop) {
-      const scoreCell = setScoreRowTop.children[1];
-      scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-    }
+    const beginCell = setScoreRowTop.children[4];
+    let begin = parseFloat(beginCell.textContent) || 0;
+    begin += jackpotAmount;
+    beginCell.textContent = begin.toFixed(2);
+
+
+  const scoreCell = setScoreRowTop.children[1];
+  scoreCell.textContent = `Set score：${(-Math.abs(begin)).toFixed(2)}`;
+}
   }
 
   jackpotInsertedMap[currentGame] = true;
