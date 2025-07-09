@@ -1717,6 +1717,11 @@ function addManualSetScore() {
   if (isNaN(inputScore)) return alert("❌ Nilai tidak sah");
 
   const tbody = document.querySelector("#gameLog tbody");
+
+  // Cek sudah ada manual score row atau belum
+  let existingManualRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
+    .find(row => !row.classList.contains("jackpot") && !row.children[1].textContent.includes("-"));
+
   const setScoreNegatifRow = Array.from(tbody.querySelectorAll("tr.set-score-row:not(.jackpot)"))
     .find(row => row.children[1].textContent.includes("-"));
 
@@ -1728,18 +1733,24 @@ function addManualSetScore() {
   const newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
   const formatted = formatDateTimeLocal(newTime);
 
-  const newRow = document.createElement("tr");
-  newRow.classList.add("set-score-row");
-  newRow.innerHTML = `
-    <td>-</td>
-    <td class="setscore">Set score：${inputScore.toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${formatted}</td>
-  `;
-  tbody.insertBefore(newRow, setScoreNegatifRow);
+  if (existingManualRow) {
+    existingManualRow.children[1].textContent = `Set score：${inputScore.toFixed(2)}`;
+    existingManualRow.children[6].textContent = formatted;
+  } else {
+
+    const newRow = document.createElement("tr");
+    newRow.classList.add("set-score-row");
+    newRow.innerHTML = `
+      <td>-</td>
+      <td class="setscore">Set score：${inputScore.toFixed(2)}</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td>${formatted}</td>
+    `;
+    tbody.insertBefore(newRow, setScoreNegatifRow);
+  }
 
   const allRows = Array.from(tbody.querySelectorAll("tr"));
   if (allRows.length > 11) {
@@ -1748,7 +1759,6 @@ function addManualSetScore() {
   }
 
   document.getElementById("manualScoreInput").value = "0";
-}
 
 function resetLog() {
   localStorage.removeItem("gameLogDataMega888");
