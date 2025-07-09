@@ -1236,19 +1236,17 @@ let rows = `
     prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
   }
 
-  // ✅ UPDATE BEGINMONEY BARIS ATAS IKUT ENDMONEY BARIS PALING BAWAH
-  if (updatedRows.length > 0) {
-    const lastRow = updatedRows[updatedRows.length - 1];
-    const endMoneyLast = parseFloat(lastRow.children[5].textContent);
+  // ✅ AMBIL ENDMONEY DARI LOG PALING BAWAH (bukan urutan array, tapi urutan visual DOM)
+  const visibleLogRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (visibleLogRows.length > 0) {
+    const bottomRow = visibleLogRows[visibleLogRows.length - 1];
+    const endMoney = parseFloat(bottomRow.children[5].textContent);
 
     const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
     if (setScoreRowTop) {
-      // BeginMoney baris SET SCORE ikut EndMoney paling bawah
-      setScoreRowTop.children[4].textContent = endMoneyLast.toFixed(2);
-
-      // Set score ikut juga
-      const scoreCell = setScoreRowTop.children[1];
-      scoreCell.textContent = `Set score：${(-Math.abs(endMoneyLast)).toFixed(2)}`;
+      // Set BeginMoney ikut EndMoney paling bawah
+      setScoreRowTop.children[4].textContent = endMoney.toFixed(2);
+      setScoreRowTop.children[1].textContent = `Set score：${(-Math.abs(endMoney)).toFixed(2)}`;
     }
   }
 
