@@ -1239,13 +1239,19 @@ for (let i = updatedRows.length - 1; i > 0; i--) {
 }
 
   if (updatedRows.length > 0) {
-    const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
-    const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-    if (setScoreRowTop) {
-      const scoreCell = setScoreRowTop.children[1];
-      scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-    }
+  const lastRow = updatedRows[updatedRows.length - 1];
+  const endMoneyLast = parseFloat(lastRow.children[5].textContent);
+
+  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+  if (setScoreRowTop) {
+    // Set BeginMoney ikut EndMoney baris terakhir
+    setScoreRowTop.children[4].textContent = endMoneyLast.toFixed(2);
+
+    // Set score ikut juga
+    const scoreCell = setScoreRowTop.children[1];
+    scoreCell.textContent = `Set score：${(-Math.abs(endMoneyLast)).toFixed(2)}`;
   }
+}
 
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
