@@ -1194,7 +1194,7 @@ let rows = `
   const bet = parseFloat(prevRow.children[2].textContent);
   const newEnd = beginMoney - bet + newWin;
 
-  const dateTime = prevRow.children[6].textContent;
+  const dateTime = new Date().toISOString().replace('T', ' ').slice(0, 19);
   const gameName = prevRow.children[0].textContent;
 
   // Buat baris jackpot
@@ -1214,6 +1214,7 @@ let rows = `
   const clonedRow = targetRow.cloneNode(true);
   clonedRow.children[3].textContent = newWin.toFixed(2); // win
   clonedRow.children[5].textContent = newEnd.toFixed(2); // endmoney
+  clonedRow.children[6].textContent = dateTime;
 
   // Masukkan jackpotRow dan cloned log-row
   targetRow.parentNode.insertBefore(newJackpotRow, targetRow);
