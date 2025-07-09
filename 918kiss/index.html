@@ -88,19 +88,24 @@
    align-items: center;      
    margin: 10px auto;         
     }
-    button {
+     button {
      padding: 5px 10px;
      font-size: 14px;
-     background: #000;
-     color: gold;
+     background: gold;
+     color: #000;
      border: none;
      border-radius: 5px;
      cursor: pointer;
-      border: 1px solid gold;
+     border: 1px solid gold;
+     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
     button:hover {
-     background: gold;
-     color: #000;
+     background: rgba(255,255,255,0.3);
+     color: #fff;
+    }
+    button:active {
+     background: rgba(0,0,0,0.3);
+     color: white;
     }
     select, input {
       padding: 3px 6px;
@@ -148,9 +153,9 @@
 <button onclick="resetLog()" style="background:red; color:white;">Reset Log</button>
 <h2 style="color: gold;">918KISS SYSTEM RANDOM</h2>
 
-<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 15px;">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
   <label for="gameSelect" style="color: gold;">Game:</label>
-  <select id="gameSelect" style="height: 38px; font-size: 16px; color: white;">
+  <select id="gameSelect" class="select2" style="height: 38px; font-size: 16px; color: white;">
     <option value="">-- Choose --</option>
     <option value="India">India</option>
     <option value="IreLand">IreLand</option>
@@ -212,16 +217,14 @@
 
   <label for="pecahanSelect" style="color: gold;">Pecahan:</label>
   <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;"></select>
-</div>
 
-  <button onclick="setNow()" style="height: 30px; padding: 6px 12px; font-size: 16px;margin-right: 10px;">Click Now</button>
+  <button onclick="setNow()" style="height: 38px; padding: 0 12px; font-size: 16px;">Click Now</button>
 
   <label for="manualTime" style="color: gold;">Set Time:</label>
   <input type="text" id="manualTime" placeholder="Add Date & Time"
-         style="width: 207px; font-size: 22px; padding: 6px 12px; height: 30px; color: white;" />
+         style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" />
 </div>
 
-<br><br>
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
 
   <button onclick="generateLog()" style="height: 38px;">Change</button>
