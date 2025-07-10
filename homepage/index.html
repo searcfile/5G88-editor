@@ -734,169 +734,110 @@ function checkLogin() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const forceLogout = sessionStorage.getItem("forceLogout");
-  if (forceLogout === "1") {
-    sessionStorage.removeItem("forceLogout");
-    cleanUrl();
-  }
+    const forceLogout = sessionStorage.getItem("forceLogout");
+    if (forceLogout === "1") {
+      sessionStorage.removeItem("forceLogout");
+      cleanUrl();
+    }
 
-  saveLoginFromURL();
+    saveLoginFromURL();
 
-  if (!checkLogin()) return;
+    if (!checkLogin()) return;
 
-  const loginDataRaw = localStorage.getItem("gmailLogin");
-  let loginData = null;
+    const loginDataRaw = localStorage.getItem("gmailLogin");
+    let loginData = null;
 
-  try {
-    loginData = JSON.parse(loginDataRaw);
-  } catch (e) {
-    console.error("❌ Failed to parse login data:", e);
-    localStorage.removeItem("gmailLogin");
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
-
-  if (!loginData || !loginData.email) {
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
-
-  const userNameElem = document.getElementById("userName");
-if (userNameElem) {
-  const nameParts = loginData.name.trim().split(" ");
-  const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
-    ? nameParts[0]
-    : loginData.name;
-  userNameElem.textContent = displayName;
-}
-
-  const userEmailElem = document.getElementById("userEmail");
-  if (userEmailElem) userEmailElem.textContent = loginData.email;
-
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
+    try {
+      loginData = JSON.parse(loginDataRaw);
+    } catch (e) {
+      console.error("❌ Failed to parse login data:", e);
       localStorage.removeItem("gmailLogin");
-      sessionStorage.setItem("forceLogout", "1");
-
-      if (window.google?.accounts?.id) {
-        google.accounts.id.disableAutoSelect();
-      }
-
       window.location.href = "https://5g88-login.vercel.app/";
-    });
-  }
+      return;
+    }
 
-  document.addEventListener("DOMContentLoaded", () => {
-  const forceLogout = sessionStorage.getItem("forceLogout");
-  if (forceLogout === "1") {
-    sessionStorage.removeItem("forceLogout");
-    cleanUrl();
-  }
-
-  saveLoginFromURL();
-
-  if (!checkLogin()) return;
-
-  const loginDataRaw = localStorage.getItem("gmailLogin");
-  let loginData = null;
-
-  try {
-    loginData = JSON.parse(loginDataRaw);
-  } catch (e) {
-    console.error("❌ Failed to parse login data:", e);
-    localStorage.removeItem("gmailLogin");
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
-
-  if (!loginData || !loginData.email) {
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
-
-  const userNameElem = document.getElementById("userName");
-  const dropdownContent = document.getElementById("dropdownContent");
-
-  if (userNameElem && dropdownContent) {
-    const nameParts = loginData.name.trim().split(" ");
-    const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
-      ? nameParts[0]
-      : loginData.name;
-
-    userNameElem.textContent = displayName;
-    dropdownContent.textContent = loginData.email;
-
-    // Toggle dropdown on click
-    userNameElem.addEventListener("click", () => {
-      const isVisible = dropdownContent.style.display === "block";
-      dropdownContent.style.display = isVisible ? "none" : "block";
-    });
-
-    // Hide dropdown if clicking outside
-    document.addEventListener("click", (event) => {
-      if (!event.target.closest(".user-dropdown")) {
-        dropdownContent.style.display = "none";
-      }
-    });
-  }
-
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("gmailLogin");
-      sessionStorage.setItem("forceLogout", "1");
-
-      if (window.google?.accounts?.id) {
-        google.accounts.id.disableAutoSelect();
-      }
-
+    if (!loginData || !loginData.email) {
       window.location.href = "https://5g88-login.vercel.app/";
-    });
-  }
+      return;
+    }
 
-  function updateDateTime() {
-    const now = new Date();
+    const userNameElem = document.getElementById("userName");
+    const dropdownContent = document.getElementById("dropdownContent");
 
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
+    if (userNameElem && dropdownContent) {
+      const nameParts = loginData.name.trim().split(" ");
+      const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
+        ? nameParts[0]
+        : loginData.name;
 
-    const day = String(now.getDate()).padStart(2, '0');
-    const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
-    const month = monthNames[now.getMonth()];
-    const year = now.getFullYear();
+      userNameElem.textContent = displayName;
+      dropdownContent.textContent = loginData.email;
 
-    const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
+      userNameElem.addEventListener("click", () => {
+        const isVisible = dropdownContent.style.display === "block";
+        dropdownContent.style.display = isVisible ? "none" : "block";
+      });
 
-    document.getElementById('dateTime').textContent = timeString;
-  }
+      document.addEventListener("click", (event) => {
+        if (!event.target.closest(".user-dropdown")) {
+          dropdownContent.style.display = "none";
+        }
+      });
+    }
 
-  setInterval(updateDateTime, 1000);
-  updateDateTime();
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("gmailLogin");
+        sessionStorage.setItem("forceLogout", "1");
 
-  window.addEventListener("message", async function (e) {
-    if (e.origin !== "https://5g88-logogame.vercel.app") return;
+        if (window.google?.accounts?.id) {
+          google.accounts.id.disableAutoSelect();
+        }
 
-    const data = e.data;
+        window.location.href = "https://5g88-login.vercel.app/";
+      });
+    }
 
-    if (data && data.action === "copy-image" && data.url) {
-      try {
-        const response = await fetch(data.url);
-        const blob = await response.blob();
-        const item = new ClipboardItem({ [blob.type]: blob });
-        await navigator.clipboard.write([item]);
-      } catch (err) {
-        console.error(err);
+    function updateDateTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+      const month = monthNames[now.getMonth()];
+      const year = now.getFullYear();
+
+      const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
+      document.getElementById('dateTime').textContent = timeString;
+    }
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    window.addEventListener("message", async function (e) {
+      if (e.origin !== "https://5g88-logogame.vercel.app") return;
+
+      const data = e.data;
+
+      if (data && data.action === "copy-image" && data.url) {
+        try {
+          const response = await fetch(data.url);
+          const blob = await response.blob();
+          const item = new ClipboardItem({ [blob.type]: blob });
+          await navigator.clipboard.write([item]);
+        } catch (err) {
+          console.error(err);
+        }
       }
+    });
+
+    const loadingScreen = document.getElementById("loadingScreen");
+    if (loadingScreen) {
+      loadingScreen.style.display = "none";
     }
   });
-
-  const loadingScreen = document.getElementById("loadingScreen");
-  if (loadingScreen) {
-    loadingScreen.style.display = "none";
-  }
-});
   </script>
 </body>
 </html>
