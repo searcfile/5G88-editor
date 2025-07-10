@@ -20,8 +20,6 @@
     .user-text {gap: 10px;display: flex;align-items: center;}
     .user-details {display: flex;flex-direction: column;align-items: flex-end;}
     .date-time {color: gold;font-size: 13px;white-space: nowrap;}
-    #userName {color: gold;font-size: 14px;border: 1px solid gold;border-radius: 4px;padding: 4px 12px;}
-    #userEmail {color: gold;font-size: 14px;border: 1px solid gold;border-radius: 4px;padding: 4px 12px;}
     .container {transition: margin-left 0.3s ease;padding: 0;}
     .container.shrink { margin-left: 260px;}
     .menu-icon {position: absolute;top: 5px;left: 10px;font-size: 28px;color: gold;cursor: pointer;z-index: 1100;}
@@ -126,6 +124,41 @@
   display: block !important;
   opacity: 1;
       z-index: 10000;
+}
+ .user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-button {
+  background-color: #111;
+  color: gold;
+  border: 1px solid gold;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.user-button:hover {
+  background: gold;
+  color: #111;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #111;
+  min-width: 200px;
+  border: 1px solid gold;
+  border-radius: 4px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
+  padding: 10px;
+  z-index: 1;
+  color: gold;
+  top: 110%;
+  left: 0;
+  font-size: 13px;
 }
   </style>
 </head>
@@ -236,9 +269,10 @@
   <div id="dateTime" class="date-time"></div>
 </div>
 
-      <div class="user-details">
-      <div id="userName"></div></div> </div>
-      <div id="userEmail"></div>
+  <div class="user-dropdown">
+  <button id="userName" class="user-button"></button>
+  <div id="dropdownContent" class="dropdown-content"></div>
+</div>
     
     
     <button id="logoutBtn">Logout</button>
@@ -303,12 +337,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
    const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -759,6 +787,74 @@ if (userNameElem) {
     });
   }
 
+  document.addEventListener("DOMContentLoaded", () => {
+  const forceLogout = sessionStorage.getItem("forceLogout");
+  if (forceLogout === "1") {
+    sessionStorage.removeItem("forceLogout");
+    cleanUrl();
+  }
+
+  saveLoginFromURL();
+
+  if (!checkLogin()) return;
+
+  const loginDataRaw = localStorage.getItem("gmailLogin");
+  let loginData = null;
+
+  try {
+    loginData = JSON.parse(loginDataRaw);
+  } catch (e) {
+    console.error("❌ Failed to parse login data:", e);
+    localStorage.removeItem("gmailLogin");
+    window.location.href = "https://5g88-login.vercel.app/";
+    return;
+  }
+
+  if (!loginData || !loginData.email) {
+    window.location.href = "https://5g88-login.vercel.app/";
+    return;
+  }
+
+  const userNameElem = document.getElementById("userName");
+  const dropdownContent = document.getElementById("dropdownContent");
+
+  if (userNameElem && dropdownContent) {
+    const nameParts = loginData.name.trim().split(" ");
+    const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
+      ? nameParts[0]
+      : loginData.name;
+
+    userNameElem.textContent = displayName;
+    dropdownContent.textContent = loginData.email;
+
+    // Toggle dropdown on click
+    userNameElem.addEventListener("click", () => {
+      const isVisible = dropdownContent.style.display === "block";
+      dropdownContent.style.display = isVisible ? "none" : "block";
+    });
+
+    // Hide dropdown if clicking outside
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".user-dropdown")) {
+        dropdownContent.style.display = "none";
+      }
+    });
+  }
+
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("gmailLogin");
+      sessionStorage.setItem("forceLogout", "1");
+
+      if (window.google?.accounts?.id) {
+        google.accounts.id.disableAutoSelect();
+      }
+
+      window.location.href = "https://5g88-login.vercel.app/";
+    });
+  }
+
   function updateDateTime() {
     const now = new Date();
 
@@ -780,22 +876,22 @@ if (userNameElem) {
   updateDateTime();
 
   window.addEventListener("message", async function (e) {
-  if (e.origin !== "https://5g88-logogame.vercel.app") return;
+    if (e.origin !== "https://5g88-logogame.vercel.app") return;
 
-  const data = e.data;
+    const data = e.data;
 
-  if (data && data.action === "copy-image" && data.url) {
-    try {
-      const response = await fetch(data.url);
-      const blob = await response.blob();
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
-    } catch (err) {
-      console.error(err);
+    if (data && data.action === "copy-image" && data.url) {
+      try {
+        const response = await fetch(data.url);
+        const blob = await response.blob();
+        const item = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([item]);
+      } catch (err) {
+        console.error(err);
+      }
     }
-  }
-});
-  
+  });
+
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
     loadingScreen.style.display = "none";
