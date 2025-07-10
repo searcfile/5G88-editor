@@ -435,6 +435,14 @@ function closeSidebar() {
   document.getElementById("tabBar").classList.remove('shrink');
 }
 
+document.addEventListener("click", (e) => {
+  const isSidebar = e.target.closest("#sidebar");
+  const isMenuIcon = e.target.closest("#menuIcon");
+
+  if (!isSidebar && !isMenuIcon && sidebar.classList.contains("active")) {
+    closeSidebar();
+  }
+});
 function saveTabs(tabs) {
   localStorage.setItem("openTabs", JSON.stringify(tabs));
 }
