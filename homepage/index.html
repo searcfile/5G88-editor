@@ -45,6 +45,7 @@
       white-space: nowrap;
       -ms-overflow-style: none;
       scrollbar-width: none;
+      scroll-behavior: smooth;
     }
     .tab-bar::-webkit-scrollbar {
       display: none;
@@ -495,8 +496,8 @@ function addTab(label, url) {
     existingTabs.push({ label, url });
     saveTabs(existingTabs);
   }
-  renderTabs();
   loadPage(url);
+  renderTabs(); 
 }
 
 function closeTab(label) {
@@ -853,6 +854,12 @@ tabBar.addEventListener('mousemove', (e) => {
   const x = e.pageX - tabBar.offsetLeft;
   const walk = (x - startX) * 1.5;
   tabBar.scrollLeft = scrollLeft - walk;
+});
+tabBar.addEventListener('wheel', (e) => {
+  if (e.deltaY !== 0) {
+    e.preventDefault();
+    tabBar.scrollLeft += e.deltaY;
+  }
 });
 });
   </script>
