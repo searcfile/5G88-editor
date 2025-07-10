@@ -40,6 +40,14 @@
       justify-content: flex-start;
       white-space: nowrap; 
       margin-top: 55px;
+      overflow-x: auto;
+      overflow-y: hidden; 
+      white-space: nowrap;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .tab-bar::-webkit-scrollbar {
+      display: none;
     }
      .tab {
       background: gold;
@@ -204,6 +212,36 @@
     </a>
     <a href="#" onclick="addTab('CIMB BANK', 'https://5g88-cimb.vercel.app/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK
+    </a>
+   <a href="#" onclick="addTab('CIMB BANK1', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK1
+    </a>
+   <a href="#" onclick="addTab('CIMB BANK2', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK2
+    </a>
+   <a href="#" onclick="addTab('CIMB BANK3', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK3
+    </a>
+   <a href="#" onclick="addTab('panjangpanjangpanjang', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang
+    </a>
+   <a href="#" onclick="addTab('panjangpanjangpanjang1', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang1
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang12', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang123', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang123
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang1234', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang1234
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang12345', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12345
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang123456', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang123456
     </a>
   </div>
 
@@ -791,6 +829,31 @@ document.addEventListener("DOMContentLoaded", () => {
   if (loadingScreen) {
     loadingScreen.style.display = "none";
   }
+  const tabBar = document.getElementById('tabBar');
+let isDown = false;
+let startX, scrollLeft;
+
+tabBar.addEventListener('mousedown', (e) => {
+  isDown = true;
+  startX = e.pageX - tabBar.offsetLeft;
+  scrollLeft = tabBar.scrollLeft;
+});
+
+tabBar.addEventListener('mouseleave', () => {
+  isDown = false;
+});
+
+tabBar.addEventListener('mouseup', () => {
+  isDown = false;
+});
+
+tabBar.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - tabBar.offsetLeft;
+  const walk = (x - startX) * 1.5;
+  tabBar.scrollLeft = scrollLeft - walk;
+});
 });
   </script>
 </body>
