@@ -161,6 +161,9 @@
   transform: translateX(-50%);
   font-size: 13px;
 }
+  .dropdown-content button#logoutBtn:hover {
+  background-color: #ffcc00;
+}
   </style>
 </head>
 <body>
@@ -223,14 +226,22 @@
         </div>
 
         <div class="user-dropdown">
-          <button id="userName" class="user-button"></button>
-          <div id="dropdownContent" class="dropdown-content"></div>
-        </div>
-
-        <button id="logoutBtn">Logout</button>
-      </div>
-    </div>
+  <button id="userName" class="user-button"></button>
+  <div id="dropdownContent" class="dropdown-content">
+    <div id="userEmail" style="margin-bottom: 8px;"></div>
+    <hr style="border: 0; border-top: 1px solid gold; margin: 8px 0;">
+    <button id="logoutBtn" style="
+      background-color: gold;
+      color: #111;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      width: 100%;
+    ">Logout</button>
   </div>
+</div>
 
   <!-- 🔹 Tab Bar -->
   <div id="tabBar" class="tab-bar"></div>
@@ -710,61 +721,60 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-});
 
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("gmailLogin");
-        sessionStorage.setItem("forceLogout", "1");
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("gmailLogin");
+      sessionStorage.setItem("forceLogout", "1");
 
-        if (window.google?.accounts?.id) {
-          google.accounts.id.disableAutoSelect();
-        }
-
-        window.location.href = "https://5g88-login.vercel.app/";
-      });
-    }
-
-    function updateDateTime() {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
-      const month = monthNames[now.getMonth()];
-      const year = now.getFullYear();
-
-      const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
-      document.getElementById('dateTime').textContent = timeString;
-    }
-
-    setInterval(updateDateTime, 1000);
-    updateDateTime();
-
-    window.addEventListener("message", async function (e) {
-      if (e.origin !== "https://5g88-logogame.vercel.app") return;
-
-      const data = e.data;
-
-      if (data && data.action === "copy-image" && data.url) {
-        try {
-          const response = await fetch(data.url);
-          const blob = await response.blob();
-          const item = new ClipboardItem({ [blob.type]: blob });
-          await navigator.clipboard.write([item]);
-        } catch (err) {
-          console.error(err);
-        }
+      if (window.google?.accounts?.id) {
+        google.accounts.id.disableAutoSelect();
       }
-    });
 
-    const loadingScreen = document.getElementById("loadingScreen");
-    if (loadingScreen) {
-      loadingScreen.style.display = "none";
+      window.location.href = "https://5g88-login.vercel.app/";
+    });
+  }
+
+  function updateDateTime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+    const month = monthNames[now.getMonth()];
+    const year = now.getFullYear();
+
+    const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
+    document.getElementById('dateTime').textContent = timeString;
+  }
+
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+
+  window.addEventListener("message", async function (e) {
+    if (e.origin !== "https://5g88-logogame.vercel.app") return;
+
+    const data = e.data;
+
+    if (data && data.action === "copy-image" && data.url) {
+      try {
+        const response = await fetch(data.url);
+        const blob = await response.blob();
+        const item = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([item]);
+      } catch (err) {
+        console.error(err);
+      }
     }
   });
+
+  const loadingScreen = document.getElementById("loadingScreen");
+  if (loadingScreen) {
+    loadingScreen.style.display = "none";
+  }
+});
   </script>
 </body>
 </html>
