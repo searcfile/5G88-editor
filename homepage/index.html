@@ -27,7 +27,7 @@
     @media (max-width: 600px) {
     .container.shrink {margin-left: 0;}}
      html, body {height: 100%;}
-     #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;margin-top: 55px;}
+     #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;}
      .tab-bar {
       position: relative;
       width: 100%;
@@ -39,6 +39,7 @@
       z-index: 1000;
       justify-content: flex-start;
       white-space: nowrap; 
+      margin-top: 55px;
     }
      .tab {
       background: gold;
@@ -699,6 +700,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const userNameElem = document.getElementById("userName");
   const dropdownContent = document.getElementById("dropdownContent");
+  const userEmailElem = document.getElementById("userEmail");
 
   if (userNameElem && dropdownContent) {
     const nameParts = loginData.name.trim().split(" ");
@@ -707,7 +709,11 @@ document.addEventListener("DOMContentLoaded", () => {
       : loginData.name;
 
     userNameElem.textContent = displayName;
-    dropdownContent.textContent = loginData.email;
+
+    // ✅ Set hanya elemen email, bukan seluruh dropdown content
+    if (userEmailElem) {
+      userEmailElem.textContent = loginData.email;
+    }
 
     // Tunjuk/sembunyi dropdown bila klik username
     userNameElem.addEventListener("click", (e) => {
