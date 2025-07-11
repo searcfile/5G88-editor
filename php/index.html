@@ -160,6 +160,25 @@
      from { opacity: 0; transform: translateY(-5px); }
      to { opacity: 1; transform: translateY(0); }
     }
+    #backToTop {
+  position: fixed;
+  bottom: 30px;
+  right: 20px;
+  padding: 10px 15px;
+  background-color: gold;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  display: none;
+  z-index: 1000;
+  box-shadow: 0 0 8px gold;
+  transition: transform 0.3s ease;
+}
+#backToTop:hover {
+  transform: scale(1.1);
+}
   </style>
 </head>
 <body>
@@ -189,6 +208,7 @@
 
     <div class="logo-grid" id="gameGrid"></div>
   </div>
+  <button id="backToTop" onclick="scrollToTop()">^ Top</button>
   <script>
   document.addEventListener("contextmenu", e => e.preventDefault());
   document.onkeydown = function (e) {
@@ -1573,9 +1593,9 @@
     ];
 
     let currentType = "all";
-    let currentPlatform = "all";
+let currentPlatform = "all";
 
-    function renderGames() {
+function renderGames() {
   const grid = document.getElementById("gameGrid");
   const searchText = document.getElementById("searchInput").value.toLowerCase();
   grid.innerHTML = "";
@@ -1583,11 +1603,11 @@
   const filtered = games.filter(function(game) {
     const matchType = currentType === "all" || game.type === currentType;
     const matchSearch =
-  game.name.toLowerCase().includes(searchText) ||
-  (game.alias && game.alias.toLowerCase().includes(searchText)) ||
-  (Array.isArray(game.platform)
-    ? game.platform.some(p => p.toLowerCase().includes(searchText))
-    : game.platform.toLowerCase().includes(searchText));
+      game.name.toLowerCase().includes(searchText) ||
+      (game.alias && game.alias.toLowerCase().includes(searchText)) ||
+      (Array.isArray(game.platform)
+        ? game.platform.some(p => p.toLowerCase().includes(searchText))
+        : game.platform.toLowerCase().includes(searchText));
     const matchPlatform = currentPlatform === "all" ||
       (Array.isArray(game.platform)
         ? game.platform.includes(currentPlatform)
@@ -1600,10 +1620,10 @@
     const div = document.createElement("div");
     div.className = "game-logo";
     div.innerHTML = `
-  <span class="game-alias">${game.alias || ''}</span>
-  <img src="${game.image}" alt="${game.name}" onclick="copyImageToClipboard('${game.image}', this.parentElement)">
-  <span class="game-name">${game.name}</span>
-`;
+      <span class="game-alias">${game.alias || ''}</span>
+      <img src="${game.image}" alt="${game.name}" onclick="copyImageToClipboard('${game.image}', this.parentElement)">
+      <span class="game-name">${game.name}</span>
+    `;
     grid.appendChild(div);
   });
 }
@@ -1614,19 +1634,19 @@ function setPlatform(platform) {
   event.target.classList.add('active');
   renderGames();
 }
-    
-    function filterGames() {
-      renderGames();
-    }
 
-    function setFilter(type) {
+function filterGames() {
+  renderGames();
+}
+
+function setFilter(type) {
   currentType = type;
   document.querySelectorAll('.filter-tabs button').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
   renderGames();
 }
 
-  renderGames();
+renderGames();
 
 async function copyImageToClipboard(imageUrl, parentElement) {
   if (window.parent !== window) {
@@ -1667,6 +1687,30 @@ async function copyImageToClipboard(imageUrl, parentElement) {
   } catch (err) {
     alert("❌ Gagal salin gambar.");
     console.error(err);
+  }
+}
+
+// 👇 BACK TO TOP SCROLL MONITOR
+document.addEventListener("DOMContentLoaded", function () {
+  const scrollTarget = document.querySelector('.main-scroll') || window;
+
+  scrollTarget.addEventListener('scroll', function () {
+    const btn = document.getElementById('backToTop');
+    const scrollTop = scrollTarget === window ? window.scrollY : scrollTarget.scrollTop;
+    if (scrollTop > 300) {
+      btn.style.display = 'block';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+});
+
+function scrollToTop() {
+  const scrollTarget = document.querySelector('.main-scroll') || window;
+  if (scrollTarget === window) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    scrollTarget.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
   </script>
