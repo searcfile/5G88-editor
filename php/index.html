@@ -41,12 +41,13 @@ body::-webkit-scrollbar {
       z-index: 999;
       margin-bottom: 10px;
     }
-    .filter-bar {
+     .sticky-header {
       position: sticky;
-      top: 90px;
+      top: 0;
+      z-index: 999;
       background-color: #000;
-      z-index: 998;
-      padding-top: 20px;
+      padding: 10px 0;
+      border-bottom: 1px solid gold;
     }
      .search-title {
       font-size: 30px;
@@ -163,7 +164,7 @@ body::-webkit-scrollbar {
 <body>
   <div class="header">🎰 LOGO GAME 🎰</div>
 
-  <div class="filter-bar">
+  <div class="sticky-header">
   <div class="search-container">
     <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
   </div>
