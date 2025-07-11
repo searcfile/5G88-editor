@@ -11,8 +11,23 @@
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
+      overflow: hidden;
   }
+    .main-scroll {
+  height: 100vh;
+  overflow-y: auto; /* ✅ Scroll hanya di sini */
+  scroll-behavior: smooth;
+  padding-bottom: 20px;
+}
+
+/* Optional: sembunyikan scroll bar */
+.main-scroll::-webkit-scrollbar {
+  width: 0px;
+}
+.main-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
     .header {
       width: 100%;
       height: 90px;
@@ -148,31 +163,31 @@
   </style>
 </head>
 <body>
-  <div class="header">🎰 LOGO GAME 🎰</div>
+  <div class="main-scroll">
+    <div class="header">🎰 LOGO GAME 🎰</div>
 
-  <div class="filter-bar">
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
-  </div>
+    <div class="filter-bar">
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
+      </div>
 
-  <div class="filter-tabs">
-    <button onclick="setFilter('all')" class="active">All</button>
-    <button onclick="setFilter('slot')">Slot</button>
-    <button onclick="setFilter('live')">Live Game</button>
-    <button onclick="setFilter('table')">Table Game</button>
-  </div>
+      <div class="filter-tabs">
+        <button onclick="setFilter('all')" class="active">All</button>
+        <button onclick="setFilter('slot')">Slot</button>
+        <button onclick="setFilter('live')">Live Game</button>
+        <button onclick="setFilter('table')">Table Game</button>
+      </div>
 
-  <div class="filter-tabs platform-filters">
-    <button onclick="setPlatform('all')" class="active">All Platforms</button>
-    <button onclick="setPlatform('918kiss')">918kiss</button>
-    <button onclick="setPlatform('mega888')">MEGA888</button>
-    <button onclick="setPlatform('pussy888')">PUSSY888</button>
-    <button onclick="setPlatform('xe88')">XE88</button>
-  </div>
-</div>
+      <div class="filter-tabs platform-filters">
+        <button onclick="setPlatform('all')" class="active">All Platforms</button>
+        <button onclick="setPlatform('918kiss')">918kiss</button>
+        <button onclick="setPlatform('mega888')">MEGA888</button>
+        <button onclick="setPlatform('pussy888')">PUSSY888</button>
+        <button onclick="setPlatform('xe88')">XE88</button>
+      </div>
+    </div>
 
-  <div class="logo-grid" id="gameGrid">
-  
+    <div class="logo-grid" id="gameGrid"></div>
   </div>
   <script>
   document.addEventListener("contextmenu", e => e.preventDefault());
