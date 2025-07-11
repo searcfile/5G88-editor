@@ -14,6 +14,14 @@
       margin: 0 ;
       overflow-x: hidden;
     }
+    html {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overflow-y: scroll;
+    }
+   html::-webkit-scrollbar {
+     display: none;
+    }
     .header {
       width: 100%;
       height: 90px;
@@ -70,7 +78,6 @@
       width: 90%;
       margin-bottom: 20px;
       overflow-y: auto;
-      overflow-x: hidden;
       box-sizing: border-box;
       scrollbar-width: none; 
       -ms-overflow-style: none; 
@@ -188,25 +195,6 @@
       color: #000; 
       text-align: center;
     }
-    .gif-kiri, .gif-kanan {
-      position: fixed;
-      width: 500px;
-      bottom: 10px;
-    }
-    .gif-kiri {
-      left: 10px;
-      z-index: -90;
-    }
-    .gif-kanan {
-      right: 10px;
-      z-index: -90;
-    }
-    @media (max-width: 768px) {
-    .gif-kiri,
-    .gif-kanan {
-      display: none;
-    }
-  }
   </style>
 </head>
 <body>
@@ -215,17 +203,8 @@
   <div class="platform-row" id="row-1"></div>
   <div class="platform-row" id="row-2"></div>
   <div class="platform-row" id="row-3"></div>
-
-  <img src="https://i.imgur.com/3qOL65q.gif" alt="GIF Kiri" class="gif-kiri">
-    <img src="https://i.imgur.com/3qOL65q.gif" alt="GIF Kanan" class="gif-kanan">
 </div>
   <script>
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
   console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
     const platformData = {
       "MEGA888": ["FROST QUEEN","GOLDEN RAT","FA FA BABIES","LUCKY NEW YEAR", "SILENT RUN", "CHINESE LION", "BIG WIN CAT", "JACKPOT RAIDERS", "POND OF RICHES", "RALLY", "GOLDEN LOTUS", "STICKY BANDITS WILD RETURN", "STEAM TOWER", "THE GOOD LIFE", "MANIC MILLIONS", "MIDAS GOLDEN TOUCH", "IRELAND", "ALADDIN", "COOKIE POP", "SEASON GREETINGS", "FAME &", "FORTUNE", "DWARFS GONE WILD", "GOLDEN SLUT", "GOLDEN TOUR", "GOLDEN TREE", "GIFTS FROM SANTA", "WESTERN RANCH STORY", "DRAGON STRIKE", "FORTUNE TIGER", "COYOTE CASH", "VICTORY", "DIM SUM PRIZE", "FRUITY TUTTI", "FRUIT VS CANDY", "DRAGON MAIDEN", "SPARTAN", "KING OF GHOSTS", "BOYKING'S TREASURE", "BLAZE OF RA", "SUN WUKONG", "COCKTAIL NIGHTS","FORTUNE CHARM", "DA SI XI", "CLASH OF THE BEASTS", "STRIPER NIGHT", "JINGLE", "BELLS", "KIMOCHI", "SILENT SAMURAI", "HALLOWEEN PARTY", "HOTLINE", "ROBIN OF", "SHERWOOD", "STONE AGE", "WEALTH'S TREASURE", "BIG CHEF", "GOLDEN MONKEY", "CHAMPIONS OF ROME", "GREAT STARS", "NARCOS", "MAGIC SHOPPE", "SILVER BULLET", "GLAMOROUS WORLD", "DRAGON GOLD", "DRAGON HERO", "LION DANCE", "GOLDEN COLTS", "DOLPHIN", "HANZO'S DOJO", "5 DRAGONS", "HOUSE OF DOOM", "TIGER'S GLORY", "FORTUNE FIREWORKS", "EMPEROR GATE", "GREAT CHINA", "THAI", "PARADISE", "SANTA", "LUCKY NEKO", "CLEOPATRA'S GOLD", "NITRO", "SUSHI OISHI", "CRYSTAL WATERS", "SEA WORLD", "ROBIN HOOD", "NIAN NIAN YOU YU", "PIRATE", "T-REX", "RAZOR SHARK", "KING OF POP", "JAPAN FORTUNE", "MYSTIC DRAGON", "DR", "FORTUNO", "MASQUERADE", "WOLF RUN", "HIGHWAY KINGS", "CELEBRATION OF", "WEALTH", "DARK VORTEX", "WONG CHOY", "ZHAO CAI JIN BAO", "RAGING REX", "A NIGHT OUT", "JUNGLE SPIRIT", "FLOATING DRAGON", "WOLF HUNTERS", "IVAN AND THE IMMORTAL KING", "FOOTBALL CARNIVAL", "LUCKY DUCK", "LOST ISLAND", "CIRCUS", "PANTHER MOON", "WHITE SNAKE LADY", "SNOW WORLD", "GOD OF", "COOKERY", "BONUS BEARS", "GOLDEN COK", "AMAZON JUNGLE", "BIG PROSPERITY", "IRISH LUCK", "FART GIRL", "INDIAN MYTH", "MONEY FEVER", "SIX ACROBATS", "BIG SHOT", "GOLDEN BEAUTY", "LUCKY KOI", "ROYAL MASQUERADE", "FORTUNE", "CHERRY LOVE", "TOP GUN", "ICELAND", "PIRATE SHIP", "ORIENT EXPRESS", "WILD FIREWORKS", "DRAGONZ", "GREAT BLUE", "GREEN LIGHT", "TEMPLE OF WEALTH", "ZOMBIE CIRCUS", "DOLPHIN REEF", "AGENT 51", "HALLOWEEN FORTUNE", "GOD OF WEALTH", "JIN PING MAI", "THREE KINGDOMS", "ELVEN MAGIC", "LUCKY LITTLE GODS", "WILD FOX", "LIGHTS", "CAISHEN'S GOLD", "PAY DIRT", "PENGUIN CITY", "AMAZING THAILAND", "VEGAS NIGHT LIFE", "SAFARI HEAT", "FORTUNE PANDA", "GREAT88", "YIN & YANG", "CLEOPATRA'S RICHES", "ENCHANTED GARDEN", "MAGICAL SPIN", "FONG SHEN", "FORTUNE FEST", "DEEP TREK", "TEMPLE QUEST", "SHINING STARS", "DESERT GEM", "RANCH STORY", "CASH NOIRE", "TRIPLE TWISTER", "SEA CAPTAIN", "SWORD OF KHANS", "AFRICAN WILDLIFE", "CASH VANDAL", "CAPTAIN'S TREASURE", "FAIRY GARDEN PLUS", "SIZZLING SPINS", "MATSURI", "CONAN", "CHINESE NEW YEAR", "ALICE", "TREASURE ISLAND", "ZOMBIE CARNIVAL", "EASTER SURPRISE", "AZTEC'S TREASURE", "BEAST OF WEALTH", "THE DISCOVERY", "LAURA", "TALLY HO", "SPARTA", "XMAS MAGIC", "NATIVE INDIAN", "GOLD RUSH", "JIN QIAN WA", "LOTUS LEGEND", "WATER MARGIN"],
