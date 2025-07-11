@@ -15,9 +15,17 @@
       overflow-y: scroll;
       scrollbar-width: none;
   }
-   body::-webkit-scrollbar {
-      display: none;
-  }
+   html, body {
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
     .header {
       width: 100%;
       height: 90px;
