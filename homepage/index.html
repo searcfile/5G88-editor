@@ -7,7 +7,7 @@
   <title>Home | 5G88</title>
   <style>
     * {margin: 0;padding: 0;box-sizing: border-box;font-family: 'Segoe UI', sans-serif;}
-    body {background-color: #000;color: #fff;overflow-x: hidden!important;height: auto;min-height: 100vh;scrollbar-width: none;-ms-overflow-style: none;}body::-webkit-scrollbar {display: none;}
+    body {background-color: #000;color: #fff;overflow-x: hidden;display: flex;flex-direction: column;height: 100vh;}
     .sidebar-overlay {position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;background: rgba(0, 0, 0, 0.5);display: none;z-index: 999;}
     .sidebar {position: fixed;top: 0;left: -260px;width: 260px;height: 100vh;background: #111;padding: 20px;transition: 0.3s;z-index: 1002;}
     .sidebar.active {left: 0;}.sidebar-overlay.active {display: block;}.sidebar h2 {color: gold;margin-bottom: 20px;}
@@ -26,22 +26,30 @@
     .menu-img {width: 20px;height: 20px;vertical-align: middle;margin-right: 8px;border-radius: 4px;}
     @media (max-width: 600px) {
     .container.shrink {margin-left: 0;}}
-    html, body {
-  margin: 0;
-  padding: 0;
-  height: auto;
-  min-height: 100vh;
-  overflow-x: hidden;
-  overflow-y: scroll; /* ✅ wajib untuk tetap scroll tanpa scrollbar */
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none;    /* Firefox */
-}
-    body::-webkit-scrollbar {
-  display: none; /* ✅ Chrome, Safari, Opera */
-}
+     html, body {height: 100%;}
      #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;}
-     .tab-bar {position: relative;width: 100%;height: 40px;background: transparent;display: flex;align-items: center;gap: 0;z-index: 1000;justify-content: flex-start;white-space:nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;}
-     .tab-bar::-webkit-scrollbar {display: none;}
+     .tab-bar {
+      position: relative;
+      width: 100%;
+      height: 40px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      z-index: 1000;
+      justify-content: flex-start;
+      white-space: nowrap; 
+      margin-top: 55px;
+      overflow-x: auto;
+      overflow-y: hidden; 
+      white-space: nowrap;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+    }
+    .tab-bar::-webkit-scrollbar {
+      display: none;
+    }
      .tab {
       background: gold;
       color: #111;
@@ -137,7 +145,7 @@
   color: gold;
   border: 1px solid gold;
   border-radius: 4px;
-  padding: 4px 15px;
+  padding: 4px 12px;
   font-size: 14px;
   cursor: pointer;
 }
@@ -167,7 +175,7 @@
  .dropdown-content {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.5s ease, visibility 0.2s ease;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .user-dropdown:hover .dropdown-content {
@@ -178,10 +186,10 @@
   </style>
 </head>
 <body>
-  <!-- 🔹 Overlay -->
+
   <div class="sidebar-overlay" id="overlay"></div>
 
-  <!-- 🔹 Sidebar Menu -->
+  
   <div class="sidebar" id="sidebar">
     <button class="close-btn" onclick="closeSidebar()">✖ Close</button>
     <h2>Menu list</h2>
@@ -215,9 +223,39 @@
     <a href="#" onclick="addTab('CIMB BANK', 'https://5g88-cimb.vercel.app/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK
     </a>
+   <a href="#" onclick="addTab('CIMB BANK1', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK1
+    </a>
+   <a href="#" onclick="addTab('CIMB BANK2', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK2
+    </a>
+   <a href="#" onclick="addTab('CIMB BANK3', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK3
+    </a>
+   <a href="#" onclick="addTab('panjangpanjangpanjang', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang
+    </a>
+   <a href="#" onclick="addTab('panjangpanjangpanjang1', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang1
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang12', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang123', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang123
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang1234', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang1234
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang12345', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12345
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang123456', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12315
+    </a>
   </div>
 
-  <!-- 🔹 Header -->
+
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
@@ -244,14 +282,13 @@
     <button id="logoutBtn">Logout</button>
   </div>
 </div>
-</div> <!-- ✅ TUTUP user-text -->
-</div> <!-- ✅ TUTUP user-info -->
-</div> <!-- ✅ TUTUP header -->
+</div> 
+</div> 
+</div> 
 
-  <!-- 🔹 Tab Bar -->
   <div id="tabBar" class="tab-bar"></div>
 
-  <!-- 🔹 Main Container -->
+
   <div class="container" id="mainContainer">
     <div id="iframeLoader" style="position: absolute; top: 95px; left: 0; width: 100%; height: calc(100vh - 95px); background: rgba(0, 0, 0, 0.8); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 1000;">
       <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 150px; height: auto;" />
@@ -260,7 +297,7 @@
     <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
   </div>
 
-  <!-- 🔹 Notice Popup -->
+
   <div id="messagePopup" style="display: none; position: absolute; background: #222; color: white; border: 1px solid gold; border-radius: 8px; padding: 3px 10px; max-width: 300px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); z-index: 2000; word-wrap: break-word; overflow-wrap: anywhere;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <strong style="color: red;">Notice!</strong>
