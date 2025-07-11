@@ -36,10 +36,7 @@ body::-webkit-scrollbar {
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      position: fixed;
-      top: 0;
-      z-index: 999;
-      margin-bottom: 10px;
+       padding: 10px 0;
     }
      .sticky-header {
       position: sticky;
@@ -162,32 +159,34 @@ body::-webkit-scrollbar {
   </style>
 </head>
 <body>
+  <!-- Tetap di atas -->
   <div class="header">🎰 LOGO GAME 🎰</div>
 
+  <!-- Sticky Search + Filter -->
   <div class="sticky-header">
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
+    </div>
+
+    <div class="filter-tabs">
+      <button onclick="setFilter('all')" class="active">All</button>
+      <button onclick="setFilter('slot')">Slot</button>
+      <button onclick="setFilter('live')">Live Game</button>
+      <button onclick="setFilter('table')">Table Game</button>
+    </div>
+
+    <div class="filter-tabs platform-filters">
+      <button onclick="setPlatform('all')" class="active">All Platforms</button>
+      <button onclick="setPlatform('918kiss')">918kiss</button>
+      <button onclick="setPlatform('mega888')">MEGA888</button>
+      <button onclick="setPlatform('pussy888')">PUSSY888</button>
+      <button onclick="setPlatform('xe88')">XE88</button>
+    </div>
   </div>
 
-  <div class="filter-tabs">
-    <button onclick="setFilter('all')" class="active">All</button>
-    <button onclick="setFilter('slot')">Slot</button>
-    <button onclick="setFilter('live')">Live Game</button>
-    <button onclick="setFilter('table')">Table Game</button>
-  </div>
-
-  <div class="filter-tabs platform-filters">
-    <button onclick="setPlatform('all')" class="active">All Platforms</button>
-    <button onclick="setPlatform('918kiss')">918kiss</button>
-    <button onclick="setPlatform('mega888')">MEGA888</button>
-    <button onclick="setPlatform('pussy888')">PUSSY888</button>
-    <button onclick="setPlatform('xe88')">XE88</button>
-  </div>
-</div>
-
-  <div class="logo-grid" id="gameGrid">
-  
-  </div>
+  <!-- Game grid -->
+  <div class="logo-grid" id="gameGrid"></div>
+</body>
   <script>
   document.addEventListener("contextmenu", e => e.preventDefault());
   document.onkeydown = function (e) {
