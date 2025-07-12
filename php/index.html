@@ -12,6 +12,11 @@
       margin: 0;
       padding: 0;
       overflow-x: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+     body::-webkit-scrollbar {
+      display: none;
     }
     .header {
       width: 100%;
@@ -80,6 +85,8 @@
     }
     .logo-grid {
       display: grid;
+      position: relative;
+      height: calc(100vh - 230px);
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 23px;
       padding: 10px;
@@ -90,7 +97,7 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
-    .element::-webkit-scrollbar {
+    .logo-grid::-webkit-scrollbar {
       display: none;
     }
     .game-alias {
