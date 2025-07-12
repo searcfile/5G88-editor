@@ -3,1705 +3,422 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>5G88 Game Logo</title>
+  <title>CIMB Editor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #000;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: "Open Sans", Verdana, Helvetica, sans-serif;
+      background: #000;
       margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+      padding: 20px;
+      font-weight: 400;
     }
-    html { 
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-     html.body::-webkit-scrollbar {
-      display: none;
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #f4f4f4;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
     }
     .header {
-      width: 100%;
-      height: 90px;
-      background: gold;
-      color: #000;
-      font-size: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      position: fixed;
-      top: 0;
-      z-index: 999;
-      margin-bottom: 10px;
-    }
-    .filter-bar {
-      position: sticky;
-      top: 90px;
-      background-color: #000;
-      z-index: 998;
-      padding-top: 20px;
-    }
-     .search-title {
-      font-size: 30px;
-      font-weight: bold;
-      color: gold;
-      animation: blinkColor 0.3s infinite;
-      margin-top: 30px;
-      text-align: center;
-      letter-spacing: 1px;
-    }
-    .search-container {
-      text-align: center;
       padding: 20px;
-      margin-top: -20px;
-    }
-    .search-container input {
-      padding: 10px;
-      font-size: 16px;
-      width: 500px;
-      border-radius: 5px;
-      border: 1px solid gold;
-      background-color: #000;
-      color: gold;
-      margin-top: 0;
-    }
-    .filter-tabs {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .filter-tabs button {
-      background-color: #111;
-      color: gold;
-      border: 1px solid gold;
-      padding: 8px 16px;
-      margin: 0 5px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .filter-tabs button.active,
-    .filter-tabs button:hover {
-      background-color: gold;
-      color: #111;
-    }
-    .logo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 23px;
-      padding: 20px 30px;
-      justify-content: center;
-      max-width: 1000px;
-      margin: 80px auto 0 auto;
-      overflow-y: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .logo-grid::-webkit-scrollbar {
-      display: none;
-    }
-    .game-alias {
+      font-size: 22px;
       font-weight: bold;
-      color: gold !important;
-      margin-bottom: 1px !important;
-      font-size: 12px !important;
+      color: #000;
+      background: #fff;
     }
-    .game-logo {
+    .status-bar {
+      background: #e5e5e5;
+      padding: 15px 20px;
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      background-color: #000;
-      border: 2px solid gold;
-      border-radius: 10px;
-      padding: 17px;
-      transition: transform 0.2s ease;
-      position: relative;
-      top: 10px;
-      box-sizing: border-box;
-      width: 188px;
     }
-    .game-logo img {
-      width: 185px;
-      height: 160px;
-      object-fit: contain;
-      margin-bottom: 8px;
-    }
-    .game-logo span {
-      color: white;
+    .status-bar .left {
+      display: flex;
+      align-items: center;
       font-size: 14px;
-      text-align: center;
+      color: #000;
     }
-    .game-logo:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 12px gold;
+    .check-icon {
+      width: 20px;
+      height: 20px;
+      background-color: #7db680;
+      color: white;
+      border-radius: 50%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      margin-right: 8px;
+      font-size: 14px;
     }
-    .platform-filters {
-      text-align: center;
-      padding-bottom: 10px;
+    .success-text {
+      color: rgb(125, 182, 128);
+      font-weight: 700;
     }
-      .copy-notice {
-        position: absolute;
-        bottom: -12px;
-        background-color: gold;
-        color: black;
-        font-size: 12px;
-        font-weight: bold;
-        padding: 3px 6px;
-        border-radius: 6px;
-        box-shadow: 0 0 5px #000;
-        animation: fadeNotice 0.3s ease;
-        z-index: 1;
-       }
-     @keyframes fadeNotice {
-     from { opacity: 0; transform: translateY(-5px); }
-     to { opacity: 1; transform: translateY(0); }
+    .details {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
     }
-#backToTop {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: gold;
-  color: black;
-  padding: 10px 15px;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  display: none;
-  z-index: 1000;
-  box-shadow: 0 0 10px gold;
-  transition: all 0.3s ease;
-}
-#backToTop:hover {
-  background-color: gold;
-  color: white;
-  box-shadow: 0 0 12px gold;
-}
-#backToTop:active { 
-  background: rgba(0,0,0,0.3);
-  color: rgba(255,255,255,0.4);
-   box-shadow: 0 0 12px white;
-}
+    .left, .right {
+      width: 48%;
+    }
+    .label {
+      font-size: 14px;
+      color: #555;
+    }
+    .value {
+      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: 16px;
+      color: #000;
+    }
+    .amount-label {
+     font-size: 20px;
+     font-weight: 700;
+     margin-bottom: 8px;
+     color: #000; 
+    }
+    .amount {
+     font-weight: bold;
+     color: #000;
+     margin-bottom: 10px;
+    }
+    .currency {
+     font-size: 11px;
+     position: relative;
+     margin-right: 2px;
+     top: -10px;
+     font-weight: 850;
+    }
+    #main-amount {
+     font-size: 20px;
+     position: relative;
+     top: 0;
+     font-weight: 720;
+    }
+    .sen {
+     font-size: 11px;
+     position: relative;
+     top: -10px;
+     margin-left: 1px;
+     font-weight: 700;
+    }  
+    .charges {
+     font-size: 13px;
+     color: #000;
+     top: -8px;
+     position: relative;
+    }
+    .charge-amount {
+     font-size: 12px;
+     position: relative;
+     top: 0;
+     font-weight: bold;
+    }
+    .charge-sen {
+     font-size: 8px;
+     position: relative;
+     font-weight: bold;
+     top: -3px;
+    }
+    .charges .currency {
+     top: -3px;
+     font-size: 8px;
+     position: relative;
+    }
+    .footer {
+     padding: 15px 20px;
+     background: #fff;
+     font-size: 13px;
+     color: #d50000;
+     font-weight: 500;
+     border-top: 1px solid #ccc;
+    }
+    .top-inputs {
+     max-width: 700px;
+     margin: 10px auto 0 auto;
+     display: flex;
+     justify-content: flex-end;
+     gap: 8px;
+     flex-wrap: wrap;
+     padding: 0 20px;
+     font-size: 10px;
+    }
+    .input-group {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+    }
+    .input-label {
+     font-size: 15px;
+     color: #ec1d23;
+     margin-top: 4px;
+     text-align: center;
+    }
+    .input-group input {
+     width: 155px;
+     padding: 6px 8px;
+     font-size: 13px;
+     border: 1px solid #ec1d23;
+     border-radius: 4px;
+    }
+    .top-inputs button {
+     padding: 4px 8px;
+     font-size: 13px;
+     border: none;
+     border-radius: 4px;
+     background-color: #ec1d23; 
+     color: white;
+     cursor: pointer;
+     transition: background-color 0.3s ease, opacity 0.2s ease;
+     height: 30px;
+    }
+    .top-inputs button:hover {
+     background-color: rgba(236, 29, 35, 0.5);
+     border: 1px solid #ec1d23;
+     color: white;
+    }
+    .top-inputs button:active {
+     background-color: rgba(236, 29, 35, 0.3); 
+     opacity: 0.8;
+    }
+    .form-section {
+     max-width: 700px;
+     margin: 30px auto;
+     background: #fff;
+     padding: 20px;
+     border-radius: 6px;
+     box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    .form-section input {
+     width: 100%;
+     padding: 8px;
+     margin: 8px 0;
+     box-sizing: border-box;
+     font-size: 14px;
+    }
+    .form-section button {
+     padding: 5px 20px;
+     margin-top: 10px;
+     margin-right: 10px;
+     cursor: pointer;
+     background-color: #ec1d23;
+     color: white;
+     border: none;
+     border-radius: 4px;
+     font-size: 14px;
+    }
+    .form-section button:hover {
+     background-color: #800000;
+     color: white;
+     transition: background-color 0.3s ease;
+    }
+    #transfer-date, #ref-number {
+     font-family: Open Sans;
+     font-size: 14px;
+    }
+    input:focus {
+     border: 2px solid #ec1d23;
+     outline: 1px solid #ec1d23;
+     box-shadow: 0 0 3px #ec1d23;
+     caret-color: #ec1d23;
+     border-color: #ec1d23;
+    }
+    .btn-update, btn-date {
+     padding: 4px 8px;
+     font-size: 13px;
+     border: 2px solid #ec1d23;
+     border-radius: 4px;
+     background-color: #fff;
+     color: #ec1d23;
+     cursor: pointer;
+     transition: transform 0.6s ease, background-color 0.3s, color 0.3s;
+     transform-origin: center;
+    }
+    .btn-update, btn-date:hover {
+     animation: rotate360 0.6s linear;
+     background-color: #ec1d23;
+     color: #fff;
+    }
+    @keyframes rotate360 {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+    }
+    @media (max-width: 600px) {
+    .left, .right {
+    width: 100%;
+    }
+  }
+    .scale-wrapper {
+    transform: scale(2.5);
+    transform-origin: top center;
+  }
+
+   
   </style>
 </head>
 <body>
-  <div class="header">🎰 LOGO GAME 🎰</div>
-
-  <div class="filter-bar">
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
+ <div class="scale-wrapper">
+  <div class="top-inputs">
+    <div style="display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
+  <button class="btn-update" onclick="resetDisplay()">Reset</button>
+  <button class="btn-update" id="btn-date">Now</button>
+  <div style="display: flex; flex-direction: column;">
+    <input type="text" id="input-date" placeholder="Date & Time" />
+    <div class="input-label">Date & Time</div>
+  </div>
+  <div style="display: flex; flex-direction: column;">
+    <input type="text" id="input-amount" placeholder="Fill Amount" />
+    <div class="input-label">Amount</div>
+  </div>
+  <button class="btn-update" onclick="updateDisplay()">Create</button>
+</div>
   </div>
 
-  <div class="filter-tabs">
-    <button onclick="setFilter('all')" class="active">All</button>
-    <button onclick="setFilter('slot')">Slot</button>
-    <button onclick="setFilter('live')">Live Game</button>
-    <button onclick="setFilter('table')">Table Game</button>
-  </div>
+  <div class="container">
+    <div class="header">DuitNow / Transfer Money Acknowledgement</div>
 
-  <div class="filter-tabs platform-filters">
-    <button onclick="setPlatform('all')" class="active">All Platforms</button>
-    <button onclick="setPlatform('918kiss')">918kiss</button>
-    <button onclick="setPlatform('mega888')">MEGA888</button>
-    <button onclick="setPlatform('pussy888')">PUSSY888</button>
-    <button onclick="setPlatform('xe88')">XE88</button>
+    <div class="status-bar">
+      <div class="left" style="display: flex; align-items: center;">
+        <div class="check-icon">✔</div>
+        <span><strong class="success-text">Successful</strong> Ref <span id="ref-number">000000000</span></span>
+      </div>
+      <div id="transfer-date">01 May 2025, 00:00:00 am</div>
+    </div>
+
+    <div class="details">
+      <div class="left">
+        <div class="label">Account Number</div>
+        <div class="value">7002795979</div>
+
+        <div class="label">Account Name</div>
+        <div class="value">SA PASSBOOK</div>
+
+        <div class="label">Recipient Name</div>
+        <div class="value">PAPA MINTA SAYANG</div>
+      </div>
+      <div class="right" style="text-align: right;">
+        <div class="label amount-label">Amount</div>
+        <div class="amount">
+          <span class="currency">MYR</span>
+          <span id="main-amount">1,000.</span><span class="sen">00</span>
+        </div>
+        <div class="charges">
+          Bank charges 
+          <span class="currency">MYR</span>
+          <span class="charge-amount">0.</span><span class="charge-sen">00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">More transfer details →</div>
   </div>
 </div>
 
-  <div class="logo-grid" id="gameGrid">
-  </div>
-  <button id="backToTop" onclick="scrollToTop()">⬆ Back to Top</button>
-  <script>
- 
-  console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
-    const games = [
-      { 
-        alias: "GOD OF WEALTH",
-        name: "GodofWealth",
-        image: "https://i.imgur.com/a6R6znR.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "DRAGON TIGER",
-        name: "DragonTiger1",
-        image: "https://i.imgur.com/rihURXa.png",
-        platform: ["mega888","918kiss"],
-        type: "live"
-      },
-      {
-        alias: "DRAGON TIGER",
-        name: "DragonTiger2",
-        image: "https://i.imgur.com/iSx0PoM.png",
-        platform: ["mega888","918kiss"],
-        type: "live"
-      },
-      {
-        alias: "DRAGON TIGER",
-        name: "DragonTiger3",
-        image: "https://i.imgur.com/SxMf26V.png",
-        platform: ["mega888","918kiss"],
-        type: "live"
-      },
-      {
-        alias: "GLAMOROUS WORLD",
-        name: "Fashion",
-        image: "https://i.imgur.com/2KAfqdM.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "ROULETTE",
-        name: "Roulette",
-        image: "https://i.imgur.com/1HQvJ1v.png",
-        platform: ["mega888","918kiss"],
-        type: "live"
-      },
-      {
-        alias: "BULLS",
-        name: "Bulls",
-        image: "https://i.imgur.com/gUNtuNc.png",
-        platform: ["mega888","918kiss"],
-        type: "table"
-      },
-      {
-        alias: "THUNDER BOLT",
-        name: "Thunderbolt",
-        image: "https://i.imgur.com/rQh3lve.png",
-        platform: ["mega888","918kiss"],
-        type: "live"
-      },
-      {
-        alias: "OCEAN KING",
-        name: "OceanKing",
-        image: "https://i.imgur.com/Pty2Q0G.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "table"
-      },
-      {
-        alias: "ROULETTE24",
-        name: "Roulette24",
-        image: "https://i.imgur.com/MLDG7Cm.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "table"
-      },
-      {
-        alias: "POKER THREE",
-        name: "PokerTree",
-        image: "https://i.imgur.com/etJNoaG.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "live"
-      },
-      {
-        alias: "HOLD`EM",
-        name: "Hold`Em",
-        image: "https://i.imgur.com/N61DWQ2.png",
-        platform: ["mega888","918kis","pussy888"],
-        type: "live"
-      },
-      {
-        alias: "CASINO WAR",
-        name: "CasinoWar",
-        image: "https://i.imgur.com/jNWW46N.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "table"
-      },
-      {
-        alias: "ROULETTE12",
-        name: "Roulette12",
-        image: "https://i.imgur.com/BgEOOFM.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "table"
-      },
-      {
-        alias: "BLACKJACK",
-        name: "Blackjack",
-        image: "https://i.imgur.com/Nd7nqJ1.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "live"
-      },
-      {
-        alias: "KING DERBY",
-        name: "KingDerby",
-        image: "https://i.imgur.com/NPn4Q6b.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "table"
-      },
-      {
-        alias: "ROULETTE73",
-        name: "Roulette73",
-        image: "https://i.imgur.com/uhlicfh.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "table"
-      },
-      {
-        alias: "HULU COCK",
-        name: "Hulucock",
-        image: "https://i.imgur.com/QBodPrB.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "table"
-      },
-      {
-        alias: "BACCARAT",
-        name: "Baccarat",
-        image: "https://i.imgur.com/190muBR.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "table"
-      },
-      {
-        alias: "SICBO",
-        name: "Sicbo",
-        image: "https://i.imgur.com/znzx6hm.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "table"
-      },
-      {
-        alias: "BELANGKAI",
-        name: "Belangkai",
-        image: "https://i.imgur.com/DN0E45R.png",
-        platform: ["mega888","918kiss"],
-        type: "table"
-      },
-      {
-        alias: "HALLOWEEN FORTUNE",
-        name: "Halloween",
-        image: "https://i.imgur.com/G4iD4nz.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "slot"
-      },
-      {
-        alias: "DWARFS GONE WILD",
-        name: "DwarfsGoneWild",
-        image: "https://i.imgur.com/7Jq8Q97.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "ELVEN MAGIC",
-        name: "ElvenMagic",
-        image: "https://i.imgur.com/7GpRS3B.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "CHINESE NEW YEAR",
-        name: "ChineseNewYear",
-        image: "https://i.imgur.com/76N9cuo.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "LUCKY KOI",
-        name: "LuckyKoi",
-        image: "https://i.imgur.com/WUWJUNp.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "LUCKY NEKO",
-        name: "LuckyNeko",
-        image: "https://i.imgur.com/FpWOjkt.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "DA SI XI",
-        name: "DaSiXi",
-        image: "https://i.imgur.com/VAvbLaK.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "MANIC MILLIONS",
-        name: "ManicMillions",
-        image: "https://i.imgur.com/XgK6wXA.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "DRAGONZ",
-        name: "Dragonz",
-        image: "https://i.imgur.com/uNKI6Iz.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "GOLD RUSH",
-        name: "GoldRush",
-        image: "https://i.imgur.com/xz445Do.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "LOST ISLAND",
-        name: "LostIsland",
-        image: "https://i.imgur.com/wJf5MEV.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "HOUSE OF DOOM",
-        name: "Doom",
-        image: "https://i.imgur.com/16IZrQ9.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-       {
-        alias: "HALLOWEEN",
-        name: "Halloween",
-        image: "https://i.imgur.com/Dw3l47w.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "TOP GUN",
-        name: "TopGun",
-        image: "https://i.imgur.com/nvYvrw6.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "SUN WU KONG",
-        name: "SunWuKong",
-        image: "https://i.imgur.com/dTht1Ey.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "JIN QIAN WA",
-        name: "JinQianWa",
-        image: "https://i.imgur.com/Ur7FqtJ.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "ROBIN HOOD SHIFTING RICHES",
-        name: "RobinHood",
-        image: "https://i.imgur.com/7LJPIzp.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "ALICE",
-        name: "Alice",
-        image: "https://i.imgur.com/h28OgIq.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "AFRICAN WILDLIFE",
-        name: "African",
-        image: "https://i.imgur.com/uFQherG.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "LAURA",
-        name: "Laura",
-        image: "https://i.imgur.com/3ZIg1kW.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "AMAZON JUNGLE",
-        name: "Amazon",
-        image: "https://i.imgur.com/ea6eDPR.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "SEASONS GREETINGS",
-        name: "Seasons",
-        image: "https://i.imgur.com/NbvQgqd.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "PIRATE",
-        name: "Pirate",
-        image: "https://i.imgur.com/jyPq8me.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "JIN PING MAI",
-        name: "PanJinlian",
-        image: "https://i.imgur.com/S9y3LJq.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "FONG SHEN",
-        name: "Fengshen",
-        image: "https://i.imgur.com/WY7xsLp.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "WATER MARGIN",
-        name: "ShuiHu",
-        image: "https://i.imgur.com/QZKVvsh.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "ZHAO CAI JIN BAO",
-        name: "ZhaoCaiJinBao",
-        image: "https://i.imgur.com/njUVXYU.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "NIAN NIAN YOU YU",
-        name: "NianNianYouYu",
-        image: "https://i.imgur.com/uRJkRp1.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "5 DRAGONS",
-        name: "FiveDragons",
-        image: "https://i.imgur.com/brJx1mL.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "SEA WORLD",
-        name: "SeaWorld",
-        image: "https://i.imgur.com/RLYOApB.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "RANCH STORY",
-        name: "RanchStory",
-        image: "https://i.imgur.com/Mael2wE.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "GOLDEN TREE",
-        name: "GoldenTree",
-        image: "https://i.imgur.com/u50gRVK.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "TREASURE ISLAND",
-        name: "TreasureIsland",
-        image: "https://i.imgur.com/KmnmL4E.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      { 
-        alias: "MONEY FEVER",
-        name: "MoneyFever",
-        image: "https://i.imgur.com/9vKzWvK.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "WESTERN RANCH STORY",
-        name: "WesternRanchStory",
-        image: "https://i.imgur.com/mdkPrZt.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "STONE AGE",
-        name: "StoneAge",
-        image: "https://i.imgur.com/iX9A7jq.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "FAIRY GARDEN PLUS",
-        name: "FairyGarden",
-        image: "https://i.imgur.com/QQuvffV.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "SHINING STARS",
-        name: "ShiningStars",
-        image: "https://i.imgur.com/QSaLYfv.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "COOKIE POP",
-        name: "CookiePop",
-        image: "https://i.imgur.com/uL89THW.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "HALLOWEEN PARTY",
-        name: "HalloweenParty",
-        image: "https://i.imgur.com/lJiXmr5.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "PIRATE SHIP",
-        name: "PirateShip",
-        image: "https://i.imgur.com/58MtioR.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "MAGICAL SPINS",
-        name: "Magician",
-        image: "https://i.imgur.com/NjOcqcB.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "FRUITY TUTTI",
-        name: "Fruit",
-        image: "https://i.imgur.com/bAS22vp.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "INDIAN MYTH",
-        name: "India",
-        image: "https://i.imgur.com/xKMPhOz.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "GREAT CHINA",
-        name: "Panda",
-        image: "https://i.imgur.com/zImRTUt.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "SPARTA",
-        name: "Sparta",
-        image: "https://i.imgur.com/eiqC1pT.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "DISCOVERY",
-        name: "thediscovery",
-        image: "https://i.imgur.com/kDwsuW4.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "IRISH LUCK",
-        name: "IrishLuck",
-        image: "https://i.imgur.com/dY7mquW.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "GREAT BLUE",
-        name: "GreatBlue",
-        image: "https://i.imgur.com/pc7Ksz9.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "CHERRY LOVE",
-        name: "CherryLove",
-        image: "https://i.imgur.com/W6Svt1M.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "PANTHER MOON",
-        name: "PantherMoon",
-        image: "https://i.imgur.com/TkRnybu.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "JAPAN FORTURE",
-        name: "JAPAN",
-        image: "https://i.imgur.com/0nEoxdF.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "ICELAND",
-        name: "ICELAND",
-        image: "https://i.imgur.com/RlNyqDg.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "THAI PARADISE",
-        name: "Thai",
-        image: "https://i.imgur.com/PINlFYm.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "SILVER BULLET",
-        name: "Silver",
-        image: "https://i.imgur.com/jI93RSE.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "WONG CHOY",
-        name: "Wong Choy",
-        image: "https://i.imgur.com/PsliGma.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "SPARTAN",
-        name: "Spartan",
-        image: "https://i.imgur.com/vUox6Gz.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "TREASURE CAPTAINS",
-        name: "Captain",
-        image: "https://i.imgur.com/4qgqu3i.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "5 FORTUNE",
-        name: "FORTUNE",
-        image: "https://i.imgur.com/tccAcjz.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "DRAGON GOLD",
-        name: "Dragon Gold",
-        image: "https://i.imgur.com/hdtxXOQ.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "KIMOCHIII",
-        name: "Kimochi",
-        image: "https://i.imgur.com/dy3ufg7.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "WILD FOX",
-        name: "WildFox",
-        image: "https://i.imgur.com/sDWl04W.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "BIG PROSPERITY",
-        name: "Prosperity",
-        image: "https://i.imgur.com/sbBRIX3.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "DOLPHIN REEF",
-        name: "DolphinReef",
-        image: "https://i.imgur.com/kN1fxxo.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "EMPEROR GATE",
-        name: "EmperorGate",
-        image: "https://i.imgur.com/7PZGZkb.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "SAMURAI",
-        name: "Samurai",
-        image: "https://i.imgur.com/vQ80fN5.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "A NIGHT OUT", 
-        name: "ANightOut",
-        image: "https://i.imgur.com/6F1svqV.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "STRIPER NIGHT", 
-        name: "Girls",
-        image: "https://i.imgur.com/f7X7uyo.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "GOLDEN TOUR", 
-        name: "GoldenTour",
-        image: "https://i.imgur.com/tlq4DyF.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "BONUS BEARS", 
-        name: "BonusBears",
-        image: "https://i.imgur.com/LyJI0YV.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "T-REX",
-        name: "T-REX",
-        image: "https://i.imgur.com/BDksnld.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "TRIPLE TWISTER",
-        name: "Twister",
-        image: "https://i.imgur.com/e2lOD4r.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "DOLPHIN",
-        name: "Dolphin",
-        image: "https://i.imgur.com/bHonlsr.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "GREAT STARS",
-        name: "GreatStars",
-        image: "https://i.imgur.com/yRI6GKY.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "TALLY HO",
-        name: "Tally Ho",
-        image: "https://i.imgur.com/BzgpBw6.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "COYOTE CASH",
-        name: "CoyoteCash",
-        image: "https://i.imgur.com/njPTqud.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "CLEOPATRA",
-        name: "Cleopatra",
-        image: "https://i.imgur.com/rCSZUyR.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "HIGHWAY KINGS",
-        name: "HighWay",
-        image: "https://i.imgur.com/AMIwGcf.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "BIG SHOT",
-        name: "BigShot",
-        image: "https://i.imgur.com/K9AjF0j.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "PAY DIRT",
-        name: "PayDirt",
-        image: "https://i.imgur.com/I80bxRK.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "SEA CAPTAIN",
-        name: "SeaCaptain",
-        image: "https://i.imgur.com/0IJKiau.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "MYSTICAL DRAGON",
-        name: "Dragon",
-        image: "https://i.imgur.com/HZDpPgy.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "BOYKING'S TREASURE",
-        name: "Boyking",
-        image: "https://i.imgur.com/a6rB6Ti.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "GOLDEN SLUT",
-        name: "GoldenSlut",
-        image: "https://i.imgur.com/UYdRHBJ.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "AZTAC",
-        name: "Aztec",
-        image: "https://i.imgur.com/tfNboL4.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "ENCHANTED GARDEN",
-        name: "Garden",
-        image: "https://i.imgur.com/b55g7Jb.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "EASTER SURPRISE",
-        name: "Easter",
-        image: "https://i.imgur.com/JPhy44x.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "CIRCUS",
-        name: "circus",
-        image: "https://i.imgur.com/aPiTcea.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "GREEN LIGHT",
-        name: "Green",
-        image: "https://i.imgur.com/MPgr8ah.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "WEALTH'S TREASURE",
-        name: "Wealth",
-        image: "https://i.imgur.com/cdbIwRa.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "VICTORY",
-        name: "Victory",
-        image: "https://i.imgur.com/CU5uz3q.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "RALLY CHAMPIONSHIP",
-        name: "Rally",
-        image: "https://i.imgur.com/Tcg2tD9.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "ORIENT EXPRESS",
-        name: "Orient",
-        image: "https://i.imgur.com/4uKUbUo.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "FOREST DANCE",
-        name: "ForestDance",
-        image: "https://i.imgur.com/mdoDOdS.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "WHITE RICHES",
-        name: "White Riches",
-        image: "https://i.imgur.com/QR8GQ2x.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "ZOMBIE CARNIVAL",
-        name: "ZombieCarnival",
-        image: "https://i.imgur.com/6jDeIrk.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "THREE KINGDOMS",
-        name: "ThreeKing",
-        image: "https://i.imgur.com/8IfWsE8.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "GIFTS FROM SANTA",
-        name: "GiftsFromSanta",
-        image: "https://i.imgur.com/OGtkrdB.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "ALADDIN WISHES",
-        name: "Aladdin",
-        image: "https://i.imgur.com/2etUvUc.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "CRAZY",
-        name: "Crazy777",
-        image: "https://i.imgur.com/VOQs5qh.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "WOLF RUN",
-        name: "WolfRun",
-        image: "https://i.imgur.com/gVkvc7T.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "FORTUNE FEST",
-        name: "FortuneFest",
-        image: "https://i.imgur.com/SzQlzyA.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "GOD OF COOKERY",
-        name: "GodOfCookery",
-        image: "https://i.imgur.com/e7gEjC7.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "DRAGON HERO",
-        name: "DragonHero",
-        image: "https://i.imgur.com/sWp0bQV.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "WILD FIREWORKS",
-        name: "WildFireworks",
-        image: "https://i.imgur.com/jEOWpGP.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "DRAGON STRIKE",
-        name: "DragonStrike",
-        image: "https://i.imgur.com/H2biKJf.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "GOLDEN MONKEY",
-        name: "GoldenMonkey",
-        image: "https://i.imgur.com/Vd8LvsR.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "GOLDEN LOTUS",
-        name: "GoldenLotus",
-        image: "https://i.imgur.com/LaWJCAr.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "slot"
-      },
-      {
-        alias: "SUSHI OISHI",
-        name: "SushiOishi",
-        image: "https://i.imgur.com/l2lwBYd.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "FART GIRL",
-        name: "FartGirl",
-        image: "https://i.imgur.com/JanhuUI.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "CELEBRATION OF WEALTH",
-        name: "Celebration",
-        image: "https://i.imgur.com/Mnzy3aq.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "HANZO'S DOJO",
-        name: "Hanzo",
-        image: "https://i.imgur.com/44ayfIX.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "CLASH OF THE BEASTS",
-        name: "ClashOfTheBeasts",
-        image: "https://i.imgur.com/SuYf2ds.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "NITRO",
-        name: "Motorcycle",
-        image: "https://i.imgur.com/M2EVzai.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "TEMPLE OF WEALTH",
-        name: "TempleOfWealth",
-        image: "https://i.imgur.com/lB0CLlb.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "AGENT 51",
-        name: "Agent51",
-        image: "https://i.imgur.com/BjbjKR1.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "FLOATING DRAGON",
-        name: "FloatingDragon",
-        image: "https://i.imgur.com/X0teVrj.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "LION DANCE",
-        name: "Lion Dance",
-        image: "https://i.imgur.com/kMSL5qK.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "STICKY BANDITS WILD RETURN",
-        name: "StickBandits",
-        image: "https://i.imgur.com/jKyhg3h.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "GREAT88",
-        name: "Great88",
-        image: "https://i.imgur.com/sTZjCIF.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "NARCOS",
-        name: "Narcos",
-        image: "https://i.imgur.com/c26j2dI.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "FORTUNE TIGER",
-        name: "TigerFortune",
-        image: "https://i.imgur.com/gG7a9B3.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "TIGER'S GLORY",
-        name: "Glory",
-        image: "https://i.imgur.com/usVPymQ.png",
-        platform: ["mega888","pussy888"],
-        type: "slot"
-      },
-      {
-        alias: "CONAN",
-        name: "Conan",
-        image: "https://i.imgur.com/hIcNrLh.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "FORTUNE FIREWORKS",
-        name: "FireWorks",
-        image: "https://i.imgur.com/HdAor6f.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "MIDAS GOLDEN TOUCH",
-        name: "GoldenTouch",
-        image: "https://i.imgur.com/9RmvOKL.png",
-        platform: ["mega888","pussy888"],
-        type: "slot"
-      },
-      {
-        alias: "YIN & YANG",
-        name: "YinYang",
-        image: "https://i.imgur.com/OzRcWCr.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "KING OF GHOSTS",
-        name: "KingOfGhoto",
-        image: "https://i.imgur.com/WWdfhTn.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "CHAMPIONS OF ROME",
-        name: "ChampionsOfRome",
-        image: "https://i.imgur.com/OhIHvhK.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "AMAZING THAILAND",
-        name: "Boxing",
-        image: "https://i.imgur.com/uIsv1xu.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "slot"
-      },
-      {
-        alias: "FORTUNE PANDA",
-        name: "FortunePanda",
-        image: "https://i.imgur.com/Yt87DN2.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "slot"
-      },
-      {
-        alias: "BIG CHEF",
-        name: "BigChef",
-        image: "https://i.imgur.com/tOKRgw4.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "NATIVE INDIAN",
-        name: "NativeIndian",
-        image: "https://i.imgur.com/iVPGuZr.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "CASH NOIRE",
-        name: "CashNoire",
-        image: "https://i.imgur.com/C8sqCMo.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "GOLDEN COLTS",
-        name: "GoldenColts",
-        image: "https://i.imgur.com/6ss0Mg3.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "VEGAS NIGHT LIFE",
-        name: "VegasNightLife",
-        image: "https://i.imgur.com/np82p6I.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "LIGHT",
-        name: "Lights",
-        image: "https://i.imgur.com/QdOeYG4.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "BLAZE OF RA",
-        name: "BlazeOfRa",
-        image: "https://i.imgur.com/s21W0qk.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "SILENT RUN",
-        name: "SilentRun",
-        image: "https://i.imgur.com/bp0GvOG.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "SAFARI HEAT",
-        name: "SAFARI Heat",
-        image: "https://i.imgur.com/2JUF5a7.png",
-        platform: ["mega888","918kiss","pussy888"],
-        type: "slot"
-      },
-      {
-        alias: "GOLDEN COK",
-        name: "GoldenCok",
-        image: "https://i.imgur.com/mFJmwNX.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "LEGEND OF THE WHITE SNAKE LADY",
-        name: "WhiteSnakeLady",
-        image: "https://i.imgur.com/DMsM9wD.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "ZOMBIE CIRCUS",
-        name: "Zombie",
-        image: "https://i.imgur.com/fWCPxki.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "LUCKY LITTLE GODS",
-        name: "LuckyLittleGods",
-        image: "https://i.imgur.com/gEPDQ3Z.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "ROBIN OF SHERWOOD",
-        name: "Robin",
-        image: "https://i.imgur.com/mmMcEbV.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "WOLF HUNTERS",
-        name: "WolfHunters",
-        image: "https://i.imgur.com/ktPxiE1.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "XMAS MAGIC",
-        name: "Xman Magic",
-        image: "https://i.imgur.com/D6Mb2tJ.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "FRUIT VS CANDY",
-        name: "FruitVsCandy",
-        image: "https://i.imgur.com/j8RRg4k.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "DIM SUM PRIZE",
-        name: "DimSumPrize",
-        image: "https://i.imgur.com/pABQK4k.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "RAGING REX",
-        name: "Raging",
-        image: "https://i.imgur.com/xqeWj5z.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "MASQUERADE",
-        name: "Masquerade",
-        image: "https://i.imgur.com/ubWUi4h.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "DARK VORTEX",
-        name: "DarkVortex",
-        image: "https://i.imgur.com/cjUvFQp.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "FORTUNE CHARM",
-        name: "FortuneCharm",
-        image: "https://i.imgur.com/vBvZKst.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "PENGUIN CITY",
-        name: "PenguinCity",
-        image: "https://i.imgur.com/PGEyb4x.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "SANTA",
-        name: "Santa",
-        image: "https://i.imgur.com/Nf9K7bU.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "STEAM TOWER",
-        name: "SteamTower",
-        image: "https://i.imgur.com/ZmqBAiP.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "TEMPLE QUEST",
-        name: "TempleQuest",
-        image: "https://i.imgur.com/0HAkfbd.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "HOTLINE",
-        name: "HotLine",
-        image: "https://i.imgur.com/1drj8z5.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "MATSURI",
-        name: "Matsuri",
-        image: "https://i.imgur.com/CsV6PBt.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "JUNGLE SPIRIT",
-        name: "Jungle",
-        image: "https://i.imgur.com/9o6tNSK.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "DESERT GEM",
-        name: "DesertGem",
-        image: "https://i.imgur.com/w2r4q6T.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "DR FORTUNO",
-        name: "DrFortuno",
-        image: "https://i.imgur.com/820Idbh.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "DRAGON MAIDEN",
-        name: "DragonMaiden",
-        image: "https://i.imgur.com/QCHCIZO.png",
-        platform: ["mega888","918kiss"],
-        type: "slot"
-      },
-      {
-        alias: "LUCKY NEW YEAR",
-        name: "LuckyNewYear",
-        image: "https://i.imgur.com/5jA4NcA.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "BIG WIN CAT",
-        name: "BigWinCat",
-        image: "https://i.imgur.com/WHzClvs.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "GOLDEN BEAUTY",
-        name: "GoldenBeauty",
-        image: "https://i.imgur.com/6qRLCwO.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "ROYAL MASQUERADE",
-        name: "Royal",
-        image: "https://i.imgur.com/EyfhOj0.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "JINGLE BELLS",
-        name: "JingleBells",
-        image: "https://i.imgur.com/q5rWXaJ.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "SIZZLING SPINS",
-        name: "SizzLing",
-        image: "https://i.imgur.com/L75BwTu.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "SWORD OF KHANS",
-        name: "SwordOfKhans",
-        image: "https://i.imgur.com/PddIEar.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "RAZOR SHARK",
-        name: "RazorShark",
-        image: "https://i.imgur.com/r7dYJiK.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "POND OF RICHES",
-        name: "PondOfRiches",
-        image: "https://i.imgur.com/MXMTqCz.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "CHINESE LION",
-        name: "ChineseLino",
-        image: "https://i.imgur.com/3IHcz17.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "IVAN AND THE IMMORTAL KING",
-        name: "Iavn",
-        image: "https://i.imgur.com/VmtLBSP.png",
-        platform: ["mega888"],
-        type: "slot"
-      },
-      {
-        alias: "CRYSTAL WATERS",
-        name: "Crystal",
-        image: "https://i.imgur.com/jZTKqWV.png",
-        platform: ["pussy888","mega888","918kiss"],
-        type: "slot"
-      }
-    ];
+<script>
+console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 
-    let currentType = "all";
-    let currentPlatform = "all";
+function getFormattedDateTime() {
+  const now = new Date();
 
-    function renderGames() {
-  const grid = document.getElementById("gameGrid");
-  const searchText = document.getElementById("searchInput").value.toLowerCase();
-  grid.innerHTML = "";
+  const day = now.getDate().toString().padStart(2, '0');
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const month = monthNames[now.getMonth()];
+  const year = now.getFullYear();
 
-  const filtered = games.filter(function(game) {
-    const matchType = currentType === "all" || game.type === currentType;
-    const matchSearch =
-  game.name.toLowerCase().includes(searchText) ||
-  (game.alias && game.alias.toLowerCase().includes(searchText)) ||
-  (Array.isArray(game.platform)
-    ? game.platform.some(p => p.toLowerCase().includes(searchText))
-    : game.platform.toLowerCase().includes(searchText));
-    const matchPlatform = currentPlatform === "all" ||
-      (Array.isArray(game.platform)
-        ? game.platform.includes(currentPlatform)
-        : game.platform === currentPlatform);
+  let hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
 
-    return matchType && matchSearch && matchPlatform;
-  });
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12 || 12;
 
-  filtered.forEach(game => {
-    const div = document.createElement("div");
-    div.className = "game-logo";
-    div.innerHTML = `
-  <span class="game-alias">${game.alias || ''}</span>
-  <img src="${game.image}" alt="${game.name}" onclick="copyImageToClipboard('${game.image}', this.parentElement)">
-  <span class="game-name">${game.name}</span>
-`;
-    grid.appendChild(div);
-  });
+  return `${day} ${month} ${year}, ${hours.toString().padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
 }
 
-    const backToTopBtn = document.getElementById('backToTop');
+document.getElementById("btn-date").addEventListener("click", function () {
+  const now = getFormattedDateTime();
+  document.getElementById("input-date").value = now;
+});
 
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 300) {
-    backToTopBtn.style.display = 'block';
-  } else {
-    backToTopBtn.style.display = 'none';
+function formatNumberWithCommas(numStr) {
+  const [whole, decimal] = numStr.replace(/[^\d.]/g, '').split(".");
+  const formattedWhole = parseInt(whole || "0").toLocaleString("en-MY");
+  return formattedWhole + (decimal !== undefined ? "." + decimal : "");
+}
+
+document.getElementById("input-amount").addEventListener("input", function () {
+  const rawValue = this.value.replace(/,/g, '');
+  if (!isNaN(rawValue)) {
+    const formatted = formatNumberWithCommas(rawValue);
+    this.value = formatted;
   }
 });
 
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function updateDisplay() {
+  const date = document.getElementById("input-date").value;
+  const rawAmount = document.getElementById("input-amount").value.replace(/,/g, '');
+  const amount = parseFloat(rawAmount).toFixed(2);
+
+  const parts = amount.split(".");
+  const main = parseInt(parts[0]).toLocaleString("en-MY");
+  const sen = parts[1] || "00";
+
+  // Set tampilan
+  document.getElementById("transfer-date").textContent = date;
+  document.getElementById("main-amount").textContent = main + ".";
+  document.querySelector(".sen").textContent = sen;
+
+  // Contoh jika mahu simpan juga ref number (jika berubah)
+  const ref = document.getElementById("ref-number").textContent;
+
+  const displayData = {
+    date,
+    amount: amount,
+    mainAmount: main,
+    sen: sen,
+    ref: ref
+  };
+
+  localStorage.setItem("displayData", JSON.stringify(displayData));
 }
-function setPlatform(platform) {
-  currentPlatform = platform;
-  document.querySelectorAll('.platform-filters button').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  renderGames();
-}
-    
-    function filterGames() {
-      renderGames();
+
+window.addEventListener("DOMContentLoaded", function () {
+  const stored = localStorage.getItem("displayData");
+  if (stored) {
+    const data = JSON.parse(stored);
+
+    // Restore input
+    document.getElementById("input-date").value = data.date;
+    document.getElementById("input-amount").value = formatNumberWithCommas(data.amount);
+
+    // Restore tampilan
+    document.getElementById("transfer-date").textContent = data.date;
+    document.getElementById("main-amount").textContent = data.mainAmount + ".";
+    document.querySelector(".sen").textContent = data.sen;
+
+    if (data.ref) {
+      document.getElementById("ref-number").textContent = data.ref;
     }
-
-    function setFilter(type) {
-  currentType = type;
-  document.querySelectorAll('.filter-tabs button').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  renderGames();
-}
-
-  renderGames();
-
-async function copyImageToClipboard(imageUrl, parentElement) {
-  if (window.parent !== window) {
-    window.parent.postMessage({ action: "copy-image", url: imageUrl }, "*");
-
-    const existing = parentElement.querySelector('.copy-notice');
-    if (existing) existing.remove();
-
-    const notice = document.createElement('div');
-    notice.textContent = "✔️ Image Copied!";
-    notice.className = 'copy-notice';
-    parentElement.appendChild(notice);
-
-    setTimeout(() => {
-      if (notice && notice.parentNode) notice.remove();
-    }, 2000);
-
-    return;
   }
+});
+function resetDisplay() {
+  localStorage.removeItem("displayData");
 
-  try {
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
-    const item = new ClipboardItem({ [blob.type]: blob });
-    await navigator.clipboard.write([item]);
+  document.getElementById("input-date").value = "";
+  document.getElementById("input-amount").value = "";
 
-    const existing = parentElement.querySelector('.copy-notice');
-    if (existing) existing.remove();
-
-    const notice = document.createElement('div');
-    notice.textContent = "✅ Image Copied!";
-    notice.className = 'copy-notice';
-    parentElement.appendChild(notice);
-
-    setTimeout(() => {
-      if (notice && notice.parentNode) notice.remove();
-    }, 2000);
-  } catch (err) {
-    alert("❌ Gagal salin gambar.");
-    console.error(err);
-  }
+  document.getElementById("transfer-date").textContent = "01 May 2025, 00:00:00 am";
+  document.getElementById("main-amount").textContent = "1,000.";
+  document.querySelector(".sen").textContent = "00";
+  document.getElementById("ref-number").textContent = "000000000";
 }
-  </script>
+</script>
 </body>
 </html>
