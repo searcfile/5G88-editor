@@ -1,429 +1,244 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CIMB Editor</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: "Open Sans", Verdana, Helvetica, sans-serif;
-      background: #000;
-      margin: 0;
-      padding: 20px;
-      font-weight: 400;
-    }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: #f4f4f4;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-    .header {
-      padding: 20px;
-      font-size: 22px;
-      font-weight: bold;
-      color: #000;
-      background: #fff;
-    }
-    .status-bar {
-      background: #e5e5e5;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .status-bar .left {
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      color: #000;
-    }
-    .check-icon {
-      width: 20px;
-      height: 20px;
-      background-color: #7db680;
-      color: white;
-      border-radius: 50%;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      margin-right: 8px;
-      font-size: 14px;
-    }
-    .success-text {
-      color: rgb(125, 182, 128);
-      font-weight: 700;
-    }
-    .details {
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-    .left, .right {
-      width: 48%;
-    }
-    .label {
-      font-size: 14px;
-      color: #555;
-    }
-    .value {
-      font-weight: bold;
-      margin-bottom: 12px;
-      font-size: 16px;
-      color: #000;
-    }
-    .amount-label {
-     font-size: 20px;
-     font-weight: 700;
-     margin-bottom: 8px;
-     color: #000; 
-    }
-    .amount {
-     font-weight: bold;
-     color: #000;
-     margin-bottom: 10px;
-    }
-    .currency {
-     font-size: 11px;
-     position: relative;
-     margin-right: 2px;
-     top: -10px;
-     font-weight: 850;
-    }
-    #main-amount {
-     font-size: 20px;
-     position: relative;
-     top: 0;
-     font-weight: 720;
-    }
-    .sen {
-     font-size: 11px;
-     position: relative;
-     top: -10px;
-     margin-left: 1px;
-     font-weight: 700;
-    }  
-    .charges {
-     font-size: 13px;
-     color: #000;
-     top: -8px;
-     position: relative;
-    }
-    .charge-amount {
-     font-size: 12px;
-     position: relative;
-     top: 0;
-     font-weight: bold;
-    }
-    .charge-sen {
-     font-size: 8px;
-     position: relative;
-     font-weight: bold;
-     top: -3px;
-    }
-    .charges .currency {
-     top: -3px;
-     font-size: 8px;
-     position: relative;
-    }
-    .footer {
-     padding: 15px 20px;
-     background: #fff;
-     font-size: 13px;
-     color: #d50000;
-     font-weight: 500;
-     border-top: 1px solid #ccc;
-    }
-    .top-inputs {
-     max-width: 700px;
-     margin: 10px auto 0 auto;
-     display: flex;
-     justify-content: flex-end;
-     gap: 8px;
-     flex-wrap: wrap;
-     padding: 0 20px;
-     font-size: 10px;
-    }
-    .input-group {
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-    }
-    .input-label {
-     font-size: 15px;
-     color: #ec1d23;
-     margin-top: 4px;
-     text-align: center;
-    }
-    .input-group input {
-     width: 155px;
-     padding: 6px 8px;
-     font-size: 13px;
-     border: 1px solid #ec1d23 !important;
-     border-radius: 4px;
-    }
-    .top-inputs button {
-     padding: 4px 8px;
-     font-size: 13px;
-     border: none;
-     border-radius: 4px;
-     background-color: #ec1d23; 
-     color: white;
-     cursor: pointer;
-     transition: background-color 0.3s ease, opacity 0.2s ease;
-     height: 30px;
-    }
-    .top-inputs button:hover {
-     background-color: rgba(236, 29, 35, 0.5);
-     border: 1px solid #ec1d23;
-     color: white;
-    }
-    .top-inputs button:active {
-     background-color: rgba(236, 29, 35, 0.3); 
-     opacity: 0.8;
-    }
-    .form-section {
-     max-width: 700px;
-     margin: 30px auto;
-     background: #fff;
-     padding: 20px;
-     border-radius: 6px;
-     box-shadow: 0 0 8px rgba(0,0,0,0.1);
-    }
-    .form-section input {
-     width: 100%;
-     padding: 8px;
-     margin: 8px 0;
-     box-sizing: border-box;
-     font-size: 14px;
-    }
-    .form-section button {
-     padding: 5px 20px;
-     margin-top: 10px;
-     margin-right: 10px;
-     cursor: pointer;
-     background-color: #ec1d23;
-     color: white;
-     border: none;
-     border-radius: 4px;
-     font-size: 14px;
-    }
-    .form-section button:hover {
-     background-color: #800000;
-     color: white;
-     transition: background-color 0.3s ease;
-    }
-    #transfer-date, #ref-number {
-     font-family: Open Sans;
-     font-size: 14px;
-    }
-    input:focus {
-     border: 2px solid #ec1d23;
-     outline: 1px solid #ec1d23;
-     box-shadow: 0 0 3px #ec1d23;
-     caret-color: #ec1d23;
-     border-color: #ec1d23;
-    }
-    .btn-update, btn-date {
-     padding: 4px 8px;
-     font-size: 13px;
-     border: 2px solid #ec1d23;
-     border-radius: 4px;
-     background-color: #fff;
-     color: #ec1d23;
-     cursor: pointer;
-     transition: transform 0.6s ease, background-color 0.3s, color 0.3s;
-     transform-origin: center;
-    }
-    .btn-update, btn-date:hover {
-     animation: rotate360 0.6s linear;
-     background-color: #ec1d23;
-     color: #fff;
-    }
-    @keyframes rotate360 {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-    }
-    @media (max-width: 600px) {
-    .left, .right {
-    width: 100%;
-    }
-  }
-    .scale-wrapper {
-    transform: scale(2.5);
-    transform-origin: top center;
-  }
-.top-inputs input[type="text"] {
-  border: 1px solid #ec1d23 !important;
-  border-radius: 2px;
-  background-color: white;
-  color: black;
-}
-   
-  </style>
-</head>
-<body>
- <div class="scale-wrapper">
-  <div class="top-inputs">
-    <div style="display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
-  <button class="btn-update" onclick="resetDisplay()">Reset</button>
-  <button class="btn-update" id="btn-date">Now</button>
-  <div style="display: flex; flex-direction: column;">
-    <input type="text" id="input-date" placeholder="Date & Time" />
-    <div class="input-label">Date & Time</div>
-  </div>
-  <div style="display: flex; flex-direction: column;">
-    <input type="text" id="input-amount" placeholder="Fill Amount" />
-    <div class="input-label">Amount</div>
-  </div>
-  <button class="btn-update" onclick="updateDisplay()">Create</button>
-</div>
-  </div>
+<html>
+    <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Maybank Editor</title>
+        <style type="text/css">
+            <!--
+            span.cls_002{font-family:Arial,serif;font-size:18.1px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+            div.cls_002{font-family:Arial,serif;font-size:18.1px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+            span.cls_003{font-family:Arial,serif;font-size:12.1px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+            div.cls_003{font-family:Arial,serif;font-size:12.1px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+            span.cls_004{font-family:Arial,serif;font-size:12.1px;color:rgb(0,153,0);font-weight:bold;font-style:normal;text-decoration: none}
+            div.cls_004{font-family:Arial,serif;font-size:12.1px;color:rgb(0,153,0);font-weight:bold;font-style:normal;text-decoration: none}
+            span.cls_005{font-family:Arial,serif;font-size:12.1px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+            div.cls_005{font-family:Arial,serif;font-size:12.1px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+            span.cls_006{font-family:Arial,serif;font-size:8.1px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+            div.cls_006{font-family:Arial,serif;font-size:8.1px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+            -->
+        </style>
+        <script defer>
+            var counter;
+            counter = 0;
+            console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 
-  <div class="container">
-    <div class="header">DuitNow / Transfer Money Acknowledgement</div>
+            function change() {
+                inDate = document.getElementById("inDate").value;
+                document.getElementById("date").textContent = inDate;
+            };
 
-    <div class="status-bar">
-      <div class="left" style="display: flex; align-items: center;">
-        <div class="check-icon">✔</div>
-        <span><strong class="success-text">Successful</strong> Ref <span id="ref-number">000000000</span></span>
-      </div>
-      <div id="transfer-date">01 May 2025, 00:00:00 am</div>
-    </div>
+            function change2() {
+                var day, month, year, hour, min, sec;
+                day = document.getElementById("dd").value;
+                month = document.getElementById("mm").value;
+                year = document.getElementById("yyyy").value;
+                hour = document.getElementById("hh").value;
+                min = document.getElementById("ii").value;
+                sec = document.getElementById("ss").value;
+                document.getElementById("date").textContent = day + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
+            }
+            
+            function mutate() {
+                if (counter == 0) {
+                    document.querySelector("#inDate").style.visibility = "hidden";
+                    document.querySelector("#inDate2").style.visibility = "visible";
+                    counter += 1;
+                } else if (counter == 1) {
+                    document.querySelector("#inDate2").style.visibility = "hidden";
+                    document.querySelector("#inDate").style.visibility = "visible";
+                    counter -= 1;
+                } else {
+                    counter = 0;
+                }
+            }
+            
+            function generate(mustTen) {
+                if (mustTen.length != 0 && mustTen.length < 10) {
+                    let lessNum = 10 - mustTen.length;
+                    for (x = lessNum; x > 0; x--) {
+                        mustTen += Math.floor(Math.random() * 9);
+                    };
+                    return mustTen;
+                } else {
+                    return mustTen;
+                }
+            }
 
-    <div class="details">
-      <div class="left">
-        <div class="label">Account Number</div>
-        <div class="value">7002795979</div>
+            function create() {
+                var inRef, genRef, inAmount;
+                inRef = document.getElementById("inRef").value;
+                genRef = generate(inRef);
+                document.getElementById("ref").textContent = genRef;
+                if (counter == 0) {
+                    change();
+                } else if (counter == 1) {
+                    change2();
+                }
+                inAmount = document.getElementById("inAmount").value;
+                document.getElementById("amount").textContent = inAmount;
+            }
 
-        <div class="label">Account Name</div>
-        <div class="value">SA PASSBOOK</div>
+            function reset() {
+                document.getElementById("inRef").value = "";
+                document.getElementById("inDate").value = "01 Jun 2024 00:00:00";
+                document.getElementById("inAmount").value = "RM1,000.00";
+                document.getElementById("ref").textContent = "0123080820";
+                document.getElementById("date").textContent = "01 Jun 2024 00:00:00";
+                document.getElementById("amount").textContent = "RM1,000.00";
+                document.getElementById("dd").value = "01"
+                document.getElementById("mm").value = "Jun"
+                document.getElementById("yyyy").value = "2024"
+                document.getElementById("hh").value = "00"
+                document.getElementById("ii").value = "00"
+                document.getElementById("ss").value = "00"
+            }
 
-        <div class="label">Recipient Name</div>
-        <div class="value">PAPA MINTA SAYANG</div>
-      </div>
-      <div class="right" style="text-align: right;">
-        <div class="label amount-label">Amount</div>
-        <div class="amount">
-          <span class="currency">MYR</span>
-          <span id="main-amount">1,000.</span><span class="sen">00</span>
+            function hide() {
+                document.getElementById("editor").style.display = "none";
+                setTimeout(function show() {
+                    document.getElementById("editor").style.display = "inline";
+                }, 8000);
+            }
+
+            function now() {
+                var now, nDay, nMonth, nYear, nHour, nMin, nSec;
+                now = new Date();
+                nDay = now.getDate();
+                nMonth = now.getMonth()+1;
+                nYear = now.getFullYear();
+                nHour = now.getHours();
+                nMin = now.getMinutes();
+                nSec = now.getSeconds();
+                if(nMonth.toString().length == 1) {
+                    nMonth = '0'+nMonth;
+                } else {
+                    nMonth = nMonth.toString();
+                }
+                switch(nMonth) {
+                    case "01":
+                        nMonth = "Jan";
+                        break;
+                    case "02":
+                        nMonth = "Feb";
+                        break;
+                    case "03":
+                        nMonth = "Mar";
+                        break;
+                    case "04":
+                        nMonth = "Apr";
+                        break;
+                    case "05":
+                        nMonth = "May";
+                        break;  
+                    case "06":
+                        nMonth = "Jun";
+                        break;
+                    case "07":
+                        nMonth = "Jul";
+                        break;
+                    case "08":
+                        nMonth = "Aug";
+                        break;
+                    case "09":
+                        nMonth = "Sep";
+                        break;
+                    case "10":
+                        nMonth = "Oct";
+                        break;
+                    case "11":
+                        nMonth = "Nov";
+                        break;
+                    case "12":
+                        nMonth = "Dec";
+                        break;
+                }
+                if(nDay.toString().length == 1) {
+                    nDay = '0'+nDay;
+                }   
+                if(nHour.toString().length == 1) {
+                    nHour = '0'+nHour;
+                }
+                if(nMin.toString().length == 1) {
+                    nMin = '0'+nMin;
+                }
+                if(nSec.toString().length == 1) {
+                    nSec = '0'+nSec;
+                }
+                document.getElementById("dd").value = nDay;
+                document.getElementById("mm").value = nMonth;
+                document.getElementById("yyyy").value = nYear;
+                document.getElementById("hh").value = nHour;
+                document.getElementById("ii").value = nMin;
+                document.getElementById("ss").value = nSec;
+                document.getElementById("inDate").value = `${nDay} ${nMonth} ${nYear} ${nHour}:${nMin}:${nSec}`;
+            }
+        
+        </script>
+    </head>
+    <body>
+       <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%) scale(3.7);transform-origin:top center;width:595px;height:500px;border-style:outset;overflow:hidden">
+            <div style="position:absolute;left:0px;top:0px">
+                <img src="https://raw.githubusercontent.com/paradisefb/main/main/resources/Images/universal/background1.jpg" width=595 height=842>
+            </div>
+            <div style="position:absolute;left:36.00px;top:107.48px" class="cls_002"><span class="cls_002">Favourite 3rd Party Transfer</span></div>
+            <div style="position:absolute;left:36.00px;top:147.48px" class="cls_003"><span class="cls_003">Status:</span></div>
+            <div style="position:absolute;left:300.83px;top:147.48px" class="cls_004"><span class="cls_004">Successful</span></div>
+            <div style="position:absolute;left:36.00px;top:167.97px" class="cls_003"><span class="cls_003">Reference number:</span></div>
+            <div style="position:absolute;left:300.83px;top:167.97px" class="cls_005"><span id="ref" class="cls_005">0123080820</span></div>
+            <div style="position:absolute;left:36.00px;top:188.45px" class="cls_003"><span class="cls_003">Transaction date:</span></div>
+            <div style="position:absolute;left:300.83px;top:188.45px" class="cls_005"><span id="date" class="cls_005">01 Jun 2024 00:00:00</span></div>
+            <div style="position:absolute;left:36.00px;top:229.42px" class="cls_003"><span class="cls_003">Amount:</span></div>
+            <div style="position:absolute;left:300.83px;top:229.42px" class="cls_005"><span id="amount" class="cls_005">RM1,000.00</span></div>
+            <div style="position:absolute;left:36.00px;top:270.39px" class="cls_003"><span class="cls_003">To Favourite 3rd Party Account :</span></div>
+            <div style="position:absolute;left:300.83px;top:270.39px" class="cls_005"><span class="cls_005">553340180612</span></div>
+            <div style="position:absolute;left:36.00px;top:290.87px" class="cls_003"><span class="cls_003">Account Holder Name :</span></div>
+            <div style="position:absolute;left:300.83px;top:290.87px" class="cls_005"><span class="cls_005">TUAH SAKARUBIK ENTERPRISE</span></div>
+            <div style="position:absolute;left:36.00px;top:311.36px" class="cls_003"><span class="cls_003">Recipient Reference :</span></div>
+            <div style="position:absolute;left:300.83px;top:311.36px" class="cls_005"><span class="cls_005">Mama Sayang Papa</span></div>
+            <div style="position:absolute;left:36.00px;top:331.84px" class="cls_003"><span class="cls_003">Other Transfer Details :</span></div>
+            <div style="position:absolute;left:36.00px;top:372.80px" class="cls_003"><span class="cls_003">Note: </span><span class="cls_005">This receipt is computer generated and no signature is required.</span></div>
+            <div style="position:absolute;left:36.00px;top:441.20px" class="cls_006"><span class="cls_006">Malayan Banking Berhad (Co. Reg. : 196001000142)  |  Maybank Islamic Berhad (Co. Reg. : 200701029411)</span></div>
+            <div id="editor" style="display: inline">
+                <button onclick="now()" style="background-color: #16dca5; position:absolute; left:308px; top:50px;cursor:pointer;" class="cls_004">Now</button>
+                <div class=col style="position:absolute; left:235px; top:25px" class="cls_004">
+                    <label for="inRef">Reference Number</label>
+                    <input type="text" id="inRef" placeholder="Must 10 digits" minlength ="10" maxlength="10" style="width: 140px;">
+                </div>
+                <div class=col style="position:absolute; left:235px; top:50px" class="cls_004">
+                    <label for="inDate">Date Time</label>
+                    <input type="text" id="inDate" placeholder="01 Jun 2024 00:00:00" value="01 Jun 2024 00:00:00" style="visibility: visible; position: absolute; left: 125px; width: 206px">
+                    <div id="inDate2" style="visibility: hidden">
+                        <input id="dd" type="tel" placeholder="dd" value="01" minlength="2" maxlength="2" style=" position: absolute;bottom: -3px; left: 125px; width: 24px">
+                        <select id="mm" style=" position: absolute;bottom: -3px; left: 150px; width: 50px; height: 21px;" >
+                            <option value="Jan">Jan</option>
+                            <option value="Feb">Feb</option>
+                            <option value="Mar">Mar</option>
+                            <option value="Apr">Apr</option>
+                            <option value="May">May</option>
+                            <option value="Jun" selected>Jun</option>
+                            <option value="Jul">Jul</option>
+                            <option value="Aug">Aug</option>
+                            <option value="Sep">Sep</option>
+                            <option value="Oct">Oct</option>
+                            <option value="Nov">Nov</option>
+                            <option value="Dec">Dec</option>
+                        </select>
+                        <input id="yyyy" type="tel" placeholder="yyyy" value="2024" minlength="4" maxlength="4" style=" position: absolute;bottom: -3px; left: 201px; width: 40px">
+                        <input id="hh" type="tel" placeholder="hh" value="00" minlength="2" maxlength="2" style=" position: absolute;bottom: -3px; left: 245px; width: 24px">
+                        <span style=" position: absolute;bottom: 0px; left: 270px; width: 24px">:</span>
+                        <input id="ii" type="tel" placeholder="mm" value="00" minlength="2" maxlength="2" style=" position: absolute;bottom: -3px; left: 275px; width: 24px">
+                        <span style=" position: absolute;bottom: 0px; left: 300px; width: 24px">:</span>
+                        <input id="ss" type="tel" placeholder="ss" value="00" minlength="2" maxlength="2" style=" position: absolute;bottom: -3px; left: 305px; width: 24px">
+                    </div>
+                </div>
+                <div class=col style="position:absolute; left:235px; top:75px" class="cls_004">
+                    <label for="inAmount">Amount</label>
+                    <input type="text" id="inAmount" placeholder="RM1,000.00" value="RM1,000.00" style="position: absolute; left: 125px">
+                </div>
+                <button id="submit" onclick="create()" style="background-color: #16dca5; position:absolute; left:360px; top:100px;cursor:pointer;" class="cls_004" >Create</button>
+                <button id="hide" onclick="hide()" style="background-color: #16dca5; position:absolute; left:418px; top:100px; cursor:pointer;" class="cls_004">Hide 8s</button>
+                <button id="mutate" onclick="reset()" style=" background-color: #D0104C; position:absolute; left:482px; top:100px; cursor:pointer;" class="cls_004">Reset</button>
+                <button onclick="mutate()" style="background-color: #16dca5; position:absolute; left:503px; top:25px; cursor:pointer;" class="cls_004">Change</button>
+            </div>
         </div>
-        <div class="charges">
-          Bank charges 
-          <span class="currency">MYR</span>
-          <span class="charge-amount">0.</span><span class="charge-sen">00</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer">More transfer details →</div>
-  </div>
-</div>
-
-<script>
-console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
-
-function getFormattedDateTime() {
-  const now = new Date();
-
-  const day = now.getDate().toString().padStart(2, '0');
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const month = monthNames[now.getMonth()];
-  const year = now.getFullYear();
-
-  let hours = now.getHours();
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-
-  const ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12 || 12;
-
-  return `${day} ${month} ${year}, ${hours.toString().padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
-}
-
-document.getElementById("btn-date").addEventListener("click", function () {
-  const now = getFormattedDateTime();
-  document.getElementById("input-date").value = now;
-});
-
-function formatNumberWithCommas(numStr) {
-  const [whole, decimal] = numStr.replace(/[^\d.]/g, '').split(".");
-  const formattedWhole = parseInt(whole || "0").toLocaleString("en-MY");
-  return formattedWhole + (decimal !== undefined ? "." + decimal : "");
-}
-
-document.getElementById("input-amount").addEventListener("input", function () {
-  const rawValue = this.value.replace(/,/g, '');
-  if (!isNaN(rawValue)) {
-    const formatted = formatNumberWithCommas(rawValue);
-    this.value = formatted;
-  }
-});
-
-function updateDisplay() {
-  const date = document.getElementById("input-date").value;
-  const rawAmount = document.getElementById("input-amount").value.replace(/,/g, '');
-  const amount = parseFloat(rawAmount).toFixed(2);
-
-  const parts = amount.split(".");
-  const main = parseInt(parts[0]).toLocaleString("en-MY");
-  const sen = parts[1] || "00";
-
-  // Set tampilan
-  document.getElementById("transfer-date").textContent = date;
-  document.getElementById("main-amount").textContent = main + ".";
-  document.querySelector(".sen").textContent = sen;
-
-  // Contoh jika mahu simpan juga ref number (jika berubah)
-  const ref = document.getElementById("ref-number").textContent;
-
-  const displayData = {
-    date,
-    amount: amount,
-    mainAmount: main,
-    sen: sen,
-    ref: ref
-  };
-
-  localStorage.setItem("displayData", JSON.stringify(displayData));
-}
-
-window.addEventListener("DOMContentLoaded", function () {
-  const stored = localStorage.getItem("displayData");
-  if (stored) {
-    const data = JSON.parse(stored);
-
-    // Restore input
-    document.getElementById("input-date").value = data.date;
-    document.getElementById("input-amount").value = formatNumberWithCommas(data.amount);
-
-    // Restore tampilan
-    document.getElementById("transfer-date").textContent = data.date;
-    document.getElementById("main-amount").textContent = data.mainAmount + ".";
-    document.querySelector(".sen").textContent = data.sen;
-
-    if (data.ref) {
-      document.getElementById("ref-number").textContent = data.ref;
-    }
-  }
-});
-function resetDisplay() {
-  localStorage.removeItem("displayData");
-
-  document.getElementById("input-date").value = "";
-  document.getElementById("input-amount").value = "";
-
-  document.getElementById("transfer-date").textContent = "01 May 2025, 00:00:00 am";
-  document.getElementById("main-amount").textContent = "1,000.";
-  document.querySelector(".sen").textContent = "00";
-  document.getElementById("ref-number").textContent = "000000000";
-}
-</script>
-</body>
+    </body>
 </html>
