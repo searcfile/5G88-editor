@@ -161,8 +161,8 @@
     }
     #backToTop {
   position: absolute;
-  bottom: 15px;
-  right: 15px;
+  bottom: 20px;
+  right: 20px;
   background: gold;
   color: black;
   padding: 8px 14px;
@@ -174,6 +174,7 @@
   display: none;
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
   z-index: 10;
+  transition: opacity 0.3s ease;
 }
 #backToTop:hover {
   background: white;
@@ -210,12 +211,7 @@
   </div>
   
   <script>
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
+ 
   console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
     const games = [
       { 
