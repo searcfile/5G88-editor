@@ -267,7 +267,12 @@
         </div>
 
         <div class="user-dropdown">
-  <button id="userName" class="user-button"></button>
+  <button id="userName" class="user-button">
+  <svg width="16" height="16" fill="gold" viewBox="0 0 24 24" style="margin-right: 6px;">
+    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
+  </svg>
+  <span id="userNameText"></span>
+</button>
   <div id="dropdownContent" class="dropdown-content">
     <div id="userEmail" style="margin-bottom: 8px;"></div>
     <hr style="border: 0; border-top: 1px solid gold; margin: 8px 0;">
@@ -736,7 +741,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const userNameElem = document.getElementById("userName");
+  const userNameText = document.getElementById("userNameText");
   const dropdownContent = document.getElementById("dropdownContent");
   const userEmailElem = document.getElementById("userEmail");
 
@@ -746,7 +751,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ? nameParts[0]
       : loginData.name;
 
-    userNameElem.textContent = displayName;
+    userNameText.textContent = displayName;
 
     // ✅ Set hanya elemen email, bukan seluruh dropdown content
     if (userEmailElem) {
