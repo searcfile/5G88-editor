@@ -159,6 +159,27 @@
      from { opacity: 0; transform: translateY(-5px); }
      to { opacity: 1; transform: translateY(0); }
     }
+    #backToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: gold;
+  color: black;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: none;
+  z-index: 1000;
+  box-shadow: 0 0 10px gold;
+  transition: all 0.3s ease;
+}
+#backToTop:hover {
+  background-color: #fff;
+  color: gold;
+  box-shadow: 0 0 12px white;
+}
 
   </style>
 </head>
@@ -188,7 +209,7 @@
 
   <div class="logo-grid" id="gameGrid">
   </div>
-  
+  <button id="backToTop" onclick="scrollToTop()">⬆ Back to Top</button>
   <script>
  
   console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
@@ -1603,6 +1624,19 @@
   });
 }
 
+    const backToTopBtn = document.getElementById('backToTop');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) {
+    backToTopBtn.style.display = 'block';
+  } else {
+    backToTopBtn.style.display = 'none';
+  }
+});
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 function setPlatform(platform) {
   currentPlatform = platform;
   document.querySelectorAll('.platform-filters button').forEach(btn => btn.classList.remove('active'));
