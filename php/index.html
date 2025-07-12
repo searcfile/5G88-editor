@@ -9,29 +9,10 @@
       background-color: #000;
       color: white;
       font-family: 'Segoe UI', sans-serif;
-  
-  }
-   html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: auto; /* ✅ izinkan scroll penuh */
-}
-    .main-scroll {
-  min-height: 100vh;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  padding-top: 90px;
-  padding-bottom: 40px;
-      scroll-behavior: smooth;
-}
-main-scroll::-webkit-scrollbar {
-  width: 0px;
-}
-.main-scroll {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
     .header {
       width: 100%;
       height: 90px;
@@ -52,6 +33,7 @@ main-scroll::-webkit-scrollbar {
       top: 90px;
       background-color: #000;
       z-index: 998;
+      padding-top: 20px;
     }
      .search-title {
       font-size: 30px;
@@ -65,7 +47,7 @@ main-scroll::-webkit-scrollbar {
     .search-container {
       text-align: center;
       padding: 20px;
-      
+      margin-top: -20px;
     }
     .search-container input {
       padding: 10px;
@@ -103,7 +85,13 @@ main-scroll::-webkit-scrollbar {
       padding: 10px;
       justify-content: center;
       max-width: 1000px;
-      margin:0 auto;
+      margin: 80px auto 0 auto;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .element::-webkit-scrollbar {
+      display: none;
     }
     .game-alias {
       font-weight: bold;
@@ -142,9 +130,11 @@ main-scroll::-webkit-scrollbar {
     }
     .platform-filters {
       text-align: center;
+      margin-bottom: 20px;
       padding-bottom: 20px;
     }
     
+     
       .copy-notice {
         position: absolute;
         bottom: -12px;
@@ -163,56 +153,62 @@ main-scroll::-webkit-scrollbar {
      to { opacity: 1; transform: translateY(0); }
     }
     #backToTop {
-  position: fixed;
-  bottom: 20px;
-  right: 590px;
-  padding: 10px 15px;
-  background-color: gold;
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  background: gold;
   color: black;
+  padding: 8px 14px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
   display: none;
-  z-index: 1000;
-  box-shadow: 0 0 8px gold;
-  transition: transform 0.3s ease;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+  z-index: 10;
 }
 #backToTop:hover {
-  transform: scale(1.1);
+  background: white;
+  color: black;
 }
   </style>
 </head>
 <body>
-  <div class="main-scroll">
-    <div class="header">🎰 LOGO GAME 🎰</div>
+  <div class="header">🎰 LOGO GAME 🎰</div>
 
-    <div class="filter-bar">
-      <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
-      </div>
-
-      <div class="filter-tabs">
-        <button onclick="setFilter('all')" class="active">All</button>
-        <button onclick="setFilter('slot')">Slot</button>
-        <button onclick="setFilter('live')">Live Game</button>
-        <button onclick="setFilter('table')">Table Game</button>
-      </div>
-
-      <div class="filter-tabs platform-filters">
-        <button onclick="setPlatform('all')" class="active">All Platforms</button>
-        <button onclick="setPlatform('918kiss')">918kiss</button>
-        <button onclick="setPlatform('mega888')">MEGA888</button>
-        <button onclick="setPlatform('pussy888')">PUSSY888</button>
-        <button onclick="setPlatform('xe88')">XE88</button>
-      </div>
-    </div>
-
-    <div class="logo-grid" id="gameGrid"></div>
+  <div class="filter-bar">
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
   </div>
-  <button id="backToTop" onclick="scrollToTop()">Back to Top</button>
-  <script>
 
+  <div class="filter-tabs">
+    <button onclick="setFilter('all')" class="active">All</button>
+    <button onclick="setFilter('slot')">Slot</button>
+    <button onclick="setFilter('live')">Live Game</button>
+    <button onclick="setFilter('table')">Table Game</button>
+  </div>
+
+  <div class="filter-tabs platform-filters">
+    <button onclick="setPlatform('all')" class="active">All Platforms</button>
+    <button onclick="setPlatform('918kiss')">918kiss</button>
+    <button onclick="setPlatform('mega888')">MEGA888</button>
+    <button onclick="setPlatform('pussy888')">PUSSY888</button>
+    <button onclick="setPlatform('xe88')">XE88</button>
+  </div>
+</div>
+
+  <div class="logo-grid" id="gameGrid">
+  <button id="backToTop" onclick="scrollToTop()">⬆️ Top</button>
+  </div>
+  
+  <script>
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.onkeydown = function (e) {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
+      return false;
+    }
+  };
   console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
     const games = [
       { 
@@ -1590,9 +1586,9 @@ main-scroll::-webkit-scrollbar {
     ];
 
     let currentType = "all";
-let currentPlatform = "all";
+    let currentPlatform = "all";
 
-function renderGames() {
+    function renderGames() {
   const grid = document.getElementById("gameGrid");
   const searchText = document.getElementById("searchInput").value.toLowerCase();
   grid.innerHTML = "";
@@ -1600,11 +1596,11 @@ function renderGames() {
   const filtered = games.filter(function(game) {
     const matchType = currentType === "all" || game.type === currentType;
     const matchSearch =
-      game.name.toLowerCase().includes(searchText) ||
-      (game.alias && game.alias.toLowerCase().includes(searchText)) ||
-      (Array.isArray(game.platform)
-        ? game.platform.some(p => p.toLowerCase().includes(searchText))
-        : game.platform.toLowerCase().includes(searchText));
+  game.name.toLowerCase().includes(searchText) ||
+  (game.alias && game.alias.toLowerCase().includes(searchText)) ||
+  (Array.isArray(game.platform)
+    ? game.platform.some(p => p.toLowerCase().includes(searchText))
+    : game.platform.toLowerCase().includes(searchText));
     const matchPlatform = currentPlatform === "all" ||
       (Array.isArray(game.platform)
         ? game.platform.includes(currentPlatform)
@@ -1617,10 +1613,10 @@ function renderGames() {
     const div = document.createElement("div");
     div.className = "game-logo";
     div.innerHTML = `
-      <span class="game-alias">${game.alias || ''}</span>
-      <img src="${game.image}" alt="${game.name}" onclick="copyImageToClipboard('${game.image}', this.parentElement)">
-      <span class="game-name">${game.name}</span>
-    `;
+  <span class="game-alias">${game.alias || ''}</span>
+  <img src="${game.image}" alt="${game.name}" onclick="copyImageToClipboard('${game.image}', this.parentElement)">
+  <span class="game-name">${game.name}</span>
+`;
     grid.appendChild(div);
   });
 }
@@ -1631,19 +1627,19 @@ function setPlatform(platform) {
   event.target.classList.add('active');
   renderGames();
 }
+    
+    function filterGames() {
+      renderGames();
+    }
 
-function filterGames() {
-  renderGames();
-}
-
-function setFilter(type) {
+    function setFilter(type) {
   currentType = type;
   document.querySelectorAll('.filter-tabs button').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
   renderGames();
 }
 
-renderGames();
+  renderGames();
 
 async function copyImageToClipboard(imageUrl, parentElement) {
   if (window.parent !== window) {
@@ -1686,29 +1682,22 @@ async function copyImageToClipboard(imageUrl, parentElement) {
     console.error(err);
   }
 }
+    const logoGrid = document.getElementById('gameGrid');
+const backToTopBtn = document.getElementById('backToTop');
 
-
-document.addEventListener("DOMContentLoaded", function () {
-  const scrollTarget = document.querySelector('.main-scroll') || window;
-
-  scrollTarget.addEventListener('scroll', function () {
-    const btn = document.getElementById('backToTop');
-    const scrollTop = scrollTarget === window ? window.scrollY : scrollTarget.scrollTop;
-    if (scrollTop > 300) {
-      btn.style.display = 'block';
-    } else {
-      btn.style.display = 'none';
-    }
-  });
+logoGrid.addEventListener('scroll', () => {
+  if (logoGrid.scrollTop > 250) {
+    backToTopBtn.style.display = 'block';
+  } else {
+    backToTopBtn.style.display = 'none';
+  }
 });
 
 function scrollToTop() {
-  const scrollTarget = document.querySelector('.main-scroll') || window;
-  if (scrollTarget === window) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    scrollTarget.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  logoGrid.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
 }
   </script>
 </body>
