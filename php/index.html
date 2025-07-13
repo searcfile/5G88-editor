@@ -1460,7 +1460,7 @@ for (let i = updatedRows.length - 1; i > 0; i--) {
 }
 function addManualSetScore() {
   const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
-  if (isNaN(inputScore) || inputScore <= 0) return alert("❌ Nilai tidak sah");
+  if (isNaN(inputScore)) return alert("❌ Nilai tidak sah");
 
   const tbody = document.querySelector("#gameLog tbody");
 
