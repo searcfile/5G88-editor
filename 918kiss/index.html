@@ -240,7 +240,12 @@
     <input type="number" id="manualJackpot" value="0"
            style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
   </div>
-
+ <div style="display: flex; align-items: center;">
+    <label for="manualScoreInput" style="color: gold; height: 38px; display: flex; align-items: center;">Support Amount:</label>
+    <input type="number" id="manualScoreInput" value="0"
+           style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  </div>
+  <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
   
   <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
  </div>
@@ -1263,6 +1268,65 @@ for (let i = updatedRows.length - 1; i > 0; i--) {
 
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
+}
+function addManualSetScore() {
+  const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
+  if (isNaN(inputScore)) return alert("❌ Nilai tidak sah");
+
+  const tbody = document.querySelector("#gameLog tbody");
+
+  // Ambil baris SetScore negatif (yang mengandung "-")
+  const setScoreNegatifRow = Array.from(tbody.querySelectorAll("tr.set-score-row:not(.jackpot)"))
+    .find(row => row.children[1].textContent.includes("-"));
+
+  if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
+
+  // Cek apakah sudah ada baris Support Positive sebelumnya
+  const existingSupportRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
+    .find(row =>
+      !row.classList.contains("jackpot") &&
+      !row.children[1].textContent.includes("-") &&
+      row !== setScoreNegatifRow
+    );
+
+  const endMoneyNegatif = parseFloat(setScoreNegatifRow.children[5].textContent);
+  const newTotal = (endMoneyNegatif + inputScore).toFixed(2);
+
+  // Waktu baru (naik beberapa detik dari baris negatif)
+  const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
+  const belowDate = new Date(belowTimeText.replace(" ", "T"));
+  const randomSeconds = Math.floor(Math.random() * 4) + 4;
+  const newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
+  const formatted = formatDateTimeLocal(newTime);
+
+  if (existingSupportRow) {
+    // Jika baris sudah ada, update
+    existingSupportRow.children[1].textContent = `Set score：${parseFloat(newTotal).toFixed(2)}`;
+    existingSupportRow.children[4].textContent = endMoneyNegatif.toFixed(2);
+    existingSupportRow.children[5].textContent = newTotal;
+    existingSupportRow.children[6].textContent = formatted;
+  } else {
+    // Kalau belum ada, buat satu baris support baru
+    const newRow = document.createElement("tr");
+    newRow.classList.add("set-score-row");
+    newRow.innerHTML = `
+      <td>-</td>
+      <td class="setscore">Set score：${parseFloat(newTotal).toFixed(2)}</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td>${endMoneyNegatif.toFixed(2)}</td>
+      <td>${newTotal}</td>
+      <td>${formatted}</td>
+    `;
+    tbody.insertBefore(newRow, setScoreNegatifRow);
+  }
+  const allRows = Array.from(tbody.querySelectorAll("tr"));
+  if (allRows.length > 11) {
+    const lastRow = allRows[allRows.length - 1];
+    lastRow.remove();
+  }
+
+  document.getElementById("manualScoreInput").value = "0";
 }
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
