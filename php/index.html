@@ -1275,41 +1275,50 @@ function addManualSetScore() {
 
   const tbody = document.querySelector("#gameLog tbody");
 
+  // Ambil baris SetScore negatif (yang mengandung "-")
   const setScoreNegatifRow = Array.from(tbody.querySelectorAll("tr.set-score-row:not(.jackpot)"))
     .find(row => row.children[1].textContent.includes("-"));
 
   if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
 
-  // Ambil nilai EndMoney dari setscore negatif
+  // Cek apakah sudah ada baris Support Positive sebelumnya
+  const existingSupportRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
+    .find(row =>
+      !row.classList.contains("jackpot") &&
+      !row.children[1].textContent.includes("-") &&
+      row !== setScoreNegatifRow
+    );
+
   const endMoneyNegatif = parseFloat(setScoreNegatifRow.children[5].textContent);
   const newTotal = (endMoneyNegatif + inputScore).toFixed(2);
 
-  // Buat waktu baru (offset beberapa detik dari setscore negatif)
+  // Waktu baru (naik beberapa detik dari baris negatif)
   const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
   const belowDate = new Date(belowTimeText.replace(" ", "T"));
   const randomSeconds = Math.floor(Math.random() * 4) + 4;
   const newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
   const formatted = formatDateTimeLocal(newTime);
 
-  // Buat baris baru untuk support back
-  const newRow = document.createElement("tr");
-  newRow.classList.add("set-score-row");
-  newRow.innerHTML = `
-    <td>-</td>
-    <td class="setscore">Set score：${parseFloat(newTotal).toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${endMoneyNegatif.toFixed(2)}</td>
-    <td>${newTotal}</td>
-    <td>${formatted}</td>
-  `;
-  tbody.insertBefore(newRow, setScoreNegatifRow);
-
-  // Maksimum 11 baris
-  const allRows = Array.from(tbody.querySelectorAll("tr"));
-  if (allRows.length > 11) {
-    const lastRow = allRows[allRows.length - 1];
-    lastRow.remove();
+  if (existingSupportRow) {
+    // Jika baris sudah ada, update
+    existingSupportRow.children[1].textContent = `Set score：${parseFloat(newTotal).toFixed(2)}`;
+    existingSupportRow.children[4].textContent = endMoneyNegatif.toFixed(2);
+    existingSupportRow.children[5].textContent = newTotal;
+    existingSupportRow.children[6].textContent = formatted;
+  } else {
+    // Kalau belum ada, buat satu baris support baru
+    const newRow = document.createElement("tr");
+    newRow.classList.add("set-score-row");
+    newRow.innerHTML = `
+      <td>-</td>
+      <td class="setscore">Set score：${parseFloat(newTotal).toFixed(2)}</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td>${endMoneyNegatif.toFixed(2)}</td>
+      <td>${newTotal}</td>
+      <td>${formatted}</td>
+    `;
+    tbody.insertBefore(newRow, setScoreNegatifRow);
   }
 
   document.getElementById("manualScoreInput").value = "0";
