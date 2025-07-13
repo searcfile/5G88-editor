@@ -257,24 +257,24 @@
 
 
  <div class="header">
-  <div style="display: flex; align-items: center; gap: 10px;">
-    <!-- ☰ Menu -->
-    <div class="menu-icon" id="menuIcon">☰</div>
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    
+    <!-- KIRI: Menu & Tombol Live Chat -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div class="menu-icon" id="menuIcon">☰</div>
 
-    <!-- Tombol Live Chat -->
-    <button id="liveChatBtn" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')" style="position: relative; display: flex; align-items: center; gap: 6px;">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
-      </svg>
-      Live Chat
-      <span id="liveChatAlert" style="display: none; position: absolute; top: -5px; right: -5px; background: red; color: white;
-        border-radius: 50%; width: 16px; height: 16px; font-size: 12px; display: flex; align-items: center;
-        justify-content: center; font-weight: bold;">!</span>
-    </button>
-  </div>
-</div>
-    <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
+      <button id="liveChatBtn" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')" style="position: relative; display: flex; align-items: center; gap: 6px;">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
+        </svg>
+        Live Chat
+        <span id="liveChatAlert" style="display: none; position: absolute; top: -5px; right: -5px; background: red; color: white;
+          border-radius: 50%; width: 16px; height: 16px; font-size: 12px; display: flex; align-items: center;
+          justify-content: center; font-weight: bold;">!</span>
+      </button>
+    </div>
 
+    <!-- KANAN: Notif & User Info -->
     <div class="user-info">
       <div class="user-text">
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -290,23 +290,30 @@
         </div>
 
         <div class="user-dropdown">
-  <button id="userName" class="user-button">
-  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
-    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
-  </svg>
-  <span id="userNameText"></span>
-</button>
-  <div id="dropdownContent" class="dropdown-content">
-    <div id="userEmail" style="margin-bottom: 8px;"></div>
-    <hr style="border: 0; border-top: 1px solid gold; margin: 8px 0;">
-    <button id="logoutBtn"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
-    <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
-  </svg>Logout</button>
+          <button id="userName" class="user-button">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+            <span id="userNameText"></span>
+          </button>
+          <div id="dropdownContent" class="dropdown-content">
+            <div id="userEmail" style="margin-bottom: 8px;"></div>
+            <hr style="border: 0; border-top: 1px solid gold; margin: 8px 0;">
+            <button id="logoutBtn">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+                <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-</div> 
-</div> 
-</div> 
+
+<!-- Logo Tengah Tetap -->
+<img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
   <div id="tabBar" class="tab-bar"></div>
 
