@@ -1275,40 +1275,37 @@ function addManualSetScore() {
 
   const tbody = document.querySelector("#gameLog tbody");
 
-  // Cek sudah ada manual score row atau belum
-  let existingManualRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
-    .find(row => !row.classList.contains("jackpot") && !row.children[1].textContent.includes("-"));
-
   const setScoreNegatifRow = Array.from(tbody.querySelectorAll("tr.set-score-row:not(.jackpot)"))
     .find(row => row.children[1].textContent.includes("-"));
 
   if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
 
+  // Ambil nilai EndMoney dari setscore negatif
+  const endMoneyNegatif = parseFloat(setScoreNegatifRow.children[5].textContent);
+  const newTotal = (endMoneyNegatif + inputScore).toFixed(2);
+
+  // Buat waktu baru (offset beberapa detik dari setscore negatif)
   const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
   const belowDate = new Date(belowTimeText.replace(" ", "T"));
   const randomSeconds = Math.floor(Math.random() * 4) + 4;
   const newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
   const formatted = formatDateTimeLocal(newTime);
 
-  if (existingManualRow) {
-    existingManualRow.children[1].textContent = `Set score：${inputScore.toFixed(2)}`;
-    existingManualRow.children[6].textContent = formatted;
-  } else {
+  // Buat baris baru untuk support back
+  const newRow = document.createElement("tr");
+  newRow.classList.add("set-score-row");
+  newRow.innerHTML = `
+    <td>-</td>
+    <td class="setscore">Set score：${parseFloat(newTotal).toFixed(2)}</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td>${endMoneyNegatif.toFixed(2)}</td>
+    <td>${newTotal}</td>
+    <td>${formatted}</td>
+  `;
+  tbody.insertBefore(newRow, setScoreNegatifRow);
 
-    const newRow = document.createElement("tr");
-    newRow.classList.add("set-score-row");
-    newRow.innerHTML = `
-      <td>-</td>
-      <td class="setscore">Set score：${inputScore.toFixed(2)}</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td>${formatted}</td>
-    `;
-    tbody.insertBefore(newRow, setScoreNegatifRow);
-  }
-
+  // Maksimum 11 baris
   const allRows = Array.from(tbody.querySelectorAll("tr"));
   if (allRows.length > 11) {
     const lastRow = allRows[allRows.length - 1];
@@ -1316,7 +1313,7 @@ function addManualSetScore() {
   }
 
   document.getElementById("manualScoreInput").value = "0";
-  }
+}
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
