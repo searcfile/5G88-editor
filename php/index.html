@@ -1460,17 +1460,14 @@ for (let i = updatedRows.length - 1; i > 0; i--) {
 }
 function addManualSetScore() {
   const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
-  if (isNaN(inputScore)) return alert("❌ Nilai tidak sah");
+  if (isNaN(inputScore) || inputScore <= 0) return alert("❌ Nilai tidak sah");
 
   const tbody = document.querySelector("#gameLog tbody");
 
-  // Ambil baris SetScore negatif (yang mengandung "-")
   const setScoreNegatifRow = Array.from(tbody.querySelectorAll("tr.set-score-row:not(.jackpot)"))
     .find(row => row.children[1].textContent.includes("-"));
-
   if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
 
-  // Cek apakah sudah ada baris Support Positive sebelumnya
   const existingSupportRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
     .find(row =>
       !row.classList.contains("jackpot") &&
@@ -1479,9 +1476,11 @@ function addManualSetScore() {
     );
 
   const endMoneyNegatif = parseFloat(setScoreNegatifRow.children[5].textContent);
-  const newTotal = (endMoneyNegatif + inputScore).toFixed(2);
+  const beginMoney = endMoneyNegatif;
+  const endMoneyBaru = (beginMoney + inputScore).toFixed(2);
+  const setScoreDisplay = inputScore.toFixed(2); // Hanya nilai support, tidak tambah pecahan
 
-  // Waktu baru (naik beberapa detik dari baris negatif)
+  // Waktu baru
   const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
   const belowDate = new Date(belowTimeText.replace(" ", "T"));
   const randomSeconds = Math.floor(Math.random() * 4) + 4;
@@ -1489,30 +1488,28 @@ function addManualSetScore() {
   const formatted = formatDateTimeLocal(newTime);
 
   if (existingSupportRow) {
-    // Jika baris sudah ada, update
-    existingSupportRow.children[1].textContent = `Set score：${parseFloat(newTotal).toFixed(2)}`;
-    existingSupportRow.children[4].textContent = endMoneyNegatif.toFixed(2);
-    existingSupportRow.children[5].textContent = newTotal;
+    existingSupportRow.children[1].textContent = `Set score：${setScoreDisplay}`;
+    existingSupportRow.children[4].textContent = beginMoney.toFixed(2);
+    existingSupportRow.children[5].textContent = endMoneyBaru;
     existingSupportRow.children[6].textContent = formatted;
   } else {
-    // Kalau belum ada, buat satu baris support baru
     const newRow = document.createElement("tr");
     newRow.classList.add("set-score-row");
     newRow.innerHTML = `
       <td>-</td>
-      <td class="setscore">Set score：${parseFloat(newTotal).toFixed(2)}</td>
+      <td class="setscore">Set score：${setScoreDisplay}</td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
-      <td>${endMoneyNegatif.toFixed(2)}</td>
-      <td>${newTotal}</td>
+      <td>${beginMoney.toFixed(2)}</td>
+      <td>${endMoneyBaru}</td>
       <td>${formatted}</td>
     `;
     tbody.insertBefore(newRow, setScoreNegatifRow);
   }
+
   const allRows = Array.from(tbody.querySelectorAll("tr"));
   if (allRows.length > 11) {
-    const lastRow = allRows[allRows.length - 1];
-    lastRow.remove();
+    allRows[allRows.length - 1].remove();
   }
 
   document.getElementById("manualScoreInput").value = "0";
