@@ -1320,6 +1320,11 @@ function addManualSetScore() {
     `;
     tbody.insertBefore(newRow, setScoreNegatifRow);
   }
+  const allRows = Array.from(tbody.querySelectorAll("tr"));
+  if (allRows.length > 11) {
+    const lastRow = allRows[allRows.length - 1];
+    lastRow.remove();
+  }
 
   document.getElementById("manualScoreInput").value = "0";
 }
