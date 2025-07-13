@@ -14,7 +14,7 @@
     .sidebar a {display: block;margin: 10px 0;color: gold;text-decoration: none;font-size: 14px;font-weight: bold;border-radius: 5px;transition: background 0.2s;padding: 4px 8px;gap: 5px;white-space: nowrap;}
     .sidebar a:hover {background: gold;color: #111;}
     .close-btn {background: gold;color: #111;border: none;padding: 2px 6px;font-size: 12px;cursor: pointer;border-radius: 5px;margin-bottom: 20px;border-bottom: 2px solid gold;}
-    .header {position: fixed;width: 100%;z-index: 1003;height: 55px;background: #111;display: flex;justify-content: space-between;align-items: center;padding: 0 20px;top: 0;left: 0;}
+    .header {position: fixed;width: 100%;z-index: 1003;height: 55px;background: #111;display: flex;justify-content: center;align-items: center;padding: 0 20px;top: 0;left: 0;}
     .header img {position: absolute;max-height: 40px;top: 5px;}
     .user-info {position: absolute;right: 20px;top: 50%;transform: translateY(-50%);display: flex;align-items: center;gap: 10px;}
     .user-text {gap: 10px;display: flex;align-items: center;}
@@ -22,7 +22,7 @@
     .date-time {color: gold;font-size: 13px;white-space: nowrap;}
     .container {transition: margin-left 0.3s ease;position: relative;}
     .container.shrink { margin-left: 260px;}
-    .menu-icon {font-size: 28px;color: gold;cursor: pointer;z-index: 1100;}
+    .menu-icon {position: absolute;top: 5px;left: 10px;font-size: 28px;color: gold;cursor: pointer;z-index: 1100;}
     .menu-img {width: 20px;height: 20px;vertical-align: middle;margin-right: 8px;border-radius: 4px;}
     @media (max-width: 600px) {
     .container.shrink {margin-left: 0;}}
@@ -111,7 +111,7 @@
     color: #fff;
    }
    #logoutBtn:active {
-    color: #d1d1d1;
+    color: #222;
    }
     #notifTooltip {
   opacity: 0;
@@ -171,24 +171,6 @@
   visibility: visible;
   display: block;
 }
-    #liveChatBtn {
-  background-color: gold;
-  color: #111;
-  border: 1px solid gold;
-  border-radius: 5px;
-  padding: 4px 12px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: bold;
-}
-
-#liveChatBtn:hover {
-  color: #fff;
-}
-#liveChatBtn:active {
-    color: #d1d1d1;
-   }
   </style>
 </head>
 <body>
@@ -253,28 +235,19 @@
     <a href="#" onclick="addTab('panjangpanjangpanjang1234', 'https://5g88-cimb.vercel.app/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang1234
     </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang12345', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12345
+    </a>
+    <a href="#" onclick="addTab('panjangpanjangpanjang123456', 'https://5g88-cimb.vercel.app/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12315
+    </a>
   </div>
 
 
- <div class="header">
-  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-    
-    <!-- KIRI: Menu & Tombol Live Chat -->
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <div class="menu-icon" id="menuIcon">☰</div>
+  <div class="header">
+    <div class="menu-icon" id="menuIcon">☰</div>
+    <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
-      <button id="liveChatBtn" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')" style="position: relative; display: flex; align-items: center; gap: 6px;">
-        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
-        </svg>
-        Live Chat
-        <span id="liveChatAlert" style="display: none; position: absolute; top: -5px; right: -5px; background: red; color: white;
-          border-radius: 50%; width: 16px; height: 16px; font-size: 12px; display: flex; align-items: center;
-          justify-content: center; font-weight: bold;">!</span>
-      </button>
-    </div>
-
-    <!-- KANAN: Notif & User Info -->
     <div class="user-info">
       <div class="user-text">
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -290,29 +263,23 @@
         </div>
 
         <div class="user-dropdown">
-          <button id="userName" class="user-button">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
-              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
-            </svg>
-            <span id="userNameText"></span>
-          </button>
-          <div id="dropdownContent" class="dropdown-content">
-            <div id="userEmail" style="margin-bottom: 8px;"></div>
-            <hr style="border: 0; border-top: 1px solid gold; margin: 8px 0;">
-            <button id="logoutBtn">
-              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
-                <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
-              </svg>
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+  <button id="userName" class="user-button">
+  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
+  </svg>
+  <span id="userNameText"></span>
+</button>
+  <div id="dropdownContent" class="dropdown-content">
+    <div id="userEmail" style="margin-bottom: 8px;"></div>
+    <hr style="border: 0; border-top: 1px solid gold; margin: 8px 0;">
+    <button id="logoutBtn"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+    <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
+  </svg>Logout</button>
   </div>
 </div>
-
-<img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
+</div> 
+</div> 
+</div> 
 
   <div id="tabBar" class="tab-bar"></div>
 
@@ -883,24 +850,6 @@ tabBar.addEventListener('wheel', (e) => {
   }
 });
 });
-const liveChatAlert = document.getElementById("liveChatAlert");
-if (liveChatAlert) {
-  firebase.database().ref("livechat/lastMessageTimestamp").on("value", (snapshot) => {
-    const timestamp = snapshot.val();
-    if (!timestamp) return;
-
-    const lastSeen = localStorage.getItem("liveChatSeenTimestamp");
-    if (!lastSeen || Number(lastSeen) < Number(timestamp)) {
-      liveChatAlert.style.display = "flex";
-    }
-  });
-
-  document.getElementById("liveChatBtn").addEventListener("click", () => {
-    const now = Date.now();
-    localStorage.setItem("liveChatSeenTimestamp", now);
-    liveChatAlert.style.display = "none";
-  });
-}
   </script>
 </body>
 </html>
