@@ -214,9 +214,10 @@
 }
     #livechatDot {
   transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0.7;
 }
 #livechatDot.show {
-  transform: scale(1.1);
+  transform: scale(1.2);
   opacity: 1;
 }
   </style>
@@ -394,22 +395,41 @@ window.addEventListener("load", () => {
   const savedTimestamp = localStorage.getItem("latestNotifTimestamp");
   const seenKey = `seenNotif_${savedTimestamp}_${currentEmail}`;
 
-  if (savedMessage && savedTimestamp) {
-  const alreadySeen = localStorage.getItem(seenKey);
-  notifButton.dataset.message = savedMessage;
-  notifButton.dataset.timestamp = savedTimestamp;
+  const notifButton = document.getElementById("notifButton");
+  const notifDot = document.getElementById("notifDot");
+  const liveBtn = document.getElementById("liveChatBtn");
+  const liveDot = document.getElementById("livechatDot");
 
-  if (!alreadySeen) {
-    notifDot.style.display = "block";
-    // ✅ Tampilkan dot merah di LiveChat
-    const liveDot = document.getElementById("livechatDot");
-    if (liveDot) liveDot.style.display = "flex";
-  } else {
-    // ✅ Sembunyikan dot merah di LiveChat kalau sudah dibaca
-    const liveDot = document.getElementById("livechatDot");
-    if (liveDot) liveDot.style.display = "none";
+  if (savedMessage && savedTimestamp) {
+    const alreadySeen = localStorage.getItem(seenKey);
+    notifButton.dataset.message = savedMessage;
+    notifButton.dataset.timestamp = savedTimestamp;
+
+    if (!alreadySeen) {
+      if (notifDot) notifDot.style.display = "block";
+      if (liveDot) {
+        liveDot.classList.add("show");
+        liveDot.style.display = "flex";
+      }
+    } else {
+      if (liveDot) liveDot.style.display = "none";
+    }
   }
-}
+
+  // ✅ Aktifkan tombol LIVE CHAT jika tab aktif adalah LIVE CHAT
+  const activeUrl = localStorage.getItem("activeTabUrl");
+  const tabs = getTabs();
+  const match = tabs.find(tab => tab.url === activeUrl);
+  if (match && match.label === "LIVE CHAT" && liveBtn) {
+    liveBtn.classList.add("active-livechat");
+
+    // Cek ulang notifikasi jika tab aktif LIVE CHAT tapi belum dibaca
+    const alreadySeen = localStorage.getItem(seenKey);
+    if (!alreadySeen && liveDot) {
+      liveDot.classList.add("show");
+      liveDot.style.display = "flex";
+    }
+  }
 });
 
 function showNotification(message, timestamp) {
@@ -432,8 +452,15 @@ function showNotification(message, timestamp) {
       liveDot.classList.add("show");
       liveDot.style.display = "flex";
     }
+if (localStorage.getItem("activeTabUrl")?.includes("userlivechatphp")) {
+  const liveBtn = document.getElementById("liveChatBtn");
+  if (liveBtn) {
+    liveBtn.classList.add("active-livechat");
   }
 }
+ }
+}
+
 
 
 notifButton.addEventListener("click", () => {
