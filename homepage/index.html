@@ -212,14 +212,6 @@
   border: 1px solid white;
   z-index: 10000;
 }
-    #livechatDot {
-  transition: transform 0.3s ease, opacity 0.3s ease;
-      opacity: 0.7;
-}
-#livechatDot.show {
-  transform: scale(1.2);
-  opacity: 1;
-}
   </style>
 </head>
 <body>
@@ -407,27 +399,22 @@ window.addEventListener("load", () => {
 
     if (!alreadySeen) {
       if (notifDot) notifDot.style.display = "block";
-      if (liveDot) {
-        liveDot.classList.add("show");
-        liveDot.style.display = "flex";
-      }
+      if (liveDot) liveDot.style.display = "flex"; // ✅ tanpa .show
     } else {
       if (liveDot) liveDot.style.display = "none";
     }
-  }
 
-  // ✅ Aktifkan tombol LIVE CHAT jika tab aktif adalah LIVE CHAT
-  const activeUrl = localStorage.getItem("activeTabUrl");
-  const tabs = getTabs();
-  const match = tabs.find(tab => tab.url === activeUrl);
-  if (match && match.label === "LIVE CHAT" && liveBtn) {
-    liveBtn.classList.add("active-livechat");
+    // ✅ Aktifkan tombol LIVE CHAT jika tab aktif adalah LIVE CHAT
+    const activeUrl = localStorage.getItem("activeTabUrl");
+    const tabs = getTabs();
+    const match = tabs.find(tab => tab.url === activeUrl);
+    if (match && match.label === "LIVE CHAT" && liveBtn) {
+      liveBtn.classList.add("active-livechat");
 
-    // Cek ulang notifikasi jika tab aktif LIVE CHAT tapi belum dibaca
-    const alreadySeen = localStorage.getItem(seenKey);
-    if (!alreadySeen && liveDot) {
-      liveDot.classList.add("show");
-      liveDot.style.display = "flex";
+      // 🔁 Cek ulang notifikasi kalau tab aktif = LIVE CHAT
+      if (!alreadySeen && liveDot) {
+        liveDot.style.display = "flex";
+      }
     }
   }
 });
@@ -448,25 +435,23 @@ function showNotification(message, timestamp) {
 
     const liveDot = document.getElementById("livechatDot");
     if (liveDot) {
-      liveDot.classList.add("show");
-      liveDot.style.display = "flex";
+      liveDot.style.display = "flex"; // ❗ hanya pakai display flex
     }
 
-    // ✅ Tunda cek activeTabUrl agar sempat diset ulang
+    // ✅ Tunda sedikit untuk pastikan activeTabUrl sudah terset
     setTimeout(() => {
       const activeUrl = localStorage.getItem("activeTabUrl") || "";
       if (activeUrl.includes("userlivechatphp")) {
         const liveBtn = document.getElementById("liveChatBtn");
         if (liveBtn) liveBtn.classList.add("active-livechat");
 
-        // ✅ Sembunyikan kembali dot merah karena user sudah di tab Live Chat
+        // ❌ dot merah tidak perlu jika user sudah di LIVE CHAT
         if (liveDot) liveDot.style.display = "none";
         localStorage.setItem(seenKey, "1");
       }
-    }, 150); // 150ms biasanya cukup
+    }, 150);
   }
 }
-
 
 
 notifButton.addEventListener("click", () => {
