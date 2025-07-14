@@ -446,19 +446,25 @@ function showNotification(message, timestamp) {
     localStorage.setItem("latestNotifMessage", message);
     localStorage.setItem("latestNotifTimestamp", timestamp);
 
-    // ✅ Tampilkan dot merah di tombol LiveChat juga
-  const liveDot = document.getElementById("livechatDot");
+    const liveDot = document.getElementById("livechatDot");
     if (liveDot) {
       liveDot.classList.add("show");
       liveDot.style.display = "flex";
     }
-if (localStorage.getItem("activeTabUrl")?.includes("userlivechatphp")) {
-  const liveBtn = document.getElementById("liveChatBtn");
-  if (liveBtn) {
-    liveBtn.classList.add("active-livechat");
+
+    // ✅ Tunda cek activeTabUrl agar sempat diset ulang
+    setTimeout(() => {
+      const activeUrl = localStorage.getItem("activeTabUrl") || "";
+      if (activeUrl.includes("userlivechatphp")) {
+        const liveBtn = document.getElementById("liveChatBtn");
+        if (liveBtn) liveBtn.classList.add("active-livechat");
+
+        // ✅ Sembunyikan kembali dot merah karena user sudah di tab Live Chat
+        if (liveDot) liveDot.style.display = "none";
+        localStorage.setItem(seenKey, "1");
+      }
+    }, 150); // 150ms biasanya cukup
   }
-}
- }
 }
 
 
