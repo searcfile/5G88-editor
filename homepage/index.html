@@ -167,11 +167,11 @@
 }
   .live-chat-button {
   position: absolute;
-  top: 9px;
+  top: 15px;
   left: 50px;
   color: gold;
   border: none;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
@@ -190,6 +190,10 @@
 }
     .header.shrink .live-chat-button {
   left: 50px; /* menyesuaikan sidebar lebar 260px + margin */
+}
+  .live-chat-button.active-livechat {
+  background: transparent;
+  color: #fff;
 }
   </style>
 </head>
@@ -587,7 +591,18 @@ function renderTabs() {
       }
     });
 
-    tabElement.onclick = () => loadPage(tab.url);
+    tabElement.onclick = () => {
+  loadPage(tab.url);
+
+  const liveBtn = document.getElementById("liveChatBtn");
+  if (liveBtn) {
+    if (tab.label === "LIVE CHAT") {
+      liveBtn.classList.add("active-livechat");
+    } else {
+      liveBtn.classList.remove("active-livechat"); // 🟡 Tambah ini
+    }
+  }
+};
 
     const currentFrame = document.getElementById("pageFrame");
     if (currentFrame && tab.url === currentFrame.src) {
@@ -669,8 +684,15 @@ window.onload = () => {
   const activeUrl = localStorage.getItem("activeTabUrl");
   const match = tabs.find(tab => tab.url === activeUrl);
 
+  const liveBtn = document.getElementById("liveChatBtn");
+  if (liveBtn) liveBtn.classList.remove("active-livechat"); // 🟡 Bersihkan dulu
+
   if (match) {
     loadPage(match.url);
+
+    if (match.label === "LIVE CHAT") {
+      liveBtn.classList.add("active-livechat");
+    }
   } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
   }
