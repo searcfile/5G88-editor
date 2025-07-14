@@ -409,23 +409,29 @@ function showNotification(message, timestamp) {
   const alreadySeen = localStorage.getItem(seenKey);
 
   if (!alreadySeen) {
-    const notifDot = document.getElementById("notifDot");
-    const liveDot = document.getElementById("livechatDot");
+    notifButton.dataset.message = message;
+    notifButton.dataset.timestamp = timestamp;
 
-    if (notifDot) notifDot.style.display = "block";
     localStorage.setItem("latestNotifMessage", message);
     localStorage.setItem("latestNotifTimestamp", timestamp);
 
-    // Cek tab aktif
-    const activeUrl = localStorage.getItem("activeTabUrl") || "";
-    if (liveDot) {
-      if (activeUrl.includes("userlivechatphp")) {
-        liveDot.style.display = "none";
-        localStorage.setItem(seenKey, "1");
-      } else {
-        liveDot.style.display = "flex";
+    // ✅ Pastikan notifDot tampil
+    if (notifDot) notifDot.style.display = "block";
+
+    // ✅ Tunggu hingga DOM selesai render dulu
+    setTimeout(() => {
+      const liveDot = document.getElementById("livechatDot");
+      const activeUrl = localStorage.getItem("activeTabUrl") || "";
+
+      if (liveDot) {
+        if (activeUrl.includes("userlivechatphp")) {
+          liveDot.style.display = "none";
+          localStorage.setItem(seenKey, "1");
+        } else {
+          liveDot.style.display = "flex";  // ✅ tampilkan dot merah
+        }
       }
-    }
+    }, 100); // delay sedikit agar elemen pasti tersedia
   }
 }
 
@@ -494,11 +500,18 @@ document.addEventListener("click", (e) => {
 });
 
 
+let lastShownTimestamp = 0;
+
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
-  showNotification(data.message, data.timestamp);
-})
+
+  // ✅ Cek agar hanya notifikasi baru yang diproses
+  if (data.timestamp > lastShownTimestamp) {
+    lastShownTimestamp = data.timestamp;
+    showNotification(data.message, data.timestamp);
+  }
+});
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
