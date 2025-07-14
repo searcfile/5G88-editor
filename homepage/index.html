@@ -187,14 +187,14 @@
   background: transparent;
   color: #fff;
 }
-    .livechat-dot {
+  .livechat-dot {
   display: none;
   position: absolute;
   top: 0px;
   right: -8px;
   background: red;
   color: white;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: bold;
   width: 16px;
   height: 16px;
@@ -280,7 +280,7 @@
 
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
-    <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
+   <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
     <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
   </svg>
@@ -380,69 +380,52 @@ window.addEventListener("load", () => {
   const savedTimestamp = localStorage.getItem("latestNotifTimestamp");
   const seenKey = `seenNotif_${savedTimestamp}_${currentEmail}`;
 
-  const notifButton = document.getElementById("notifButton");
   const notifDot = document.getElementById("notifDot");
-  const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
 
   if (savedMessage && savedTimestamp) {
     const alreadySeen = localStorage.getItem(seenKey);
-    notifButton.dataset.message = savedMessage;
-    notifButton.dataset.timestamp = savedTimestamp;
 
     if (!alreadySeen) {
       if (notifDot) notifDot.style.display = "block";
-      if (liveDot) liveDot.style.display = "flex"; // ✅ tanpa .show
+
+      const activeUrl = localStorage.getItem("activeTabUrl") || "";
+      if (liveDot) {
+        if (activeUrl.includes("userlivechatphp")) {
+          liveDot.style.display = "none";
+          localStorage.setItem(seenKey, "1");
+        } else {
+          liveDot.style.display = "flex";
+        }
+      }
     } else {
       if (liveDot) liveDot.style.display = "none";
-    }
-
-    // ✅ Aktifkan tombol LIVE CHAT jika tab aktif adalah LIVE CHAT
-    const activeUrl = localStorage.getItem("activeTabUrl");
-    const tabs = getTabs();
-    const match = tabs.find(tab => tab.url === activeUrl);
-    if (match && match.label === "LIVE CHAT" && liveBtn) {
-      liveBtn.classList.add("active-livechat");
-
-      // 🔁 Cek ulang notifikasi kalau tab aktif = LIVE CHAT
-      if (!alreadySeen && liveDot) {
-        liveDot.style.display = "flex";
-      }
     }
   }
 });
 
 function showNotification(message, timestamp) {
-  if (!popup || !content || !notifButton || !notifDot) return;
-
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   const alreadySeen = localStorage.getItem(seenKey);
 
   if (!alreadySeen) {
-    notifDot.style.display = "block";
-    notifButton.dataset.message = message;
-    notifButton.dataset.timestamp = timestamp;
+    const notifDot = document.getElementById("notifDot");
+    const liveDot = document.getElementById("livechatDot");
 
+    if (notifDot) notifDot.style.display = "block";
     localStorage.setItem("latestNotifMessage", message);
     localStorage.setItem("latestNotifTimestamp", timestamp);
 
-    const liveDot = document.getElementById("livechatDot");
+    // Cek tab aktif
+    const activeUrl = localStorage.getItem("activeTabUrl") || "";
     if (liveDot) {
-      liveDot.style.display = "flex"; // ❗ hanya pakai display flex
-    }
-
-    // ✅ Tunda sedikit untuk pastikan activeTabUrl sudah terset
-    setTimeout(() => {
-      const activeUrl = localStorage.getItem("activeTabUrl") || "";
       if (activeUrl.includes("userlivechatphp")) {
-        const liveBtn = document.getElementById("liveChatBtn");
-        if (liveBtn) liveBtn.classList.add("active-livechat");
-
-        // ❌ dot merah tidak perlu jika user sudah di LIVE CHAT
-        if (liveDot) liveDot.style.display = "none";
+        liveDot.style.display = "none";
         localStorage.setItem(seenKey, "1");
+      } else {
+        liveDot.style.display = "flex";
       }
-    }, 150);
+    }
   }
 }
 
