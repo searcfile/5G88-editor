@@ -212,6 +212,13 @@
   border: 1px solid white;
   z-index: 10000;
 }
+    #livechatDot {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+#livechatDot.show {
+  transform: scale(1.1);
+  opacity: 1;
+}
   </style>
 </head>
 <body>
@@ -387,11 +394,22 @@ window.addEventListener("load", () => {
   const savedTimestamp = localStorage.getItem("latestNotifTimestamp");
   const seenKey = `seenNotif_${savedTimestamp}_${currentEmail}`;
 
-  if (savedMessage && savedTimestamp && !localStorage.getItem(seenKey)) {
+  if (savedMessage && savedTimestamp) {
+  const alreadySeen = localStorage.getItem(seenKey);
+  notifButton.dataset.message = savedMessage;
+  notifButton.dataset.timestamp = savedTimestamp;
+
+  if (!alreadySeen) {
     notifDot.style.display = "block";
-    notifButton.dataset.message = savedMessage;
-    notifButton.dataset.timestamp = savedTimestamp;
+    // ✅ Tampilkan dot merah di LiveChat
+    const liveDot = document.getElementById("livechatDot");
+    if (liveDot) liveDot.style.display = "flex";
+  } else {
+    // ✅ Sembunyikan dot merah di LiveChat kalau sudah dibaca
+    const liveDot = document.getElementById("livechatDot");
+    if (liveDot) liveDot.style.display = "none";
   }
+}
 });
 
 function showNotification(message, timestamp) {
@@ -409,8 +427,11 @@ function showNotification(message, timestamp) {
     localStorage.setItem("latestNotifTimestamp", timestamp);
 
     // ✅ Tampilkan dot merah di tombol LiveChat juga
-    const liveDot = document.getElementById("livechatDot");
-    if (liveDot) liveDot.style.display = "flex";
+  const liveDot = document.getElementById("livechatDot");
+    if (liveDot) {
+      liveDot.classList.add("show");
+      liveDot.style.display = "flex";
+    }
   }
 }
 
