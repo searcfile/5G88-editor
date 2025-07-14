@@ -40,7 +40,7 @@
       align-items: center;
       gap: 2px;
       cursor: default;
-      transition: background-color 0.2s ease;
+      transition: background-color 0.3s ease;
       white-space: nowrap; 
     }
     .tab .close-tab {
@@ -105,7 +105,7 @@
     color: #fff;
    }
    #logoutBtn:active {
-    color: #d1d1d1;
+    color: #8d8d8d;
    }
     #notifTooltip {
   opacity: 0;
@@ -164,6 +164,28 @@
   opacity: 1;
   visibility: visible;
   display: block;
+}
+    .live-chat-button {
+  position: absolute;
+  top: 9px;
+  left: 50px; /* Adjust sesuai kebutuhan */
+  background-color: gold;
+  color: #111;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: bold;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+}
+.live-chat-button:hover {
+  background-color: #fff;
+  color: #111;
+}
+    .header.shrink .live-chat-button {
+  left: 310px; /* menyesuaikan sidebar lebar 260px + margin */
 }
   </style>
 </head>
@@ -240,6 +262,7 @@
 
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
+    <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">💬 Live Chat</button>
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
     <div class="user-info">
