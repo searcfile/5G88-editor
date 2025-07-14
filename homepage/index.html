@@ -194,6 +194,24 @@
   background: transparent;
   color: #fff;
 }
+    .livechat-dot {
+  display: none;
+  position: absolute;
+  top: 0px;
+  right: -8px;
+  background: red;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid white;
+  z-index: 10000;
+}
   </style>
 </head>
 <body>
@@ -269,9 +287,13 @@
 
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
-    <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+    <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
+  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
     <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
-  </svg>LiveChat</button>
+  </svg>
+  LiveChat
+  <span id="livechatDot" class="livechat-dot">!</span>
+</button>
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
     <div class="user-info">
@@ -385,6 +407,10 @@ function showNotification(message, timestamp) {
 
     localStorage.setItem("latestNotifMessage", message);
     localStorage.setItem("latestNotifTimestamp", timestamp);
+
+    // ✅ Tampilkan dot merah di tombol LiveChat juga
+    const liveDot = document.getElementById("livechatDot");
+    if (liveDot) liveDot.style.display = "flex";
   }
 }
 
@@ -518,15 +544,18 @@ function addTab(label, url) {
   }
 
   const liveBtn = document.getElementById("liveChatBtn");
+  const liveDot = document.getElementById("livechatDot");
   if (liveBtn) {
     if (label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
+      if (liveDot) liveDot.style.display = "none"; // ✅ Hilang saat diklik
     } else {
       liveBtn.classList.remove("active-livechat");
     }
   }
+
   loadPage(url);
-  renderTabs(); 
+  renderTabs();
 }
 
 function closeTab(label) {
