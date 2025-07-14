@@ -165,12 +165,11 @@
   visibility: visible;
   display: block;
 }
-    .live-chat-button {
+  .live-chat-button {
   position: absolute;
   top: 9px;
-  left: 50px; /* Adjust sesuai kebutuhan */
-  background-color: gold;
-  color: #111;
+  left: 50px;
+  color: gold;
   border: none;
   border-radius: 4px;
   padding: 5px 10px;
@@ -181,11 +180,13 @@
   box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
 }
 .live-chat-button:hover {
-  background-color: #fff;
-  color: #111;
+  color: #fff;
+}
+.live-chat-button:active {
+  color: #8d8d8d;
 }
     .header.shrink .live-chat-button {
-  left: 310px; /* menyesuaikan sidebar lebar 260px + margin */
+  left: 50px; /* menyesuaikan sidebar lebar 260px + margin */
 }
   </style>
 </head>
@@ -262,7 +263,9 @@
 
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
-    <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">💬 Live Chat</button>
+    <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+    <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
+  </svg>LiveChat</button>
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
     <div class="user-info">
