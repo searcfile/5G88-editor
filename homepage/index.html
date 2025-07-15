@@ -187,24 +187,7 @@
   background: transparent;
   color: #fff;
 }
-  .livechat-dot {
-  display: none;
-  position: absolute;
-  top: 0px;
-  right: -8px;
-  background: red;
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid white;
-  z-index: 10000;
-}
+  
   </style>
 </head>
 <body>
@@ -285,7 +268,6 @@
     <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
   </svg>
   LiveChat
-  <span id="livechatDot" class="livechat-dot">!</span>
 </button>
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
@@ -348,7 +330,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-let isInitialLoad = true;
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -375,8 +356,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedMessage = localStorage.getItem("latestNotifMessage");
   const savedTimestamp = localStorage.getItem("latestNotifTimestamp");
   const seenKey = `seenNotif_${savedTimestamp}_${currentEmail}`;
-  const liveDot = document.getElementById("livechatDot");
-  const activeUrl = localStorage.getItem("activeTabUrl") || "";
 
   if (savedMessage && savedTimestamp) {
     const alreadySeen = localStorage.getItem(seenKey);
@@ -385,16 +364,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!alreadySeen) {
       if (notifDot) notifDot.style.display = "block";
-      if (liveDot) {
-        if (activeUrl.includes("userlivechatphp")) {
-          liveDot.style.display = "none";
-          localStorage.setItem(seenKey, "1");
-        } else {
-          liveDot.style.display = "flex";
-        }
-      }
-    } else {
-      if (liveDot) liveDot.style.display = "none";
     }
   }
 });
@@ -409,33 +378,18 @@ db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
 function showNotification(message, timestamp) {
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   const alreadySeen = localStorage.getItem(seenKey);
-  const liveDot = document.getElementById("livechatDot");
-  const activeUrl = localStorage.getItem("activeTabUrl") || "";
 
   if (!alreadySeen) {
-  notifButton.dataset.message = message;
-  notifButton.dataset.timestamp = timestamp;
+    notifButton.dataset.message = message;
+    notifButton.dataset.timestamp = timestamp;
 
-  localStorage.setItem("latestNotifMessage", message);
-  localStorage.setItem("latestNotifTimestamp", timestamp);
+    localStorage.setItem("latestNotifMessage", message);
+    localStorage.setItem("latestNotifTimestamp", timestamp);
 
-  if (notifDot) notifDot.style.display = "block";
-
-  setTimeout(() => {
-    if (liveDot) {
-      if (activeUrl.includes("userlivechatphp")) {
-        liveDot.style.display = "none";
-        localStorage.setItem(seenKey, "1");
-      } else {
-        if (!isInitialLoad) {
-          liveDot.style.display = "flex";
-        }
-      }
-    }
-  }, 100);
+    if (notifDot) notifDot.style.display = "block";
+  }
 }
 
-// TOMBOL NOTIF
 notifButton.addEventListener("click", () => {
   const message = notifButton.dataset.message;
   const timestamp = Number(notifButton.dataset.timestamp);
@@ -481,10 +435,6 @@ notifButton.addEventListener("click", () => {
   notifDot.style.display = "none";
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
-
-  // ❗ Jangan lupa sembunyikan juga liveDot
-  const liveDot = document.getElementById("livechatDot");
-  if (liveDot) liveDot.style.display = "none";
 });
 
 // TOOLTIP
@@ -954,8 +904,6 @@ tabBar.addEventListener('wheel', (e) => {
     e.preventDefault();
     tabBar.scrollLeft += e.deltaY;
   }
-});
-  isInitialLoad = false; // ✅ TAMBAH INI DI SINI
 });
 });
   </script>
