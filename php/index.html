@@ -308,6 +308,13 @@ border-radius: 10px;
   min-width: 200px;
   max-width: 300px;
 }
+.msg-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  margin-right: 6px;
+  object-fit: cover;
+}
 </style>
 
 <body>
@@ -576,7 +583,7 @@ function listenToChat(userEmail) {
     }
   });
 }
-      function renderChats(chatGroup, today) {
+ function renderChats(chatGroup, today) {
   const chatBox = document.getElementById('chatBox');
   let lastDateKey = '';
 
@@ -615,9 +622,12 @@ function listenToChat(userEmail) {
     }
 
     const senderLabel = c.from === 'user' ? (c.name || 'You') : (c.name || 'Admin');
+    const senderPhoto = c.photoURL || "https://i.pravatar.cc/40";
+
     if (c.text) {
       div.innerHTML = `
         <div class="msg-header">
+          <img src="${senderPhoto}" class="msg-avatar" alt="user" />
           <span class="msg-info">${senderLabel}</span>
           <small>${timeFormatted}</small>
         </div>
@@ -626,6 +636,7 @@ function listenToChat(userEmail) {
     } else if (c.image) {
       div.innerHTML = `
         <div class="msg-header">
+          <img src="${senderPhoto}" class="msg-avatar" alt="user" />
           <span class="msg-info">${senderLabel}</span>
           <small>${timeFormatted}</small>
         </div>
