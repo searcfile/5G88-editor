@@ -238,6 +238,60 @@
       width: 100%;
     }
   }
+    .chat-wrapper {
+  background: white;
+  max-width: 750px;
+  margin: 30px auto;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  border: 2px solid gold;
+}
+
+.chat-header {
+  background: var(--primary-color);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #fff3;
+}
+
+.chat-header .profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-header .profile img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.chat-header .profile span {
+  font-weight: bold;
+  font-size: 16px;
+  color: black;
+}
+
+.search-wrapper {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#searchChat {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 200px;
+  max-width: 300px;
+}
 </style>
 
 <body>
@@ -255,33 +309,32 @@
 
   <!-- Chat Main -->
   <main>
-    <div class="chat-container">
-      <!-- Header Chat -->
-      <div class="chat-header">
-        <div class="profile">
-          <img id="headerUserPhoto" src="" alt="User Photo" />
-          <div>
-            <span id="headerUserName">User</span><br>
-            <small id="typingStatus">Offline</small>
-          </div>
-        </div>
-        <input type="text" id="searchChat" placeholder="Search messages..." />
+  <div class="chat-wrapper">
+    <!-- CHAT HEADER -->
+    <div class="chat-header">
+      <div class="profile">
+        <img id="headerUserPhoto" src="https://i.pravatar.cc/40" alt="User" />
+        <span id="headerUserName">5G 88</span>
       </div>
-
-      <!-- Isi Chat -->
-      <div class="chat-box" id="chatBox"></div>
-
-      <!-- Input Chat -->
-      <div class="send-box">
-        <textarea id="msg" placeholder="Type your message" rows="2"></textarea>
-        <label class="file-label">
-          Upload Image
-          <input type="file" id="fileInput" accept="image/*">
-        </label>
-        <button type="button" disabled>Send</button>
+      <div class="search-wrapper">
+        <input type="text" id="searchChat" placeholder="🔍 Search messages..." />
       </div>
     </div>
-  </main>
+
+    <!-- CHAT CONTENT -->
+    <div class="chat-box" id="chatBox"></div>
+
+    <!-- SEND BOX -->
+    <div class="send-box">
+      <textarea id="msg" placeholder="Type your message" rows="2"></textarea>
+      <label class="file-label">
+        Upload Image
+        <input type="file" id="fileInput" accept="image/*">
+      </label>
+      <button type="button" disabled>Send</button>
+    </div>
+  </div>
+</main>
 <audio id="notifSound" src="https://easypay88.com/assets/sound/notification.wav" preload="auto"></audio>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
