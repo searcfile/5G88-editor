@@ -296,25 +296,28 @@
 
 <body>
   <!-- Header Atas -->
-  <header>
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <h1>User LiveChat</h1>
-      <div id="notifDot" style="width: 12px; height: 12px; background: red; border-radius: 50%; display: none;"></div>
-    </div>
-    <div style="display: flex; gap: 10px;">
-      <button onclick="toggleTheme()">🌓 Theme</button>
-      <button id="logoutBtn">Logout</button>
-    </div>
-  </header>
+ <header>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <h1>User LiveChat</h1>
+    <div id="notifDot" style="width: 12px; height: 12px; background: red; border-radius: 50%; display: none;"></div>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <button onclick="toggleTheme()">🌓 Theme</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
+</header>
 
-  <!-- Chat Main -->
-  <main>
+<!-- Chat Main -->
+<main>
   <div class="chat-wrapper">
     <!-- CHAT HEADER -->
     <div class="chat-header">
       <div class="profile">
         <img id="headerUserPhoto" src="https://i.pravatar.cc/40" alt="User" />
-        <span id="headerUserName">5G 88</span>
+        <div>
+          <span id="headerUserName">5G 88</span><br />
+          <small id="typingStatus" style="font-size: 12px; font-weight: normal; color: black;">Offline</small>
+        </div>
       </div>
       <div class="search-wrapper">
         <input type="text" id="searchChat" placeholder="🔍 Search messages..." />
