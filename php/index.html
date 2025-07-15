@@ -2,432 +2,593 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CIMB Editor</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiveChat - User</title>
   <style>
+    :root {
+      --bg-color: #111111;
+      --text-color: #111111;
+      --primary-color: #facc15;
+    }
+    body.dark {
+      --bg-color: #1f1f1f;
+      --text-color: #f5f5f5;
+      --primary-color: #3b82f6;
+    }
     body {
-      font-family: "Open Sans", Verdana, Helvetica, sans-serif;
-      background: #000;
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 20px;
-      font-weight: 400;
+      padding: 0;
     }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: #f4f4f4;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-    .header {
-      padding: 20px;
-      font-size: 22px;
-      font-weight: bold;
-      color: #000;
-      background: #fff;
-    }
-    .status-bar {
-      background: #e5e5e5;
-      padding: 15px 20px;
+    header {
+      background-color: var(--primary-color);
+      padding: 0.3rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      color: var(--bg-color);
     }
-    .status-bar .left {
-      display: flex;
-      align-items: center;
-      font-size: 14px;
+     h1 {
+     color: #035657;
+     }
+    chat-box {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #000000;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.chat-box::-webkit-scrollbar {
+  display: none;
+}
+    .message {
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 10px;
+      max-width: 70%;
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    .mine {
+      background-image: linear-gradient(to bottom, #fdcb3c, #efe451, #98a1b1);
       color: #000;
+      margin-left: auto;
     }
-    .check-icon {
-      width: 20px;
-      height: 20px;
-      background-color: #7db680;
-      color: white;
-      border-radius: 50%;
-      display: inline-flex;
+    .theirs {
+      background-image: linear-gradient(to bottom, #1d77ff33, #81acff, #c5ff4a);
+    }
+    .chat-container {
+  max-width: 700px;
+  margin: 1rem auto;
+  border: 2px solid gold;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #000;
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+    .send-box {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid gold;
+  background: #111;
+  flex-wrap: wrap;
+}
+    .send-box input, .send-box button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      min-width: 90px;
+      border-radius: 5px;
+    }
+    .send-box input[type="text"] {
+      flex: 1;
+    }
+    #msg {
+  width: 65%;        /* Lebar penuh sesuai container */
+  min-height: 20px;   /* Tinggi minimal */
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 2px solid gold;
+  resize: vertical;   /* Boleh resize vertikal */
+  box-sizing: border-box; /* supaya padding tidak membuat melebar */
+}
+    .file-label {
+      background: var(--primary-color);
+      color: var(--bg-color);
+      padding: 0.5rem;
+      border-radius: 5px;
+      cursor: pointer;
       justify-content: center;
       align-items: center;
-      font-weight: bold;
-      margin-right: 8px;
-      font-size: 14px;
-    }
-    .success-text {
-      color: rgb(125, 182, 128);
-      font-weight: 700;
-    }
-    .details {
-      padding: 20px;
       display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
     }
-    .left, .right {
-      width: 48%;
+    input[type="file"] {
+      display: none;
     }
-    .label {
-      font-size: 14px;
-      color: #555;
-    }
-    .value {
+    #logoutBtn {
+   background-color: gold;
+   color: black;
+   padding: 10px 16px;
+   border-radius: 5px;
+   font-weight: bold;
+   cursor: pointer;
+   transition: all 0.3s ease;
+  }
+   #logoutBtn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #000;
+    font-weight: bold;
+   }
+    /* CHAT HEADER STYLE */
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #222;
+      padding: 8px 12px;
+      color: gold;
       font-weight: bold;
-      margin-bottom: 12px;
-      font-size: 16px;
-      color: #000;
+      font-family: Arial, sans-serif;
     }
-    .amount-label {
-     font-size: 20px;
-     font-weight: 700;
-     margin-bottom: 8px;
-     color: #000; 
+
+    .chat-header .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: auto;
     }
-    .amount {
-     font-weight: bold;
-     color: #000;
-     margin-bottom: 10px;
+
+    .chat-header .profile img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      border: 2px solid gold;
     }
-    .currency {
-     font-size: 11px;
-     position: relative;
-     margin-right: 2px;
-     top: -10px;
-     font-weight: 850;
+
+    #searchChat {
+      flex-grow: 1;
+      padding: 10px 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 14px;
     }
-    #main-amount {
-     font-size: 20px;
-     position: relative;
-     top: 0;
-     font-weight: 720;
+
+    #typingStatus {
+      min-width: 90px;
+      text-align: right;
+      font-style: italic;
+      font-size: 12px;
+      color: lightgreen;
     }
-    .sen {
-     font-size: 11px;
-     position: relative;
-     top: -10px;
-     margin-left: 1px;
-     font-weight: 700;
-    }  
-    .charges {
-     font-size: 13px;
-     color: #000;
-     top: -8px;
-     position: relative;
-    }
-    .charge-amount {
-     font-size: 12px;
-     position: relative;
-     top: 0;
-     font-weight: bold;
-    }
-    .charge-sen {
-     font-size: 8px;
-     position: relative;
-     font-weight: bold;
-     top: -3px;
-    }
-    .charges .currency {
-     top: -3px;
-     font-size: 8px;
-     position: relative;
-    }
-    .footer {
-     padding: 15px 20px;
-     background: #fff;
-     font-size: 13px;
-     color: #d50000;
-     font-weight: 500;
-     border-top: 1px solid #ccc;
-    }
-    .top-inputs {
-     max-width: 700px;
-     margin: 10px auto 0 auto;
-     display: flex;
-     justify-content: flex-end;
-     gap: 8px;
-     flex-wrap: wrap;
-     padding: 0 20px;
-     font-size: 10px;
-    }
-    .input-group {
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-    }
-    .input-label {
-     font-size: 15px;
-     color: #ec1d23;
-     margin-top: 4px;
-     text-align: center;
-    }
-    .input-group input {
-     width: 155px;
-     padding: 6px 8px;
-     font-size: 13px;
-     border: 1px solid #ec1d23 !important;
-     border-radius: 4px;
-    }
-    .top-inputs button {
-     padding: 4px 8px;
-     font-size: 13px;
-     border: none;
-     border-radius: 4px;
-     background-color: #ec1d23; 
-     color: white;
-     cursor: pointer;
-     transition: background-color 0.3s ease, opacity 0.2s ease;
-     height: 30px;
-    }
-    .top-inputs button:hover {
-     background-color: rgba(236, 29, 35, 0.5);
-     border: 1px solid #ec1d23;
-     color: white;
-    }
-    .top-inputs button:active {
-     background-color: rgba(236, 29, 35, 0.3); 
-     opacity: 0.8;
-    }
-    .form-section {
-     max-width: 700px;
-     margin: 30px auto;
-     background: #fff;
-     padding: 20px;
-     border-radius: 6px;
-     box-shadow: 0 0 8px rgba(0,0,0,0.1);
-    }
-    .form-section input {
-     width: 100%;
-     padding: 8px;
-     margin: 8px 0;
-     box-sizing: border-box;
-     font-size: 14px;
-    }
-    .form-section button {
-     padding: 5px 20px;
-     margin-top: 10px;
-     margin-right: 10px;
-     cursor: pointer;
-     background-color: #ec1d23;
-     color: white;
-     border: none;
-     border-radius: 4px;
-     font-size: 14px;
-    }
-    .form-section button:hover {
-     background-color: #800000;
-     color: white;
-     transition: background-color 0.3s ease;
-    }
-    #transfer-date, #ref-number {
-     font-family: Open Sans;
-     font-size: 14px;
-    }
-    input:focus {
-     border: 2px solid #ec1d23;
-     outline: 1px solid #ec1d23;
-     box-shadow: 0 0 3px #ec1d23;
-     caret-color: #ec1d23;
-     border-color: #ec1d23;
-    }
-    .btn-update, btn-date {
-     padding: 4px 8px;
-     font-size: 13px;
-     border: 2px solid #ec1d23;
-     border-radius: 4px;
-     background-color: #fff;
-     color: #ec1d23;
-     cursor: pointer;
-     transition: transform 0.6s ease, background-color 0.3s, color 0.3s;
-     transform-origin: center;
-    }
-    .btn-update, btn-date:hover {
-     animation: rotate360 0.6s linear;
-     background-color: #ec1d23;
-     color: #fff;
-    }
-    @keyframes rotate360 {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-    }
-    @media (max-width: 600px) {
-    .left, .right {
-    width: 100%;
-    }
-  }
-    .scale-wrapper {
-    transform: scale(2.5);
-    transform-origin: top center;
-  }
-.top-inputs input[type="text"] {
-  border: 1px solid #ec1d23 !important;
-  border-radius: 2px;
-  background-color: white;
-  color: black;
+     .msg-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+  font-weight: bold;
 }
+
+.msg-header small {
+  font-size: 0.75rem;
+  color: #0b6906;
+}
+
+.msg-text {
+  margin: 0;
+  padding: 0;
+}
+    .date-label {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.date-label-inner {
+  display: inline-block;
+  background-color: lightgreen;
+  padding: 2px 30px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.date-label-inner .day-label {
+  font-weight: bold;
+}
+
+.date-label-inner .full-date-label {
+  font-size: 12px;
+  color: #555;
+}
+    @media (max-width: 600px) {
+  .chat-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  #searchChat {
+    width: 100%;
+  }
+
+  .send-box {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #msg {
+    width: 100%;
+  }
+}
+    
+    
   </style>
 </head>
 <body>
- <div class="scale-wrapper">
-  <div class="top-inputs">
-    <div style="display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
-  <button class="btn-update" onclick="resetDisplay()">Reset</button>
-  <button class="btn-update" id="btn-date">Now</button>
-  <div style="display: flex; flex-direction: column;">
-    <input type="text" id="input-date" placeholder="Date & Time" />
-    <div class="input-label">Date & Time</div>
-  </div>
-  <div style="display: flex; flex-direction: column;">
-    <input type="text" id="input-amount" placeholder="Fill Amount" />
-    <div class="input-label">Amount</div>
-  </div>
-  <button class="btn-update" onclick="updateDisplay()">Create</button>
-</div>
-  </div>
-
-  <div class="container">
-    <div class="header">DuitNow / Transfer Money Acknowledgement</div>
-
-    <div class="status-bar">
-      <div class="left" style="display: flex; align-items: center;">
-        <div class="check-icon">✔</div>
-        <span><strong class="success-text">Successful</strong> Ref <span id="ref-number">000000000</span></span>
-      </div>
-      <div id="transfer-date">01 May 2025, 00:00:00 am</div>
+  <header style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <h1>User LiveChat</h1>
+      <div id="notifDot" style="width: 12px; height: 12px; background: red; border-radius: 50%; display: none;"></div>
     </div>
+    <button onclick="toggleTheme()">Toggle Theme</button>
+  </header>
 
-    <div class="details">
-      <div class="left">
-        <div class="value">To</div>
-        <div class="label">Account Number</div>
-        <div class="value">7002795979</div>
-
-        <div class="label">Account Name</div>
-        <div class="value">SA PASSBOOK</div>
-
-        <div class="label">Recipient Name</div>
-        <div class="value">PAPA MINTA SAYANG</div>
-      </div>
-      <div class="right" style="text-align: right;">
-        <div class="label amount-label">Amount</div>
-        <div class="amount">
-          <span class="currency">MYR</span>
-          <span id="main-amount">1,000.</span><span class="sen">00</span>
-        </div>
-        <div class="charges">
-          Bank charges 
-          <span class="currency">MYR</span>
-          <span class="charge-amount">0.</span><span class="charge-sen">00</span>
+ <main>
+  <div class="chat-container">
+    <!-- CHAT HEADER -->
+    <div class="chat-header">
+      <div class="profile">
+        <img id="headerUserPhoto" src="" alt="User Photo" />
+        <div>
+          <span id="headerUserName">User</span><br>
+          <small id="typingStatus">Offline</small>
         </div>
       </div>
+      <input type="text" id="searchChat" placeholder="Search messages..." />
+      <button id="logoutBtn">Logout</button>
     </div>
 
-    <div class="footer">More transfer details →</div>
+    <!-- CHAT CONTENT -->
+    <div class="chat-box" id="chatBox"></div>
+
+    <!-- SEND BOX -->
+    <div class="send-box">
+      <textarea id="msg" placeholder="Type your message" rows="2"></textarea>
+      <label class="file-label">
+        Upload Image
+        <input type="file" id="fileInput" accept="image/*">
+      </label>
+      <button type="button" disabled>Send</button>
+    </div>
   </div>
-</div>
+</main>
+<audio id="notifSound" src="https://easypay88.com/assets/sound/notification.wav" preload="auto"></audio>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 
 <script>
-document.addEventListener("contextmenu", e => e.preventDefault());
-document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
-console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
-
-function getFormattedDateTime() {
-  const now = new Date();
-
-  const day = now.getDate().toString().padStart(2, '0');
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const month = monthNames[now.getMonth()];
-  const year = now.getFullYear();
-
-  let hours = now.getHours();
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-
-  const ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12 || 12;
-
-  return `${day} ${month} ${year}, ${hours.toString().padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
-}
-
-document.getElementById("btn-date").addEventListener("click", function () {
-  const now = getFormattedDateTime();
-  document.getElementById("input-date").value = now;
-});
-
-function formatNumberWithCommas(numStr) {
-  const [whole, decimal] = numStr.replace(/[^\d.]/g, '').split(".");
-  const formattedWhole = parseInt(whole || "0").toLocaleString("en-MY");
-  return formattedWhole + (decimal !== undefined ? "." + decimal : "");
-}
-
-document.getElementById("input-amount").addEventListener("input", function () {
-  const rawValue = this.value.replace(/,/g, '');
-  if (!isNaN(rawValue)) {
-    const formatted = formatNumberWithCommas(rawValue);
-    this.value = formatted;
+  // Konversi email jadi ID aman untuk path Firebase
+  function sanitizeEmail(email) {
+    return email.replace(/\./g, '_').replace(/@/g, '_at_').replace(/,/g, '_');
   }
-});
 
-function updateDisplay() {
-  const date = document.getElementById("input-date").value;
-  const rawAmount = document.getElementById("input-amount").value.replace(/,/g, '');
-  const amount = parseFloat(rawAmount).toFixed(2);
+  function getChatPath(email) {
+    return 'chats/' + sanitizeEmail(email);
+  }
 
-  const parts = amount.split(".");
-  const main = parseInt(parts[0]).toLocaleString("en-MY");
-  const sen = parts[1] || "00";
-
-
-  document.getElementById("transfer-date").textContent = date;
-  document.getElementById("main-amount").textContent = main + ".";
-  document.querySelector(".sen").textContent = sen;
-
-  const ref = document.getElementById("ref-number").textContent;
-
-  const displayData = {
-    date,
-    amount: amount,
-    mainAmount: main,
-    sen: sen,
-    ref: ref
+  const firebaseConfig = {
+    apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+    authDomain: "blurphp.firebaseapp.com",
+    databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "blurphp",
+    storageBucket: "blurphp.appspot.com",
+    messagingSenderId: "593904200464",
+    appId: "1:593904200464:web:cea7bc1360532c20d99395"
   };
 
-  localStorage.setItem("displayData", JSON.stringify(displayData));
-}
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const storage = firebase.storage();
 
-window.addEventListener("DOMContentLoaded", function () {
-  const stored = localStorage.getItem("displayData");
-  if (stored) {
-    const data = JSON.parse(stored);
+  let currentUserEmail = null;
 
- 
-    document.getElementById("input-date").value = data.date;
-    document.getElementById("input-amount").value = formatNumberWithCommas(data.amount);
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      const userName = localStorage.getItem("username") || user.displayName || "User";
+      const userEmail = localStorage.getItem("useremail") || user.email;
+      const userPhoto = localStorage.getItem("userphoto") || user.photoURL || "";
 
-    document.getElementById("transfer-date").textContent = data.date;
-    document.getElementById("main-amount").textContent = data.mainAmount + ".";
-    document.querySelector(".sen").textContent = data.sen;
+      if (!userEmail) {
+        alert("🚫 User email not found. Please login again.");
+        logout();
+        return;
+      }
 
-    if (data.ref) {
-      document.getElementById("ref-number").textContent = data.ref;
+      localStorage.setItem("username", userName);
+      localStorage.setItem("useremail", userEmail);
+      localStorage.setItem("userphoto", userPhoto);
+
+      currentUserEmail = userEmail;
+
+      
+      // SET CHAT HEADER PROFILE
+      const headerUserPhoto = document.getElementById('headerUserPhoto');
+      const headerUserName = document.getElementById('headerUserName');
+      const typingStatus = document.getElementById('typingStatus');
+      const searchInput = document.getElementById('searchChat');
+      const chatBox = document.getElementById('chatBox');
+
+      headerUserPhoto.src = userPhoto || 'https://i.pravatar.cc/40';
+      headerUserName.textContent = userName;
+      typingStatus.textContent = 'Online';
+
+      listenToChat(currentUserEmail);
+
+      const msgInput = document.getElementById('msg');
+      const sendBtn = document.querySelector('.send-box button');
+      const fileInput = document.getElementById('fileInput');
+
+      let typingTimer;
+      const typingDelay = 2000;
+
+      msgInput.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') {
+    if (e.shiftKey || e.ctrlKey) {
+      // Shift+Enter atau Ctrl+Enter bikin baris baru (newline)
+      return; // biarkan default behavior
+    } else {
+      // Enter doang, kirim pesan
+      e.preventDefault();
+      sendMessage(currentUserEmail);
     }
   }
 });
-function resetDisplay() {
-  localStorage.removeItem("displayData");
 
-  document.getElementById("input-date").value = "";
-  document.getElementById("input-amount").value = "";
+      msgInput.addEventListener('input', () => {
+        sendBtn.disabled = !msgInput.value.trim() && !fileInput.files.length;
 
-  document.getElementById("transfer-date").textContent = "01 May 2025, 00:00:00 am";
-  document.getElementById("main-amount").textContent = "1,000.";
-  document.querySelector(".sen").textContent = "00";
-  document.getElementById("ref-number").textContent = "000000000";
+        if (msgInput.value.trim() !== '') {
+          typingStatus.textContent = 'Typing...';
+          clearTimeout(typingTimer);
+          typingTimer = setTimeout(() => {
+            typingStatus.textContent = 'Online';
+          }, typingDelay);
+        } else {
+          typingStatus.textContent = 'Online';
+        }
+      });
+
+      searchInput.addEventListener('input', () => {
+        const filter = searchInput.value.toLowerCase();
+        const messages = chatBox.querySelectorAll('.message');
+
+        messages.forEach(msg => {
+          const text = msg.textContent.toLowerCase();
+          if (text.includes(filter)) {
+            msg.style.display = '';
+          } else {
+            msg.style.display = 'none';
+          }
+        });
+      });
+
+      sendBtn.disabled = true;
+      sendBtn.addEventListener('click', () => sendMessage(currentUserEmail));
+
+    } else {
+      alert("🚫 Not logged in. Redirecting to login page...");
+      window.location.href = "https://searcfile.github.io/5g88-php/livechatloginphp/";
+    }
+  });
+
+  async function sendMessage(userEmail) {
+  if (!userEmail) {
+    alert("❌ Gagal mengirim pesan: email tidak valid.");
+    logout();
+    return;
+  }
+
+  const msgInput = document.getElementById('msg');
+  const msg = msgInput.value.trim();
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files[0];
+
+  if (!msg && !file) return;
+
+  const userName = localStorage.getItem("username") || "User";
+  const userPhoto = localStorage.getItem("userphoto") || "";
+  const time = Date.now();
+  const chatRef = db.ref(getChatPath(userEmail));
+
+  try {
+    // Jika ada file, upload ke Firebase Storage
+    if (file) {
+      const fileRef = storage.ref(`chat_images/${sanitizeEmail(userEmail)}/${time}_${file.name}`);
+      const snapshot = await fileRef.put(file);
+      const url = await snapshot.ref.getDownloadURL();
+
+      await chatRef.push({
+        from: 'user',
+        name: userName,
+        email: userEmail,
+        photoURL: userPhoto,
+        image: url,
+        time
+      });
+    }
+
+    // Jika ada teks, kirim pesan teks
+    if (msg) {
+      await chatRef.push({
+        from: 'user',
+        name: userName,
+        email: userEmail,
+        photoURL: userPhoto,
+        text: msg,
+        time
+      });
+    }
+
+    msgInput.value = '';
+    fileInput.value = '';
+    document.querySelector('.send-box button').disabled = true;
+
+  } catch (error) {
+    console.error("Error sending message:", error);
+    alert("❌ Gagal mengirim pesan.");
+  }
 }
-</script>
+function listenToChat(userEmail) {
+  const chatBox = document.getElementById('chatBox');
+  const chatRef = db.ref(getChatPath(userEmail));
+  const notifDot = document.getElementById('notifDot');
+  const lastSeenKey = `lastSeenByUser_${sanitizeEmail(userEmail)}`;
+
+  chatRef.on('value', snapshot => {
+    chatBox.innerHTML = '';
+    const chats = snapshot.val();
+    const lastSeenTime = parseInt(localStorage.getItem(lastSeenKey) || '0');
+    let latestAdminMsgTime = 0;
+
+    if (chats) {
+      const chatArray = Object.values(chats).sort((a, b) => a.time - b.time);
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const pastChats = [], todayChats = [];
+
+      chatArray.forEach(c => {
+        const msgDateOnly = new Date(c.time); msgDateOnly.setHours(0, 0, 0, 0);
+        (msgDateOnly.getTime() === today.getTime() ? todayChats : pastChats).push(c);
+        if (c.from === 'admin' && c.time > latestAdminMsgTime) latestAdminMsgTime = c.time;
+      });
+
+      // 🔔 Notifikasi jika ada pesan admin baru
+      if (latestAdminMsgTime > lastSeenTime) {
+        notifDot.style.display = 'inline-block';
+        playNotificationSound();
+      } else {
+        notifDot.style.display = 'none';
+      }
+
+      renderChats(pastChats, today);  // kirim today ke fungsi render
+      renderChats(todayChats, today);
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Simpan waktu terakhir dibaca
+      const latestTime = chatArray[chatArray.length - 1]?.time || 0;
+      localStorage.setItem(lastSeenKey, latestTime);
+    } else {
+      notifDot.style.display = 'none';
+    }
+  });
+}
+      function renderChats(chatGroup, today) {
+  const chatBox = document.getElementById('chatBox');
+  let lastDateKey = '';
+
+  chatGroup.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'message ' + (c.from === 'user' ? 'mine' : 'theirs');
+
+    const msgDate = new Date(c.time);
+    const timeFormatted = msgDate.toLocaleTimeString('en-US', {
+      hour: '2-digit', minute: '2-digit', hour12: true
+    });
+
+    const dateKey = msgDate.toDateString();
+    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+
+    let dayLabel = '';
+    if (dateKey === today.toDateString()) dayLabel = 'Today';
+    else if (dateKey === yesterday.toDateString()) dayLabel = 'Yesterday';
+    else dayLabel = msgDate.toLocaleDateString('en-GB', { weekday: 'long' });
+
+    const fullDateLabel = msgDate.toLocaleDateString('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+
+    if (dateKey !== lastDateKey) {
+      const dateLabelDiv = document.createElement('div');
+      dateLabelDiv.className = 'date-label';
+      dateLabelDiv.innerHTML = `
+        <div class="date-label-inner">
+          <div class="day-label">${dayLabel}</div>
+          <div class="full-date-label">${fullDateLabel}</div>
+        </div>
+      `;
+      chatBox.appendChild(dateLabelDiv);
+      lastDateKey = dateKey;
+    }
+
+    const senderLabel = c.from === 'user' ? (c.name || 'You') : (c.name || 'Admin');
+    if (c.text) {
+      div.innerHTML = `
+        <div class="msg-header">
+          <span class="msg-info">${senderLabel}</span>
+          <small>${timeFormatted}</small>
+        </div>
+        <p class="msg-text">${c.text}</p>
+      `;
+    } else if (c.image) {
+      div.innerHTML = `
+        <div class="msg-header">
+          <span class="msg-info">${senderLabel}</span>
+          <small>${timeFormatted}</small>
+        </div>
+        <img src="${c.image}" alt="Image" style="max-width: 100%; border-radius: 8px; margin-top: 4px;">
+      `;
+    }
+
+    chatBox.appendChild(div);
+  });
+}
+
+  
+let userHasInteracted = false;
+
+  // Deteksi klik pertama user
+  ['click', 'keydown', 'scroll', 'touchstart'].forEach(event =>
+  document.addEventListener(event, () => userHasInteracted = true, { once: true })
+);
+
+  function playNotificationSound() {
+    const audio = document.getElementById("notifSound");
+    if (audio && userHasInteracted) {
+      audio.currentTime = 0;
+      audio.play().catch(e => {
+        console.warn("🔇 Audio autoplay blocked:", e);
+      });
+    }
+  }
+  function logout() {
+    firebase.auth().signOut()
+      .then(() => {
+        localStorage.clear();
+        window.location.href = "https://searcfile.github.io/5g88-php/livechatloginphp/";
+      })
+      .catch((error) => {
+        console.error("Logout failed:", error);
+      });
+  }
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    logout();
+  });
+
+  function toggleTheme() {
+    document.body.classList.toggle('dark-theme');
+  }
+  </script>
 </body>
 </html>
