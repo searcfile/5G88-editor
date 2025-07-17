@@ -28,7 +28,7 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 10px;
     background: #222;
   }
   th, td {
@@ -43,14 +43,105 @@
   tbody tr:nth-child(even) {
     background: rgba(0,0,0,0.25);
   }
+ .search-container {
+  display: flex;
+  align-items: center;
+  width: 500px;
+  margin: 20px 20px 10px;
+  background-color: transparent;
+  gap: 0;
+}
+
+/* INPUT */
+.search-container input {
+  flex: 1;
+  padding: 10px 10px;
+  font-size: 14px;
+  color: white;
+  background-color: #141414;
+  border: 1px solid #424242;
+  border-radius: 6px 0 0 6px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.search-container input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.search-container input:hover {
+  border-color: #3b8cff;
+}
+.search-container input:focus {
+  border-color: #1668dc;
+}
+
+/* BUTTON */
+.search-container button {
+  padding: 10px 10px;
+  background-color: #141414;
+  border: 1px solid #424242;
+  border-left: 1px solid #424242; /* penting agar tak dobel border */
+  border-radius: 0 6px 6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.search-container button:hover {
+  border-color: #3b8cff;
+  color: #3b8cff;
+  background-color: #1a1a1a;
+}
+.search-container button:active {
+  border-color: #1668dc;
+  color: #1668dc;
+  background-color: #1a1a1a;
+}
+
+/* SVG ikut warna */
+.search-container button svg {
+  stroke: currentColor;
+  transition: stroke 0.2s;
+}
+#searchBtn.loading {
+  animation: snapshotPulse 5s ease-in-out infinite;
+  border: 1px solid #3b8cff;
+  border-radius: 0 6px 6px 0;
+}
+
+@keyframes snapshotPulse {
+  0% { box-shadow: 0 0 0px #3b8cff; }
+  50% { box-shadow: 0 0 8px #3b8cff; }
+  100% { box-shadow: 0 0 0px #3b8cff; }
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
-
 <div class="header">User List (Login)</div>
-
+  
+<div class="search-container">
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Search"
+    autocomplete="off"
+  />
+  <button id="searchBtn" type="button">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <path d="M21 21L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="10" cy="10" r="6" stroke="#currentColor" stroke-width="2"/>
+    </svg>
+  </button>
+</div>
+  
 <div class="table-container">
 <table>
   <thead>
@@ -80,6 +171,8 @@
   firebase.initializeApp(firebaseConfig);
   const dbRef = firebase.database().ref('logins');
 
+  let allLoginData = [];
+
   function parseDateString(dateString) {
     if (!dateString) return null;
     const cleaned = dateString.replace(/\s*-\s*/g, '-').trim();
@@ -105,18 +198,46 @@
     return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
   }
 
-  function loadLoginData() {
+  function filterTable(query, data) {
+    const lowerQuery = query.toLowerCase();
+    return data.filter(item =>
+      (item.name || '').toLowerCase().includes(lowerQuery) ||
+      (item.email || '').toLowerCase().includes(lowerQuery)
+    );
+  }
+
+  function renderLoginTable(dataArray) {
     const tbody = document.getElementById('loginTableBody');
-    tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+    if (!dataArray.length) {
+      tbody.innerHTML = '<tr><td colspan="4">No matching login data found.</td></tr>';
+      return;
+    }
+
+    let html = '';
+    dataArray.forEach((item, index) => {
+      html += `<tr>
+        <td>${index + 1}</td>
+        <td>${item.name || '-'}</td>
+        <td>${item.email || '-'}</td>
+        <td class="yellow">${item.dateObj ? formatDateTime(item.dateObj) : item.loginRaw}</td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  }
+
+  function loadLoginData() {
+    const searchBtn = document.getElementById('searchBtn');
+    searchBtn.classList.add('loading'); // ✅ Tunjukkan efek snapshot hanya di tombol
 
     dbRef.once('value', snapshot => {
       const data = snapshot.val();
       if (!data) {
-        tbody.innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
+        document.getElementById('loginTableBody').innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
+        searchBtn.classList.remove('loading');
         return;
       }
 
-      const dataArray = Object.values(data)
+      allLoginData = Object.values(data)
         .map(item => {
           const dateObj = parseDateString(item.loginAt);
           return {
@@ -132,34 +253,43 @@
           return b.dateObj - a.dateObj;
         });
 
-      let html = '';
-      dataArray.forEach((item, index) => {
-        html += `<tr>
-          <td>${index + 1}</td>
-          <td>${item.name || '-'}</td>
-          <td>${item.email || '-'}</td>
-          <td class="yellow">${item.dateObj ? formatDateTime(item.dateObj) : item.loginRaw}</td>
-        </tr>`;
-      });
-
-      tbody.innerHTML = html;
+      const searchTerm = document.getElementById('searchInput')?.value || '';
+      const filteredData = filterTable(searchTerm, allLoginData);
+      renderLoginTable(filteredData);
+      searchBtn.classList.remove('loading'); // ✅ Sembunyikan efek selepas selesai
     }, error => {
-      tbody.innerHTML = `<tr><td colspan="4">Error: ${error.message}</td></tr>`;
+      document.getElementById('loginTableBody').innerHTML = `<tr><td colspan="4">Error: ${error.message}</td></tr>`;
+      searchBtn.classList.remove('loading');
     });
   }
 
   function preserveScrollAndLoad() {
-  const scrollY = window.scrollY;
+    const scrollY = window.scrollY;
+    loadLoginData();
+    setTimeout(() => {
+      window.scrollTo({ top: scrollY, behavior: 'instant' });
+    }, 50);
+  }
 
-  loadLoginData();
+  function setupSearchListener() {
+    const input = document.getElementById('searchInput');
+    if (input) {
+      input.addEventListener('input', () => {
+        const filteredData = filterTable(input.value, allLoginData);
+        renderLoginTable(filteredData);
+      });
+    }
+  }
 
-  setTimeout(() => {
-    window.scrollTo({ top: scrollY, behavior: 'instant' });
-  }, 100);
-}
+  preserveScrollAndLoad();
+  setInterval(preserveScrollAndLoad, 10000);
+  window.onload = setupSearchListener;
 
-preserveScrollAndLoad();
-setInterval(preserveScrollAndLoad, 10000);
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    const query = document.getElementById('searchInput').value;
+    const filtered = filterTable(query, allLoginData);
+    renderLoginTable(filtered);
+  });
 </script>
 
 </body>
