@@ -110,15 +110,22 @@
   transition: stroke 0.2s;
 }
 #searchBtn.loading {
-  animation: snapshotPulse 5s ease-in-out infinite;
   border: 1px solid #3b8cff;
   border-radius: 0 6px 6px 0;
+  box-shadow: 0 0 10px #3b8cff;
+  background-color: #1a1a1a;
 }
 
-@keyframes snapshotPulse {
-  0% { box-shadow: 0 0 0px #3b8cff; }
-  50% { box-shadow: 0 0 8px #3b8cff; }
-  100% { box-shadow: 0 0 0px #3b8cff; }
+#searchBtn.loading svg {
+  stroke: #3b8cff;
+  filter: drop-shadow(0 0 5px #3b8cff);
+  animation: pulseIcon 5s ease-in-out infinite;
+}
+
+@keyframes pulseIcon {
+  0% { filter: drop-shadow(0 0 0px #3b8cff); }
+  50% { filter: drop-shadow(0 0 8px #3b8cff); }
+  100% { filter: drop-shadow(0 0 0px #3b8cff); }
 }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -227,7 +234,7 @@
 
   function loadLoginData() {
     const searchBtn = document.getElementById('searchBtn');
-    searchBtn.classList.add('loading'); // ✅ Tunjukkan efek snapshot hanya di tombol
+    searchBtn.classList.add('loading'); // 🔵 Aktifkan efek glowing tombol + icon
 
     dbRef.once('value', snapshot => {
       const data = snapshot.val();
@@ -256,7 +263,8 @@
       const searchTerm = document.getElementById('searchInput')?.value || '';
       const filteredData = filterTable(searchTerm, allLoginData);
       renderLoginTable(filteredData);
-      searchBtn.classList.remove('loading'); // ✅ Sembunyikan efek selepas selesai
+
+      searchBtn.classList.remove('loading');
     }, error => {
       document.getElementById('loginTableBody').innerHTML = `<tr><td colspan="4">Error: ${error.message}</td></tr>`;
       searchBtn.classList.remove('loading');
@@ -282,7 +290,7 @@
   }
 
   preserveScrollAndLoad();
-  setInterval(preserveScrollAndLoad, 10000);
+  setInterval(preserveScrollAndLoad, 5000);
   window.onload = setupSearchListener;
 
   document.getElementById('searchBtn').addEventListener('click', () => {
