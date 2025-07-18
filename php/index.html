@@ -232,7 +232,7 @@
 }
 
 .toggle-switch.active {
-  background-color: #22c55e;
+  background-color: #1668dc;
 }
 
 .toggle-switch.active::after {
@@ -611,13 +611,33 @@ function startCountdown(targetTime, display, isActiveCallback = () => true) {
   judulInput.placeholder = 'Title Message...';
   judulInput.className = 'judul-input';
 
- const textarea = document.createElement('textarea');
- textarea.placeholder = 'Type new message...';
- textarea.className = 'create-message';
+  const textarea = document.createElement('textarea');
+  textarea.placeholder = 'Type new message...';
+  textarea.className = 'create-message';
 
-  const timeInput = document.createElement('input');
-  timeInput.type = 'datetime-local';
-  timeInput.className = 'create-time';
+  const datetimeWrapper = document.createElement('div');
+  datetimeWrapper.className = 'datetime-wrapper';
+
+  const customDateInput = document.createElement('input');
+  customDateInput.type = 'text';
+  customDateInput.placeholder = 'dd/mm/yyyy --:--';
+  customDateInput.id = `customDate_${Date.now()}`;
+  customDateInput.className = 'create-time';
+  datetimeWrapper.appendChild(customDateInput);
+
+  const calendarIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  calendarIcon.setAttribute("viewBox", "0 0 24 24");
+  calendarIcon.classList.add("calendar-icon");
+  calendarIcon.innerHTML = '<path fill="gold" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1...Z"/>';
+  datetimeWrapper.appendChild(calendarIcon);
+
+  setTimeout(() => {
+    flatpickr(`#${customDateInput.id}`, {
+      enableTime: true,
+      dateFormat: "d/m/Y H:i",
+      time_24hr: true
+    });
+  }, 0);
 
   const countdownText = document.createElement('div');
   countdownText.style.color = 'gray';
@@ -648,6 +668,62 @@ function startCountdown(targetTime, display, isActiveCallback = () => true) {
     daySelect.appendChild(option);
   }
 
+  const controlDiv = document.createElement('div');
+  controlDiv.style.display = 'flex';
+  controlDiv.style.alignItems = 'center';
+  controlDiv.style.gap = '10px';
+  controlDiv.style.marginTop = '5px';
+  controlDiv.appendChild(datetimeWrapper);
+  controlDiv.appendChild(daySelect);
+  controlDiv.appendChild(toggle);
+  controlDiv.appendChild(countdownText);
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'btn-save';
+  saveBtn.textContent = 'Save';
+  saveBtn.onclick = () => {
+    const newText = textarea.value.trim();
+    const newTitle = judulInput.value.trim();
+    if (!newText) return;
+
+    const newId = db.ref().child("notifikasi/list").push().key;
+
+    db.ref("notifikasi/list/" + newId).set({
+      text: newText,
+      title: newTitle,
+      timestamp: Date.now()
+    }).then(() => {
+      if (customDateInput.value) {
+        localStorage.setItem(`autoSend_${newId}`, JSON.stringify({
+          time: customDateInput.value,
+          enabled: toggle.classList.contains("active"),
+          selectedDay: daySelect.value
+        }));
+      }
+
+      clearInterval(countdownText._timer);
+      row.remove();
+      isCreating = false;
+      renderNotices();
+    });
+  };
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-delete';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = () => {
+    clearInterval(countdownText._timer);
+    row.remove();
+    isCreating = false;
+  };
+
+  row.appendChild(judulInput);
+  row.appendChild(textarea);
+  row.appendChild(saveBtn);
+  row.appendChild(cancelBtn);
+  row.appendChild(controlDiv);
+  noticeList.prepend(row);
+}
   // ⏱️ Countdown handler
   function startCountdownInCreate(targetTime) {
     clearInterval(countdownText._timer);
