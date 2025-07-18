@@ -2,688 +2,768 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LiveChat - User</title>
+  <title>Admin Notice</title>
   <style>
-    :root {
-  --bg-color: #111111;
-  --text-color: #ffffff;
-  --primary-color: #facc15;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: gold;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-body.dark {
-  --bg-color: #1f1f1f;
-  --text-color: #f5f5f5;
-  --primary-color: #3b82f6;
-}
-
-body {
-  background: var(--bg-color);
-  color: var(--text-color);
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 0;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-body::-webkit-scrollbar {
-  display: none;
-}
-
-  header {
-    background-color: var(--primary-color);
-    padding: 0.5rem 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--bg-color);
-    height: 90px;
-  }
-
-  h1 {
-    color: #035657;
-    margin: 0;
-    font-size: 24px;
-  }
-
-  .chat-container {
-    max-width: 700px;
-    margin: 2rem auto;
-    border: 2px solid gold;
-    border-radius: 10px;
-    overflow: hidden;
-    background-color: #000;
-    display: flex;
-    flex-direction: column;
-    height: 85vh;
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
-  }
-
-  .chat-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: #222;
-    padding: 10px 14px;
-    color: gold;
-    font-weight: bold;
-    font-family: Arial, sans-serif;
-  }
-
-  .chat-header .profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .chat-header .profile img {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    border: 2px solid gold;
-  }
-
-  #searchChat {
-    flex-grow: 1;
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: none;
-    font-size: 14px;
-  }
-
-  .chat-box {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 15px;
-  background: #000;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  height: 60vh;
-border-radius: 10px;
-}
-
-.chat-box::-webkit-scrollbar {
-  display: none;
-}
-  .message {
-    padding: 0.5rem 0.75rem;
-    margin: 0.5rem 0;
-    border-radius: 12px;
-    max-width: 80%;
-    word-wrap: break-word;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  }
-
-  .mine {
-    margin-left: auto;
-    background: linear-gradient(to bottom, #facc15, #aaa);
-    color: black;
-  }
-
-  .theirs {
-    margin-right: auto;
-    background: linear-gradient(to bottom, #1d77ff33, #81acff, #c5ff4a);
-  }
-
-  .send-box {
-    display: flex;
-    gap: 0.5rem;
-    padding: 1rem;
-    border-top: 1px solid gold;
-    background: #111;
-    flex-wrap: wrap;
-   border-radius: 10px;
-  }
-
-  #msg {
-    width: 65%;
-    min-height: 40px;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 2px solid gold;
-    resize: vertical;
-    box-sizing: border-box;
-  }
-
-  .file-label {
-    background: var(--primary-color);
-    color: var(--bg-color);
-    padding: 0.5rem;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-
-  input[type="file"] {
-    display: none;
-  }
-
-  .send-box button {
-    padding: 0 16px;
-    background: gold;
-    color: black;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .msg-header {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 2px;
-    font-weight: bold;
-  }
-
-  .msg-header small {
-    font-size: 0.75rem;
-    color: #0b6906;
-  }
-
-  .msg-text {
-    margin: 0;
-    padding: 0;
-  }
-
-  .date-label {
-    text-align: center;
-    margin: 20px 0;
-  }
-
-  .date-label-inner {
-    display: inline-block;
-    background-color: lightgreen;
-    padding: 2px 30px;
-    border-radius: 20px;
-    font-size: 14px;
-    color: #333;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .date-label-inner .day-label {
-    font-weight: bold;
-  }
-
-  .date-label-inner .full-date-label {
-    font-size: 12px;
-    color: #555;
-  }
-
-  #logoutBtn {
-    background-color: black;
-    color: gold;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    border: 2px solid gold;
-    transition: 0.3s;
-  }
-
-  #logoutBtn:hover {
-    background-color: gold;
-    color: black;
-  }
-
-  @media (max-width: 600px) {
-    .chat-header {
+    .sidebar {
+      width: 100%;
+      max-width: 600px;
+      background-color: #1a1a1a;
+      display: flex;
       flex-direction: column;
+      border-right: 2px solid #333;
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid #333;
+      background-color: #1668dc;
+    }
+
+    .sidebar-header h3 {
+      margin: 0;
+      font-size: 20px;
+      color: white;
+      text-align: center;
+    }
+
+    .btn-create {
+      background-color: #1668dc;
+      color: white;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 10px 15px 0 auto;
+    }
+    .btn-create:hover { 
+     background: #3c89e8;
+     color: white;
+    }
+    .btn-create:active { 
+     background: #1554ad;
+     color: white;
+    }
+
+    .notice-scroll {
+      padding: 15px;
+      overflow-y: auto;
+      flex-grow: 1;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .notice-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .notice-row {
+      display: flex;
       align-items: flex-start;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
-    #searchChat {
-      width: 100%;
+    .notice-row textarea {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px;
+      font-size: 12px;
+      border: none;
+      border-radius: 6px;
+      background-color: #111;
+      color: skyblue;
+      resize: vertical;
+      min-height: 40px;
+      word-break: break-word;
+      border: 1px solid #1668dc;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .notice-row textarea::-webkit-scrollbar {
+      display: none;
+    }
+    .notice-row button {
+      padding: 6px 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      white-space: nowrap;
     }
 
-    .send-box {
-      flex-direction: column;
+    .btn-send { background-color: #1668dc;}
+    .btn-send:hover {
+     background: #3c89e8;
+     color: white;
+    }
+    .btn-send:active {
+     background: #1554ad;
+     color: white;
+    }
+    .btn-edit { background-color: #999; }
+    .btn-edit:hover {
+     background: #bbbbbb;
+     color: white;
+    }
+    .btn-edit:active {
+     background: #757575;
+     color: white !important;
+    }
+    .btn-save { background-color: green; }
+    .btn-delete { background-color: red; }
+    .btn-delete:hover {
+     background: #e75858;
+     color: white;
+    }
+    .btn-delete:active {
+     background: #b31616;
+     color: white !important;
+    }
+    .main {
+      flex-grow: 1;
+      padding: 0;
+    }
+    .main-body {
+    padding: 0 20px;
     }
 
-    #msg {
-      width: 100%;
+    .main textarea {
+      width: 99%;
+      height: 700px;
+      background-color: #222;
+      color: #1668dc;
+      font-size: 14px;
+      border-radius: 6px;
+      padding: 10px;
+      border: 1px solid #3c89e8;
+      resize: none;
     }
-  }
-  .chat-wrapper {
-  background: white;
-  max-width: 640px;
-  margin: 1rem auto 30px auto;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  height: 85vh; /* Tambah ini */
-  overflow: hidden;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  border: 1px solid gold;
-    padding: 15px;
+   .main textarea:focus {
+      outline: none;
+      border: 1px solid #1668dc;
+   }
+   .main button:active {
+    color: rgba(255, 255, 255, 0.6);
+   }
+  .main-header {
+  background-color: #1668dc;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.chat-header {
-  background: linear-gradient(to right,#facc15, #fef08a);
-  padding: 12px 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid #fff3;
-    border-radius: 10px;
-      font-size: 1rem;
-      color: #333;
-  margin-bottom: 10px;
-  justify-content: space-between;
+.main-header h2 {
+  margin: 0;
+  color: white;
+  font-size: 30px;
 }
-
-.chat-header .profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.chat-header .profile img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid white;
-}
-
-.chat-header .profile span {
-  font-weight: bold;
-  font-size: 16px;
-  color: black;
-}
-
-.search-wrapper {
-  flex-grow: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-
-#searchChat {
-  padding: 8px 12px;
+  .btn-fly, .btn-clear {
+  padding: 10px 20px;
   font-size: 14px;
+  color: white;
+  border: none;
   border-radius: 6px;
-  border: 1px solid #ccc;
-  min-width: 200px;
-  max-width: 300px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 15px;
 }
-.msg-avatar {
-  width: 24px;
-  height: 24px;
+
+.btn-fly {
+  background-color: #1668dc;
+}
+
+.btn-fly:hover {
+ background: #3c89e8;
+ color: white;
+}
+.btn-fly:active {
+ background: #1554ad;
+ color: white !important;
+}
+
+.btn-clear {
+  background: #dd1717;
+}
+.btn-clear:hover {
+  background: #e75858;
+  color: white;
+}
+.btn-clear:active {
+  background: #b31616;
+  color: white !important;
+}
+    .toggle-switch {
+  width: 46px;
+  height: 22px;
+  background-color: #444;
+  border-radius: 30px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: white;
   border-radius: 50%;
-  margin-right: 6px;
-  object-fit: cover;
-  border: 1px solid white;
+  transition: left 0.3s ease;
 }
-</style>
 
+.toggle-switch.active {
+  background-color: #22c55e;
+}
+
+.toggle-switch.active::after {
+  left: 26px;
+}
+  .judul-input {
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #111;
+    color: gold;
+    transition: all 0.2s ease;
+  }
+.judul-input:hover {
+    border: 1px solid #3c89e8;
+}
+.judul-input:focus {
+    outline: none;
+    border: 1px solid #1668dc;
+}
+.textarea-message {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px;
+  font-size: 12px;
+  border: 1px solid #1668dc;
+  border-radius: 6px;
+  background-color: #111;
+  color: skyblue;
+  resize: none;
+  transition: all 0.2s ease;
+}
+
+.textarea-message:hover {
+  border-color: #3c89e8;
+}
+
+.textarea-message:focus {
+  outline: none;
+  border-color: #1668dc;
+}
+  </style>
+</head>
 <body>
-  <!-- Header Atas -->
- <header>
-  <div style="display: flex; align-items: center; gap: 10px;">
-    <h1>User LiveChat</h1>
-    <div id="notifDot" style="width: 12px; height: 12px; background: red; border-radius: 50%; display: none;"></div>
-  </div>
-  <div style="display: flex; gap: 10px;">
-    <button onclick="toggleTheme()">🌓 Theme</button>
-    <button id="logoutBtn">Logout</button>
-  </div>
-</header>
 
-<!-- Chat Main -->
-<main>
-  <div class="chat-wrapper">
-    <!-- CHAT HEADER -->
-    <div class="chat-header">
-      <div class="profile">
-        <img id="headerUserPhoto" src="https://i.pravatar.cc/40" alt="User" />
-        <div>
-          <span id="headerUserName">5G 88</span><br />
-          <small id="typingStatus" style="font-size: 12px; font-weight: normal; color: black;">Offline</small>
-        </div>
-      </div>
-      <div class="search-wrapper">
-        <input type="text" id="searchChat" placeholder="🔍 Search messages..." />
-      </div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Instant Messages</h3>
     </div>
-
-    <!-- CHAT CONTENT -->
-    <div class="chat-box" id="chatBox"></div>
-
-    <!-- SEND BOX -->
-    <div class="send-box">
-      <textarea id="msg" placeholder="Type your message" rows="2"></textarea>
-      <label class="file-label">
-        Upload Image
-        <input type="file" id="fileInput" accept="image/*">
-      </label>
-      <button type="button" disabled>Send</button>
-    </div>
+    <button class="btn-create" onclick="createNotice()">+ Create</button>
+    <div id="noticeList" class="notice-scroll"></div>
   </div>
-</main>
-<audio id="notifSound" src="https://easypay88.com/assets/sound/notification.wav" preload="auto"></audio>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 
-<script>
-  // Konversi email jadi ID aman untuk path Firebase
-  function sanitizeEmail(email) {
-    return email.replace(/\./g, '_').replace(/@/g, '_at_').replace(/,/g, '_');
-  }
+  <div class="main">
+  <div class="main-header">
+    <h2>FLY NOTICE</h2>
+  </div>
 
-  function getChatPath(email) {
-    return 'chats/' + sanitizeEmail(email);
-  }
+  <div class="main-body">
+    <textarea id="pesan" placeholder="Type Your Notice HERE..." onkeydown="handleKeyPress(event)"></textarea><br>
+ <div style="display: flex; gap: 10px; margin-top: 15px;">
+  <button class="btn-fly" onclick="kirimPesan()">FLY NOTICE!</button>
+  <button class="btn-clear" onclick="clearPesan()">🗑️ CLEAR TEXT</button>
+</div>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
-    authDomain: "blurphp.firebaseapp.com",
-    databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "blurphp",
-    storageBucket: "blurphp.appspot.com",
-    messagingSenderId: "593904200464",
-    appId: "1:593904200464:web:cea7bc1360532c20d99395"
+  <script>
+      const firebaseConfig = {
+    apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
+    authDomain: "notice-83ae5.firebaseapp.com",
+    databaseURL: "https://notice-83ae5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "notice-83ae5",
+    storageBucket: "notice-83ae5.appspot.com",
+    messagingSenderId: "268106877488",
+    appId: "1:268106877488:web:798beadfe45104297e7bf5"
   };
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-  const storage = firebase.storage();
 
-  let currentUserEmail = null;
+  const encodedAllowedEmail = "NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ==";
+  const allowedAdmin = atob(encodedAllowedEmail);
+  const urlParams = new URLSearchParams(window.location.search);
+  const adminEmail = atob(urlParams.get("admin") || "");
 
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      const userName = localStorage.getItem("username") || user.displayName || "User";
-      const userEmail = localStorage.getItem("useremail") || user.email;
-      const userPhoto = localStorage.getItem("userphoto") || user.photoURL || "";
+  let isCreating = false;
+  let noticeData = [];
+  const noticeList = document.getElementById('noticeList');
+  const pesanTextarea = document.getElementById("pesan");
 
-      if (!userEmail) {
-        alert("🚫 User email not found. Please login again.");
-        logout();
+function renderNotices() {
+  noticeList.innerHTML = '';
+  const sorted = [...noticeData].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  sorted.forEach(({ id, text, title }) => {
+    const row = document.createElement('div');
+    row.className = 'notice-row';
+
+    const judulInput = document.createElement('input');
+    judulInput.type = 'text';
+    judulInput.value = title || '';
+    judulInput.disabled = true;
+    judulInput.placeholder = 'No Title...';
+    judulInput.style.cssText = `
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 5px;
+      border-radius: 6px;
+      border: 1px solid #1668dc;
+      background-color: #111;
+      color: rgb(34, 197, 94);
+      font-weight: bold;
+    `;
+
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.disabled = true;
+    textarea.style.resize = 'none';
+
+    const sendBtn = document.createElement('button');
+    sendBtn.className = 'btn-send';
+    sendBtn.textContent = 'Send';
+    sendBtn.onclick = () => {
+      pesanTextarea.value = text;
+      localStorage.setItem("lastNoticeMessage", text);
+      kirimPesan();
+    };
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn-edit';
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = () => {
+      textarea.disabled = false;
+      judulInput.disabled = false;
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'inline-block';
+    };
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-save';
+    saveBtn.textContent = 'Save';
+    saveBtn.style.display = 'none';
+    saveBtn.onclick = () => {
+      const newText = textarea.value.trim();
+      const newTitle = judulInput.value.trim();
+      if (!newText) return;
+      db.ref("notifikasi/list/" + id).set({
+        text: newText,
+        title: newTitle,
+        timestamp: Date.now()
+      });
+    };
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn-delete';
+    delBtn.textContent = 'Delete';
+    delBtn.onclick = () => {
+      db.ref("notifikasi/list/" + id).remove();
+      localStorage.removeItem(`autoSend_${id}`);
+    };
+
+    const controlDiv = document.createElement('div');
+    controlDiv.style.display = "flex";
+    controlDiv.style.alignItems = "center";
+    controlDiv.style.gap = "10px";
+    controlDiv.style.marginTop = "5px";
+
+    const timeInput = document.createElement('input');
+    timeInput.type = 'datetime-local';
+    timeInput.style.padding = '6px';
+    timeInput.style.borderRadius = '6px';
+    timeInput.style.border = '1px solid #999';
+    timeInput.style.backgroundColor = '#1668dc';
+    timeInput.style.color = 'white';
+    timeInput.style.cursor = 'pointer';
+
+    const countdownText = document.createElement('div');
+    countdownText.style.color = 'lime';
+    countdownText.style.fontSize = '14px';
+    countdownText.style.fontWeight = 'bold';
+    countdownText.textContent = '00:00:00';
+
+    const toggle = document.createElement('div');
+    toggle.className = 'toggle-switch';
+    toggle.title = 'Enable Auto Send';
+    toggle.style.marginLeft = 'auto';
+
+    const daySelect = document.createElement('select');
+    daySelect.style.padding = '6px';
+    daySelect.style.borderRadius = '6px';
+    daySelect.style.border = '1px solid #999';
+    daySelect.style.backgroundColor = '#1668dc';
+    daySelect.style.color = 'white';
+    daySelect.style.cursor = 'pointer';
+
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    for (let i = 1; i <= daysInMonth; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = `${i} day${i > 1 ? 's' : ''}`;
+      daySelect.appendChild(option);
+    }
+
+    const savedAuto = JSON.parse(localStorage.getItem(`autoSend_${id}`)) || {};
+    if (savedAuto.time) timeInput.value = savedAuto.time;
+    if (savedAuto.enabled) toggle.classList.add("active");
+    if (savedAuto.selectedDay) daySelect.value = savedAuto.selectedDay;
+
+    const isToggleOn = () => toggle.classList.contains("active");
+
+    const updateCountdown = () => {
+      const targetTime = new Date(timeInput.value).getTime();
+      startCountdown(targetTime, countdownText, () => isToggleOn());
+    };
+
+    if (savedAuto.time) updateCountdown();
+
+    daySelect.addEventListener("change", () => {
+      const days = parseInt(daySelect.value);
+      const future = new Date();
+      future.setDate(future.getDate() + days);
+      future.setSeconds(0);
+      future.setMilliseconds(0);
+      const formatted = future.toISOString().slice(0, 16);
+      timeInput.value = formatted;
+      updateCountdown();
+
+      localStorage.setItem(`autoSend_${id}`, JSON.stringify({
+        time: formatted,
+        enabled: isToggleOn(),
+        selectedDay: daySelect.value
+      }));
+    });
+
+    timeInput.addEventListener("change", () => {
+      updateCountdown();
+      localStorage.setItem(`autoSend_${id}`, JSON.stringify({
+        time: timeInput.value,
+        enabled: isToggleOn(),
+        selectedDay: daySelect.value
+      }));
+    });
+
+    toggle.addEventListener("click", () => {
+      toggle.classList.toggle("active");
+      updateCountdown();
+      localStorage.setItem(`autoSend_${id}`, JSON.stringify({
+        time: timeInput.value,
+        enabled: isToggleOn(),
+        selectedDay: daySelect.value
+      }));
+    });
+
+    setInterval(() => {
+      const target = new Date(timeInput.value).getTime();
+      const now = Date.now();
+      if (
+        isToggleOn() &&
+        timeInput.value &&
+        !timeInput.disabled &&
+        now >= target
+      ) {
+        pesanTextarea.value = text;
+        localStorage.setItem("lastNoticeMessage", text);
+        kirimPesan();
+
+        toggle.classList.remove("active");
+        timeInput.disabled = true;
+        toggle.style.pointerEvents = "none";
+        sendBtn.textContent = "Complate";
+        sendBtn.disabled = true;
+
+        localStorage.setItem(`autoSend_${id}`, JSON.stringify({
+          time: timeInput.value,
+          enabled: false,
+          selectedDay: daySelect.value
+        }));
+      }
+    }, 1000);
+
+    controlDiv.appendChild(timeInput);
+    controlDiv.appendChild(daySelect);
+    controlDiv.appendChild(toggle);
+    controlDiv.appendChild(countdownText);
+
+    row.appendChild(judulInput);
+    row.appendChild(textarea);
+    row.appendChild(sendBtn);
+    row.appendChild(editBtn);
+    row.appendChild(saveBtn);
+    row.appendChild(delBtn);
+    row.appendChild(controlDiv);
+    noticeList.appendChild(row);
+  });
+}
+
+function startCountdown(targetTime, display, isActiveCallback = () => true) {
+  clearInterval(display._timer);
+
+  function update() {
+    const now = Date.now();
+    const diff = targetTime - now;
+
+    if (!isActiveCallback()) {
+      display.textContent = '⏸️ Paused';
+      display.style.color = 'gray';
+      return;
+    }
+
+    if (diff <= 0) {
+      display.textContent = "00:00:00";
+      display.style.color = "gray";
+      clearInterval(display._timer);
+      return;
+    }
+
+    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    display.textContent = `${h}:${m}:${s}`;
+    display.style.color = diff < 300000 ? "red" : "lime";
+  }
+
+  update();
+  display._timer = setInterval(update, 1000);
+}
+
+  function createNotice() {
+  if (isCreating) return;
+  isCreating = true;
+
+  const row = document.createElement('div');
+  row.className = 'notice-row';
+
+  const judulInput = document.createElement('input');
+  judulInput.type = 'text';
+  judulInput.placeholder = 'Title Message...';
+  judulInput.className = 'judul-input';
+
+ const textarea = document.createElement('textarea');
+ textarea.placeholder = 'Type new message...';
+ textarea.className = 'textarea-message';
+
+  const timeInput = document.createElement('input');
+  timeInput.type = 'datetime-local';
+  timeInput.style.padding = '6px';
+  timeInput.style.borderRadius = '6px';
+  timeInput.style.border = '1px solid #555';
+  timeInput.style.backgroundColor = '#000';
+  timeInput.style.color = 'white';
+
+  const countdownText = document.createElement('div');
+  countdownText.style.color = 'gray';
+  countdownText.style.fontSize = '14px';
+  countdownText.style.fontWeight = 'bold';
+  countdownText.textContent = '00:00:00';
+
+  const toggle = document.createElement('div');
+  toggle.className = 'toggle-switch';
+  toggle.title = 'Enable Auto Send';
+  toggle.style.cursor = 'pointer';
+  toggle.addEventListener("click", () => {
+    toggle.classList.toggle("active");
+  });
+
+  const daySelect = document.createElement('select');
+  daySelect.style.padding = '6px';
+  daySelect.style.borderRadius = '6px';
+  daySelect.style.border = '1px solid #555';
+  daySelect.style.backgroundColor = '#000';
+  daySelect.style.color = 'white';
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let i = 1; i <= daysInMonth; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = `${i} day${i > 1 ? 's' : ''}`;
+    daySelect.appendChild(option);
+  }
+
+  // ⏱️ Countdown handler
+  function startCountdownInCreate(targetTime) {
+    clearInterval(countdownText._timer);
+    function update() {
+      const now = Date.now();
+      const diff = targetTime - now;
+      if (diff <= 0) {
+        countdownText.textContent = "00:00:00";
+        countdownText.style.color = "gray";
+        clearInterval(countdownText._timer);
         return;
       }
-
-      localStorage.setItem("username", userName);
-      localStorage.setItem("useremail", userEmail);
-      localStorage.setItem("userphoto", userPhoto);
-
-      currentUserEmail = userEmail;
-
-      
-      // SET CHAT HEADER PROFILE
-      const headerUserPhoto = document.getElementById('headerUserPhoto');
-      const headerUserName = document.getElementById('headerUserName');
-      const typingStatus = document.getElementById('typingStatus');
-      const searchInput = document.getElementById('searchChat');
-      const chatBox = document.getElementById('chatBox');
-
-      headerUserPhoto.src = userPhoto || 'https://i.pravatar.cc/40';
-      headerUserName.textContent = userName;
-      typingStatus.textContent = 'Online';
-
-      listenToChat(currentUserEmail);
-
-      const msgInput = document.getElementById('msg');
-      const sendBtn = document.querySelector('.send-box button');
-      const fileInput = document.getElementById('fileInput');
-
-      let typingTimer;
-      const typingDelay = 2000;
-
-      msgInput.addEventListener('keydown', function (e) {
-  if (e.key === 'Enter') {
-    if (e.shiftKey || e.ctrlKey) {
-      // Shift+Enter atau Ctrl+Enter bikin baris baru (newline)
-      return; // biarkan default behavior
-    } else {
-      // Enter doang, kirim pesan
-      e.preventDefault();
-      sendMessage(currentUserEmail);
+      const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+      countdownText.textContent = `${h}:${m}:${s}`;
+      countdownText.style.color = diff < 300000 ? "red" : "lime";
     }
+    update();
+    countdownText._timer = setInterval(update, 1000);
   }
-});
 
-      msgInput.addEventListener('input', () => {
-        sendBtn.disabled = !msgInput.value.trim() && !fileInput.files.length;
-
-        if (msgInput.value.trim() !== '') {
-          typingStatus.textContent = 'Typing...';
-          clearTimeout(typingTimer);
-          typingTimer = setTimeout(() => {
-            typingStatus.textContent = 'Online';
-          }, typingDelay);
-        } else {
-          typingStatus.textContent = 'Online';
-        }
-      });
-
-      searchInput.addEventListener('input', () => {
-        const filter = searchInput.value.toLowerCase();
-        const messages = chatBox.querySelectorAll('.message');
-
-        messages.forEach(msg => {
-          const text = msg.textContent.toLowerCase();
-          if (text.includes(filter)) {
-            msg.style.display = '';
-          } else {
-            msg.style.display = 'none';
-          }
-        });
-      });
-
-      sendBtn.disabled = true;
-      sendBtn.addEventListener('click', () => sendMessage(currentUserEmail));
-
-    } else {
-      alert("🚫 Not logged in. Redirecting to login page...");
-      window.location.href = "https://searcfile.github.io/5g88-php/livechatloginphp/";
-    }
+  daySelect.addEventListener("change", () => {
+    const days = parseInt(daySelect.value);
+    const future = new Date();
+    future.setDate(future.getDate() + days);
+    future.setSeconds(0);
+    future.setMilliseconds(0);
+    const formatted = future.toISOString().slice(0, 16);
+    timeInput.value = formatted;
+    startCountdownInCreate(future.getTime());
   });
 
-  async function sendMessage(userEmail) {
-  if (!userEmail) {
-    alert("❌ Gagal mengirim pesan: email tidak valid.");
-    logout();
-    return;
-  }
+  timeInput.addEventListener("change", () => {
+    const t = new Date(timeInput.value).getTime();
+    startCountdownInCreate(t);
+  });
 
-  const msgInput = document.getElementById('msg');
-  const msg = msgInput.value.trim();
-  const fileInput = document.getElementById('fileInput');
-  const file = fileInput.files[0];
+  const controlDiv = document.createElement('div');
+  controlDiv.style.display = 'flex';
+  controlDiv.style.alignItems = 'center';
+  controlDiv.style.gap = '10px';
+  controlDiv.style.marginTop = '5px';
+  controlDiv.appendChild(timeInput);
+  controlDiv.appendChild(daySelect);
+  controlDiv.appendChild(toggle);
+  controlDiv.appendChild(countdownText);
 
-  if (!msg && !file) return;
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'btn-save';
+  saveBtn.textContent = 'Save';
+  saveBtn.onclick = () => {
+    const newText = textarea.value.trim();
+    const newTitle = judulInput.value.trim();
+    if (!newText) return;
 
-  const userName = localStorage.getItem("username") || "User";
-  const userPhoto = localStorage.getItem("userphoto") || "";
-  const time = Date.now();
-  const chatRef = db.ref(getChatPath(userEmail));
+    const newId = db.ref().child("notifikasi/list").push().key;
 
-  try {
-    // Jika ada file, upload ke Firebase Storage
-    if (file) {
-      const fileRef = storage.ref(`chat_images/${sanitizeEmail(userEmail)}/${time}_${file.name}`);
-      const snapshot = await fileRef.put(file);
-      const url = await snapshot.ref.getDownloadURL();
-
-      await chatRef.push({
-        from: 'user',
-        name: userName,
-        email: userEmail,
-        photoURL: userPhoto,
-        image: url,
-        time
-      });
-    }
-
-    // Jika ada teks, kirim pesan teks
-    if (msg) {
-      await chatRef.push({
-        from: 'user',
-        name: userName,
-        email: userEmail,
-        photoURL: userPhoto,
-        text: msg,
-        time
-      });
-    }
-
-    msgInput.value = '';
-    fileInput.value = '';
-    document.querySelector('.send-box button').disabled = true;
-
-  } catch (error) {
-    console.error("Error sending message:", error);
-    alert("❌ Gagal mengirim pesan.");
-  }
-}
-function listenToChat(userEmail) {
-  const chatBox = document.getElementById('chatBox');
-  const chatRef = db.ref(getChatPath(userEmail));
-  const notifDot = document.getElementById('notifDot');
-  const lastSeenKey = `lastSeenByUser_${sanitizeEmail(userEmail)}`;
-
-  chatRef.on('value', snapshot => {
-    chatBox.innerHTML = '';
-    const chats = snapshot.val();
-    const lastSeenTime = parseInt(localStorage.getItem(lastSeenKey) || '0');
-    let latestAdminMsgTime = 0;
-
-    if (chats) {
-      const chatArray = Object.values(chats).sort((a, b) => a.time - b.time);
-      const today = new Date(); today.setHours(0, 0, 0, 0);
-      const pastChats = [], todayChats = [];
-
-      chatArray.forEach(c => {
-        const msgDateOnly = new Date(c.time); msgDateOnly.setHours(0, 0, 0, 0);
-        (msgDateOnly.getTime() === today.getTime() ? todayChats : pastChats).push(c);
-        if (c.from === 'admin' && c.time > latestAdminMsgTime) latestAdminMsgTime = c.time;
-      });
-
-      // 🔔 Notifikasi jika ada pesan admin baru
-      if (latestAdminMsgTime > lastSeenTime) {
-        notifDot.style.display = 'inline-block';
-        playNotificationSound();
-      } else {
-        notifDot.style.display = 'none';
+    db.ref("notifikasi/list/" + newId).set({
+      text: newText,
+      title: newTitle,
+      timestamp: Date.now()
+    }).then(() => {
+      // Hanya simpan autoSend jika waktu valid
+      if (timeInput.value) {
+        localStorage.setItem(`autoSend_${newId}`, JSON.stringify({
+          time: timeInput.value,
+          enabled: toggle.classList.contains("active"),
+          selectedDay: daySelect.value
+        }));
       }
 
-      renderChats(pastChats, today);  // kirim today ke fungsi render
-      renderChats(todayChats, today);
-
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      // Simpan waktu terakhir dibaca
-      const latestTime = chatArray[chatArray.length - 1]?.time || 0;
-      localStorage.setItem(lastSeenKey, latestTime);
-    } else {
-      notifDot.style.display = 'none';
-    }
-  });
-}
- function renderChats(chatGroup, today) {
-  const chatBox = document.getElementById('chatBox');
-  let lastDateKey = '';
-
-  chatGroup.forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'message ' + (c.from === 'user' ? 'mine' : 'theirs');
-
-    const msgDate = new Date(c.time);
-    const timeFormatted = msgDate.toLocaleTimeString('en-US', {
-      hour: '2-digit', minute: '2-digit', hour12: true
+      clearInterval(countdownText._timer);
+      row.remove();
+      isCreating = false;
+      renderNotices();
     });
+  };
 
-    const dateKey = msgDate.toDateString();
-    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-delete';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = () => {
+    clearInterval(countdownText._timer);
+    row.remove();
+    isCreating = false;
+  };
 
-    let dayLabel = '';
-    if (dateKey === today.toDateString()) dayLabel = 'Today';
-    else if (dateKey === yesterday.toDateString()) dayLabel = 'Yesterday';
-    else dayLabel = msgDate.toLocaleDateString('en-GB', { weekday: 'long' });
-
-    const fullDateLabel = msgDate.toLocaleDateString('en-GB', {
-      day: '2-digit', month: 'short', year: 'numeric'
-    });
-
-    if (dateKey !== lastDateKey) {
-      const dateLabelDiv = document.createElement('div');
-      dateLabelDiv.className = 'date-label';
-      dateLabelDiv.innerHTML = `
-        <div class="date-label-inner">
-          <div class="day-label">${dayLabel}</div>
-          <div class="full-date-label">${fullDateLabel}</div>
-        </div>
-      `;
-      chatBox.appendChild(dateLabelDiv);
-      lastDateKey = dateKey;
-    }
-
-    const senderLabel = c.from === 'user' ? (c.name || 'You') : (c.name || 'Admin');
-    const senderPhoto = c.photoURL || "https://i.pravatar.cc/40";
-
-    if (c.text) {
-      div.innerHTML = `
-        <div class="msg-header">
-          <img src="${senderPhoto}" class="msg-avatar" alt="user" />
-          <span class="msg-info">${senderLabel}</span>
-          <small>${timeFormatted}</small>
-        </div>
-        <p class="msg-text">${c.text}</p>
-      `;
-    } else if (c.image) {
-      div.innerHTML = `
-        <div class="msg-header">
-          <img src="${senderPhoto}" class="msg-avatar" alt="user" />
-          <span class="msg-info">${senderLabel}</span>
-          <small>${timeFormatted}</small>
-        </div>
-        <img src="${c.image}" alt="Image" style="max-width: 100%; border-radius: 8px; margin-top: 4px;">
-      `;
-    }
-
-    chatBox.appendChild(div);
-  });
+  row.appendChild(judulInput);
+  row.appendChild(textarea);
+  row.appendChild(saveBtn);
+  row.appendChild(cancelBtn);
+  row.appendChild(controlDiv);
+  noticeList.prepend(row);
 }
+  function kirimPesan() {
+    if (!adminEmail || adminEmail.toLowerCase() !== allowedAdmin.toLowerCase()) return;
+
+    const teks = pesanTextarea.value.trim();
+    if (!teks) return;
+
+    const data = {
+      message: teks,
+      timestamp: Date.now()
+    };
+
+    db.ref("notifikasi/pesanTerbaru").set(data).then(() => {
+    });
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === "Enter" && !event.ctrlKey) {
+      event.preventDefault();
+      kirimPesan();
+    } else if (event.key === "Enter" && event.ctrlKey) {
+      const cursorPos = pesanTextarea.selectionStart;
+      const textBefore = pesanTextarea.value.substring(0, cursorPos);
+      const textAfter = pesanTextarea.value.substring(cursorPos);
+      pesanTextarea.value = textBefore + "\n" + textAfter;
+      pesanTextarea.selectionStart = pesanTextarea.selectionEnd = cursorPos + 1;
+      event.preventDefault();
+    }
+  }
 
   
-let userHasInteracted = false;
-
-  // Deteksi klik pertama user
-  ['click', 'keydown', 'scroll', 'touchstart'].forEach(event =>
-  document.addEventListener(event, () => userHasInteracted = true, { once: true })
-);
-
-  function playNotificationSound() {
-    const audio = document.getElementById("notifSound");
-    if (audio && userHasInteracted) {
-      audio.currentTime = 0;
-      audio.play().catch(e => {
-        console.warn("🔇 Audio autoplay blocked:", e);
-      });
+  window.addEventListener("DOMContentLoaded", function () {
+    const saved = localStorage.getItem("lastNoticeMessage");
+    if (saved) {
+      pesanTextarea.value = saved;
     }
-  }
-  function logout() {
-    firebase.auth().signOut()
-      .then(() => {
-        localStorage.clear();
-        window.location.href = "https://searcfile.github.io/5g88-php/livechatloginphp/";
-      })
-      .catch((error) => {
-        console.error("Logout failed:", error);
-      });
-  }
-
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    logout();
   });
 
-  function toggleTheme() {
-    document.body.classList.toggle('dark-theme');
-  }
-  </script>
+  pesanTextarea.addEventListener("input", function () {
+    localStorage.setItem("lastNoticeMessage", pesanTextarea.value);
+  });
+
+
+  db.ref("notifikasi/list").on("value", (snapshot) => {
+    const raw = snapshot.val() || {};
+    noticeData = Object.entries(raw).map(([id, val]) => ({ id, ...val }));
+    renderNotices();
+  });
+function clearPesan() {
+  pesanTextarea.value = "";
+  localStorage.removeItem("lastNoticeMessage");
+}
+</script>
 </body>
 </html>
