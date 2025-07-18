@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- 
   <meta charset="UTF-8" />
   <title>Admin Notice</title>
   <style>
@@ -150,19 +149,16 @@
       font-size: 14px;
       border-radius: 6px;
       padding: 10px;
-      border: 1px solid #1668dc;
-      resize: none;
-}
-  .main textarea:hover {
       border: 1px solid #3c89e8;
-}
-  .main textarea:focus {
+      resize: none;
+    }
+   .main textarea:focus {
       outline: none;
       border: 1px solid #1668dc;
-}
-  .main button:active {
+   }
+   .main button:active {
     color: rgba(255, 255, 255, 0.6);
-}
+   }
   .main-header {
   background-color: #1668dc;
   padding: 20px;
@@ -233,7 +229,7 @@
 }
 
 .toggle-switch.active {
-  background-color: #1668dc;
+  background-color: #22c55e;
 }
 
 .toggle-switch.active::after {
@@ -246,7 +242,7 @@
     border-radius: 6px;
     border: 1px solid #1668dc;
     background-color: #111;
-    color: white;
+    color: gold;
     transition: all 0.2s ease;
   }
 .judul-input:hover {
@@ -256,7 +252,7 @@
     outline: none;
     border: 1px solid #1668dc;
 }
-.create-message {
+.textarea-message {
   width: 100%;
   min-height: 40px;
   padding: 8px;
@@ -264,16 +260,16 @@
   border: 1px solid #1668dc;
   border-radius: 6px;
   background-color: #111;
-  color: white;
+  color: skyblue;
   resize: none !important;
   transition: all 0.2s ease;
 }
 
-.create-message:hover {
+.textarea-message:hover {
   border-color: #3c89e8;
 }
 
-.create-message:focus {
+.textarea-message:focus {
   outline: none;
   border-color: #1668dc;
 }
@@ -312,12 +308,6 @@
   outline: none;
   border-color: 1668dc;
 }
-.calendar-icon {
-  width: 20px;
-  height: 20px;
-  margin-left: 6px;
-  cursor: pointer;
-}
   </style>
 </head>
 <body>
@@ -343,8 +333,7 @@
 </div>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
   <script>
       const firebaseConfig = {
     apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -607,7 +596,7 @@ function startCountdown(targetTime, display, isActiveCallback = () => true) {
   display._timer = setInterval(update, 1000);
 }
 
-function createNotice() {
+  function createNotice() {
   if (isCreating) return;
   isCreating = true;
 
@@ -619,25 +608,13 @@ function createNotice() {
   judulInput.placeholder = 'Title Message...';
   judulInput.className = 'judul-input';
 
-  const textarea = document.createElement('textarea');
-  textarea.placeholder = 'Type new message...';
-  textarea.className = 'create-message';
+ const textarea = document.createElement('textarea');
+ textarea.placeholder = 'Type new message...';
+ textarea.className = 'textarea-message';
 
-  const datetimeWrapper = document.createElement('div');
-  datetimeWrapper.className = 'datetime-wrapper';
-
-  const customDateInput = document.createElement('input');
-  customDateInput.type = 'text';
-  customDateInput.placeholder = 'dd/mm/yyyy --:--';
-  customDateInput.id = `customDate_${Date.now()}`;
-  customDateInput.className = 'create-time';
-  datetimeWrapper.appendChild(customDateInput);
-
-  const calendarIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  calendarIcon.setAttribute("viewBox", "0 0 24 24");
-  calendarIcon.classList.add("calendar-icon");
-  calendarIcon.innerHTML = '<path fill="gold" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1...Z"/>';
-  datetimeWrapper.appendChild(calendarIcon);
+  const timeInput = document.createElement('input');
+  timeInput.type = 'datetime-local';
+  timeInput.className = 'create-time';
 
   const countdownText = document.createElement('div');
   countdownText.style.color = 'gray';
@@ -668,109 +645,27 @@ function createNotice() {
     daySelect.appendChild(option);
   }
 
-  const controlDiv = document.createElement('div');
-  controlDiv.style.display = 'flex';
-  controlDiv.style.alignItems = 'center';
-  controlDiv.style.gap = '10px';
-  controlDiv.style.marginTop = '5px';
-  controlDiv.appendChild(datetimeWrapper);
-  controlDiv.appendChild(daySelect);
-  controlDiv.appendChild(toggle);
-  controlDiv.appendChild(countdownText);
-
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'btn-save';
-  saveBtn.textContent = 'Save';
-  saveBtn.onclick = () => {
-    const newText = textarea.value.trim();
-    const newTitle = judulInput.value.trim();
-    if (!newText) return;
-
-    const newId = db.ref().child("notifikasi/list").push().key;
-
-    db.ref("notifikasi/list/" + newId).set({
-      text: newText,
-      title: newTitle,
-      timestamp: Date.now()
-    }).then(() => {
-      if (customDateInput.value) {
-        localStorage.setItem(`autoSend_${newId}`, JSON.stringify({
-          time: customDateInput.value,
-          enabled: toggle.classList.contains("active"),
-          selectedDay: daySelect.value
-        }));
-      }
-
-      clearInterval(countdownText._timer);
-      row.remove();
-      isCreating = false;
-      renderNotices();
-    });
-  };
-
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'btn-delete';
-  cancelBtn.textContent = 'Cancel';
-  cancelBtn.onclick = () => {
+  // ⏱️ Countdown handler
+  function startCountdownInCreate(targetTime) {
     clearInterval(countdownText._timer);
-    row.remove();
-    isCreating = false;
-  };
-
-  row.appendChild(judulInput);
-  row.appendChild(textarea);
-  row.appendChild(saveBtn);
-  row.appendChild(cancelBtn);
-  row.appendChild(controlDiv);
-  noticeList.prepend(row);
-
-  setTimeout(() => {
-    flatpickr(`#${customDateInput.id}`, {
-      enableTime: true,
-      dateFormat: "d/m/Y H:i",
-      time_24hr: true,
-      onChange: (selectedDates) => {
-        if (selectedDates.length > 0) {
-          startCountdownInCreate(selectedDates[0].getTime());
-        }
+    function update() {
+      const now = Date.now();
+      const diff = targetTime - now;
+      if (diff <= 0) {
+        countdownText.textContent = "00:00:00";
+        countdownText.style.color = "gray";
+        clearInterval(countdownText._timer);
+        return;
       }
-    });
-  }, 0);
-
-  daySelect.addEventListener("change", () => {
-    const days = parseInt(daySelect.value);
-    const future = new Date();
-    future.setDate(future.getDate() + days);
-    future.setSeconds(0);
-    future.setMilliseconds(0);
-    customDateInput._flatpickr.setDate(future);
-    startCountdownInCreate(future.getTime());
-  });
-}
-
-function startCountdownInCreate(targetTime) {
-  const countdownText = document.querySelector(".notice-row .create-time")?.parentElement?.nextSibling;
-  if (!countdownText) return;
-  clearInterval(countdownText._timer);
-  function update() {
-    const now = Date.now();
-    const diff = targetTime - now;
-    if (diff <= 0) {
-      countdownText.textContent = "00:00:00";
-      countdownText.style.color = "gray";
-      clearInterval(countdownText._timer);
-      return;
+      const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+      countdownText.textContent = `${h}:${m}:${s}`;
+      countdownText.style.color = diff < 300000 ? "red" : "lime";
     }
-    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-    countdownText.textContent = `${h}:${m}:${s}`;
-    countdownText.style.color = diff < 300000 ? "red" : "lime";
+    update();
+    countdownText._timer = setInterval(update, 1000);
   }
-  update();
-  countdownText._timer = setInterval(update, 1000);
-}
-
 
   daySelect.addEventListener("change", () => {
     const days = parseInt(daySelect.value);
