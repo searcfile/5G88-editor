@@ -607,7 +607,7 @@ function startCountdown(targetTime, display, isActiveCallback = () => true) {
   display._timer = setInterval(update, 1000);
 }
 
-  function createNotice() {
+function createNotice() {
   if (isCreating) return;
   isCreating = true;
 
@@ -638,14 +638,6 @@ function startCountdown(targetTime, display, isActiveCallback = () => true) {
   calendarIcon.classList.add("calendar-icon");
   calendarIcon.innerHTML = '<path fill="gold" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1...Z"/>';
   datetimeWrapper.appendChild(calendarIcon);
-
-  setTimeout(() => {
-    flatpickr(`#${customDateInput.id}`, {
-      enableTime: true,
-      dateFormat: "d/m/Y H:i",
-      time_24hr: true
-    });
-  }, 0);
 
   const countdownText = document.createElement('div');
   countdownText.style.color = 'gray';
@@ -731,28 +723,54 @@ function startCountdown(targetTime, display, isActiveCallback = () => true) {
   row.appendChild(cancelBtn);
   row.appendChild(controlDiv);
   noticeList.prepend(row);
-}
-  // ⏱️ Countdown handler
-  function startCountdownInCreate(targetTime) {
-    clearInterval(countdownText._timer);
-    function update() {
-      const now = Date.now();
-      const diff = targetTime - now;
-      if (diff <= 0) {
-        countdownText.textContent = "00:00:00";
-        countdownText.style.color = "gray";
-        clearInterval(countdownText._timer);
-        return;
+
+  setTimeout(() => {
+    flatpickr(`#${customDateInput.id}`, {
+      enableTime: true,
+      dateFormat: "d/m/Y H:i",
+      time_24hr: true,
+      onChange: (selectedDates) => {
+        if (selectedDates.length > 0) {
+          startCountdownInCreate(selectedDates[0].getTime());
+        }
       }
-      const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-      countdownText.textContent = `${h}:${m}:${s}`;
-      countdownText.style.color = diff < 300000 ? "red" : "lime";
+    });
+  }, 0);
+
+  daySelect.addEventListener("change", () => {
+    const days = parseInt(daySelect.value);
+    const future = new Date();
+    future.setDate(future.getDate() + days);
+    future.setSeconds(0);
+    future.setMilliseconds(0);
+    customDateInput._flatpickr.setDate(future);
+    startCountdownInCreate(future.getTime());
+  });
+}
+
+function startCountdownInCreate(targetTime) {
+  const countdownText = document.querySelector(".notice-row .create-time")?.parentElement?.nextSibling;
+  if (!countdownText) return;
+  clearInterval(countdownText._timer);
+  function update() {
+    const now = Date.now();
+    const diff = targetTime - now;
+    if (diff <= 0) {
+      countdownText.textContent = "00:00:00";
+      countdownText.style.color = "gray";
+      clearInterval(countdownText._timer);
+      return;
     }
-    update();
-    countdownText._timer = setInterval(update, 1000);
+    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    countdownText.textContent = `${h}:${m}:${s}`;
+    countdownText.style.color = diff < 300000 ? "red" : "lime";
   }
+  update();
+  countdownText._timer = setInterval(update, 1000);
+}
+
 
   daySelect.addEventListener("change", () => {
     const days = parseInt(daySelect.value);
