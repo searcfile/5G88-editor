@@ -2,808 +2,1377 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Notice</title>
+  <title>918KISS Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .sidebar {
-      width: 100%;
-      max-width: 600px;
-      background-color: #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      border-right: 2px solid #333;
-    }
-
-    .sidebar-header {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0;
-      border-bottom: 1px solid #333;
+     body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-family: 'Source Sans 3', 'Source Sans Pro', Arial, sans-serif;
+      padding: 10px;
+      font-size: 14px;
+      line-height: 1.42857;
+      color: rgb(51, 51, 51);
+      font-weight: 400;
+      background-color: #000;
+      }
+      .header {
       background-color: #1668dc;
       height: 90px;
-    }
-
-    .sidebar-header h3 {
-      margin: 0;
-      font-size: 20px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 30px;
+      color: white;
+     } 
+    table {
+      width: 65%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 26px;
+      }
+    th {
+      padding: 22px 26px;
+      border: 2.5px solid #ddd;
+      background: #605ca8;
       color: white;
       text-align: center;
-    }
-
-    .btn-create {
-      background-color: #1668dc;
-      color: white;
-      padding: 8px 12px;
-      font-size: 14px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 10px 15px 0 auto;
-    }
-    .btn-create:hover { 
-     background: #3c89e8;
-     color: white;
-    }
-    .btn-create:active { 
-     background: #1554ad;
-     color: white;
-    }
-
-    .notice-scroll {
-      padding: 15px;
-      overflow-y: auto;
-      flex-grow: 1;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .notice-scroll::-webkit-scrollbar {
-      display: none;
-    }
-    .notice-row {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .notice-row textarea {
-      flex: 1;
-      min-width: 200px;
-      padding: 8px;
-      font-size: 12px;
-      border: none;
-      border-radius: 6px;
-      background-color: #111;
-      color: skyblue;
-      resize: vertical;
-      min-height: 40px;
-      word-break: break-word;
-      border: 1px solid #1668dc;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .notice-row textarea::-webkit-scrollbar {
-      display: none;
-    }
-    .notice-row button {
-      padding: 6px 10px;
-      font-size: 14px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
+     }
+    td {
+      padding: 22px 26px; 
+      border: 1px solid #ddd;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      text-align: center;
+     }
+    #gameLog tbody td {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      line-height: 1.1;
+     }
+    .log-row {
+      color: rgb(51, 51, 51);
+      font-size: 26px; 
       white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .btn-send { background-color: #1668dc;}
-    .btn-send:hover {
-     background: #3c89e8;
-     color: white;
-    }
-    .btn-send:active {
-     background: #1554ad;
-     color: white;
-    }
-    .btn-edit { background-color: #999; }
-    .btn-edit:hover {
-     background: #bbbbbb;
-     color: white;
-    }
-    .btn-edit:active {
-     background: #757575;
-     color: white !important;
-    }
-    .btn-save { background-color: #17cb17d1; }
-    .btn-save:hover {
-     background: #20ed20d1 !important;
-     color: white !important;
-    }
-    .btn-save:active {
-     background: #0e970ed1 !important;
-     color: white !important;
-    }
-    .btn-delete { background-color: red; }
-    .btn-delete:hover {
-     background: #e75858;
-     color: white;
-    }
-    .btn-delete:active {
-     background: #b31616;
-     color: white !important;
-    }
-    .main {
-      flex-grow: 1;
-      padding: 0;
-    }
-    .main-body {
-    padding: 0 20px;
-    }
-
-    .main textarea {
-      width: 99%;
-      height: 700px;
-      background-color: #222;
-      color: #1668dc;
-      font-size: 14px;
-      border-radius: 6px;
-      padding: 10px;
-      border: 1px solid #3c89e8;
-      resize: none;
-    }
-   .main textarea:focus {
-      outline: none;
-      border: 1px solid #1668dc;
-   }
-   .main button:active {
-    color: rgba(255, 255, 255, 0.6);
-   }
-  .main-header {
-  background-color: #1668dc;
-  height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-  padding: 0 20px;
-}
-
-.main-header h2 {
-  margin: 0;
-  color: white;
-  font-size: 30px;
-}
-  .btn-fly, .btn-clear {
-  padding: 10px 20px;
-  font-size: 14px;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 15px;
-}
-
-.btn-fly {
-  background-color: #1668dc;
-}
-
-.btn-fly:hover {
- background: #3c89e8;
- color: white;
-}
-.btn-fly:active {
- background: #1554ad;
- color: white !important;
-}
-
-.btn-clear {
-  background: #dd1717;
-}
-.btn-clear:hover {
-  background: #e75858;
-  color: white;
-}
-.btn-clear:active {
-  background: #b31616;
-  color: white !important;
-}
-    .toggle-switch {
-  width: 46px;
-  height: 22px;
-  background-color: #444;
-  border-radius: 30px;
-  position: relative;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.toggle-switch::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 18px;
-  background: white;
-  border-radius: 50%;
-  transition: left 0.3s ease;
-}
-
-.toggle-switch.active {
-  background-color: #1668dc;
-}
-
-.toggle-switch.active::after {
-  left: 26px;
-}
-  .judul-input {
-    width: 100%;
-    padding: 6px;
-    margin-bottom: 5px;
-    border-radius: 6px;
-    border: 1px solid #1668dc;
-    background-color: #111;
-    color: white;
-    transition: all 0.2s ease;
+      background-color: #fff;
+     }
+     th:nth-child(2),
+     td:nth-child(2) {
+     width: 0px;
+     }
+     th:nth-child(7),
+     td:nth-child(7) {
+     width: 5px; 
+     }
+  #gameLog td:nth-child(5),
+  #gameLog th:nth-child(5) {
+    width: 5px;
   }
-.judul-input:hover {
-    border: 1px solid #3c89e8;
-}
-.judul-input:focus {
-    outline: none;
-    border: 1px solid #1668dc;
-}
-.textarea-message {
-  width: 100%;
-  min-height: 40px;
-  padding: 8px;
-  font-size: 12px;
-  border: 1px solid #1668dc;
-  border-radius: 6px;
-  background-color: #111;
-  color: white !important;
-  resize: none !important;
-  transition: all 0.2s ease;
-}
-
-.textarea-message:hover {
-  border-color: #3c89e8;
-}
-
-.textarea-message:focus {
-  outline: none;
-  border-color: #1668dc;
-}
-.create-time {
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #1668dc;
-  background-color: #111;
-  color: gray;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.create-time:hover {
-  border-color: #3c89e8;
-}
-
-.create-time:focus {
-  outline: none;
-  border-color: #1668dc;
-}
-.create-day {
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #1668dc;
-  background-color: #111;
-  color: gray;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.create-day:hover {
-  border-color: #3c89e8;
-}
-
-.create-day:focus {
-  outline: none;
-  border-color: #1668dc;
-}
+  #gameLog th:first-child,
+  #gameLog td:first-child {
+   width: 5px; 
+   white-space: nowrap;
+  }
+  #gameLog th:nth-child(6),
+  #gameLog td:nth-child(6) {
+   width: 5px;
+  }
+  #gameLog th:nth-child(3),
+  #gameLog td:nth-child(3) {
+   width: 5px; 
+  }
+  #gameLog th:nth-child(4),
+  #gameLog td:nth-child(4) {
+   width: 5px; 
+  }
+ .table-id-highlight {
+   width: 38px;               
+   height: 34px;             
+   background-color: #d2d6de; 
+   color: #000;               
+   font-weight: bold;         
+   font-size: 23.5px;          
+   border-radius: 45%;        
+   display: flex;             
+   justify-content: center;   
+   align-items: center;      
+   margin: 10px auto;         
+    }
+     button {
+     padding: 5px 10px;
+     font-size: 14px;
+     background: gold;
+     color: #000;
+     border: none;
+     border-radius: 5px;
+     cursor: pointer;
+     border: 1px solid gold;
+     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    button:hover {
+     background: rgba(255,255,255,0.3);
+     color: #fff;
+    }
+    button:active {
+     background: rgba(0,0,0,0.3);
+     color: white;
+    }
+    select, input {
+      padding: 3px 6px;
+      font-size: 13px;
+      margin-left: 10px;
+      border-radius: 5px;
+      background: #000;
+      border: 1px solid gold;
+      color: gold;
+    }
+    #nowTime {
+     font-weight: bold;
+     margin-left: 10px;
+     color: gold;
+    }
+    .set-score-row td {
+     color: rgb(51, 51, 51);
+     font-size: 26px;
+     padding-top: 22px !important;
+     padding-bottom: 22px !important;
+     line-height: 1.1 !important;
+     white-space: nowrap;
+     background-color: #fff;
+    }
+    .set-score-row td.negatif {
+     color: #dd4b39;
+     font-weight: bold;
+     font-size: 26px;
+     background-color: #fff;
+    }
+    .set-score-row td.setscore {
+     color: #dd4b39;
+     font-weight: 750;;
+     font-size: 26px;
+     white-space: nowrap;
+     background-color: #fff;
+    }
+    #gameSelect {
+     max-height: 30px;
+     overflow-y: auto;
+    }
   </style>
 </head>
 <body>
+<div class="header">MEGA888 GENERATE</div>
+<button onclick="resetLog()" style="background:red; color:white;">Reset Log</button>
+<h2 style="color: gold;">918KISS SYSTEM RANDOM</h2>
 
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <h3>Instant Messages</h3>
-    </div>
-    <button class="btn-create" onclick="createNotice()">+ Create</button>
-    <div id="noticeList" class="notice-scroll"></div>
-  </div>
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+  <label for="gameSelect" style="color: gold;">Game:</label>
+  <select id="gameSelect" class="select2" style="height: 38px; font-size: 16px; color: white;">
+    <option value="">-- Choose --</option>
+    <option value="India">India</option>
+    <option value="IreLand">IreLand</option>
+    <option value="Victory">Victory</option>
+    <option value="Panda">Panda</option>
+    <option value="Twister">Twister</option>
+    <option value="PayDirt">PayDirt</option>
+    <option value="WildFox">WildFox</option>
+    <option value="PirateShip">PirateShip</option>
+    <option value="JinQianWa">JinQianWa</option>
+    <option value="Cleopatra">Cleopatra</option>
+    <option value="Garden">Garden</option>
+    <option value="FiveDragons">FiveDragons</option>
+    <option value="SteamTower">SteamTower</option>
+    <option value="Alice">Alice</option>
+    <option value="GreatStars">GreatStars</option>
+    <option value="SAFARI Heat">SAFARI Heat</option>
+    <option value="PatherMoon">PatherMoon</option>
+    <option value="Rally">Rally</option>
+    <option value="BigShot">BigShot</option>
+    <option value="Thai">Thai</option>
+    <option value="SeaCaptain">SeaCaptain</option>
+    <option value="TreasureIsland">TreasureIsland</option>
+    <option value="GoldenTree">GoldenTree</option>
+    <option value="Magician">Magician</option>
+    <option value="SeaWorld">SeaWorld</option>
+    <option value="Samurai">Samurai</option>
+    <option value="circus">circus</option>
+    <option value="TopGun">TopGun</option>
+    <option value="Boxing">Boxing</option>
+    <option value="BonusBears">BonusBears</option>
+    <option value="JAPAN">JAPAN</option>
+    <option value="Boyking">Boyking</option>
+    <option value="ShiningStars">ShiningStars</option>
+    <option value="DolphinReef">DolphinReef</option>
+    <option value="EmperorGate">EmperorGate</option>
+    <option value="IrishLuck">IrishLuck</option>
+    <option value="CookiePop">CookiePop</option>
+    <option value="Wealth">Wealth</option>
+    <option value="Celebration">Celebration</option>
+    <option value="Prosperity">Prosperity</option>
+    <option value="CoyoteCash">CoyoteCash</option>
+    <option value="FairyGarden">FairyGarden</option>
+    <option value="GoldenLotus">GoldenLotus</option>
+    <option value="Tally Ho">Tally Ho</option>
+    <option value="Girls">Girls</option>
+    <option value="Dragon Gold">Dragon Gold</option>
+    <option value="Fame">Fame</option>
+    <option value="Motorcycle">Motorcycle</option>
+    <option value="ICELAND">ICELAND</option>
+    <option value="GreatBlue">GreatBlue</option>
+    <option value="Easter">Easter</option>
+    <option value="RobinHood">RobinHood</option>
+    <option value="ShuiHu">ShuiHu</option>
+  </select>
 
-  <div class="main">
-  <div class="main-header">
-    <h2>FLY NOTICE</h2>
-  </div>
+  <label for="betSelect" style="color: gold;">Bet:</label>
+  <select id="betSelect" style="height: 38px; font-size: 16px; color: white;"></select>
 
-  <div class="main-body">
-    <textarea id="pesan" placeholder="Type Your Notice HERE..." onkeydown="handleKeyPress(event)"></textarea><br>
- <div style="display: flex; gap: 10px; margin-top: 15px;">
-  <button class="btn-fly" onclick="kirimPesan()">FLY NOTICE!</button>
-  <button class="btn-clear" onclick="clearPesan()">🗑️ CLEAR TEXT</button>
+  <label for="pecahanSelect" style="color: gold;">Pecahan:</label>
+  <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;"></select>
+
+  <button onclick="setNow()" style="height: 38px; padding: 0 12px; font-size: 16px;">Click Now</button>
+
+  <label for="manualTime" style="color: gold;">Set Time:</label>
+  <input type="text" id="manualTime" placeholder="Add Date & Time"
+         style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" />
 </div>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  <script>
-      const firebaseConfig = {
-    apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
-    authDomain: "notice-83ae5.firebaseapp.com",
-    databaseURL: "https://notice-83ae5-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "notice-83ae5",
-    storageBucket: "notice-83ae5.appspot.com",
-    messagingSenderId: "268106877488",
-    appId: "1:268106877488:web:798beadfe45104297e7bf5"
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+
+  <button onclick="generateLog()" style="height: 38px;">Change</button>
+
+  <div style="display: flex; align-items: center;">
+    <label for="manualScore" style="color: gold; height: 38px; display: flex; align-items: center;">Add Score (optional):</label>
+    <input type="number" id="manualScore" value="0"
+           style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  </div>
+
+  <div style="display: flex; align-items: center;">
+    <label for="manualJackpot" style="color: gold; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
+    <input type="number" id="manualJackpot" value="0"
+           style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  </div>
+ <div style="display: flex; align-items: center;">
+    <label for="manualScoreInput" style="color: gold; height: 38px; display: flex; align-items: center;">Support Amount:</label>
+    <input type="number" id="manualScoreInput" value="0"
+           style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  </div>
+  <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
+  
+  <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
+ </div>
+  
+<table id="gameLog">
+  <thead>
+    <tr>
+      <th>GameName</th>
+      <th>TableID</th>
+      <th>Bet</th>
+      <th>Win</th>
+      <th>BeginMoney</th>
+      <th>EndMoney</th>
+      <th>DateTime</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<script>
+document.addEventListener("contextmenu", e => e.preventDefault());
+  document.onkeydown = function (e) {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
+      return false;
+    }
   };
+let hiddenRow = null;
+console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
+  const gameData = {
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  const encodedAllowedEmail = "NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ==";
-  const allowedAdmin = atob(encodedAllowedEmail);
-  const urlParams = new URLSearchParams(window.location.search);
-  const adminEmail = atob(urlParams.get("admin") || "");
-
-  let isCreating = false;
-  let noticeData = [];
-  const noticeList = document.getElementById('noticeList');
-  const pesanTextarea = document.getElementById("pesan");
-
-function renderNotices() {
-  noticeList.innerHTML = '';
-  const sorted = [...noticeData].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-  sorted.forEach(({ id, text, title }) => {
-    const row = document.createElement('div');
-    row.className = 'notice-row';
-
-    const judulInput = document.createElement('input');
-    judulInput.type = 'text';
-    judulInput.value = title || '';
-    judulInput.disabled = true;
-    judulInput.placeholder = 'No Title...';
-    judulInput.style.cssText = `
-      width: 100%;
-      padding: 6px;
-      margin-bottom: 5px;
-      border-radius: 6px;
-      border: 1px solid #1668dc;
-      background-color: #111;
-      color: rgb(34, 197, 94);
-      font-weight: bold;
-    `;
-
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.disabled = true;
-    textarea.style.resize = 'none';
-
-    const sendBtn = document.createElement('button');
-    sendBtn.className = 'btn-send';
-    sendBtn.textContent = 'Send';
-    sendBtn.onclick = () => {
-      pesanTextarea.value = text;
-      localStorage.setItem("lastNoticeMessage", text);
-      kirimPesan();
-    };
-
-    const editBtn = document.createElement('button');
-    editBtn.className = 'btn-edit';
-    editBtn.textContent = 'Edit';
-    editBtn.onclick = () => {
-      textarea.disabled = false;
-      judulInput.disabled = false;
-      editBtn.style.display = 'none';
-      saveBtn.style.display = 'inline-block';
-    };
-
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'btn-save';
-    saveBtn.textContent = 'Save';
-    saveBtn.style.display = 'none';
-    saveBtn.onclick = () => {
-      const newText = textarea.value.trim();
-      const newTitle = judulInput.value.trim();
-      if (!newText) return;
-      db.ref("notifikasi/list/" + id).set({
-        text: newText,
-        title: newTitle,
-        timestamp: Date.now()
-      });
-    };
-
-    const delBtn = document.createElement('button');
-    delBtn.className = 'btn-delete';
-    delBtn.textContent = 'Delete';
-    delBtn.onclick = () => {
-      db.ref("notifikasi/list/" + id).remove();
-      localStorage.removeItem(`autoSend_${id}`);
-    };
-
-    const controlDiv = document.createElement('div');
-    controlDiv.style.display = "flex";
-    controlDiv.style.alignItems = "center";
-    controlDiv.style.gap = "10px";
-    controlDiv.style.marginTop = "5px";
-
-    const timeInput = document.createElement('input');
-    timeInput.type = 'datetime-local';
-    timeInput.style.padding = '6px';
-    timeInput.style.borderRadius = '6px';
-    timeInput.style.border = '1px solid #999';
-    timeInput.style.backgroundColor = '#1668dc';
-    timeInput.style.color = 'white';
-    timeInput.style.cursor = 'pointer';
-
-    const countdownText = document.createElement('div');
-    countdownText.style.color = '#3c89e8';
-    countdownText.style.fontSize = '14px';
-    countdownText.style.fontWeight = 'bold';
-    countdownText.textContent = '00:00:00';
-
-    const toggle = document.createElement('div');
-    toggle.className = 'toggle-switch';
-    toggle.title = 'Enable Auto Send';
-    toggle.style.marginLeft = 'auto';
-
-    const daySelect = document.createElement('select');
-    daySelect.style.padding = '6px';
-    daySelect.style.borderRadius = '6px';
-    daySelect.style.border = '1px solid #999';
-    daySelect.style.backgroundColor = '#1668dc';
-    daySelect.style.color = 'white';
-    daySelect.style.cursor = 'pointer';
-
-    const today = new Date();
-    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    for (let i = 1; i <= daysInMonth; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = `${i} day${i > 1 ? 's' : ''}`;
-      daySelect.appendChild(option);
+ "Magician": {
+    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.50: [100.00, 130.00, 150.00, 200.00],
+      3.00: [130.00, 150.00, 180.00, 220.00],
+      3.75: [150.00, 180.00, 200.00, 240.00],
+      5.00: [180.00, 200.00, 220.00, 260.00],
+      7.50: [200.00, 240.00, 280.00, 320.00],
+      12.50: [350.00, 400.00, 450.00, 500.00],
+      15.00: [500.00, 550.00, 600.00, 650.00],
+      25.00: [650.00, 700.00, 750.00, 800.00]
     }
-
-    const savedAuto = JSON.parse(localStorage.getItem(`autoSend_${id}`)) || {};
-    if (savedAuto.time) timeInput.value = savedAuto.time;
-    if (savedAuto.enabled) toggle.classList.add("active");
-    if (savedAuto.selectedDay) daySelect.value = savedAuto.selectedDay;
-
-    const isToggleOn = () => toggle.classList.contains("active");
-
-    const updateCountdown = () => {
-      const targetTime = new Date(timeInput.value).getTime();
-      startCountdown(targetTime, countdownText, () => isToggleOn());
-    };
-
-    if (savedAuto.time) updateCountdown();
-
-    daySelect.addEventListener("change", () => {
-      const days = parseInt(daySelect.value);
-      const future = new Date();
-      future.setDate(future.getDate() + days);
-      future.setSeconds(0);
-      future.setMilliseconds(0);
-      const formatted = future.toISOString().slice(0, 16);
-      timeInput.value = formatted;
-      updateCountdown();
-
-      localStorage.setItem(`autoSend_${id}`, JSON.stringify({
-        time: formatted,
-        enabled: isToggleOn(),
-        selectedDay: daySelect.value
-      }));
-    });
-
-    timeInput.addEventListener("change", () => {
-      updateCountdown();
-      localStorage.setItem(`autoSend_${id}`, JSON.stringify({
-        time: timeInput.value,
-        enabled: isToggleOn(),
-        selectedDay: daySelect.value
-      }));
-    });
-
-    toggle.addEventListener("click", () => {
-      toggle.classList.toggle("active");
-      updateCountdown();
-      localStorage.setItem(`autoSend_${id}`, JSON.stringify({
-        time: timeInput.value,
-        enabled: isToggleOn(),
-        selectedDay: daySelect.value
-      }));
-    });
-
-    setInterval(() => {
-      const target = new Date(timeInput.value).getTime();
-      const now = Date.now();
-      if (
-        isToggleOn() &&
-        timeInput.value &&
-        !timeInput.disabled &&
-        now >= target
-      ) {
-        pesanTextarea.value = text;
-        localStorage.setItem("lastNoticeMessage", text);
-        kirimPesan();
-
-        toggle.classList.remove("active");
-        timeInput.disabled = true;
-        toggle.style.pointerEvents = "none";
-        sendBtn.textContent = "Complate";
-        sendBtn.disabled = true;
-
-        localStorage.setItem(`autoSend_${id}`, JSON.stringify({
-          time: timeInput.value,
-          enabled: false,
-          selectedDay: daySelect.value
-        }));
-      }
-    }, 1000);
-
-    controlDiv.appendChild(timeInput);
-    controlDiv.appendChild(daySelect);
-    controlDiv.appendChild(toggle);
-    controlDiv.appendChild(countdownText);
-
-    row.appendChild(judulInput);
-    row.appendChild(textarea);
-    row.appendChild(sendBtn);
-    row.appendChild(editBtn);
-    row.appendChild(saveBtn);
-    row.appendChild(delBtn);
-    row.appendChild(controlDiv);
-    noticeList.appendChild(row);
-  });
-}
-
-function startCountdown(targetTime, display, isActiveCallback = () => true) {
-  clearInterval(display._timer);
-
-  function update() {
-    const now = Date.now();
-    const diff = targetTime - now;
-
-    if (!isActiveCallback()) {
-      display.textContent = '⏸️ Paused';
-      display.style.color = 'gray';
-      return;
+    },
+    "Girls": {
+    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      2.50: [30.00, 50.00, 100.00, 150.00],
+      5.00: [50.00, 80.00, 100.00, 200.00],
+      12.50: [80.00, 100.00, 130.00, 300.00],
+      25.00: [100.00, 150.00, 200.00, 500.00]
     }
-
-    if (diff <= 0) {
-      display.textContent = "00:00:00";
-      display.style.color = "gray";
-      clearInterval(display._timer);
-      return;
+    },
+    "Easter": {
+    bets: [1.00, 2.00, 4.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      4.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
     }
-
-    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-    display.textContent = `${h}:${m}:${s}`;
-    display.style.color = diff < 300000 ? "red" : "#3c89e8";
-  }
-
-  update();
-  display._timer = setInterval(update, 1000);
-}
-
-  function createNotice() {
-  if (isCreating) return;
-  isCreating = true;
-
-  const row = document.createElement('div');
-  row.className = 'notice-row';
-
-  const judulInput = document.createElement('input');
-  judulInput.type = 'text';
-  judulInput.placeholder = 'Title Message...';
-  judulInput.className = 'judul-input';
-
- const textarea = document.createElement('textarea');
- textarea.placeholder = 'Type new message...';
- textarea.className = 'textarea-message';
-
-  const timeInput = document.createElement('input');
-  timeInput.type = 'datetime-local';
-  timeInput.className = 'create-time';
-
-  const countdownText = document.createElement('div');
-  countdownText.style.color = 'gray';
-  countdownText.style.fontSize = '14px';
-  countdownText.style.fontWeight = 'bold';
-  countdownText.textContent = '00:00:00';
-
-  const toggle = document.createElement('div');
-  toggle.className = 'toggle-switch';
-  toggle.title = 'Enable Auto Send';
-  toggle.style.cursor = 'pointer';
-  toggle.addEventListener("click", () => {
-    toggle.classList.toggle("active");
-  });
-
-  const daySelect = document.createElement('select');
-  daySelect.className = 'create-day';
-
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  for (let i = 1; i <= daysInMonth; i++) {
-    const option = document.createElement('option');
-    option.value = i;
-    option.textContent = `${i} day${i > 1 ? 's' : ''}`;
-    daySelect.appendChild(option);
-  }
-
-  // ⏱️ Countdown handler
-  function startCountdownInCreate(targetTime) {
-    clearInterval(countdownText._timer);
-    function update() {
-      const now = Date.now();
-      const diff = targetTime - now;
-      if (diff <= 0) {
-        countdownText.textContent = "00:00:00";
-        countdownText.style.color = "gray";
-        clearInterval(countdownText._timer);
-        return;
-      }
-      const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-      countdownText.textContent = `${h}:${m}:${s}`;
-      countdownText.style.color = diff < 300000 ? "red" : "#3c89e8";
+    },
+    "RobinHood": {
+    bets: [1.50, 3.00, 4.50, 9.00, 15.00, 30.00],
+    pecahan: {
+      1.50: [30.00, 50.00, 100.00, 130.00],
+      3.00: [50.00, 80.00, 100.00, 150.00],
+      4.50: [80.00, 100.00, 130.00, 180.00],
+      9.00: [100.00, 130.00, 150.00, 200.00],
+      15.00: [130.00, 150.00, 180.00, 300.00],
+      30.00: [150.00, 180.00, 200.00, 500.00]
     }
-    update();
-    countdownText._timer = setInterval(update, 1000);
+    },
+    "ShuiHu": {
+    bets: [1.80, 4.50, 9.00, 18.00, 27.00],
+    pecahan: {
+      1.80: [30.00, 50.00, 70.00, 90.00],
+      4.50: [40.00, 60.00, 110.00, 160.00],
+      9.00: [60.00, 90.00, 110.00, 210.00],
+      18.00: [90.00, 110.00, 140.00, 310.00],
+      27.00: [110.00, 160.00, 210.00, 550.00]
+    }
+    },
+    "ICELAND": {
+    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      2.50: [30.00, 50.00, 100.00, 150.00],
+      5.00: [50.00, 80.00, 100.00, 200.00],
+      12.50: [80.00, 100.00, 130.00, 300.00],
+      25.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+    "SeaWorld": {
+    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.50: [100.00, 130.00, 150.00, 200.00],
+      3.00: [130.00, 150.00, 180.00, 220.00],
+      3.75: [150.00, 180.00, 200.00, 240.00],
+      5.00: [180.00, 200.00, 220.00, 260.00],
+      7.50: [200.00, 240.00, 280.00, 320.00],
+      12.50: [350.00, 400.00, 450.00, 500.00],
+      15.00: [500.00, 550.00, 600.00, 650.00],
+      25.00: [650.00, 700.00, 750.00, 800.00]
+    }
+    },
+   "Motorcycle": {
+    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      1.25: [40.00, 60.00, 80.00, 100.00],
+      1.50: [60.00, 80.00, 100.00, 120.00],
+      1.75: [80.00, 100.00, 120.00, 140.00],
+      2.00: [100.00, 120.00, 140.00, 160.00],
+      2.25: [120.00, 140.00, 160.00, 180.00],
+      2.50: [140.00, 160.00, 180.00, 200.00],
+      6.25: [220.00, 240.00, 260.00, 280.00],
+      12.50: [240.00, 260.00, 280.00, 300.00],
+      25.00: [260.00, 280.00, 300.00, 500.00]
+    }
+    },
+   "Dragon Gold": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+   "Tally Ho": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+    "ShiningStars": {
+    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.50: [100.00, 130.00, 150.00, 200.00],
+      3.00: [130.00, 150.00, 180.00, 220.00],
+      3.75: [150.00, 180.00, 200.00, 240.00],
+      5.00: [180.00, 200.00, 220.00, 260.00],
+      7.50: [200.00, 240.00, 280.00, 320.00],
+      12.50: [350.00, 400.00, 450.00, 500.00],
+      15.00: [500.00, 550.00, 600.00, 650.00],
+      25.00: [650.00, 700.00, 750.00, 800.00]
+    }
+    },
+    "TopGun": {
+    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.50: [100.00, 130.00, 150.00, 200.00],
+      3.00: [130.00, 150.00, 180.00, 220.00],
+      3.75: [150.00, 180.00, 200.00, 240.00],
+      5.00: [180.00, 200.00, 220.00, 260.00],
+      7.50: [200.00, 240.00, 280.00, 320.00],
+      12.50: [350.00, 400.00, 450.00, 500.00],
+      15.00: [500.00, 550.00, 600.00, 650.00],
+      25.00: [650.00, 700.00, 750.00, 800.00]
+    }
+    },
+    "Celebration": {
+    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.50: [100.00, 130.00, 150.00, 200.00],
+      3.00: [130.00, 150.00, 180.00, 220.00],
+      3.75: [150.00, 180.00, 200.00, 240.00],
+      5.00: [180.00, 200.00, 220.00, 260.00],
+      7.50: [200.00, 240.00, 280.00, 320.00],
+      12.50: [350.00, 400.00, 450.00, 500.00],
+      15.00: [500.00, 550.00, 600.00, 650.00],
+      25.00: [650.00, 700.00, 750.00, 800.00]
+    }
+     },
+    "FairyGarden": {
+    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.50: [100.00, 130.00, 150.00, 200.00],
+      3.00: [130.00, 150.00, 180.00, 220.00],
+      3.75: [150.00, 180.00, 200.00, 240.00],
+      5.00: [180.00, 200.00, 220.00, 260.00],
+      7.50: [200.00, 240.00, 280.00, 320.00],
+      12.50: [350.00, 400.00, 450.00, 500.00],
+      15.00: [500.00, 550.00, 600.00, 650.00],
+      25.00: [650.00, 700.00, 750.00, 800.00]
+    }
+    },
+    "GreatStars": {
+    bets: [0.90,2.25, 4.50, 9.00, 45.00],
+    pecahan: {
+      0.90: [20.00, 40.00, 60.00, 80.00],
+      2.25: [30.00, 50.00, 100.00, 150.00],
+      4.50: [50.00, 80.00, 100.00, 200.00],
+      9.00: [80.00, 100.00, 130.00, 300.00],
+      45.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+    "Boxing": {
+    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      2.50: [30.00, 50.00, 100.00, 150.00],
+      5.00: [50.00, 80.00, 100.00, 200.00],
+      12.50: [80.00, 100.00, 130.00, 300.00],
+      25.00: [100.00, 150.00, 200.00, 500.00]
+    }
+     },
+    "JAPAN": {
+    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      2.50: [30.00, 50.00, 100.00, 150.00],
+      5.00: [50.00, 80.00, 100.00, 200.00],
+      12.50: [80.00, 100.00, 130.00, 300.00],
+      25.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+    "Samurai": {
+    bets: [0.90,2.25, 4.50, 9.00, 45.00],
+    pecahan: {
+      0.90: [20.00, 40.00, 60.00, 80.00],
+      2.25: [30.00, 50.00, 100.00, 150.00],
+      4.50: [50.00, 80.00, 100.00, 200.00],
+      9.00: [80.00, 100.00, 130.00, 300.00],
+      45.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+    "Alice": {
+    bets: [1.50, 3.00, 4.50, 9.00, 15.00, 30.00],
+    pecahan: {
+      1.50: [30.00, 50.00, 100.00, 130.00],
+      3.00: [50.00, 80.00, 100.00, 150.00],
+      4.50: [80.00, 100.00, 130.00, 180.00],
+      9.00: [100.00, 130.00, 150.00, 200.00],
+      15.00: [130.00, 150.00, 180.00, 300.00],
+      30.00: [150.00, 180.00, 200.00, 500.00]
+    }
+    },
+   "IrishLuck": {
+    bets: [1.20, 1.50, 1.80, 2.10, 2.40, 2.70, 3.00, 6.00, 7.50, 15.00],
+    pecahan: {
+      1.20: [50.00, 80.00, 100.00, 150.00],
+      1.50: [80.00, 100.00, 130.00, 180.00],
+      1.80: [50.00, 100.00, 200.00, 300.00],
+      2.10: [50.00, 100.00, 200.00, 300.00],
+      2.40: [50.00, 100.00, 200.00, 300.00],
+      2.70: [50.00, 100.00, 200.00, 300.00],
+      3.00: [50.00, 100.00, 200.00, 300.00],
+      6.00: [50.00, 100.00, 200.00, 300.00],
+      7.50: [80.00, 100.00, 200.00, 400.00],
+      15.00: [100.00, 300.00, 500.00, 750.00]
+    }
+    },
+   "Wealth": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+   "Fame": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+   "DolphinReef": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+    "Boyking": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+   "circus": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+   "BigShot": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+   "Rally": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+   "GoldenLotus": {
+    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      1.25: [40.00, 60.00, 80.00, 100.00],
+      1.50: [60.00, 80.00, 100.00, 120.00],
+      1.75: [80.00, 100.00, 120.00, 140.00],
+      2.00: [100.00, 120.00, 140.00, 160.00],
+      2.25: [120.00, 140.00, 160.00, 180.00],
+      2.50: [140.00, 160.00, 180.00, 200.00],
+      6.25: [220.00, 240.00, 260.00, 280.00],
+      12.50: [240.00, 260.00, 280.00, 300.00],
+      25.00: [260.00, 280.00, 300.00, 500.00]
+    }
+    },
+   "GreatBlue": {
+    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      1.25: [40.00, 60.00, 80.00, 100.00],
+      1.50: [60.00, 80.00, 100.00, 120.00],
+      1.75: [80.00, 100.00, 120.00, 140.00],
+      2.00: [100.00, 120.00, 140.00, 160.00],
+      2.25: [120.00, 140.00, 160.00, 180.00],
+      2.50: [140.00, 160.00, 180.00, 200.00],
+      6.25: [220.00, 240.00, 260.00, 280.00],
+      12.50: [240.00, 260.00, 280.00, 300.00],
+      25.00: [260.00, 280.00, 300.00, 500.00]
+    }
+    },
+   "CoyoteCash": {
+    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      1.25: [40.00, 60.00, 80.00, 100.00],
+      1.50: [60.00, 80.00, 100.00, 120.00],
+      1.75: [80.00, 100.00, 120.00, 140.00],
+      2.00: [100.00, 120.00, 140.00, 160.00],
+      2.25: [120.00, 140.00, 160.00, 180.00],
+      2.50: [140.00, 160.00, 180.00, 200.00],
+      6.25: [220.00, 240.00, 260.00, 280.00],
+      12.50: [240.00, 260.00, 280.00, 300.00],
+      25.00: [260.00, 280.00, 300.00, 500.00]
+    }
+    },
+    "Prosperity": {
+    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      1.25: [40.00, 60.00, 80.00, 100.00],
+      1.50: [60.00, 80.00, 100.00, 120.00],
+      1.75: [80.00, 100.00, 120.00, 140.00],
+      2.00: [100.00, 120.00, 140.00, 160.00],
+      2.25: [120.00, 140.00, 160.00, 180.00],
+      2.50: [140.00, 160.00, 180.00, 200.00],
+      6.25: [220.00, 240.00, 260.00, 280.00],
+      12.50: [240.00, 260.00, 280.00, 300.00],
+      25.00: [260.00, 280.00, 300.00, 500.00]
+    }
+    },
+    "BonusBears": {
+    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      1.25: [40.00, 60.00, 80.00, 100.00],
+      1.50: [60.00, 80.00, 100.00, 120.00],
+      1.75: [80.00, 100.00, 120.00, 140.00],
+      2.00: [100.00, 120.00, 140.00, 160.00],
+      2.25: [120.00, 140.00, 160.00, 180.00],
+      2.50: [140.00, 160.00, 180.00, 200.00],
+      6.25: [220.00, 240.00, 260.00, 280.00],
+      12.50: [240.00, 260.00, 280.00, 300.00],
+      25.00: [260.00, 280.00, 300.00, 500.00]
+    }
+    },
+   "SeaCaptain": {
+    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      1.25: [40.00, 60.00, 80.00, 100.00],
+      1.50: [60.00, 80.00, 100.00, 120.00],
+      1.75: [80.00, 100.00, 120.00, 140.00],
+      2.00: [100.00, 120.00, 140.00, 160.00],
+      2.25: [120.00, 140.00, 160.00, 180.00],
+      2.50: [140.00, 160.00, 180.00, 200.00],
+      6.25: [220.00, 240.00, 260.00, 280.00],
+      12.50: [240.00, 260.00, 280.00, 300.00],
+      25.00: [260.00, 280.00, 300.00, 500.00]
+    }
+    },
+   "India": {
+    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      2.50: [40.00, 60.00, 80.00, 100.00],
+      5.00: [60.00, 80.00, 100.00, 120.00],
+      12.50: [50.00, 100.00, 200.00, 500.00],
+      25.00: [50.00, 100.00, 200.00, 500.00]
+    }
+    },
+    "EmperorGate": {
+    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      2.50: [40.00, 60.00, 80.00, 100.00],
+      5.00: [60.00, 80.00, 100.00, 120.00],
+      12.50: [50.00, 100.00, 200.00, 500.00],
+      25.00: [50.00, 100.00, 200.00, 500.00]
+    }
+    },
+   "IreLand": {
+    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.50: [100.00, 130.00, 150.00, 200.00],
+      3.00: [130.00, 150.00, 180.00, 220.00],
+      3.75: [150.00, 180.00, 200.00, 240.00],
+      5.00: [180.00, 200.00, 220.00, 260.00],
+      7.50: [200.00, 240.00, 280.00, 320.00],
+      12.50: [350.00, 400.00, 450.00, 500.00],
+      15.00: [500.00, 550.00, 600.00, 650.00],
+      25.00: [650.00, 700.00, 750.00, 800.00]
+    }
+    },
+   "GoldenTree": {
+    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.50: [100.00, 130.00, 150.00, 200.00],
+      3.00: [130.00, 150.00, 180.00, 220.00],
+      3.75: [150.00, 180.00, 200.00, 240.00],
+      5.00: [180.00, 200.00, 220.00, 260.00],
+      7.50: [200.00, 240.00, 280.00, 320.00],
+      12.50: [350.00, 400.00, 450.00, 500.00],
+      15.00: [500.00, 550.00, 600.00, 650.00],
+      25.00: [650.00, 700.00, 750.00, 800.00]
+    }
+    },
+    "SAFARI Heat": {
+    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
+    pecahan: {
+      1.05: [30.00, 50.00, 100.00, 130.00],
+      1.20: [50.00, 80.00, 100.00, 150.00],
+      1.35: [80.00, 100.00, 130.00, 180.00],
+      1.50: [100.00, 130.00, 150.00, 200.00],
+      3.75: [130.00, 150.00, 180.00, 220.00],
+      7.50: [150.00, 180.00, 200.00, 250.00],
+      15.00: [180.00, 200.00, 220.00, 300.00]
+    }
+    },
+    "Thai": {
+    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
+    pecahan: {
+      1.05: [30.00, 50.00, 100.00, 130.00],
+      1.20: [50.00, 80.00, 100.00, 150.00],
+      1.35: [80.00, 100.00, 130.00, 180.00],
+      1.50: [100.00, 130.00, 150.00, 200.00],
+      3.75: [130.00, 150.00, 180.00, 220.00],
+      7.50: [150.00, 180.00, 200.00, 250.00],
+      15.00: [180.00, 200.00, 220.00, 300.00]
+    }
+    },
+    "PatherMoon": {
+    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
+    pecahan: {
+      1.05: [30.00, 50.00, 100.00, 130.00],
+      1.20: [50.00, 80.00, 100.00, 150.00],
+      1.35: [80.00, 100.00, 130.00, 180.00],
+      1.50: [100.00, 130.00, 150.00, 200.00],
+      3.75: [130.00, 150.00, 180.00, 220.00],
+      7.50: [150.00, 180.00, 200.00, 250.00],
+      15.00: [180.00, 200.00, 220.00, 300.00]
+    }
+    },
+   "Victory": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+    },
+   "Panda": {
+    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      2.50: [40.00, 60.00, 80.00, 100.00],
+      5.00: [60.00, 80.00, 100.00, 120.00],
+      12.50: [50.00, 100.00, 200.00, 500.00],
+      25.00: [50.00, 100.00, 200.00, 500.00]
+    }
+    },
+   "Twister": {
+    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      2.50: [40.00, 60.00, 80.00, 100.00],
+      5.00: [60.00, 80.00, 100.00, 120.00],
+      12.50: [50.00, 100.00, 200.00, 500.00],
+      25.00: [50.00, 100.00, 200.00, 500.00]
+    }
+    },
+   "PayDirt": {
+    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.50: [60.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.00: [100.00, 130.00, 150.00, 200.00],
+      2.25: [130.00, 150.00, 180.00, 220.00],
+      2.50: [150.00, 180.00, 200.00, 240.00],
+      6.25: [180.00, 200.00, 220.00, 260.00],
+      12.50: [200.00, 240.00, 280.00, 320.00],
+      25.00: [350.00, 400.00, 450.00, 500.00]
+    }
+    },
+   "WildFox": {
+    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
+    pecahan: {
+      1.00: [20.00, 40.00, 60.00, 80.00],
+      2.50: [40.00, 60.00, 80.00, 100.00],
+      5.00: [60.00, 80.00, 100.00, 120.00],
+      12.50: [50.00, 100.00, 200.00, 500.00],
+      25.00: [50.00, 100.00, 200.00, 500.00]
   }
+  },
+   "PirateShip": {
+    bets: [1.20, 1.50, 2.10, 3.00, 3.60, 4.50, 6.00, 9.00, 15.00, 18.00, 30.00],
+    pecahan: {
+      1.20: [15.00, 30.00, 45.00, 60.00],
+      1.50: [30.00, 45.00, 60.00, 75.00],
+      2.10: [45.00, 60.00, 75.00, 90.00],
+      3.00: [60.00, 75.00, 90.00, 105.00],
+      3.60: [75.00, 90.00, 105.00, 120.00],
+      4.50: [90.00, 105.00, 120.00, 135.00],
+      6.00: [105.00, 120.00, 135.00, 150.00],
+      9.00: [120.00, 135.00, 150.00, 165.00],
+      15.00: [135.00, 150.00, 165.00, 180.00],
+      18.00: [150.00, 165.00, 180.00, 195.00],
+      30.00: [165.00, 180.00, 195.00, 205.00]
+    }
+    },
+   "CookiePop": {
+    bets: [1.20, 1.50, 2.10, 3.00, 3.60, 4.50, 6.00, 9.00, 15.00, 18.00, 30.00],
+    pecahan: {
+      1.20: [15.00, 30.00, 45.00, 60.00],
+      1.50: [30.00, 45.00, 60.00, 75.00],
+      2.10: [45.00, 60.00, 75.00, 90.00],
+      3.00: [60.00, 75.00, 90.00, 105.00],
+      3.60: [75.00, 90.00, 105.00, 120.00],
+      4.50: [90.00, 105.00, 120.00, 135.00],
+      6.00: [105.00, 120.00, 135.00, 150.00],
+      9.00: [120.00, 135.00, 150.00, 165.00],
+      15.00: [135.00, 150.00, 165.00, 180.00],
+      18.00: [150.00, 165.00, 180.00, 195.00],
+      30.00: [165.00, 180.00, 195.00, 205.00]
+  }
+  },
+    "JinQianWa": {
+    bets: [1.20, 2.00, 4.00, 8.00, 12.00, 20.00],
+    pecahan: {
+      1.20: [50.00, 80.00, 100.00, 150.00],
+      2.00: [80.00, 100.00, 130.00, 180.00],
+      4.00: [100.00, 130.00, 150.00, 200.00],
+      8.00: [180.00, 200.00, 220.00, 260.00],
+      12.00: [350.00, 400.00, 450.00, 500.00],
+      20.00: [650.00, 700.00, 750.00, 800.00]
+  }
+  },
+    "Cleopatra": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+  }
+  },
+  "Garden": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+  }
+  },
+  "FiveDragons": {
+    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
+    pecahan: {
+      1.00: [30.00, 50.00, 100.00, 130.00],
+      1.25: [50.00, 80.00, 100.00, 150.00],
+      1.50: [60.00, 80.00, 100.00, 150.00],
+      1.75: [80.00, 100.00, 130.00, 180.00],
+      2.00: [100.00, 130.00, 150.00, 200.00],
+      2.25: [130.00, 150.00, 180.00, 220.00],
+      2.50: [150.00, 180.00, 200.00, 240.00],
+      6.25: [180.00, 200.00, 220.00, 260.00],
+      12.50: [200.00, 240.00, 280.00, 320.00],
+      25.00: [350.00, 400.00, 450.00, 500.00]
+  }
+  },
+   "SteamTower": {
+    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
+    pecahan: {
+      1.00: [30.00, 60.00, 100.00, 130.00],
+      2.00: [60.00, 90.00, 110.00, 150.00],
+      5.00: [90.00, 120.00, 150.00, 180.00],
+      10.00: [120.00, 150.00, 180.00, 210.00],
+      20.00: [100.00, 150.00, 200.00, 500.00]
+    }
+  }
+};
+  
+  let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
+  document.getElementById("gameSelect").addEventListener("change", function () {
+  const game = this.value;
+  const betSelect = document.getElementById("betSelect");
+  const pecahanSelect = document.getElementById("pecahanSelect");
+  betSelect.innerHTML = "";
+  pecahanSelect.innerHTML = "";
 
-  daySelect.addEventListener("change", () => {
-    const days = parseInt(daySelect.value);
-    const future = new Date();
-    future.setDate(future.getDate() + days);
-    future.setSeconds(0);
-    future.setMilliseconds(0);
-    const formatted = future.toISOString().slice(0, 16);
-    timeInput.value = formatted;
-    startCountdownInCreate(future.getTime());
-  });
+  jackpotInsertedMap[game] = false;
 
-  timeInput.addEventListener("change", () => {
-    const t = new Date(timeInput.value).getTime();
-    startCountdownInCreate(t);
-  });
-
-  const controlDiv = document.createElement('div');
-  controlDiv.style.display = 'flex';
-  controlDiv.style.alignItems = 'center';
-  controlDiv.style.gap = '10px';
-  controlDiv.style.marginTop = '5px';
-  controlDiv.appendChild(timeInput);
-  controlDiv.appendChild(daySelect);
-  controlDiv.appendChild(toggle);
-  controlDiv.appendChild(countdownText);
-
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'btn-save';
-  saveBtn.textContent = 'Save';
-  saveBtn.onclick = () => {
-    const newText = textarea.value.trim();
-    const newTitle = judulInput.value.trim();
-    if (!newText) return;
-
-    const newId = db.ref().child("notifikasi/list").push().key;
-
-    db.ref("notifikasi/list/" + newId).set({
-      text: newText,
-      title: newTitle,
-      timestamp: Date.now()
-    }).then(() => {
-      // Hanya simpan autoSend jika waktu valid
-      if (timeInput.value) {
-        localStorage.setItem(`autoSend_${newId}`, JSON.stringify({
-          time: timeInput.value,
-          enabled: toggle.classList.contains("active"),
-          selectedDay: daySelect.value
-        }));
-      }
-
-      clearInterval(countdownText._timer);
-      row.remove();
-      isCreating = false;
-      renderNotices();
+  if (game && gameData[game]) {
+    gameData[game].bets.forEach(bet => {
+      const option = document.createElement("option");
+      option.value = bet;
+      option.textContent = bet.toFixed(2);
+      betSelect.appendChild(option);
     });
-  };
-
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'btn-delete';
-  cancelBtn.textContent = 'Cancel';
-  cancelBtn.onclick = () => {
-    clearInterval(countdownText._timer);
-    row.remove();
-    isCreating = false;
-  };
-
-  row.appendChild(judulInput);
-  row.appendChild(textarea);
-  row.appendChild(saveBtn);
-  row.appendChild(cancelBtn);
-  row.appendChild(controlDiv);
-  noticeList.prepend(row);
-}
-  function kirimPesan() {
-    if (!adminEmail || adminEmail.toLowerCase() !== allowedAdmin.toLowerCase()) return;
-
-    const teks = pesanTextarea.value.trim();
-    if (!teks) return;
-
-    const data = {
-      message: teks,
-      timestamp: Date.now()
-    };
-
-    db.ref("notifikasi/pesanTerbaru").set(data).then(() => {
-    });
-  }
-
-  function handleKeyPress(event) {
-    if (event.key === "Enter" && !event.ctrlKey) {
-      event.preventDefault();
-      kirimPesan();
-    } else if (event.key === "Enter" && event.ctrlKey) {
-      const cursorPos = pesanTextarea.selectionStart;
-      const textBefore = pesanTextarea.value.substring(0, cursorPos);
-      const textAfter = pesanTextarea.value.substring(cursorPos);
-      pesanTextarea.value = textBefore + "\n" + textAfter;
-      pesanTextarea.selectionStart = pesanTextarea.selectionEnd = cursorPos + 1;
-      event.preventDefault();
-    }
-  }
 
   
-  window.addEventListener("DOMContentLoaded", function () {
-    const saved = localStorage.getItem("lastNoticeMessage");
-    if (saved) {
-      pesanTextarea.value = saved;
-    }
-  });
-
-  pesanTextarea.addEventListener("input", function () {
-    localStorage.setItem("lastNoticeMessage", pesanTextarea.value);
-  });
+    betSelect.dispatchEvent(new Event("change"));
+  }
+});
 
 
-  db.ref("notifikasi/list").on("value", (snapshot) => {
-    const raw = snapshot.val() || {};
-    noticeData = Object.entries(raw).map(([id, val]) => ({ id, ...val }));
-    renderNotices();
-  });
-function clearPesan() {
-  pesanTextarea.value = "";
-  localStorage.removeItem("lastNoticeMessage");
+document.getElementById("betSelect").addEventListener("change", function () {
+  const game = document.getElementById("gameSelect").value;
+  const bet = parseFloat(this.value);
+  const pecahanSelect = document.getElementById("pecahanSelect");
+  pecahanSelect.innerHTML = "";
+
+    
+    if (gameData[game] && gameData[game].pecahan[bet]) {
+    const pecahanList = gameData[game].pecahan[bet];
+
+    pecahanList.forEach(p => {
+      const option = document.createElement("option");
+      option.value = p;
+      option.textContent = p.toFixed(2);
+      pecahanSelect.appendChild(option);
+    });
+  }
+});
+
+ function setNow() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hour = String(now.getHours()).padStart(2, '0');
+  const minute = String(now.getMinutes()).padStart(2, '0');
+  const second = String(now.getSeconds()).padStart(2, '0');
+
+  const globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+  document.getElementById("manualTime").value = globalTime;
 }
+  function rnd(min, max, dec = 2){
+    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
+  }
+
+  let globalTime = null;
+
+  function rnd(min, max, dec = 2){
+    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
+  }
+  function formatDateTimeLocal(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+  return `${y}-${m}-${d} ${h}:${min}:${s}`;
+ }
+  
+ function deleteCents() {
+  const tables = document.querySelectorAll("table");
+
+  tables.forEach(table => {
+    const rows = table.querySelectorAll("tr");
+
+    rows.forEach(row => {
+      const setScoreCell = row.querySelector(".setscore");
+      const beginMoneyCell = row.cells[4]; 
+      const endMoneyCell = row.cells[5];   
+
+      if (setScoreCell && setScoreCell.textContent.includes("Set score：")) {
+       
+        const parts = setScoreCell.textContent.split("Set score：");
+        const originalNumber = parseFloat(parts[1]);
+
+      
+        if (!isNaN(originalNumber)) {
+          const intPart = Math.floor(Math.abs(originalNumber));
+          const finalSetScore = `Set score：${originalNumber < 0 ? "-" : ""}${intPart}.00`;
+          setScoreCell.textContent = finalSetScore;
+        }
+
+        if (beginMoneyCell && endMoneyCell) {
+          const beginMoney = parseFloat(beginMoneyCell.textContent);
+          if (!isNaN(beginMoney)) {
+            const centsOnly = (beginMoney % 1).toFixed(2);
+            endMoneyCell.textContent = centsOnly;
+          }
+        }
+      }
+    });
+  });
+}
+  function generateLog() {
+  const game = document.getElementById("gameSelect").value;
+  const bet = parseFloat(document.getElementById("betSelect").value);
+  const pecahanSelect = document.getElementById("pecahanSelect");
+  const selectedPecahan = parseFloat(pecahanSelect.value);
+  const tbody = document.querySelector("#gameLog tbody");
+  const manualTimeInput = document.getElementById('manualTime').value;
+
+  let logs = [];
+
+ 
+  const manualInput = document.getElementById("manualTime").value.trim();
+  let baseTime;
+if (manualInput) {
+  const parts = manualInput.includes("T")
+    ? manualInput.split("T")
+    : manualInput.split(" ");
+
+  if (parts.length === 2) {
+    const [datePart, timePartRaw] = parts;
+    const [year, month, day] = datePart.split("-").map(Number);
+    const timePart = timePartRaw.trim();
+    const timeParts = timePart.split(":").map(Number);
+    const hour = timeParts[0] || 0;
+    const minute = timeParts[1] || 0;
+    const second = timeParts[2] || 0;
+    baseTime = new Date(year, month - 1, day, hour, minute, second);
+  } else {
+    baseTime = new Date();
+  }
+} else if (globalTime) {
+  const parts = globalTime.split(" ");
+  if (parts.length === 2) {
+    const [datePart, timePart] = parts;
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hour, minute, second] = timePart.split(":").map(Number);
+    baseTime = new Date(year, month - 1, day, hour, minute, second);
+  } else {
+    baseTime = new Date();
+  }
+} else {
+  baseTime = new Date();
+}
+
+
+  baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
+
+   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
+   let balance = rnd(500, 1000) + manualScore;
+
+   let totalSeconds = 0;
+
+   for (let i = 0; i < 10; i++) {
+    const gap = Math.floor(Math.random() * 3) + 3;
+    totalSeconds += gap;
+    const logTime = new Date();
+    logTime.setSeconds(logTime.getSeconds() - totalSeconds);
+
+    const beginMoney = balance;
+    const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
+    const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
+    const formattedTime = formatDateTimeLocal(baseTime);
+
+    logs.unshift({ 
+      game,
+      tableID: `<span class="table-id-highlight">0</span>`,
+      bet: bet.toFixed(2),
+      win: win.toFixed(2),
+      beginMoney: beginMoney.toFixed(2),
+      endMoney: endMoney.toFixed(2),
+      dateTime: formattedTime
+    });
+
+    balance = endMoney;
+    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
+  }
+    
+   setTimeout(() => {
+    const savedData = {
+      game,
+      bet,
+      pecahan: selectedPecahan,
+      manualTime: manualTimeInput,
+      manualScore: document.getElementById("manualScore").value,
+      logs: tbody.innerHTML
+    };
+    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
+  }, 50);
+ 
+ const setScoreMoney = logs[0].endMoney;
+
+
+let setScoreTime = new Date(logs[0].dateTime);
+const extraSeconds = [2, 3, 7, 10];
+const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
+setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
+
+let rows = `
+  <tr class="set-score-row">
+    <td>-</td>
+    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td>${(Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+    <td>0.00</td>
+    <td>${formatDateTimeLocal(setScoreTime)}</td>
+  </tr>
+`;
+
+  logs.forEach(log => {
+    rows += `
+      <tr class="log-row">
+        <td>${log.game}</td>
+        <td>${log.tableID}</td>
+        <td>${log.bet}</td>
+        <td>${log.win}</td>
+        <td>${log.beginMoney}</td>
+        <td>${log.endMoney}</td>
+        <td>${log.dateTime}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = rows;
+}
+  function addJackpot() {
+  const currentGame = document.getElementById("gameSelect").value;
+  const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
+
+  if (isNaN(jackpotAmount) || jackpotAmount < 0) {
+    return;
+  }
+
+  const tbody = document.querySelector("#gameLog tbody");
+  let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  let jackpotRow = tbody.querySelector("tr.set-score-row.jackpot");
+
+  if (jackpotRow) {
+    const prevJackpotText = jackpotRow.children[1].textContent;
+    const match = prevJackpotText.match(/JackPot：([\d.]+)/);
+    if (match) {
+      const oldJackpotValue = parseFloat(match[1]);
+
+     
+      const index = Array.from(tbody.children).indexOf(jackpotRow);
+      const prevRow = tbody.children[index - 1];
+      const oldWin = parseFloat(prevRow.children[3].textContent);
+      const oldEnd = parseFloat(prevRow.children[5].textContent);
+      const newWin = oldWin - oldJackpotValue;
+
+      prevRow.children[3].textContent = newWin.toFixed(2);
+      const bet = parseFloat(prevRow.children[2].textContent);
+      const beginMoney = parseFloat(prevRow.children[4].textContent);
+      const newEnd = beginMoney - bet + newWin;
+      prevRow.children[5].textContent = newEnd.toFixed(2);
+    }
+
+    jackpotRow.remove();
+  }
+
+  if (hiddenRow) {
+  tbody.appendChild(hiddenRow);
+  hiddenRow = null;
+}
+
+  rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (rows.length < 2) {
+    alert("Log belum cukup baris.");
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
+  const targetRow = rows[randomIndex];
+  const prevRow = rows[randomIndex - 1];
+
+  const oldWin = parseFloat(prevRow.children[3].textContent);
+  const newWin = oldWin + jackpotAmount;
+  prevRow.children[3].textContent = newWin.toFixed(2);
+
+  const beginMoney = parseFloat(prevRow.children[4].textContent);
+  const bet = parseFloat(prevRow.children[2].textContent);
+  const newEnd = beginMoney - bet + newWin;
+  prevRow.children[5].textContent = newEnd.toFixed(2);
+
+  const dateTime = prevRow.children[6].textContent;
+  const gameName = prevRow.children[0].textContent;
+
+  const newJackpotRow = document.createElement("tr");
+  newJackpotRow.classList.add("set-score-row", "jackpot");
+  newJackpotRow.innerHTML = `
+    <td>${gameName}</td>
+    <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td class="negatif">-</td>
+    <td>${dateTime}</td>
+  `;
+  targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
+
+ const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+const specialRows = tbody.querySelectorAll("tr.set-score-row"); 
+
+while (allRows.length + specialRows.length > 11) {
+  const lastRow = allRows.pop(); 
+  lastRow.remove();
+}
+
+
+const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+for (let i = updatedRows.length - 1; i > 0; i--) {
+  const current = updatedRows[i];
+  const prev = updatedRows[i - 1];
+
+  const curEnd = parseFloat(current.children[5].textContent);
+  const prevBet = parseFloat(prev.children[2].textContent);
+  const prevWin = parseFloat(prev.children[3].textContent);
+
+  prev.children[4].textContent = curEnd.toFixed(2);
+  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
+}
+
+  if (updatedRows.length > 0) {
+  const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
+  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+  if (setScoreRowTop) {
+    const scoreCell = setScoreRowTop.children[1];
+    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+
+    const beginCell = setScoreRowTop.children[4];
+      const oldBegin = parseFloat(beginCell.textContent);
+      const newBegin = oldBegin + jackpotAmount;
+      beginCell.textContent = newBegin.toFixed(2);
+
+    
+      scoreCell.textContent = `Set score：${(-Math.abs(newBegin)).toFixed(2)}`;
+  }
+}
+
+
+  jackpotInsertedMap[currentGame] = true;
+  localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
+}
+function addManualSetScore() {
+  const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
+  if (isNaN(inputScore)) return alert("❌ Nilai tidak sah");
+
+  const tbody = document.querySelector("#gameLog tbody");
+
+  const setScoreNegatifRow = Array.from(tbody.querySelectorAll("tr.set-score-row:not(.jackpot)"))
+    .find(row => row.children[1].textContent.includes("-"));
+  if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
+
+  const existingSupportRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
+    .find(row =>
+      !row.classList.contains("jackpot") &&
+      !row.children[1].textContent.includes("-") &&
+      row !== setScoreNegatifRow
+    );
+
+  const endMoneyNegatif = parseFloat(setScoreNegatifRow.children[5].textContent);
+  const beginMoney = endMoneyNegatif;
+  const endMoneyBaru = (beginMoney + inputScore).toFixed(2);
+  const setScoreDisplay = inputScore.toFixed(2); // Hanya nilai support, tidak tambah pecahan
+
+  // Waktu baru
+  const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
+  const belowDate = new Date(belowTimeText.replace(" ", "T"));
+  const randomSeconds = Math.floor(Math.random() * 4) + 4;
+  const newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
+  const formatted = formatDateTimeLocal(newTime);
+
+  if (existingSupportRow) {
+    existingSupportRow.children[1].textContent = `Set score：${setScoreDisplay}`;
+    existingSupportRow.children[4].textContent = beginMoney.toFixed(2);
+    existingSupportRow.children[5].textContent = endMoneyBaru;
+    existingSupportRow.children[6].textContent = formatted;
+  } else {
+    const newRow = document.createElement("tr");
+    newRow.classList.add("set-score-row");
+    newRow.innerHTML = `
+      <td>-</td>
+      <td class="setscore">Set score：${setScoreDisplay}</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td>${beginMoney.toFixed(2)}</td>
+      <td>${endMoneyBaru}</td>
+      <td>${formatted}</td>
+    `;
+    tbody.insertBefore(newRow, setScoreNegatifRow);
+  }
+
+  const allRows = Array.from(tbody.querySelectorAll("tr"));
+  if (allRows.length > 11) {
+    allRows[allRows.length - 1].remove();
+  }
+
+  document.getElementById("manualScoreInput").value = "0";
+}
+function resetLog() {
+  localStorage.removeItem("gameLogData918kiss");
+  localStorage.removeItem("jackpotInsertedMap");
+  jackpotInsertedMap = {};
+
+  document.getElementById("gameSelect").value = "";
+  document.getElementById("betSelect").innerHTML = "";
+  document.getElementById("pecahanSelect").innerHTML = "";
+  document.getElementById("manualTime").value = "";
+  document.getElementById("manualScore").value = "0";
+  document.getElementById("manualJackpot").value = "0";
+  document.querySelector("#gameLog tbody").innerHTML = "";
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("gameLogData918kiss");
+  if (!saved) return;
+
+  const data = JSON.parse(saved);
+  document.getElementById("gameSelect").value = data.game;
+  document.getElementById("manualTime").value = data.manualTime;
+  document.getElementById("manualScore").value = data.manualScore;
+  document.getElementById("gameSelect").dispatchEvent(new Event("change"));
+
+  setTimeout(() => {
+    document.getElementById("betSelect").value = data.bet;
+    document.getElementById("betSelect").dispatchEvent(new Event("change"));
+
+    setTimeout(() => {
+      document.getElementById("pecahanSelect").value = data.pecahan;
+    }, 50);
+  }, 50);
+
+  document.querySelector("#gameLog tbody").innerHTML = data.logs;
+});
 </script>
+
 </body>
 </html>
