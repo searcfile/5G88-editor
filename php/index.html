@@ -2,22 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>918KISS Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>5G88 Game Logo</title>
   <style>
-     body {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      font-family: 'Source Sans 3', 'Source Sans Pro', Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.42857;
-      font-weight: 400;
+    body {
       background-color: #000;
-      margin:0 0 20px;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
       overflow-x: hidden;
       scrollbar-width: none;
       -ms-overflow-style: none;
-      }
+    }
     html { 
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -25,1398 +22,1686 @@
      html.body::-webkit-scrollbar {
       display: none;
     }
-      .header {
-      background-color: #1668dc;
-      height: 90px;
+    .header {
       width: 100%;
+      height: 90px;
+      background: gold;
+      color: #000;
+      font-size: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 10px;
-      font-size: 30px;
-      color: white;
       font-weight: bold;
-     }
-    table {
-      width: 65%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 26px;
-      }
-    th {
-      padding: 22px 26px;
-      border: 2.5px solid #ddd;
-      background: #605ca8;
-      color: white;
+      position: fixed;
+      top: 0;
+      z-index: 999;
+      margin-bottom: 10px;
+    }
+    .filter-bar {
+      position: sticky;
+      top: 90px;
+      background-color: #000;
+      z-index: 998;
+      padding-top: 20px;
+    }
+     .search-title {
+      font-size: 30px;
+      font-weight: bold;
+      color: gold;
+      animation: blinkColor 0.3s infinite;
+      margin-top: 30px;
       text-align: center;
-     }
-    td {
-      padding: 22px 26px; 
-      border: 1px solid #ddd;
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      letter-spacing: 1px;
+    }
+    .search-container {
       text-align: center;
-     }
-    #gameLog tbody td {
-      padding-top: 10px;
-      padding-bottom: 10px;
-      line-height: 1.1;
-     }
-    .log-row {
-      color: rgb(51, 51, 51);
-      font-size: 26px; 
-      white-space: nowrap;
-      background-color: #fff;
-     }
-     th:nth-child(2),
-     td:nth-child(2) {
-     width: 0px;
-     }
-     th:nth-child(7),
-     td:nth-child(7) {
-     width: 5px; 
-     }
-  #gameLog td:nth-child(5),
-  #gameLog th:nth-child(5) {
-    width: 5px;
-  }
-  #gameLog th:first-child,
-  #gameLog td:first-child {
-   width: 5px; 
-   white-space: nowrap;
-  }
-  #gameLog th:nth-child(6),
-  #gameLog td:nth-child(6) {
-   width: 5px;
-  }
-  #gameLog th:nth-child(3),
-  #gameLog td:nth-child(3) {
-   width: 5px; 
-  }
-  #gameLog th:nth-child(4),
-  #gameLog td:nth-child(4) {
-   width: 5px; 
-  }
- .table-id-highlight {
-   width: 38px;               
-   height: 34px;             
-   background-color: #d2d6de; 
-   color: #000;               
-   font-weight: bold;         
-   font-size: 23.5px;          
-   border-radius: 45%;        
-   display: flex;             
-   justify-content: center;   
-   align-items: center;      
-   margin: 10px auto;         
+      padding: 20px;
+      margin-top: -20px;
     }
-     button {
-     padding: 5px 10px;
-     font-size: 14px;
-     background: #1668dc;
-     color: white;
-     border: none;
-     border-radius: 6px;
-     cursor: pointer;
-     border: 1px solid white;
-     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-    button:hover {
-     background: #3c89e8;
-     color: white;
-    }
-    button:active {
-     background: #1554ad;
-     color: white;
-    }
-    select, input {
-      padding: 3px 6px;
-      font-size: 13px;
-      margin-left: 10px;
+    .search-container input {
+      padding: 10px;
+      font-size: 16px;
+      width: 500px;
       border-radius: 5px;
-      background: #141414;
-      border: 1px solid #424242;
+      border: 1px solid gold;
+      background-color: #000;
+      color: gold;
+      margin-top: 0;
+    }
+    .filter-tabs {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .filter-tabs button {
+      background-color: #111;
+      color: gold;
+      border: 1px solid gold;
+      padding: 8px 16px;
+      margin: 0 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .filter-tabs button.active,
+    .filter-tabs button:hover {
+      background-color: gold;
+      color: #111;
+    }
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 23px;
+      padding: 20px 30px;
+      justify-content: center;
+      max-width: 1000px;
+      margin: 80px auto 0 auto;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .logo-grid::-webkit-scrollbar {
+      display: none;
+    }
+    .game-alias {
+      font-weight: bold;
+      color: gold !important;
+      margin-bottom: 1px !important;
+      font-size: 12px !important;
+    }
+    .game-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #000;
+      border: 2px solid gold;
+      border-radius: 10px;
+      padding: 17px;
+      transition: transform 0.2s ease;
+      position: relative;
+      top: 10px;
+      box-sizing: border-box;
+      width: 188px;
+    }
+    .game-logo img {
+      width: 185px;
+      height: 160px;
+      object-fit: contain;
+      margin-bottom: 8px;
+    }
+    .game-logo span {
       color: white;
-      transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+      font-size: 14px;
+      text-align: center;
     }
-    input:hover {
-      border: 1px solid #3c89e8;
+    .game-logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px gold;
     }
-    input:focus {
-      border: 1px solid #1668dc;
-      outline: none;
+    .platform-filters {
+      text-align: center;
+      padding-bottom: 10px;
     }
-    select:hover {
-      border: 1px solid #3c89e8;
+      .copy-notice {
+        position: absolute;
+        bottom: -12px;
+        background-color: gold;
+        color: black;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 3px 6px;
+        border-radius: 6px;
+        box-shadow: 0 0 5px #000;
+        animation: fadeNotice 0.3s ease;
+        z-index: 1;
+       }
+     @keyframes fadeNotice {
+     from { opacity: 0; transform: translateY(-5px); }
+     to { opacity: 1; transform: translateY(0); }
     }
-    select:focus {
-      border: 1px solid #1668dc;
-      outline: none;
-    }
-    #nowTime {
-     font-weight: bold;
-     margin-left: 10px;
-     color: gold;
-    }
-    .set-score-row td {
-     color: rgb(51, 51, 51);
-     font-size: 26px;
-     padding-top: 22px !important;
-     padding-bottom: 22px !important;
-     line-height: 1.1 !important;
-     white-space: nowrap;
-     background-color: #fff;
-    }
-    .set-score-row td.negatif {
-     color: #dd4b39;
-     font-weight: bold;
-     font-size: 26px;
-     background-color: #fff;
-    }
-    .set-score-row td.setscore {
-     color: #dd4b39;
-     font-weight: 750;;
-     font-size: 26px;
-     white-space: nowrap;
-     background-color: #fff;
-    }
-    #gameSelect {
-     max-height: 38px;
-     overflow-y: auto;
-     cursor: pointer;
-     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-    #gameSelect:hover {
-    border: 1px solid #3c89e8;
-    }
-    #gameSelect:focus {
-    border: 1px solid #1668dc;
-    outline: none;
-    }
-    .reset-button {
-     background:red;
-     color:white;
-     margin-bottom:15px;
-     border: 1px solid white;
-     padding:0px 15px;
-     height:32px;
-     font-size: 14px;
-    }
-    .reset-button:hover {
-     background: #ff4d4d;
-     color: white;
-    }
-    .reset-button:active {
-     background: #bf0000;
-     color: white;
-    }
+#backToTop {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: gold;
+  color: black;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: none;
+  z-index: 1000;
+  box-shadow: 0 0 10px gold;
+  transition: all 0.3s ease;
+}
+#backToTop:hover {
+  background-color: gold;
+  color: white;
+  box-shadow: 0 0 12px gold;
+}
+#backToTop:active { 
+  background: rgba(0,0,0,0.3);
+  color: rgba(255,255,255,0.4);
+   box-shadow: 0 0 12px white;
+}
   </style>
 </head>
 <body>
-<div class="header">918KISS GENERATE</div>
-<button onclick="resetLog()" class="reset-button">Reset Log</button>
+  <div class="header">🎰 LOGO GAME 🎰</div>
 
-<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
-  <label for="gameSelect" style="color: white;padding-left:5px;">Game:</label>
-  <select id="gameSelect" class="select2" style="height: 38px; font-size: 16px; color: white;">
-    <option value="">-- Choose --</option>
-    <option value="India">India</option>
-    <option value="IreLand">IreLand</option>
-    <option value="Victory">Victory</option>
-    <option value="Panda">Panda</option>
-    <option value="Twister">Twister</option>
-    <option value="PayDirt">PayDirt</option>
-    <option value="WildFox">WildFox</option>
-    <option value="PirateShip">PirateShip</option>
-    <option value="JinQianWa">JinQianWa</option>
-    <option value="Cleopatra">Cleopatra</option>
-    <option value="Garden">Garden</option>
-    <option value="FiveDragons">FiveDragons</option>
-    <option value="SteamTower">SteamTower</option>
-    <option value="Alice">Alice</option>
-    <option value="GreatStars">GreatStars</option>
-    <option value="SAFARI Heat">SAFARI Heat</option>
-    <option value="PatherMoon">PatherMoon</option>
-    <option value="Rally">Rally</option>
-    <option value="BigShot">BigShot</option>
-    <option value="Thai">Thai</option>
-    <option value="SeaCaptain">SeaCaptain</option>
-    <option value="TreasureIsland">TreasureIsland</option>
-    <option value="GoldenTree">GoldenTree</option>
-    <option value="Magician">Magician</option>
-    <option value="SeaWorld">SeaWorld</option>
-    <option value="Samurai">Samurai</option>
-    <option value="circus">circus</option>
-    <option value="TopGun">TopGun</option>
-    <option value="Boxing">Boxing</option>
-    <option value="BonusBears">BonusBears</option>
-    <option value="JAPAN">JAPAN</option>
-    <option value="Boyking">Boyking</option>
-    <option value="ShiningStars">ShiningStars</option>
-    <option value="DolphinReef">DolphinReef</option>
-    <option value="EmperorGate">EmperorGate</option>
-    <option value="IrishLuck">IrishLuck</option>
-    <option value="CookiePop">CookiePop</option>
-    <option value="Wealth">Wealth</option>
-    <option value="Celebration">Celebration</option>
-    <option value="Prosperity">Prosperity</option>
-    <option value="CoyoteCash">CoyoteCash</option>
-    <option value="FairyGarden">FairyGarden</option>
-    <option value="GoldenLotus">GoldenLotus</option>
-    <option value="Tally Ho">Tally Ho</option>
-    <option value="Girls">Girls</option>
-    <option value="Dragon Gold">Dragon Gold</option>
-    <option value="Fame">Fame</option>
-    <option value="Motorcycle">Motorcycle</option>
-    <option value="ICELAND">ICELAND</option>
-    <option value="GreatBlue">GreatBlue</option>
-    <option value="Easter">Easter</option>
-    <option value="RobinHood">RobinHood</option>
-    <option value="ShuiHu">ShuiHu</option>
-  </select>
+  <div class="filter-bar">
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search Favorite Game" onkeyup="filterGames()" />
+  </div>
 
-  <label for="betSelect" style="color: white;">Bet:</label>
-  <select id="betSelect" style="height: 38px; font-size: 16px; color: white; cursor:pointer;transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);"></select>
+  <div class="filter-tabs">
+    <button onclick="setFilter('all')" class="active">All</button>
+    <button onclick="setFilter('slot')">Slot</button>
+    <button onclick="setFilter('live')">Live Game</button>
+    <button onclick="setFilter('table')">Table Game</button>
+  </div>
 
-  <label for="pecahanSelect" style="color: white;">Pecahan:</label>
-  <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;cursor:pointer;transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);"></select>
-
-  <button onclick="setNow()" style="height: 38px; padding: 0 12px; font-size: 16px;">Click Now</button>
-
-  <label for="manualTime" style="color: white;">Set Time:</label>
-  <input type="text" id="manualTime" placeholder="Add Date & Time"
-         style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" />
+  <div class="filter-tabs platform-filters">
+    <button onclick="setPlatform('all')" class="active">All Platforms</button>
+    <button onclick="setPlatform('918kiss')">918kiss</button>
+    <button onclick="setPlatform('mega888')">MEGA888</button>
+    <button onclick="setPlatform('pussy888')">PUSSY888</button>
+    <button onclick="setPlatform('xe88')">XE88</button>
+  </div>
 </div>
 
-<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-
-  <button onclick="generateLog()" style="height: 38px;">Change</button>
-
-  <div style="display: flex; align-items: center;">
-    <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;">Add Score (optional):</label>
-    <input type="number" id="manualScore" value="0"
-           style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  <div class="logo-grid" id="gameGrid">
   </div>
-
-  <div style="display: flex; align-items: center;">
-    <label for="manualJackpot" style="color: white; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
-    <input type="number" id="manualJackpot" value="0"
-           style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
-  </div>
- <div style="display: flex; align-items: center;">
-    <label for="manualScoreInput" style="color: white; height: 38px; display: flex; align-items: center;">Support Amount:</label>
-    <input type="number" id="manualScoreInput" value="0"
-           style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
-  </div>
-  <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
-  
-  <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
- </div>
-  
-<table id="gameLog">
-  <thead>
-    <tr>
-      <th>GameName</th>
-      <th>TableID</th>
-      <th>Bet</th>
-      <th>Win</th>
-      <th>BeginMoney</th>
-      <th>EndMoney</th>
-      <th>DateTime</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
-
-<script>
-let hiddenRow = null;
-console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
-  const gameData = {
-
- "Magician": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "Girls": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Easter": {
-    bets: [1.00, 2.00, 4.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      4.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "RobinHood": {
-    bets: [1.50, 3.00, 4.50, 9.00, 15.00, 30.00],
-    pecahan: {
-      1.50: [30.00, 50.00, 100.00, 130.00],
-      3.00: [50.00, 80.00, 100.00, 150.00],
-      4.50: [80.00, 100.00, 130.00, 180.00],
-      9.00: [100.00, 130.00, 150.00, 200.00],
-      15.00: [130.00, 150.00, 180.00, 300.00],
-      30.00: [150.00, 180.00, 200.00, 500.00]
-    }
-    },
-    "ShuiHu": {
-    bets: [1.80, 4.50, 9.00, 18.00, 27.00],
-    pecahan: {
-      1.80: [30.00, 50.00, 70.00, 90.00],
-      4.50: [40.00, 60.00, 110.00, 160.00],
-      9.00: [60.00, 90.00, 110.00, 210.00],
-      18.00: [90.00, 110.00, 140.00, 310.00],
-      27.00: [110.00, 160.00, 210.00, 550.00]
-    }
-    },
-    "ICELAND": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "SeaWorld": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-   "Motorcycle": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "Dragon Gold": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Tally Ho": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "ShiningStars": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "TopGun": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "Celebration": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-     },
-    "FairyGarden": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "GreatStars": {
-    bets: [0.90,2.25, 4.50, 9.00, 45.00],
-    pecahan: {
-      0.90: [20.00, 40.00, 60.00, 80.00],
-      2.25: [30.00, 50.00, 100.00, 150.00],
-      4.50: [50.00, 80.00, 100.00, 200.00],
-      9.00: [80.00, 100.00, 130.00, 300.00],
-      45.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Boxing": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-     },
-    "JAPAN": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Samurai": {
-    bets: [0.90,2.25, 4.50, 9.00, 45.00],
-    pecahan: {
-      0.90: [20.00, 40.00, 60.00, 80.00],
-      2.25: [30.00, 50.00, 100.00, 150.00],
-      4.50: [50.00, 80.00, 100.00, 200.00],
-      9.00: [80.00, 100.00, 130.00, 300.00],
-      45.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Alice": {
-    bets: [1.50, 3.00, 4.50, 9.00, 15.00, 30.00],
-    pecahan: {
-      1.50: [30.00, 50.00, 100.00, 130.00],
-      3.00: [50.00, 80.00, 100.00, 150.00],
-      4.50: [80.00, 100.00, 130.00, 180.00],
-      9.00: [100.00, 130.00, 150.00, 200.00],
-      15.00: [130.00, 150.00, 180.00, 300.00],
-      30.00: [150.00, 180.00, 200.00, 500.00]
-    }
-    },
-   "IrishLuck": {
-    bets: [1.20, 1.50, 1.80, 2.10, 2.40, 2.70, 3.00, 6.00, 7.50, 15.00],
-    pecahan: {
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.50: [80.00, 100.00, 130.00, 180.00],
-      1.80: [50.00, 100.00, 200.00, 300.00],
-      2.10: [50.00, 100.00, 200.00, 300.00],
-      2.40: [50.00, 100.00, 200.00, 300.00],
-      2.70: [50.00, 100.00, 200.00, 300.00],
-      3.00: [50.00, 100.00, 200.00, 300.00],
-      6.00: [50.00, 100.00, 200.00, 300.00],
-      7.50: [80.00, 100.00, 200.00, 400.00],
-      15.00: [100.00, 300.00, 500.00, 750.00]
-    }
-    },
-   "Wealth": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Fame": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "DolphinReef": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Boyking": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "circus": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "BigShot": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Rally": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "GoldenLotus": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "GreatBlue": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "CoyoteCash": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-    "Prosperity": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-    "BonusBears": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "SeaCaptain": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "India": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-    "EmperorGate": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-   "IreLand": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-   "GoldenTree": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "SAFARI Heat": {
-    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
-    pecahan: {
-      1.05: [30.00, 50.00, 100.00, 130.00],
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.35: [80.00, 100.00, 130.00, 180.00],
-      1.50: [100.00, 130.00, 150.00, 200.00],
-      3.75: [130.00, 150.00, 180.00, 220.00],
-      7.50: [150.00, 180.00, 200.00, 250.00],
-      15.00: [180.00, 200.00, 220.00, 300.00]
-    }
-    },
-    "Thai": {
-    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
-    pecahan: {
-      1.05: [30.00, 50.00, 100.00, 130.00],
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.35: [80.00, 100.00, 130.00, 180.00],
-      1.50: [100.00, 130.00, 150.00, 200.00],
-      3.75: [130.00, 150.00, 180.00, 220.00],
-      7.50: [150.00, 180.00, 200.00, 250.00],
-      15.00: [180.00, 200.00, 220.00, 300.00]
-    }
-    },
-    "PatherMoon": {
-    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
-    pecahan: {
-      1.05: [30.00, 50.00, 100.00, 130.00],
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.35: [80.00, 100.00, 130.00, 180.00],
-      1.50: [100.00, 130.00, 150.00, 200.00],
-      3.75: [130.00, 150.00, 180.00, 220.00],
-      7.50: [150.00, 180.00, 200.00, 250.00],
-      15.00: [180.00, 200.00, 220.00, 300.00]
-    }
-    },
-   "Victory": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Panda": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-   "Twister": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-   "PayDirt": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.50: [60.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.00: [100.00, 130.00, 150.00, 200.00],
-      2.25: [130.00, 150.00, 180.00, 220.00],
-      2.50: [150.00, 180.00, 200.00, 240.00],
-      6.25: [180.00, 200.00, 220.00, 260.00],
-      12.50: [200.00, 240.00, 280.00, 320.00],
-      25.00: [350.00, 400.00, 450.00, 500.00]
-    }
-    },
-   "WildFox": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-  }
-  },
-   "PirateShip": {
-    bets: [1.20, 1.50, 2.10, 3.00, 3.60, 4.50, 6.00, 9.00, 15.00, 18.00, 30.00],
-    pecahan: {
-      1.20: [15.00, 30.00, 45.00, 60.00],
-      1.50: [30.00, 45.00, 60.00, 75.00],
-      2.10: [45.00, 60.00, 75.00, 90.00],
-      3.00: [60.00, 75.00, 90.00, 105.00],
-      3.60: [75.00, 90.00, 105.00, 120.00],
-      4.50: [90.00, 105.00, 120.00, 135.00],
-      6.00: [105.00, 120.00, 135.00, 150.00],
-      9.00: [120.00, 135.00, 150.00, 165.00],
-      15.00: [135.00, 150.00, 165.00, 180.00],
-      18.00: [150.00, 165.00, 180.00, 195.00],
-      30.00: [165.00, 180.00, 195.00, 205.00]
-    }
-    },
-   "CookiePop": {
-    bets: [1.20, 1.50, 2.10, 3.00, 3.60, 4.50, 6.00, 9.00, 15.00, 18.00, 30.00],
-    pecahan: {
-      1.20: [15.00, 30.00, 45.00, 60.00],
-      1.50: [30.00, 45.00, 60.00, 75.00],
-      2.10: [45.00, 60.00, 75.00, 90.00],
-      3.00: [60.00, 75.00, 90.00, 105.00],
-      3.60: [75.00, 90.00, 105.00, 120.00],
-      4.50: [90.00, 105.00, 120.00, 135.00],
-      6.00: [105.00, 120.00, 135.00, 150.00],
-      9.00: [120.00, 135.00, 150.00, 165.00],
-      15.00: [135.00, 150.00, 165.00, 180.00],
-      18.00: [150.00, 165.00, 180.00, 195.00],
-      30.00: [165.00, 180.00, 195.00, 205.00]
-  }
-  },
-    "JinQianWa": {
-    bets: [1.20, 2.00, 4.00, 8.00, 12.00, 20.00],
-    pecahan: {
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      2.00: [80.00, 100.00, 130.00, 180.00],
-      4.00: [100.00, 130.00, 150.00, 200.00],
-      8.00: [180.00, 200.00, 220.00, 260.00],
-      12.00: [350.00, 400.00, 450.00, 500.00],
-      20.00: [650.00, 700.00, 750.00, 800.00]
-  }
-  },
-    "Cleopatra": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-  }
-  },
-  "Garden": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-  }
-  },
-  "FiveDragons": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.50: [60.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.00: [100.00, 130.00, 150.00, 200.00],
-      2.25: [130.00, 150.00, 180.00, 220.00],
-      2.50: [150.00, 180.00, 200.00, 240.00],
-      6.25: [180.00, 200.00, 220.00, 260.00],
-      12.50: [200.00, 240.00, 280.00, 320.00],
-      25.00: [350.00, 400.00, 450.00, 500.00]
-  }
-  },
-   "SteamTower": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-  }
-};
-  
-  let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
-  document.getElementById("gameSelect").addEventListener("change", function () {
-  const game = this.value;
-  const betSelect = document.getElementById("betSelect");
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  betSelect.innerHTML = "";
-  pecahanSelect.innerHTML = "";
-
-  jackpotInsertedMap[game] = false;
-
-  if (game && gameData[game]) {
-    gameData[game].bets.forEach(bet => {
-      const option = document.createElement("option");
-      option.value = bet;
-      option.textContent = bet.toFixed(2);
-      betSelect.appendChild(option);
-    });
-
-  
-    betSelect.dispatchEvent(new Event("change"));
-  }
-});
-
-
-document.getElementById("betSelect").addEventListener("change", function () {
-  const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(this.value);
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  pecahanSelect.innerHTML = "";
-
-    
-    if (gameData[game] && gameData[game].pecahan[bet]) {
-    const pecahanList = gameData[game].pecahan[bet];
-
-    pecahanList.forEach(p => {
-      const option = document.createElement("option");
-      option.value = p;
-      option.textContent = p.toFixed(2);
-      pecahanSelect.appendChild(option);
-    });
-  }
-});
-
- function setNow() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hour = String(now.getHours()).padStart(2, '0');
-  const minute = String(now.getMinutes()).padStart(2, '0');
-  const second = String(now.getSeconds()).padStart(2, '0');
-
-  const globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-  document.getElementById("manualTime").value = globalTime;
-}
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-
-  let globalTime = null;
-
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-  function formatDateTimeLocal(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const h = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const s = String(date.getSeconds()).padStart(2, '0');
-  return `${y}-${m}-${d} ${h}:${min}:${s}`;
- }
-  
- function deleteCents() {
-  const tables = document.querySelectorAll("table");
-
-  tables.forEach(table => {
-    const rows = table.querySelectorAll("tr");
-
-    rows.forEach(row => {
-      const setScoreCell = row.querySelector(".setscore");
-      const beginMoneyCell = row.cells[4]; 
-      const endMoneyCell = row.cells[5];   
-
-      if (setScoreCell && setScoreCell.textContent.includes("Set score：")) {
-       
-        const parts = setScoreCell.textContent.split("Set score：");
-        const originalNumber = parseFloat(parts[1]);
-
-      
-        if (!isNaN(originalNumber)) {
-          const intPart = Math.floor(Math.abs(originalNumber));
-          const finalSetScore = `Set score：${originalNumber < 0 ? "-" : ""}${intPart}.00`;
-          setScoreCell.textContent = finalSetScore;
-        }
-
-        if (beginMoneyCell && endMoneyCell) {
-          const beginMoney = parseFloat(beginMoneyCell.textContent);
-          if (!isNaN(beginMoney)) {
-            const centsOnly = (beginMoney % 1).toFixed(2);
-            endMoneyCell.textContent = centsOnly;
-          }
-        }
+  <button id="backToTop" onclick="scrollToTop()">⬆ Back to Top</button>
+  <script>
+ 
+  console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
+    const games = [
+      { 
+        alias: "GOD OF WEALTH",
+        name: "GodofWealth",
+        image: "https://i.imgur.com/a6R6znR.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "DRAGON TIGER",
+        name: "DragonTiger1",
+        image: "https://i.imgur.com/rihURXa.png",
+        platform: ["mega888","918kiss"],
+        type: "live"
+      },
+      {
+        alias: "DRAGON TIGER",
+        name: "DragonTiger2",
+        image: "https://i.imgur.com/iSx0PoM.png",
+        platform: ["mega888","918kiss"],
+        type: "live"
+      },
+      {
+        alias: "DRAGON TIGER",
+        name: "DragonTiger3",
+        image: "https://i.imgur.com/SxMf26V.png",
+        platform: ["mega888","918kiss"],
+        type: "live"
+      },
+      {
+        alias: "GLAMOROUS WORLD",
+        name: "Fashion",
+        image: "https://i.imgur.com/2KAfqdM.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "ROULETTE",
+        name: "Roulette",
+        image: "https://i.imgur.com/1HQvJ1v.png",
+        platform: ["mega888","918kiss"],
+        type: "live"
+      },
+      {
+        alias: "BULLS",
+        name: "Bulls",
+        image: "https://i.imgur.com/gUNtuNc.png",
+        platform: ["mega888","918kiss"],
+        type: "table"
+      },
+      {
+        alias: "THUNDER BOLT",
+        name: "Thunderbolt",
+        image: "https://i.imgur.com/rQh3lve.png",
+        platform: ["mega888","918kiss"],
+        type: "live"
+      },
+      {
+        alias: "OCEAN KING",
+        name: "OceanKing",
+        image: "https://i.imgur.com/Pty2Q0G.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "table"
+      },
+      {
+        alias: "ROULETTE24",
+        name: "Roulette24",
+        image: "https://i.imgur.com/MLDG7Cm.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "table"
+      },
+      {
+        alias: "POKER THREE",
+        name: "PokerTree",
+        image: "https://i.imgur.com/etJNoaG.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "live"
+      },
+      {
+        alias: "HOLD`EM",
+        name: "Hold`Em",
+        image: "https://i.imgur.com/N61DWQ2.png",
+        platform: ["mega888","918kis","pussy888"],
+        type: "live"
+      },
+      {
+        alias: "CASINO WAR",
+        name: "CasinoWar",
+        image: "https://i.imgur.com/jNWW46N.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "table"
+      },
+      {
+        alias: "ROULETTE12",
+        name: "Roulette12",
+        image: "https://i.imgur.com/BgEOOFM.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "table"
+      },
+      {
+        alias: "BLACKJACK",
+        name: "Blackjack",
+        image: "https://i.imgur.com/Nd7nqJ1.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "live"
+      },
+      {
+        alias: "KING DERBY",
+        name: "KingDerby",
+        image: "https://i.imgur.com/NPn4Q6b.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "table"
+      },
+      {
+        alias: "ROULETTE73",
+        name: "Roulette73",
+        image: "https://i.imgur.com/uhlicfh.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "table"
+      },
+      {
+        alias: "HULU COCK",
+        name: "Hulucock",
+        image: "https://i.imgur.com/QBodPrB.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "table"
+      },
+      {
+        alias: "BACCARAT",
+        name: "Baccarat",
+        image: "https://i.imgur.com/190muBR.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "table"
+      },
+      {
+        alias: "SICBO",
+        name: "Sicbo",
+        image: "https://i.imgur.com/znzx6hm.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "table"
+      },
+      {
+        alias: "BELANGKAI",
+        name: "Belangkai",
+        image: "https://i.imgur.com/DN0E45R.png",
+        platform: ["mega888","918kiss"],
+        type: "table"
+      },
+      {
+        alias: "HALLOWEEN FORTUNE",
+        name: "Halloween",
+        image: "https://i.imgur.com/G4iD4nz.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "slot"
+      },
+      {
+        alias: "DWARFS GONE WILD",
+        name: "DwarfsGoneWild",
+        image: "https://i.imgur.com/7Jq8Q97.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "ELVEN MAGIC",
+        name: "ElvenMagic",
+        image: "https://i.imgur.com/7GpRS3B.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "CHINESE NEW YEAR",
+        name: "ChineseNewYear",
+        image: "https://i.imgur.com/76N9cuo.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "LUCKY KOI",
+        name: "LuckyKoi",
+        image: "https://i.imgur.com/WUWJUNp.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "LUCKY NEKO",
+        name: "LuckyNeko",
+        image: "https://i.imgur.com/FpWOjkt.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "DA SI XI",
+        name: "DaSiXi",
+        image: "https://i.imgur.com/VAvbLaK.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "MANIC MILLIONS",
+        name: "ManicMillions",
+        image: "https://i.imgur.com/XgK6wXA.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "DRAGONZ",
+        name: "Dragonz",
+        image: "https://i.imgur.com/uNKI6Iz.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "GOLD RUSH",
+        name: "GoldRush",
+        image: "https://i.imgur.com/xz445Do.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "LOST ISLAND",
+        name: "LostIsland",
+        image: "https://i.imgur.com/wJf5MEV.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "HOUSE OF DOOM",
+        name: "Doom",
+        image: "https://i.imgur.com/16IZrQ9.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+       {
+        alias: "HALLOWEEN",
+        name: "Halloween",
+        image: "https://i.imgur.com/Dw3l47w.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "TOP GUN",
+        name: "TopGun",
+        image: "https://i.imgur.com/nvYvrw6.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "SUN WU KONG",
+        name: "SunWuKong",
+        image: "https://i.imgur.com/dTht1Ey.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "JIN QIAN WA",
+        name: "JinQianWa",
+        image: "https://i.imgur.com/Ur7FqtJ.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "ROBIN HOOD SHIFTING RICHES",
+        name: "RobinHood",
+        image: "https://i.imgur.com/7LJPIzp.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "ALICE",
+        name: "Alice",
+        image: "https://i.imgur.com/h28OgIq.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "AFRICAN WILDLIFE",
+        name: "African",
+        image: "https://i.imgur.com/uFQherG.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "LAURA",
+        name: "Laura",
+        image: "https://i.imgur.com/3ZIg1kW.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "AMAZON JUNGLE",
+        name: "Amazon",
+        image: "https://i.imgur.com/ea6eDPR.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "SEASONS GREETINGS",
+        name: "Seasons",
+        image: "https://i.imgur.com/NbvQgqd.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "PIRATE",
+        name: "Pirate",
+        image: "https://i.imgur.com/jyPq8me.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "JIN PING MAI",
+        name: "PanJinlian",
+        image: "https://i.imgur.com/S9y3LJq.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "FONG SHEN",
+        name: "Fengshen",
+        image: "https://i.imgur.com/WY7xsLp.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "WATER MARGIN",
+        name: "ShuiHu",
+        image: "https://i.imgur.com/QZKVvsh.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "ZHAO CAI JIN BAO",
+        name: "ZhaoCaiJinBao",
+        image: "https://i.imgur.com/njUVXYU.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "NIAN NIAN YOU YU",
+        name: "NianNianYouYu",
+        image: "https://i.imgur.com/uRJkRp1.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "5 DRAGONS",
+        name: "FiveDragons",
+        image: "https://i.imgur.com/brJx1mL.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "SEA WORLD",
+        name: "SeaWorld",
+        image: "https://i.imgur.com/RLYOApB.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "RANCH STORY",
+        name: "RanchStory",
+        image: "https://i.imgur.com/Mael2wE.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "GOLDEN TREE",
+        name: "GoldenTree",
+        image: "https://i.imgur.com/u50gRVK.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "TREASURE ISLAND",
+        name: "TreasureIsland",
+        image: "https://i.imgur.com/KmnmL4E.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      { 
+        alias: "MONEY FEVER",
+        name: "MoneyFever",
+        image: "https://i.imgur.com/9vKzWvK.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "WESTERN RANCH STORY",
+        name: "WesternRanchStory",
+        image: "https://i.imgur.com/mdkPrZt.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "STONE AGE",
+        name: "StoneAge",
+        image: "https://i.imgur.com/iX9A7jq.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "FAIRY GARDEN PLUS",
+        name: "FairyGarden",
+        image: "https://i.imgur.com/QQuvffV.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "SHINING STARS",
+        name: "ShiningStars",
+        image: "https://i.imgur.com/QSaLYfv.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "COOKIE POP",
+        name: "CookiePop",
+        image: "https://i.imgur.com/uL89THW.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "HALLOWEEN PARTY",
+        name: "HalloweenParty",
+        image: "https://i.imgur.com/lJiXmr5.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "PIRATE SHIP",
+        name: "PirateShip",
+        image: "https://i.imgur.com/58MtioR.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "MAGICAL SPINS",
+        name: "Magician",
+        image: "https://i.imgur.com/NjOcqcB.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "FRUITY TUTTI",
+        name: "Fruit",
+        image: "https://i.imgur.com/bAS22vp.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "INDIAN MYTH",
+        name: "India",
+        image: "https://i.imgur.com/xKMPhOz.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "GREAT CHINA",
+        name: "Panda",
+        image: "https://i.imgur.com/zImRTUt.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "SPARTA",
+        name: "Sparta",
+        image: "https://i.imgur.com/eiqC1pT.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "DISCOVERY",
+        name: "thediscovery",
+        image: "https://i.imgur.com/kDwsuW4.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "IRISH LUCK",
+        name: "IrishLuck",
+        image: "https://i.imgur.com/dY7mquW.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "GREAT BLUE",
+        name: "GreatBlue",
+        image: "https://i.imgur.com/pc7Ksz9.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "CHERRY LOVE",
+        name: "CherryLove",
+        image: "https://i.imgur.com/W6Svt1M.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "PANTHER MOON",
+        name: "PantherMoon",
+        image: "https://i.imgur.com/TkRnybu.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "JAPAN FORTURE",
+        name: "JAPAN",
+        image: "https://i.imgur.com/0nEoxdF.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "ICELAND",
+        name: "ICELAND",
+        image: "https://i.imgur.com/RlNyqDg.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "THAI PARADISE",
+        name: "Thai",
+        image: "https://i.imgur.com/PINlFYm.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "SILVER BULLET",
+        name: "Silver",
+        image: "https://i.imgur.com/jI93RSE.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "WONG CHOY",
+        name: "Wong Choy",
+        image: "https://i.imgur.com/PsliGma.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "SPARTAN",
+        name: "Spartan",
+        image: "https://i.imgur.com/vUox6Gz.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "TREASURE CAPTAINS",
+        name: "Captain",
+        image: "https://i.imgur.com/4qgqu3i.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "5 FORTUNE",
+        name: "FORTUNE",
+        image: "https://i.imgur.com/tccAcjz.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "DRAGON GOLD",
+        name: "Dragon Gold",
+        image: "https://i.imgur.com/hdtxXOQ.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "KIMOCHIII",
+        name: "Kimochi",
+        image: "https://i.imgur.com/dy3ufg7.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "WILD FOX",
+        name: "WildFox",
+        image: "https://i.imgur.com/sDWl04W.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "BIG PROSPERITY",
+        name: "Prosperity",
+        image: "https://i.imgur.com/sbBRIX3.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "DOLPHIN REEF",
+        name: "DolphinReef",
+        image: "https://i.imgur.com/kN1fxxo.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "EMPEROR GATE",
+        name: "EmperorGate",
+        image: "https://i.imgur.com/7PZGZkb.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "SAMURAI",
+        name: "Samurai",
+        image: "https://i.imgur.com/vQ80fN5.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "A NIGHT OUT", 
+        name: "ANightOut",
+        image: "https://i.imgur.com/6F1svqV.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "STRIPER NIGHT", 
+        name: "Girls",
+        image: "https://i.imgur.com/f7X7uyo.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "GOLDEN TOUR", 
+        name: "GoldenTour",
+        image: "https://i.imgur.com/tlq4DyF.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "BONUS BEARS", 
+        name: "BonusBears",
+        image: "https://i.imgur.com/LyJI0YV.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "T-REX",
+        name: "T-REX",
+        image: "https://i.imgur.com/BDksnld.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "TRIPLE TWISTER",
+        name: "Twister",
+        image: "https://i.imgur.com/e2lOD4r.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "DOLPHIN",
+        name: "Dolphin",
+        image: "https://i.imgur.com/bHonlsr.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "GREAT STARS",
+        name: "GreatStars",
+        image: "https://i.imgur.com/yRI6GKY.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "TALLY HO",
+        name: "Tally Ho",
+        image: "https://i.imgur.com/BzgpBw6.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "COYOTE CASH",
+        name: "CoyoteCash",
+        image: "https://i.imgur.com/njPTqud.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "CLEOPATRA",
+        name: "Cleopatra",
+        image: "https://i.imgur.com/rCSZUyR.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "HIGHWAY KINGS",
+        name: "HighWay",
+        image: "https://i.imgur.com/AMIwGcf.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "BIG SHOT",
+        name: "BigShot",
+        image: "https://i.imgur.com/K9AjF0j.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "PAY DIRT",
+        name: "PayDirt",
+        image: "https://i.imgur.com/I80bxRK.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "SEA CAPTAIN",
+        name: "SeaCaptain",
+        image: "https://i.imgur.com/0IJKiau.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "MYSTICAL DRAGON",
+        name: "Dragon",
+        image: "https://i.imgur.com/HZDpPgy.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "BOYKING'S TREASURE",
+        name: "Boyking",
+        image: "https://i.imgur.com/a6rB6Ti.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "GOLDEN SLUT",
+        name: "GoldenSlut",
+        image: "https://i.imgur.com/UYdRHBJ.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "AZTAC",
+        name: "Aztec",
+        image: "https://i.imgur.com/tfNboL4.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "ENCHANTED GARDEN",
+        name: "Garden",
+        image: "https://i.imgur.com/b55g7Jb.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "EASTER SURPRISE",
+        name: "Easter",
+        image: "https://i.imgur.com/JPhy44x.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "CIRCUS",
+        name: "circus",
+        image: "https://i.imgur.com/aPiTcea.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "GREEN LIGHT",
+        name: "Green",
+        image: "https://i.imgur.com/MPgr8ah.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "WEALTH'S TREASURE",
+        name: "Wealth",
+        image: "https://i.imgur.com/cdbIwRa.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "VICTORY",
+        name: "Victory",
+        image: "https://i.imgur.com/CU5uz3q.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "RALLY CHAMPIONSHIP",
+        name: "Rally",
+        image: "https://i.imgur.com/Tcg2tD9.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "ORIENT EXPRESS",
+        name: "Orient",
+        image: "https://i.imgur.com/4uKUbUo.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "FOREST DANCE",
+        name: "ForestDance",
+        image: "https://i.imgur.com/mdoDOdS.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "WHITE RICHES",
+        name: "White Riches",
+        image: "https://i.imgur.com/QR8GQ2x.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "ZOMBIE CARNIVAL",
+        name: "ZombieCarnival",
+        image: "https://i.imgur.com/6jDeIrk.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "THREE KINGDOMS",
+        name: "ThreeKing",
+        image: "https://i.imgur.com/8IfWsE8.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "GIFTS FROM SANTA",
+        name: "GiftsFromSanta",
+        image: "https://i.imgur.com/OGtkrdB.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "ALADDIN WISHES",
+        name: "Aladdin",
+        image: "https://i.imgur.com/2etUvUc.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "CRAZY",
+        name: "Crazy777",
+        image: "https://i.imgur.com/VOQs5qh.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "WOLF RUN",
+        name: "WolfRun",
+        image: "https://i.imgur.com/gVkvc7T.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "FORTUNE FEST",
+        name: "FortuneFest",
+        image: "https://i.imgur.com/SzQlzyA.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "GOD OF COOKERY",
+        name: "GodOfCookery",
+        image: "https://i.imgur.com/e7gEjC7.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "DRAGON HERO",
+        name: "DragonHero",
+        image: "https://i.imgur.com/sWp0bQV.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "WILD FIREWORKS",
+        name: "WildFireworks",
+        image: "https://i.imgur.com/jEOWpGP.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "DRAGON STRIKE",
+        name: "DragonStrike",
+        image: "https://i.imgur.com/H2biKJf.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "GOLDEN MONKEY",
+        name: "GoldenMonkey",
+        image: "https://i.imgur.com/Vd8LvsR.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "GOLDEN LOTUS",
+        name: "GoldenLotus",
+        image: "https://i.imgur.com/LaWJCAr.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "slot"
+      },
+      {
+        alias: "SUSHI OISHI",
+        name: "SushiOishi",
+        image: "https://i.imgur.com/l2lwBYd.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "FART GIRL",
+        name: "FartGirl",
+        image: "https://i.imgur.com/JanhuUI.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "CELEBRATION OF WEALTH",
+        name: "Celebration",
+        image: "https://i.imgur.com/Mnzy3aq.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "HANZO'S DOJO",
+        name: "Hanzo",
+        image: "https://i.imgur.com/44ayfIX.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "CLASH OF THE BEASTS",
+        name: "ClashOfTheBeasts",
+        image: "https://i.imgur.com/SuYf2ds.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "NITRO",
+        name: "Motorcycle",
+        image: "https://i.imgur.com/M2EVzai.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "TEMPLE OF WEALTH",
+        name: "TempleOfWealth",
+        image: "https://i.imgur.com/lB0CLlb.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "AGENT 51",
+        name: "Agent51",
+        image: "https://i.imgur.com/BjbjKR1.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "FLOATING DRAGON",
+        name: "FloatingDragon",
+        image: "https://i.imgur.com/X0teVrj.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "LION DANCE",
+        name: "Lion Dance",
+        image: "https://i.imgur.com/kMSL5qK.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "STICKY BANDITS WILD RETURN",
+        name: "StickBandits",
+        image: "https://i.imgur.com/jKyhg3h.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "GREAT88",
+        name: "Great88",
+        image: "https://i.imgur.com/sTZjCIF.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "NARCOS",
+        name: "Narcos",
+        image: "https://i.imgur.com/c26j2dI.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "FORTUNE TIGER",
+        name: "TigerFortune",
+        image: "https://i.imgur.com/gG7a9B3.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "TIGER'S GLORY",
+        name: "Glory",
+        image: "https://i.imgur.com/usVPymQ.png",
+        platform: ["mega888","pussy888"],
+        type: "slot"
+      },
+      {
+        alias: "CONAN",
+        name: "Conan",
+        image: "https://i.imgur.com/hIcNrLh.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "FORTUNE FIREWORKS",
+        name: "FireWorks",
+        image: "https://i.imgur.com/HdAor6f.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "MIDAS GOLDEN TOUCH",
+        name: "GoldenTouch",
+        image: "https://i.imgur.com/9RmvOKL.png",
+        platform: ["mega888","pussy888"],
+        type: "slot"
+      },
+      {
+        alias: "YIN & YANG",
+        name: "YinYang",
+        image: "https://i.imgur.com/OzRcWCr.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "KING OF GHOSTS",
+        name: "KingOfGhoto",
+        image: "https://i.imgur.com/WWdfhTn.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "CHAMPIONS OF ROME",
+        name: "ChampionsOfRome",
+        image: "https://i.imgur.com/OhIHvhK.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "AMAZING THAILAND",
+        name: "Boxing",
+        image: "https://i.imgur.com/uIsv1xu.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "slot"
+      },
+      {
+        alias: "FORTUNE PANDA",
+        name: "FortunePanda",
+        image: "https://i.imgur.com/Yt87DN2.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "slot"
+      },
+      {
+        alias: "BIG CHEF",
+        name: "BigChef",
+        image: "https://i.imgur.com/tOKRgw4.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "NATIVE INDIAN",
+        name: "NativeIndian",
+        image: "https://i.imgur.com/iVPGuZr.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "CASH NOIRE",
+        name: "CashNoire",
+        image: "https://i.imgur.com/C8sqCMo.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "GOLDEN COLTS",
+        name: "GoldenColts",
+        image: "https://i.imgur.com/6ss0Mg3.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "VEGAS NIGHT LIFE",
+        name: "VegasNightLife",
+        image: "https://i.imgur.com/np82p6I.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "LIGHT",
+        name: "Lights",
+        image: "https://i.imgur.com/QdOeYG4.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "BLAZE OF RA",
+        name: "BlazeOfRa",
+        image: "https://i.imgur.com/s21W0qk.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "SILENT RUN",
+        name: "SilentRun",
+        image: "https://i.imgur.com/bp0GvOG.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "SAFARI HEAT",
+        name: "SAFARI Heat",
+        image: "https://i.imgur.com/2JUF5a7.png",
+        platform: ["mega888","918kiss","pussy888"],
+        type: "slot"
+      },
+      {
+        alias: "GOLDEN COK",
+        name: "GoldenCok",
+        image: "https://i.imgur.com/mFJmwNX.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "LEGEND OF THE WHITE SNAKE LADY",
+        name: "WhiteSnakeLady",
+        image: "https://i.imgur.com/DMsM9wD.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "ZOMBIE CIRCUS",
+        name: "Zombie",
+        image: "https://i.imgur.com/fWCPxki.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "LUCKY LITTLE GODS",
+        name: "LuckyLittleGods",
+        image: "https://i.imgur.com/gEPDQ3Z.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "ROBIN OF SHERWOOD",
+        name: "Robin",
+        image: "https://i.imgur.com/mmMcEbV.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "WOLF HUNTERS",
+        name: "WolfHunters",
+        image: "https://i.imgur.com/ktPxiE1.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "XMAS MAGIC",
+        name: "Xman Magic",
+        image: "https://i.imgur.com/D6Mb2tJ.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "FRUIT VS CANDY",
+        name: "FruitVsCandy",
+        image: "https://i.imgur.com/j8RRg4k.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "DIM SUM PRIZE",
+        name: "DimSumPrize",
+        image: "https://i.imgur.com/pABQK4k.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "RAGING REX",
+        name: "Raging",
+        image: "https://i.imgur.com/xqeWj5z.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "MASQUERADE",
+        name: "Masquerade",
+        image: "https://i.imgur.com/ubWUi4h.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "DARK VORTEX",
+        name: "DarkVortex",
+        image: "https://i.imgur.com/cjUvFQp.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "FORTUNE CHARM",
+        name: "FortuneCharm",
+        image: "https://i.imgur.com/vBvZKst.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "PENGUIN CITY",
+        name: "PenguinCity",
+        image: "https://i.imgur.com/PGEyb4x.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "SANTA",
+        name: "Santa",
+        image: "https://i.imgur.com/Nf9K7bU.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "STEAM TOWER",
+        name: "SteamTower",
+        image: "https://i.imgur.com/ZmqBAiP.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "TEMPLE QUEST",
+        name: "TempleQuest",
+        image: "https://i.imgur.com/0HAkfbd.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "HOTLINE",
+        name: "HotLine",
+        image: "https://i.imgur.com/1drj8z5.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "MATSURI",
+        name: "Matsuri",
+        image: "https://i.imgur.com/CsV6PBt.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "JUNGLE SPIRIT",
+        name: "Jungle",
+        image: "https://i.imgur.com/9o6tNSK.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "DESERT GEM",
+        name: "DesertGem",
+        image: "https://i.imgur.com/w2r4q6T.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "DR FORTUNO",
+        name: "DrFortuno",
+        image: "https://i.imgur.com/820Idbh.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "DRAGON MAIDEN",
+        name: "DragonMaiden",
+        image: "https://i.imgur.com/QCHCIZO.png",
+        platform: ["mega888","918kiss"],
+        type: "slot"
+      },
+      {
+        alias: "LUCKY NEW YEAR",
+        name: "LuckyNewYear",
+        image: "https://i.imgur.com/5jA4NcA.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "BIG WIN CAT",
+        name: "BigWinCat",
+        image: "https://i.imgur.com/WHzClvs.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "GOLDEN BEAUTY",
+        name: "GoldenBeauty",
+        image: "https://i.imgur.com/6qRLCwO.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "ROYAL MASQUERADE",
+        name: "Royal",
+        image: "https://i.imgur.com/EyfhOj0.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "JINGLE BELLS",
+        name: "JingleBells",
+        image: "https://i.imgur.com/q5rWXaJ.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "SIZZLING SPINS",
+        name: "SizzLing",
+        image: "https://i.imgur.com/L75BwTu.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "SWORD OF KHANS",
+        name: "SwordOfKhans",
+        image: "https://i.imgur.com/PddIEar.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "RAZOR SHARK",
+        name: "RazorShark",
+        image: "https://i.imgur.com/r7dYJiK.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "POND OF RICHES",
+        name: "PondOfRiches",
+        image: "https://i.imgur.com/MXMTqCz.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "CHINESE LION",
+        name: "ChineseLino",
+        image: "https://i.imgur.com/3IHcz17.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "IVAN AND THE IMMORTAL KING",
+        name: "Iavn",
+        image: "https://i.imgur.com/VmtLBSP.png",
+        platform: ["mega888"],
+        type: "slot"
+      },
+      {
+        alias: "CRYSTAL WATERS",
+        name: "Crystal",
+        image: "https://i.imgur.com/jZTKqWV.png",
+        platform: ["pussy888","mega888","918kiss"],
+        type: "slot"
       }
-    });
+    ];
+
+    let currentType = "all";
+    let currentPlatform = "all";
+
+    function renderGames() {
+  const grid = document.getElementById("gameGrid");
+  const searchText = document.getElementById("searchInput").value.toLowerCase();
+  grid.innerHTML = "";
+
+  const filtered = games.filter(function(game) {
+    const matchType = currentType === "all" || game.type === currentType;
+    const matchSearch =
+  game.name.toLowerCase().includes(searchText) ||
+  (game.alias && game.alias.toLowerCase().includes(searchText)) ||
+  (Array.isArray(game.platform)
+    ? game.platform.some(p => p.toLowerCase().includes(searchText))
+    : game.platform.toLowerCase().includes(searchText));
+    const matchPlatform = currentPlatform === "all" ||
+      (Array.isArray(game.platform)
+        ? game.platform.includes(currentPlatform)
+        : game.platform === currentPlatform);
+
+    return matchType && matchSearch && matchPlatform;
   });
-}
-  function generateLog() {
-  const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(document.getElementById("betSelect").value);
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  const selectedPecahan = parseFloat(pecahanSelect.value);
-  const tbody = document.querySelector("#gameLog tbody");
-  const manualTimeInput = document.getElementById('manualTime').value;
 
-  let logs = [];
-
- 
-  const manualInput = document.getElementById("manualTime").value.trim();
-  let baseTime;
-if (manualInput) {
-  const parts = manualInput.includes("T")
-    ? manualInput.split("T")
-    : manualInput.split(" ");
-
-  if (parts.length === 2) {
-    const [datePart, timePartRaw] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const timePart = timePartRaw.trim();
-    const timeParts = timePart.split(":").map(Number);
-    const hour = timeParts[0] || 0;
-    const minute = timeParts[1] || 0;
-    const second = timeParts[2] || 0;
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
-  } else {
-    baseTime = new Date();
-  }
-} else if (globalTime) {
-  const parts = globalTime.split(" ");
-  if (parts.length === 2) {
-    const [datePart, timePart] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const [hour, minute, second] = timePart.split(":").map(Number);
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
-  } else {
-    baseTime = new Date();
-  }
-} else {
-  baseTime = new Date();
-}
-
-
-  baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
-
-   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
-   let balance = rnd(500, 1000) + manualScore;
-
-   let totalSeconds = 0;
-
-   for (let i = 0; i < 10; i++) {
-    const gap = Math.floor(Math.random() * 3) + 3;
-    totalSeconds += gap;
-    const logTime = new Date();
-    logTime.setSeconds(logTime.getSeconds() - totalSeconds);
-
-    const beginMoney = balance;
-    const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
-    const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-    const formattedTime = formatDateTimeLocal(baseTime);
-
-    logs.unshift({ 
-      game,
-      tableID: `<span class="table-id-highlight">0</span>`,
-      bet: bet.toFixed(2),
-      win: win.toFixed(2),
-      beginMoney: beginMoney.toFixed(2),
-      endMoney: endMoney.toFixed(2),
-      dateTime: formattedTime
-    });
-
-    balance = endMoney;
-    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
-  }
-    
-   setTimeout(() => {
-    const savedData = {
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore: document.getElementById("manualScore").value,
-      logs: tbody.innerHTML
-    };
-    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
-  }, 50);
- 
- const setScoreMoney = logs[0].endMoney;
-
-
-let setScoreTime = new Date(logs[0].dateTime);
-const extraSeconds = [2, 3, 7, 10];
-const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
-setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
-
-let rows = `
-  <tr class="set-score-row">
-    <td>-</td>
-    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${(Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td>0.00</td>
-    <td>${formatDateTimeLocal(setScoreTime)}</td>
-  </tr>
+  filtered.forEach(game => {
+    const div = document.createElement("div");
+    div.className = "game-logo";
+    div.innerHTML = `
+  <span class="game-alias">${game.alias || ''}</span>
+  <img src="${game.image}" alt="${game.name}" onclick="copyImageToClipboard('${game.image}', this.parentElement)">
+  <span class="game-name">${game.name}</span>
 `;
-
-  logs.forEach(log => {
-    rows += `
-      <tr class="log-row">
-        <td>${log.game}</td>
-        <td>${log.tableID}</td>
-        <td>${log.bet}</td>
-        <td>${log.win}</td>
-        <td>${log.beginMoney}</td>
-        <td>${log.endMoney}</td>
-        <td>${log.dateTime}</td>
-      </tr>
-    `;
+    grid.appendChild(div);
   });
-
-  tbody.innerHTML = rows;
 }
-  function addJackpot() {
-  const currentGame = document.getElementById("gameSelect").value;
-  const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
 
-  if (isNaN(jackpotAmount) || jackpotAmount < 0) {
-    return;
+    const backToTopBtn = document.getElementById('backToTop');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) {
+    backToTopBtn.style.display = 'block';
+  } else {
+    backToTopBtn.style.display = 'none';
   }
+});
 
-  const tbody = document.querySelector("#gameLog tbody");
-  let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  let jackpotRow = tbody.querySelector("tr.set-score-row.jackpot");
-
-  if (jackpotRow) {
-    const prevJackpotText = jackpotRow.children[1].textContent;
-    const match = prevJackpotText.match(/JackPot：([\d.]+)/);
-    if (match) {
-      const oldJackpotValue = parseFloat(match[1]);
-
-     
-      const index = Array.from(tbody.children).indexOf(jackpotRow);
-      const prevRow = tbody.children[index - 1];
-      const oldWin = parseFloat(prevRow.children[3].textContent);
-      const oldEnd = parseFloat(prevRow.children[5].textContent);
-      const newWin = oldWin - oldJackpotValue;
-
-      prevRow.children[3].textContent = newWin.toFixed(2);
-      const bet = parseFloat(prevRow.children[2].textContent);
-      const beginMoney = parseFloat(prevRow.children[4].textContent);
-      const newEnd = beginMoney - bet + newWin;
-      prevRow.children[5].textContent = newEnd.toFixed(2);
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function setPlatform(platform) {
+  currentPlatform = platform;
+  document.querySelectorAll('.platform-filters button').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  renderGames();
+}
+    
+    function filterGames() {
+      renderGames();
     }
 
-    jackpotRow.remove();
-  }
-
-  if (hiddenRow) {
-  tbody.appendChild(hiddenRow);
-  hiddenRow = null;
+    function setFilter(type) {
+  currentType = type;
+  document.querySelectorAll('.filter-tabs button').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  renderGames();
 }
 
-  rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  if (rows.length < 2) {
-    alert("Log belum cukup baris.");
-    return;
-  }
+  renderGames();
 
-  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
-  const targetRow = rows[randomIndex];
-  const prevRow = rows[randomIndex - 1];
+async function copyImageToClipboard(imageUrl, parentElement) {
+  if (window.parent !== window) {
+    window.parent.postMessage({ action: "copy-image", url: imageUrl }, "*");
 
-  const oldWin = parseFloat(prevRow.children[3].textContent);
-  const newWin = oldWin + jackpotAmount;
-  prevRow.children[3].textContent = newWin.toFixed(2);
+    const existing = parentElement.querySelector('.copy-notice');
+    if (existing) existing.remove();
 
-  const beginMoney = parseFloat(prevRow.children[4].textContent);
-  const bet = parseFloat(prevRow.children[2].textContent);
-  const newEnd = beginMoney - bet + newWin;
-  prevRow.children[5].textContent = newEnd.toFixed(2);
-
-  const dateTime = prevRow.children[6].textContent;
-  const gameName = prevRow.children[0].textContent;
-
-  const newJackpotRow = document.createElement("tr");
-  newJackpotRow.classList.add("set-score-row", "jackpot");
-  newJackpotRow.innerHTML = `
-    <td>${gameName}</td>
-    <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${dateTime}</td>
-  `;
-  targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
-
- const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-const specialRows = tbody.querySelectorAll("tr.set-score-row"); 
-
-while (allRows.length + specialRows.length > 11) {
-  const lastRow = allRows.pop(); 
-  lastRow.remove();
-}
-
-
-const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-for (let i = updatedRows.length - 1; i > 0; i--) {
-  const current = updatedRows[i];
-  const prev = updatedRows[i - 1];
-
-  const curEnd = parseFloat(current.children[5].textContent);
-  const prevBet = parseFloat(prev.children[2].textContent);
-  const prevWin = parseFloat(prev.children[3].textContent);
-
-  prev.children[4].textContent = curEnd.toFixed(2);
-  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
-}
-
-  if (updatedRows.length > 0) {
-  const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
-  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-  if (setScoreRowTop) {
-    const scoreCell = setScoreRowTop.children[1];
-    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-
-    const beginCell = setScoreRowTop.children[4];
-      const oldBegin = parseFloat(beginCell.textContent);
-      const newBegin = oldBegin + jackpotAmount;
-      beginCell.textContent = newBegin.toFixed(2);
-
-    
-      scoreCell.textContent = `Set score：${(-Math.abs(newBegin)).toFixed(2)}`;
-  }
-}
-
-
-  jackpotInsertedMap[currentGame] = true;
-  localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
-}
-function addManualSetScore() {
-  const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
-  if (isNaN(inputScore)) return alert("❌ Nilai tidak sah");
-
-  const tbody = document.querySelector("#gameLog tbody");
-
-  const setScoreNegatifRow = Array.from(tbody.querySelectorAll("tr.set-score-row:not(.jackpot)"))
-    .find(row => row.children[1].textContent.includes("-"));
-  if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
-
-  const existingSupportRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
-    .find(row =>
-      !row.classList.contains("jackpot") &&
-      !row.children[1].textContent.includes("-") &&
-      row !== setScoreNegatifRow
-    );
-
-  const endMoneyNegatif = parseFloat(setScoreNegatifRow.children[5].textContent);
-  const beginMoney = endMoneyNegatif;
-  const endMoneyBaru = (beginMoney + inputScore).toFixed(2);
-  const setScoreDisplay = inputScore.toFixed(2); // Hanya nilai support, tidak tambah pecahan
-
-  // Waktu baru
-  const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
-  const belowDate = new Date(belowTimeText.replace(" ", "T"));
-  const randomSeconds = Math.floor(Math.random() * 4) + 4;
-  const newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
-  const formatted = formatDateTimeLocal(newTime);
-
-  if (existingSupportRow) {
-    existingSupportRow.children[1].textContent = `Set score：${setScoreDisplay}`;
-    existingSupportRow.children[4].textContent = beginMoney.toFixed(2);
-    existingSupportRow.children[5].textContent = endMoneyBaru;
-    existingSupportRow.children[6].textContent = formatted;
-  } else {
-    const newRow = document.createElement("tr");
-    newRow.classList.add("set-score-row");
-    newRow.innerHTML = `
-      <td>-</td>
-      <td class="setscore">Set score：${setScoreDisplay}</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td>${beginMoney.toFixed(2)}</td>
-      <td>${endMoneyBaru}</td>
-      <td>${formatted}</td>
-    `;
-    tbody.insertBefore(newRow, setScoreNegatifRow);
-  }
-
-  const allRows = Array.from(tbody.querySelectorAll("tr"));
-  if (allRows.length > 11) {
-    allRows[allRows.length - 1].remove();
-  }
-
-  document.getElementById("manualScoreInput").value = "0";
-}
-function resetLog() {
-  localStorage.removeItem("gameLogData918kiss");
-  localStorage.removeItem("jackpotInsertedMap");
-  jackpotInsertedMap = {};
-
-  document.getElementById("gameSelect").value = "";
-  document.getElementById("betSelect").innerHTML = "";
-  document.getElementById("pecahanSelect").innerHTML = "";
-  document.getElementById("manualTime").value = "";
-  document.getElementById("manualScore").value = "0";
-  document.getElementById("manualJackpot").value = "0";
-  document.querySelector("#gameLog tbody").innerHTML = "";
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  const saved = localStorage.getItem("gameLogData918kiss");
-  if (!saved) return;
-
-  const data = JSON.parse(saved);
-  document.getElementById("gameSelect").value = data.game;
-  document.getElementById("manualTime").value = data.manualTime;
-  document.getElementById("manualScore").value = data.manualScore;
-  document.getElementById("gameSelect").dispatchEvent(new Event("change"));
-
-  setTimeout(() => {
-    document.getElementById("betSelect").value = data.bet;
-    document.getElementById("betSelect").dispatchEvent(new Event("change"));
+    const notice = document.createElement('div');
+    notice.textContent = "✔️ Image Copied!";
+    notice.className = 'copy-notice';
+    parentElement.appendChild(notice);
 
     setTimeout(() => {
-      document.getElementById("pecahanSelect").value = data.pecahan;
-    }, 50);
-  }, 50);
+      if (notice && notice.parentNode) notice.remove();
+    }, 2000);
 
-  document.querySelector("#gameLog tbody").innerHTML = data.logs;
-});
-</script>
+    return;
+  }
 
+  try {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    const item = new ClipboardItem({ [blob.type]: blob });
+    await navigator.clipboard.write([item]);
+
+    const existing = parentElement.querySelector('.copy-notice');
+    if (existing) existing.remove();
+
+    const notice = document.createElement('div');
+    notice.textContent = "✅ Image Copied!";
+    notice.className = 'copy-notice';
+    parentElement.appendChild(notice);
+
+    setTimeout(() => {
+      if (notice && notice.parentNode) notice.remove();
+    }, 2000);
+  } catch (err) {
+    alert("❌ Gagal salin gambar.");
+    console.error(err);
+  }
+}
+  </script>
 </body>
 </html>
