@@ -6,7 +6,7 @@
   <title>5G88 Game Logo</title>
   <style>
     body {
-      background-color: #000;
+      background-color: #141414;
       color: white;
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -25,8 +25,8 @@
     .header {
       width: 100%;
       height: 90px;
-      background: gold;
-      color: #000;
+      background: #1668dc;
+      color: white;
       font-size: 30px;
       display: flex;
       align-items: center;
@@ -40,7 +40,7 @@
     .filter-bar {
       position: sticky;
       top: 90px;
-      background-color: #000;
+      background-color: #141414;
       z-index: 998;
       padding-top: 20px;
     }
@@ -63,29 +63,48 @@
       font-size: 16px;
       width: 500px;
       border-radius: 5px;
-      border: 1px solid gold;
-      background-color: #000;
-      color: gold;
+      border: 1px solid #424242;
+      background-color: #141414;
+      color: white;
       margin-top: 0;
+      transition: all 0.2s ease;
+    }
+    .search-container input:hover {
+      border: 1px solid #3c89e8;
+    }
+    .search-container input:focus {
+      border: 1px solid #1668dc;
+      outline: none;
     }
     .filter-tabs {
       text-align: center;
       margin-bottom: 10px;
     }
     .filter-tabs button {
-      background-color: #111;
-      color: gold;
-      border: 1px solid gold;
+      background-color: #141414;
+      color: white;
+      border: 1px solid #424242;
       padding: 8px 16px;
       margin: 0 5px;
       border-radius: 5px;
       cursor: pointer;
       transition: all 0.3s ease;
     }
-    .filter-tabs button.active,
     .filter-tabs button:hover {
-      background-color: gold;
-      color: #111;
+      background-color: transparant;
+      color: #3c89e8;
+      transition: all 0.3s ease;
+    }
+    .filter-tabs button.active {
+     background-color: transparant;
+     color: #1668dc;
+     transition: all 0.3s ease;
+     border: 1px solid #1668dc;
+    }
+    .filter-tabs button:active {
+     background-color: transparant;
+     color: #1554ad;
+     transition: all 0.3s ease;
     }
     .logo-grid {
       display: grid;
@@ -104,7 +123,7 @@
     }
     .game-alias {
       font-weight: bold;
-      color: gold !important;
+      color: #3c89e8 !important;
       margin-bottom: 1px !important;
       font-size: 12px !important;
     }
@@ -112,8 +131,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      background-color: #000;
-      border: 2px solid gold;
+      background-color: rgba(0,0,0,0.3);
+      border: 2px solid #1668dc;
       border-radius: 10px;
       padding: 17px;
       transition: transform 0.2s ease;
@@ -135,7 +154,7 @@
     }
     .game-logo:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 12px gold;
+      box-shadow: 0 0 12px #3c89e8;
     }
     .platform-filters {
       text-align: center;
@@ -144,13 +163,13 @@
       .copy-notice {
         position: absolute;
         bottom: -12px;
-        background-color: gold;
-        color: black;
+        background-color: #1668dc;
+        color: white;
         font-size: 12px;
         font-weight: bold;
         padding: 3px 6px;
         border-radius: 6px;
-        box-shadow: 0 0 5px #000;
+        box-shadow: 0 0 3px #3c89e8;
         animation: fadeNotice 0.3s ease;
         z-index: 1;
        }
@@ -163,8 +182,8 @@
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: gold;
-  color: black;
+  background-color: #1668dc;
+  color: white;
   padding: 10px 15px;
   font-size: 14px;
   border: none;
@@ -172,18 +191,15 @@
   cursor: pointer;
   display: none;
   z-index: 1000;
-  box-shadow: 0 0 10px gold;
   transition: all 0.3s ease;
 }
 #backToTop:hover {
-  background-color: gold;
+  background-color: #3c89e8;
   color: white;
-  box-shadow: 0 0 12px gold;
 }
 #backToTop:active { 
-  background: rgba(0,0,0,0.3);
-  color: rgba(255,255,255,0.4);
-   box-shadow: 0 0 12px white;
+  background: #1554ad;
+  color: white;
 }
   </style>
 </head>
