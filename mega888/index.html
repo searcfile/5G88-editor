@@ -6,16 +6,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      -webkit-font-smoothing: antialiased;
+     -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       font-family: 'Source Sans 3', 'Source Sans Pro', Arial, sans-serif;
-      padding: 10px;
       font-size: 14px;
       line-height: 1.42857;
-      color: rgb(51, 51, 51);
       font-weight: 400;
       background-color: #000;
+      margin:0 0 20px;
       }
+      .header {
+      background-color: #1668dc;
+      height: 90px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      font-size: 30px;
+      color: white;
+      font-weight: bold;
+     }
     table {
       width: 65%;
       border-collapse: collapse;
@@ -91,20 +102,20 @@
     button {
      padding: 5px 10px;
      font-size: 14px;
-     background: gold;
-     color: #000;
+     background: #1668dc;
+     color: white;
      border: none;
-     border-radius: 5px;
+     border-radius: 6px;
      cursor: pointer;
-     border: 1px solid gold;
+     border: 1px solid white;
      transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
     button:hover {
-     background: rgba(255,255,255,0.3);
-     color: #fff;
+     background: #3c89e8;
+     color: white;
     }
     button:active {
-     background: rgba(0,0,0,0.3);
+     background: #1554ad;
      color: white;
     }
     select, input {
@@ -112,9 +123,24 @@
       font-size: 13px;
       margin-left: 10px;
       border-radius: 5px;
-      background: #000;
-      border: 1px solid gold;
-      color: gold;
+      background: #141414;
+      border: 1px solid #424242;
+      color: white;
+      transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    input:hover {
+      border: 1px solid #3c89e8;
+    }
+    input:focus {
+      border: 1px solid #1668dc;
+      outline: none;
+    }
+    select:hover {
+      border: 1px solid #3c89e8;
+    }
+    select:focus {
+      border: 1px solid #1668dc;
+      outline: none;
     }
     #nowTime {
      font-weight: bold;
@@ -146,12 +172,38 @@
     #gameSelect {
      max-height: 38px;
      overflow-y: auto;
+     cursor: pointer;
+     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    #gameSelect:hover {
+    border: 1px solid #3c89e8;
+    }
+    #gameSelect:focus {
+    border: 1px solid #1668dc;
+    outline: none;
+    }
+    .reset-button {
+     background:red;
+     color:white;
+     margin-bottom:15px;
+     border: 1px solid white;
+     padding:0px 15px;
+     height:32px;
+     font-size: 14px;
+    }
+    .reset-button:hover {
+     background: #ff4d4d;
+     color: white;
+    }
+    .reset-button:active {
+     background: #bf0000;
+     color: white;
     }
   </style>
 </head>
 <body>
-<button onclick="resetLog()" style="background:red; color:white;">Reset Log</button>
-<h2 style="color: gold;">MEGA888 SYSTEM RANDOM</h2>
+<div class="header">MEGA888 GENERATE</div>
+<button onclick="resetLog()" class="reset-button">Reset Log</button>
 
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
   <label for="gameSelect" style="color: gold;">Game:</label>
