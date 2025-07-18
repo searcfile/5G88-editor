@@ -419,7 +419,12 @@ function renderNotices() {
 
     const timeInput = document.createElement('input');
     timeInput.type = 'datetime-local';
-    timeInput.className = 'create-time';
+    timeInput.style.padding = '6px';
+    timeInput.style.borderRadius = '6px';
+    timeInput.style.border = '1px solid #999';
+    timeInput.style.backgroundColor = '#1668dc';
+    timeInput.style.color = 'white';
+    timeInput.style.cursor = 'pointer';
 
     const countdownText = document.createElement('div');
     countdownText.style.color = 'lime';
@@ -591,11 +596,7 @@ function startCountdown(targetTime, display, isActiveCallback = () => true) {
 
   const timeInput = document.createElement('input');
   timeInput.type = 'datetime-local';
-  timeInput.style.padding = '6px';
-  timeInput.style.borderRadius = '6px';
-  timeInput.style.border = '1px solid #555';
-  timeInput.style.backgroundColor = '#000';
-  timeInput.style.color = 'white';
+  timeInput.className = 'input-time';
 
   const countdownText = document.createElement('div');
   countdownText.style.color = 'gray';
