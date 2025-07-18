@@ -290,6 +290,24 @@
   outline: none;
   border-color: #1668dc;
 }
+.create-day {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #1668dc;
+  background-color: #111;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.create-day:hover {
+  border-color: #3c89e8;
+}
+
+.create-day:focus {
+  outline: none;
+  border-color: 1668dc;
+}
   </style>
 </head>
 <body>
@@ -613,11 +631,7 @@ function startCountdown(targetTime, display, isActiveCallback = () => true) {
   });
 
   const daySelect = document.createElement('select');
-  daySelect.style.padding = '6px';
-  daySelect.style.borderRadius = '6px';
-  daySelect.style.border = '1px solid #555';
-  daySelect.style.backgroundColor = '#000';
-  daySelect.style.color = 'white';
+  daySelect.className = 'create-day';
 
   const today = new Date();
   const year = today.getFullYear();
