@@ -273,6 +273,23 @@
   outline: none;
   border-color: #1668dc;
 }
+.create-time {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #1668dc;
+  background-color: #111;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.create-time:hover {
+  border-color: #3c89e8;
+}
+
+.create-time:focus {
+  outline: none;
+  border-color: #1668dc;
+}
   </style>
 </head>
 <body>
@@ -402,12 +419,7 @@ function renderNotices() {
 
     const timeInput = document.createElement('input');
     timeInput.type = 'datetime-local';
-    timeInput.style.padding = '6px';
-    timeInput.style.borderRadius = '6px';
-    timeInput.style.border = '1px solid #999';
-    timeInput.style.backgroundColor = '#1668dc';
-    timeInput.style.color = 'white';
-    timeInput.style.cursor = 'pointer';
+    timeInput.className = 'create-time';
 
     const countdownText = document.createElement('div');
     countdownText.style.color = 'lime';
