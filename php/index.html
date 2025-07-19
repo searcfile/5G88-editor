@@ -265,8 +265,8 @@
   <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
 
   <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
- <button onclick="copyGameLogImage()" style="height: 38px;">📋 Copy Table to Clipboard</button>
-  <button onclick="printGameLogTable()" style="height: 38px;">🖨️ Print Table</button>
+ <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button>
+  
 </div>
 <table id="gameLog">
   <thead>
@@ -725,42 +725,6 @@ function copyGameLogImage() {
       }
     });
   });
-}
-  function printGameLogTable() {
-  const table = document.getElementById("gameLog");
-  const style = `
-    <style>
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 16px;
-      }
-      th, td {
-        border: 1px solid #000;
-        padding: 8px;
-        text-align: center;
-      }
-      .table-id-highlight {
-        display: inline-block;
-        background: #d2d6de;
-        border-radius: 45%;
-        padding: 5px 10px;
-        font-weight: bold;
-        font-size: 16px;
-      }
-    </style>
-  `;
-
-  const win = window.open('', '', 'width=1000,height=700');
-  win.document.write(`<html><head><title>Print Table</title>${style}</head><body>`);
-  win.document.write(table.outerHTML);
-  win.document.write('</body></html>');
-  win.document.close();
-  win.focus();
-  setTimeout(() => {
-    win.print();
-    win.close();
-  }, 500);
 }
 </script>
 </body>
