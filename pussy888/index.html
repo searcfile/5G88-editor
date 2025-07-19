@@ -342,12 +342,6 @@
 </table>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
 let hiddenRow = null;
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
   const gameData = {
@@ -1608,28 +1602,29 @@ window.addEventListener("DOMContentLoaded", () => {
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
 });
 function copyGameLogImage() {
-  const gameLogTable = document.getElementById("gameLog");
+  // 🔍 Cek dukungan Clipboard API
+  if (!navigator.clipboard || !window.ClipboardItem) {
+    alert("❌ Browser tidak support Clipboard API (copy image tidak bisa).");
+    return;
+  }
 
-  // Tambah class screenshot-mode untuk rendahkan border sementara
+  const gameLogTable = document.getElementById("gameLog");
   gameLogTable.classList.add("screenshot-mode");
 
   html2canvas(gameLogTable, {
     scale: 2,
     useCORS: true
   }).then(canvas => {
-    // Hapus semula class selepas screenshot
     gameLogTable.classList.remove("screenshot-mode");
 
     canvas.toBlob(blob => {
-      if (navigator.clipboard && window.ClipboardItem) {
-        const item = new ClipboardItem({ "image/png": blob });
-        navigator.clipboard.write([item]).then(() => {
-        }).catch(err => {
-          alert("❌ Gagal salin ke clipboard.");
-          console.error(err);
-        });
-      } else {
-        alert("❌ Browser tidak sokong salin gambar ke clipboard.");
+      if (blob) {
+        const imageURL = URL.createObjectURL(blob);
+        // Kirim ke halaman utama (parent)
+        window.parent.postMessage({
+          action: "copy-image",
+          url: imageURL
+        }, "https://5g88-main.vercel.app/");
       }
     });
   });
