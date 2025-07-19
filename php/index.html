@@ -18,6 +18,9 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
       }
+    .screenshot-mode th {
+    border: 1px solid #ddd !important; /* sementara semasa copy */
+  }
     html { 
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -697,17 +700,23 @@ window.addEventListener("DOMContentLoaded", () => {
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
 
+  // Tambah class screenshot-mode untuk rendahkan border sementara
+  gameLogTable.classList.add("screenshot-mode");
+
   html2canvas(gameLogTable, {
     scale: 2,
     useCORS: true
   }).then(canvas => {
+    // Hapus semula class selepas screenshot
+    gameLogTable.classList.remove("screenshot-mode");
+
     canvas.toBlob(blob => {
       if (navigator.clipboard && window.ClipboardItem) {
         const item = new ClipboardItem({ "image/png": blob });
         navigator.clipboard.write([item]).then(() => {
           alert("✅ Tabel disalin ke clipboard sebagai gambar!");
         }).catch(err => {
-          alert("❌ Gagal salin ke clipboard. Sila cuba lagi.");
+          alert("❌ Gagal salin ke clipboard.");
           console.error(err);
         });
       } else {
