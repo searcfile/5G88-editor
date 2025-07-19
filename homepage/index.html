@@ -831,21 +831,38 @@ document.addEventListener("DOMContentLoaded", () => {
   updateDateTime();
 
   window.addEventListener("message", async function (e) {
-    if (e.origin !== "https://5g88-logogame.vercel.app") return;
+  // ✅ Daftar asal (origin) yang dibenarkan
+  const allowedOrigins = [
+    "https://5g88-logogame.vercel.app",
+    "https://searcfile.github.io",
+    "https://searcfile.github.io/5G88-editor/mega888/",
+    "https://searcfile.github.io/5G88-editor/pussy888/",
+    "https://searcfile.github.io/5G88-editor/918kiss/"
+  ];
 
-    const data = e.data;
+  // ❌ Tolak jika bukan dari sumber yang sah
+  if (!allowedOrigins.includes(e.origin)) {
+    console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
+    return;
+  }
 
-    if (data && data.action === "copy-image" && data.url) {
-      try {
-        const response = await fetch(data.url);
-        const blob = await response.blob();
-        const item = new ClipboardItem({ [blob.type]: blob });
-        await navigator.clipboard.write([item]);
-      } catch (err) {
-        console.error(err);
-      }
+  const data = e.data;
+
+  if (data && data.action === "copy-image" && data.url) {
+    try {
+      const response = await fetch(data.url);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+
+      alert("✅ Gambar berjaya disalin ke clipboard!");
+      console.log("✅ Gambar telah disalin dari:", data.url);
+    } catch (err) {
+      console.error("❌ Gagal salin gambar:", err);
+      alert("❌ Gagal salin gambar. Mungkin disebabkan CORS atau browser tidak support.");
     }
-  });
+  }
+});
 
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
