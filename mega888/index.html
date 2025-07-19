@@ -368,7 +368,7 @@
   <tbody>
   </tbody>
 </table>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 let hiddenRow = null;
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
@@ -1875,7 +1875,6 @@ function copyGameLogImage() {
       if (navigator.clipboard && window.ClipboardItem) {
         const item = new ClipboardItem({ "image/png": blob });
         navigator.clipboard.write([item]).then(() => {
-          alert("✅ Tabel disalin ke clipboard sebagai gambar!");
         }).catch(err => {
           alert("❌ Gagal salin ke clipboard.");
           console.error(err);
