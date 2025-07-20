@@ -24,6 +24,26 @@
     .screenshot-mode th {
     border: 1px solid #ddd !important;
     }
+    /* Override gaya putih untuk option yang selected dan highlighted */
+.select2-results__option--highlighted[aria-selected="true"],
+.select2-results__option[aria-selected="true"].select2-results__option--highlighted,
+.select2-results__option[role="option"][aria-selected="true"].select2-results__option--highlighted {
+  background-color: gold !important;
+  color: black !important;
+  font-weight: bold !important;
+}
+
+/* Jika hanya selected tanpa highlight */
+.select2-results__option[aria-selected="true"] {
+  background-color: black !important;
+  color: white !important;
+}
+
+/* Jika hanya highlight (hover) */
+.select2-results__option--highlighted {
+  background-color: gold !important;
+  color: black !important;
+}
   /* 🔥 Override highlight + selected (yang putih kelabu itu) */
 .select2-container--default .select2-results__option.select2-results__option--highlighted[aria-selected="true"] {
   background-color: gold !important;
