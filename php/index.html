@@ -24,6 +24,16 @@
     .screenshot-mode th {
     border: 1px solid #ddd !important;
     }
+    /* ✅ Sembunyikan scrollbar tapi masih bisa scroll */
+.select2-results__options::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+.select2-results__options {
+  -ms-overflow-style: none;  /* for Internet Explorer & Edge */
+  scrollbar-width: none;     /* for Firefox */
+}
   /* ✅ Bungkus kotak input pencarian agar tidak keluar dari dropdown */
 .select2-dropdown {
   background-color: #000; /* dropdown background */
