@@ -24,6 +24,19 @@
     .screenshot-mode th {
     border: 1px solid #ddd !important;
     }
+/* Ubah warna ikon dropdown panah ▼ jadi putih */
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: white transparent transparent transparent !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__clear:hover {
+  color: #facc15; /* warna gold saat hover */
+  cursor: pointer;
+}
+  /* Ubah warna ikon clear (X) jadi putih */
+.select2-container--default .select2-selection--single .select2-selection__clear {
+  color: white;
+  font-weight: bold;
+}
     /* ✅ Kotak utama (select terpilih) */
 .select2-container--default .select2-selection--single {
   background-color: #141414; /* warna hitam sesuai tema */
@@ -32,6 +45,7 @@
   height: 38px;
   display: flex;
   align-items: center;
+  border-radius: 6px;
 }
 
 /* ✅ Teks dalam select */
@@ -101,8 +115,8 @@
 
 /* ✅ Highlight pilihan saat hover */
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-  background-color: gold;
-  color: black;
+  background-color: gold !important;
+  color: black !important;
 }
     html { 
       scrollbar-width: none;
