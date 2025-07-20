@@ -1560,7 +1560,12 @@ $(document).ready(function() {
   $('#gameSelect').select2({
     placeholder: "-- Choose --",
     allowClear: true,
-    width: '180px' // atau sesuai lebar kamu
+    width: '100px' // atau sesuai lebar kamu
+  });
+ $('#gameSelect').on('select2:open', function () {
+    setTimeout(() => {
+      document.querySelector('.select2-search__field').placeholder = 'Search game...';
+    }, 0);
   });
 });
 </script>
