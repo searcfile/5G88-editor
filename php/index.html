@@ -24,13 +24,15 @@
     .screenshot-mode th {
     border: 1px solid #ddd !important;
     }
-.selection:hover {
+.select2-container--default .select2-selection--single:hover {
   border: 1px solid #ffe34d;
 }
-.selection:focus {
+.select2-container--default.select2-container--focus .select2-selection--single {
 border: 1px solid gold;
 outline:none;
 }
+  .select2-selection--single {
+  transition: border 0.2s;
 
 /* Ubah warna ikon dropdown panah ▼ jadi putih */
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
@@ -111,7 +113,7 @@ outline:none;
   outline: none;
 }
 .select2-container--default .select2-search__field:hover {
-  border-color: #ffe34d;
+  border-color: #ffe34d !important;
 }
 
 /* ✅ List item style */
