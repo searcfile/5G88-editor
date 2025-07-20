@@ -1428,6 +1428,11 @@ function copyGameLogImage() {
   }
 
   const gameLogTable = document.getElementById("gameLog");
+  if (!gameLogTable) {
+    alert("❌ Tidak jumpa elemen #gameLog");
+    return;
+  }
+
   gameLogTable.classList.add("screenshot-mode");
 
   html2canvas(gameLogTable, {
@@ -1436,16 +1441,14 @@ function copyGameLogImage() {
   }).then(canvas => {
     gameLogTable.classList.remove("screenshot-mode");
 
-    canvas.toBlob(blob => {
-      if (blob) {
-        const imageURL = URL.createObjectURL(blob);
-        // Kirim ke halaman utama (parent)
-        window.parent.postMessage({
-          action: "copy-image",
-          url: imageURL
-        }, "https://5g88-main.vercel.app/");
-      }
-    });
+    // ✅ Gantikan toBlob dengan toDataURL
+    const dataURL = canvas.toDataURL("image/png");
+
+    // ✅ Kirim base64 ke parent
+    window.parent.postMessage({
+      action: "copy-image-base64",
+      base64: dataURL
+    }, "https://5g88-main.vercel.app/");
   });
 }
 </script>
