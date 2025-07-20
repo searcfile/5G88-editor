@@ -127,17 +127,20 @@
   cursor: pointer;
   white-space: nowrap;
   height: 32px;
+  transition: all 0.2s ease;
 }
 
 .user-button:hover {
   border: 1px solid #ffe34d;
   background: transparant;
   color: #ffe34d;
+  transition: all 0.2s ease;
 }
 .active-user-button {
   border: 1px solid gold;
   background: transparant;
   color: gold;
+  transition: all 0.2s ease;
 }
 .dropdown-content {
   display: none;
@@ -155,6 +158,7 @@
   left: auto;
   transform: none;
   font-size: 13px;
+  transition: all 0.2s ease;
 }
  .dropdown-content {
   opacity: 0;
@@ -845,7 +849,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "https://searcfile.github.io",
     "https://searcfile.github.io/5G88-editor/mega888/",
     "https://searcfile.github.io/5G88-editor/pussy888/",
-    "https://searcfile.github.io/5G88-editor/918kiss/"
+    "https://searcfile.github.io/5G88-editor/918kiss/",
+    "https://5g88-main.vercel.app"
   ];
 
   // ❌ Tolak jika bukan dari sumber yang sah
@@ -856,20 +861,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const data = e.data;
 
-  if (data && data.action === "copy-image" && data.url) {
-    try {
-      const response = await fetch(data.url);
-      const blob = await response.blob();
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
+if (data && data.action === "copy-image-base64" && data.base64) {
+  try {
+    const response = await fetch(data.base64);
+    const blob = await response.blob();
+    const item = new ClipboardItem({ [blob.type]: blob });
+    await navigator.clipboard.write([item]);
 
-      alert("✅ Gambar berjaya disalin ke clipboard!");
-      console.log("✅ Gambar telah disalin dari:", data.url);
-    } catch (err) {
-      console.error("❌ Gagal salin gambar:", err);
-      alert("❌ Gagal salin gambar. Mungkin disebabkan CORS atau browser tidak support.");
-    }
+    alert("✅ Gambar disalin ke clipboard (base64)!");
+    console.log("✅ Gambar dari base64 telah disalin.");
+  } catch (err) {
+    console.error("❌ Gagal salin gambar dari base64:", err);
+    alert("❌ Gagal salin gambar dari base64.");
   }
+}
 });
 
   const loadingScreen = document.getElementById("loadingScreen");
