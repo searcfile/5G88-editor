@@ -842,7 +842,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
-  window.addEventListener("message", async function (e) {
+ window.addEventListener("message", async function (e) {
   // ✅ Daftar asal (origin) yang dibenarkan
   const allowedOrigins = [
     "https://5g88-logogame.vercel.app",
@@ -861,20 +861,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const data = e.data;
 
-if (data && data.action === "copy-image-base64" && data.base64) {
-  try {
-    const response = await fetch(data.base64);
-    const blob = await response.blob();
-    const item = new ClipboardItem({ [blob.type]: blob });
-    await navigator.clipboard.write([item]);
+  // ✅ Untuk base64
+  if (data && data.action === "copy-image-base64" && data.base64) {
+    try {
+      const response = await fetch(data.base64);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
 
-    alert("✅ Gambar disalin ke clipboard (base64)!");
-    console.log("✅ Gambar dari base64 telah disalin.");
-  } catch (err) {
-    console.error("❌ Gagal salin gambar dari base64:", err);
-    alert("❌ Gagal salin gambar dari base64.");
+      alert("✅ Gambar disalin ke clipboard (base64)!");
+      console.log("✅ Gambar dari base64 telah disalin.");
+    } catch (err) {
+      console.error("❌ Gagal salin gambar dari base64:", err);
+      alert("❌ Gagal salin gambar dari base64.");
+    }
   }
-}
+
+  // ✅ Untuk image URL biasa
+  else if (data && data.action === "copy-image" && data.url) {
+    try {
+      const response = await fetch(data.url);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+
+      alert("✅ Gambar disalin ke clipboard!");
+      console.log("✅ Gambar dari URL telah disalin.");
+    } catch (err) {
+      console.error("❌ Gagal salin gambar dari URL:", err);
+      alert("❌ Gagal salin gambar dari URL.");
+    }
+  }
 });
 
   const loadingScreen = document.getElementById("loadingScreen");
