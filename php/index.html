@@ -24,16 +24,28 @@
     .screenshot-mode th {
     border: 1px solid #ddd !important;
     }
-    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+ .select2-container--default .select2-results__option[aria-selected="true"] {
   background-color: gold !important;
   color: black !important;
 }
 
-/* Ganti warna item yang sedang selected tapi tidak active (yang kelabu) */
-.select2-container--default .select2-results__option[aria-selected="true"] {
-  background-color: gold !important; /* ubah jadi warna gelap */
-  color: black !important;           /* ubah teks jadi putih */
+/* Item yang sedang di-hover */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: gold !important;
+  color: black !important;
 }
+
+/* Fix untuk mouse hover override */
+.select2-results__option--highlighted {
+  background-color: gold !important;
+  color: black !important;
+}
+
+/* Optional: font bold utk selected */
+.select2-results__option[aria-selected="true"] {
+  font-weight: bold;
+}
+
     .select2-search__field {
   font-size: 12px !important;
   padding: 6px 10px;
