@@ -1509,9 +1509,12 @@ function addManualSetScore() {
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
+  localStorage.removeItem("selectedGameName"); // ❌ reset nama game terpilih juga
   jackpotInsertedMap = {};
 
   document.getElementById("gameSelect").value = "";
+  $('#gameSelect').val(null).trigger('change'); // update select2 juga
+
   document.getElementById("betSelect").innerHTML = "";
   document.getElementById("pecahanSelect").innerHTML = "";
   document.getElementById("manualTime").value = "";
@@ -1522,36 +1525,41 @@ function resetLog() {
 
 window.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("gameLogData918kiss");
-  if (!saved) return;
-
-  const data = JSON.parse(saved);
-  document.getElementById("gameSelect").value = data.game;
-  document.getElementById("manualTime").value = data.manualTime;
-  document.getElementById("manualScore").value = data.manualScore;
-  document.getElementById("gameSelect").dispatchEvent(new Event("change"));
-
-  setTimeout(() => {
-    document.getElementById("betSelect").value = data.bet;
-    document.getElementById("betSelect").dispatchEvent(new Event("change"));
+  if (saved) {
+    const data = JSON.parse(saved);
+    document.getElementById("gameSelect").value = data.game;
+    document.getElementById("manualTime").value = data.manualTime;
+    document.getElementById("manualScore").value = data.manualScore;
+    document.getElementById("gameSelect").dispatchEvent(new Event("change"));
 
     setTimeout(() => {
-      document.getElementById("pecahanSelect").value = data.pecahan;
-    }, 50);
-  }, 50);
+      document.getElementById("betSelect").value = data.bet;
+      document.getElementById("betSelect").dispatchEvent(new Event("change"));
 
-  document.querySelector("#gameLog tbody").innerHTML = data.logs;
+      setTimeout(() => {
+        document.getElementById("pecahanSelect").value = data.pecahan;
+      }, 50);
+    }, 50);
+
+    document.querySelector("#gameLog tbody").innerHTML = data.logs;
+  }
+
+  // ✅ Muat kembali game yang disimpan jika ada
+  const savedGameName = localStorage.getItem("selectedGameName");
+  if (savedGameName) {
+    $('#gameSelect').val(savedGameName).trigger('change');
+  }
 });
+
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
 
-  // Tambah class screenshot-mode untuk rendahkan border sementara
   gameLogTable.classList.add("screenshot-mode");
 
   html2canvas(gameLogTable, {
     scale: 2,
     useCORS: true
   }).then(canvas => {
-    // Hapus semula class selepas screenshot
     gameLogTable.classList.remove("screenshot-mode");
 
     canvas.toBlob(blob => {
@@ -1573,12 +1581,20 @@ $(document).ready(function() {
   $('#gameSelect').select2({
     placeholder: "-- Choose --",
     allowClear: true,
-    width: '150px' // atau sesuai lebar kamu
+    width: '150px'
   });
- $('#gameSelect').on('select2:open', function () {
+
+  // ✅ Tambahkan placeholder search
+  $('#gameSelect').on('select2:open', function () {
     setTimeout(() => {
       document.querySelector('.select2-search__field').placeholder = 'Search game...';
     }, 0);
+  });
+
+  // ✅ Simpan nama game saat dipilih
+  $('#gameSelect').on('change', function () {
+    const selectedGame = $(this).val();
+    localStorage.setItem("selectedGameName", selectedGame);
   });
 });
 </script>
