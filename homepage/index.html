@@ -22,7 +22,7 @@
     .date-time {color: rgba(255,255,255,0.65);font-size: 13px;white-space: nowrap;transition: color 0.3s;} .date-time:hover{ color:rgba(255,255,255,0.85);transition: color 0.3s;}
     .container {transition: margin-left 0.3s ease;position: relative;}
     .container.shrink { margin-left: 260px;}
-    .menu-icon {position: absolute;top: 5px;left: 10px;font-size: 28px;color: gold;cursor: pointer;z-index: 1100;}
+    .menu-icon {position: absolute;top: 5px;left: 10px;font-size: 28px;color: rgba(255, 255, 255, 0.65);cursor: pointer;z-index: 1100;transition: color 0.3s;}.menu-icon:hover {color: rgba(255,255,255,0.85);transition: color 0.3s;}.active-menu-icon {color: gold;transition: all 0.3s ease;}
     .menu-img {width: 20px;height: 20px;vertical-align: middle;margin-right: 8px;border-radius: 4px;}
     @media (max-width: 600px) {
     .container.shrink {margin-left: 0;}}
@@ -47,7 +47,6 @@
       justify-content: center;
     }
     .tab:hover {
-      background-color: transparant !important;
       color: #ffe34d !important;
       font-weight: bold !important;
      
@@ -56,12 +55,10 @@
       background-color: #141414 !important;
       color: gold !important;
       font-weight: bold;
-      border-bottom-color: #e10808;
     }
     .tab:active {
      color: #dbb900!important;
      font-weight: bold !important;
-     background-color: transparant !important;
     }
     .floating-logo {
       position: fixed;
@@ -869,7 +866,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = new ClipboardItem({ [blob.type]: blob });
       await navigator.clipboard.write([item]);
 
-      alert("✅ Gambar disalin ke clipboard (base64)!");
       console.log("✅ Gambar dari base64 telah disalin.");
     } catch (err) {
       console.error("❌ Gagal salin gambar dari base64:", err);
@@ -885,7 +881,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const item = new ClipboardItem({ [blob.type]: blob });
       await navigator.clipboard.write([item]);
 
-      alert("✅ Gambar disalin ke clipboard!");
       console.log("✅ Gambar dari URL telah disalin.");
     } catch (err) {
       console.error("❌ Gagal salin gambar dari URL:", err);
