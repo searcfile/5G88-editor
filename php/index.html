@@ -24,6 +24,16 @@
     .screenshot-mode th {
     border: 1px solid #ddd !important;
     }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: gold !important;
+  color: black !important;
+}
+
+/* Ganti warna item yang sedang selected tapi tidak active (yang kelabu) */
+.select2-container--default .select2-results__option[aria-selected="true"] {
+  background-color: gold !important; /* ubah jadi warna gelap */
+  color: black !important;           /* ubah teks jadi putih */
+}
     .select2-search__field {
   font-size: 12px !important;
   padding: 6px 10px;
@@ -134,11 +144,6 @@ outline:none;
   font-size: 14px;
 }
 
-/* ✅ Highlight pilihan saat hover */
-.select2-container--default .select2-results__option--highlighted[aria-selected] {
-  background-color: gold !important;
-  color: black !important;
-}
     html { 
       scrollbar-width: none;
       -ms-overflow-style: none;
