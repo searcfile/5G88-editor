@@ -24,131 +24,29 @@
     .screenshot-mode th {
     border: 1px solid #ddd !important;
     }
-    /* Override gaya putih untuk option yang selected dan highlighted */
-.select2-results__option--highlighted[aria-selected="true"],
-.select2-results__option[aria-selected="true"].select2-results__option--highlighted,
-.select2-results__option[role="option"][aria-selected="true"].select2-results__option--highlighted {
+/* ✅ Gaya pilihan SELECTED + HIGHLIGHTED */
+.select2-container--default .select2-results__option.select2-results__option--highlighted[aria-selected="true"],
+.select2-container--default .select2-results__option[aria-selected="true"],
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
   background-color: gold !important;
   color: black !important;
   font-weight: bold !important;
 }
 
-/* Jika hanya selected tanpa highlight */
+/* ✅ Item SELECTED tanpa hover */
 .select2-results__option[aria-selected="true"] {
   background-color: black !important;
   color: white !important;
 }
 
-/* Jika hanya highlight (hover) */
-.select2-results__option--highlighted {
-  background-color: gold !important;
-  color: black !important;
-}
-  /* 🔥 Override highlight + selected (yang putih kelabu itu) */
-.select2-container--default .select2-results__option.select2-results__option--highlighted[aria-selected="true"] {
-  background-color: gold !important;
-  color: black !important;
-}
- .select2-container--default .select2-results__option[aria-selected="true"] {
-  background-color: gold !important;
-  color: black !important;
-}
-
-/* Item yang sedang di-hover */
-.select2-container--default .select2-results__option--highlighted[aria-selected] {
-  background-color: gold !important;
-  color: black !important;
-}
-
-/* Fix untuk mouse hover override */
-.select2-results__option--highlighted {
-  background-color: gold !important;
-  color: black !important;
-}
-
-.select2-search__field {
-  font-size: 12px !important;
+/* ✅ List item style */
+.select2-container--default .select2-results__option {
+  color: white;
   padding: 6px 10px;
-}
-.select2-results__options {
-  max-height: 450px !important; /* ubah ke 400px atau lebih jika mahu */
-}
-.select2-container--default .select2-selection--single:hover {
-  border: 1px solid #ffe34d;
-}
-.select2-container--default.select2-container--focus .select2-selection--single {
-border: 1px solid gold;
-outline:none;
-}
-  .select2-selection--single {
-  transition: border 0.2s;
-  }
-/* Ubah warna ikon dropdown panah ▼ jadi putih */
-.select2-container--default .select2-selection--single .select2-selection__arrow b {
-  border-color: white transparent transparent transparent !important;
-}
-.select2-container--default .select2-selection--single .select2-selection__clear:hover {
-  color: #facc15; /* warna gold saat hover */
-  cursor: pointer;
-}
-  /* Ubah warna ikon clear (X) jadi putih */
-.select2-container--default .select2-selection--single .select2-selection__clear {
-  color: white;
-  font-weight: bold;
-}
-    /* ✅ Kotak utama (select terpilih) */
-.select2-container--default .select2-selection--single {
-  background-color: #141414; /* warna hitam sesuai tema */
-  color: white;
-  border: 1px solid #424242;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  border-radius: 6px;
-}
-.select2-selection__clear {
-  margin-right: 2px !important;  /* kurangi jarak kanan ikon X */
-  margin-left: 4px !important;   /* kurangi jarak kiri dari teks */
-  font-size: 16px;
-}
-/* ✅ Teks dalam select */
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-  color: white;
-  padding-left: 10px;
   font-size: 14px;
-  line-height: 38px;
 }
 
-/* ✅ Panah dropdown */
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-  height: 38px;
-  right: 6px;
-}
-    /* ✅ Sembunyikan scrollbar tapi masih bisa scroll */
-.select2-results__options::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-}
-
-.select2-results__options {
-  -ms-overflow-style: none;  /* for Internet Explorer & Edge */
-  scrollbar-width: none;     /* for Firefox */
-}
-  /* ✅ Bungkus kotak input pencarian agar tidak keluar dari dropdown */
-.select2-dropdown {
-  background-color: #000; /* dropdown background */
-  border: 1px solid gold;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
-
-/* ✅ Kotak input search di dalam dropdown */
-.select2-container--default .select2-search--dropdown {
-  padding: 8px 10px; /* padding biar input ga nempel atas */
-}
-
-/* ✅ Input field di dalam search box */
+/* ✅ Search field */
 .select2-container--default .select2-search--dropdown .select2-search__field {
   background-color: #141414;
   color: white;
@@ -159,8 +57,6 @@ outline:none;
   width: 100%;
   box-sizing: border-box;
 }
-
-/* ✅ Saat fokus di input */
 .select2-container--default .select2-search__field:focus {
   border-color: gold;
   outline: none;
@@ -168,14 +64,84 @@ outline:none;
 .select2-container--default .select2-search__field:hover {
   border-color: #ffe34d !important;
 }
-
-/* ✅ List item style */
-.select2-container--default .select2-results__option {
-  color: white;
+.select2-search__field {
+  font-size: 12px !important;
   padding: 6px 10px;
-  font-size: 14px;
 }
 
+/* ✅ Dropdown wrapper */
+.select2-dropdown {
+  background-color: #000;
+  border: 1px solid gold;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.select2-container--default .select2-search--dropdown {
+  padding: 8px 10px;
+}
+
+/* ✅ Sembunyikan scrollbar tapi tetap bisa scroll */
+.select2-results__options::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+.select2-results__options {
+  max-height: 450px !important;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ✅ Main select box */
+.select2-container--default .select2-selection--single {
+  background-color: #141414;
+  color: white;
+  border: 1px solid #424242;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: border 0.2s;
+}
+.select2-container--default .select2-selection--single:hover {
+  border: 1px solid #ffe34d;
+}
+.select2-container--default.select2-container--focus .select2-selection--single {
+  border: 1px solid gold;
+  outline: none;
+}
+
+/* ✅ Teks di dalam select */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: white;
+  padding-left: 10px;
+  font-size: 14px;
+  line-height: 38px;
+}
+
+/* ✅ Panah ▼ */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 38px;
+  right: 6px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: white transparent transparent transparent !important;
+}
+
+/* ✅ Clear (X) icon */
+.select2-container--default .select2-selection--single .select2-selection__clear {
+  color: white;
+  font-weight: bold;
+}
+.select2-container--default .select2-selection--single .select2-selection__clear:hover {
+  color: #facc15;
+  cursor: pointer;
+}
+.select2-selection__clear {
+  margin-right: 2px !important;
+  margin-left: 4px !important;
+  font-size: 16px;
+}
     html { 
       scrollbar-width: none;
       -ms-overflow-style: none;
