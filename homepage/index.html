@@ -327,7 +327,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng*/
+/*Mcng 123 123 123*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -818,58 +818,65 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+ // ✅ Setelah login aman, baru lanjut
   const userNameText = document.getElementById("userNameText");
   const dropdownContent = document.getElementById("dropdownContent");
   const userEmailElem = document.getElementById("userEmail");
+  const dropdownWrapper = document.querySelector(".user-dropdown");
+  const userButton = document.getElementById("userName");
 
- if (userNameText && dropdownContent) {
+  if (userNameText && dropdownContent && dropdownWrapper && userButton) {
+    const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
     const nameParts = loginData.name.trim().split(" ");
     const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
       ? nameParts[0]
       : loginData.name;
-
     userNameText.textContent = displayName;
+    if (userEmailElem) userEmailElem.textContent = loginData.email;
 
-    // ✅ Set hanya elemen email, bukan seluruh dropdown content
-    if (userEmailElem) {
-      userEmailElem.textContent = loginData.email;
-    }
+    // 1. Hover: tampilkan dropdown
+    dropdownWrapper.addEventListener("mouseenter", () => {
+      dropdownContent.style.display = "block";
+    });
 
-   const dropdownWrapper = document.querySelector(".user-dropdown");
-   const userButton = document.getElementById("userName");
-  dropdownWrapper.addEventListener("mouseenter", () => {
-  dropdownContent.style.display = "block";
-});
-
+    // 2. Hover keluar: sembunyikan jika belum diklik
     dropdownWrapper.addEventListener("mouseleave", () => {
-  dropdownContent.style.display = "none";
+      if (!dropdownWrapper.classList.contains("force-open")) {
+        dropdownContent.style.display = "none";
+        userButton.classList.remove("active-user-button");
+      }
+    });
+
+    // 3. Klik user button = toggle tampil dan class
+   userButton.addEventListener("click", (e) => {
+  e.stopPropagation(); // 🛑 ini bantu cegah konflik click luar
+  const isOpen = dropdownWrapper.classList.toggle("force-open");
+  dropdownContent.style.display = isOpen ? "block" : "none";
+  userButton.classList.toggle("active-user-button", isOpen);
 });
 
-// ✅ Toggle class active bila user button diklik
-userButton.addEventListener("click", () => {
-  userButton.classList.toggle("active-user-button");
-});
-document.addEventListener("click", (e) => {
-  if (
-    !dropdownWrapper.contains(e.target) &&
-    !userButton.contains(e.target)
-  ) {
-    dropdownContent.style.display = "none";
-    userButton.classList.remove("active-user-button");
-  }
-});
+    // 4. Klik di luar dropdown → tutup semua
+    document.addEventListener("click", (e) => {
+      if (
+        !dropdownWrapper.contains(e.target) &&
+        !userButton.contains(e.target)
+      ) {
+        dropdownContent.style.display = "none";
+        dropdownWrapper.classList.remove("force-open");
+        userButton.classList.remove("active-user-button");
+      }
+    });
   }
 
+  // ✅ Tombol logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("gmailLogin");
       sessionStorage.setItem("forceLogout", "1");
-
       if (window.google?.accounts?.id) {
         google.accounts.id.disableAutoSelect();
       }
-
       window.location.href = "https://5g88-login.vercel.app/";
     });
   }
