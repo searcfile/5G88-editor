@@ -1571,6 +1571,95 @@ function copyGameLogImage() {
     isResizing = false;
   });
 })();
+document.addEventListener("paste", (e) => {
+  const items = e.clipboardData.items;
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    if (item.type.indexOf("image") !== -1) {
+      const blob = item.getAsFile();
+      const url = URL.createObjectURL(blob);
+      insertPastedImage(url);
+    }
+  }
+});
+
+function insertPastedImage(imageURL) {
+  const canvas = document.getElementById("imageEditorCanvas");
+
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("pasted-image-wrapper");
+  wrapper.style.position = "absolute";
+  wrapper.style.top = "100px";
+  wrapper.style.left = "100px";
+  wrapper.style.width = "300px";
+  wrapper.style.height = "200px";
+  wrapper.style.border = "2px solid #00ffcc";
+  wrapper.style.cursor = "move";
+  wrapper.style.zIndex = "100";
+
+  const img = document.createElement("img");
+  img.src = imageURL;
+  img.style.width = "100%";
+  img.style.height = "100%";
+  img.style.objectFit = "contain";
+  img.style.pointerEvents = "none";
+
+  const handle = document.createElement("div");
+  handle.style.width = "12px";
+  handle.style.height = "12px";
+  handle.style.background = "cyan";
+  handle.style.position = "absolute";
+  handle.style.right = "-6px";
+  handle.style.bottom = "-6px";
+  handle.style.cursor = "nwse-resize";
+
+  wrapper.appendChild(img);
+  wrapper.appendChild(handle);
+  canvas.appendChild(wrapper);
+
+  makeElementDraggable(wrapper, handle);
+}
+
+function makeElementDraggable(box, handle) {
+  let isDragging = false, offsetX = 0, offsetY = 0;
+  let isResizing = false, startX, startY, startWidth, startHeight;
+
+  box.addEventListener("mousedown", (e) => {
+    if (e.target === handle) return;
+    isDragging = true;
+    offsetX = e.clientX - box.offsetLeft;
+    offsetY = e.clientY - box.offsetTop;
+    box.style.cursor = "grabbing";
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+      box.style.left = (e.clientX - offsetX) + "px";
+      box.style.top = (e.clientY - offsetY) + "px";
+    }
+    if (isResizing) {
+      const newWidth = startWidth + (e.clientX - startX);
+      const newHeight = startHeight + (e.clientY - startY);
+      box.style.width = Math.max(50, newWidth) + "px";
+      box.style.height = Math.max(50, newHeight) + "px";
+    }
+  });
+
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+    isResizing = false;
+    box.style.cursor = "move";
+  });
+
+  handle.addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+    isResizing = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startWidth = box.offsetWidth;
+    startHeight = box.offsetHeight;
+  });
+}
 </script>
 
 </body>
