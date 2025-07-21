@@ -325,6 +325,8 @@
   <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
   <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button>
  </div>
+  
+<div style="display: flex; align-items: flex-start; gap: 20px; margin-top: 20px; flex-wrap: wrap;">
 <table id="gameLog">
   <thead>
     <tr>
@@ -340,6 +342,11 @@
   <tbody>
   </tbody>
 </table>
+<div id="imagePreviewContainer" style="display: none; min-width: 300px; background: #1a1a1a; border: 2px solid gold; padding: 10px; border-radius: 10px;">
+    <h3 style="color: gold; margin-top: 0;">📷 Preview Image</h3>
+    <img id="imagePreview" src="" alt="Preview will appear here" style="max-width: 100%; border-radius: 8px;" />
+  </div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 let hiddenRow = null;
@@ -1603,28 +1610,32 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
+  const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+  const previewImage = document.getElementById("imagePreview");
 
-  // Tambah class screenshot-mode untuk rendahkan border sementara
   gameLogTable.classList.add("screenshot-mode");
 
   html2canvas(gameLogTable, {
     scale: 2,
     useCORS: true
   }).then(canvas => {
-    // Hapus semula class selepas screenshot
     gameLogTable.classList.remove("screenshot-mode");
 
     canvas.toBlob(blob => {
       if (navigator.clipboard && window.ClipboardItem) {
         const item = new ClipboardItem({ "image/png": blob });
-        navigator.clipboard.write([item]).then(() => {
-        }).catch(err => {
+        navigator.clipboard.write([item]).catch(err => {
           alert("❌ Gagal salin ke clipboard.");
           console.error(err);
         });
       } else {
         alert("❌ Browser tidak sokong salin gambar ke clipboard.");
       }
+
+      // ✅ Tampilkan preview ke samping kanan tabel
+      const imageURL = URL.createObjectURL(blob);
+      previewImage.src = imageURL;
+      imagePreviewContainer.style.display = "block";
     });
   });
 }
