@@ -1621,11 +1621,19 @@ function insertPastedImage(imageURL) {
 
   makeElementDraggable(wrapper, handle);
 
- wrapper.addEventListener("click", (e) => {
-    e.stopPropagation();
-    document.querySelectorAll(".resize-handle").forEach(h => h.style.display = "none");
-    handle.style.display = "block";
+wrapper.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  // Sembunyikan semua handle + border dulu
+  document.querySelectorAll(".resize-handle").forEach(h => h.style.display = "none");
+  document.querySelectorAll(".pasted-image-wrapper").forEach(w => {
+    w.style.border = "none";
   });
+
+  // Tampilkan border + handle hanya untuk yang diklik
+  wrapper.style.border = "2px solid #00ffcc";
+  handle.style.display = "block";
+});
  document.addEventListener("click", (e) => {
     if (!wrapper.contains(e.target)) {
       handle.style.display = "none";
