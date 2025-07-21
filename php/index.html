@@ -340,17 +340,36 @@
   position: relative;
   overflow: hidden;
 ">
-  <!-- Template gambar hasil copy image -->
-  <img id="copiedImage" src="" style="
-    width: 792px;
-    height: 552px;
+
+  <!-- Resizeable + Draggable Image Box -->
+  <div id="resizeBox" style="
     position: absolute;
     top: 50px;
     left: 50px;
-    cursor: move;
-    display: none;
+    width: 792px;
+    height: 552px;
     border: 2px solid white;
-  " />
+    display: none;
+    cursor: move;
+  ">
+    <img id="copiedImage" src="" style="
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    " />
+    <!-- Resize handle pojok kanan bawah -->
+    <div id="resizeHandle" style="
+      width: 14px;
+      height: 14px;
+      background: gold;
+      position: absolute;
+      right: -7px;
+      bottom: -7px;
+      cursor: nwse-resize;
+    "></div>
+  </div>
+
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
@@ -1444,6 +1463,7 @@ window.addEventListener("DOMContentLoaded", () => {
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
   const copiedImage = document.getElementById("copiedImage");
+  const resizeBox = document.getElementById("resizeBox");
 
   gameLogTable.classList.add("screenshot-mode");
 
@@ -1458,7 +1478,7 @@ function copyGameLogImage() {
 
       const url = URL.createObjectURL(blob);
       copiedImage.src = url;
-      copiedImage.style.display = "block";
+      resizeBox.style.display = "block";
 
       if (navigator.clipboard && window.ClipboardItem) {
         const item = new ClipboardItem({ "image/png": blob });
@@ -1467,7 +1487,7 @@ function copyGameLogImage() {
           console.error(err);
         });
       } else {
-        alert("❌ Browser tidak sokong Clipboard API.");
+        alert("❌ Clipboard tidak disokong.");
       }
     });
   });
@@ -1495,6 +1515,60 @@ function copyGameLogImage() {
   document.addEventListener("mouseup", () => {
     isDragging = false;
     img.style.cursor = "move";
+  });
+})();
+(function makeResizeBoxInteractive() {
+  const box = document.getElementById("resizeBox");
+  const handle = document.getElementById("resizeHandle");
+
+  // 🔹 Drag logic
+  let isDragging = false;
+  let offsetX, offsetY;
+
+  box.addEventListener("mousedown", (e) => {
+    if (e.target === handle) return;
+    isDragging = true;
+    offsetX = e.clientX - box.offsetLeft;
+    offsetY = e.clientY - box.offsetTop;
+    box.style.cursor = "grabbing";
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+      box.style.left = (e.clientX - offsetX) + "px";
+      box.style.top = (e.clientY - offsetY) + "px";
+    }
+  });
+
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+    box.style.cursor = "move";
+  });
+
+  // 🔹 Resize logic
+  let isResizing = false;
+  let startX, startY, startWidth, startHeight;
+
+  handle.addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+    isResizing = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startWidth = box.offsetWidth;
+    startHeight = box.offsetHeight;
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (isResizing) {
+      const newWidth = startWidth + (e.clientX - startX);
+      const newHeight = startHeight + (e.clientY - startY);
+      box.style.width = Math.max(100, newWidth) + "px";
+      box.style.height = Math.max(100, newHeight) + "px";
+    }
+  });
+
+  document.addEventListener("mouseup", () => {
+    isResizing = false;
   });
 })();
 </script>
