@@ -333,7 +333,7 @@
 </table>
 <div id="imageEditorCanvas" style="
   margin-top: 30px;
-  width: 1000px;
+  width: 1500px;
   height: 1000px;
   background-color: #111;
   border: 2px dashed gold;
@@ -1621,20 +1621,17 @@ function insertPastedImage(imageURL) {
 
   makeElementDraggable(wrapper, handle);
 
-  // ✅ Show resize handle only when clicked
-  wrapper.addEventListener("click", (e) => {
+ wrapper.addEventListener("click", (e) => {
     e.stopPropagation();
-    // Sembunyikan handle lain
     document.querySelectorAll(".resize-handle").forEach(h => h.style.display = "none");
     handle.style.display = "block";
   });
-
-  // ✅ Sembunyikan semua handle jika klik area kosong
-  canvas.addEventListener("click", () => {
-    handle.style.display = "none";
+ document.addEventListener("click", (e) => {
+    if (!wrapper.contains(e.target)) {
+      handle.style.display = "none";
+    }
   });
 }
-
 function makeElementDraggable(box, handle) {
   let isDragging = false, offsetX = 0, offsetY = 0;
   let isResizing = false, startX, startY, startWidth, startHeight;
