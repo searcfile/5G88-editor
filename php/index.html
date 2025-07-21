@@ -1605,6 +1605,7 @@ function insertPastedImage(imageURL) {
   img.style.pointerEvents = "none";
 
   const handle = document.createElement("div");
+  handle.classList.add("resize-handle");
   handle.style.width = "12px";
   handle.style.height = "12px";
   handle.style.background = "cyan";
@@ -1612,12 +1613,26 @@ function insertPastedImage(imageURL) {
   handle.style.right = "-6px";
   handle.style.bottom = "-6px";
   handle.style.cursor = "nwse-resize";
+  handle.style.display = "none"; // awalnya disembunyikan
 
   wrapper.appendChild(img);
   wrapper.appendChild(handle);
   canvas.appendChild(wrapper);
 
   makeElementDraggable(wrapper, handle);
+
+  // ✅ Show resize handle only when clicked
+  wrapper.addEventListener("click", (e) => {
+    e.stopPropagation();
+    // Sembunyikan handle lain
+    document.querySelectorAll(".resize-handle").forEach(h => h.style.display = "none");
+    handle.style.display = "block";
+  });
+
+  // ✅ Sembunyikan semua handle jika klik area kosong
+  canvas.addEventListener("click", () => {
+    handle.style.display = "none";
+  });
 }
 
 function makeElementDraggable(box, handle) {
@@ -1649,6 +1664,9 @@ function makeElementDraggable(box, handle) {
     isDragging = false;
     isResizing = false;
     box.style.cursor = "move";
+
+    // ✅ Sembunyikan handle setelah resize selesai
+    if (handle) handle.style.display = "none";
   });
 
   handle.addEventListener("mousedown", (e) => {
