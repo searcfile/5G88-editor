@@ -331,19 +331,38 @@
   <tbody>
   </tbody>
 </table>
-<div id="imagePreviewContainer" style="margin-top: 20px; display: flex; justify-content: center;">
+<!-- Image Preview Container -->
+<div id="imagePreviewContainer" style="margin-top: 25px; display: flex; justify-content: flex-start;">
   <div id="imageTemplate" style="
     width: 792px;
     height: 552px;
-    border: 2px dashed gold;
+    border: 2px solid gold;
+    background-color: #111;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #111;
     position: relative;
+    padding: 8px;
   ">
-    <span style="color: white; position: absolute; top: 10px; left: 10px; font-size: 16px;">📷 Image Preview</span>
-    <img id="copiedImage" src="" alt="Preview" style="max-width: 100%; max-height: 100%; display: none;" />
+    <span style="
+      color: white;
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      font-size: 15px;
+      background: black;
+      padding: 2px 8px;
+      border: 1px dashed gold;
+      border-radius: 4px;
+    ">
+      📸 Image Preview
+    </span>
+    <img id="copiedImage" src="" alt="Preview" style="
+      max-width: 100%;
+      max-height: 100%;
+      display: none;
+      object-fit: contain;
+    " />
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1450,22 +1469,20 @@ function copyGameLogImage() {
     canvas.toBlob(blob => {
       if (!blob) return;
 
-      // Convert blob to image URL
       const url = URL.createObjectURL(blob);
       copiedImage.src = url;
       copiedImage.style.display = "block";
 
-      // Salin ke clipboard jika disokong
       if (navigator.clipboard && window.ClipboardItem) {
         const item = new ClipboardItem({ "image/png": blob });
         navigator.clipboard.write([item]).then(() => {
-          console.log("✅ Gambar disalin ke clipboard.");
+          console.log("✅ Copied to clipboard");
         }).catch(err => {
           alert("❌ Gagal salin ke clipboard.");
           console.error(err);
         });
       } else {
-        alert("❌ Browser tidak sokong salin gambar ke clipboard.");
+        alert("❌ Browser tidak sokong Clipboard API.");
       }
     });
   });
