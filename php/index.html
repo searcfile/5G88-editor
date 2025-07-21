@@ -331,53 +331,26 @@
   <tbody>
   </tbody>
 </table>
-<!-- Container besar -->
-<div id="imagePreviewContainer" style="
+<div id="imageEditorCanvas" style="
   margin-top: 30px;
   width: 2000px;
   height: 1500px;
-  border: 2px solid white;
-  background-color: #000;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 20px;
-  overflow: auto;
+  background-color: #111;
+  border: 2px dashed gold;
+  position: relative;
+  overflow: hidden;
 ">
-
-  <!-- Template ukuran tetap di dalamnya -->
-  <div id="imageTemplate" style="
+  <!-- Template gambar hasil copy image -->
+  <img id="copiedImage" src="" style="
     width: 792px;
     height: 552px;
-    border: 2px solid gold;
-    background-color: #111;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    padding: 10px;
-  ">
-    <span style="
-      color: white;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 15px;
-      background: black;
-      padding: 2px 8px;
-      border: 1px dashed gold;
-      border-radius: 4px;
-    ">
-      📸 Image Preview
-    </span>
-    <img id="copiedImage" src="" alt="Preview" style="
-      max-width: 100%;
-      max-height: 100%;
-      display: none;
-      object-fit: contain;
-    " />
-  </div>
-
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    cursor: move;
+    display: none;
+    border: 2px solid white;
+  " />
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
@@ -1489,9 +1462,7 @@ function copyGameLogImage() {
 
       if (navigator.clipboard && window.ClipboardItem) {
         const item = new ClipboardItem({ "image/png": blob });
-        navigator.clipboard.write([item]).then(() => {
-          console.log("✅ Copied to clipboard");
-        }).catch(err => {
+        navigator.clipboard.write([item]).catch(err => {
           alert("❌ Gagal salin ke clipboard.");
           console.error(err);
         });
@@ -1501,6 +1472,31 @@ function copyGameLogImage() {
     });
   });
 }
+// Drag logic untuk gambar
+(function makeImageDraggable() {
+  const img = document.getElementById("copiedImage");
+  let isDragging = false;
+  let offsetX, offsetY;
+
+  img.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    offsetX = e.clientX - img.offsetLeft;
+    offsetY = e.clientY - img.offsetTop;
+    img.style.cursor = "grabbing";
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+      img.style.left = (e.clientX - offsetX) + "px";
+      img.style.top = (e.clientY - offsetY) + "px";
+    }
+  });
+
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+    img.style.cursor = "move";
+  });
+})();
 </script>
 
 </body>
