@@ -1658,14 +1658,18 @@ function makeElementDraggable(box, handle) {
   });
 
   document.addEventListener("mouseup", () => {
-    isDragging = false;
-    isResizing = false;
-    box.style.cursor = "move";
+  isDragging = false;
+  isResizing = false;
+  box.style.cursor = "move";
 
-    // ✅ Sembunyikan handle setelah resize selesai
-    if (handle) handle.style.display = "none";
-  });
-
+  // Hilangkan semua resize handle & border
+  setTimeout(() => {
+    document.querySelectorAll(".resize-handle").forEach(h => h.style.display = "none");
+    document.querySelectorAll(".pasted-image-wrapper").forEach(w => {
+      w.style.border = "none"; // hilangkan garis putih
+    });
+  }, 100);
+});
   handle.addEventListener("mousedown", (e) => {
     e.stopPropagation();
     isResizing = true;
