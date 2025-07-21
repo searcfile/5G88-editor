@@ -145,7 +145,7 @@
   background-color: #111;
   min-width: 200px;
   border: 1px solid gold;
-  border-radius: 4px;
+  border-radius: 6px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
   padding: 10px;
   z-index: 1;
@@ -160,7 +160,7 @@
  .dropdown-content {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .user-dropdown:hover .dropdown-content {
@@ -197,6 +197,16 @@
   .live-chat-button.active-livechat {
   background: transparent;
   color: gold;
+}
+#messagePopup {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+#messagePopup.show {
+  opacity: 1;
+  transform: translateY(0);
 }
   
   </style>
@@ -303,7 +313,7 @@
   </div>
 
 
-  <div id="messagePopup" style="display: none; position: absolute; background: #222; color: white; border: 1px solid gold; border-radius: 8px; padding: 3px 10px; max-width: 300px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); z-index: 2000; word-wrap: break-word; overflow-wrap: anywhere;">
+  <div id="messagePopup" style="display: none; position: absolute; background: #222; color: white; border: 1px solid gold; border-radius: 6px; padding: 3px 10px; max-width: 300px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); z-index: 2000; word-wrap: break-word; overflow-wrap: anywhere;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <strong style="color: red;">Notice!</strong>
       <button onclick="closeMessage()" style="background: none; color: white; border: none; font-size: 18px; cursor: pointer; transition: transform 0.2s, color 0.2s;" 
@@ -383,10 +393,11 @@ notifButton.addEventListener("click", () => {
   const timestamp = Number(notifButton.dataset.timestamp);
   if (!message || !timestamp) return;
 
-  if (popup.style.display === "block") {
-    popup.style.display = "none";
-    return;
-  }
+ if (popup.style.display === "block") {
+  popup.classList.remove("show");
+  popup.style.display = "none";
+  return;
+}
 
   const dateObj = new Date(timestamp);
   const isValidDate = !isNaN(dateObj.getTime());
@@ -406,6 +417,7 @@ notifButton.addEventListener("click", () => {
   `;
 
   popup.style.display = "block";
+  popup.classList.add("show"); // ⬅️ Tambahkan class animasi
   popup.style.visibility = "hidden";
   popup.style.top = "0px";
   popup.style.left = "-9999px";
@@ -413,10 +425,11 @@ notifButton.addEventListener("click", () => {
   setTimeout(() => {
   const rect = notifButton.getBoundingClientRect();
   const popupWidth = popup.offsetWidth || 300;
-  const spacing = 3.2;
+  const spacing = 4; // jarak ke bawah
 
+  // 📌 Tampilkan tepat di bawah & rata kanan dengan tombol notif
   popup.style.top = `${rect.bottom + window.scrollY + spacing}px`;
-  popup.style.left = `${rect.left + window.scrollX}px`;
+  popup.style.left = `${rect.right + window.scrollX - popupWidth}px`;
   popup.style.visibility = "visible";
 }, 0);
 
@@ -447,7 +460,12 @@ document.addEventListener("click", function (event) {
     popup.style.display = "none";
   }
 });
-
+window.addEventListener("blur", () => {
+  const popup = document.getElementById("messagePopup");
+  if (popup && popup.style.display === "block") {
+    popup.style.display = "none";
+  }
+});
 
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
@@ -818,12 +836,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
    const dropdownWrapper = document.querySelector(".user-dropdown");
+   const userButton = document.getElementById("userName");
   dropdownWrapper.addEventListener("mouseenter", () => {
   dropdownContent.style.display = "block";
 });
 
     dropdownWrapper.addEventListener("mouseleave", () => {
   dropdownContent.style.display = "none";
+});
+
+// ✅ Toggle class active bila user button diklik
+userButton.addEventListener("click", () => {
+  userButton.classList.toggle("active-user-button");
+});
+document.addEventListener("click", (e) => {
+  if (
+    !dropdownWrapper.contains(e.target) &&
+    !userButton.contains(e.target)
+  ) {
+    dropdownContent.style.display = "none";
+    userButton.classList.remove("active-user-button");
+  }
 });
   }
 
