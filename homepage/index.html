@@ -34,7 +34,7 @@
       cursor: default;transition: background-color 0.3s ease;white-space: nowrap; 
     } 
     .tab .close-tab {
-      background: rgba(255,255,255,0.04); /*dddddd*/
+      background: rgba(255,255,255,0.04);
       color: gold;
       border: none;
       font-size: 14px;
@@ -196,7 +196,7 @@
 }
   .live-chat-button.active-livechat {
   background: transparent;
-  color: #fff;
+  color: gold;
 }
   
   </style>
@@ -317,6 +317,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
+/*Mcng*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -410,14 +411,14 @@ notifButton.addEventListener("click", () => {
   popup.style.left = "-9999px";
 
   setTimeout(() => {
-    const rect = notifButton.getBoundingClientRect();
-    const popupWidth = popup.offsetWidth || 300;
-    const spacing = 10;
+  const rect = notifButton.getBoundingClientRect();
+  const popupWidth = popup.offsetWidth || 300;
+  const spacing = 3.2;
 
-    popup.style.top = `${rect.top + window.scrollY}px`;
-    popup.style.left = `${rect.left + window.scrollX - popupWidth - spacing}px`;
-    popup.style.visibility = "visible";
-  }, 0);
+  popup.style.top = `${rect.bottom + window.scrollY + spacing}px`;
+  popup.style.left = `${rect.left + window.scrollX}px`;
+  popup.style.visibility = "visible";
+}, 0);
 
   notifDot.style.display = "none";
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
@@ -433,8 +434,16 @@ notifButton.addEventListener("mouseleave", () => {
 });
 
 // Klik luar popup = tutup
-document.addEventListener("click", (e) => {
-  if (!popup.contains(e.target) && !notifButton.contains(e.target)) {
+document.addEventListener("click", function (event) {
+  const popup = document.getElementById("messagePopup");
+  const notifBtn = document.getElementById("notifButton");
+
+  if (
+    popup &&
+    popup.style.display === "block" &&
+    !popup.contains(event.target) &&
+    !notifBtn.contains(event.target)
+  ) {
     popup.style.display = "none";
   }
 });
@@ -462,7 +471,13 @@ tabBar.style.padding = "10px 5px";
 tabBar.style.background = "#111";
 
 
-menuIcon.addEventListener("click", openSidebar);
+menuIcon.addEventListener("click", () => {
+  if (sidebar.classList.contains("active")) {
+    closeSidebar();
+  } else {
+    openSidebar();
+  }
+});
 overlay.addEventListener("click", closeSidebar);
 function openSidebar() {
   sidebar.classList.add("active");
@@ -471,7 +486,9 @@ function openSidebar() {
   document.querySelector(".floating-logo").classList.add("shrink");
   document.querySelector('.header').classList.add('shrink');
   document.getElementById("tabBar").classList.add('shrink');
+  document.getElementById("menuIcon").classList.add("active-menu-icon");
 }
+
 function closeSidebar() {
   sidebar.classList.remove("active");
   overlay.classList.remove("active");
@@ -479,6 +496,7 @@ function closeSidebar() {
   document.querySelector(".floating-logo").classList.remove("shrink");
   document.querySelector('.header').classList.remove('shrink');
   document.getElementById("tabBar").classList.remove('shrink');
+  document.getElementById("menuIcon").classList.remove("active-menu-icon");
 }
 
 document.addEventListener("click", (e) => {
@@ -839,8 +857,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setInterval(updateDateTime, 1000);
   updateDateTime();
+    // 🔴 NOTIF MERAH LIVE CHAT JIKA ADA PESAN BELUM DIBACA
+const livechatDot = document.getElementById("livechatDot");
+
+// Cek pesan user belum dibaca
+firebase.database().ref("livechat/messages").on("value", (snapshot) => {
+  let foundUnread = false;
+  snapshot.forEach(child => {
+    const msg = child.val();
+    if (msg && msg.readByAdmin === false) {
+      foundUnread = true;
+    }
+  });
+  if (foundUnread) {
+    livechatDot.style.display = "block";
+  } else {
+    livechatDot.style.display = "none";
+  }
+});
 
  window.addEventListener("message", async function (e) {
+
   // ✅ Daftar asal (origin) yang dibenarkan
   const allowedOrigins = [
     "https://5g88-logogame.vercel.app",
