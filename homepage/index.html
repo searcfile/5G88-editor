@@ -495,19 +495,6 @@ function getTabs() {
   return JSON.parse(localStorage.getItem("openTabs")) || [];
 }
 
- const menuIcon = document.getElementById("menuIcon");
-
-  menuIcon.addEventListener("click", function (e) {
-    e.stopPropagation(); // ❗ Jangan teruskan klik ke body
-    this.classList.add("active-menu-icon");
-  });
-
-  document.addEventListener("click", function (e) {
-    if (!menuIcon.contains(e.target)) {
-      menuIcon.classList.remove("active-menu-icon");
-    }
-  });
-
 function addTab(label, url) {
   const existingTabs = getTabs();
   const exists = existingTabs.some(tab => tab.label === label);
