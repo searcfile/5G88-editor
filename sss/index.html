@@ -213,6 +213,13 @@
      background: #bf0000;
      color: white;
     }
+    #imagePreview {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+   }
+   #imagePreviewContainer.showing #imagePreview {
+    opacity: 1;
+   }
   </style>
 </head>
 <body>
@@ -342,10 +349,18 @@
   <tbody>
   </tbody>
 </table>
-<div id="imagePreviewContainer" style="display: none; min-width: 300px; background: #1a1a1a; border: 2px solid gold; padding: 10px; border-radius: 10px;">
-    <h3 style="color: gold; margin-top: 0;">📷 Preview Image</h3>
-    <img id="imagePreview" src="" alt="Preview will appear here" style="max-width: 100%; border-radius: 8px;" />
-  </div>
+<div id="imagePreviewContainer" style="display: none; width: 320px; height: auto; background: #1a1a1a; border: 2px solid gold; padding: 10px; border-radius: 10px;">
+  <h3 style="color: gold; margin-top: 0;">📷 Preview Image</h3>
+  <img id="imagePreview" src="" alt="Preview will appear here" style="
+    display: block;
+    min-width: 200px;
+    max-width: 100%;
+    min-height: 150px;
+    max-height: 300px;
+    border-radius: 8px;
+    object-fit: contain;
+    background-color: #000;" />
+</div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
@@ -1635,7 +1650,8 @@ function copyGameLogImage() {
       // ✅ Tampilkan preview ke samping kanan tabel
       const imageURL = URL.createObjectURL(blob);
       previewImage.src = imageURL;
-      imagePreviewContainer.style.display = "block";
+imagePreviewContainer.style.display = "block";
+imagePreviewContainer.classList.add("showing");
     });
   });
 }
