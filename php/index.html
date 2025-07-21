@@ -331,6 +331,21 @@
   <tbody>
   </tbody>
 </table>
+<div id="imagePreviewContainer" style="margin-top: 20px; display: flex; justify-content: center;">
+  <div id="imageTemplate" style="
+    width: 792px;
+    height: 552px;
+    border: 2px dashed gold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #111;
+    position: relative;
+  ">
+    <span style="color: white; position: absolute; top: 10px; left: 10px; font-size: 16px;">📷 Image Preview</span>
+    <img id="copiedImage" src="" alt="Preview" style="max-width: 100%; max-height: 100%; display: none;" />
+  </div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 let hiddenRow = null;
@@ -1422,21 +1437,29 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
+  const copiedImage = document.getElementById("copiedImage");
 
-  // Tambah class screenshot-mode untuk rendahkan border sementara
   gameLogTable.classList.add("screenshot-mode");
 
   html2canvas(gameLogTable, {
     scale: 2,
     useCORS: true
   }).then(canvas => {
-    // Hapus semula class selepas screenshot
     gameLogTable.classList.remove("screenshot-mode");
 
     canvas.toBlob(blob => {
+      if (!blob) return;
+
+      // Convert blob to image URL
+      const url = URL.createObjectURL(blob);
+      copiedImage.src = url;
+      copiedImage.style.display = "block";
+
+      // Salin ke clipboard jika disokong
       if (navigator.clipboard && window.ClipboardItem) {
         const item = new ClipboardItem({ "image/png": blob });
         navigator.clipboard.write([item]).then(() => {
+          console.log("✅ Gambar disalin ke clipboard.");
         }).catch(err => {
           alert("❌ Gagal salin ke clipboard.");
           console.error(err);
