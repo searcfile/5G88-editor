@@ -3,9 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>918KISS Generator</title>
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
   <style>
      body {
@@ -24,123 +21,6 @@
     .screenshot-mode th {
     border: 1px solid #ddd !important;
     }
-/* ✅ Gaya pilihan SELECTED + HIGHLIGHTED */
-.select2-container--default .select2-results__option.select2-results__option--highlighted[aria-selected="true"],
-.select2-container--default .select2-results__option[aria-selected="true"],
-.select2-container--default .select2-results__option--highlighted[aria-selected] {
-  background-color: gold !important;
-  color: black !important;
-}
-
-/* ✅ Item SELECTED tanpa hover */
-.select2-results__option[aria-selected="true"] {
-  background-color: black !important;
-  color: white !important;
-}
-
-/* ✅ List item style */
-.select2-container--default .select2-results__option {
-  color: white;
-  padding: 6px 10px;
-  font-size: 14px;
-}
-
-/* ✅ Search field */
-.select2-container--default .select2-search--dropdown .select2-search__field {
-  background-color: #141414;
-  color: white;
-  border: 1px solid #424242;
-  padding: 5px 2px;
-  font-size: 14px;
-  border-radius: 6px;
-  width: 100%;
-  box-sizing: border-box;
-}
-.select2-container--default .select2-search__field:focus {
-  border-color: gold;
-  outline: none;
-}
-.select2-container--default .select2-search__field:hover {
-  border-color: #ffe34d !important;
-}
-.select2-search__field {
-  font-size: 12px !important;
-  padding: 6px 10px;
-}
-
-/* ✅ Dropdown wrapper */
-.select2-dropdown {
-  background-color: #000;
-  border: 1px solid gold;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
-.select2-container--default .select2-search--dropdown {
-  padding: 8px 10px;
-}
-
-/* ✅ Sembunyikan scrollbar tapi tetap bisa scroll */
-.select2-results__options::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-}
-.select2-results__options {
-  max-height: 450px !important;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* ✅ Main select box */
-.select2-container--default .select2-selection--single {
-  background-color: #141414;
-  color: white;
-  border: 1px solid #424242;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  border-radius: 6px;
-  transition: border 0.2s;
-}
-.select2-container--default .select2-selection--single:hover {
-  border: 1px solid #ffe34d;
-}
-.select2-container--default.select2-container--focus .select2-selection--single {
-  border: 1px solid gold;
-  outline: none;
-}
-
-/* ✅ Teks di dalam select */
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-  color: white;
-  padding-left: 10px;
-  font-size: 14px;
-  line-height: 38px;
-}
-
-/* ✅ Panah ▼ */
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-  height: 38px;
-  right: 6px;
-}
-.select2-container--default .select2-selection--single .select2-selection__arrow b {
-  border-color: white transparent transparent transparent !important;
-}
-
-/* ✅ Clear (X) icon */
-.select2-container--default .select2-selection--single .select2-selection__clear {
-  color: white;
-  font-weight: bold;
-}
-.select2-container--default .select2-selection--single .select2-selection__clear:hover {
-  color: #facc15;
-  cursor: pointer;
-}
-.select2-selection__clear {
-  margin-right: 2px !important;
-  margin-left: 4px !important;
-  font-size: 16px;
-}
     html { 
       scrollbar-width: none;
       -ms-overflow-style: none;
@@ -254,7 +134,7 @@
     select, input {
       padding: 3px 6px;
       font-size: 13px;
-    
+      margin-left: 10px;
       border-radius: 5px;
       background: #141414;
       border: 1px solid #424242;
@@ -415,18 +295,18 @@
   <button onclick="generateLog()" style="height: 38px;">Change</button>
 
   <div style="display: flex; align-items: center;">
-    <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;margin-right: 10px !important;">Add Score (optional):</label>
+    <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;">Add Score (optional):</label>
     <input type="number" id="manualScore" value="0"
            style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
   </div>
 
   <div style="display: flex; align-items: center;">
-    <label for="manualJackpot" style="color: white; height: 38px; display: flex; align-items: center;margin-right: 10px !important;">Jackpot Amount:</label>
+    <label for="manualJackpot" style="color: white; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
     <input type="number" id="manualJackpot" value="0"
            style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
   </div>
  <div style="display: flex; align-items: center;">
-    <label for="manualScoreInput" style="color: white; height: 38px; display: flex; align-items: center;margin-right: 10px !important;">Support Amount:</label>
+    <label for="manualScoreInput" style="color: white; height: 38px; display: flex; align-items: center;">Support Amount:</label>
     <input type="number" id="manualScoreInput" value="0"
            style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
   </div>
@@ -451,7 +331,6 @@
   <tbody>
   </tbody>
 </table>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 let hiddenRow = null;
@@ -1509,12 +1388,9 @@ function addManualSetScore() {
 function resetLog() {
   localStorage.removeItem("gameLogData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
-  localStorage.removeItem("selectedGameName"); // ❌ reset nama game terpilih juga
   jackpotInsertedMap = {};
 
   document.getElementById("gameSelect").value = "";
-  $('#gameSelect').val(null).trigger('change'); // update select2 juga
-
   document.getElementById("betSelect").innerHTML = "";
   document.getElementById("pecahanSelect").innerHTML = "";
   document.getElementById("manualTime").value = "";
@@ -1525,41 +1401,36 @@ function resetLog() {
 
 window.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("gameLogData918kiss");
-  if (saved) {
-    const data = JSON.parse(saved);
-    document.getElementById("gameSelect").value = data.game;
-    document.getElementById("manualTime").value = data.manualTime;
-    document.getElementById("manualScore").value = data.manualScore;
-    document.getElementById("gameSelect").dispatchEvent(new Event("change"));
+  if (!saved) return;
+
+  const data = JSON.parse(saved);
+  document.getElementById("gameSelect").value = data.game;
+  document.getElementById("manualTime").value = data.manualTime;
+  document.getElementById("manualScore").value = data.manualScore;
+  document.getElementById("gameSelect").dispatchEvent(new Event("change"));
+
+  setTimeout(() => {
+    document.getElementById("betSelect").value = data.bet;
+    document.getElementById("betSelect").dispatchEvent(new Event("change"));
 
     setTimeout(() => {
-      document.getElementById("betSelect").value = data.bet;
-      document.getElementById("betSelect").dispatchEvent(new Event("change"));
-
-      setTimeout(() => {
-        document.getElementById("pecahanSelect").value = data.pecahan;
-      }, 50);
+      document.getElementById("pecahanSelect").value = data.pecahan;
     }, 50);
+  }, 50);
 
-    document.querySelector("#gameLog tbody").innerHTML = data.logs;
-  }
-
-  // ✅ Muat kembali game yang disimpan jika ada
-  const savedGameName = localStorage.getItem("selectedGameName");
-  if (savedGameName) {
-    $('#gameSelect').val(savedGameName).trigger('change');
-  }
+  document.querySelector("#gameLog tbody").innerHTML = data.logs;
 });
-
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
 
+  // Tambah class screenshot-mode untuk rendahkan border sementara
   gameLogTable.classList.add("screenshot-mode");
 
   html2canvas(gameLogTable, {
     scale: 2,
     useCORS: true
   }).then(canvas => {
+    // Hapus semula class selepas screenshot
     gameLogTable.classList.remove("screenshot-mode");
 
     canvas.toBlob(blob => {
@@ -1576,27 +1447,6 @@ function copyGameLogImage() {
     });
   });
 }
-
-$(document).ready(function() {
-  $('#gameSelect').select2({
-    placeholder: "-- Choose --",
-    allowClear: true,
-    width: '150px'
-  });
-
-  // ✅ Tambahkan placeholder search
-  $('#gameSelect').on('select2:open', function () {
-    setTimeout(() => {
-      document.querySelector('.select2-search__field').placeholder = 'Search game...';
-    }, 0);
-  });
-
-  // ✅ Simpan nama game saat dipilih
-  $('#gameSelect').on('change', function () {
-    const selectedGame = $(this).val();
-    localStorage.setItem("selectedGameName", selectedGame);
-  });
-});
 </script>
 
 </body>
