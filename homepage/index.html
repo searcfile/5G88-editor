@@ -322,7 +322,7 @@
   </div>
 
 
-  <div id="messagePopup" style="display: none; position: absolute; background: #1d1d1d;color: rgba(255,255,255,0.85); border: 1px solid #424242; border-radius: 6px; padding: 3px 10px; max-width: 220px;z-index: 2000; word-wrap: break-word; overflow-wrap: anywhere;transition: all 0.2s ease;">
+  <div id="messagePopup" style="display: none; position: fixed; background: #141414;color: rgba(255,255,255,0.85); border: 1px solid #424242; border-radius: 6px; padding: 3px 10px; max-width: 220px;z-index: 2000; word-wrap: break-word; overflow-wrap: anywhere;transition: all 0.2s ease;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <strong style="color: red;">Notice!</strong>
       <button onclick="closeMessage()" style="background: none; color: white; border: none; font-size: 18px; cursor: pointer; transition: transform 0.2s, color 0.2s;" 
@@ -435,7 +435,7 @@ notifButton.addEventListener("click", () => {
   requestAnimationFrame(() => {
     const bellRect = notifButton.getBoundingClientRect();
     const popupWidth = popup.offsetWidth;
-    const spacing = 8;
+    const spacing = 4;
 
     const top = bellRect.bottom + window.scrollY + spacing;
     const left = bellRect.left + window.scrollX + (bellRect.width / 2) - (popupWidth / 2);
