@@ -217,6 +217,9 @@
   opacity: 1;
   transform: translateY(0);
 }
+#messagePopup {
+  border: 1px solid red;
+}
 
   </style>
 </head>
@@ -437,8 +440,8 @@ notifButton.addEventListener("click", () => {
     const popupWidth = popup.offsetWidth;
     const spacing = 4;
 
-    const top = bellRect.bottom + window.scrollY + spacing;
-    const left = bellRect.left + window.scrollX + (bellRect.width / 2) - (popupWidth / 2);
+    const top = bellRect.bottom + spacing;
+    const left = bellRect.left + (bellRect.width / 2) - (popupWidth / 2);
 
     popup.style.top = `${top}px`;
     popup.style.left = `${left}px`;
