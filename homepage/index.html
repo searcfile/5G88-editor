@@ -203,17 +203,6 @@
   background: transparent;
   color: gold;
 }
-#messagePopup {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-#messagePopup.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-  
   </style>
 </head>
 <body>
@@ -399,7 +388,6 @@ notifButton.addEventListener("click", () => {
   if (!message || !timestamp) return;
 
  if (popup.style.display === "block") {
-  popup.classList.remove("show");
   popup.style.display = "none";
   return;
 }
@@ -422,7 +410,6 @@ notifButton.addEventListener("click", () => {
   `;
 
   popup.style.display = "block";
-  popup.classList.add("show"); // ⬅️ Tambahkan class animasi
   popup.style.visibility = "hidden";
   popup.style.top = "0px";
   popup.style.left = "-9999px";
