@@ -339,7 +339,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 12399*/
+/*Mcng 123 123 12310*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -400,16 +400,19 @@ function showNotification(message, timestamp) {
   }
 }
 
-notifButton.addEventListener("click", () => {
+notifButton.addEventListener("click", (e) => {
+  e.stopPropagation(); // ✅ Cegah trigger dari document click
+
+  const popup = document.getElementById("messagePopup"); // ✅ hanya SEKALI
+  const content = document.getElementById("messageContent");
+
   const message = notifButton.dataset.message;
   const timestamp = Number(notifButton.dataset.timestamp);
   if (!message || !timestamp) return;
 
-  const popup = document.getElementById("messagePopup");
-  const content = document.getElementById("messageContent");
-
   // Toggle: Jika sudah tampil, sembunyikan
-  if (popup.style.display === "block") {
+  const isVisible = popup.style.display === "block";
+  if (isVisible) {
     popup.style.display = "none";
     return;
   }
@@ -431,22 +434,25 @@ notifButton.addEventListener("click", () => {
     </div>
   `;
 
-  // ⏳ Tampilkan dulu agar bisa ukur ukuran popup
-  popup.style.visibility = "hidden";
+  // ✅ Tampilkan dulu agar dapat ukurannya
   popup.style.display = "block";
+  popup.style.visibility = "hidden";
+  popup.style.outline = "2px solid red"; // 🔍 Debug: beri outline
 
-requestAnimationFrame(() => {
-  const bellRect = notifButton.getBoundingClientRect();
-  const popupWidth = popup.offsetWidth;
-  const spacing = 4;
+  requestAnimationFrame(() => {
+    const bellRect = notifButton.getBoundingClientRect();
+    const popupWidth = popup.offsetWidth;
+    const spacing = 8;
 
-  const top = bellRect.bottom + spacing;
-  const left = bellRect.left + (bellRect.width / 2) - (popupWidth / 2);
+    const top = bellRect.bottom + spacing;
+    const left = bellRect.left + (bellRect.width / 2) - (popupWidth / 2);
 
-  popup.style.top = `${top}px`;
-  popup.style.left = `${left}px`;
-  popup.style.visibility = "visible";
-});
+    popup.style.position = "fixed"; // ✅ Pastikan `fixed`
+    popup.style.top = `${top}px`;
+    popup.style.left = `${left}px`;
+    popup.style.visibility = "visible";
+  });
+
   notifDot.style.display = "none";
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
