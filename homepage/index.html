@@ -306,7 +306,7 @@
   </div>
 
 
- <div id="messagePopup" style="display: none; position: absolute; top: 110%; left: 50%; transform: translateX(-50%); background: #1d1d1d; font-size: 14px; color: rgba(255,255,255,0.85); border: 1px solid #424242; border-radius: 6px; padding: 3px 10px; max-width: 220px; z-index: 9999;">
+ <div id="messagePopup" style="display: none; position: fixed; top: 0; left: 0;background: #1d1d1d; font-size: 14px; color: rgba(255,255,255,0.85); border: 1px solid #424242; border-radius: 6px; padding: 3px 10px; max-width: 220px; z-index: 9999;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <strong style="color: red;">Notice!</strong>
       <button onclick="closeMessage()" style="background: none; color: white; border: none; font-size: 18px; cursor: pointer; transition: transform 0.2s, color 0.2s;" 
@@ -320,7 +320,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 12311*/
+/*Mcng 123 123 12322*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -408,19 +408,15 @@ notifButton.addEventListener("click", () => {
     </div>
   `;
 
-  popup.style.display = "block";
-popup.style.visibility = "hidden";
-popup.style.top = "0px";
-popup.style.left = "-9999px";
+popup.style.display = "block";
 
 setTimeout(() => {
   const rect = notifButton.getBoundingClientRect();
-  const popupWidth = popup.offsetWidth || 300;
-  const spacing = 4;
+  const spacing = 6; // jarak sedikit ke bawah
 
-  popup.style.top = `${rect.bottom + window.scrollY + spacing}px`;
-  popup.style.left = `${rect.right + window.scrollX - popupWidth}px`;
-  popup.style.visibility = "visible";
+  popup.style.position = "fixed"; // ❗ sangat penting
+  popup.style.top = `${rect.bottom + spacing}px`;
+  popup.style.left = `${rect.left}px`;
 }, 0);
 
   notifDot.style.display = "none";
