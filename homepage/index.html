@@ -22,7 +22,7 @@
     .date-time {color: white;font-size: 13px;white-space: nowrap;transition: color 0.3s;}
     .container {transition: margin-left 0.3s ease;position: relative;}
     .container.shrink { margin-left: 260px;}
-    .menu-icon {position: absolute;top: 5px;left: 10px;font-size: 28px;color: rgba(255, 255, 255, 0.65);cursor: pointer;z-index: 1100;transition: color 0.3s;}.menu-icon:hover {color: rgba(255,255,255,0.85);transition: color 0.3s;}.active-menu-icon {color: gold;transition: all 0.3s ease;}
+    .menu-icon {position: absolute;top: 5px;left: 10px;font-size: 28px;transition: all 0.3s ease;color: rgba(255, 255, 255, 0.65);cursor: pointer;z-index: 1100;transition: color 0.3s;}.menu-icon:hover {color: rgba(255,255,255,0.85);transition: color 0.3s;}.active-menu-icon {color: gold;transition: all 0.3s ease;}.menu-icon:active {color: #dbb900;transition: all 0.3s ease;}
     .menu-img {width: 20px;height: 20px;vertical-align: middle;margin-right: 8px;border-radius: 4px;}
     @media (max-width: 600px) {
     .container.shrink {margin-left: 0;}}
@@ -45,20 +45,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
+      transition: all 0.3s ease;
     }
     .tab:hover {
       color: #ffe34d !important;
       font-weight: bold !important;
-     
+      transition: all 0.3s ease;
     }
     .active-tab {
       background-color: #141414 !important;
       color: gold !important;
       font-weight: bold;
+      transition: all 0.3s ease;
     }
     .tab:active {
      color: #dbb900!important;
      font-weight: bold !important;
+      transition: all 0.3s ease;
     }
     .floating-logo {
       position: fixed;
@@ -81,14 +85,14 @@
    }
   #logoutBtn {
    display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;
-   background-color: #1f1f1f;
+   background: #141414;
    color: rgba(255,255,255,0.85);
    padding: 5px 10px;
    border-radius: 6px;
    cursor: pointer;
    width: 100%;
    border: none;
-   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+   box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
    transition: all 0.3s ease;
    border: 1px solid #424242;
    font-size: 14px;
@@ -101,7 +105,7 @@
    #logoutBtn:active {
     color: gold;
     transition: all 0.3s ease;
-    border: 1px solid gold;
+    border: 1px solid #dbb900;
    }
     #notifTooltip {
   opacity: 0;
@@ -129,6 +133,7 @@
   white-space: nowrap;
   height: 32px;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
 }
 
 .user-button:hover {
@@ -147,11 +152,11 @@
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #1d1d1d;
+  background-color: #1f1f1f;
   min-width: 220px;
   border: 1px solid #424242;
   border-radius: 6px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
   padding: 10px;
   z-index: 1;
   color: rgba(255,255,255,0.85);
