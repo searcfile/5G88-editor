@@ -432,22 +432,21 @@ notifButton.addEventListener("click", () => {
   `;
 
   // ⏳ Tampilkan dulu agar bisa ukur ukuran popup
-  popup.style.display = "block";
   popup.style.visibility = "hidden";
+  popup.style.display = "block";
 
-  requestAnimationFrame(() => {
-    const bellRect = notifButton.getBoundingClientRect();
-    const popupWidth = popup.offsetWidth;
-    const spacing = 4;
+requestAnimationFrame(() => {
+  const bellRect = notifButton.getBoundingClientRect();
+  const popupWidth = popup.offsetWidth;
+  const spacing = 4;
 
-    const top = bellRect.bottom + spacing;
-    const left = bellRect.left + (bellRect.width / 2) - (popupWidth / 2);
+  const top = bellRect.bottom + spacing;
+  const left = bellRect.left + (bellRect.width / 2) - (popupWidth / 2);
 
-    popup.style.top = `${top}px`;
-    popup.style.left = `${left}px`;
-    popup.style.visibility = "visible";
-  });
-
+  popup.style.top = `${top}px`;
+  popup.style.left = `${left}px`;
+  popup.style.visibility = "visible";
+});
   notifDot.style.display = "none";
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
