@@ -146,7 +146,7 @@
   display: none;
   position: absolute;
   background-color: #1f1f1f;
-  min-width: 200px;
+  min-width: 220px;
   border: 1px solid #424242;
   border-radius: 6px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
@@ -157,7 +157,7 @@
   right: 0;
   left: auto;
   transform: none;
-  font-size: 13px;
+  font-size: 14px;
   transition: all 0.2s ease;
 }
  .dropdown-content {
@@ -319,7 +319,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 12322*/
+/*Mcng 123 123 12333*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -411,11 +411,12 @@ popup.style.display = "block";
 
 setTimeout(() => {
   const rect = notifButton.getBoundingClientRect();
-  const spacing = 6; // jarak sedikit ke bawah
+  const spacing = 6; // jarak ke bawah
 
-  popup.style.position = "fixed"; // ❗ sangat penting
+  popup.style.position = "fixed";
   popup.style.top = `${rect.bottom + spacing}px`;
-  popup.style.left = `${rect.left}px`;
+  popup.style.left = "auto"; // reset dulu
+  popup.style.right = `${window.innerWidth - rect.right}px`; // RATA KANAN
 }, 0);
 
   notifDot.style.display = "none";
