@@ -193,7 +193,8 @@
   background: transparent;
 }
  
-  .live-chat-button.active-livechat {
+.live-chat-button.active-livechat,
+.live-chat-button.active-linkdownload {
   background: transparent;
   color: gold;
 }
@@ -245,7 +246,7 @@
 
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
-  <div style="display: flex; gap: 8px; position: absolute; top: 15px; left: 50px;">
+  <div style="display: flex; gap: 20px; position: absolute; top: 15px; left: 50px;">
    <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
     <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
@@ -328,7 +329,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 22*/
+/*Mcng 123 123 11*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -420,7 +421,7 @@ popup.style.display = "block";
 
 setTimeout(() => {
   const rect = notifButton.getBoundingClientRect();
-  const spacing = 3.2; // jarak ke bawah
+  const spacing = 3.8; // jarak ke bawah
 
   popup.style.position = "fixed";
   popup.style.top = `${rect.bottom + spacing}px`;
@@ -534,7 +535,7 @@ function addTab(label, url) {
     existingTabs.push({ label, url });
     saveTabs(existingTabs);
   }
-
+  const linkBtn = document.getElementById("linkDownloadBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
   if (liveBtn) {
@@ -546,6 +547,13 @@ function addTab(label, url) {
     }
   }
 
+  if (linkBtn) {
+  if (label === "LINK DOWNLOAD") {
+    linkBtn.classList.add("active-linkdownload");
+  } else {window.onload
+    linkBtn.classList.remove("active-linkdownload");
+  }
+}
   loadPage(url);
   renderTabs();
 }
@@ -715,12 +723,16 @@ window.onload = () => {
 
   const liveBtn = document.getElementById("liveChatBtn");
   if (liveBtn) liveBtn.classList.remove("active-livechat"); // 🟡 Bersihkan dulu
-
+  const linkBtn = document.getElementById("linkDownloadBtn");
+  if (linkBtn) linkBtn.classList.remove("active-linkdownload");
   if (match) {
     loadPage(match.url);
 
     if (match.label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
+    }
+    if (match.label === "LINK DOWNLOAD") {
+      linkBtn.classList.add("active-linkdownload");
     }
   } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
