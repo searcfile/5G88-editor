@@ -183,8 +183,8 @@
     }
     .setscore .badge {
      background-color: #d2d6de;
-     padding: 3px 7px;
-     border-radius: 10px;
+     padding: 4px 13px;
+     border-radius: 50px;
      display: inline-block;
     }
     #gameSelect {
@@ -491,7 +491,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   let rows = `
     <tr class="set-score-row">
       <td>-</td>
-      <td class="setscore"><span class="badge">Set Score:${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</span></td>
+      <td class="setscore"><span class="badge">Set Score: ${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</span></td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
@@ -654,7 +654,7 @@ function addManualSetScore() {
     newRow.classList.add("set-score-row");
     newRow.innerHTML = `
       <td>-</td>
-      <td class="setscore"><span class="badge">Set score: ${inputScore.toFixed(2)}</span></td>
+      <td class="setscore"><span class="badge">Set Score: ${inputScore.toFixed(2)}</span></td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
