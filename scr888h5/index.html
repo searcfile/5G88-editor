@@ -181,10 +181,11 @@
      font-size: 26px;
      background-color: #fff !important;
     }
-    .set-score-row td.setscore.badge {
-     background-color: #d2d6de !important;
+    .setscore .badge {
+     background-color: #d2d6de;
      padding: 3px 7px;
      border-radius: 10px;
+     display: inline-block;
     }
     #gameSelect {
      max-height: 38px;
@@ -490,7 +491,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   let rows = `
     <tr class="set-score-row">
       <td>-</td>
-      <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+      <td class="setscore"><span class="badge">Set Score:${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</span></td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
@@ -581,7 +582,7 @@ function addJackpot() {
   newJackpotRow.classList.add("set-score-row", "jackpot");
   newJackpotRow.innerHTML = `
     <td>${gameName}</td>
-    <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
+    <td class="setscore"><span class="badge">JackPot: ${jackpotAmount.toFixed(2)}</span></td>
     <td class="negatif">-</td>
     <td class="negatif">-</td>
     <td class="negatif">-</td>
@@ -653,7 +654,7 @@ function addManualSetScore() {
     newRow.classList.add("set-score-row");
     newRow.innerHTML = `
       <td>-</td>
-      <td class="setscore">Set score：${inputScore.toFixed(2)}</td>
+      <td class="setscore"><span class="badge">Set score: ${inputScore.toFixed(2)}</span></td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
       <td class="negatif">-</td>
