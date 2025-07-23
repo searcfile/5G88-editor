@@ -264,7 +264,7 @@
           <div id="notifButton" style="background: #111; border: 1px solid gold; border-radius: 50%; width: 26px; height: 26px; color: gold; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 6px rgba(255, 215, 0, 0.4); position: relative; font-size: 14px;">
             🔔
             <span id="notifDot" style="position: absolute; top: 2px; right: 2px; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;"></span>
-            <div id="notifTooltip" style="display: none; position: absolute; top: 2%; left: calc(100% + 8px); transform: translateX(1%); background: #333; color: gold; padding: 4px 8px; font-size: 11px; border-radius: 4px; white-space: nowrap; z-index: 10000; box-shadow: 0 0 4px rgba(255, 215, 0, 0.4);">Notice</div>
+            <div id="notifTooltip" style="display: none; position: absolute;border: 1px solid #424242; top: 2%; left: calc(100% + 8px); transform: translateX(1%); background: #141414; color: gold; padding: 4px 8px; font-size: 11px; border-radius: 6px; white-space: nowrap; z-index: 10000;">Notice</div>
           </div>
 
           <div id="dateTime" class="date-time"></div>
@@ -308,19 +308,19 @@
 
  <div id="messagePopup" style="display: none; position: fixed; top: 0; left: 0;background: #1f1f1f; font-size: 14px; color: rgba(255,255,255,0.85); border: 1px solid #424242; border-radius: 6px; padding: 3px 10px; max-width: 220px; z-index: 9999;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <strong style="color: red;">Notice!</strong>
+      <strong style="color: red;font-size:14px;font-weight: bold;">📢- Announcement!</strong>
       <button onclick="closeMessage()" style="background: none; color: white; border: none; font-size: 18px; cursor: pointer; transition: transform 0.2s, color 0.2s;" 
         onmouseover="this.style.transform='scale(1.3)'; this.style.color='red';"
         onmouseout="this.style.transform='scale(1)'; this.style.color='white';">×</button>
     </div>
-    <div id="messageContent" style="margin-top: 1px; white-space: normal; word-wrap: break-word; overflow-wrap: anywhere;"></div>
+    <div id="messageContent" style="margin-top: 2px;font-size:12px; white-space: normal; word-wrap: break-word; overflow-wrap: anywhere;"></div>
   </div>
   
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 12344*/
+/*Mcng 123 123 12355*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -412,7 +412,7 @@ popup.style.display = "block";
 
 setTimeout(() => {
   const rect = notifButton.getBoundingClientRect();
-  const spacing = 6; // jarak ke bawah
+  const spacing = 4; // jarak ke bawah
 
   popup.style.position = "fixed";
   popup.style.top = `${rect.bottom + spacing}px`;
