@@ -693,8 +693,8 @@ function addManualSetScore() {
 
   const tbody = document.querySelector("#gameLog tbody");
 
-  // Cari apakah baris manual sudah ada
-  let existingManualRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
+  // Cari baris manual (positif) dan negatif
+  const existingManualRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
     .find(row => !row.classList.contains("jackpot") && !row.children[1].textContent.includes("-"));
 
   const setScoreNegatifRow = Array.from(tbody.querySelectorAll("tr.set-score-row:not(.jackpot)"))
@@ -702,18 +702,26 @@ function addManualSetScore() {
 
   if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
 
-  // Ambil waktu dari baris negatif
+  // Ambil waktu dari baris negatif dan parse manual
   const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
-  const cleanTime = belowTimeText.replace(" AM", "").replace(" PM", "").replace(" ", "T");
-  const belowDate = new Date(cleanTime);
+  const match = belowTimeText.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2}) (AM|PM)$/);
+  if (!match) return alert("❌ Format waktu di baris negatif tidak valid!");
 
-  if (isNaN(belowDate)) {
-    alert("❌ Format waktu di baris negatif tidak valid!");
-    return;
-  }
+  let [, month, day, year, hh, mm, ss, ampm] = match;
+  month = parseInt(month, 10);
+  day = parseInt(day, 10);
+  year = parseInt(year, 10);
+  hh = parseInt(hh, 10);
+  mm = parseInt(mm, 10);
+  ss = parseInt(ss, 10);
 
-  const randomSeconds = Math.floor(Math.random() * 14) + 2; // Tambah 2–15 detik
-  const newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
+  // Konversi AM/PM ke 24 jam
+  if (ampm === "PM" && hh < 12) hh += 12;
+  if (ampm === "AM" && hh === 12) hh = 0;
+
+  const baseDate = new Date(year, month - 1, day, hh, mm, ss);
+  const randomSeconds = Math.floor(Math.random() * 14) + 2; // +2~15 detik
+  const newTime = new Date(baseDate.getTime() + randomSeconds * 1000);
   const formatted = formatDateTimeLocal(newTime);
 
   // Update baris jika sudah ada
@@ -735,7 +743,7 @@ function addManualSetScore() {
     tbody.insertBefore(newRow, setScoreNegatifRow);
   }
 
-  // Maksimum 11 baris
+  // Batasi max 11 baris
   const allRows = Array.from(tbody.querySelectorAll("tr"));
   if (allRows.length > 11) {
     const lastRow = allRows[allRows.length - 1];
