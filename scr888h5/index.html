@@ -443,14 +443,15 @@ document.getElementById("betSelect").addEventListener("change", function () {
   let logs = [];
   let baseTime;
 
-  const manualInput = manualTimeInput.trim();
-  if (manualInput) {
+ const manualInput = manualTimeInput.trim();
+if (manualInput) {
   const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
-  if (parts.length === 2) {
-    const [datePart, timePartRaw] = parts;
+  if (parts.length >= 2) {
+    const datePart = parts[0];
+    const timePartRaw = parts.slice(1).join(" ");
+
     const [month, day, year] = datePart.split("/").map(Number);
 
-    // ⬇️ GANTI BAGIAN INI dengan versi baru yang aman
     let timePart = timePartRaw.trim();
     let ampm = "";
 
