@@ -693,7 +693,7 @@ function addManualSetScore() {
 
   const tbody = document.querySelector("#gameLog tbody");
 
-  // Cek sudah ada manual score row atau belum
+  // Cek apakah baris manual sudah ada
   let existingManualRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
     .find(row => !row.classList.contains("jackpot") && !row.children[1].textContent.includes("-"));
 
@@ -705,16 +705,25 @@ function addManualSetScore() {
   // Ambil waktu dari manualTime jika ada
   const manualTimeVal = document.getElementById("manualTime").value.trim();
   let newTime;
+
   if (manualTimeVal) {
-    const parsedManual = new Date(manualTimeVal);
-    if (!isNaN(parsedManual)) {
-      newTime = parsedManual;
-    } else {
-      alert("❌ Format waktu tidak sah di input manualTime!");
+    const parts = manualTimeVal.split(" ");
+    if (parts.length < 3) {
+      alert("❌ Format waktu harus MM/DD/YYYY hh:mm:ss AM/PM");
       return;
     }
+
+    const [datePart, timePart, ampm] = parts;
+    const [month, day, year] = datePart.split("/");
+    const [hh, mm, ss] = timePart.split(":");
+
+    let hour = parseInt(hh, 10);
+    if (ampm.toUpperCase() === "PM" && hour < 12) hour += 12;
+    if (ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
+
+    newTime = new Date(year, month - 1, day, hour, parseInt(mm), parseInt(ss));
   } else {
-    // Kalau manual kosong, generate dari waktu setScore negatif
+    // Kalau manualTime kosong → generate otomatis berdasarkan row negatif
     const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
     const belowDate = new Date(belowTimeText.replace(" ", "T"));
     const randomSeconds = Math.floor(Math.random() * 4) + 4;
