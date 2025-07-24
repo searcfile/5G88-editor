@@ -702,17 +702,31 @@ function addManualSetScore() {
 
   if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
 
-  const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
-  const belowDate = new Date(belowTimeText.replace(" ", "T"));
-  const randomSeconds = Math.floor(Math.random() * 4) + 4;
-  const newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
+  // Ambil waktu dari manualTime jika ada
+  const manualTimeVal = document.getElementById("manualTime").value.trim();
+  let newTime;
+  if (manualTimeVal) {
+    const parsedManual = new Date(manualTimeVal);
+    if (!isNaN(parsedManual)) {
+      newTime = parsedManual;
+    } else {
+      alert("❌ Format waktu tidak sah di input manualTime!");
+      return;
+    }
+  } else {
+    // Kalau manual kosong, generate dari waktu setScore negatif
+    const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
+    const belowDate = new Date(belowTimeText.replace(" ", "T"));
+    const randomSeconds = Math.floor(Math.random() * 4) + 4;
+    newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
+  }
+
   const formatted = formatDateTimeLocal(newTime);
 
   if (existingManualRow) {
-    existingManualRow.children[1].textContent = `Set score：${inputScore.toFixed(2)}`;
+    existingManualRow.children[1].innerHTML = `<span class="badge">Set Score: ${inputScore.toFixed(2)}</span>`;
     existingManualRow.children[6].textContent = formatted;
   } else {
-
     const newRow = document.createElement("tr");
     newRow.classList.add("set-score-row");
     newRow.innerHTML = `
@@ -734,7 +748,7 @@ function addManualSetScore() {
   }
 
   document.getElementById("manualScoreInput").value = "0";
-  }
+}
 function resetLog() {
   localStorage.removeItem("gameLogDataScr888h5");
   localStorage.removeItem("jackpotInsertedMap");
