@@ -333,7 +333,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 14*/
+/*Mcng 123 123 15*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -425,7 +425,7 @@ popup.style.display = "block";
 
 setTimeout(() => {
   const rect = notifButton.getBoundingClientRect();
-  const spacing = 3.8; // jarak ke bawah
+  const spacing = 3.9; // jarak ke bawah
 
   popup.style.position = "fixed";
   popup.style.top = `${rect.bottom + spacing}px`;
@@ -633,9 +633,10 @@ function renderTabs() {
     });
 
     tabElement.onclick = () => {
-  loadPage(tab.url);
+    loadPage(tab.url);
 
   const liveBtn = document.getElementById("liveChatBtn");
+  const linkBtn = document.getElementById("linkDownloadBtn");
   if (liveBtn) {
     if (tab.label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
@@ -643,7 +644,15 @@ function renderTabs() {
       liveBtn.classList.remove("active-livechat"); // 🟡 Tambah ini
     }
   }
+if (linkBtn) {
+    if (tab.label === "LINK DOWNLOAD") {
+      linkBtn.classList.add("active-linkdownload");
+    } else {
+      linkBtn.classList.remove("active-linkdownload");
+    }
+  }
 };
+
 
     const currentFrame = document.getElementById("pageFrame");
     if (currentFrame && tab.url === currentFrame.src) {
