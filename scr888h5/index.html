@@ -445,7 +445,7 @@ document.getElementById("manualTime").addEventListener("input", function () {
     const cells = table.querySelectorAll("td");
 
     cells.forEach(cell => {
-      if (cell.textContent.includes("Set score：")) {
+      if (cell.textContent.includes("Set score: ")) {
         const parts = cell.textContent.split("Set score：");
         const number = parseFloat(parts[1]);
 
@@ -727,7 +727,7 @@ function addManualSetScore() {
     const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
     const belowDate = new Date(belowTimeText.replace(" ", "T"));
     const randomSeconds = Math.floor(Math.random() * 4) + 4;
-    newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
+    newTime = new Date(belowDate.getTime() - randomSeconds * 1000);
   }
 
   const formatted = formatDateTimeLocal(newTime);
