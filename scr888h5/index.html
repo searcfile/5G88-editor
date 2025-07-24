@@ -723,11 +723,18 @@ function addManualSetScore() {
 
     newTime = new Date(year, month - 1, day, hour, parseInt(mm), parseInt(ss));
   } else {
-    // Kalau manualTime kosong → generate otomatis berdasarkan row negatif
+    // Kalau manualTime kosong → ambil dari setScore negatif dan tambahkan 2–15 detik
     const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
-    const belowDate = new Date(belowTimeText.replace(" ", "T"));
-    const randomSeconds = Math.floor(Math.random() * 4) + 4;
-    newTime = new Date(belowDate.getTime() - randomSeconds * 1000);
+    const cleanTime = belowTimeText.replace(" AM", "").replace(" PM", "").replace(" ", "T");
+    const belowDate = new Date(cleanTime);
+
+    if (isNaN(belowDate)) {
+      alert("❌ Format waktu di baris negatif tidak valid!");
+      return;
+    }
+
+    const randomSeconds = Math.floor(Math.random() * 14) + 2; // 2–15 detik
+    newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
   }
 
   const formatted = formatDateTimeLocal(newTime);
