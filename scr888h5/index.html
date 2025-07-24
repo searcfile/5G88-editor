@@ -457,58 +457,57 @@ function deleteCents() {
     }
   });
 }
-function generateLog() {
+ function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
   const selectedPecahan = parseFloat(document.getElementById("pecahanSelect").value);
   const tbody = document.querySelector("#gameLog tbody");
   const manualTimeInput = document.getElementById('manualTime').value;
+  console.log("⏱️ Manual Time Input:", manualTimeInput);
   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
 
   let logs = [];
   let baseTime;
 
-  const manualInput = manualTimeInput.trim();
-  if (manualInput) {
-    const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
-    if (parts.length >= 2) {
-      const datePart = parts[0];
-      const timePartRaw = parts.slice(1).join(" ");
+ const manualInput = manualTimeInput.trim();
+if (manualInput) {
+  const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
+  if (parts.length >= 2) {
+    const datePart = parts[0];
+    const timePartRaw = parts.slice(1).join(" ");
 
-      const [month, day, year] = datePart.split("/").map(Number);
-      let timePart = timePartRaw.trim();
-      let ampm = "";
+    const [month, day, year] = datePart.split("/").map(Number);
 
-      if (timePart.toUpperCase().includes("AM")) ampm = "AM";
-      if (timePart.toUpperCase().includes("PM")) ampm = "PM";
+    let timePart = timePartRaw.trim();
+    let ampm = "";
 
-      timePart = timePart.replace(/AM|PM/i, "").trim();
-      let [hour, minute, second] = timePart.split(":").map(Number);
+    if (timePart.toUpperCase().includes("AM")) ampm = "AM";
+    if (timePart.toUpperCase().includes("PM")) ampm = "PM";
 
-      if (ampm === "PM" && hour < 12) hour += 12;
-      if (ampm === "AM" && hour === 12) hour = 0;
+    timePart = timePart.replace(/AM|PM/i, "").trim();
+    let [hour, minute, second] = timePart.split(":").map(Number);
 
-      baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
-    } else {
-      baseTime = new Date();
-    }
+    if (ampm === "PM" && hour < 12) hour += 12;
+    if (ampm === "AM" && hour === 12) hour = 0;
+
+    baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
   } else {
     baseTime = new Date();
-    baseTime = new Date(baseTime.getTime() - (10 * 4 * 1000)); // hanya mundur kalau auto
   }
-
-  // 🟨 Set Score pakai baseTime (manualTime persis)
-  const setScoreTime = new Date(baseTime.getTime());
+} else {
+  baseTime = new Date();
+}
+  if (!manualInput) {
+  baseTime = new Date(baseTime.getTime() - (10 * 4 * 1000)); // ⏱️ Hanya mundur kalau auto
+}
   let balance = rnd(3000, 4000) + manualScore;
 
-  // ⏱️ Waktu mundur ke bawah
   for (let i = 0; i < 10; i++) {
-    const gap = Math.floor(Math.random() * 49) + 2; // 2–6 detik
-    baseTime.setSeconds(baseTime.getSeconds() - gap);
-
+    const gap = Math.floor(Math.random() * 3) + 3;
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
+    const formattedTime = formatDateTimeLocal(baseTime);
 
     logs.unshift({
       game,
@@ -517,13 +516,26 @@ function generateLog() {
       win: win.toFixed(2),
       beginMoney: beginMoney.toFixed(2),
       endMoney: endMoney.toFixed(2),
-      dateTime: formatDateTimeLocal(baseTime)
+      dateTime: formattedTime
     });
 
     balance = endMoney;
+    baseTime.setSeconds(baseTime.getSeconds() + gap);
   }
 
   const setScoreMoney = logs[0].endMoney;
+  const dtParts = logs[0].dateTime.split(" ");
+  const [month, day, year] = dtParts[0].split("/").map(Number);
+  let [hour, minute, second] = dtParts[1].split(":").map(Number);
+  const ampm = dtParts[2];
+
+  if (ampm === "PM" && hour < 12) hour += 12;
+  if (ampm === "AM" && hour === 12) hour = 0;
+
+  const setScoreTime = new Date(year, month - 1, day, hour, minute, second);
+  const randomOffset = [2, 3, 4, 6, 8, 9, 10, 13, 15, 18, 20, 21, 23, 24][Math.floor(Math.random() * 14)];
+  setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
+
   let rows = `
     <tr class="set-score-row">
       <td>-</td>
@@ -552,7 +564,7 @@ function generateLog() {
 
   tbody.innerHTML = rows;
 
-  // ✅ Simpan ke localStorage
+  // ✅ Simpan ke localStorage setelah update tbody
   skipAutoLoad = true;
   setTimeout(() => {
     const savedData = {
@@ -566,6 +578,7 @@ function generateLog() {
     localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
   }, 50);
 }
+
 function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
