@@ -439,23 +439,22 @@ document.getElementById("manualTime").addEventListener("input", function () {
 });
 
  function deleteCents() {
-  const tables = document.querySelectorAll("table");
+  const cells = document.querySelectorAll("td");
 
-  tables.forEach(table => {
-    const cells = table.querySelectorAll("td");
+  cells.forEach(cell => {
+    const text = cell.textContent.trim();
 
-    cells.forEach(cell => {
-      if (cell.textContent.includes("Set Score: ")) {
-        const parts = cell.textContent.split("Set Score: ");
-        const number = parseFloat(parts[1]);
-
-        if (!isNaN(number)) {
-          const intPart = Math.floor(Math.abs(number));
-          const finalValue = `Set score：${number < 0 ? "-" : ""}${intPart}.00`;
-          cell.textContent = finalValue;
-        }
+    if (text.includes("Set Score:") || text.includes("Set score:") || text.includes("Set score：")) {
+      const match = text.match(/-?\d+(\.\d+)?/); // Ambil angka dari string
+      if (match) {
+        const number = parseFloat(match[0]);
+        const prefix = text.includes("：") ? "Set score：" :
+                       text.includes("Set score:") ? "Set score: " :
+                       "Set Score: ";
+        const formatted = prefix + (number < 0 ? "-" : "") + Math.floor(Math.abs(number)) + ".00";
+        cell.textContent = formatted;
       }
-    });
+    }
   });
 }
  function generateLog() {
