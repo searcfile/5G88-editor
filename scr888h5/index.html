@@ -379,13 +379,11 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const dd = String(now.getDate()).padStart(2, '0');
   const yyyy = now.getFullYear();
 
-  let hours = now.getHours();
+  const hours = String(now.getHours()).padStart(2, '0'); // 24-hour
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
 
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12;
-  hours = String(hours).padStart(2, '0');
+  const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
 
   const formatted = `${mm}/${dd}/${yyyy} ${hours}:${minutes}:${seconds} ${ampm}`;
   document.getElementById("manualTime").value = formatted;
@@ -404,13 +402,11 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const dd = String(date.getDate()).padStart(2, '0');
   const yyyy = date.getFullYear();
 
-  let hours = date.getHours();
+  const hours = String(date.getHours()).padStart(2, '0'); // 24-hour format
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
 
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12; // convert to 12-hour format
-  hours = String(hours).padStart(2, '0');
+  const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
 
   return `${mm}/${dd}/${yyyy} ${hours}:${minutes}:${seconds} ${ampm}`;
 }
@@ -447,18 +443,24 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   const manualInput = manualTimeInput.trim();
   if (manualInput) {
-    const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
-    if (parts.length === 2) {
-      const [datePart, timePartRaw] = parts;
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute, second] = timePartRaw.trim().split(":").map(Number);
-      baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
-    } else {
-      baseTime = new Date();
-    }
+  const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
+  if (parts.length === 2) {
+    const [datePart, timePartRaw] = parts;
+    const [month, day, year] = datePart.split("/").map(Number); // ✅ Sesuai MM/DD/YYYY
+
+    let [hour, minute, second] = timePartRaw.trim().split(":").map(Number);
+    const ampm = timePartRaw.toUpperCase().includes("PM") ? "PM" : "AM";
+
+    if (ampm === "PM" && hour < 12) hour += 12;
+    if (ampm === "AM" && hour === 12) hour = 0;
+
+    baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
   } else {
     baseTime = new Date();
   }
+} else {
+  baseTime = new Date();
+}
 
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
   let balance = rnd(3000, 4000) + manualScore;
