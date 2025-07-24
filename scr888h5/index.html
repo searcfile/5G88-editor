@@ -469,7 +469,9 @@ document.getElementById("betSelect").addEventListener("change", function () {
 } else {
   baseTime = new Date();
 }
-  baseTime = new Date(baseTime.getTime() - (10 * 4 * 1000));
+  if (!manualInput) {
+  baseTime = new Date(baseTime.getTime() - (10 * 4 * 1000)); // ⏱️ Hanya mundur kalau auto
+}
   let balance = rnd(3000, 4000) + manualScore;
 
   for (let i = 0; i < 10; i++) {
