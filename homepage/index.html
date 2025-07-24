@@ -103,6 +103,7 @@
     color: #dbb900;
     transition: all 0.3s ease;
     border: 1px solid #dbb900;
+    background-color: #141414;
    }
     #notifTooltip {
   opacity: 0;
@@ -129,7 +130,7 @@
   cursor: pointer;
   white-space: nowrap;
   height: 32px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
 }
 
@@ -137,13 +138,13 @@
   border: 1px solid #ffe34d;
   background: transparant;
   color: #ffe34d;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 .user-button:active {
   border: 1px solid gold;
   background: transparant;
   color: gold;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .dropdown-content {
@@ -249,7 +250,7 @@
 
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
-  <div style="display: flex; gap: 20px; position: absolute; top: 15px; left: 50px;">
+  <div style="display: flex; gap: 20px; position: absolute; top: 15px; left: 60px;">
    <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
     <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
@@ -332,7 +333,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 12*/
+/*Mcng 123 123 14*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -553,7 +554,7 @@ function addTab(label, url) {
   if (linkBtn) {
   if (label === "LINK DOWNLOAD") {
     linkBtn.classList.add("active-linkdownload");
-  } else {window.onload
+  } else {
     linkBtn.classList.remove("active-linkdownload");
   }
 }
