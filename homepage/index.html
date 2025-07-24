@@ -202,19 +202,22 @@
   background: transparent;
   color: gold;
 }
-#gamelogBtn.active-gamelog {
+#gameLogBtn.active-gamelog {
   background: transparent;
   color: gold;
 }
 
 .gamelog-dropdown .dropdown-content {
   display: none;
-  position: absolute;
+  position: fixed;
   background-color: #1f1f1f;
   border: 1px solid #424242;
   border-radius: 6px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
   z-index: 9999;
+  top: 120%;
+  left: 0;
+  min-width: 160px;
 }
 
 .gamelog-dropdown .dropdown-content a {
@@ -374,7 +377,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 16*/
+/*Mcng 123 123 17*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -983,8 +986,20 @@ const gameLogDropdown = document.getElementById("gameLogDropdown");
 if (gameLogBtn && gameLogDropdown) {
   gameLogBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
-    gameLogBtn.classList.toggle("active-gamelog");
+    const isVisible = gameLogDropdown.style.display === "block";
+    
+    // Tutup kalau sudah terbuka
+    if (isVisible) {
+      gameLogDropdown.style.display = "none";
+      gameLogBtn.classList.remove("active-gamelog");
+    } else {
+      // Hitung posisi tombol
+      const rect = gameLogBtn.getBoundingClientRect();
+      gameLogDropdown.style.top = `${rect.bottom + 5}px`;
+      gameLogDropdown.style.left = `${rect.left}px`;
+      gameLogDropdown.style.display = "block";
+      gameLogBtn.classList.add("active-gamelog");
+    }
   });
 
   document.addEventListener("click", (e) => {
