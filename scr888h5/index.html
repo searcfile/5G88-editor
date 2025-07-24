@@ -411,6 +411,33 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   return `${mm}/${dd}/${yyyy} ${hours}:${minutes}:${seconds} ${ampm}`;
 }
+document.getElementById("manualTime").addEventListener("input", function () {
+  let val = this.value.trim();
+
+  // Pisahkan waktu: tanggal & waktu & AM/PM
+  const dateTimeParts = val.split(" ");
+  if (dateTimeParts.length < 2) return;
+
+  const [datePart, timePartRaw] = dateTimeParts;
+  let timePart = timePartRaw.replace(/AM|PM/i, "").trim();
+
+  const [hhStr, mm, ss] = timePart.split(":");
+  if (!hhStr || isNaN(hhStr)) return;
+
+  const hh = parseInt(hhStr);
+  if (isNaN(hh)) return;
+
+  // Tentukan AM/PM berdasarkan jam
+  let newAmpm = "";
+  if (hh === 12 || hh >= 12) {
+    newAmpm = "PM";
+  } else {
+    newAmpm = "AM";
+  }
+
+  this.value = `${datePart} ${timePart} ${newAmpm}`;
+});
+
  function deleteCents() {
   const tables = document.querySelectorAll("table");
 
