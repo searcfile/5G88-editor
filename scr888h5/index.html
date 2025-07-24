@@ -292,6 +292,7 @@
 </table>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
+let skipAutoLoad = false;
 let hiddenRow = null;
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
   const gameData = {
@@ -430,7 +431,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
     });
   });
 }
-  function generateLog() {
+ function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
   const selectedPecahan = parseFloat(document.getElementById("pecahanSelect").value);
@@ -464,11 +465,9 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
   let balance = rnd(3000, 4000) + manualScore;
-  let totalSeconds = 0;
 
   for (let i = 0; i < 10; i++) {
     const gap = Math.floor(Math.random() * 3) + 3;
-    totalSeconds += gap;
     const beginMoney = balance;
     const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
     const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
@@ -485,23 +484,10 @@ document.getElementById("betSelect").addEventListener("change", function () {
     });
 
     balance = endMoney;
-    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
+    baseTime.setSeconds(baseTime.getSeconds() + gap);
   }
 
-  setTimeout(() => {
-    const savedData = {
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore: manualScore,
-      logs: tbody.innerHTML
-    };
-    localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
-  }, 50);
-
   const setScoreMoney = logs[0].endMoney;
-
   const dtParts = logs[0].dateTime.split(" ");
   const [month, day, year] = dtParts[0].split("/").map(Number);
   let [hour, minute, second] = dtParts[1].split(":").map(Number);
@@ -511,7 +497,6 @@ document.getElementById("betSelect").addEventListener("change", function () {
   if (ampm === "AM" && hour === 12) hour = 0;
 
   const setScoreTime = new Date(year, month - 1, day, hour, minute, second);
-
   const randomOffset = [2, 3, 4, 6, 8, 9, 10, 13, 15, 18, 20, 21, 23, 24][Math.floor(Math.random() * 14)];
   setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
 
@@ -542,6 +527,20 @@ document.getElementById("betSelect").addEventListener("change", function () {
   });
 
   tbody.innerHTML = rows;
+
+  // ✅ Simpan ke localStorage setelah update tbody
+  skipAutoLoad = true;
+  setTimeout(() => {
+    const savedData = {
+      game,
+      bet,
+      pecahan: selectedPecahan,
+      manualTime: manualTimeInput,
+      manualScore: manualScore,
+      logs: tbody.innerHTML
+    };
+    localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
+  }, 50);
 }
 
 function addJackpot() {
@@ -714,6 +713,7 @@ function resetLog() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  if (skipAutoLoad) return;
   const saved = localStorage.getItem("gameLogDataScr888h5");
   if (!saved) return;
 
