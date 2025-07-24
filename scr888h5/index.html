@@ -693,7 +693,7 @@ function addManualSetScore() {
 
   const tbody = document.querySelector("#gameLog tbody");
 
-  // Cek sudah ada manual score row atau belum
+  // Cek apakah baris manual sudah ada
   let existingManualRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
     .find(row => !row.classList.contains("jackpot") && !row.children[1].textContent.includes("-"));
 
@@ -702,11 +702,35 @@ function addManualSetScore() {
 
   if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
 
-  const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
-  const belowDate = new Date(belowTimeText.replace(" ", "T"));
-  const randomSeconds = Math.floor(Math.random() * 4) + 4;
-  const newTime = new Date(belowDate.getTime() - randomSeconds * 1000); // ❗ Lebih awal
-  const formatted = formatDateTimeLocal(newTime); // gunakan format yang sudah kamu pakai
+  // Ambil waktu dari manualTime jika ada
+  const manualTimeVal = document.getElementById("manualTime").value.trim();
+  let newTime;
+
+  if (manualTimeVal) {
+    const parts = manualTimeVal.split(" ");
+    if (parts.length < 3) {
+      alert("❌ Format waktu harus MM/DD/YYYY hh:mm:ss AM/PM");
+      return;
+    }
+
+    const [datePart, timePart, ampm] = parts;
+    const [month, day, year] = datePart.split("/");
+    const [hh, mm, ss] = timePart.split(":");
+
+    let hour = parseInt(hh, 10);
+    if (ampm.toUpperCase() === "PM" && hour < 12) hour += 12;
+    if (ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
+
+    newTime = new Date(year, month - 1, day, hour, parseInt(mm), parseInt(ss));
+  } else {
+    // Kalau manualTime kosong → generate otomatis berdasarkan row negatif
+    const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
+    const belowDate = new Date(belowTimeText.replace(" ", "T"));
+    const randomSeconds = Math.floor(Math.random() * 4) + 4;
+    newTime = new Date(belowDate.getTime() - randomSeconds * 1000);
+  }
+
+  const formatted = formatDateTimeLocal(newTime);
 
   if (existingManualRow) {
     existingManualRow.children[1].innerHTML = `<span class="badge">Set Score: ${inputScore.toFixed(2)}</span>`;
