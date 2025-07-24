@@ -202,6 +202,32 @@
   background: transparent;
   color: gold;
 }
+#gamelogBtn.active-gamelog {
+  background: transparent;
+  color: gold;
+}
+
+.gamelog-dropdown .dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #1f1f1f;
+  border: 1px solid #424242;
+  border-radius: 6px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
+  z-index: 9999;
+}
+
+.gamelog-dropdown .dropdown-content a {
+  display: block;
+  color: gold;
+  padding: 8px 12px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.gamelog-dropdown .dropdown-content a:hover {
+  background-color: #333;
+}
   </style>
 </head>
 <body>
@@ -265,6 +291,21 @@
     </svg>
     LinkDownload
   </button>
+
+  <div class="gamelog-dropdown" style="position: relative;">
+  <button id="gameLogBtn" class="live-chat-button">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+      <path d="M5 4h14v2H5V4zm0 5h14v2H5V9zm0 5h14v2H5v-2zm0 5h14v2H5v-2z"/>
+    </svg>
+    GameLog
+  </button>
+  <div id="gameLogDropdown" class="dropdown-content" style="right: auto; left: 0; min-width: 160px; top: 130%;">
+    <a href="#" onclick="addTab('EDIT MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/')">Edit MEGA888</a>
+    <a href="#" onclick="addTab('EDIT PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/')">Edit PUSSY888</a>
+    <a href="#" onclick="addTab('EDIT 918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/')">Edit 918KISS</a>
+    <!-- Tambah lainnya di sini -->
+  </div>
+</div>
 </div>
 
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
@@ -333,7 +374,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 15*/
+/*Mcng 123 123 16*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -935,6 +976,24 @@ firebase.database().ref("livechat/messages").on("value", (snapshot) => {
   }
 });
 
+// ✅ Tambahan GameLog Dropdown
+const gameLogBtn = document.getElementById("gameLogBtn");
+const gameLogDropdown = document.getElementById("gameLogDropdown");
+
+if (gameLogBtn && gameLogDropdown) {
+  gameLogBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
+    gameLogBtn.classList.toggle("active-gamelog");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
+      gameLogDropdown.style.display = "none";
+      gameLogBtn.classList.remove("active-gamelog");
+    }
+  });
+}
  window.addEventListener("message", async function (e) {
 
   // ✅ Daftar asal (origin) yang dibenarkan
