@@ -32,7 +32,18 @@
      .tab-bar::-webkit-scrollbar {display: none;}
      .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px;
       cursor: default;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;} 
-    .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;font-size: 14px;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: all 0.3s ease;
+    .tab .close-tab {background: rgba(255,255,255,0.04);
+      color: gold;
+      border: none;
+      font-size: 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
     }
     .tab:hover {
       color: #ffe34d !important;
@@ -191,42 +202,6 @@
   background: transparent;
   color: gold;
 }
-#gameLogBtn.active-gamelog {
-  background: transparent;
-  color: gold;
-}
-.gamelog-dropdown {
-  position: relative; /* Ini penting untuk posisi anaknya */
-}
-.gamelog-dropdown .dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #1f1f1f;
-  border: 1px solid #424242;
-  border-radius: 6px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
-  z-index: 999999 !important;
-  top: 110%;
-  left: 0;
-  min-width: 160px;
-}
-
-.gamelog-dropdown .dropdown-content a {
-  display: block;
-  color: rgba(255,255,255,0.85);
-  padding: 8px 12px;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-.gamelog-dropdown .dropdown-content a:hover {
-  background-color: #333;
-  color: gold;
-}
-.gamelog-dropdown .dropdown-content a:active {
-  background-color: #333;
-  color: #dbb900;
-}
   </style>
 </head>
 <body>
@@ -290,21 +265,6 @@
     </svg>
     LinkDownload
   </button>
-
-  <div class="gamelog-dropdown" style="position: relative;">
-  <button id="gameLogBtn" class="live-chat-button">
-    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
-      <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
-    </svg>
-    GameLog
-  </button>
-  <div id="gameLogDropdown" class="dropdown-content" style="right: auto; left: 0; min-width: 160px; top: 130%;">
-    <a href="#" onclick="addTab('EDIT MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/')">Edit MEGA888</a>
-    <a href="#" onclick="addTab('EDIT PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/')">Edit PUSSY888</a>
-    <a href="#" onclick="addTab('EDIT 918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/')">Edit 918KISS</a>
-    <!-- Tambah lainnya di sini -->
-  </div>
-</div>
 </div>
 
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
@@ -373,7 +333,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 17*/
+/*Mcng 123 123 15*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -975,36 +935,6 @@ firebase.database().ref("livechat/messages").on("value", (snapshot) => {
   }
 });
 
-// ✅ Tambahan GameLog Dropdown
-const gameLogBtn = document.getElementById("gameLogBtn");
-const gameLogDropdown = document.getElementById("gameLogDropdown");
-
-if (gameLogBtn && gameLogDropdown) {
-  gameLogBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const isVisible = gameLogDropdown.style.display === "block";
-    
-    // Tutup kalau sudah terbuka
-    if (isVisible) {
-      gameLogDropdown.style.display = "none";
-      gameLogBtn.classList.remove("active-gamelog");
-    } else {
-      // Hitung posisi tombol
-      const rect = gameLogBtn.getBoundingClientRect();
-      gameLogDropdown.style.top = `${rect.bottom + 5}px`;
-      gameLogDropdown.style.left = `${rect.left}px`;
-      gameLogDropdown.style.display = "block";
-      gameLogBtn.classList.add("active-gamelog");
-    }
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
-      gameLogDropdown.style.display = "none";
-      gameLogBtn.classList.remove("active-gamelog");
-    }
-  });
-}
  window.addEventListener("message", async function (e) {
 
   // ✅ Daftar asal (origin) yang dibenarkan
