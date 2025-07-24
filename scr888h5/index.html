@@ -445,8 +445,8 @@ document.getElementById("manualTime").addEventListener("input", function () {
     const cells = table.querySelectorAll("td");
 
     cells.forEach(cell => {
-      if (cell.textContent.includes("Set score: ")) {
-        const parts = cell.textContent.split("Set score：");
+      if (cell.textContent.includes("Set Score: ")) {
+        const parts = cell.textContent.split("Set Score: ");
         const number = parseFloat(parts[1]);
 
         if (!isNaN(number)) {
@@ -720,7 +720,7 @@ function addManualSetScore() {
   if (ampm === "AM" && hh === 12) hh = 0;
 
   const baseDate = new Date(year, month - 1, day, hh, mm, ss);
-  const randomSeconds = Math.floor(Math.random() * 14) + 2; // +2~15 detik
+  const randomSeconds = Math.floor(Math.random() * 29) + 2; // +2~15 detik
   const newTime = new Date(baseDate.getTime() + randomSeconds * 1000);
   const formatted = formatDateTimeLocal(newTime);
 
