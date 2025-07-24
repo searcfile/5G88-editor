@@ -443,24 +443,24 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   const manualInput = manualTimeInput.trim();
   if (manualInput) {
-  const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
-  if (parts.length === 2) {
-    const [datePart, timePartRaw] = parts;
-    const [month, day, year] = datePart.split("/").map(Number); // ✅ Sesuai MM/DD/YYYY
+    const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
+    if (parts.length === 2) {
+      const [datePart, timePartRaw] = parts;
+      const [month, day, year] = datePart.split("/").map(Number);
 
-    let [hour, minute, second] = timePartRaw.trim().split(":").map(Number);
-    const ampm = timePartRaw.toUpperCase().includes("PM") ? "PM" : "AM";
+      let [hour, minute, second] = timePartRaw.trim().split(":").map(Number);
+      const ampm = timePartRaw.toUpperCase().includes("PM") ? "PM" : "AM";
 
-    if (ampm === "PM" && hour < 12) hour += 12;
-    if (ampm === "AM" && hour === 12) hour = 0;
+      if (ampm === "PM" && hour < 12) hour += 12;
+      if (ampm === "AM" && hour === 12) hour = 0;
 
-    baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
+      baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
+    } else {
+      baseTime = new Date();
+    }
   } else {
     baseTime = new Date();
   }
-} else {
-  baseTime = new Date();
-}
 
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
   let balance = rnd(3000, 4000) + manualScore;
@@ -501,7 +501,17 @@ document.getElementById("betSelect").addEventListener("change", function () {
   }, 50);
 
   const setScoreMoney = logs[0].endMoney;
-  const setScoreTime = new Date(logs[0].dateTime);
+
+  const dtParts = logs[0].dateTime.split(" ");
+  const [month, day, year] = dtParts[0].split("/").map(Number);
+  let [hour, minute, second] = dtParts[1].split(":").map(Number);
+  const ampm = dtParts[2];
+
+  if (ampm === "PM" && hour < 12) hour += 12;
+  if (ampm === "AM" && hour === 12) hour = 0;
+
+  const setScoreTime = new Date(year, month - 1, day, hour, minute, second);
+
   const randomOffset = [2, 3, 4, 6, 8, 9, 10, 13, 15, 18, 20, 21, 23, 24][Math.floor(Math.random() * 14)];
   setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
 
