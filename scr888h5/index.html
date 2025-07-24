@@ -463,7 +463,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
     baseTime = new Date();
   }
 
-  baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
+  baseTime = new Date(baseTime.getTime() - (10 * 4 * 1000));
   let balance = rnd(3000, 4000) + manualScore;
 
   for (let i = 0; i < 10; i++) {
