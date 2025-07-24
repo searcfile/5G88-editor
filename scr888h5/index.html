@@ -375,15 +375,20 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
  function setNow() {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hour = String(now.getHours()).padStart(2, '0');
-  const minute = String(now.getMinutes()).padStart(2, '0');
-  const second = String(now.getSeconds()).padStart(2, '0');
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const yyyy = now.getFullYear();
 
-  const globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-  document.getElementById("manualTime").value = globalTime;
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+  hours = String(hours).padStart(2, '0');
+
+  const formatted = `${mm}/${dd}/${yyyy} ${hours}:${minutes}:${seconds} ${ampm}`;
+  document.getElementById("manualTime").value = formatted;
 }
   function rnd(min, max, dec = 2){
     return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
@@ -395,14 +400,20 @@ document.getElementById("betSelect").addEventListener("change", function () {
     return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
   }
   function formatDateTimeLocal(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const h = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const s = String(date.getSeconds()).padStart(2, '0');
-  return `${y}-${m}-${d} ${h}:${min}:${s}`;
- }
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const yyyy = date.getFullYear();
+
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // convert to 12-hour format
+  hours = String(hours).padStart(2, '0');
+
+  return `${mm}/${dd}/${yyyy} ${hours}:${minutes}:${seconds} ${ampm}`;
+}
  function deleteCents() {
   const tables = document.querySelectorAll("table");
 
