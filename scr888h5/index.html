@@ -444,28 +444,31 @@ document.getElementById("betSelect").addEventListener("change", function () {
 
   const manualInput = manualTimeInput.trim();
   if (manualInput) {
-    const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
-    if (parts.length === 2) {
-      const [datePart, timePartRaw] = parts;
-      const [month, day, year] = datePart.split("/").map(Number);
+  const parts = manualInput.includes("T") ? manualInput.split("T") : manualInput.split(" ");
+  if (parts.length === 2) {
+    const [datePart, timePartRaw] = parts;
+    const [month, day, year] = datePart.split("/").map(Number);
 
-      let timePart = timePartRaw.trim();
-      let ampm = "AM";
-      if (timePart.toUpperCase().includes("PM")) ampm = "PM";
+    // ⬇️ GANTI BAGIAN INI dengan versi baru yang aman
+    let timePart = timePartRaw.trim();
+    let ampm = "";
 
-timePart = timePart.replace(/AM|PM/i, "").trim();
-let [hour, minute, second] = timePart.split(":").map(Number);
-if (ampm === "PM" && hour < 12) hour += 12;
-if (ampm === "AM" && hour === 12) hour = 0;
+    if (timePart.toUpperCase().includes("AM")) ampm = "AM";
+    if (timePart.toUpperCase().includes("PM")) ampm = "PM";
 
-      baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
-    } else {
-      baseTime = new Date();
-    }
+    timePart = timePart.replace(/AM|PM/i, "").trim();
+    let [hour, minute, second] = timePart.split(":").map(Number);
+
+    if (ampm === "PM" && hour < 12) hour += 12;
+    if (ampm === "AM" && hour === 12) hour = 0;
+
+    baseTime = new Date(year, month - 1, day, hour, minute || 0, second || 0);
   } else {
     baseTime = new Date();
   }
-
+} else {
+  baseTime = new Date();
+}
   baseTime = new Date(baseTime.getTime() - (10 * 4 * 1000));
   let balance = rnd(3000, 4000) + manualScore;
 
