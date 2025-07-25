@@ -426,7 +426,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 22*/
+/*Mcng 123 123 33*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -921,6 +921,7 @@ function updateGameLogCheckmarks() {
 window.onload = () => {
   renderTabs();
   const tabs = getTabs();
+  updateGameLogCheckmarks();
   const activeUrl = localStorage.getItem("activeTabUrl");
   const match = tabs.find(tab => tab.url === activeUrl);
 
@@ -934,6 +935,7 @@ window.onload = () => {
 
   if (match) {
     loadPage(match.url);
+    updateGameLogCheckmarks();
 
     if (match.label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
