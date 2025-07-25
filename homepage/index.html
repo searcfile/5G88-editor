@@ -198,7 +198,8 @@
 }
  
 .live-chat-button.active-livechat,
-.live-chat-button.active-linkdownload {
+.live-chat-button.active-linkdownload,
+.live-chat-button.active-gamelog {
   background: transparent;
   color: gold;
 }
@@ -299,7 +300,7 @@
 <div class="dropdown-wrapper">
   <button id="gameLogBtn" class="live-chat-button">
     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
-      <path d="M4 4h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/>
+      <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
     </svg>
     GameLog
   </button>
@@ -378,7 +379,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 11*/
+/*Mcng 123 123 22*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -605,6 +606,15 @@ function addTab(label, url) {
   const linkBtn = document.getElementById("linkDownloadBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
+  const gameLogBtn = document.getElementById("gameLogBtn");
+if (gameLogBtn) {
+  if (label === "MEGA888" || label === "PUSSY888" || label === "918KISS" || label === "SCR888H5") {
+    gameLogBtn.classList.add("active-gamelog");
+  } else {
+    gameLogBtn.classList.remove("active-gamelog");
+  }
+}
+
   if (liveBtn) {
     if (label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
