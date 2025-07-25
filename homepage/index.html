@@ -225,7 +225,7 @@
 .dropdown-links a {
   display: block;
   padding: 8px 16px;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.85);
   text-decoration: none;
   font-size: 14px;
   transition: color 0.3s;
@@ -233,12 +233,12 @@
 
 .dropdown-links a:hover {
   background: transparent;
-  color: rgba(255,255,255,0.85);
+  color:  #ffe34d;
   transition: color 0.3s;
 }
 .dropdown-links a:active {
   background: transparent;
-  color: #8d8d8d !important;
+  color: #dbb900!important;
 }
 #gameLogBtn.active-gamelog {
   color: gold;
@@ -391,7 +391,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 45*/
+/*Mcng 123 123 66*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -483,7 +483,7 @@ popup.style.display = "block";
 
 setTimeout(() => {
   const rect = notifButton.getBoundingClientRect();
-  const spacing = 4; // jarak ke bawah
+  const spacing = 4.1; // jarak ke bawah
 
   popup.style.position = "fixed";
   popup.style.top = `${rect.bottom + spacing}px`;
@@ -674,6 +674,43 @@ function closeTab(label) {
   let tabs = getTabs().filter(tab => tab.label !== label);
   saveTabs(tabs);
   renderTabs();
+
+  const gameLogBtn = document.getElementById("gameLogBtn");
+  const liveBtn = document.getElementById("liveChatBtn");
+  const linkBtn = document.getElementById("linkDownloadBtn");
+
+  // 🔸 Update GameLog
+  const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+  const stillHasGameLogTab = tabs.some(tab => gameLogLabels.includes(tab.label));
+  if (gameLogBtn) {
+    if (stillHasGameLogTab) {
+      gameLogBtn.classList.add("active-gamelog");
+    } else {
+      gameLogBtn.classList.remove("active-gamelog");
+    }
+  }
+
+  // 🔸 Update LIVE CHAT
+  const stillHasLiveTab = tabs.some(tab => tab.label === "LIVE CHAT");
+  if (liveBtn) {
+    if (stillHasLiveTab) {
+      liveBtn.classList.add("active-livechat");
+    } else {
+      liveBtn.classList.remove("active-livechat");
+    }
+  }
+
+  // 🔸 Update LINK DOWNLOAD
+  const stillHasLinkTab = tabs.some(tab => tab.label === "LINK DOWNLOAD");
+  if (linkBtn) {
+    if (stillHasLinkTab) {
+      linkBtn.classList.add("active-linkdownload");
+    } else {
+      linkBtn.classList.remove("active-linkdownload");
+    }
+  }
+
+  // 🔸 Muat ulang tab terakhir jika masih ada
   if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
   } else {
@@ -743,6 +780,7 @@ function renderTabs() {
     tabElement.onclick = () => {
     loadPage(tab.url);
 
+  const gameLogBtn = document.getElementById("gameLogBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const linkBtn = document.getElementById("linkDownloadBtn");
   if (liveBtn) {
@@ -759,6 +797,14 @@ if (linkBtn) {
       linkBtn.classList.remove("active-linkdownload");
     }
   }
+  if (gameLogBtn) {
+  const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+  if (gameLogLabels.includes(tab.label)) {
+    gameLogBtn.classList.add("active-gamelog");
+  } else {
+    gameLogBtn.classList.remove("active-gamelog");
+  }
+}
 };
 
 
