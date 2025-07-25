@@ -28,7 +28,7 @@
     .container.shrink {margin-left: 0;}}
      html, body {height: 100%;}
      #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;}
-     .tab-bar {position: relative;transition: all 0.2s ease;width: 100%;height: 40px;background: balck;display: flex;align-items: center;gap: 0;z-index: 1000;justify-content: flex-start;white-space: nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);}
+     .tab-bar {position: relative;transition: all 0.2s ease;width: 100%;height: 40px;background: balck;display: flex;align-items: center;gap: 0;z-index: 1000;justify-content: flex-start;white-space: nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;}
      .tab-bar::-webkit-scrollbar {display: none;}
      .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px;
       cursor: default;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;} 
@@ -305,10 +305,10 @@
     GameLog
   </button>
   <div id="gameLogDropdown" class="dropdown-links">
-    <a href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/')">MEGA888</a>
-    <a href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/')">PUSSY888</a>
-    <a href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/')">918KISS</a>
-    <a href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/')">SCR888H5</a>
+    <a href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/'); document.getElementById('gameLogDropdown').style.display = 'none';">MEGA888</a>
+    <a href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/'); document.getElementById('gameLogDropdown').style.display = 'none';">PUSSY888</a>
+    <a href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/'); document.getElementById('gameLogDropdown').style.display = 'none';">918KISS</a>
+    <a href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/'); document.getElementById('gameLogDropdown').style.display = 'none';">SCR888H5</a>
   </div>
 </div>
 </div>
@@ -379,7 +379,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 22*/
+/*Mcng 123 123 23*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -522,6 +522,7 @@ db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
 const gameLogBtn = document.getElementById("gameLogBtn");
 const gameLogDropdown = document.getElementById("gameLogDropdown");
 
+// Saat tombol GameLog diklik
 gameLogBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   const rect = gameLogBtn.getBoundingClientRect();
@@ -530,11 +531,26 @@ gameLogBtn.addEventListener("click", (e) => {
   gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
 });
 
+// Tutup dropdown jika klik di luar tombol/dropdown
 document.addEventListener("click", (e) => {
   if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
     gameLogDropdown.style.display = "none";
   }
 });
+
+// ✅ Tambahan: Tutup dropdown jika klik di dalam iframe
+const iframe = document.getElementById("pageFrame");
+if (iframe) {
+  iframe.addEventListener("load", () => {
+    try {
+      iframe.contentWindow.document.addEventListener("click", () => {
+        gameLogDropdown.style.display = "none";
+      });
+    } catch (err) {
+      console.warn("⚠️ Tidak bisa akses iframe: kemungkinan beda origin.");
+    }
+  });
+}
 
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
