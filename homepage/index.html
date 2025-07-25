@@ -426,7 +426,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 44*/
+/*Mcng 123 123 55*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -441,24 +441,38 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ✅ Tunggu elemen livechatDot tersedia sebelum pasang listener Firebase
-const waitLivechatDot = setInterval(() => {
+// ✅ Tampilkan notif dot merah jika ada pesan belum dibaca
+const checkLivechatNotif = () => {
   const livechatDot = document.getElementById("livechatDot");
-  if (livechatDot) {
-    clearInterval(waitLivechatDot);
+  if (!livechatDot) return;
 
-    db.ref("livechat/messages").on("value", (snapshot) => {
-      let foundUnread = false;
-      snapshot.forEach(child => {
-        const msg = child.val();
-        if (msg && msg.readByAdmin === false) {
-          foundUnread = true;
-        }
-      });
-      livechatDot.style.display = foundUnread ? "block" : "none";
+  firebase.database().ref("livechat/messages").once("value").then(snapshot => {
+    let foundUnread = false;
+    snapshot.forEach(child => {
+      const msg = child.val();
+      if (msg && msg.readByAdmin === false) {
+        foundUnread = true;
+      }
     });
-  }
-}, 300);
+    livechatDot.style.display = foundUnread ? "inline" : "none";
+  });
+};
+
+// Jalankan saat page load
+window.addEventListener("load", checkLivechatNotif);
+
+// 🔁 Dan pantau perubahan real-time juga
+firebase.database().ref("livechat/messages").on("value", snapshot => {
+  const livechatDot = document.getElementById("livechatDot");
+  let foundUnread = false;
+  snapshot.forEach(child => {
+    const msg = child.val();
+    if (msg && msg.readByAdmin === false) {
+      foundUnread = true;
+    }
+  });
+  if (livechatDot) livechatDot.style.display = foundUnread ? "inline" : "none";
+});
 
 // ✅ Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
