@@ -219,19 +219,31 @@
   min-width: 180px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.4);
   padding: 6px 0;
+  transition: color 0.3s;
 }
 
 .dropdown-links a {
   display: block;
   padding: 8px 16px;
-  color: gold;
+  color: rgba(255,255,255,0.65);
   text-decoration: none;
   font-size: 14px;
+  transition: color 0.3s;
 }
 
 .dropdown-links a:hover {
-  background-color: #333;
-  color: white;
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  transition: color 0.3s;
+}
+.dropdown-links a:active {
+  background: transparent;
+  color: #8d8d8d !important;
+}
+#gameLogBtn.active-gamelog {
+  color: gold;
+  background: transparent;
+  transition: all 0.2s ease;
 }
   </style>
 </head>
@@ -379,7 +391,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 23*/
+/*Mcng 123 123 45*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -522,7 +534,7 @@ db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
 const gameLogBtn = document.getElementById("gameLogBtn");
 const gameLogDropdown = document.getElementById("gameLogDropdown");
 
-// Saat tombol GameLog diklik
+// Tampilkan/Hide dropdown saat tombol GameLog diklik
 gameLogBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   const rect = gameLogBtn.getBoundingClientRect();
@@ -531,26 +543,33 @@ gameLogBtn.addEventListener("click", (e) => {
   gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
 });
 
-// Tutup dropdown jika klik di luar tombol/dropdown
+// Klik luar = tutup
 document.addEventListener("click", (e) => {
   if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
     gameLogDropdown.style.display = "none";
   }
 });
 
-// ✅ Tambahan: Tutup dropdown jika klik di dalam iframe
+// Jika iframe load & domain sama, deteksi klik iframe
 const iframe = document.getElementById("pageFrame");
-if (iframe) {
-  iframe.addEventListener("load", () => {
-    try {
-      iframe.contentWindow.document.addEventListener("click", () => {
-        gameLogDropdown.style.display = "none";
-      });
-    } catch (err) {
-      console.warn("⚠️ Tidak bisa akses iframe: kemungkinan beda origin.");
-    }
-  });
-}
+iframe?.addEventListener("load", () => {
+  try {
+    iframe.contentWindow.document.addEventListener("click", () => {
+      gameLogDropdown.style.display = "none";
+    });
+  } catch (err) {
+    // Jika beda origin
+    console.warn("❌ Tidak bisa akses iframe karena beda origin.");
+  }
+});
+
+// Jika user klik iframe (fokus keluar), juga tutup dropdown
+window.addEventListener("blur", () => {
+  if (gameLogDropdown.style.display === "block") {
+    gameLogDropdown.style.display = "none";
+  }
+});
+
 
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
@@ -824,17 +843,27 @@ window.onload = () => {
   const match = tabs.find(tab => tab.url === activeUrl);
 
   const liveBtn = document.getElementById("liveChatBtn");
-  if (liveBtn) liveBtn.classList.remove("active-livechat"); // 🟡 Bersihkan dulu
   const linkBtn = document.getElementById("linkDownloadBtn");
+  const gameLogBtn = document.getElementById("gameLogBtn");
+
+  if (liveBtn) liveBtn.classList.remove("active-livechat");
   if (linkBtn) linkBtn.classList.remove("active-linkdownload");
+  if (gameLogBtn) gameLogBtn.classList.remove("active-gamelog");
+
   if (match) {
     loadPage(match.url);
 
     if (match.label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
     }
+
     if (match.label === "LINK DOWNLOAD") {
       linkBtn.classList.add("active-linkdownload");
+    }
+
+    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+    if (gameLogBtn && gameLogLabels.includes(match.label)) {
+      gameLogBtn.classList.add("active-gamelog");
     }
   } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
