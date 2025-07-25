@@ -221,14 +221,27 @@
   padding: 6px 0;
   transition: color 0.3s;
 }
-
+.check-icon {
+  flex-shrink: 0;
+  margin-left: 10px;
+  width: 16px;
+  height: 16px;
+  color: transparent;
+  transition: color 0.3s;
+}
+a.tab-open .check-icon {
+  fill: gold; /* warna emas saat aktif */
+}
 .dropdown-links a {
-  display: block;
+  display: flex; /* ✅ ubah dari block ke flex */
+  justify-content: space-between; /* ✅ label kiri, icon kanan */
+  align-items: center;
   padding: 8px 16px;
   color: rgba(255,255,255,0.85);
   text-decoration: none;
   font-size: 14px;
   transition: color 0.3s;
+  gap: 10px; /* opsional jarak label dengan icon */
 }
 
 .dropdown-links a:hover {
@@ -316,12 +329,32 @@
     </svg>
     GameLog
   </button>
-  <div id="gameLogDropdown" class="dropdown-links">
-    <a href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/'); document.getElementById('gameLogDropdown').style.display = 'none';">MEGA888</a>
-    <a href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/'); document.getElementById('gameLogDropdown').style.display = 'none';">PUSSY888</a>
-    <a href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/'); document.getElementById('gameLogDropdown').style.display = 'none';">918KISS</a>
-    <a href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/'); document.getElementById('gameLogDropdown').style.display = 'none';">SCR888H5</a>
-  </div>
+ <div id="gameLogDropdown" class="dropdown-links">
+  <a data-label="MEGA888" href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/'); hideDropdown();">
+    MEGA888
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+    </svg>
+  </a>
+  <a data-label="PUSSY888" href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/'); hideDropdown();">
+    PUSSY888
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+    </svg>
+  </a>
+  <a data-label="918KISS" href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/'); hideDropdown();">
+    918KISS
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+    </svg>
+  </a>
+  <a data-label="SCR888H5" href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/'); hideDropdown();">
+    SCR888H5
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+    </svg>
+  </a>
+</div>
 </div>
 </div>
 
@@ -391,7 +424,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 77*/
+/*Mcng 123 123 98*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -858,6 +891,25 @@ function loadPage(url) {
       if (tabElements[index]) {
         tabElements[index].classList.add("active-tab");
       }
+    }
+  });
+}
+
+  // ✅ Ceklis GameLog Dropdown
+function updateGameLogCheckmarks() {
+  const tabs = getTabs();
+  const labelsOpen = tabs.map(tab => tab.label);
+  const dropdownLinks = document.querySelectorAll('#gameLogDropdown a');
+
+  dropdownLinks.forEach(link => {
+    const label = link.getAttribute("data-label");
+    const icon = link.querySelector(".check-icon");
+     if (labelsOpen.includes(label)) {
+     link.classList.add("tab-open");
+     icon.style.display = "inline";
+     } else {
+     link.classList.remove("tab-open");
+     icon.style.display = "none";
     }
   });
 }
