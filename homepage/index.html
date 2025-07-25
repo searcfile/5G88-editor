@@ -202,6 +202,36 @@
   background: transparent;
   color: gold;
 }
+.dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-links {
+  display: none;
+  position: fixed;
+  top: 60px;
+  z-index: 10000;
+  background-color: #1f1f1f;
+  border: 1px solid #424242;
+  border-radius: 6px;
+  min-width: 180px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  padding: 6px 0;
+}
+
+.dropdown-links a {
+  display: block;
+  padding: 8px 16px;
+  color: gold;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.dropdown-links a:hover {
+  background-color: #333;
+  color: white;
+}
   </style>
 </head>
 <body>
@@ -265,6 +295,21 @@
     </svg>
     LinkDownload
   </button>
+
+<div class="dropdown-wrapper">
+  <button id="gameLogBtn" class="live-chat-button">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+      <path d="M4 4h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/>
+    </svg>
+    GameLog
+  </button>
+  <div id="gameLogDropdown" class="dropdown-links">
+    <a href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/')">MEGA888</a>
+    <a href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/')">PUSSY888</a>
+    <a href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/')">918KISS</a>
+    <a href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/')">SCR888H5</a>
+  </div>
+</div>
 </div>
 
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
@@ -333,7 +378,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 15*/
+/*Mcng 123 123 11*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -425,7 +470,7 @@ popup.style.display = "block";
 
 setTimeout(() => {
   const rect = notifButton.getBoundingClientRect();
-  const spacing = 3.95; // jarak ke bawah
+  const spacing = 4; // jarak ke bawah
 
   popup.style.position = "fixed";
   popup.style.top = `${rect.bottom + spacing}px`;
@@ -472,6 +517,24 @@ db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   if (!data || !data.message || !data.timestamp) return;
   showNotification(data.message, data.timestamp);
 });
+
+const gameLogBtn = document.getElementById("gameLogBtn");
+const gameLogDropdown = document.getElementById("gameLogDropdown");
+
+gameLogBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const rect = gameLogBtn.getBoundingClientRect();
+  gameLogDropdown.style.left = `${rect.left}px`;
+  gameLogDropdown.style.top = `${rect.bottom + 6}px`;
+  gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
+});
+
+document.addEventListener("click", (e) => {
+  if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
+    gameLogDropdown.style.display = "none";
+  }
+});
+
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
