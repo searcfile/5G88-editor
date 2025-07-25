@@ -426,7 +426,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 55*/
+/*Mcng 123 123 77*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -441,7 +441,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ✅ Tampilkan notif dot merah jika ada pesan belum dibaca
 const checkLivechatNotif = () => {
   const livechatDot = document.getElementById("livechatDot");
   if (!livechatDot) return;
@@ -450,7 +449,7 @@ const checkLivechatNotif = () => {
     let foundUnread = false;
     snapshot.forEach(child => {
       const msg = child.val();
-      if (msg && msg.readByAdmin === false) {
+      if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
         foundUnread = true;
       }
     });
@@ -458,22 +457,20 @@ const checkLivechatNotif = () => {
   });
 };
 
-// Jalankan saat page load
 window.addEventListener("load", checkLivechatNotif);
 
-// 🔁 Dan pantau perubahan real-time juga
+// 🔁 Pantau realtime juga
 firebase.database().ref("livechat/messages").on("value", snapshot => {
   const livechatDot = document.getElementById("livechatDot");
   let foundUnread = false;
   snapshot.forEach(child => {
     const msg = child.val();
-    if (msg && msg.readByAdmin === false) {
+    if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
       foundUnread = true;
     }
   });
   if (livechatDot) livechatDot.style.display = foundUnread ? "inline" : "none";
 });
-
 // ✅ Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
