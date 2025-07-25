@@ -186,6 +186,7 @@
   align-items: center;
   gap: 3px;
   background: transparent;
+  position: relative;
 }
 .live-chat-button:hover {
   color: rgba(255,255,255,0.85);
@@ -313,7 +314,7 @@ a.tab-open .check-icon {
     <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
   </svg>
   LiveChat
- <span id="livechatDot" style="position: absolute; top: 4px; right: 6px; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;"></span>
+ <span id="livechatDot" style="position: absolute; top: 4px; right: 6px; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;z-index: 11000;"></span>
 </button>
 
 <button id="linkDownloadBtn" class="live-chat-button" onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
@@ -425,7 +426,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 11*/
+/*Mcng 123 123 22*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -1134,7 +1135,7 @@ firebase.database().ref("livechat/messages").on("value", (snapshot) => {
   }
 });
 
- window.addEventListener("message", async function (e) {
+window.addEventListener("message", async function (e) {
 
   // ✅ Daftar asal (origin) yang dibenarkan
   const allowedOrigins = [
@@ -1155,14 +1156,25 @@ firebase.database().ref("livechat/messages").on("value", (snapshot) => {
 
   const data = e.data;
 
-  // ✅ Untuk base64
-  if (data && data.action === "copy-image-base64" && data.base64) {
+  // ✅ Tampilkan dot merah LiveChat dari iframe
+  if (data?.action === "show-livechat-notif") {
+    const livechatDot = document.getElementById("livechatDot");
+    if (livechatDot) livechatDot.style.display = "block";
+  }
+
+  // ✅ Sembunyikan dot merah LiveChat dari iframe
+  else if (data?.action === "hide-livechat-notif") {
+    const livechatDot = document.getElementById("livechatDot");
+    if (livechatDot) livechatDot.style.display = "none";
+  }
+
+  // ✅ Untuk salin gambar dari base64
+  else if (data?.action === "copy-image-base64" && data.base64) {
     try {
       const response = await fetch(data.base64);
       const blob = await response.blob();
       const item = new ClipboardItem({ [blob.type]: blob });
       await navigator.clipboard.write([item]);
-
       console.log("✅ Gambar dari base64 telah disalin.");
     } catch (err) {
       console.error("❌ Gagal salin gambar dari base64:", err);
@@ -1170,14 +1182,13 @@ firebase.database().ref("livechat/messages").on("value", (snapshot) => {
     }
   }
 
-  // ✅ Untuk image URL biasa
-  else if (data && data.action === "copy-image" && data.url) {
+  // ✅ Untuk salin gambar dari URL
+  else if (data?.action === "copy-image" && data.url) {
     try {
       const response = await fetch(data.url);
       const blob = await response.blob();
       const item = new ClipboardItem({ [blob.type]: blob });
       await navigator.clipboard.write([item]);
-
       console.log("✅ Gambar dari URL telah disalin.");
     } catch (err) {
       console.error("❌ Gagal salin gambar dari URL:", err);
