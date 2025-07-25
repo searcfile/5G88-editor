@@ -314,7 +314,7 @@ a.tab-open .check-icon {
     <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
   </svg>
   LiveChat
- <span id="livechatDot" style="position: absolute; top: 4px; right: 6px; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;z-index: 11000;"></span>
+ <span id="livechatDot" style="position: absolute; top: 0; right: 0; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;z-index: 11000;"></span>
 </button>
 
 <button id="linkDownloadBtn" class="live-chat-button" onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
@@ -426,7 +426,8 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 33*/
+/*Mcng 123 123 44*/
+// ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -440,6 +441,26 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// ✅ Tunggu elemen livechatDot tersedia sebelum pasang listener Firebase
+const waitLivechatDot = setInterval(() => {
+  const livechatDot = document.getElementById("livechatDot");
+  if (livechatDot) {
+    clearInterval(waitLivechatDot);
+
+    db.ref("livechat/messages").on("value", (snapshot) => {
+      let foundUnread = false;
+      snapshot.forEach(child => {
+        const msg = child.val();
+        if (msg && msg.readByAdmin === false) {
+          foundUnread = true;
+        }
+      });
+      livechatDot.style.display = foundUnread ? "block" : "none";
+    });
+  }
+}, 300);
+
+// ✅ Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
 const popup = document.getElementById("messagePopup");
@@ -465,7 +486,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// DARI FIREBASE
+// ✅ Realtime notifikasi pesan baru dari Firebase
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
@@ -492,10 +513,10 @@ notifButton.addEventListener("click", () => {
   const timestamp = Number(notifButton.dataset.timestamp);
   if (!message || !timestamp) return;
 
- if (popup.style.display === "block") {
-  popup.style.display = "none";
-  return;
-}
+  if (popup.style.display === "block") {
+    popup.style.display = "none";
+    return;
+  }
 
   const dateObj = new Date(timestamp);
   const isValidDate = !isNaN(dateObj.getTime());
@@ -514,24 +535,22 @@ notifButton.addEventListener("click", () => {
     </div>
   `;
 
-popup.style.display = "block";
+  popup.style.display = "block";
 
-setTimeout(() => {
-  const rect = notifButton.getBoundingClientRect();
-  const spacing = 4.1; // jarak ke bawah
-
-  popup.style.position = "fixed";
-  popup.style.top = `${rect.bottom + spacing}px`;
-  popup.style.left = "auto"; // reset dulu
-  popup.style.right = `${window.innerWidth - rect.right}px`; // RATA KANAN
-}, 0);
+  setTimeout(() => {
+    const rect = notifButton.getBoundingClientRect();
+    popup.style.position = "fixed";
+    popup.style.top = `${rect.bottom + 4.1}px`;
+    popup.style.left = "auto";
+    popup.style.right = `${window.innerWidth - rect.right}px`;
+  }, 0);
 
   notifDot.style.display = "none";
   const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
   localStorage.setItem(seenKey, "1");
 });
 
-// TOOLTIP
+// ✅ Tooltip muncul saat hover
 notifButton.addEventListener("mouseenter", () => {
   notifTooltip.style.display = "block";
 });
@@ -539,22 +558,18 @@ notifButton.addEventListener("mouseleave", () => {
   notifTooltip.style.display = "none";
 });
 
-// Klik luar popup = tutup
+// ✅ Klik luar = tutup popup
 document.addEventListener("click", function (event) {
-  const popup = document.getElementById("messagePopup");
-  const notifBtn = document.getElementById("notifButton");
-
   if (
     popup &&
     popup.style.display === "block" &&
     !popup.contains(event.target) &&
-    !notifBtn.contains(event.target)
+    !notifButton.contains(event.target)
   ) {
     popup.style.display = "none";
   }
 });
 window.addEventListener("blur", () => {
-  const popup = document.getElementById("messagePopup");
   if (popup && popup.style.display === "block") {
     popup.style.display = "none";
   }
@@ -823,7 +838,6 @@ if (linkBtn) {
   }
 }
 };
-
 
     const currentFrame = document.getElementById("pageFrame");
     if (currentFrame && tab.url === currentFrame.src) {
@@ -1115,30 +1129,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
     document.getElementById('dateTime').textContent = timeString;
   }
-
   setInterval(updateDateTime, 1000);
   updateDateTime();
-    // 🔴 NOTIF MERAH LIVE CHAT JIKA ADA PESAN BELUM DIBACA
-const livechatDot = document.getElementById("livechatDot");
-
-// Cek pesan user belum dibaca
-firebase.database().ref("livechat/messages").on("value", (snapshot) => {
-  let foundUnread = false;
-  snapshot.forEach(child => {
-    const msg = child.val();
-    if (msg && msg.readByAdmin === false) {
-      foundUnread = true;
-    }
-  });
-  if (foundUnread) {
-    livechatDot.style.display = "block";
-  } else {
-    livechatDot.style.display = "none";
-  }
-});
 
 window.addEventListener("message", async function (e) {
-
   // ✅ Daftar asal (origin) yang dibenarkan
   const allowedOrigins = [
     "https://5g88-logogame.vercel.app",
