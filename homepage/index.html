@@ -426,7 +426,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 77*/
+/*Mcng 123 123 72*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -631,7 +631,22 @@ window.addEventListener("blur", () => {
   }
 });
 
+let hasClicked = false;
 
+  function setupClickTrigger() {
+    if (hasClicked) return;
+    hasClicked = true;
+
+    const iframe = document.getElementById("iframeLiveChat");
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage({ type: "user-clicked" }, "*");
+    }
+  }
+
+  ["click", "touchstart", "keydown", "scroll"].forEach(ev => {
+    document.addEventListener(ev, setupClickTrigger, { once: true });
+  });
+  
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
@@ -699,34 +714,44 @@ function addTab(label, url) {
     existingTabs.push({ label, url });
     saveTabs(existingTabs);
   }
+
   const linkBtn = document.getElementById("linkDownloadBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
   const gameLogBtn = document.getElementById("gameLogBtn");
-if (gameLogBtn) {
-  if (label === "MEGA888" || label === "PUSSY888" || label === "918KISS" || label === "SCR888H5") {
-    gameLogBtn.classList.add("active-gamelog");
-  } else {
-    gameLogBtn.classList.remove("active-gamelog");
+
+  if (gameLogBtn) {
+    if (["MEGA888", "PUSSY888", "918KISS", "SCR888H5"].includes(label)) {
+      gameLogBtn.classList.add("active-gamelog");
+    } else {
+      gameLogBtn.classList.remove("active-gamelog");
+    }
   }
-}
 
   if (liveBtn) {
     if (label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
-      if (liveDot) liveDot.style.display = "none"; // ✅ Hilang saat diklik
+      if (liveDot) liveDot.style.display = "none";
+
+      // ✅ Kirim sinyal agar iframe LiveChat bisa aktifkan suara
+      const iframe = document.getElementById("pageFrame");
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: "user-clicked" }, "*");
+        console.log("📤 Sent user-clicked to iframe LiveChat");
+      }
     } else {
       liveBtn.classList.remove("active-livechat");
     }
   }
 
   if (linkBtn) {
-  if (label === "LINK DOWNLOAD") {
-    linkBtn.classList.add("active-linkdownload");
-  } else {
-    linkBtn.classList.remove("active-linkdownload");
+    if (label === "LINK DOWNLOAD") {
+      linkBtn.classList.add("active-linkdownload");
+    } else {
+      linkBtn.classList.remove("active-linkdownload");
+    }
   }
-}
+
   loadPage(url);
   renderTabs();
   updateGameLogCheckmarks();
