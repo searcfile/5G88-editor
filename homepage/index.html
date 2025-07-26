@@ -32,7 +32,9 @@
      .tab-bar::-webkit-scrollbar {display: none;}
      .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px;
       cursor: default;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;} 
-    .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;
+    .tab .close-tab {background: rgba(255,255,255,0.04);
+      color: gold;
+      border: none;
       font-size: 14px;
       border-radius: 50%;
       cursor: pointer;
@@ -74,11 +76,11 @@
       margin-left: 260px;
       transition: margin-left 0.3s;
     }
-   .tab-bar.shrink {
+  .tab-bar.shrink {
    margin-left: 260px;
    transition: margin-left 0.3s;
    }
-   #logoutBtn {
+  #logoutBtn {
    display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;
    background-color: #141414;
    color: rgba(255,255,255,0.85);
@@ -116,6 +118,7 @@
   position: relative;
   display: inline-block;
 }
+
 .user-button {
   display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;
   background-color: #141414;
@@ -267,7 +270,7 @@ a.tab-open .check-icon {
   <div class="sidebar" id="sidebar">
     <button class="close-btn" onclick="closeSidebar()">✖ Close</button>
     <h2>Menu list</h2>
-    <a href="#" onclick="addTab('LIVE CHAT', 'https://5g88-userlivechatphp.vercel.app/')">
+    <a href="#" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LIVE CHAT
     </a>
     <a href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/')">
@@ -301,6 +304,7 @@ a.tab-open .check-icon {
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK
     </a>
   </div>
+
 
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
@@ -372,14 +376,13 @@ a.tab-open .check-icon {
           <div id="dateTime" class="date-time"></div>
         </div>
 
-  <div class="user-dropdown">
+        <div class="user-dropdown">
   <button id="userName" class="user-button">
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
     <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
   </svg>
   <span id="userNameText"></span>
 </button>
-
   <div id="dropdownContent" class="dropdown-content">
     <div id="userEmail" style="margin-bottom: 8px;"></div>
     <hr style="border: 0; border-top: 1px solid #424242; margin: 8px 0;">
@@ -400,13 +403,14 @@ a.tab-open .check-icon {
       <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 150px; height: auto;" />
       <div style="margin-top: 3px; color: white; font-size: 14px; font-family: sans-serif;">Loading...</div>
     </div>
-
-   <iframe
+    <iframe
   id="pageFrame"
-  src="https://5g88-userlivechatphp.vercel.app/"
-  sandbox="allow-scripts allow-same-origin allow-popups allow-modals"
-  style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
+  allow="clipboard-write"
+  sandbox="allow-scripts allow-same-origin"
+  style="width: 100%; height: calc(100vh - 95px); border: none;">
+</iframe>
   </div>
+
 
  <div id="messagePopup" style="display: none; position: fixed; top: 0; left: 0;background: #1f1f1f; font-size: 14px; color: rgba(255,255,255,0.85); border: 1px solid #424242; border-radius: 6px; padding: 3px 10px; max-width: 220px; z-index: 9999;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -422,7 +426,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 99*/
+/*Mcng 123 123 77*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -627,22 +631,7 @@ window.addEventListener("blur", () => {
   }
 });
 
-let hasClicked = false;
 
-  function setupClickTrigger() {
-    if (hasClicked) return;
-    hasClicked = true;
-
-    const iframe = document.getElementById("iframeLiveChat");
-    if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage({ type: "user-clicked" }, "*");
-    }
-  }
-
-  ["click", "touchstart", "keydown", "scroll"].forEach(ev => {
-    document.addEventListener(ev, setupClickTrigger, { once: true });
-  });
-  
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
@@ -710,44 +699,34 @@ function addTab(label, url) {
     existingTabs.push({ label, url });
     saveTabs(existingTabs);
   }
-
   const linkBtn = document.getElementById("linkDownloadBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
   const gameLogBtn = document.getElementById("gameLogBtn");
-
-  if (gameLogBtn) {
-    if (["MEGA888", "PUSSY888", "918KISS", "SCR888H5"].includes(label)) {
-      gameLogBtn.classList.add("active-gamelog");
-    } else {
-      gameLogBtn.classList.remove("active-gamelog");
-    }
+if (gameLogBtn) {
+  if (label === "MEGA888" || label === "PUSSY888" || label === "918KISS" || label === "SCR888H5") {
+    gameLogBtn.classList.add("active-gamelog");
+  } else {
+    gameLogBtn.classList.remove("active-gamelog");
   }
+}
 
   if (liveBtn) {
     if (label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
-      if (liveDot) liveDot.style.display = "none";
-
-      // ✅ Kirim sinyal agar iframe LiveChat bisa aktifkan suara
-      const iframe = document.getElementById("pageFrame");
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.postMessage({ type: "user-clicked" }, "*");
-        console.log("📤 Sent user-clicked to iframe LiveChat");
-      }
+      if (liveDot) liveDot.style.display = "none"; // ✅ Hilang saat diklik
     } else {
       liveBtn.classList.remove("active-livechat");
     }
   }
 
   if (linkBtn) {
-    if (label === "LINK DOWNLOAD") {
-      linkBtn.classList.add("active-linkdownload");
-    } else {
-      linkBtn.classList.remove("active-linkdownload");
-    }
+  if (label === "LINK DOWNLOAD") {
+    linkBtn.classList.add("active-linkdownload");
+  } else {
+    linkBtn.classList.remove("active-linkdownload");
   }
-
+}
   loadPage(url);
   renderTabs();
   updateGameLogCheckmarks();
