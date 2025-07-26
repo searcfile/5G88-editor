@@ -6,36 +6,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Home | 5G88</title>
   <style>
-    * {margin: 0;padding: 0;box-sizing: border-box;font-family: 'Segoe UI', sans-serif;}
+    * {margin: 0;padding: 0;box-sizing: border-box;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';}
     body {background-color: #000;color: #fff;overflow-x: hidden;display: flex;flex-direction: column;height: 100vh;-ms-overflow-style: none;scrollbar-width: none;}body::-webkit-scrollbar{display: none;} html{-ms-overflow-style: none;scrollbar-width: none;}html::-webkit-scrollbar{display: none;} 
     .sidebar-overlay {position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;background: rgba(0, 0, 0, 0.5);display: none;z-index: 999;}
     .sidebar {position: fixed;top: 0;left: -260px;width: 260px;height: 100vh;background: #111;padding: 20px;transition: 0.3s;z-index: 1002;}
-    .sidebar.active {left: 0;}.sidebar-overlay.active {display: block;}.sidebar h2 {color: gold;margin-bottom: 20px;}
-    .sidebar a {display: block;margin: 10px 0;color: gold;text-decoration: none;font-size: 14px;font-weight: bold;border-radius: 5px;transition: background 0.2s;padding: 4px 8px;gap: 5px;white-space: nowrap;}
+    .sidebar.active {left: 0;}.sidebar-overlay.active {display: block;}.sidebar h2 {color: white;margin-bottom: 10px;border-bottom:3px solid white;}
+    .sidebar a {display: block;margin: 10px 0;color: gold;text-decoration: none;font-size: 14px;font-weight: bold;border-radius: 6px;transition: background 0.2s;padding: 4px 8px;gap: 5px;white-space: nowrap;}
     .sidebar a:hover {background: gold;color: #111;}
-    .close-btn {background: gold;color: #111;border: none;padding: 2px 6px;font-size: 12px;cursor: pointer;border-radius: 5px;margin-bottom: 20px;border-bottom: 2px solid gold;}
-    .header {position: fixed;width: 100%;z-index: 1003;height: 55px;background: #111;display: flex;justify-content: center;align-items: center;padding: 0 20px;top: 0;left: 0;}
+    .close-btn {background: gold;color: #111;padding: 3px 6px;font-size: 12px;cursor: pointer;border-radius: 6px;margin-bottom: 20px;border: 1px solid gold;}
+    .header {position: fixed;width: 100%;z-index: 1003;height: 55px;background: #000;display: flex;justify-content: center;align-items: center;padding: 0 20px;top: 0;left: 0;}.close-btn:hover {background:#ffe34d;color:black;transition: color 0.2s;}.close-btn:active {background:#dbb900;color:black;transition: color 0.2s;}
     .header img {position: absolute;max-height: 40px;top: 5px;}
     .user-info {position: absolute;right: 20px;top: 50%;transform: translateY(-50%);display: flex;align-items: center;gap: 10px;white-space: nowrap;flex-wrap: nowrap;}
     .user-text {gap: 10px;display: flex;align-items: center;}
     .user-details {display: flex;flex-direction: column;align-items: flex-end;}
-    .date-time {color: gold;font-size: 13px;white-space: nowrap;}
+    .date-time {color: white;font-size: 14px;white-space: nowrap;transition: color 0.3s;}
     .container {transition: margin-left 0.3s ease;position: relative;}
     .container.shrink { margin-left: 260px;}
-    .menu-icon {position: absolute;top: 5px;left: 10px;font-size: 28px;color: gold;cursor: pointer;z-index: 1100;}
+    .menu-icon {position: absolute;top: 5px;left: 10px;font-size: 28px;color: rgba(255, 255, 255, 0.65);cursor: pointer;z-index: 1100;transition: color 0.3s;}.menu-icon:hover {color: #ffe34d;transition: color 0.2s;}.active-menu-icon {color: gold;transition: all 0.2s ease;}.menu-icon:active {color: #dbb900;transition: color 0.2s;}
     .menu-img {width: 20px;height: 20px;vertical-align: middle;margin-right: 8px;border-radius: 4px;}
     @media (max-width: 600px) {
     .container.shrink {margin-left: 0;}}
      html, body {height: 100%;}
      #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;}
-     .tab-bar {position: relative;width: 100%;height: 40px;background: transparent;display: flex;align-items: center;gap: 0;z-index: 1000;justify-content: flex-start;white-space: nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;}
+     .tab-bar {position: relative;transition: all 0.2s ease;width: 100%;height: 40px;background: balck;display: flex;align-items: center;gap: 0;z-index: 1000;justify-content: flex-start;white-space: nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;}
      .tab-bar::-webkit-scrollbar {display: none;}
      .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px;
-      cursor: default;
-      transition: background-color 0.3s ease;
-      white-space: nowrap; 
-    }
-    .tab .close-tab {background: #111;
+      cursor: default;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;} 
+    .tab .close-tab {background: rgba(255,255,255,0.04);
       color: gold;
       border: none;
       font-size: 14px;
@@ -46,18 +43,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.3s ease;
     }
     .tab:hover {
-      background-color: #111 !important;
-      color: #ffffff !important;
+      color: #ffe34d !important;
       font-weight: bold !important;
-      border: 1px solid white !important;
+      transition: all 0.3s ease;
     }
     .active-tab {
-      background-color: #111 !important;
-      color: #ffffff !important;
+      background-color: #141414 !important;
+      color: gold !important;
       font-weight: bold;
-      border: 1px solid white !important;
+      transition: all 0.3s ease;
+    }
+    .tab:active {
+     color: #dbb900!important;
+     font-weight: bold !important;
+     transition: all 0.3s ease;
     }
     .floating-logo {
       position: fixed;
@@ -80,23 +82,28 @@
    }
   #logoutBtn {
    display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;
-   background-color: #111;
-   color: gold;
+   background-color: #141414;
+   color: rgba(255,255,255,0.85);
    padding: 5px 10px;
    border-radius: 4px;
    cursor: pointer;
    width: 100%;
    border: none;
-   box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+   box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
    transition: all 0.3s ease;
-   border: 1px solid gold;
+   border: 1px solid #424242;
    font-size: 14px;
   }
    #logoutBtn:hover {
-    color: #fff;
+    color: #ffe34d;
+    transition: all 0.3s ease;
+    border: 1px solid #ffe34d;
    }
    #logoutBtn:active {
-    color: #8d8d8d;
+    color: #dbb900;
+    transition: all 0.3s ease;
+    border: 1px solid #dbb900;
+    background-color: #141414;
    }
     #notifTooltip {
   opacity: 0;
@@ -114,42 +121,54 @@
 
 .user-button {
   display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;
-  background-color: #111;
-  color: gold;
-  border: 1px solid gold;
-  border-radius: 4px;
-  padding: 4px 12px;
+  background-color: #141414;
+  color: rgba(255,255,255,0.85);
+  border: 1px solid #424242;
+  border-radius: 6px;
+  padding: 0px 15px;
   font-size: 14px;
   cursor: pointer;
   white-space: nowrap;
+  height: 32px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
 }
 
 .user-button:hover {
-  background: gold;
-  color: #111;
+  border: 1px solid #ffe34d;
+  background-color: #141414;
+  color: #ffe34d;
+  transition: all 0.3s ease;
+}
+.user-button:active {
+  border: 1px solid gold;
+  background-color: #141414;
+  color: gold;
+  transition: all 0.3s ease;
 }
 
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #111;
-  min-width: 200px;
-  border: 1px solid gold;
-  border-radius: 4px;
+  background-color: #1f1f1f;
+  min-width: 220px;
+  border: 1px solid #424242;
+  border-radius: 6px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
   padding: 10px;
   z-index: 1;
-  color: gold;
+  color: rgba(255,255,255,0.85);
   top: 110%;
   right: 0;
   left: auto;
   transform: none;
-  font-size: 13px;
+  font-size: 14px;
+  transition: all 0.2s ease;
 }
  .dropdown-content {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .user-dropdown:hover .dropdown-content {
@@ -158,35 +177,89 @@
   display: block;
 }
   .live-chat-button {
-  position: absolute;
-  top: 15px;
-  left: 50px;
-  color: gold;
+  color: rgba(255,255,255,0.65);
   border: none;
   font-size: 15px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.3s;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
   background: transparent;
+  position: relative;
 }
 .live-chat-button:hover {
-  color: #fff;
+  color: rgba(255,255,255,0.85);
   background: transparent;
+  transition: color 0.3s;
 }
 .live-chat-button:active {
   color: #8d8d8d !important;
   background: transparent;
 }
-    .header.shrink .live-chat-button {
-  left: 50px; /* menyesuaikan sidebar lebar 260px + margin */
-}
-  .live-chat-button.active-livechat {
+ 
+.live-chat-button.active-livechat,
+.live-chat-button.active-linkdownload,
+.live-chat-button.active-gamelog {
   background: transparent;
-  color: #fff;
+  color: gold;
 }
-  
+.dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-links {
+  display: none;
+  position: fixed;
+  top: 60px;
+  z-index: 10000;
+  background-color: #1f1f1f;
+  border: 1px solid #424242;
+  border-radius: 6px;
+  min-width: 180px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  padding: 6px 0;
+  transition: color 0.3s;
+}
+.check-icon {
+  flex-shrink: 0;
+  margin-left: 10px;
+  width: 16px;
+  height: 16px;
+  color: transparent;
+  transition: color 0.3s;
+  display: none;
+}
+a.tab-open .check-icon {
+  color: gold;
+}
+.dropdown-links a {
+  display: flex; /* ✅ ubah dari block ke flex */
+  justify-content: space-between; /* ✅ label kiri, icon kanan */
+  align-items: center;
+  padding: 8px 16px;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+  gap: 10px; /* opsional jarak label dengan icon */
+}
+
+.dropdown-links a:hover {
+  background: transparent;
+  color:  #ffe34d;
+  transition: color 0.3s;
+}
+.dropdown-links a:active {
+  background: transparent;
+  color: #dbb900!important;
+}
+#gameLogBtn.active-gamelog {
+  color: gold;
+  background: transparent;
+  transition: all 0.2s ease;
+}
   </style>
 </head>
 <body>
@@ -200,14 +273,17 @@
     <a href="#" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LIVE CHAT
     </a>
-    <a href="#" onclick="addTab('MEGA888', 'https://5g88-mega888.vercel.app/')">
+    <a href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> MEGA888
     </a>
-    <a href="#" onclick="addTab('PUSSY888', 'https://5g88-pussy888.vercel.app/')">
+    <a href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> PUSSY888
     </a>
-    <a href="#" onclick="addTab('918KISS', 'https://5g88-918kiss.vercel.app/')">
+    <a href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> 918KISS
+    </a>
+    <a href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> SCR888H5
     </a>
     <a href="#" onclick="addTab('LOGO GAME', 'https://5g88-logogame.vercel.app/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LOGO GAME
@@ -227,47 +303,63 @@
     <a href="#" onclick="addTab('CIMB BANK', 'https://5g88-cimb.vercel.app/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK
     </a>
-   <a href="#" onclick="addTab('CIMB BANK1', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK1
-    </a>
-   <a href="#" onclick="addTab('CIMB BANK2', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK2
-    </a>
-   <a href="#" onclick="addTab('CIMB BANK3', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK3
-    </a>
-   <a href="#" onclick="addTab('panjangpanjangpanjang', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang
-    </a>
-   <a href="#" onclick="addTab('panjangpanjangpanjang1', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang1
-    </a>
-    <a href="#" onclick="addTab('panjangpanjangpanjang12', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12
-    </a>
-    <a href="#" onclick="addTab('panjangpanjangpanjang123', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang123
-    </a>
-    <a href="#" onclick="addTab('panjangpanjangpanjang1234', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang1234
-    </a>
-    <a href="#" onclick="addTab('panjangpanjangpanjang12345', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12345
-    </a>
-    <a href="#" onclick="addTab('panjangpanjangpanjang123456', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> panjangpanjangpanjang12315
-    </a>
   </div>
 
 
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
+  <div style="display: flex; gap: 20px; position: absolute; top: 15px; left: 60px;">
    <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
-  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
     <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
   </svg>
   LiveChat
+ <span id="livechatDot" style="position: absolute; top: 0; right: 0; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;z-index: 11000;"></span>
 </button>
+
+<button id="linkDownloadBtn" class="live-chat-button" onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+      <path d="M9 2h6v1h-6v-1zm6-1v-1h-6v1h6zm-5.146 21l-1.854 2h8l-1.854-2h-4.292zm10.146-14h-5v-4h-6v4h-5l8 8 8-8zm-2 11h-12v-6.172l-2-2v10.172h16v-10.172l-2 2v6.172z"/>
+    </svg>
+    LinkDownload
+  </button>
+
+<div class="dropdown-wrapper">
+  <button id="gameLogBtn" class="live-chat-button">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+      <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
+    </svg>
+    GameLog
+  </button>
+ <div id="gameLogDropdown" class="dropdown-links">
+  <a data-label="MEGA888" href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/'); hideDropdown();">
+    MEGA888
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+    </svg>
+  </a>
+  <a data-label="PUSSY888" href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/'); hideDropdown();">
+    PUSSY888
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+    </svg>
+  </a>
+  <a data-label="918KISS" href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/'); hideDropdown();">
+    918KISS
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+    </svg>
+  </a>
+  <a data-label="SCR888H5" href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/'); hideDropdown();">
+    SCR888H5
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+    </svg>
+  </a>
+</div>
+</div>
+</div>
+
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
     <div class="user-info">
@@ -278,7 +370,7 @@
           <div id="notifButton" style="background: #111; border: 1px solid gold; border-radius: 50%; width: 26px; height: 26px; color: gold; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 6px rgba(255, 215, 0, 0.4); position: relative; font-size: 14px;">
             🔔
             <span id="notifDot" style="position: absolute; top: 2px; right: 2px; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;"></span>
-            <div id="notifTooltip" style="display: none; position: absolute; top: 2%; left: calc(100% + 8px); transform: translateX(1%); background: #333; color: gold; padding: 4px 8px; font-size: 11px; border-radius: 4px; white-space: nowrap; z-index: 10000; box-shadow: 0 0 4px rgba(255, 215, 0, 0.4);">Notice</div>
+            <div id="notifTooltip" style="display: none; position: absolute;border: 1px solid #424242; top: 2%; left: calc(100% + 8px); transform: translateX(1%); background: #141414; color: gold; padding: 4px 8px; font-size: 11px; border-radius: 6px; white-space: nowrap; z-index: 10000;">Notice</div>
           </div>
 
           <div id="dateTime" class="date-time"></div>
@@ -293,7 +385,7 @@
 </button>
   <div id="dropdownContent" class="dropdown-content">
     <div id="userEmail" style="margin-bottom: 8px;"></div>
-    <hr style="border: 0; border-top: 1px solid gold; margin: 8px 0;">
+    <hr style="border: 0; border-top: 1px solid #424242; margin: 8px 0;">
     <button id="logoutBtn"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
     <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
   </svg>Logout</button>
@@ -311,24 +403,31 @@
       <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 150px; height: auto;" />
       <div style="margin-top: 3px; color: white; font-size: 14px; font-family: sans-serif;">Loading...</div>
     </div>
-    <iframe id="pageFrame" src="" style="width: 100%; height: calc(100vh - 95px); border: none;"></iframe>
+    <iframe
+  id="pageFrame"
+  allow="clipboard-write"
+  sandbox="allow-scripts allow-same-origin"
+  style="width: 100%; height: calc(100vh - 95px); border: none;">
+</iframe>
   </div>
 
 
-  <div id="messagePopup" style="display: none; position: absolute; background: #222; color: white; border: 1px solid gold; border-radius: 8px; padding: 3px 10px; max-width: 300px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); z-index: 2000; word-wrap: break-word; overflow-wrap: anywhere;">
+ <div id="messagePopup" style="display: none; position: fixed; top: 0; left: 0;background: #1f1f1f; font-size: 14px; color: rgba(255,255,255,0.85); border: 1px solid #424242; border-radius: 6px; padding: 3px 10px; max-width: 220px; z-index: 9999;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <strong style="color: red;">Notice!</strong>
+      <strong style="color: red;font-size:14px;font-weight: bold;">📢- Announcement!</strong>
       <button onclick="closeMessage()" style="background: none; color: white; border: none; font-size: 18px; cursor: pointer; transition: transform 0.2s, color 0.2s;" 
         onmouseover="this.style.transform='scale(1.3)'; this.style.color='red';"
         onmouseout="this.style.transform='scale(1)'; this.style.color='white';">×</button>
     </div>
-    <div id="messageContent" style="margin-top: 1px; white-space: normal; word-wrap: break-word; overflow-wrap: anywhere;"></div>
+    <div id="messageContent" style="margin-top: 2px;font-size:12px; white-space: normal; word-wrap: break-word; overflow-wrap: anywhere;"></div>
   </div>
   
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
+/*Mcng 123 123 77*/
+// ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -342,6 +441,37 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+const checkLivechatNotif = () => {
+  const livechatDot = document.getElementById("livechatDot");
+  if (!livechatDot) return;
+
+  firebase.database().ref("livechat/messages").once("value").then(snapshot => {
+    let foundUnread = false;
+    snapshot.forEach(child => {
+      const msg = child.val();
+      if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
+        foundUnread = true;
+      }
+    });
+    livechatDot.style.display = foundUnread ? "inline" : "none";
+  });
+};
+
+window.addEventListener("load", checkLivechatNotif);
+
+// 🔁 Pantau realtime juga
+firebase.database().ref("livechat/messages").on("value", snapshot => {
+  const livechatDot = document.getElementById("livechatDot");
+  let foundUnread = false;
+  snapshot.forEach(child => {
+    const msg = child.val();
+    if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
+      foundUnread = true;
+    }
+  });
+  if (livechatDot) livechatDot.style.display = foundUnread ? "inline" : "none";
+});
+// ✅ Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
 const popup = document.getElementById("messagePopup");
@@ -367,7 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// DARI FIREBASE
+// ✅ Realtime notifikasi pesan baru dari Firebase
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
@@ -417,18 +547,13 @@ notifButton.addEventListener("click", () => {
   `;
 
   popup.style.display = "block";
-  popup.style.visibility = "hidden";
-  popup.style.top = "0px";
-  popup.style.left = "-9999px";
 
   setTimeout(() => {
     const rect = notifButton.getBoundingClientRect();
-    const popupWidth = popup.offsetWidth || 300;
-    const spacing = 10;
-
-    popup.style.top = `${rect.top + window.scrollY}px`;
-    popup.style.left = `${rect.left + window.scrollX - popupWidth - spacing}px`;
-    popup.style.visibility = "visible";
+    popup.style.position = "fixed";
+    popup.style.top = `${rect.bottom + 4.1}px`;
+    popup.style.left = "auto";
+    popup.style.right = `${window.innerWidth - rect.right}px`;
   }, 0);
 
   notifDot.style.display = "none";
@@ -436,7 +561,7 @@ notifButton.addEventListener("click", () => {
   localStorage.setItem(seenKey, "1");
 });
 
-// TOOLTIP
+// ✅ Tooltip muncul saat hover
 notifButton.addEventListener("mouseenter", () => {
   notifTooltip.style.display = "block";
 });
@@ -444,19 +569,69 @@ notifButton.addEventListener("mouseleave", () => {
   notifTooltip.style.display = "none";
 });
 
-// Klik luar popup = tutup
-document.addEventListener("click", (e) => {
-  if (!popup.contains(e.target) && !notifButton.contains(e.target)) {
+// ✅ Klik luar = tutup popup
+document.addEventListener("click", function (event) {
+  if (
+    popup &&
+    popup.style.display === "block" &&
+    !popup.contains(event.target) &&
+    !notifButton.contains(event.target)
+  ) {
     popup.style.display = "none";
   }
 });
-
+window.addEventListener("blur", () => {
+  if (popup && popup.style.display === "block") {
+    popup.style.display = "none";
+  }
+});
 
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
   showNotification(data.message, data.timestamp);
 });
+
+const gameLogBtn = document.getElementById("gameLogBtn");
+const gameLogDropdown = document.getElementById("gameLogDropdown");
+
+// Tampilkan/Hide dropdown saat tombol GameLog diklik
+gameLogBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const rect = gameLogBtn.getBoundingClientRect();
+  gameLogDropdown.style.left = `${rect.left}px`;
+  gameLogDropdown.style.top = `${rect.bottom + 6}px`;
+  gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
+});
+
+// Klik luar = tutup
+document.addEventListener("click", (e) => {
+  if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
+    gameLogDropdown.style.display = "none";
+  }
+});
+
+// Jika iframe load & domain sama, deteksi klik iframe
+const iframe = document.getElementById("pageFrame");
+iframe?.addEventListener("load", () => {
+  try {
+    iframe.contentWindow.document.addEventListener("click", () => {
+      gameLogDropdown.style.display = "none";
+    });
+  } catch (err) {
+    // Jika beda origin
+    console.warn("❌ Tidak bisa akses iframe karena beda origin.");
+  }
+});
+
+// Jika user klik iframe (fokus keluar), juga tutup dropdown
+window.addEventListener("blur", () => {
+  if (gameLogDropdown.style.display === "block") {
+    gameLogDropdown.style.display = "none";
+  }
+});
+
+
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
@@ -470,11 +645,17 @@ const pageFrame = document.getElementById("pageFrame");
 
 tabBar.style.display = "flex";
 tabBar.style.alignItems = "center";
-tabBar.style.padding = "10px 5px";
-tabBar.style.background = "#111";
+tabBar.style.padding = "10px 2px";
+tabBar.style.background = "#000";
 
 
-menuIcon.addEventListener("click", openSidebar);
+menuIcon.addEventListener("click", () => {
+  if (sidebar.classList.contains("active")) {
+    closeSidebar();
+  } else {
+    openSidebar();
+  }
+});
 overlay.addEventListener("click", closeSidebar);
 function openSidebar() {
   sidebar.classList.add("active");
@@ -483,7 +664,9 @@ function openSidebar() {
   document.querySelector(".floating-logo").classList.add("shrink");
   document.querySelector('.header').classList.add('shrink');
   document.getElementById("tabBar").classList.add('shrink');
+  document.getElementById("menuIcon").classList.add("active-menu-icon");
 }
+
 function closeSidebar() {
   sidebar.classList.remove("active");
   overlay.classList.remove("active");
@@ -491,6 +674,7 @@ function closeSidebar() {
   document.querySelector(".floating-logo").classList.remove("shrink");
   document.querySelector('.header').classList.remove('shrink');
   document.getElementById("tabBar").classList.remove('shrink');
+  document.getElementById("menuIcon").classList.remove("active-menu-icon");
 }
 
 document.addEventListener("click", (e) => {
@@ -515,9 +699,18 @@ function addTab(label, url) {
     existingTabs.push({ label, url });
     saveTabs(existingTabs);
   }
-
+  const linkBtn = document.getElementById("linkDownloadBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
+  const gameLogBtn = document.getElementById("gameLogBtn");
+if (gameLogBtn) {
+  if (label === "MEGA888" || label === "PUSSY888" || label === "918KISS" || label === "SCR888H5") {
+    gameLogBtn.classList.add("active-gamelog");
+  } else {
+    gameLogBtn.classList.remove("active-gamelog");
+  }
+}
+
   if (liveBtn) {
     if (label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
@@ -527,18 +720,44 @@ function addTab(label, url) {
     }
   }
 
+  if (linkBtn) {
+  if (label === "LINK DOWNLOAD") {
+    linkBtn.classList.add("active-linkdownload");
+  } else {
+    linkBtn.classList.remove("active-linkdownload");
+  }
+}
   loadPage(url);
   renderTabs();
+  updateGameLogCheckmarks();
 }
 
 function closeTab(label) {
   let tabs = getTabs().filter(tab => tab.label !== label);
   saveTabs(tabs);
   renderTabs();
+  updateGameLogCheckmarks();
+  
+  const gameLogBtn = document.getElementById("gameLogBtn");
+  const liveBtn = document.getElementById("liveChatBtn");
+  const linkBtn = document.getElementById("linkDownloadBtn");
+
   if (tabs.length > 0) {
-    loadPage(tabs[tabs.length - 1].url);
+    const lastTab = tabs[tabs.length - 1];
+    loadPage(lastTab.url);
+
+    // ✅ Set status aktif tombol sesuai tab terakhir
+    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+    gameLogBtn?.classList.toggle("active-gamelog", gameLogLabels.includes(lastTab.label));
+    liveBtn?.classList.toggle("active-livechat", lastTab.label === "LIVE CHAT");
+    linkBtn?.classList.toggle("active-linkdownload", lastTab.label === "LINK DOWNLOAD");
+
   } else {
+    // Tidak ada tab tersisa → matikan semua status aktif
     pageFrame.src = "";
+    gameLogBtn?.classList.remove("active-gamelog");
+    liveBtn?.classList.remove("active-livechat");
+    linkBtn?.classList.remove("active-linkdownload");
   }
 }
  
@@ -551,12 +770,12 @@ function renderTabs() {
     tabElement.className = "tab";
     tabElement.draggable = true;
     tabElement.dataset.index = index;
-    tabElement.style.background = "#222";
-    tabElement.style.color = "gold";
-    tabElement.style.padding = "2px 3px";
+    tabElement.style.background = "rgba(255, 255, 255, 0.04)";
+    tabElement.style.color = "rgba(255, 255, 255, 0.85)";
+    tabElement.style.padding = "6px 16px";
     tabElement.style.marginRight = "0px";
-    tabElement.style.borderRadius = "3px";
-    tabElement.style.border = "1px solid gold";
+    tabElement.style.borderRadius = "6px";
+    tabElement.style.border = "1px solid #303030";
     tabElement.style.display = "inline-flex";
     tabElement.style.alignItems = "center";
     tabElement.style.fontSize = "14px";
@@ -602,9 +821,11 @@ function renderTabs() {
     });
 
     tabElement.onclick = () => {
-  loadPage(tab.url);
+    loadPage(tab.url);
 
+  const gameLogBtn = document.getElementById("gameLogBtn");
   const liveBtn = document.getElementById("liveChatBtn");
+  const linkBtn = document.getElementById("linkDownloadBtn");
   if (liveBtn) {
     if (tab.label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
@@ -612,6 +833,21 @@ function renderTabs() {
       liveBtn.classList.remove("active-livechat"); // 🟡 Tambah ini
     }
   }
+if (linkBtn) {
+    if (tab.label === "LINK DOWNLOAD") {
+      linkBtn.classList.add("active-linkdownload");
+    } else {
+      linkBtn.classList.remove("active-linkdownload");
+    }
+  }
+  if (gameLogBtn) {
+  const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+  if (gameLogLabels.includes(tab.label)) {
+    gameLogBtn.classList.add("active-gamelog");
+  } else {
+    gameLogBtn.classList.remove("active-gamelog");
+  }
+}
 };
 
     const currentFrame = document.getElementById("pageFrame");
@@ -688,20 +924,55 @@ function loadPage(url) {
   });
 }
 
+  // ✅ Ceklis GameLog Dropdown
+function updateGameLogCheckmarks() {
+  const tabs = getTabs();
+  const labelsOpen = tabs.map(tab => tab.label);
+  const dropdownLinks = document.querySelectorAll('#gameLogDropdown a');
+
+  dropdownLinks.forEach(link => {
+    const label = link.getAttribute("data-label");
+    const icon = link.querySelector(".check-icon");
+     if (labelsOpen.includes(label)) {
+     link.classList.add("tab-open");
+     icon.style.display = "inline";
+     } else {
+     link.classList.remove("tab-open");
+     icon.style.display = "none";
+    }
+  });
+}
+
 window.onload = () => {
   renderTabs();
   const tabs = getTabs();
+  updateGameLogCheckmarks();
   const activeUrl = localStorage.getItem("activeTabUrl");
   const match = tabs.find(tab => tab.url === activeUrl);
 
   const liveBtn = document.getElementById("liveChatBtn");
-  if (liveBtn) liveBtn.classList.remove("active-livechat"); // 🟡 Bersihkan dulu
+  const linkBtn = document.getElementById("linkDownloadBtn");
+  const gameLogBtn = document.getElementById("gameLogBtn");
+
+  if (liveBtn) liveBtn.classList.remove("active-livechat");
+  if (linkBtn) linkBtn.classList.remove("active-linkdownload");
+  if (gameLogBtn) gameLogBtn.classList.remove("active-gamelog");
 
   if (match) {
     loadPage(match.url);
+    updateGameLogCheckmarks();
 
     if (match.label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
+    }
+
+    if (match.label === "LINK DOWNLOAD") {
+      linkBtn.classList.add("active-linkdownload");
+    }
+
+    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+    if (gameLogBtn && gameLogLabels.includes(match.label)) {
+      gameLogBtn.classList.add("active-gamelog");
     }
   } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
@@ -794,43 +1065,64 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+ // ✅ Setelah login aman, baru lanjut
   const userNameText = document.getElementById("userNameText");
   const dropdownContent = document.getElementById("dropdownContent");
   const userEmailElem = document.getElementById("userEmail");
+  const dropdownWrapper = document.querySelector(".user-dropdown");
+  const userButton = document.getElementById("userName");
 
- if (userNameText && dropdownContent) {
+  if (userNameText && dropdownContent && dropdownWrapper && userButton) {
+    const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
     const nameParts = loginData.name.trim().split(" ");
     const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
       ? nameParts[0]
       : loginData.name;
-
     userNameText.textContent = displayName;
+    if (userEmailElem) userEmailElem.textContent = loginData.email;
 
-    // ✅ Set hanya elemen email, bukan seluruh dropdown content
-    if (userEmailElem) {
-      userEmailElem.textContent = loginData.email;
-    }
+    // 1. Hover: tampilkan dropdown
+    dropdownWrapper.addEventListener("mouseenter", () => {
+      dropdownContent.style.display = "block";
+    });
 
-   const dropdownWrapper = document.querySelector(".user-dropdown");
-  dropdownWrapper.addEventListener("mouseenter", () => {
-  dropdownContent.style.display = "block";
+    // 2. Hover keluar: sembunyikan jika belum diklik
+   dropdownWrapper.addEventListener("mouseleave", () => {
+  // Jika sedang force-open (hasil dari klik), biarkan tetap tampil
+  if (dropdownWrapper.classList.contains("force-open")) return;
+
+  // Kalau bukan dari klik, artinya hanya hover → tutup dropdown
+  dropdownContent.style.display = "none";
+  userButton.classList.remove("active-user-button");
 });
 
-    dropdownWrapper.addEventListener("mouseleave", () => {
-  dropdownContent.style.display = "none";
+    // 3. Klik user button = toggle tampil dan class
+   userButton.addEventListener("click", (e) => {
+  e.stopPropagation(); // 🛑 ini bantu cegah konflik click luar
+  const isOpen = dropdownWrapper.classList.toggle("force-open");
+  dropdownContent.style.display = isOpen ? "block" : "none";
+  userButton.classList.toggle("active-user-button", isOpen);
+});
+
+    // 4. Klik di luar dropdown → tutup semua
+   document.addEventListener("click", (e) => {
+  if (!dropdownWrapper.contains(e.target)) {
+    dropdownContent.style.display = "none";
+    dropdownWrapper.classList.remove("force-open");
+    userButton.classList.remove("active-user-button");
+  }
 });
   }
 
+  // ✅ Tombol logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("gmailLogin");
       sessionStorage.setItem("forceLogout", "1");
-
       if (window.google?.accounts?.id) {
         google.accounts.id.disableAutoSelect();
       }
-
       window.location.href = "https://5g88-login.vercel.app/";
     });
   }
@@ -848,26 +1140,69 @@ document.addEventListener("DOMContentLoaded", () => {
     const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
     document.getElementById('dateTime').textContent = timeString;
   }
-
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
-  window.addEventListener("message", async function (e) {
-    if (e.origin !== "https://5g88-logogame.vercel.app") return;
+window.addEventListener("message", async function (e) {
+  // ✅ Daftar asal (origin) yang dibenarkan
+  const allowedOrigins = [
+    "https://5g88-logogame.vercel.app","https://5g88-userlivechatphp.vercel.app",
+    "https://searcfile.github.io",
+    "https://searcfile.github.io/5G88-editor/mega888/",
+    "https://searcfile.github.io/5G88-editor/pussy888/",
+    "https://searcfile.github.io/5G88-editor/918kiss/",
+    "https://searcfile.github.io/5G88-editor/scr888h5/",
+    "https://5g88-main.vercel.app"
+  ];
 
-    const data = e.data;
+  // ❌ Tolak jika bukan dari sumber yang sah
+  if (!allowedOrigins.includes(e.origin)) {
+    console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
+    return;
+  }
 
-    if (data && data.action === "copy-image" && data.url) {
-      try {
-        const response = await fetch(data.url);
-        const blob = await response.blob();
-        const item = new ClipboardItem({ [blob.type]: blob });
-        await navigator.clipboard.write([item]);
-      } catch (err) {
-        console.error(err);
-      }
+  const data = e.data;
+
+  // ✅ Tampilkan dot merah LiveChat dari iframe
+  if (data?.action === "show-livechat-notif") {
+    const livechatDot = document.getElementById("livechatDot");
+    if (livechatDot) livechatDot.style.display = "block";
+  }
+
+  // ✅ Sembunyikan dot merah LiveChat dari iframe
+  else if (data?.action === "hide-livechat-notif") {
+    const livechatDot = document.getElementById("livechatDot");
+    if (livechatDot) livechatDot.style.display = "none";
+  }
+
+  // ✅ Untuk salin gambar dari base64
+  else if (data?.action === "copy-image-base64" && data.base64) {
+    try {
+      const response = await fetch(data.base64);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+      console.log("✅ Gambar dari base64 telah disalin.");
+    } catch (err) {
+      console.error("❌ Gagal salin gambar dari base64:", err);
+      alert("❌ Gagal salin gambar dari base64.");
     }
-  });
+  }
+
+  // ✅ Untuk salin gambar dari URL
+  else if (data?.action === "copy-image" && data.url) {
+    try {
+      const response = await fetch(data.url);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+      console.log("✅ Gambar dari URL telah disalin.");
+    } catch (err) {
+      console.error("❌ Gagal salin gambar dari URL:", err);
+      alert("❌ Gagal salin gambar dari URL.");
+    }
+  }
+});
 
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
