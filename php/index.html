@@ -240,6 +240,14 @@
 
     const autoIntervals = {};
 
+  function refreshList(name) {
+  const count = parseInt(document.getElementById(`count-${name}`).value) || 3;
+  const randomTips = shuffleArray(window.tipData[name]).slice(0, count);
+  localStorage.setItem(`tips-${name}`, JSON.stringify(randomTips));
+
+  renderTips(name, randomTips);
+}
+
  function createPlatform(name, tips, rowId) {
   const container = document.createElement('div');
   container.className = 'platform-box';
@@ -323,16 +331,6 @@ function renderTips(name, tips) {
 
   el.innerHTML = content;
   updateTime(name);
-}
-
-    function refreshList(name) {
-  const count = parseInt(document.getElementById(`count-${name}`).value) || 3;
-  const randomTips = shuffleArray(window.tipData[name]).slice(0, count);
-
-  // Simpan hasil tips ke localStorage
-  localStorage.setItem(`tips-${name}`, JSON.stringify(randomTips));
-
-  renderTips(name, randomTips);
 }
 
     function copyTips(name) {
