@@ -242,49 +242,66 @@
 
     const autoIntervals = {};
 
-function createPlatform(name, tips, rowId) {
-  const container = document.createElement("div");
-  container.classList.add("box");
+    function createPlatform(name, tips, rowId) {
+  const container = document.createElement('div');
+  container.className = 'platform-box';
+  container.setAttribute('data-platform', name.toLowerCase());
+
+  const tipListId = `tips-${name}`;
+  const countId = `count-${name}`;
+  const autoId = `auto-${name}`;
+  const durationId = `duration-${name}`;
+  const timeId = `time-${name}`;
 
   container.innerHTML = `
-    <div class="box-header">${name}</div>
-    <div class="box-content" id="tips-${name}"></div>
-    <div class="row-center">
-      <button class="btn-number" data-platform="${name}">NUMBER</button>
-      <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
-      <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
+    <div class="platform-header">${name}</div>
+    <div class="tip-list" id="${tipListId}"></div>
+    <div class="bottom-controls">
+      <div class="row-center">
+        <button class="btn-number" data-platform="${name}">NUMBER</button>
+        <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
+        <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
+      </div>
+      <div class="row-center">
+        <div class="input-group">
+          <input class="count-input" type="number" id="${countId}" value="3" min="1" max="${tips.length}" title="Game List">
+          <div class="input-label">List Input</div>
+        </div>
+        <div class="input-group">
+          <label class="switch">
+            <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
+            <span class="slider"></span>
+          </label>
+          <div class="input-label">Off-On</div>
+        </div>
+        <div class="input-group">
+          <input class="duration-input" type="number" value="0.5" min="1" id="${durationId}" title="Second">
+          <div class="input-label">Time</div>
+        </div>
+      </div>
+      <div class="timestamp" id="${timeId}">Last Updated on --</div>
     </div>
-    <div class="row-center">
-      <input id="count-${name}" class="input-count" type="number" min="1" value="3">
-      <label class="toggle">
-        <input type="checkbox" id="toggle-${name}">
-        <span class="slider"></span>
-      </label>
-      <input id="interval-${name}" class="input-time" type="number" min="0.1" step="0.1" value="0.5">
-    </div>
-    <div class="last-updated" id="updated-${name}">Last Updated on --</div>
   `;
 
   document.getElementById(rowId).appendChild(container);
-
-  // Generate initial list (tanpa nomor)
   refreshList(name);
 
-  // Restore state tombol NUMBER
+  // ✅ Auto refresh restore
+  const autoCheckbox = document.getElementById(`auto-${name}`);
+  const savedStatus = localStorage.getItem(`auto-${name}`);
+  if (savedStatus === 'on') {
+    autoCheckbox.checked = true;
+    toggleAuto(name);
+  }
+
+  // ✅ Number toggle restore
   const numberingKey = `numbering-${name}`;
   const numberingState = localStorage.getItem(numberingKey);
   const btnNumber = container.querySelector('.btn-number');
-
   btnNumber.addEventListener('click', () => toggleNumbering(name));
-
-  // ✅ Apply numbering hanya jika localStorage === "on" dan box tidak kosong
   if (numberingState === 'on') {
     btnNumber.classList.add('active');
-
-    const tipBox = document.getElementById(`tips-${name}`);
-    if (tipBox && tipBox.innerText.trim() !== "") {
-      applyNumbering(name);
-    }
+    applyNumbering(name);
   }
 }
     function renderTips(name, tips) {
