@@ -422,7 +422,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 78*/
+/*Mcng 123 123 6666*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -454,10 +454,18 @@ const checkLivechatNotif = () => {
 };
 
 function initLivechatNotifListener() {
-  firebase.database().ref("livechat/messages").on("value", snapshot => {
-    const livechatDot = document.getElementById("livechatDot");
-    if (!livechatDot) return;
+  const livechatDot = document.getElementById("livechatDot");
+  if (!livechatDot) return;
 
+  firebase.database().ref("livechat/messages").on("child_added", (snapshot) => {
+    const msg = snapshot.val();
+    if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
+      livechatDot.style.display = "inline";
+    }
+  });
+
+  // Cek awal jika sudah ada pesan lama yang belum dibaca
+  firebase.database().ref("livechat/messages").once("value").then(snapshot => {
     let foundUnread = false;
     snapshot.forEach(child => {
       const msg = child.val();
