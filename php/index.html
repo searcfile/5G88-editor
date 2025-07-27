@@ -239,7 +239,15 @@
     };
 
     const autoIntervals = {};
-
+    
+function shuffleArray(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
   function refreshList(name) {
   const count = parseInt(document.getElementById(`count-${name}`).value) || 3;
   const randomTips = shuffleArray(window.tipData[name]).slice(0, count);
