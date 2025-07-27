@@ -248,6 +248,20 @@
   renderTips(name, randomTips);
 }
 
+function renderTips(name, tips) {
+  const el = document.getElementById('tips-' + name);
+  const numberBtn = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-number`);
+  let content = `<strong>${name}</strong><br>=========<br>`;
+
+  tips.forEach((t, i) => {
+    const line = numberBtn && numberBtn.classList.contains('active') ? `${i + 1}. ${t}` : t;
+    content += `${line}<br>`;
+  });
+
+  el.innerHTML = content;
+  updateTime(name);
+}
+
  function createPlatform(name, tips, rowId) {
   const container = document.createElement('div');
   container.className = 'platform-box';
@@ -318,19 +332,6 @@
     autoCheckbox.checked = true;
     toggleAuto(name); 
   }
-}
-function renderTips(name, tips) {
-  const el = document.getElementById('tips-' + name);
-  const numberBtn = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-number`);
-  let content = `<strong>${name}</strong><br>=========<br>`;
-
-  tips.forEach((t, i) => {
-    const line = numberBtn && numberBtn.classList.contains('active') ? `${i + 1}. ${t}` : t;
-    content += `${line}<br>`;
-  });
-
-  el.innerHTML = content;
-  updateTime(name);
 }
 
     function copyTips(name) {
