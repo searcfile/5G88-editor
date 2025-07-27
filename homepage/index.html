@@ -422,7 +422,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 77776*/
+/*Mcng 123 123 99*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -437,38 +437,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-function checkLivechatNotif() {
-  const livechatDot = document.getElementById("livechatDot");
-  if (!livechatDot) {
-    console.warn("⚠️ Element #livechatDot tak jumpa");
-    return;
-  }
-
-  firebase.database().ref("livechat/messages").once("value").then(snapshot => {
-    let foundUnread = false;
-    snapshot.forEach(child => {
-      const msg = child.val();
-      if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
-        foundUnread = true;
-      }
-    });
-    console.log("🔍 foundUnread:", foundUnread);
-    livechatDot.style.display = foundUnread ? "inline" : "none";
-  });
-}
-
-function initLivechatNotifListener() {
+const checkLivechatNotif = () => {
   const livechatDot = document.getElementById("livechatDot");
   if (!livechatDot) return;
 
-  firebase.database().ref("livechat/messages").on("child_added", (snapshot) => {
-    const msg = snapshot.val();
-    if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
-      livechatDot.style.display = "inline";
-    }
-  });
-
-  // Cek awal jika sudah ada pesan lama yang belum dibaca
   firebase.database().ref("livechat/messages").once("value").then(snapshot => {
     let foundUnread = false;
     snapshot.forEach(child => {
@@ -479,7 +451,22 @@ function initLivechatNotifListener() {
     });
     livechatDot.style.display = foundUnread ? "inline" : "none";
   });
-}
+};
+
+window.addEventListener("load", checkLivechatNotif);
+
+// 🔁 Pantau realtime juga
+firebase.database().ref("livechat/messages").on("value", snapshot => {
+  const livechatDot = document.getElementById("livechatDot");
+  let foundUnread = false;
+  snapshot.forEach(child => {
+    const msg = child.val();
+    if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
+      foundUnread = true;
+    }
+  });
+  if (livechatDot) livechatDot.style.display = foundUnread ? "inline" : "none";
+});
 // ✅ Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
@@ -1112,8 +1099,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "https://5g88-login.vercel.app/";
     return;
   }
-  checkLivechatNotif();         // 🔴 Cek awal dot merah LiveChat
-  initLivechatNotifListener();
 
  // ✅ Setelah login aman, baru lanjut
   const userNameText = document.getElementById("userNameText");
