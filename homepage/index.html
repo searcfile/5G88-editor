@@ -422,7 +422,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 36*/
+/*Mcng 123 123 48*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -1039,11 +1039,13 @@ function saveLoginFromURL() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
   const email = params.get("email");
+  const photo = params.get("photo"); // ✅ Tambah ini
 
   if (name && email && isValidEmail(email)) {
     localStorage.setItem("gmailLogin", JSON.stringify({
       name: decodeURIComponent(name),
-      email: decodeURIComponent(email).toLowerCase()
+      email: decodeURIComponent(email).toLowerCase(),
+      photo: decodeURIComponent(photo || "") // ✅ Simpan photo
     }));
     cleanUrl();
   }
