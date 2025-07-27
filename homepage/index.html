@@ -731,6 +731,43 @@ if (gameLogBtn) {
   updateGameLogCheckmarks();
 }
 
+function sendLoginToIframe() {
+  const iframe = document.getElementById("pageFrame");
+  if (!iframe || !iframe.contentWindow) return;
+
+  const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+
+  if (user.email) {
+    console.log("📤 Mengirim data user ke iframe:", user); // ⬅️ Tambah console log di sini
+
+    iframe.contentWindow.postMessage({
+      type: "user-login",
+      user: {
+        name: user.name,
+        email: user.email,
+        photo: user.photo
+      }
+    }, "*");
+  } else {
+    console.warn("⚠️ User belum login atau data tidak lengkap");
+  }
+}
+
+  // 🔁 Jalankan saat iframe load DAN saat tab LiveChat dibuka
+  const liveChatBtn = document.getElementById("liveChatBtn");
+  if (liveChatBtn) {
+    liveChatBtn.addEventListener("click", () => {
+      setTimeout(() => {
+        sendLoginToIframe();
+      }, 500); // beri waktu iframe sempat load
+    });
+  }
+
+  const iframe = document.getElementById("pageFrame");
+  if (iframe) {
+    iframe.addEventListener("load", sendLoginToIframe);
+  }
+
 function closeTab(label) {
   let tabs = getTabs().filter(tab => tab.label !== label);
   saveTabs(tabs);
