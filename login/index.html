@@ -258,15 +258,18 @@ function signInWithGoogle() {
       })
       .then(() => {
         console.log("✅ Login data saved to Firebase");
+const photo = user.photoURL;
 
-        localStorage.setItem("gmailLogin", JSON.stringify({
-          name: user.displayName,
-          email: user.email
-        }));
+localStorage.setItem("gmailLogin", JSON.stringify({
+  name: user.displayName,
+  email: user.email,
+  photo: photo
+}));
 
-        const name = encodeURIComponent(user.displayName);
-        const email = encodeURIComponent(user.email);
-        window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}`;
+const name = encodeURIComponent(user.displayName);
+const email = encodeURIComponent(user.email);
+const photoURL = encodeURIComponent(photo || "");
+window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photoURL}`;
       })
       .catch(err => {
         console.error("❌ Gagal simpan ke Firebase:", err);
