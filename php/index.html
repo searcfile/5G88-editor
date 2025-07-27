@@ -199,23 +199,6 @@
       color: #000; 
       text-align: center;
     }
-    .btn-number {
-  transition: transform 0.2s ease;
-  font-size: 14px;
-  background: black;
-  border: none;
-  color: gold;
-  cursor: pointer;
-  border-radius: 6px;
-  padding: 4px 12px;
-  border: 1px solid white;
-}
-
-.btn-number:active {
-  background: #393939;
-  color: gold;
-  box-shadow: 0 0 10px white;
-}
   </style>
 </head>
 <body>
@@ -243,62 +226,53 @@
     const autoIntervals = {};
 
     function createPlatform(name, tips, rowId) {
-  const container = document.createElement('div');
-  container.className = 'platform-box';
-  container.setAttribute('data-platform', name.toLowerCase());
+      const container = document.createElement('div');
+      container.className = 'platform-box';
+      container.setAttribute('data-platform', name.toLowerCase());
 
-  const tipListId = `tips-${name}`;
-  const countId = `count-${name}`;
-  const autoId = `auto-${name}`;
-  const durationId = `duration-${name}`;
-  const timeId = `time-${name}`;
+      const tipListId = `tips-${name}`;
+      const countId = `count-${name}`;
+      const autoId = `auto-${name}`;
+      const durationId = `duration-${name}`;
+      const timeId = `time-${name}`;
 
-  container.innerHTML = `
-    <div class="platform-header">${name}</div>
-    <div class="tip-list" id="${tipListId}"></div>
-    <div class="bottom-controls">
-      <div class="row-center">
-  <button class="btn-number" onclick="toggleNumber('${name}')">NUMBER</button>
-  <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
-  <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
-</div>
+      container.innerHTML = `
+        <div class="platform-header">${name}</div>
+        <div class="tip-list" id="${tipListId}"></div>
+        <div class="bottom-controls">
+  <div class="row-center">
+    <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
+    <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
+  </div>
 
-      <div class="row-center">
-        <div class="input-group">
-          <input class="count-input" type="number" id="${countId}" value="3" min="1" max="${tips.length}" title="Game List">
-          <div class="input-label">List Input</div>
-        </div>
-
-        <div class="input-group">
-          <label class="switch">
-            <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
-            <span class="slider"></span>
-          </label>
-          <div class="input-label">Off-On</div>
-        </div>
-
-        <div class="input-group">
-          <input class="duration-input" type="number" value="0.5" min="1" id="${durationId}" title="Second">
-          <div class="input-label">Time</div>
-        </div>
-      </div>
-
-      <div class="timestamp" id="${timeId}">Last Updated on --</div>
+  <div class="row-center">
+    <div class="input-group">
+      <input class="count-input" type="number" id="${countId}" value="3" min="1" max="${tips.length}" title="Game List">
+      <div class="input-label">List Input</div>
     </div>
-  `;
 
-  document.getElementById(rowId).appendChild(container);
+    <div class="input-group">
+      <label class="switch">
+        <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
+        <span class="slider"></span>
+      </label>
+      <div class="input-label">Off-On</div>
+    </div>
 
-  // ✅ Restore status tombol NUMBER
-  const numberSaved = localStorage.getItem(`show-number-${name}`);
-  if (numberSaved === 'on') {
-    showNumberStatus[name] = true;
-  }
+    <div class="input-group">
+      <input class="duration-input" type="number" value="0.5" min="1" id="${durationId}" title="Second">
+      <div class="input-label">Time</div>
+    </div>
+  </div>
 
-  // ✅ Refresh tips setelah status toggle dikembalikan
-  refreshList(name);
+  <div class="timestamp" id="${timeId}">Last Updated on --</div>
+</div>
+      `;
 
-  // ✅ Restore status Auto-On
+      document.getElementById(rowId).appendChild(container);
+      refreshList(name);
+
+    
   const autoCheckbox = document.getElementById(`auto-${name}`);
   const savedStatus = localStorage.getItem(`auto-${name}`);
   if (savedStatus === 'on') {
@@ -306,26 +280,21 @@
     toggleAuto(name); 
   }
 }
-function renderTips(name, tips) {
+    function renderTips(name, tips) {
+      const el = document.getElementById('tips-' + name);
+      let content = `<strong>${name}</strong><br>=========<br>`;
+      tips.forEach((t, i) => content += `${i + 1}. ${t}<br>`);
+      el.innerHTML = content;
+      updateTime(name);
+    }
+
+    function renderTips(name, tips) {
   const el = document.getElementById('tips-' + name);
   let content = `<strong>${name}</strong><br>=========<br>`;
-  const withNumber = showNumberStatus[name] ?? (localStorage.getItem(`show-number-${name}`) === 'on');
-  
-  tips.forEach((t, i) => {
-    content += withNumber ? `${i + 1}. ${t}<br>` : `${t}<br>`;
-  });
+  tips.forEach((t) => content += `${t}<br>`);
   el.innerHTML = content;
   updateTime(name);
 }
-
-    function refreshList(name) {
-      const count = parseInt(document.getElementById('count-' + name).value) || 3;
-      const list = platformData[name];
-      const shuffled = [...list].sort(() => 0.5 - Math.random());
-      const random = shuffled.slice(0, count);
-      renderTips(name, random);
-    }
-
     function copyTips(name) {
   const text = document.getElementById('tips-' + name).innerText;
   const button = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-copy`);
@@ -425,14 +394,6 @@ allPlatforms.forEach((name, i) => {
   const rowId = `row-${rowIndex}`;
   createPlatform(name, platformData[name], rowId);
 });
-let showNumberStatus = {};
-
-function toggleNumber(name) {
-  const current = showNumberStatus[name] ?? false;
-  showNumberStatus[name] = !current;
-  localStorage.setItem(`show-number-${name}`, showNumberStatus[name] ? 'on' : 'off');
-  refreshList(name); // Update tampilan list
-}
   </script>
 </body>
 </html>
