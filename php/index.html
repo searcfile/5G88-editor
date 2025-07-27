@@ -2,1692 +2,460 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>918KISS Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5G88 Tips</title>
   <style>
-     body {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      font-family: 'Source Sans 3', 'Source Sans Pro', Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.42857;
-      font-weight: 400;
-      background-color: #000;
-      margin:0 0 20px;
+    body {
+      background: black;
+      color: gold;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 110px;
+      margin: 0 ;
       overflow-x: hidden;
+    }
+    html {
       scrollbar-width: none;
       -ms-overflow-style: none;
-      }
-    .screenshot-mode th {
-    border: 1px solid #ddd !important;
+      overflow-y: scroll;
     }
-    html { 
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+   html::-webkit-scrollbar {
+     display: none;
     }
-     html.body::-webkit-scrollbar {
-      display: none;
-    }
-      .header {
-      background-color: gold;
-      height: 90px;
+    .header {
       width: 100%;
+      height: 90px;
+      background: gold;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 10px;
-      font-size: 30px;
       color: black;
       font-weight: bold;
-     }
-    table {
-      width: 65%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 26px;
-      }
-    th {
-      padding: 22px 26px;
-      border: 2.5px solid #ddd;
-      background: #605ca8;
-      color: white;
+      font-size: 30px;
+      position: fixed;
+      top: 0;
+      box-shadow: 0 2px 10px #ffd70088;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .platform-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .platform-box {
+      background: gold;
+      color: black;
+      border: 1px solid white;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 280px;
+      padding: 10px;
+    }
+
+    .platform-header {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      border-bottom: 2px solid black;
+      width: 100%;
+    }
+
+    .tip-list {
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: left;
+      padding: 10px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      height: 130px;
+      width: 90%;
+      margin-bottom: 20px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      scrollbar-width: none; 
+      -ms-overflow-style: none;
+      border: 1px solid black;
+    }
+    .tip-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .bottom-controls {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .row-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .count-input, .duration-input {
+      width: 60px;
+      padding: 2px;
+      border-radius: 4px;
+      border: 1px solid black;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 22px;
+   }
+    .auto-toggle label {
+      display: block;
+      width: 100%;
+      height: 100%;
+   }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: red;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: green;
+    }
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+    .btn-refresh, .btn-copy {
+      transition: transform 0.2s ease;
+      font-size: 14px;
+      background: black;
+      border: none;
+      color: gold;
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 4px 12px;
+      border: 1px solid white;
+    }
+    .btn-refresh:active, .btn-copy:active {
+      background:transparant;
+      color:gold;
+      box-shadow: 0 0 10px white;
+    }
+    .btn-refresh:hover, .btn-copy:hover {
+      background:#393939;
+      color:gold;
+    }
+    
+    .timestamp {
+      font-size: 10px;
+      color: black;
       text-align: center;
-     }
-    td {
-      padding: 22px 26px; 
-      border: 1px solid #ddd;
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      margin-top: 6px;
+    }
+    .duration-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .duration-label {
+      font-size: 10px;
+      margin-top: 2px;
+      color: #000;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 2px;
+    }
+    .input-label {
+      font-size: 12px;
+      margin-top: 2px;
+      color: #000; 
       text-align: center;
-     }
-    #gameLog tbody td {
-      padding-top: 10px;
-      padding-bottom: 10px;
-      line-height: 1.1;
-     }
-    .log-row {
-      color: rgb(51, 51, 51);
-      font-size: 26px; 
-      white-space: nowrap;
-      background-color: #fff;
-     }
-     th:nth-child(2),
-     td:nth-child(2) {
-     width: 0px;
-     }
-     th:nth-child(7),
-     td:nth-child(7) {
-     width: 5px; 
-     }
-  #gameLog td:nth-child(5),
-  #gameLog th:nth-child(5) {
-    width: 5px;
-  }
-  #gameLog th:first-child,
-  #gameLog td:first-child {
-   width: 5px; 
-   white-space: nowrap;
-  }
-  #gameLog th:nth-child(6),
-  #gameLog td:nth-child(6) {
-   width: 5px;
-  }
-  #gameLog th:nth-child(3),
-  #gameLog td:nth-child(3) {
-   width: 5px; 
-  }
-  #gameLog th:nth-child(4),
-  #gameLog td:nth-child(4) {
-   width: 5px; 
-  }
- .table-id-highlight {
-   width: 38px;               
-   height: 34px;             
-   background-color: #d2d6de; 
-   color: #000;               
-   font-weight: bold;         
-   font-size: 23.5px;          
-   border-radius: 45%;        
-   display: flex;             
-   justify-content: center;   
-   align-items: center;      
-   margin: 10px auto;         
     }
-    button {
-     padding: 5px 10px;
-     font-size: 14px;
-     background: gold;
-     color: black;
-     border: none;
-     border-radius: 6px;
-     cursor: pointer;
-     border: 1px solid black;
-     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-    button:hover {
-     background: #ffe34d;
-     color: black;
-    }
-    button:active {
-     background: #dbb900;
-     color: black;
-    }
-    select, input {
-      padding: 3px 6px;
-      font-size: 13px;
-      margin-left: 10px;
-      border-radius: 5px;
-      background: #141414;
-      border: 1px solid #424242;
-      color: white;
-      transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-    input:hover {
-      border: 1px solid #ffe34d;
-    }
-    input:focus {
-      border: 1px solid gold;
-      outline: none;
-    }
-    select:hover {
-      border: 1px solid #ffe34d;
-    }
-    select:focus {
-      border: 1px solid gold;
-      outline: none;
-    }
-    #nowTime {
-     font-weight: bold;
-     margin-left: 10px;
-     color: gold;
-    }
-    .set-score-row td {
-     color: rgb(51, 51, 51);
-     font-size: 26px;
-     padding-top: 22px !important;
-     padding-bottom: 22px !important;
-     line-height: 1.1 !important;
-     white-space: nowrap;
-     background-color: #fff;
-    }
-    .set-score-row td.negatif {
-     color: #dd4b39;
-     font-weight: bold;
-     font-size: 26px;
-     background-color: #fff;
-    }
-    .set-score-row td.setscore {
-     color: #dd4b39;
-     font-weight: 750;;
-     font-size: 26px;
-     white-space: nowrap;
-     background-color: #fff;
-    }
-    #gameSelect {
-     max-height: 38px;
-     overflow-y: auto;
-     cursor: pointer;
-     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-    #gameSelect:hover {
-    border: 1px solid #ffe34d;
-    }
-    #gameSelect:focus {
-    border: 1px solid gold;
-    outline: none;
-    }
-    .reset-button {
-     background:red;
-     color:white;
-     margin-bottom:15px;
-     border: 1px solid white;
-     padding:0px 15px;
-     height:32px;
-     font-size: 14px;
-    }
-    .reset-button:hover {
-     background: #ff4d4d;
-     color: white;
-    }
-    .reset-button:active {
-     background: #bf0000;
-     color: white;
-    }
+  .btn-number {
+  background: black;
+  color: gold;
+  border: 1px solid white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-number.active {
+  background: gold;
+  color: black;
+}
   </style>
 </head>
 <body>
-<div class="header">918KISS GENERATE</div>
-<button onclick="resetLog()" class="reset-button">Reset Log</button>
-
-<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
-  <label for="gameSelect" style="color: white;padding-left:5px;">Game:</label>
-  <select id="gameSelect" class="select2" style="height: 38px; font-size: 16px; color: white;">
-    <option value="">-- Choose --</option>
-    <option value="India">India</option>
-    <option value="IreLand">IreLand</option>
-    <option value="Victory">Victory</option>
-    <option value="Panda">Panda</option>
-    <option value="Twister">Twister</option>
-    <option value="PayDirt">PayDirt</option>
-    <option value="WildFox">WildFox</option>
-    <option value="PirateShip">PirateShip</option>
-    <option value="JinQianWa">JinQianWa</option>
-    <option value="Cleopatra">Cleopatra</option>
-    <option value="Garden">Garden</option>
-    <option value="FiveDragons">FiveDragons</option>
-    <option value="SteamTower">SteamTower</option>
-    <option value="Alice">Alice</option>
-    <option value="GreatStars">GreatStars</option>
-    <option value="SAFARI Heat">SAFARI Heat</option>
-    <option value="PatherMoon">PatherMoon</option>
-    <option value="Rally">Rally</option>
-    <option value="BigShot">BigShot</option>
-    <option value="Thai">Thai</option>
-    <option value="SeaCaptain">SeaCaptain</option>
-    <option value="TreasureIsland">TreasureIsland</option>
-    <option value="GoldenTree">GoldenTree</option>
-    <option value="Magician">Magician</option>
-    <option value="SeaWorld">SeaWorld</option>
-    <option value="Samurai">Samurai</option>
-    <option value="circus">circus</option>
-    <option value="TopGun">TopGun</option>
-    <option value="Boxing">Boxing</option>
-    <option value="BonusBears">BonusBears</option>
-    <option value="JAPAN">JAPAN</option>
-    <option value="Boyking">Boyking</option>
-    <option value="ShiningStars">ShiningStars</option>
-    <option value="DolphinReef">DolphinReef</option>
-    <option value="EmperorGate">EmperorGate</option>
-    <option value="IrishLuck">IrishLuck</option>
-    <option value="CookiePop">CookiePop</option>
-    <option value="Wealth">Wealth</option>
-    <option value="Celebration">Celebration</option>
-    <option value="Prosperity">Prosperity</option>
-    <option value="CoyoteCash">CoyoteCash</option>
-    <option value="FairyGarden">FairyGarden</option>
-    <option value="GoldenLotus">GoldenLotus</option>
-    <option value="Tally Ho">Tally Ho</option>
-    <option value="Girls">Girls</option>
-    <option value="Dragon Gold">Dragon Gold</option>
-    <option value="Fame">Fame</option>
-    <option value="Motorcycle">Motorcycle</option>
-    <option value="ICELAND">ICELAND</option>
-    <option value="GreatBlue">GreatBlue</option>
-    <option value="Easter">Easter</option>
-    <option value="RobinHood">RobinHood</option>
-    <option value="ShuiHu">ShuiHu</option>
-  </select>
-
-  <label for="betSelect" style="color: white;">Bet:</label>
-  <select id="betSelect" style="height: 38px; font-size: 16px; color: white; cursor:pointer;transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);"></select>
-
-  <label for="pecahanSelect" style="color: white;">Pecahan:</label>
-  <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;cursor:pointer;transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);"></select>
-
-  <button onclick="setNow()" style="height: 38px; padding: 0 12px; font-size: 16px;">Click Now</button>
-
-  <label for="manualTime" style="color: white;">Set Time:</label>
-  <input type="text" id="manualTime" placeholder="Add Date & Time"
-         style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" />
+  <div class="header">🎰 TIPS GENERATOR 🎰</div>
+  
+  <div class="platform-row" id="row-1"></div>
+  <div class="platform-row" id="row-2"></div>
+  <div class="platform-row" id="row-3"></div>
 </div>
-
-<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-
-  <button onclick="generateLog()" style="height: 38px;">Change</button>
-
-  <div style="display: flex; align-items: center;">
-    <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;">Add Score (optional):</label>
-    <input type="number" id="manualScore" value="0"
-           style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
-  </div>
-
-  <div style="display: flex; align-items: center;">
-    <label for="manualJackpot" style="color: white; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
-    <input type="number" id="manualJackpot" value="0"
-           style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
-  </div>
- <div style="display: flex; align-items: center;">
-    <label for="manualScoreInput" style="color: white; height: 38px; display: flex; align-items: center;">Support Amount:</label>
-    <input type="number" id="manualScoreInput" value="0"
-           style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
-  </div>
-  <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
-  
-  <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
-  <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button>
- </div>
-  
-<table id="gameLog">
-  <thead>
-    <tr>
-      <th>GameName</th>
-      <th>TableID</th>
-      <th>Bet</th>
-      <th>Win</th>
-      <th>BeginMoney</th>
-      <th>EndMoney</th>
-      <th>DateTime</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
-<div id="imageEditorCanvas" style="
-  margin-top: 30px;
-  width: 1500px;
-  height: 1000px;
-  background-color: #111;
-  border: 2px dashed gold;
-  position: relative;
-  overflow: hidden;
-">
-
-  <!-- Resizeable + Draggable Image Box -->
-  <div id="resizeBox" style="
-    position: absolute;
-    top: 50px;
-    left: 50px;
-    width: 792px;
-    height: 552px;
-    border: 2px solid white;
-    display: none;
-    cursor: move;
-  ">
-    <img id="copiedImage" src="" style="
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      pointer-events: none;
-    " />
-    <!-- Resize handle pojok kanan bawah -->
-    <div id="resizeHandle" style="
-      width: 14px;
-      height: 14px;
-      background: gold;
-      position: absolute;
-      right: -7px;
-      bottom: -7px;
-      cursor: nwse-resize;
-    "></div>
-  </div>
-
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-let hiddenRow = null;
-console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
-  const gameData = {
-
- "Magician": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "Girls": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Easter": {
-    bets: [1.00, 2.00, 4.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      4.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "RobinHood": {
-    bets: [1.50, 3.00, 4.50, 9.00, 15.00, 30.00],
-    pecahan: {
-      1.50: [30.00, 50.00, 100.00, 130.00],
-      3.00: [50.00, 80.00, 100.00, 150.00],
-      4.50: [80.00, 100.00, 130.00, 180.00],
-      9.00: [100.00, 130.00, 150.00, 200.00],
-      15.00: [130.00, 150.00, 180.00, 300.00],
-      30.00: [150.00, 180.00, 200.00, 500.00]
-    }
-    },
-    "ShuiHu": {
-    bets: [1.80, 4.50, 9.00, 18.00, 27.00],
-    pecahan: {
-      1.80: [30.00, 50.00, 70.00, 90.00],
-      4.50: [40.00, 60.00, 110.00, 160.00],
-      9.00: [60.00, 90.00, 110.00, 210.00],
-      18.00: [90.00, 110.00, 140.00, 310.00],
-      27.00: [110.00, 160.00, 210.00, 550.00]
-    }
-    },
-    "ICELAND": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "SeaWorld": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-   "Motorcycle": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "Dragon Gold": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Tally Ho": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "ShiningStars": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "TopGun": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "Celebration": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-     },
-    "FairyGarden": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "GreatStars": {
-    bets: [0.90,2.25, 4.50, 9.00, 45.00],
-    pecahan: {
-      0.90: [20.00, 40.00, 60.00, 80.00],
-      2.25: [30.00, 50.00, 100.00, 150.00],
-      4.50: [50.00, 80.00, 100.00, 200.00],
-      9.00: [80.00, 100.00, 130.00, 300.00],
-      45.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Boxing": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-     },
-    "JAPAN": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [30.00, 50.00, 100.00, 150.00],
-      5.00: [50.00, 80.00, 100.00, 200.00],
-      12.50: [80.00, 100.00, 130.00, 300.00],
-      25.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Samurai": {
-    bets: [0.90,2.25, 4.50, 9.00, 45.00],
-    pecahan: {
-      0.90: [20.00, 40.00, 60.00, 80.00],
-      2.25: [30.00, 50.00, 100.00, 150.00],
-      4.50: [50.00, 80.00, 100.00, 200.00],
-      9.00: [80.00, 100.00, 130.00, 300.00],
-      45.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Alice": {
-    bets: [1.50, 3.00, 4.50, 9.00, 15.00, 30.00],
-    pecahan: {
-      1.50: [30.00, 50.00, 100.00, 130.00],
-      3.00: [50.00, 80.00, 100.00, 150.00],
-      4.50: [80.00, 100.00, 130.00, 180.00],
-      9.00: [100.00, 130.00, 150.00, 200.00],
-      15.00: [130.00, 150.00, 180.00, 300.00],
-      30.00: [150.00, 180.00, 200.00, 500.00]
-    }
-    },
-   "IrishLuck": {
-    bets: [1.20, 1.50, 1.80, 2.10, 2.40, 2.70, 3.00, 6.00, 7.50, 15.00],
-    pecahan: {
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.50: [80.00, 100.00, 130.00, 180.00],
-      1.80: [50.00, 100.00, 200.00, 300.00],
-      2.10: [50.00, 100.00, 200.00, 300.00],
-      2.40: [50.00, 100.00, 200.00, 300.00],
-      2.70: [50.00, 100.00, 200.00, 300.00],
-      3.00: [50.00, 100.00, 200.00, 300.00],
-      6.00: [50.00, 100.00, 200.00, 300.00],
-      7.50: [80.00, 100.00, 200.00, 400.00],
-      15.00: [100.00, 300.00, 500.00, 750.00]
-    }
-    },
-   "Wealth": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Fame": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "DolphinReef": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-    "Boyking": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "circus": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "BigShot": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Rally": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "GoldenLotus": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "GreatBlue": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "CoyoteCash": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-    "Prosperity": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-    "BonusBears": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "SeaCaptain": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      1.25: [40.00, 60.00, 80.00, 100.00],
-      1.50: [60.00, 80.00, 100.00, 120.00],
-      1.75: [80.00, 100.00, 120.00, 140.00],
-      2.00: [100.00, 120.00, 140.00, 160.00],
-      2.25: [120.00, 140.00, 160.00, 180.00],
-      2.50: [140.00, 160.00, 180.00, 200.00],
-      6.25: [220.00, 240.00, 260.00, 280.00],
-      12.50: [240.00, 260.00, 280.00, 300.00],
-      25.00: [260.00, 280.00, 300.00, 500.00]
-    }
-    },
-   "India": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-    "EmperorGate": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-   "IreLand": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-   "GoldenTree": {
-    bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.50: [100.00, 130.00, 150.00, 200.00],
-      3.00: [130.00, 150.00, 180.00, 220.00],
-      3.75: [150.00, 180.00, 200.00, 240.00],
-      5.00: [180.00, 200.00, 220.00, 260.00],
-      7.50: [200.00, 240.00, 280.00, 320.00],
-      12.50: [350.00, 400.00, 450.00, 500.00],
-      15.00: [500.00, 550.00, 600.00, 650.00],
-      25.00: [650.00, 700.00, 750.00, 800.00]
-    }
-    },
-    "SAFARI Heat": {
-    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
-    pecahan: {
-      1.05: [30.00, 50.00, 100.00, 130.00],
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.35: [80.00, 100.00, 130.00, 180.00],
-      1.50: [100.00, 130.00, 150.00, 200.00],
-      3.75: [130.00, 150.00, 180.00, 220.00],
-      7.50: [150.00, 180.00, 200.00, 250.00],
-      15.00: [180.00, 200.00, 220.00, 300.00]
-    }
-    },
-    "Thai": {
-    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
-    pecahan: {
-      1.05: [30.00, 50.00, 100.00, 130.00],
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.35: [80.00, 100.00, 130.00, 180.00],
-      1.50: [100.00, 130.00, 150.00, 200.00],
-      3.75: [130.00, 150.00, 180.00, 220.00],
-      7.50: [150.00, 180.00, 200.00, 250.00],
-      15.00: [180.00, 200.00, 220.00, 300.00]
-    }
-    },
-    "PatherMoon": {
-    bets: [1.05, 1.20, 1.35, 1.50, 3.75, 7.50, 15.00],
-    pecahan: {
-      1.05: [30.00, 50.00, 100.00, 130.00],
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      1.35: [80.00, 100.00, 130.00, 180.00],
-      1.50: [100.00, 130.00, 150.00, 200.00],
-      3.75: [130.00, 150.00, 180.00, 220.00],
-      7.50: [150.00, 180.00, 200.00, 250.00],
-      15.00: [180.00, 200.00, 220.00, 300.00]
-    }
-    },
-   "Victory": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-    },
-   "Panda": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-   "Twister": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-    }
-    },
-   "PayDirt": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.50: [60.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.00: [100.00, 130.00, 150.00, 200.00],
-      2.25: [130.00, 150.00, 180.00, 220.00],
-      2.50: [150.00, 180.00, 200.00, 240.00],
-      6.25: [180.00, 200.00, 220.00, 260.00],
-      12.50: [200.00, 240.00, 280.00, 320.00],
-      25.00: [350.00, 400.00, 450.00, 500.00]
-    }
-    },
-   "WildFox": {
-    bets: [1.00, 2.50, 5.00, 12.50, 25.00],
-    pecahan: {
-      1.00: [20.00, 40.00, 60.00, 80.00],
-      2.50: [40.00, 60.00, 80.00, 100.00],
-      5.00: [60.00, 80.00, 100.00, 120.00],
-      12.50: [50.00, 100.00, 200.00, 500.00],
-      25.00: [50.00, 100.00, 200.00, 500.00]
-  }
-  },
-   "PirateShip": {
-    bets: [1.20, 1.50, 2.10, 3.00, 3.60, 4.50, 6.00, 9.00, 15.00, 18.00, 30.00],
-    pecahan: {
-      1.20: [15.00, 30.00, 45.00, 60.00],
-      1.50: [30.00, 45.00, 60.00, 75.00],
-      2.10: [45.00, 60.00, 75.00, 90.00],
-      3.00: [60.00, 75.00, 90.00, 105.00],
-      3.60: [75.00, 90.00, 105.00, 120.00],
-      4.50: [90.00, 105.00, 120.00, 135.00],
-      6.00: [105.00, 120.00, 135.00, 150.00],
-      9.00: [120.00, 135.00, 150.00, 165.00],
-      15.00: [135.00, 150.00, 165.00, 180.00],
-      18.00: [150.00, 165.00, 180.00, 195.00],
-      30.00: [165.00, 180.00, 195.00, 205.00]
-    }
-    },
-   "CookiePop": {
-    bets: [1.20, 1.50, 2.10, 3.00, 3.60, 4.50, 6.00, 9.00, 15.00, 18.00, 30.00],
-    pecahan: {
-      1.20: [15.00, 30.00, 45.00, 60.00],
-      1.50: [30.00, 45.00, 60.00, 75.00],
-      2.10: [45.00, 60.00, 75.00, 90.00],
-      3.00: [60.00, 75.00, 90.00, 105.00],
-      3.60: [75.00, 90.00, 105.00, 120.00],
-      4.50: [90.00, 105.00, 120.00, 135.00],
-      6.00: [105.00, 120.00, 135.00, 150.00],
-      9.00: [120.00, 135.00, 150.00, 165.00],
-      15.00: [135.00, 150.00, 165.00, 180.00],
-      18.00: [150.00, 165.00, 180.00, 195.00],
-      30.00: [165.00, 180.00, 195.00, 205.00]
-  }
-  },
-    "JinQianWa": {
-    bets: [1.20, 2.00, 4.00, 8.00, 12.00, 20.00],
-    pecahan: {
-      1.20: [50.00, 80.00, 100.00, 150.00],
-      2.00: [80.00, 100.00, 130.00, 180.00],
-      4.00: [100.00, 130.00, 150.00, 200.00],
-      8.00: [180.00, 200.00, 220.00, 260.00],
-      12.00: [350.00, 400.00, 450.00, 500.00],
-      20.00: [650.00, 700.00, 750.00, 800.00]
-  }
-  },
-    "Cleopatra": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-  }
-  },
-  "Garden": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-  }
-  },
-  "FiveDragons": {
-    bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],
-    pecahan: {
-      1.00: [30.00, 50.00, 100.00, 130.00],
-      1.25: [50.00, 80.00, 100.00, 150.00],
-      1.50: [60.00, 80.00, 100.00, 150.00],
-      1.75: [80.00, 100.00, 130.00, 180.00],
-      2.00: [100.00, 130.00, 150.00, 200.00],
-      2.25: [130.00, 150.00, 180.00, 220.00],
-      2.50: [150.00, 180.00, 200.00, 240.00],
-      6.25: [180.00, 200.00, 220.00, 260.00],
-      12.50: [200.00, 240.00, 280.00, 320.00],
-      25.00: [350.00, 400.00, 450.00, 500.00]
-  }
-  },
-   "SteamTower": {
-    bets: [1.00, 2.00, 5.00, 10.00, 20.00],
-    pecahan: {
-      1.00: [30.00, 60.00, 100.00, 130.00],
-      2.00: [60.00, 90.00, 110.00, 150.00],
-      5.00: [90.00, 120.00, 150.00, 180.00],
-      10.00: [120.00, 150.00, 180.00, 210.00],
-      20.00: [100.00, 150.00, 200.00, 500.00]
-    }
-  }
-};
-  
-  let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
-  document.getElementById("gameSelect").addEventListener("change", function () {
-  const game = this.value;
-  const betSelect = document.getElementById("betSelect");
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  betSelect.innerHTML = "";
-  pecahanSelect.innerHTML = "";
-
-  jackpotInsertedMap[game] = false;
-
-  if (game && gameData[game]) {
-    gameData[game].bets.forEach(bet => {
-      const option = document.createElement("option");
-      option.value = bet;
-      option.textContent = bet.toFixed(2);
-      betSelect.appendChild(option);
-    });
-
-  
-    betSelect.dispatchEvent(new Event("change"));
-  }
-});
-
-
-document.getElementById("betSelect").addEventListener("change", function () {
-  const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(this.value);
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  pecahanSelect.innerHTML = "";
-
-    
-    if (gameData[game] && gameData[game].pecahan[bet]) {
-    const pecahanList = gameData[game].pecahan[bet];
-
-    pecahanList.forEach(p => {
-      const option = document.createElement("option");
-      option.value = p;
-      option.textContent = p.toFixed(2);
-      pecahanSelect.appendChild(option);
-    });
-  }
-});
-
- function setNow() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hour = String(now.getHours()).padStart(2, '0');
-  const minute = String(now.getMinutes()).padStart(2, '0');
-  const second = String(now.getSeconds()).padStart(2, '0');
-
-  const globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-  document.getElementById("manualTime").value = globalTime;
-}
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-
-  let globalTime = null;
-
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-  function formatDateTimeLocal(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const h = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const s = String(date.getSeconds()).padStart(2, '0');
-  return `${y}-${m}-${d} ${h}:${min}:${s}`;
- }
-  
- function deleteCents() {
-  const tables = document.querySelectorAll("table");
-
-  tables.forEach(table => {
-    const rows = table.querySelectorAll("tr");
-
-    rows.forEach(row => {
-      const setScoreCell = row.querySelector(".setscore");
-      const beginMoneyCell = row.cells[4]; 
-      const endMoneyCell = row.cells[5];   
-
-      if (setScoreCell && setScoreCell.textContent.includes("Set score：")) {
-       
-        const parts = setScoreCell.textContent.split("Set score：");
-        const originalNumber = parseFloat(parts[1]);
-
-      
-        if (!isNaN(originalNumber)) {
-          const intPart = Math.floor(Math.abs(originalNumber));
-          const finalSetScore = `Set score：${originalNumber < 0 ? "-" : ""}${intPart}.00`;
-          setScoreCell.textContent = finalSetScore;
-        }
-
-        if (beginMoneyCell && endMoneyCell) {
-          const beginMoney = parseFloat(beginMoneyCell.textContent);
-          if (!isNaN(beginMoney)) {
-            const centsOnly = (beginMoney % 1).toFixed(2);
-            endMoneyCell.textContent = centsOnly;
-          }
-        }
-      }
-    });
-  });
-}
-  function generateLog() {
-  const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(document.getElementById("betSelect").value);
-  const pecahanSelect = document.getElementById("pecahanSelect");
-  const selectedPecahan = parseFloat(pecahanSelect.value);
-  const tbody = document.querySelector("#gameLog tbody");
-  const manualTimeInput = document.getElementById('manualTime').value;
-
-  let logs = [];
-
- 
-  const manualInput = document.getElementById("manualTime").value.trim();
-  let baseTime;
-if (manualInput) {
-  const parts = manualInput.includes("T")
-    ? manualInput.split("T")
-    : manualInput.split(" ");
-
-  if (parts.length === 2) {
-    const [datePart, timePartRaw] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const timePart = timePartRaw.trim();
-    const timeParts = timePart.split(":").map(Number);
-    const hour = timeParts[0] || 0;
-    const minute = timeParts[1] || 0;
-    const second = timeParts[2] || 0;
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
-  } else {
-    baseTime = new Date();
-  }
-} else if (globalTime) {
-  const parts = globalTime.split(" ");
-  if (parts.length === 2) {
-    const [datePart, timePart] = parts;
-    const [year, month, day] = datePart.split("-").map(Number);
-    const [hour, minute, second] = timePart.split(":").map(Number);
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
-  } else {
-    baseTime = new Date();
-  }
-} else {
-  baseTime = new Date();
-}
-
-
-  baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
-
-   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
-   let balance = rnd(500, 1000) + manualScore;
-
-   let totalSeconds = 0;
-
-   for (let i = 0; i < 10; i++) {
-    const gap = Math.floor(Math.random() * 3) + 3;
-    totalSeconds += gap;
-    const logTime = new Date();
-    logTime.setSeconds(logTime.getSeconds() - totalSeconds);
-
-    const beginMoney = balance;
-    const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
-    const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-    const formattedTime = formatDateTimeLocal(baseTime);
-
-    logs.unshift({ 
-      game,
-      tableID: `<span class="table-id-highlight">0</span>`,
-      bet: bet.toFixed(2),
-      win: win.toFixed(2),
-      beginMoney: beginMoney.toFixed(2),
-      endMoney: endMoney.toFixed(2),
-      dateTime: formattedTime
-    });
-
-    balance = endMoney;
-    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
-  }
-    
-   setTimeout(() => {
-    const savedData = {
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore: document.getElementById("manualScore").value,
-      logs: tbody.innerHTML
+  <script>
+  console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
+    const platformData = {
+      "MEGA888": ["FROST QUEEN","GOLDEN RAT","FA FA BABIES","LUCKY NEW YEAR", "SILENT RUN", "CHINESE LION", "BIG WIN CAT", "JACKPOT RAIDERS", "POND OF RICHES", "RALLY", "GOLDEN LOTUS", "STICKY BANDITS WILD RETURN", "STEAM TOWER", "THE GOOD LIFE", "MANIC MILLIONS", "MIDAS GOLDEN TOUCH", "IRELAND", "ALADDIN", "COOKIE POP", "SEASON GREETINGS", "FAME &", "FORTUNE", "DWARFS GONE WILD", "GOLDEN SLUT", "GOLDEN TOUR", "GOLDEN TREE", "GIFTS FROM SANTA", "WESTERN RANCH STORY", "DRAGON STRIKE", "FORTUNE TIGER", "COYOTE CASH", "VICTORY", "DIM SUM PRIZE", "FRUITY TUTTI", "FRUIT VS CANDY", "DRAGON MAIDEN", "SPARTAN", "KING OF GHOSTS", "BOYKING'S TREASURE", "BLAZE OF RA", "SUN WUKONG", "COCKTAIL NIGHTS","FORTUNE CHARM", "DA SI XI", "CLASH OF THE BEASTS", "STRIPER NIGHT", "JINGLE", "BELLS", "KIMOCHI", "SILENT SAMURAI", "HALLOWEEN PARTY", "HOTLINE", "ROBIN OF", "SHERWOOD", "STONE AGE", "WEALTH'S TREASURE", "BIG CHEF", "GOLDEN MONKEY", "CHAMPIONS OF ROME", "GREAT STARS", "NARCOS", "MAGIC SHOPPE", "SILVER BULLET", "GLAMOROUS WORLD", "DRAGON GOLD", "DRAGON HERO", "LION DANCE", "GOLDEN COLTS", "DOLPHIN", "HANZO'S DOJO", "5 DRAGONS", "HOUSE OF DOOM", "TIGER'S GLORY", "FORTUNE FIREWORKS", "EMPEROR GATE", "GREAT CHINA", "THAI", "PARADISE", "SANTA", "LUCKY NEKO", "CLEOPATRA'S GOLD", "NITRO", "SUSHI OISHI", "CRYSTAL WATERS", "SEA WORLD", "ROBIN HOOD", "NIAN NIAN YOU YU", "PIRATE", "T-REX", "RAZOR SHARK", "KING OF POP", "JAPAN FORTUNE", "MYSTIC DRAGON", "DR", "FORTUNO", "MASQUERADE", "WOLF RUN", "HIGHWAY KINGS", "CELEBRATION OF", "WEALTH", "DARK VORTEX", "WONG CHOY", "ZHAO CAI JIN BAO", "RAGING REX", "A NIGHT OUT", "JUNGLE SPIRIT", "FLOATING DRAGON", "WOLF HUNTERS", "IVAN AND THE IMMORTAL KING", "FOOTBALL CARNIVAL", "LUCKY DUCK", "LOST ISLAND", "CIRCUS", "PANTHER MOON", "WHITE SNAKE LADY", "SNOW WORLD", "GOD OF", "COOKERY", "BONUS BEARS", "GOLDEN COK", "AMAZON JUNGLE", "BIG PROSPERITY", "IRISH LUCK", "FART GIRL", "INDIAN MYTH", "MONEY FEVER", "SIX ACROBATS", "BIG SHOT", "GOLDEN BEAUTY", "LUCKY KOI", "ROYAL MASQUERADE", "FORTUNE", "CHERRY LOVE", "TOP GUN", "ICELAND", "PIRATE SHIP", "ORIENT EXPRESS", "WILD FIREWORKS", "DRAGONZ", "GREAT BLUE", "GREEN LIGHT", "TEMPLE OF WEALTH", "ZOMBIE CIRCUS", "DOLPHIN REEF", "AGENT 51", "HALLOWEEN FORTUNE", "GOD OF WEALTH", "JIN PING MAI", "THREE KINGDOMS", "ELVEN MAGIC", "LUCKY LITTLE GODS", "WILD FOX", "LIGHTS", "CAISHEN'S GOLD", "PAY DIRT", "PENGUIN CITY", "AMAZING THAILAND", "VEGAS NIGHT LIFE", "SAFARI HEAT", "FORTUNE PANDA", "GREAT88", "YIN & YANG", "CLEOPATRA'S RICHES", "ENCHANTED GARDEN", "MAGICAL SPIN", "FONG SHEN", "FORTUNE FEST", "DEEP TREK", "TEMPLE QUEST", "SHINING STARS", "DESERT GEM", "RANCH STORY", "CASH NOIRE", "TRIPLE TWISTER", "SEA CAPTAIN", "SWORD OF KHANS", "AFRICAN WILDLIFE", "CASH VANDAL", "CAPTAIN'S TREASURE", "FAIRY GARDEN PLUS", "SIZZLING SPINS", "MATSURI", "CONAN", "CHINESE NEW YEAR", "ALICE", "TREASURE ISLAND", "ZOMBIE CARNIVAL", "EASTER SURPRISE", "AZTEC'S TREASURE", "BEAST OF WEALTH", "THE DISCOVERY", "LAURA", "TALLY HO", "SPARTA", "XMAS MAGIC", "NATIVE INDIAN", "GOLD RUSH", "JIN QIAN WA", "LOTUS LEGEND", "WATER MARGIN"],
+      "918KISS": ["SPARTAN", "MONEY FEVER", "WEALTH'S TREASURE", "SEA WORLD", "CRAZY MONKEY", "SEA CAPTAIN", "GREAT CHINA", "ROBIN HOOD", "BIG PROSPERITY", "PAY DIRT", "TOP GUN", "HALLOWEEN PARTY", "EMPEROR GATE", "THREE KINGDOMS", "GREEN LIGHT", "HIGHWAY KINGS", "GREAT STARS", "THE DISCOVERY", "STRIPER NIGHT", "CIRCUS", "IRISH LUCK", "ICELAND", "FORTUNE PANDA", "JAPAN FORTUNE", "AZTEC'S TREASURE", "FORTUNE", "JIN QIAN WA", "SUN WUKONG", "DRAGON MAIDEN", "BIG SHOT", "WILD FOX", "COYOTE CASH", "WONG CHOY", "SHINING STARS", "FAIRY GARDEN PLUS", "GOD OF WEALTH", "STEAM TOWER", "ZHAO CAI JIN BAO", "DOLPHIN", "PANTHER MOON", "AMAZING THAILAND", "FONG SHEN", "ALICE", "MYSTIC DRAGON", "SAFARI HEAT", "GREAT BLUE", "SILENT SAMURAI", "TREASURE ISLAND", "CLEOPATRA'S GOLD", "PIRATE", "SILVER BULLET", "BOYKING'S TREASURE", "CRYSTAL WATERS", "TRIPLE TWISTER", "GLAMOROUS WORLD", "COOKIE POP", "MAGICAL SPIN", "SEASON GREETINGS", "CAPTAIN'S TREASURE", "DOLPHIN REEF", "FAME & FORTUNE", "ENCHANTED GARDEN", "DRAGON GOLD", "PAN JIN LIAN", "CHERRY LOVE", "LAURA", "5 DRAGONS", "GOLDEN LOTUS", "GOLDEN TOUR", "VICTORY", "EASTER SURPRISE", "GOLDEN SLUT", "FOOTBALL CARNIVAL", "RANCH STORY", "ORIENT EXPRESS", "NIAN NIAN YOU YU", "T-REX", "A NIGHT OUT", "WOLF HUNTERS", "STONE AGE", "WATER MARGIN", "BONUS BEARS", "TALLY HO", "FRUITY TUTTI", "GOLDEN TREE", "AMAZON JUNGLE", "PIRATE SHIP", "SPARTA", "INDIAN MYTH", "KIMOCHI", "RALLY", "ALADDIN"],
+      "PUSSY888": ["GOLDEN SLUT", "GOLDEN LOTUS", "T-REX", "THE DISCOVERY", "DON QUIXOTE", "BOYKING'S TREASURE", "FEI LONG ZAI TIAN", "RALLY", "CROPS OF GOLD", "STONE AGE", "BANANA MONKEY", "PHOENIX 888", "PRIMAL MEGAWAYS", "AFRICAN WILDLIFE", "SEA WORLD", "EMPEROR GATE", "HIGHWAY KINGS PRO", "EASTER SURPRISE", "PHARAOH'S SECRETS", "CAPTAIN TREASURE PRO", "WESTERN RANCH STORY", "BIG SHOT", "GREAT STARS", "GOD OF WEALTH", "JAPAN FORTUNE", "FOOTBALL CARNIVAL", "CAT QUEEN", "KIMOCHI", "COYOTE CASH", "TALLY HO", "GEISHA'S GARDEN", "LIE YAN ZUAN SHI", "SEA CAPTAIN", "SEASON GREETINGS", "FORTUNE PANDA", "ROME & GLORY", "PAN JIN LIAN", "QUEEN OF WANDS", "FONG SHEN", "GOLDEN MONKEY KING", "DIAMOND VALLEY PRO", "COOKIE POP", "PIRATE SHIP", "TIGER CLAW", "MARILYN MONROE", "NEPTUNE TREASURE", "SILENT SAMURAI", "THE PYRAMID OF RAMESSES", "TIGER'S GLORY", "ZHAO CAI TONG ZI", "GREAT RHINO", "WILD SPIRIT", "CAPTAIN'S TREASURE", "WHITE KING", "DOLPHIN", "BEAT THE BEAST", "FEI CUI GONG ZHU", "AGE OF EGYPT", "SPARTA", "ALICE", "THAI TEMPLE", "IRISH LUCK", "PANTHER MOON", "DR LOVEMORE", "A NIGHT OUT", "PENGUIN VACATION", "SHERLOCK MYSTERY", "ORIENT EXPRESS", "SULTAN'S GOLD", "FORTUNE", "SILVER BULLET", "YUN CONG LONG", "ZHAO CAI JIN BAO", "VICTORY", "GAELIC LUCK", "ARCHER", "CRYSTAL WATERS", "ROBIN HOOD", "MAGICAL SPIN", "THREE KINGDOMS", "LUCKY PANDA", "LAND OF GOLD", "WONG CHOY", "MONEY FEVER", "LOTTO MADNESS", "WATER MARGIN", "BONUS BEARS", "BIG PROSPERITY", "STRIPER NIGHT", "GOLDEN TREE", "SPARTAN", "EPIC APE", "TRIPLE TWISTER", "GREAT BLUE", "TOP GUN", "ALADDIN", "8 TREASURE 1 QUEEN", "AMAZON JUNGLE", "DESERT", "YU HUANG DA DI", "CHERRY LOVE", "ICELAND", "PIRATE", "DOLPHIN REEF", "THAI PARADISE", "ROARING WILDS", "CIRCUS", "TREASURE ISLAND", "5 DRAGONS", "WARRIORS GOLD", "SAFARI HEAT", "JIN QIAN WA", "GREEN LIGHT", "INDIAN MYTH", "WILD FOX", "NIAN NIAN YOU YU", "GREAT CHINA", "HIGHWAY KINGS", "ENCHANTED GARDEN", "FOOTBALL RULES", "LAURA", "DRAGONS", "BERRY BONANZA", "SI XIANG", "FORTUNES OF THE FOX", "FUNKY FRUITS FARM", "GOD OF WEALTH 2", "RANCH STORY", "AMAZING THAILAND", "BEACH LIFE", "SUN WUKONG", "THE GREAT MING", "FOOTBALL FANS", "HALLOWEEN FORTUNE 2", "ARCTIC TREASURE", "DRAGON GOLD", "HOLOGRAM WILDS", "HALLOWEEN FORTUNE", "CLEOPATRA'S RICHES", "SHINING STARS", "GHOSTS OF CHRISTMAS", "TRUE LOVE", "FAIRY GARDEN PLUS", "HALLOWEEN PARTY", "BUFFALO BLITZ", "GOLDEN TOUR", "FORTUNE LIONS", "FARMERS' MARKET", "WEALTH'S TREASURE", "AZTEC'S TREASURE", "PAY DIRT", "XUAN PU LIAN HUAN", "KING OF OLYMPUS"],
+      'EVO888': ['0', '0', '0', '0', '0'],
+      'EVO888H5': ["FiveLionsMega", "FiveRabbitsMega", "AladdinAndTheSorcerer", "AncientEgypt", "AztecBlaze", "AztecGems", "AztecKing", "AztecKingMega", "BarnFestival", "BigBassKeepingItReel", "BigBassBonanzaMega", "BigBassSplash", "BigJuan", "BiggerBassBlizzard", "BlackBull", "BombBonanza", "BonanzaGold", "BookOfAztecKing", "BookOfGoldenSands", "BookOfTheFallen", "BountyGold", "BuffaloKing", "BuffaloKingMega", "CandyStars", "CandyVillage", "CashPatrol", "ChickenDrop", "ChilliHeatMega", "ChristmasBigBassBonanza", "ChristmasCarolMega", "Cleocatra", "ClubTropicana", "CoffeeWild", "CosmicCash", "CrownOfFire", "CrystalCavernsMega", "CurseOfTheWerewolfMega", "DayOfDead", "DownTheRails", "DragoJewelsOfFortune", "DragonHero", "EmptyTheBank", "ExtraJuicy", "ExtraJuicyMega", "EyeOfTheStorm", "EyeOfCleopatra", "FireArcher", "FireStrike2", "FirebirdSpirit", "FishEye", "FloatingDragonMega", "FruitParty", "FruitParty2", "FuryOfOdinMega", "GatesOfAztec", "GatesOfGatotKaca", "OlympusGates", "GatesOfValhalla", "GatotKacaFury", "GemsBonanza", "GemsOfSerengeti", "GoblinHeistPowerNudge", "GoldParty", "GoldRush", "GorillaMayhem", "GreatRhinoMega", "GreedyWolf", "HotFiesta", "HotPepper", "HotToBurnExtreme", "BookOfTut", "BookOfTutRespin", "JohnHunterAndTheQuest", "JuicyFruit", "KingdomOfAsgard", "KoiPond", "LegendOfHeroesMega", "LittleGem", "LuckyFishing", "LuckyLightning", "MadameDestinyMegaWays", "MagicMoneyMaze", "MagicianSecrets", "MammothGoldMega", "Mochimon", "MonsterSuperlanche", "MysteriousEgypt", "NorthGuardians", "OctobeerFortunes", "PandasFortune", "PeakPower", "PinupGirls", "PirateGoldDelux", "PirateGoldenAge", "PizzaPizzaPizza", "PowerOfThorMega", "PyramidBonanza", "QueenOfGods", "Queenie", "ReelBanks", "ReleaseTheKraken", "ReleaseTheKraken2", "RiseOfGizaPowerNudge", "RiseOfSamuraiMega", "RiseOfSamurai3", "SantaGreatGifts", "SantasWonderland", "SecretCityGold", "ShieldOfSparta", "SnakesAndLaddersSnakeEyes", "SpinAndScoreMega", "SpiritOfAdventure", "StarBounty", "StarlightChristmas", "StarlightPrincess", "StrikingHot5", "SugarRush", "SweetBonanza", "SweetBonanzaXmas", "SweetPowernudge", "SwordOfAres", "TemujinTreasures", "TheDogHouse", "TheDogHouseMega", "TheGreatStickUp", "HandOfMidas", "TheTweetyHouse", "TicTacTake", "ToweringFortunes", "TreasureWild", "TropicalTiki", "VoodooMagic", "WildBeachParty", "WildBooster", "WildHopAndDrop", "WestWildGold", "WildWestGoldMega", "WildWildBananas", "YumYumPowerWays", "ZombieCarnival"],
+      'SCR888H5': ["SAFARI Heat", "DolphinReef", "Samurai", "Fruit", "TheDiscovery", "IrishLuck", "GreatBlue", "BonusBears", "CherryLove", "Thai", "SPARTAN", "GoldenTour", "PantherMoon", "Silver", "Captain", "NianNianYouYu", "Kimochi", "GreatStars", "ZhaoCaiJinBao", "HighWay", "Wong Choy", "Prosperity", "GoldenLotus", "India", "Panda", "Boxing", "JAPAN", "ICELAND", "GoldenSlut", "Girls", "Twister", "Cleopatra", "BigShot", "Fame", "PayDirt", "Fashion", "T-REX", "CoyoteCash", "SeaCaptain", "BoyKing", "Orient", "FORTUNE", "Tally Ho", "Dragon Gold", "Victory", "GreenLight", "Garden", "Crystal", "Wealth", "FiveDragon", "GodOfWealth", "WaterMargin", "ThreeKingdoms", "FengShen", "Circus", "SeaWorld", "FairyGarden", "MagicalSpin", "PanJinLian", "OceanParadise", "Aladdin", "Amazon", "Pirate", "Laura", "Seasons", "AfricanWildlife", "Alice", "RobinHood", "FortunePanda", "JinQianWa", "WuKong", "Easter", "FootBall", "TopGun", "Witch", "AncientForest", "LicenseToWin", "GoldRush", "Lupin", "OhMyHero"],
+      'MEGAH5': ["Gifts From Santa", "Samurai", "Crazy 7", "Aladdin Wishes", "The Discovery", "Wealthy Snake", "Dolphin Reef", "Golden Tour", "Ice Land", "Sea World", "Classic Reel", "Panther Moon", "Boy King's Treasure", "Great Blue", "White Riches", "Highway King", "Bonus Bear", "Three Kingdoms", "Zombie Carnival", "Green Light", "Robin Hood", "Shining Star", "Wolf Run", "Fortune Fest", "Rally Championship", "Gold Rush", "Water Margin", "Thai Paradise", "Cherry Love", "5 Dragons", "God Of Cookery", "Treasure Captains", "Feng Shen", "God Of Wealth", "Jin Qian Wa", "Dragon Hero", "Silver Bullet", "Wild Fireworks", "Big Prosperity", "Sparta", "Da Si Xi", "Dragon strike", "Ocean Paradise", "Nian Nian You Yu", "Golden Monkey", "Golden Lotus", "Sushi Oishi", "Fartt Girl", "Celebration of Wealth", "Hanzo's Dojo", "Wang Chay", "Tally Ho", "Clash Of Beast", "Dragon Z", "Nitro", "Twister", "SunWukong", "Temple of Wealth", "Dwarf Gone Wild", "Agent 51", "Floating Dragon", "5 Fortune", "Lion Dance", "Sticky Bandits", "Enchanted Garden", "Great 88", "Pan Jin Lian", "Irish Luck", "Narcos", "Fortune Tiger", "Tiger Glory", "Conan", "Fortune Firework", "Midas Golden Touch", "Yin & Yang", "King of Ghost", "Champion Of Rome", "Amazing Thailand", "Cleopatra Riches", "Big Chef", "Cash Noire", "Golden Colts", "Vegas Night Life", "Lights", "Blaze of Ra", "Silent Run", "Safari Heat", "Golden", "Spartan", "Legend of the White Snake Lady", "Fashion", "Lucky Koi", "Zombie Circus", "Lucky Little Gods", "Indian Myth", "Robin of Sherwood", "Zhao Cai Jin Bao", "Wolf Hunters", "Xmas Magic", "Fruit vs Candy", "Great China", "Dim Sum Prize", "Kimochiii", "Raging Rex", "Masquerade", "Dark Vortex", "Laura", "Fortune Charm", "Penguin City", "Santa", "Steam Tower", "Wild Fox", "Temple Quest", "Hotline", "Matsuri", "Jungle Spirit", "Striper Night", "Desert Gem", "House Doom", "Great Stars", "Dr Fortuno", "Fruity Tutti", "Dragon Maiden", "Lucky New Year", "Big Win Cat", "Golden Beauty", "Golden Slut", "Royal Masquerade", "Jingle Bell", "Sizzling Spins", "Lost Island", "Sword of Khans", "Razor Shark", "Emperor Gate", "Japan", "Pond of Riches", "Chinese New Year", "Chinese Lion", "Ivan and the Immortal King"],
+      'PRAGMATIC PLAY': ["Gates of Olympus Super Scatter","Gates of Olympus 1000","Sugar Rush 1000","Starlight Princess 1000","Waves of Poseidon","Gates of Hades","Gates of Olympus","Sweet Bonanza 1000","5 Lions Megaways","Vampy Party","Wild West Gold Blazing Bounty","Sweet Bonanza","Starlight Princess","Power of Merlin Megaways","5 Lions Megaways 2","Finger Lick'n Free Spins","Sugar Rush","5 Rabbits Megaways","Gates of Gatot Kaca 1000","Gem Fire Fortune","Zeus vs Hades - Gods of War","Panda's Fortune","Big Bass Boxing Bonus Round","Mahjong Wins 2","The Dog House Megaways","Wisdom of Athena 1000","Wild West Gold","The Tweety House","Pompeii Megareels Megaways","Buffalo King Megaways","Gates of Olympus Xmas 1000","Sweet Bonanza Xmas","Triple Pot Gold","Pyramid Bonanza","Anime Mecha Megaways","Rujak Bonanza","Great Rhino Megaways","Joker's Jewels","Saiyan Mania","The Dog House","Club Tropicana","Fortune of Giza","5 Lions Reborn","Rock Vegas","Panda Fortune 2","Rocket Blast Megaways","Bigger Bass Bonanza","Fire Portals","Big Bass Bonanza 1000","Zombie Train","Wild Wild Riches Megaways","Bonanza Gold","Power of Thor Megaways","Big Bass Splash","Mahjong Wins - Gong Xi Fa Cai","Aztec Gems","The Dog House - Royal Hunt","Rise of Samurai 4","Muertos Multiplier Megaways","Madame Destiny Megaways","Christmas Carol Megaways","Clover Gold","Bandit Megaways","PIZZA PIZZA PIZZA","Wisdom of Athena","Chests of Cai Shen","Resurrecting Riches","Gold Party","Floating Dragon","Bigger Bass Blizzard - Christmas Catch","Cleocatra","Sugar Rush Xmas","Aztec King Megaways","Big Bass - Hold & Spinner","Fire Stampede","Hot Fiesta","Barn Festival","Buffalo King","Fish Eye","Mammoth Gold Megaways","Lucky Fishing Megaways","Sugar Supreme Powernudge","Fruits of the Amazon","Eye of Spartacus","Floating Dragon - Dragon Boat Festival","Gates of Gatot Kaca","Witch Heart Megaways","Holiday Ride","Gold Party 2 - After Hours","Mahjong Wins Bonus","Sweet Bonanza Dice","Candy Village","Big Bass Halloween","Majestic Express - Gold Run","Big Bass Bonanza","Olympus Wins","Cash Patrol","Peppe's Pepperoni Pizza Plaza","Fruit Party","Sleeping Dragon","Big Bass Vegas Double Down Deluxe","Return of the Dead","5 Lions Gold","Christmas Big Bass Bonanza","Power of Ninja","Wild West Gold Megaways","Rise of Samurai 3","Rise of Samurai Megaways","Big Bass Floats my Boat","Samurai Code","Wild Celebrity Bus Megaways","The Dog House - Dog or Alive","3 Buzzing Wilds","Candy Blitz Bombs","Book of Monsters","Lucky Lightning","Gates of Olympus Dice","Fiesta Fortune","Big Bass - Secrets of the Golden Lake","Mining Rush","Wild West Duels","Rabbit Garden","Mochimon","Monkey Warrior","Kingdom of Asgard","Extra Juicy","Spin & Score Megaways","Ancient Egypt Classic","Angel vs Sinner","The Dog House Multihold","Mahjong Wins","Wild Bison Charge","Fruity Treats","Excalibur Unleashed","Pirate Gold","Zombie Carnival","The Dog House - Muttley Crew","Casino Heist Megaways","Big Bass Bonanza - Keeping it Reel","Extra Juicy Megaways","Book of Fallen","Bigger Bass Splash","Starlight Christmas","Mustang Gold Megaways","Hot Pepper","3 Dancing Monkeys","Eye of the Storm","Brick House Bonanza","Viking Forge","Tic Tac Take","Great Rhino Deluxe","Sticky Bees","Legend of Heroes Megaways","Gems Bonanza","Tiny Toads","Starlight Wins","Cosmic Cash","The Dog House Dice Show","Grace of Ebisu","The Wild Gang","Wukong Rush","Lucky's Wild Pub","Aztec Bonanza","Candy Blitz","7 Clovers of Fortune","Forge of Olympus","Fury of Odin Megaways","Temple Guardians","Buffalo King Untamed Megaways","Big Bass Christmas Bash","Fire Strike","Lucky Tiger 1000","5 Frozen Charms Megaways","Super 7s","Magician's Secrets","Aztec Gems Deluxe","Ultra Burn","Hand of Midas 2","Floating Dragon Hold & Spin Megaways","Big Bass Mission Fishin'","Cash Elevator","Santa's Wonderland","Twilight Princess","Bow of Artemis","6 Jokers","Big Bass Return to the Races","Peak Power","Phoenix Forge","Happy Fortune","Aztec Gems Megaways","Crystal Caverns Megaways","888 Dragons","Dragon Hero","The Hand of Midas","Volcano Goddess","Hot to Burn Hold and Spin","Yum Yum Powerways","Big Bass Halloween 2","Fortune of Aztec","Cyber Heist","Gates of Aztec","Release the Kraken Megaways","Heart of Cleopatra","Monster Superlanche","Great Rhino","Big Bass Bonanza 3 Reeler","John Hunter and the Tomb of the Scarab Queen","Big Bass Amazon Xtreme","Cowboys Gold","Octobeer Fortunes","Mummy's Jewels","Fruit Party 2","Ultra Hold and Spin","Spirit of Adventure","8 Dragons","Mahjong X","Cowboy Coins","Robber Strike","5 Lions","Congo Cash","Fortunes of Aztec","Big Bass Bonanza - Reel Action","Santa's Great Gifts","Supermania","Reel Banks","Wild Wildebeest Wins","Sumo Supreme Megaways","Spartan King","Big Bass Bonanza Megaways","Wild Beach Party","Money Roll","Candy Jar Clusters","Floating Dragon - Year of the Snake","Safari King","Black Bull","Treasure Wild","Infective Wild","Heart of Rio","Wild Wild Riches","Big Bass Xmas Xtreme","Gorilla Mayhem","Lucky Ox","Pig Farm","Lucky Phoenix","Dragon Gold 88","Aztec King","Firebird Spirit - Connect & Collect","Queenie","Mustang Gold","Joker's Jewels Cash","Greedy Fortune Pig","Raging Waterfall Megaways","The Big Dawgs","Revenge of Loki Megaways","Big Bass Hold & Spinner Megaways","Big Bass Day at the Races","Release the Kraken","Himalayan Wild","Wild Wild Joker","Lucky Tiger","Chilli Heat","Jumbo Safari","Blazing Wilds Megaways","Elemental Gems Megaways","Release the Bison","Strawberry Cocktail","Bounty Gold","Wealthy Frog","Sky Bounty","888 Bonanza","Gods of Giza","Mustang Trail","Mahjong Panda","Cash Surge","Fortune Ace","Fire Strike 2","Dance Party","Raging Bull","Dragon Hot Hold & Spin","Juicy Fruits","The Money Men Megaways","Savannah Legend","Empty the Bank","Book of Tut Megaways","Santa's Xmas Rush","Curse of the Werewolf Megaways","Sweet Kingdom","Floating Dragon New Year Festival Ultra Megaways Hold & Spin","Drill That Gold","Irish Charms","Money Mouse","Caishen's Gold","Might of Freya Megaways","Caishen's Cash","Bermuda Riches","Diamond Strike","Aztec Blaze","Fortune Dragon","Yeti Quest","Book Of Tut Respin","Emperor Caishen","Might of Ra","Wildies","Diamonds are Forever 3 Lines","Wild Depths","Spellbinding Mystery","Blade & Fangs","Hot to Burn","Running Sushi","Fangtastic Freespins","Triple Tigers","Tree of Riches","Barnyard Megahays Megaways","Release the Kraken 2","Wild Spells","Pyramid King","Madame Destiny","Blitz Super Wheel","Mystic Chief","Mysterious Egypt","Triple Dragons","5 Lions Dance","Greedy Wolf","3 Genie Wishes","Super X","Candy Corner","Jewel Rush","Gravity Bonanza","Chilli Heat Megaways","Golden Ox","Hokkaido Wolf","Coffee Wild","Book of Golden Sands","Shield Of Sparta","Drago - Jewels of Fortune","Gatot Kaca's Fury","Gears of Horus","Fire Archer","Rise of Giza PowerNudge","Aztec Treasure Hunt","Joker's Jewel Dice","Master Joker","Money Money Money","Sweet Powernudge","Crank it Up","Ancient Island Megaways","Book Of Kingdoms","Moonshot","Wheel O'Gold","Chicken Drop","Star Bounty","Mystery of the Orient","Amazing Money Machine","Aztec Smash","Ride the Lightning","The Tiger Warrior","Wolf Gold Ultimate","Lucky, Grace & Charm","Lucky Monkey","Big Juan","Master Chen's Fortune","Rainbow Reels","Emotiwins","Cash Chips","The Ultimate 5","Odds On Winner","Money Stacks Megaways","Peking Luck","The Great Stick-up","Little Gem Hold and Spin","Eternal Empress - Freeze Time","Piggy Bank Bills","Castle of Fire","Candy Stars","Wild Wild Pearls","Beware The Deep Megaways","Bubble Pop","Diamonds of Egypt","Fortune Hit'n Roll","Wild Hop & Drop","Asgard","Lucky New Year - Tiger Treasures","Gates of Valhalla","Sword of Ares","The Magic Cauldron","Wolf Gold","3 Kingdoms - Battle of Red Cliffs","8 Golden Dragon Challenge","Oodles of Noodles","Money Stacks","Fire 88","Goblin Heist Powernudge","Eye of Cleopatra","Pirates Pub","Mystery Mice","Temujin Treasures","Starz Megaways","Honey Honey Honey","Lucky Mouse","Badge Blitz","Greek Gods","Escape the Pyramid - Fire & Ice","Medusa's Stone","Year Of The Dragon King","Starlight Princess Pachi","Vegas Magic","Joker's Jewels Wild","Joker's Jewels Hot","Cash Box","Vegas Nights","Super Joker","Book of Aztec King","Ripe Rewards","Bomb Bonanza","Book of Tut","Heist for the Golden Nuggets","Fonzo's Feline Fortunes","Monkey Madness","Joker Race","Down the Rails","Pinup Girls","Day of Dead","Heroic Spins","Colossal Cash Zone","Congo Cash XL","Pirate Gold Deluxe","Nile Fortune","Gold Rush","Golden Pig","Fat Panda","The Dragon Tiger","Tropical Tiki","Jade Butterfly","Leprechaun Song","Dragon King Hot Pots","Frozen Tropics","Hot Chilli","John Hunter and Galileo's Secrets","Mighty Munching Melons","Pirate Golden Age","Three Star Fortune","Cyclops Smash","Aztec Powernudge","Gold Train","Lucky New Year","Juicy Fruits Multihold","Magic Money Maze","Egyptian Fortunes","Pub Kings","Lucky Dragon Ball","7 Piggies","John Hunter And The Mayan Gods","Ice Lobster","The Alter Ego","Master Gems","Bull Fiesta","Big Burger Load it up with Xtra Cheese","Lamp Of Infinity","Jelly Candy","Rise of Pyramids","Forging Wilds","Rainbow Gold","Crown of Fire","Trees of Treasure","Queen of Gods","Secret City Gold","Great Lagoon","Hellvis Wild","Dwarf & Dragon","Pot of Fortune","Devilicious","Treasure Horse","Towering Fortunes","Knight Hot Spotz","Dragon Kingdom - Eyes of Fire","Old Gold Miner Megaways","Hockey Attack","Leprechaun Carol","Hercules and Pegasus","Irish Crown","Plushie Wins","Smugglers Cove","Emerald King Rainbow Road","Fairytale Fortune","The Great Chicken Escape","Dynamite Diggin Doug","Fu Fu Fu","Fishin Reels","The Wild Machine","Moleionaire","Pixie Wings","Piggy Bankers","Wild Walker","Wild Pixies","Snakes & Ladders - Snake Eyes","Frogs & Bugs","Wild Booster","Vampires vs Wolves","Lucky Dog","Hot to Burn 7 Deadly Free Spins","Wild Wild Bananas","Diamond Cascade","Da Vinci's Treasure","Lucky Dragons","Sea Fantasy","Dragon Kingdom","Disco Lady","Striking Hot 5","The Knight King","Gemstone","Jane Hunter and the Mask of Montezuma","Voodoo Magic","Ancient Egypt","Gold Oasis","Tundra's Fortune","Journey to the West","Mighty Kong","Snakes and Ladders Megadice","Bali Dragon","Gem Elevator","Rise of Samurai","Joker King","Chicken Chase","Loki's Riches","Jackpot Hunter","Aztec Treasure","Emerald King","North Guardians","Mysterious","Fire Hot 5","Penguins Christmas Party Time","The Red Queen","Demon Pots","Kingdom of the Dead","Fruit Rainbow","Street Racer","7 Monkeys","Hot To Burn Multiplier","Ding Dong Christmas Bells","Cheeky Emperor","Hot Safari","Great Reef","Star Pirates Code","Jasmine Dreams","Hercules Son of Zeus","Koi Pond","Santa","African Elephant","Chase For Glory","Timber Stacks","Aladdin and the Sorcerer","Lobster Bob's Crazy Crab Shack","Gems of Serengeti","Fire Hot 100","Busy Bees","Dwarven Gold Deluxe","Lobster Bob's Sea Food and Win It","Hot To Burn Extreme","Wild Gladiator","Good Luck & Good Fortune","Magic Journey","Shining Hot 100","Cash Bonanza","Jungle Gorilla","Fire Hot 20","Devil's 13","Lady Godiva","Shining Hot 20","Shining Hot 5","Shining Hot 40","Fire Hot 40","Archer Gold","Waves of Poseidon","Wild West Gold Blazing Bounty","Gates of Olympus 1000","Sugar Rush 1000","Gates of Olympus Super Scatter","Sweet Bonanza 1000","Starlight Princess 1000","5 Lions Megaways","Gem Fire Fortune","Waves of Poseidon","Finger Lick'n Free Spins","Master Gems","Wild West Gold Blazing Bounty","Temple Guardians","Gold Party 2 - After Hours","Big Bass Boxing Bonus Round","Gates of Hades","Olympus Wins","Mummy's Jewels","Eye of Spartacus","Fortune of Aztec","Pig Farm","Majestic Express - Gold Run","Jumbo Safari","Resurrecting Riches","Fiesta Fortune","Sleeping Dragon","Gates of Olympus Super Scatter","Starlight Wins","Witch Heart Megaways","Cash Surge","Big Bass Bonanza 1000","Lucky Phoenix","5 Lions Reborn","Ride the Lightning"],
+      'WF GAMING': ["Muay Thai Legends", "Legendary Smash", "The Legend Of Khan", "You'll Rich", "WWE Crazy Wild", "WWE Wild Wins", "WWE Combo Wins", "WWE Championship", "Black pink", "Avengers", "Forest Adventure", "Sorcerers Duel", "Lightning Thor (Megaways)", "Rise Of Mulan", "Eternal Dragon", "Tiger’s Fortune", "Ninja Strike", "Legend Of White Snake", "Mythical Creatures", "Lightning Thor", "Fortune’s Reign", "Lucky Cai Shen", "Fishing Trip", "Sun God", "Wealth of the Ox", "Journey To The West", "Legendary Witch", "Lucky Farm", "General Mu Lan", "Dragon’s Fortune", "Legendary Jin Qian Wa", "Legendary Panther Moon", "Legendary Great Blue", "Legendary Highway King", "Lucky Ace", "Legendary Roma", "Avatar Splash", "Blazing Fortune", "S.T.U.N.", "Magic Genie", "Lucky World Cup", "Arcane Mage", "Dinosaur World", "Doraemon", "Galaxy Guardians", "Elemental Queen", "Miao!", "Monster Fight", "Rock of Multiplier", "Slam Dunk King", "Blue Armor", "Wild Valley", "Great Athletes", "Chili Fire", "Imperial Chaise", "Dolphin Ridge", "Mayan Elements", "Paris Of The East", "Jaquar Blitz"],
+      'JILI': ["10 Sparkling Crown", "3 Charge Buffalo", "3 Coin Treasures", "3 Coin Treasures 2", "3 Coin Wild Horse", "3 LUCKY LION", "3 LUCKY PIGGY", "3 Pot Dragons", "Agent Ace", "Ali Baba", "Arena Fighter", "Aztec Priestess", "Bangla Beauty", "Bao boon chin", "Bone Fortune", "Bonus Hunter", "Book of Gold", "Boxing King", "Bubble Beauty", "Candy Baby", "Charge Buffalo", "Charge Buffalo ASCENT", "Chin Shi Huang", "Circus Joker 4096", "Clover Coins 3x3", "Coin Tree", "Crazy FaFaFa", "Crazy777", "Cricket King 18", "Cricket SAH 75", "Crystal 777 DELUXE", "Dabanggg", "Devil Fire", "Devil Fire 2", "Diamond Party", "Dragon Treasure", "ELF BINGO", "Egypt's Glow", "Fa Fa Fa", "Fengshen", "Fortune Coins", "Fortune Gems", "Fortune Gems 2", "Fortune Gems 3", "Fortune Monkey", "Fortune Tree", "FortunePig", "Fruity Wheel", "Gem Party", "God Of Martial", "Gold Rush", "Golden Bank", "Golden Bank 2", "Golden Empire", "Golden Joker", "Golden Queen", "Golden Temple", "Happy Taxi", "Hawaii Beauty", "Hot Chilli", "Hyper Burst", "JILI Caishen", "Jackpot Joker", "Joker Coins", "Jungle King", "King Arthur", "Legacy Of Egypt", "Lion 2 Dance", "Lucky Ball", "Lucky Coming", "Lucky Doggy", "Lucky Goldbricks", "Lucky Jaguar", "MAYAN EMPIRE", "MagicLamp", "Master Tiger", "Medusa", "Mega Ace", "Money Coming", "Money Coming 2", "Money Coming Expand Bets", "Money Pot", "Money Pot DELUXE", "Monkey Party", "Neko Fortune", "Night City", "Nightfall Hunting", "Party Night", "Party Star", "Pharaoh Treasure", "Pirate Queen", "Pirate Queen 2", "Poseidon", "Potion Wizard", "Roma X", "RomaX Deluxe", "Safari King", "Safari Mystery", "Samba", "Secret Treasure", "SevenSevenSeven", "Shanghai Beauty", "Shōgun", "Sin City", "Super Ace", "Super Ace Deluxe", "Super Ace Joker", "Super Rich", "Sweet Land", "TWIN WINS", "The Pig House", "Thor X", "Treasure Quest", "Trial of Phoenix", "War Of Dragons", "Wild Ace", "Wild Racer", "Witches' Night", "World Cup", "XiYangYang", "Zeus"]
     };
-    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
-  }, 50);
- 
- const setScoreMoney = logs[0].endMoney;
 
+    const autoIntervals = {};
 
-let setScoreTime = new Date(logs[0].dateTime);
-const extraSeconds = [2, 3, 4, 6, 8, 9, 10, 13, 15, 18, 20, 21, 23, 24];
-const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
-setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
+    function createPlatform(name, tips, rowId) {
+  const container = document.createElement('div');
+  container.className = 'platform-box';
+  container.setAttribute('data-platform', name.toLowerCase());
 
-let rows = `
-  <tr class="set-score-row">
-    <td>-</td>
-    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${(Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td>0.00</td>
-    <td>${formatDateTimeLocal(setScoreTime)}</td>
-  </tr>
-`;
+  const tipListId = `tips-${name}`;
+  const countId = `count-${name}`;
+  const autoId = `auto-${name}`;
+  const durationId = `duration-${name}`;
+  const timeId = `time-${name}`;
 
-  logs.forEach(log => {
-    rows += `
-      <tr class="log-row">
-        <td>${log.game}</td>
-        <td>${log.tableID}</td>
-        <td>${log.bet}</td>
-        <td>${log.win}</td>
-        <td>${log.beginMoney}</td>
-        <td>${log.endMoney}</td>
-        <td>${log.dateTime}</td>
-      </tr>
-    `;
-  });
-
-  tbody.innerHTML = rows;
-}
-  function addJackpot() {
-  const currentGame = document.getElementById("gameSelect").value;
-  const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
-
-  if (isNaN(jackpotAmount) || jackpotAmount < 0) {
-    return;
-  }
-
-  const tbody = document.querySelector("#gameLog tbody");
-  let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  let jackpotRow = tbody.querySelector("tr.set-score-row.jackpot");
-
-  if (jackpotRow) {
-    const prevJackpotText = jackpotRow.children[1].textContent;
-    const match = prevJackpotText.match(/JackPot：([\d.]+)/);
-    if (match) {
-      const oldJackpotValue = parseFloat(match[1]);
-
-     
-      const index = Array.from(tbody.children).indexOf(jackpotRow);
-      const prevRow = tbody.children[index - 1];
-      const oldWin = parseFloat(prevRow.children[3].textContent);
-      const oldEnd = parseFloat(prevRow.children[5].textContent);
-      const newWin = oldWin - oldJackpotValue;
-
-      prevRow.children[3].textContent = newWin.toFixed(2);
-      const bet = parseFloat(prevRow.children[2].textContent);
-      const beginMoney = parseFloat(prevRow.children[4].textContent);
-      const newEnd = beginMoney - bet + newWin;
-      prevRow.children[5].textContent = newEnd.toFixed(2);
-    }
-
-    jackpotRow.remove();
-  }
-
-  if (hiddenRow) {
-  tbody.appendChild(hiddenRow);
-  hiddenRow = null;
-}
-
-  rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  if (rows.length < 2) {
-    alert("Log belum cukup baris.");
-    return;
-  }
-
-  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
-  const targetRow = rows[randomIndex];
-  const prevRow = rows[randomIndex - 1];
-
-  const oldWin = parseFloat(prevRow.children[3].textContent);
-  const newWin = oldWin + jackpotAmount;
-  prevRow.children[3].textContent = newWin.toFixed(2);
-
-  const beginMoney = parseFloat(prevRow.children[4].textContent);
-  const bet = parseFloat(prevRow.children[2].textContent);
-  const newEnd = beginMoney - bet + newWin;
-  prevRow.children[5].textContent = newEnd.toFixed(2);
-
-  const dateTime = prevRow.children[6].textContent;
-  const gameName = prevRow.children[0].textContent;
-
-  const newJackpotRow = document.createElement("tr");
-  newJackpotRow.classList.add("set-score-row", "jackpot");
-  newJackpotRow.innerHTML = `
-    <td>${gameName}</td>
-    <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${dateTime}</td>
+  container.innerHTML = `
+    <div class="platform-header">${name}</div>
+    <div class="tip-list" id="${tipListId}"></div>
+    <div class="bottom-controls">
+      <div class="row-center">
+        <button class="btn-number" data-platform="${name}">NUMBER</button>
+        <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
+        <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
+      </div>
+      <div class="row-center">
+        <div class="input-group">
+          <input class="count-input" type="number" id="${countId}" value="3" min="1" max="${tips.length}" title="Game List">
+          <div class="input-label">List Input</div>
+        </div>
+        <div class="input-group">
+          <label class="switch">
+            <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
+            <span class="slider"></span>
+          </label>
+          <div class="input-label">Off-On</div>
+        </div>
+        <div class="input-group">
+          <input class="duration-input" type="number" value="0.5" min="1" id="${durationId}" title="Second">
+          <div class="input-label">Time</div>
+        </div>
+      </div>
+      <div class="timestamp" id="${timeId}">Last Updated on --</div>
+    </div>
   `;
-  targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
- const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-const specialRows = tbody.querySelectorAll("tr.set-score-row"); 
+  document.getElementById(rowId).appendChild(container);
+  refreshList(name);
 
-while (allRows.length + specialRows.length > 11) {
-  const lastRow = allRows.pop(); 
-  lastRow.remove();
-}
+  // ✅ Auto refresh restore
+  const autoCheckbox = document.getElementById(`auto-${name}`);
+  const savedStatus = localStorage.getItem(`auto-${name}`);
+  if (savedStatus === 'on') {
+    autoCheckbox.checked = true;
+    toggleAuto(name);
+  }
 
-
-const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-for (let i = updatedRows.length - 1; i > 0; i--) {
-  const current = updatedRows[i];
-  const prev = updatedRows[i - 1];
-
-  const curEnd = parseFloat(current.children[5].textContent);
-  const prevBet = parseFloat(prev.children[2].textContent);
-  const prevWin = parseFloat(prev.children[3].textContent);
-
-  prev.children[4].textContent = curEnd.toFixed(2);
-  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
-}
-
-  if (updatedRows.length > 0) {
-  const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
-  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-  if (setScoreRowTop) {
-    const scoreCell = setScoreRowTop.children[1];
-    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-
-    const beginCell = setScoreRowTop.children[4];
-      const oldBegin = parseFloat(beginCell.textContent);
-      const newBegin = oldBegin + jackpotAmount;
-      beginCell.textContent = newBegin.toFixed(2);
-
-    
-      scoreCell.textContent = `Set score：${(-Math.abs(newBegin)).toFixed(2)}`;
+  // ✅ Number toggle restore
+  const numberingKey = `numbering-${name}`;
+  const numberingState = localStorage.getItem(numberingKey);
+  const btnNumber = container.querySelector('.btn-number');
+  btnNumber.addEventListener('click', () => toggleNumbering(name));
+  if (numberingState === 'on') {
+    btnNumber.classList.add('active');
+    applyNumbering(name);
   }
 }
+    function renderTips(name, tips) {
+      const el = document.getElementById('tips-' + name);
+      let content = `<strong>${name}</strong><br>=========<br>`;
+      tips.forEach((t, i) => content += `${i + 1}. ${t}<br>`);
+      el.innerHTML = content;
+      updateTime(name);
+    }
 
+    function refreshList(name) {
+      const count = parseInt(document.getElementById('count-' + name).value) || 3;
+      const list = platformData[name];
+      const shuffled = [...list].sort(() => 0.5 - Math.random());
+      const random = shuffled.slice(0, count);
+      renderTips(name, random);
+    }
 
-  jackpotInsertedMap[currentGame] = true;
-  localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
-}
-function addManualSetScore() {
-  const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
-  if (isNaN(inputScore)) return alert("❌ Nilai tidak sah");
+    function copyTips(name) {
+    const text = document.getElementById('tips-' + name).innerText;
+    const button = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-copy`);
 
-  const tbody = document.querySelector("#gameLog tbody");
-
-  const setScoreNegatifRow = Array.from(tbody.querySelectorAll("tr.set-score-row:not(.jackpot)"))
-    .find(row => row.children[1].textContent.includes("-"));
-  if (!setScoreNegatifRow) return alert("❌ Baris set score negatif tidak ditemukan!");
-
-  const existingSupportRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
-    .find(row =>
-      !row.classList.contains("jackpot") &&
-      !row.children[1].textContent.includes("-") &&
-      row !== setScoreNegatifRow
-    );
-
-  const endMoneyNegatif = parseFloat(setScoreNegatifRow.children[5].textContent);
-  const beginMoney = endMoneyNegatif;
-  const endMoneyBaru = (beginMoney + inputScore).toFixed(2);
-  const setScoreDisplay = inputScore.toFixed(2); // Hanya nilai support, tidak tambah pecahan
-
-  // Waktu baru
-  const belowTimeText = setScoreNegatifRow.children[6].textContent.trim();
-  const belowDate = new Date(belowTimeText.replace(" ", "T"));
-  const randomSeconds = Math.floor(Math.random() * 4) + 4;
-  const newTime = new Date(belowDate.getTime() + randomSeconds * 1000);
-  const formatted = formatDateTimeLocal(newTime);
-
-  if (existingSupportRow) {
-    existingSupportRow.children[1].textContent = `Set score：${setScoreDisplay}`;
-    existingSupportRow.children[4].textContent = beginMoney.toFixed(2);
-    existingSupportRow.children[5].textContent = endMoneyBaru;
-    existingSupportRow.children[6].textContent = formatted;
+  
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopyNotice(button);
+    }).catch(() => {
+      fallbackCopy();
+    });
   } else {
-    const newRow = document.createElement("tr");
-    newRow.classList.add("set-score-row");
-    newRow.innerHTML = `
-      <td>-</td>
-      <td class="setscore">Set score：${setScoreDisplay}</td>
-      <td class="negatif">-</td>
-      <td class="negatif">-</td>
-      <td>${beginMoney.toFixed(2)}</td>
-      <td>${endMoneyBaru}</td>
-      <td>${formatted}</td>
-    `;
-    tbody.insertBefore(newRow, setScoreNegatifRow);
+    fallbackCopy();
   }
 
-  const allRows = Array.from(tbody.querySelectorAll("tr"));
-  if (allRows.length > 11) {
-    allRows[allRows.length - 1].remove();
+  function fallbackCopy() {
+    const tempInput = document.createElement("textarea");
+    tempInput.value = text;
+    tempInput.style.position = "fixed";
+    tempInput.style.opacity = "0";
+    document.body.appendChild(tempInput);
+    tempInput.focus();
+    tempInput.select();
+    try {
+      document.execCommand("copy");
+    } catch (err) {}
+    document.body.removeChild(tempInput);
+    showCopyNotice(button);
   }
 
-  document.getElementById("manualScoreInput").value = "0";
-}
-function resetLog() {
-  localStorage.removeItem("gameLogData918kiss");
-  localStorage.removeItem("jackpotInsertedMap");
-  jackpotInsertedMap = {};
+  function showCopyNotice(button) {
+    let notice = button.parentElement.querySelector('.copy-notice');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.className = 'copy-notice';
+      notice.innerText = 'Copied!';
+      notice.style.position = 'absolute';
+      notice.style.bottom = '100%';
+      notice.style.left = '50%';
+      notice.style.transform = 'translateX(-50%)';
+      notice.style.background = '#222';
+      notice.style.color = '#fff';
+      notice.style.fontSize = '11px';
+      notice.style.padding = '2px 6px';
+      notice.style.borderRadius = '4px';
+      notice.style.marginBottom = '6px';
+      notice.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+      notice.style.zIndex = '999';
+      button.parentElement.style.position = 'relative';
+      button.parentElement.appendChild(notice);
+    }
 
-  document.getElementById("gameSelect").value = "";
-  document.getElementById("betSelect").innerHTML = "";
-  document.getElementById("pecahanSelect").innerHTML = "";
-  document.getElementById("manualTime").value = "";
-  document.getElementById("manualScore").value = "0";
-  document.getElementById("manualJackpot").value = "0";
-  document.querySelector("#gameLog tbody").innerHTML = "";
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  const saved = localStorage.getItem("gameLogData918kiss");
-  if (!saved) return;
-
-  const data = JSON.parse(saved);
-  document.getElementById("gameSelect").value = data.game;
-  document.getElementById("manualTime").value = data.manualTime;
-  document.getElementById("manualScore").value = data.manualScore;
-  document.getElementById("gameSelect").dispatchEvent(new Event("change"));
-
-  setTimeout(() => {
-    document.getElementById("betSelect").value = data.bet;
-    document.getElementById("betSelect").dispatchEvent(new Event("change"));
-
+    notice.style.display = 'block';
     setTimeout(() => {
-      document.getElementById("pecahanSelect").value = data.pecahan;
-    }, 50);
-  }, 50);
-
-  document.querySelector("#gameLog tbody").innerHTML = data.logs;
-});
-function copyGameLogImage() {
-  const gameLogTable = document.getElementById("gameLog");
-  const copiedImage = document.getElementById("copiedImage");
-  const resizeBox = document.getElementById("resizeBox");
-
-  gameLogTable.classList.add("screenshot-mode");
-
-  html2canvas(gameLogTable, {
-    scale: 2,
-    useCORS: true
-  }).then(canvas => {
-    gameLogTable.classList.remove("screenshot-mode");
-
-    canvas.toBlob(blob => {
-      if (!blob) return;
-
-      const url = URL.createObjectURL(blob);
-      copiedImage.src = url;
-      resizeBox.style.display = "block";
-
-      if (navigator.clipboard && window.ClipboardItem) {
-        const item = new ClipboardItem({ "image/png": blob });
-        navigator.clipboard.write([item]).catch(err => {
-          alert("❌ Gagal salin ke clipboard.");
-          console.error(err);
-        });
-      } else {
-        alert("❌ Clipboard tidak disokong.");
-      }
-    });
-  });
-}
-// Drag logic untuk gambar
-(function makeImageDraggable() {
-  const img = document.getElementById("copiedImage");
-  let isDragging = false;
-  let offsetX, offsetY;
-
-  img.addEventListener("mousedown", (e) => {
-    isDragging = true;
-    offsetX = e.clientX - img.offsetLeft;
-    offsetY = e.clientY - img.offsetTop;
-    img.style.cursor = "grabbing";
-  });
-
-  document.addEventListener("mousemove", (e) => {
-    if (isDragging) {
-      img.style.left = (e.clientX - offsetX) + "px";
-      img.style.top = (e.clientY - offsetY) + "px";
-    }
-  });
-
-  document.addEventListener("mouseup", () => {
-    isDragging = false;
-    img.style.cursor = "move";
-  });
-})();
-(function makeResizeBoxInteractive() {
-  const box = document.getElementById("resizeBox");
-  const handle = document.getElementById("resizeHandle");
-
-  // 🔹 Drag logic
-  let isDragging = false;
-  let offsetX, offsetY;
-
-  box.addEventListener("mousedown", (e) => {
-    if (e.target === handle) return;
-    isDragging = true;
-    offsetX = e.clientX - box.offsetLeft;
-    offsetY = e.clientY - box.offsetTop;
-    box.style.cursor = "grabbing";
-  });
-
-  document.addEventListener("mousemove", (e) => {
-    if (isDragging) {
-      box.style.left = (e.clientX - offsetX) + "px";
-      box.style.top = (e.clientY - offsetY) + "px";
-    }
-  });
-
-  document.addEventListener("mouseup", () => {
-    isDragging = false;
-    box.style.cursor = "move";
-  });
-
-  // 🔹 Resize logic
-  let isResizing = false;
-  let startX, startY, startWidth, startHeight;
-
-  handle.addEventListener("mousedown", (e) => {
-    e.stopPropagation();
-    isResizing = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    startWidth = box.offsetWidth;
-    startHeight = box.offsetHeight;
-  });
-
-  document.addEventListener("mousemove", (e) => {
-    if (isResizing) {
-      const newWidth = startWidth + (e.clientX - startX);
-      const newHeight = startHeight + (e.clientY - startY);
-      box.style.width = Math.max(100, newWidth) + "px";
-      box.style.height = Math.max(100, newHeight) + "px";
-    }
-  });
-
-  document.addEventListener("mouseup", () => {
-    isResizing = false;
-  });
-})();
-document.addEventListener("paste", (e) => {
-  const items = e.clipboardData.items;
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-    if (item.type.indexOf("image") !== -1) {
-      const blob = item.getAsFile();
-      const url = URL.createObjectURL(blob);
-      insertPastedImage(url);
-    }
+      notice.style.display = 'none';
+    }, 1500);
   }
-});
-
-function insertPastedImage(imageURL) {
-  const canvas = document.getElementById("imageEditorCanvas");
-
-  const wrapper = document.createElement("div");
-  wrapper.classList.add("pasted-image-wrapper");
-  wrapper.style.position = "absolute";
-  wrapper.style.top = "100px";
-  wrapper.style.left = "100px";
-  wrapper.style.width = "300px";
-  wrapper.style.height = "200px";
-  wrapper.style.border = "2px solid #00ffcc";
-  wrapper.style.cursor = "move";
-  wrapper.style.zIndex = "100";
-
-  const img = document.createElement("img");
-  img.src = imageURL;
-  img.style.width = "100%";
-  img.style.height = "100%";
-  img.style.objectFit = "contain";
-  img.style.pointerEvents = "none";
-
-  const handle = document.createElement("div");
-  handle.classList.add("resize-handle");
-  handle.style.width = "12px";
-  handle.style.height = "12px";
-  handle.style.background = "cyan";
-  handle.style.position = "absolute";
-  handle.style.right = "-6px";
-  handle.style.bottom = "-6px";
-  handle.style.cursor = "nwse-resize";
-  handle.style.display = "none"; // awalnya disembunyikan
-
-  wrapper.appendChild(img);
-  wrapper.appendChild(handle);
-  canvas.appendChild(wrapper);
-
-  makeElementDraggable(wrapper, handle);
-
-wrapper.addEventListener("click", (e) => {
-  e.stopPropagation();
-
-  // Sembunyikan semua handle + border dulu
-  document.querySelectorAll(".resize-handle").forEach(h => h.style.display = "none");
-  document.querySelectorAll(".pasted-image-wrapper").forEach(w => {
-    w.style.border = "none";
-  });
-
-  // Tampilkan border + handle hanya untuk yang diklik
-  wrapper.style.border = "2px solid #00ffcc";
-  handle.style.display = "block";
-});
- document.addEventListener("click", (e) => {
-    if (!wrapper.contains(e.target)) {
-      handle.style.display = "none";
-    }
-  });
 }
-function makeElementDraggable(box, handle) {
-  let isDragging = false, offsetX = 0, offsetY = 0;
-  let isResizing = false, startX, startY, startWidth, startHeight;
 
-  box.addEventListener("mousedown", (e) => {
-    if (e.target === handle) return;
-    isDragging = true;
-    offsetX = e.clientX - box.offsetLeft;
-    offsetY = e.clientY - box.offsetTop;
-    box.style.cursor = "grabbing";
-  });
+    function toggleAuto(name) {
+  const checkbox = document.getElementById('auto-' + name);
+  clearInterval(autoIntervals[name]);
+  localStorage.setItem(`auto-${name}`, checkbox.checked ? 'on' : 'off');
+  
+  if (checkbox.checked) {
+    let duration = parseFloat(document.getElementById('duration-' + name).value) || 1;
 
-  document.addEventListener("mousemove", (e) => {
-    if (isDragging) {
-      box.style.left = (e.clientX - offsetX) + "px";
-      box.style.top = (e.clientY - offsetY) + "px";
+    if (duration < 1) {
+      duration = duration * 10 * 1000;
+    } else {
+      duration = duration * 60 * 1000;
     }
-    if (isResizing) {
-      const newWidth = startWidth + (e.clientX - startX);
-      const newHeight = startHeight + (e.clientY - startY);
-      box.style.width = Math.max(50, newWidth) + "px";
-      box.style.height = Math.max(50, newHeight) + "px";
-    }
-  });
 
-  document.addEventListener("mouseup", () => {
-  isDragging = false;
-  isResizing = false;
-  box.style.cursor = "move";
-
-  // Hilangkan semua resize handle & border
-  setTimeout(() => {
-    document.querySelectorAll(".resize-handle").forEach(h => h.style.display = "none");
-    document.querySelectorAll(".pasted-image-wrapper").forEach(w => {
-      w.style.border = "none"; // hilangkan garis putih
-    });
-  }, 100);
-});
-  handle.addEventListener("mousedown", (e) => {
-    e.stopPropagation();
-    isResizing = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    startWidth = box.offsetWidth;
-    startHeight = box.offsetHeight;
-  });
+    autoIntervals[name] = setInterval(() => refreshList(name), duration);
+  }
 }
-</script>
 
+    function updateTime(name) {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dateString = now.toLocaleDateString('en-GB');
+      document.getElementById('time-' + name).innerText = `Last Updated on ${timeString} ${dateString}`;
+    }
+
+    function toggleNumbering(name) {
+  const key = `numbering-${name}`;
+  const btn = document.querySelector(`.btn-number[data-platform="${name}"]`);
+  const tipBox = document.getElementById(`tips-${name}`);
+  const isActive = btn.classList.toggle("active");
+
+  localStorage.setItem(key, isActive ? "on" : "off");
+
+  if (isActive) {
+    applyNumbering(name);
+  } else {
+    removeNumbering(name);
+  }
+}
+
+function applyNumbering(name) {
+  const tipBox = document.getElementById(`tips-${name}`);
+  const lines = tipBox.innerHTML.split("<br>").filter(line => line.trim() !== "" && !line.includes("==="));
+  let numbered = `<strong>${name}</strong><br>=========<br>`;
+  lines.forEach((line, i) => {
+    numbered += `${i + 1}. ${line.replace(/^\d+\.\s*/, '')}<br>`;
+  });
+  tipBox.innerHTML = numbered;
+  updateTime(name);
+}
+
+function removeNumbering(name) {
+  const tipBox = document.getElementById(`tips-${name}`);
+  const lines = tipBox.innerHTML.split("<br>").filter(line => line.trim() !== "" && !line.includes("==="));
+  let content = `<strong>${name}</strong><br>=========<br>`;
+  lines.forEach(line => {
+    content += `${line.replace(/^\d+\.\s*/, '')}<br>`;
+  });
+  tipBox.innerHTML = content;
+  updateTime(name);
+}
+    
+    function filterPlatforms(query) {
+      const allBoxes = document.querySelectorAll('.platform-box');
+      query = query.trim().toLowerCase();
+      allBoxes.forEach(box => {
+        const name = box.getAttribute('data-platform');
+        box.style.display = name.includes(query) ? '' : 'none';
+      });
+    }
+
+    const allPlatforms = Object.keys(platformData);
+allPlatforms.forEach((name, i) => {
+  const rowIndex = Math.floor(i / 4) + 1;
+  const rowId = `row-${rowIndex}`;
+  createPlatform(name, platformData[name], rowId);
+});
+  </script>
 </body>
 </html>
