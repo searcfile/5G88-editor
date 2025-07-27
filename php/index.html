@@ -199,6 +199,21 @@
       color: #000; 
       text-align: center;
     }
+    .btn-number {
+  background: black;
+  color: gold;
+  border: 1px solid white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-number.active {
+  background: gold;
+  color: black;
+}
   </style>
 </head>
 <body>
@@ -241,9 +256,10 @@
         <div class="tip-list" id="${tipListId}"></div>
         <div class="bottom-controls">
   <div class="row-center">
-    <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
-    <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
-  </div>
+  <button class="btn-number" onclick="toggleNumber('${name}', this)">NUMBER</button>
+  <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
+  <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
+</div>
 
   <div class="row-center">
     <div class="input-group">
@@ -395,6 +411,26 @@ allPlatforms.forEach((name, i) => {
   const rowId = `row-${rowIndex}`;
   createPlatform(name, platformData[name], rowId);
 });
+    function toggleNumber(name, btn) {
+  btn.classList.toggle('active');
+
+  const tipsBox = document.getElementById('tips-' + name);
+  const lines = tipsBox.innerHTML.split('<br>').filter(line => line.trim() !== '');
+
+  const platformTitle = lines[0];
+  const separator = lines[1];
+  const contentLines = lines.slice(2);
+
+  let updatedLines;
+
+  if (btn.classList.contains('active')) {
+    updatedLines = contentLines.map((line, index) => `${index + 1}. ${line}`);
+  } else {
+    updatedLines = contentLines.map(line => line.replace(/^\d+\.\s*/, ''));
+  }
+
+  tipsBox.innerHTML = [platformTitle, separator, ...updatedLines].join('<br>');
+}
   </script>
 </body>
 </html>
