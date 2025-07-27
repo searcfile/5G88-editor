@@ -199,22 +199,6 @@
       color: #000; 
       text-align: center;
     }
-    .btn-toggle-number {
-  transition: transform 0.2s ease;
-  font-size: 14px;
-  background: black;
-  border: none;
-  color: gold;
-  cursor: pointer;
-  border-radius: 6px;
-  padding: 4px 10px;
-  border: 1px solid white;
-}
-.btn-toggle-number:active {
-  background: #393939;
-  color: gold;
-  box-shadow: 0 0 10px white;
-}
   </style>
 </head>
 <body>
@@ -257,7 +241,6 @@
         <div class="tip-list" id="${tipListId}"></div>
         <div class="bottom-controls">
   <div class="row-center">
-    <button class="btn-toggle-number" onclick="toggleNumber('${name}')">NUMBER</button>
     <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
     <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
   </div>
@@ -297,13 +280,13 @@
     toggleAuto(name); 
   }
 }
-    function renderTips(name, tips) {
-     let showNumber = localStorage.getItem(`number-${name}`) === 'on';
-     let content = `<strong>${name}</strong><br>=========<br>`;
-     tips.forEach((t, i) => content += `${showNumber ? (i + 1) + '. ' : ''}${t}<br>`);
-      el.innerHTML = content;
-      updateTime(name);
-    }
+function renderTips(name, tips) {
+  const el = document.getElementById('tips-' + name);
+  let content = `<strong>${name}</strong><br>=========<br>`;
+  tips.forEach((t) => content += `${t}<br>`);
+  el.innerHTML = content;
+  updateTime(name);
+}
 
     function refreshList(name) {
       const count = parseInt(document.getElementById('count-' + name).value) || 3;
@@ -389,13 +372,7 @@
     autoIntervals[name] = setInterval(() => refreshList(name), duration);
   }
 }
-  function toggleNumber(name) {
-    const key = `number-${name}`;
-    const current = localStorage.getItem(key);
-    const newValue = current === 'on' ? 'off' : 'on';
-    localStorage.setItem(key, newValue);
-    refreshList(name);
-  }
+
     function updateTime(name) {
       const now = new Date();
       const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
