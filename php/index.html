@@ -421,21 +421,27 @@
 
 function applyNumbering(name) {
   const tipBox = document.getElementById(`tips-${name}`);
-  const lines = tipBox.innerHTML.split("<br>")
-    .map(line => line.trim())
-    .filter(line => line !== "" && !line.startsWith(name) && !line.startsWith("="));
-    
-  tipBox.innerHTML = lines.map((line, i) => `${i + 1}. ${line.replace(/^\d+\.\s*/, '')}`).join("<br>");
+  const lines = tipBox.innerHTML.split("<br>").map(line => line.trim());
+
+  const title = lines[0];
+  const separator = lines[1];
+  const games = lines.slice(2);
+
+  const numberedGames = games.map((line, i) => `${i + 1}. ${line.replace(/^\d+\.\s*/, '')}`);
+  tipBox.innerHTML = [title, separator, ...numberedGames].join("<br>");
   updateTime(name);
 }
 
 function removeNumbering(name) {
   const tipBox = document.getElementById(`tips-${name}`);
-  const lines = tipBox.innerHTML.split("<br>")
-    .map(line => line.trim())
-    .filter(line => line !== "" && !line.startsWith(name) && !line.startsWith("="));
+  const lines = tipBox.innerHTML.split("<br>").map(line => line.trim());
 
-  tipBox.innerHTML = lines.map(line => line.replace(/^\d+\.\s*/, '')).join("<br>");
+  const title = lines[0];
+  const separator = lines[1];
+  const games = lines.slice(2);
+
+  const plainGames = games.map(line => line.replace(/^\d+\.\s*/, ''));
+  tipBox.innerHTML = [title, separator, ...plainGames].join("<br>");
   updateTime(name);
 }
     
