@@ -424,7 +424,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 86*/
+/*Mcng 123 123 36*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -610,7 +610,7 @@ document.addEventListener("click", (e) => {
 });
 
 // Jika iframe load & domain sama, deteksi klik iframe
-const iframe = document.getElementById("pageFrame");
+let iframe = document.getElementById("pageFrame");
 iframe?.addEventListener("load", () => {
   try {
     iframe.contentWindow.document.addEventListener("click", () => {
@@ -732,6 +732,8 @@ if (gameLogBtn) {
 
 function sendLoginToIframe() {
   iframe = document.getElementById("pageFrame"); // ✅ tanpa const
+  console.log("iframe saat load:", iframe); 
+  
   if (!iframe || !iframe.contentWindow) return;
 
   const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
