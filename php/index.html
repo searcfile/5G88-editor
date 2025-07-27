@@ -241,54 +241,63 @@
     const autoIntervals = {};
 
     function createPlatform(name, tips, rowId) {
-      const container = document.createElement('div');
-      container.className = 'platform-box';
-      container.setAttribute('data-platform', name.toLowerCase());
+  const container = document.createElement('div');
+  container.className = 'platform-box';
+  container.setAttribute('data-platform', name.toLowerCase());
 
-      const tipListId = `tips-${name}`;
-      const countId = `count-${name}`;
-      const autoId = `auto-${name}`;
-      const durationId = `duration-${name}`;
-      const timeId = `time-${name}`;
+  const tipListId = `tips-${name}`;
+  const countId = `count-${name}`;
+  const autoId = `auto-${name}`;
+  const durationId = `duration-${name}`;
+  const timeId = `time-${name}`;
 
-      container.innerHTML = `
-        <div class="platform-header">${name}</div>
-        <div class="tip-list" id="${tipListId}"></div>
-        <div class="bottom-controls">
-  <div class="row-center">
-  <button class="btn-number" onclick="toggleNumber('${name}', this)">NUMBER</button>
-  <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
-  <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
-</div>
+  container.innerHTML = `
+    <div class="platform-header">${name}</div>
+    <div class="tip-list" id="${tipListId}"></div>
+    <div class="bottom-controls">
+      <div class="row-center">
+        <button class="btn-number" onclick="toggleNumber('${name}', this)">NUMBER</button>
+        <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
+        <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
+      </div>
 
-  <div class="row-center">
-    <div class="input-group">
-      <input class="count-input" type="number" id="${countId}" value="3" min="1" max="${tips.length}" title="Game List">
-      <div class="input-label">List Input</div>
+      <div class="row-center">
+        <div class="input-group">
+          <input class="count-input" type="number" id="${countId}" value="3" min="1" max="${tips.length}" title="Game List">
+          <div class="input-label">List Input</div>
+        </div>
+
+        <div class="input-group">
+          <label class="switch">
+            <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
+            <span class="slider"></span>
+          </label>
+          <div class="input-label">Off-On</div>
+        </div>
+
+        <div class="input-group">
+          <input class="duration-input" type="number" value="0.5" min="1" id="${durationId}" title="Second">
+          <div class="input-label">Time</div>
+        </div>
+      </div>
+
+      <div class="timestamp" id="${timeId}">Last Updated on --</div>
     </div>
+  `;
 
-    <div class="input-group">
-      <label class="switch">
-        <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
-        <span class="slider"></span>
-      </label>
-      <div class="input-label">Off-On</div>
-    </div>
+  document.getElementById(rowId).appendChild(container);
 
-    <div class="input-group">
-      <input class="duration-input" type="number" value="0.5" min="1" id="${durationId}" title="Second">
-      <div class="input-label">Time</div>
-    </div>
-  </div>
+  // ✅ Restore tombol NUMBER jika sebelumnya aktif
+  const numberStatus = localStorage.getItem(`number-${name}`);
+  if (numberStatus === 'on') {
+    const numberBtn = container.querySelector('.btn-number');
+    if (numberBtn) numberBtn.classList.add('active');
+  }
 
-  <div class="timestamp" id="${timeId}">Last Updated on --</div>
-</div>
-      `;
+  // ✅ Render tips setelah cek tombol number
+  refreshList(name);
 
-      document.getElementById(rowId).appendChild(container);
-      refreshList(name);
-
-    
+  // ✅ Restore status checkbox auto-refresh
   const autoCheckbox = document.getElementById(`auto-${name}`);
   const savedStatus = localStorage.getItem(`auto-${name}`);
   if (savedStatus === 'on') {
@@ -417,8 +426,11 @@ allPlatforms.forEach((name, i) => {
   const rowId = `row-${rowIndex}`;
   createPlatform(name, platformData[name], rowId);
 });
-    function toggleNumber(name, btn) {
+ function toggleNumber(name, btn) {
   btn.classList.toggle('active');
+
+  const isActive = btn.classList.contains('active');
+  localStorage.setItem(`number-${name}`, isActive ? 'on' : 'off');
 
   const tipsBox = document.getElementById('tips-' + name);
   const lines = tipsBox.innerHTML.split('<br>').filter(line => line.trim() !== '');
@@ -429,7 +441,7 @@ allPlatforms.forEach((name, i) => {
 
   let updatedLines;
 
-  if (btn.classList.contains('active')) {
+  if (isActive) {
     updatedLines = contentLines.map((line, index) => `${index + 1}. ${line}`);
   } else {
     updatedLines = contentLines.map(line => line.replace(/^\d+\.\s*/, ''));
