@@ -239,38 +239,8 @@
     };
 
     const autoIntervals = {};
-    
-function shuffleArray(array) { 
-  const copy = [...array];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
-  function refreshList(name) {
-  const count = parseInt(document.getElementById(`count-${name}`).value) || 3;
-  const randomTips = shuffleArray(window.tipData[name]).slice(0, count);
-  localStorage.setItem(`tips-${name}`, JSON.stringify(randomTips));
 
-  renderTips(name, randomTips);
-}
-
-function renderTips(name, tips) {
-  const el = document.getElementById('tips-' + name);
-  const numberBtn = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-number`);
-  let content = `<strong>${name}</strong><br>=========<br>`;
-
-  tips.forEach((t, i) => {
-    const line = numberBtn && numberBtn.classList.contains('active') ? `${i + 1}. ${t}` : t;
-    content += `${line}<br>`;
-  });
-
-  el.innerHTML = content;
-  updateTime(name);
-}
-
- function createPlatform(name, tips, rowId) {
+    function createPlatform(name, tips, rowId) {
   const container = document.createElement('div');
   container.className = 'platform-box';
   container.setAttribute('data-platform', name.toLowerCase());
@@ -324,14 +294,8 @@ function renderTips(name, tips) {
     if (numberBtn) numberBtn.classList.add('active');
   }
 
-  // ✅ Load tips dari localStorage kalau ada, jika tidak generate baru
-  const storedTips = localStorage.getItem(`tips-${name}`);
-  if (storedTips) {
-    const parsedTips = JSON.parse(storedTips);
-    renderTips(name, parsedTips);
-  } else {
-    refreshList(name); // hanya kalau tidak ada tips tersimpan
-  }
+  // ✅ Render tips setelah cek tombol number
+  refreshList(name);
 
   // ✅ Restore status checkbox auto-refresh
   const autoCheckbox = document.getElementById(`auto-${name}`);
@@ -341,6 +305,27 @@ function renderTips(name, tips) {
     toggleAuto(name); 
   }
 }
+function renderTips(name, tips) {
+  const el = document.getElementById('tips-' + name);
+  const numberBtn = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-number`);
+  let content = `<strong>${name}</strong><br>=========<br>`;
+
+  tips.forEach((t, i) => {
+    const line = numberBtn && numberBtn.classList.contains('active') ? `${i + 1}. ${t}` : t;
+    content += `${line}<br>`;
+  });
+
+  el.innerHTML = content;
+  updateTime(name);
+}
+
+    function refreshList(name) {
+      const count = parseInt(document.getElementById('count-' + name).value) || 3;
+      const list = platformData[name];
+      const shuffled = [...list].sort(() => 0.5 - Math.random());
+      const random = shuffled.slice(0, count);
+      renderTips(name, random);
+    }
 
     function copyTips(name) {
   const text = document.getElementById('tips-' + name).innerText;
