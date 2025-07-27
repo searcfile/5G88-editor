@@ -240,7 +240,7 @@
 
     const autoIntervals = {};
 
-    function createPlatform(name, tips, rowId) {
+ function createPlatform(name, tips, rowId) {
   const container = document.createElement('div');
   container.className = 'platform-box';
   container.setAttribute('data-platform', name.toLowerCase());
@@ -294,8 +294,14 @@
     if (numberBtn) numberBtn.classList.add('active');
   }
 
-  // ✅ Render tips setelah cek tombol number
-  refreshList(name);
+  // ✅ Load tips dari localStorage kalau ada, jika tidak generate baru
+  const storedTips = localStorage.getItem(`tips-${name}`);
+  if (storedTips) {
+    const parsedTips = JSON.parse(storedTips);
+    renderTips(name, parsedTips);
+  } else {
+    refreshList(name); // hanya kalau tidak ada tips tersimpan
+  }
 
   // ✅ Restore status checkbox auto-refresh
   const autoCheckbox = document.getElementById(`auto-${name}`);
@@ -320,12 +326,14 @@ function renderTips(name, tips) {
 }
 
     function refreshList(name) {
-      const count = parseInt(document.getElementById('count-' + name).value) || 3;
-      const list = platformData[name];
-      const shuffled = [...list].sort(() => 0.5 - Math.random());
-      const random = shuffled.slice(0, count);
-      renderTips(name, random);
-    }
+  const count = parseInt(document.getElementById(`count-${name}`).value) || 3;
+  const randomTips = shuffleArray(window.tipData[name]).slice(0, count);
+
+  // Simpan hasil tips ke localStorage
+  localStorage.setItem(`tips-${name}`, JSON.stringify(randomTips));
+
+  renderTips(name, randomTips);
+}
 
     function copyTips(name) {
   const text = document.getElementById('tips-' + name).innerText;
