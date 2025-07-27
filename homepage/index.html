@@ -424,7 +424,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 96*/
+/*Mcng 123 123 86*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -731,7 +731,7 @@ if (gameLogBtn) {
 }
 
 function sendLoginToIframe() {
-  iframe = document.getElementById("pageFrame"); // ✅ JANGAN pakai const lagi
+  iframe = document.getElementById("pageFrame"); // ✅ tanpa const
   if (!iframe || !iframe.contentWindow) return;
 
   const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
@@ -751,21 +751,20 @@ function sendLoginToIframe() {
   }
 }
 
-  // 🔁 Jalankan saat iframe load DAN saat tab LiveChat dibuka
-  const liveChatBtn = document.getElementById("liveChatBtn");
-  if (liveChatBtn) {
-    liveChatBtn.addEventListener("click", () => {
-      setTimeout(() => {
-        sendLoginToIframe();
-      }, 500); // beri waktu iframe sempat load
-    });
-  }
+// 🔁 Jalankan saat iframe load DAN saat tab LiveChat dibuka
+const liveChatBtn = document.getElementById("liveChatBtn");
+if (liveChatBtn) {
+  liveChatBtn.addEventListener("click", () => {
+    setTimeout(() => {
+      sendLoginToIframe();
+    }, 500); // beri waktu iframe sempat load
+  });
+}
 
-  const iframe = document.getElementById("pageFrame");
-  if (iframe) {
-    iframe.addEventListener("load", sendLoginToIframe);
-  }
-
+iframe = document.getElementById("pageFrame"); // ✅ TANPA const
+if (iframe) {
+  iframe.addEventListener("load", sendLoginToIframe);
+}
 function closeTab(label) {
   let tabs = getTabs().filter(tab => tab.label !== label);
   saveTabs(tabs);
