@@ -280,21 +280,22 @@
     toggleAuto(name); 
   }
 }
-    function renderTips(name, tips) {
-      const el = document.getElementById('tips-' + name);
-      let content = `<strong>${name}</strong><br>=========<br>`;
-      tips.forEach((t, i) => content += `${i + 1}. ${t}<br>`);
-      el.innerHTML = content;
-      updateTime(name);
-    }
-
-    function renderTips(name, tips) {
+function renderTips(name, tips) {
   const el = document.getElementById('tips-' + name);
   let content = `<strong>${name}</strong><br>=========<br>`;
   tips.forEach((t) => content += `${t}<br>`);
   el.innerHTML = content;
   updateTime(name);
 }
+
+    function refreshList(name) {
+      const count = parseInt(document.getElementById('count-' + name).value) || 3;
+      const list = platformData[name];
+      const shuffled = [...list].sort(() => 0.5 - Math.random());
+      const random = shuffled.slice(0, count);
+      renderTips(name, random);
+    }
+
     function copyTips(name) {
   const text = document.getElementById('tips-' + name).innerText;
   const button = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-copy`);
