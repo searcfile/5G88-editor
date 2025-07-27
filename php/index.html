@@ -438,7 +438,7 @@ function removeNumbering(name) {
 
   const title = lines[0];
   const separator = lines[1];
-  const games = lines.slice(2);
+  const games = lines.slice(2).filter(line => line !== "");
 
   const plainGames = games.map(line => line.replace(/^\d+\.\s*/, ''));
   tipBox.innerHTML = [title, separator, ...plainGames].join("<br>");
