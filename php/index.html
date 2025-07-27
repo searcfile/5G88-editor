@@ -313,12 +313,30 @@
     }
 
     function refreshList(name) {
-      const count = parseInt(document.getElementById('count-' + name).value) || 3;
-      const list = platformData[name];
-      const shuffled = [...list].sort(() => 0.5 - Math.random());
-      const random = shuffled.slice(0, count);
-      renderTips(name, random);
-    }
+  const countInput = document.getElementById(`count-${name}`);
+  const tipBox = document.getElementById(`tips-${name}`);
+  const count = parseInt(countInput.value) || 3;
+
+  const pool = [...gameTips[name]];
+  const tips = [];
+
+  while (tips.length < count && pool.length > 0) {
+    const index = Math.floor(Math.random() * pool.length);
+    tips.push(pool.splice(index, 1)[0]);
+  }
+
+  // ⛔ Jangan tambahkan nomor di sini
+  const html = [`${name}`, "=========", ...tips].join("<br>");
+  tipBox.innerHTML = html;
+
+  updateTime(name);
+
+  // Jika tombol NUMBER sedang aktif, langsung apply ulang numbering
+  const numberingState = localStorage.getItem(`numbering-${name}`);
+  if (numberingState === "on") {
+    applyNumbering(name);
+  }
+}
 
     function copyTips(name) {
     const text = document.getElementById('tips-' + name).innerText;
