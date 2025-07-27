@@ -166,13 +166,9 @@
       border: 1px solid white;
     }
     .btn-refresh:active, .btn-copy:active {
-      background:transparant;
-      color:gold;
-      box-shadow: 0 0 10px white;
-    }
-    .btn-refresh:hover, .btn-copy:hover {
       background:#393939;
       color:gold;
+      box-shadow: 0 0 10px white;
     }
     
     .timestamp {
@@ -203,18 +199,21 @@
       color: #000; 
       text-align: center;
     }
-  .btn-number {
-  background: black;
-  color: gold;
-  border: 1px solid white;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
+    .btn-toggle-number {
+  transition: transform 0.2s ease;
   font-size: 14px;
+  background: black;
+  border: none;
+  color: gold;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px 10px;
+  border: 1px solid white;
 }
-.btn-number.active {
-  background: gold;
-  color: black;
+.btn-toggle-number:active {
+  background: #393939;
+  color: gold;
+  box-shadow: 0 0 10px white;
 }
   </style>
 </head>
@@ -243,71 +242,65 @@
     const autoIntervals = {};
 
     function createPlatform(name, tips, rowId) {
-  const container = document.createElement('div');
-  container.className = 'platform-box';
-  container.setAttribute('data-platform', name.toLowerCase());
+      const container = document.createElement('div');
+      container.className = 'platform-box';
+      container.setAttribute('data-platform', name.toLowerCase());
 
-  const tipListId = `tips-${name}`;
-  const countId = `count-${name}`;
-  const autoId = `auto-${name}`;
-  const durationId = `duration-${name}`;
-  const timeId = `time-${name}`;
+      const tipListId = `tips-${name}`;
+      const countId = `count-${name}`;
+      const autoId = `auto-${name}`;
+      const durationId = `duration-${name}`;
+      const timeId = `time-${name}`;
 
-  container.innerHTML = `
-    <div class="platform-header">${name}</div>
-    <div class="tip-list" id="${tipListId}"></div>
-    <div class="bottom-controls">
-      <div class="row-center">
-        <button class="btn-number" data-platform="${name}">NUMBER</button>
-        <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
-        <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
-      </div>
-      <div class="row-center">
-        <div class="input-group">
-          <input class="count-input" type="number" id="${countId}" value="3" min="1" max="${tips.length}" title="Game List">
-          <div class="input-label">List Input</div>
-        </div>
-        <div class="input-group">
-          <label class="switch">
-            <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
-            <span class="slider"></span>
-          </label>
-          <div class="input-label">Off-On</div>
-        </div>
-        <div class="input-group">
-          <input class="duration-input" type="number" value="0.5" min="1" id="${durationId}" title="Second">
-          <div class="input-label">Time</div>
-        </div>
-      </div>
-      <div class="timestamp" id="${timeId}">Last Updated on --</div>
+      container.innerHTML = `
+        <div class="platform-header">${name}</div>
+        <div class="tip-list" id="${tipListId}"></div>
+        <div class="bottom-controls">
+  <div class="row-center">
+    <button class="btn-toggle-number" onclick="toggleNumber('${name}')">NUMBER</button>
+    <button class="btn-refresh" onclick="refreshList('${name}')">CHANGE</button>
+    <button class="btn-copy" onclick="copyTips('${name}')">COPY</button>
+  </div>
+
+  <div class="row-center">
+    <div class="input-group">
+      <input class="count-input" type="number" id="${countId}" value="3" min="1" max="${tips.length}" title="Game List">
+      <div class="input-label">List Input</div>
     </div>
-  `;
 
-  document.getElementById(rowId).appendChild(container);
-  refreshList(name);
+    <div class="input-group">
+      <label class="switch">
+        <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
+        <span class="slider"></span>
+      </label>
+      <div class="input-label">Off-On</div>
+    </div>
 
-  // ✅ Auto refresh restore
+    <div class="input-group">
+      <input class="duration-input" type="number" value="0.5" min="1" id="${durationId}" title="Second">
+      <div class="input-label">Time</div>
+    </div>
+  </div>
+
+  <div class="timestamp" id="${timeId}">Last Updated on --</div>
+</div>
+      `;
+
+      document.getElementById(rowId).appendChild(container);
+      refreshList(name);
+
+    
   const autoCheckbox = document.getElementById(`auto-${name}`);
   const savedStatus = localStorage.getItem(`auto-${name}`);
   if (savedStatus === 'on') {
     autoCheckbox.checked = true;
-    toggleAuto(name);
-  }
-
-  // ✅ Number toggle restore
-  const numberingKey = `numbering-${name}`;
-  const numberingState = localStorage.getItem(numberingKey);
-  const btnNumber = container.querySelector('.btn-number');
-  btnNumber.addEventListener('click', () => toggleNumbering(name));
-  if (numberingState === 'on') {
-    btnNumber.classList.add('active');
-    applyNumbering(name);
+    toggleAuto(name); 
   }
 }
     function renderTips(name, tips) {
-      const el = document.getElementById('tips-' + name);
-      let content = `<strong>${name}</strong><br>=========<br>`;
-      tips.forEach((t, i) => content += `${i + 1}. ${t}<br>`);
+     let showNumber = localStorage.getItem(`number-${name}`) === 'on';
+     let content = `<strong>${name}</strong><br>=========<br>`;
+     tips.forEach((t, i) => content += `${showNumber ? (i + 1) + '. ' : ''}${t}<br>`);
       el.innerHTML = content;
       updateTime(name);
     }
@@ -321,8 +314,8 @@
     }
 
     function copyTips(name) {
-    const text = document.getElementById('tips-' + name).innerText;
-    const button = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-copy`);
+  const text = document.getElementById('tips-' + name).innerText;
+  const button = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-copy`);
 
   
   if (navigator.clipboard && window.isSecureContext) {
@@ -396,7 +389,13 @@
     autoIntervals[name] = setInterval(() => refreshList(name), duration);
   }
 }
-
+  function toggleNumber(name) {
+    const key = `number-${name}`;
+    const current = localStorage.getItem(key);
+    const newValue = current === 'on' ? 'off' : 'on';
+    localStorage.setItem(key, newValue);
+    refreshList(name);
+  }
     function updateTime(name) {
       const now = new Date();
       const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -404,53 +403,6 @@
       document.getElementById('time-' + name).innerText = `Last Updated on ${timeString} ${dateString}`;
     }
 
-    function toggleNumbering(name) {
-  const key = `numbering-${name}`;
-  const btn = document.querySelector(`.btn-number[data-platform="${name}"]`);
-  const tipBox = document.getElementById(`tips-${name}`);
-  const isActive = btn.classList.toggle("active");
-
-  localStorage.setItem(key, isActive ? "on" : "off");
-
-  if (isActive) {
-    applyNumbering(name);
-  } else {
-    removeNumbering(name);
-  }
-}
-
-function applyNumbering(name) {
-  const tipBox = document.getElementById(`tips-${name}`);
-  const lines = tipBox.innerHTML
-    .split("<br>")
-    .map(line => line.trim())
-    .filter((line, i) => i < 2 || line !== "");
-
-  const title = lines[0];
-  const separator = lines[1];
-  const games = lines.slice(2);
-
-  const numberedGames = games.map((line, i) => `${i + 1}. ${line.replace(/^\d+\.\s*/, '')}`);
-  tipBox.innerHTML = [title, separator, ...numberedGames].join("<br>");
-  updateTime(name);
-}
-
-function removeNumbering(name) {
-  const tipBox = document.getElementById(`tips-${name}`);
-  const lines = tipBox.innerHTML
-    .split("<br>")
-    .map(line => line.trim())
-    .filter((line, i) => i < 2 || line !== "");
-
-  const title = lines[0];
-  const separator = lines[1];
-  const games = lines.slice(2);
-
-  const plainGames = games.map(line => line.replace(/^\d+\.\s*/, ''));
-  tipBox.innerHTML = [title, separator, ...plainGames].join("<br>");
-  updateTime(name);
-}
-    
     function filterPlatforms(query) {
       const allBoxes = document.querySelectorAll('.platform-box');
       query = query.trim().toLowerCase();
