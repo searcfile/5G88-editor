@@ -422,7 +422,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 6666*/
+/*Mcng 123 123 77776*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -437,9 +437,12 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const checkLivechatNotif = () => {
+function checkLivechatNotif() {
   const livechatDot = document.getElementById("livechatDot");
-  if (!livechatDot) return;
+  if (!livechatDot) {
+    console.warn("⚠️ Element #livechatDot tak jumpa");
+    return;
+  }
 
   firebase.database().ref("livechat/messages").once("value").then(snapshot => {
     let foundUnread = false;
@@ -449,9 +452,10 @@ const checkLivechatNotif = () => {
         foundUnread = true;
       }
     });
+    console.log("🔍 foundUnread:", foundUnread);
     livechatDot.style.display = foundUnread ? "inline" : "none";
   });
-};
+}
 
 function initLivechatNotifListener() {
   const livechatDot = document.getElementById("livechatDot");
