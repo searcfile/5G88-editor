@@ -424,7 +424,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 66*/
+/*Mcng 123 123 96*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -731,14 +731,13 @@ if (gameLogBtn) {
 }
 
 function sendLoginToIframe() {
-  const iframe = document.getElementById("pageFrame");
+  iframe = document.getElementById("pageFrame"); // ✅ JANGAN pakai const lagi
   if (!iframe || !iframe.contentWindow) return;
 
   const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
 
   if (user.email) {
-    console.log("📤 Mengirim data user ke iframe:", user); // ⬅️ Tambah console log di sini
-
+    console.log("📤 Mengirim data user ke iframe:", user);
     iframe.contentWindow.postMessage({
       type: "user-login",
       user: {
