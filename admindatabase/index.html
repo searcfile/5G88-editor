@@ -157,6 +157,7 @@
       <th>Name</th>
       <th>Email</th>
       <th>Time Logged In</th>
+      <th>Action</th>
     </tr>
   </thead>
   <tbody id="loginTableBody">
@@ -213,25 +214,41 @@
     );
   }
 
-  function renderLoginTable(dataArray) {
-    const tbody = document.getElementById('loginTableBody');
-    if (!dataArray.length) {
-      tbody.innerHTML = '<tr><td colspan="4">No matching login data found.</td></tr>';
-      return;
-    }
+  function sanitizeEmail(email) {
+  return email.replace(/\./g, "_");
+}
 
-    let html = '';
-    dataArray.forEach((item, index) => {
-      html += `<tr>
-        <td>${index + 1}</td>
-        <td>${item.name || '-'}</td>
-        <td>${item.email || '-'}</td>
-        <td class="yellow">${item.dateObj ? formatDateTime(item.dateObj) : item.loginRaw}</td>
-      </tr>`;
-    });
-    tbody.innerHTML = html;
+function forceLogoutUser(email) {
+  const userId = sanitizeEmail(email);
+  firebase.database().ref("logins/" + userId).update({
+    forceLogout: true
+  }).then(() => {
+    alert(`✅ User ${email} telah di-logout.`);
+  }).catch((error) => {
+    alert(`❌ Gagal logout: ${error.message}`);
+  });
+}
+
+function renderLoginTable(dataArray) {
+  const tbody = document.getElementById('loginTableBody');
+  if (!dataArray.length) {
+    tbody.innerHTML = '<tr><td colspan="5">No matching login data found.</td></tr>';
+    return;
   }
 
+  let html = '';
+  dataArray.forEach((item, index) => {
+    const sanitizedEmail = item.email || '';
+    html += `<tr>
+      <td>${index + 1}</td>
+      <td>${item.name || '-'}</td>
+      <td>${item.email || '-'}</td>
+      <td>${item.dateObj ? formatDateTime(item.dateObj) : item.loginRaw}</td>
+      <td><button onclick="forceLogoutUser('${sanitizedEmail}')" style="background:#dc2626;color:white;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;">Logout</button></td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
   function loadLoginData() {
     const searchBtn = document.getElementById('searchBtn');
     searchBtn.classList.add('loading'); // 🔵 Aktifkan efek glowing tombol + icon
@@ -266,7 +283,7 @@
 
       searchBtn.classList.remove('loading');
     }, error => {
-      document.getElementById('loginTableBody').innerHTML = `<tr><td colspan="4">Error: ${error.message}</td></tr>`;
+      document.getElementById('loginTableBody').innerHTML = `<tr><td colspan="5">Error: ${error.message}</td></tr>`;
       searchBtn.classList.remove('loading');
     });
   }
