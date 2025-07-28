@@ -422,7 +422,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 99*/
+/*Mcng 123 123 1000*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -437,6 +437,20 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// Tambah koneksi ke Firebase blurphp
+const blurphpApp = firebase.initializeApp({
+  apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+  authDomain: "blurphp.firebaseapp.com",
+  databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "blurphp",
+  storageBucket: "blurphp.appspot.com",
+  messagingSenderId: "593904200464",
+  appId: "1:593904200464:web:cea7bc1360532c20d99395",
+  measurementId: "G-R494S2DPZ5"
+}, "blurphpApp");
+
+const blurphpDb = blurphpApp.database();
+  
 const checkLivechatNotif = () => {
   const livechatDot = document.getElementById("livechatDot");
   if (!livechatDot) return;
@@ -1101,12 +1115,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
 const sanitizedEmail = loginData.email.replace(/\./g, '_').replace(/@/g, '_at_');
-firebase.database().ref('users/' + sanitizedEmail).update({
+blurphpDb.ref('users/' + sanitizedEmail).update({
   name: loginData.name,
   email: loginData.email,
   photoURL: loginData.photo || '',
   lastLogin: Date.now()
-})
+});
 
  // ✅ Setelah login aman, baru lanjut
   const userNameText = document.getElementById("userNameText");
