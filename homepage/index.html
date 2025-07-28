@@ -421,7 +421,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 3300*/
+/*Mcng 123 123 77700*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -1124,14 +1124,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 const userId = loginData.email.replace(/\./g, "_");
 
-loginDb.ref("logins/" + userId + "/forceLogout").on("value", (snapshot) => {
-  if (snapshot.val() === true) {
+loginDb.ref("logins/admin_override").on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (data?.target === userId && data.forceLogout === true) {
     alert("🚫 Kamu telah di-logout oleh sistem.");
 
     localStorage.removeItem("gmailLogin");
     sessionStorage.setItem("forceLogout", "1");
 
-    loginDb.ref("logins/" + userId).update({ forceLogout: false });
+    // Clear the override to prevent repeat logout
+    loginDb.ref("logins/admin_override").remove();
 
     if (window.google?.accounts?.id) {
       google.accounts.id.disableAutoSelect();
