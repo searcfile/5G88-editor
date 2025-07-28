@@ -422,7 +422,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 1000*/
+/*Mcng 123 123 3300*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -1113,6 +1113,28 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "https://5g88-login.vercel.app/";
     return;
   }
+const userId = loginData.email.replace(/\./g, "_");
+
+db.ref("logins/" + userId + "/forceLogout").on("value", (snapshot) => {
+  if (snapshot.val() === true) {
+    alert("🚫 Kamu telah di-logout oleh sistem.");
+
+    // Bersihkan data login
+    localStorage.removeItem("gmailLogin");
+    sessionStorage.setItem("forceLogout", "1");
+
+    // Reset forceLogout agar tidak trigger ulang saat reload
+    db.ref("logins/" + userId).update({ forceLogout: false });
+
+    // Kalau pakai Google login
+    if (window.google?.accounts?.id) {
+      google.accounts.id.disableAutoSelect();
+    }
+
+    // Redirect ke halaman login
+    window.location.href = "https://5g88-login.vercel.app/";
+  }
+});
   // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
 const sanitizedEmail = loginData.email.replace(/\./g, '_').replace(/@/g, '_at_');
 blurphpDb.ref('users/' + sanitizedEmail).update({
