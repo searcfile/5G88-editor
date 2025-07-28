@@ -1127,24 +1127,25 @@ const userId = loginData.email.replace(/\./g, "_");
 loginDb.ref("logins/admin_override").on("value", (snapshot) => {
   const data = snapshot.val();
 
-  // ✅ Hanya logout jika target-nya cocok dengan user ini
-  if (data?.target === userId && data.forceLogout === true) {
-    alert("🚫 Kamu telah di-logout oleh sistem.");
+  // ✅ Jika admin kirim perintah logout massal
+  if (data?.forceLogoutAll && Array.isArray(data.users)) {
+    const shouldLogout = data.users.includes(userId);
 
-    // 🔄 Bersihkan data lokal
-    localStorage.removeItem("gmailLogin");
-    sessionStorage.setItem("forceLogout", "1");
+    if (shouldLogout) {
+      alert("🚫 Kamu telah di-logout oleh sistem.");
 
-    // ✅ Hapus node admin_override hanya jika user ini adalah target
-    loginDb.ref("logins/admin_override").remove();
+      // 🔄 Bersihkan data lokal
+      localStorage.removeItem("gmailLogin");
+      sessionStorage.setItem("forceLogout", "1");
 
-    // 🚫 Matikan auto select akun Google (jika pakai Google Login)
-    if (window.google?.accounts?.id) {
-      google.accounts.id.disableAutoSelect();
+      // 🚫 Matikan auto select akun Google (jika pakai Google Login)
+      if (window.google?.accounts?.id) {
+        google.accounts.id.disableAutoSelect();
+      }
+
+      // 🔁 Redirect ke halaman login
+      window.location.href = "https://5g88-login.vercel.app/";
     }
-
-    // 🔁 Redirect ke halaman login
-    window.location.href = "https://5g88-login.vercel.app/";
   }
 });
   // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
