@@ -46,10 +46,12 @@
  .search-container {
   display: flex;
   align-items: center;
-  width: 500px;
-  margin: 20px 20px 10px;
+  justify-content: space-between; /* ✅ */
+  width: 100%;
+  padding: 0 20px;
+  margin: 20px 0 10px;
   background-color: transparent;
-  gap: 0;
+  gap: 10px;
 }
 
 /* INPUT */
@@ -135,19 +137,25 @@
 <div class="header">User List (Login)</div>
   
 <div class="search-container">
-  <input
-    type="text"
-    id="searchInput"
-    placeholder="Search"
-    autocomplete="off"
-  />
-  <button id="searchBtn" type="button">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M21 21L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="10" cy="10" r="6" stroke="#currentColor" stroke-width="2"/>
-    </svg>
+  <div style="display: flex; flex: 1; gap: 0;">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search"
+      autocomplete="off"
+    />
+    <button id="searchBtn" type="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M21 21L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </button>
+  </div>
+  <button id="forceLogoutAllBtn" style="background:#dc2626;color:white;padding:10px 16px;border:none;border-radius:6px;cursor:pointer;margin-left:10px;">
+    Force Logout All
   </button>
 </div>
+</button>
   
 <div class="table-container">
 <table>
@@ -219,13 +227,15 @@
 }
 
 function forceLogoutUser(email) {
-  const userId = sanitizeEmail(email);
-  firebase.database().ref("logins/" + userId).update({
-    forceLogout: true
+  const userId = email.replace(/\./g, "_");
+  firebase.database().ref("logins/admin_override").set({
+    target: userId,
+    forceLogout: true,
+    time: Date.now()
   }).then(() => {
-    alert(`✅ User ${email} telah di-logout.`);
-  }).catch((error) => {
-    alert(`❌ Gagal logout: ${error.message}`);
+    alert(`✅ Logout command sent for ${email}`);
+  }).catch(err => {
+    alert(`❌ Gagal logout: ${err.message}`);
   });
 }
 
@@ -315,7 +325,23 @@ function renderLoginTable(dataArray) {
     const filtered = filterTable(query, allLoginData);
     renderLoginTable(filtered);
   });
-</script>
+document.getElementById('forceLogoutAllBtn').addEventListener('click', () => {
+  if (!confirm("⚠️ Are you sure you want to force logout ALL users?")) return;
 
+  const updates = {
+    time: Date.now(),
+    users: allLoginData.map(user => user.email.replace(/\./g, "_"))
+  };
+
+  firebase.database().ref("logins/admin_override").set({
+    forceLogoutAll: true,
+    ...updates
+  }).then(() => {
+    alert("✅ Semua user telah dikirim perintah logout.");
+  }).catch(err => {
+    alert("❌ Gagal logout semua user: " + err.message);
+  });
+});
+</script>
 </body>
 </html>
