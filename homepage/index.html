@@ -448,9 +448,19 @@ const blurphpApp = firebase.initializeApp({
   appId: "1:593904200464:web:cea7bc1360532c20d99395",
   measurementId: "G-R494S2DPZ5"
 }, "blurphpApp");
-
 const blurphpDb = blurphpApp.database();
-  
+
+const loginApp = firebase.initializeApp({
+  apiKey: "AIzaSyCLHO-NGVdMVAZKaqBOf7WBzRQh7NL3XJ8",
+  authDomain: "logins-d615f.firebaseapp.com",
+  databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "logins-d615f",
+  storageBucket: "logins-d615f.appspot.com",
+  messagingSenderId: "648022690285",
+  appId: "1:648022690285:web:aefad61a2f46e6cf39f05b"
+}, "loginApp");
+const loginDb = loginApp.database();
+
 const checkLivechatNotif = () => {
   const livechatDot = document.getElementById("livechatDot");
   if (!livechatDot) return;
@@ -1115,23 +1125,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 const userId = loginData.email.replace(/\./g, "_");
 
-db.ref("logins/" + userId + "/forceLogout").on("value", (snapshot) => {
+loginDb.ref("logins/" + userId + "/forceLogout").on("value", (snapshot) => {
   if (snapshot.val() === true) {
     alert("🚫 Kamu telah di-logout oleh sistem.");
 
-    // Bersihkan data login
     localStorage.removeItem("gmailLogin");
     sessionStorage.setItem("forceLogout", "1");
 
-    // Reset forceLogout agar tidak trigger ulang saat reload
-    db.ref("logins/" + userId).update({ forceLogout: false });
+    loginDb.ref("logins/" + userId).update({ forceLogout: false });
 
-    // Kalau pakai Google login
     if (window.google?.accounts?.id) {
       google.accounts.id.disableAutoSelect();
     }
 
-    // Redirect ke halaman login
     window.location.href = "https://5g88-login.vercel.app/";
   }
 });
