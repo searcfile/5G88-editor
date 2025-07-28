@@ -53,7 +53,10 @@
   background-color: transparent;
   gap: 10px;
 }
-
+.search-box {
+  display: flex;
+  width: 500px;
+}
 /* INPUT */
 .search-container input {
   flex: 1;
@@ -129,6 +132,15 @@
   50% { filter: drop-shadow(0 0 8px #3b8cff); }
   100% { filter: drop-shadow(0 0 0px #3b8cff); }
 }
+#forceLogoutAllBtn {
+  background: #dc2626;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -137,7 +149,7 @@
 <div class="header">User List (Login)</div>
   
 <div class="search-container">
-  <div style="display: flex; flex: 1; gap: 0;">
+  <div class="search-box">
     <input
       type="text"
       id="searchInput"
@@ -151,11 +163,8 @@
       </svg>
     </button>
   </div>
-  <button id="forceLogoutAllBtn" style="background:#dc2626;color:white;padding:10px 16px;border:none;border-radius:6px;cursor:pointer;margin-left:10px;">
-    Force Logout All
-  </button>
+  <button id="forceLogoutAllBtn">Force Logout All</button>
 </div>
-</button>
   
 <div class="table-container">
 <table>
