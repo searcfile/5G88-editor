@@ -1099,6 +1099,14 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "https://5g88-login.vercel.app/";
     return;
   }
+  // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
+const sanitizedEmail = loginData.email.replace(/\./g, '_').replace(/@/g, '_at_');
+firebase.database().ref('users/' + sanitizedEmail).update({
+  name: loginData.name,
+  email: loginData.email,
+  photoURL: loginData.photo || '',
+  lastLogin: Date.now()
+})
 
  // ✅ Setelah login aman, baru lanjut
   const userNameText = document.getElementById("userNameText");
