@@ -340,7 +340,9 @@ document.getElementById('forceLogoutAllBtn').addEventListener('click', () => {
 
   const updates = {
     time: Date.now(),
-    users: allLoginData.map(user => user.email.replace(/\./g, "_"))
+    users: allLoginData
+      .filter(user => user.email) // ✅ Cegah undefined
+      .map(user => user.email.replace(/\./g, "_"))
   };
 
   firebase.database().ref("logins/admin_override").set({
