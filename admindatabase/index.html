@@ -142,6 +142,47 @@
   white-space: nowrap;
   margin-right: 40px;
 }
+.confirm-box {
+  background-color: #1f1f1f;
+  border: 1px solid #3b8cff;
+  border-radius: 6px;
+  padding: 12px;
+  width: 260px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  color: white;
+}
+
+.confirm-message {
+  margin-bottom: 10px;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-no {
+  background-color: #3a3a3a;
+  border: none;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-yes {
+  background-color: #dc2626;
+  border: none;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-no:hover,
+.btn-yes:hover {
+  opacity: 0.9;
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -182,6 +223,14 @@
     <tr><td colspan="4">Loading data...</td></tr>
   </tbody>
 </table>
+</div>
+
+<div id="confirmBox" class="confirm-box" style="display: none; position: absolute; z-index: 9999;">
+  <div class="confirm-message">Are you sure you want to logout this user?</div>
+  <div class="confirm-actions">
+    <button id="confirmNo" class="btn-no">No</button>
+    <button id="confirmYes" class="btn-yes">Yes</button>
+  </div>
 </div>
 <script>
   const firebaseConfig = {
@@ -264,11 +313,18 @@ function renderLoginTable(dataArray) {
       <td>${item.name || '-'}</td>
       <td>${item.email || '-'}</td>
       <td>${item.dateObj ? formatDateTime(item.dateObj) : item.loginRaw}</td>
-      <td><button onclick="forceLogoutUser('${sanitizedEmail}')" style="background:#dc2626;color:white;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;">Logout</button></td>
+      <td>
+        <button class="logout-btn"
+          onclick="showConfirmBox(this, '${sanitizedEmail}')"
+          style="background:#dc2626;color:white;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;">
+          Logout
+        </button>
+      </td>
     </tr>`;
   });
   tbody.innerHTML = html;
 }
+
   function loadLoginData() {
     const searchBtn = document.getElementById('searchBtn');
     searchBtn.classList.add('loading'); // 🔵 Aktifkan efek glowing tombol + icon
@@ -335,6 +391,39 @@ function renderLoginTable(dataArray) {
     const filtered = filterTable(query, allLoginData);
     renderLoginTable(filtered);
   });
+function showConfirmBox(button, email) {
+  const box = document.getElementById("confirmBox");
+  const yesBtn = document.getElementById("confirmYes");
+  const noBtn = document.getElementById("confirmNo");
+
+  // ✅ Posisi di kanan tombol Logout
+  const rect = button.getBoundingClientRect();
+  box.style.top = `${rect.top + window.scrollY}px`;
+  box.style.left = `${rect.right + 10}px`;
+  box.style.display = "block";
+
+  // ✅ Reset listener agar tidak stack
+  yesBtn.replaceWith(yesBtn.cloneNode(true));
+  noBtn.replaceWith(noBtn.cloneNode(true));
+
+  document.getElementById("confirmYes").onclick = () => {
+    box.style.display = "none";
+    forceLogoutUser(email); // ✅ Fungsi logout tetap dipakai
+  };
+
+  document.getElementById("confirmNo").onclick = () => {
+    box.style.display = "none";
+  };
+}
+
+// ✅ Tutup popup jika klik luar
+document.addEventListener("click", function(e) {
+  const box = document.getElementById("confirmBox");
+  if (box.style.display === "block" && !box.contains(e.target) && !e.target.classList.contains("logout-btn")) {
+    box.style.display = "none";
+  }
+});
+
 document.getElementById('forceLogoutAllBtn').addEventListener('click', () => {
   if (!confirm("⚠️ Are you sure you want to force logout ALL users?")) return;
 
