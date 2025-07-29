@@ -32,7 +32,8 @@
      .tab-bar::-webkit-scrollbar {display: none;}
      .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px;
       cursor: default;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;} 
-    .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;font-size: 14px;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;
+    .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;font-size: 14px;border-radius: 50%;cursor: pointer;width: 20px;
+      height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -419,7 +420,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 ulalala*/
+/*Mcng 123 123 888888*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -1171,8 +1172,7 @@ blurphpDb.ref('users/' + sanitizedEmail).update({
   name: loginData.name,
   email: loginData.email,
   photoURL: loginData.photo || '',
-  lastLoginTime: now,
-  lastActive: now
+  lastLoginTime: Date.now()
 });
 
  // ✅ Setelah login aman, baru lanjut
