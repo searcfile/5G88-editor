@@ -420,7 +420,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 77700*/
+/*Mcng 123 123 888888*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -1126,7 +1126,7 @@ const userId = loginData.email.replace(/\./g, "_");
 loginDb.ref("logins/admin_override").on("value", (snapshot) => {
   const data = snapshot.val();
 
-  // ✅ Jika admin kirim perintah logout massal
+  // ✅ Jika force logout ALL dan user termasuk dalam daftar
   if (data?.forceLogoutAll && Array.isArray(data.users)) {
     const shouldLogout = data.users.includes(userId);
 
@@ -1137,14 +1137,33 @@ loginDb.ref("logins/admin_override").on("value", (snapshot) => {
       localStorage.removeItem("gmailLogin");
       sessionStorage.setItem("forceLogout", "1");
 
-      // 🚫 Matikan auto select akun Google (jika pakai Google Login)
+      // ✅ Hapus node untuk hentikan logout terus-menerus
+      loginDb.ref("logins/admin_override").remove();
+
+      // 🚫 Matikan auto select Google Login
       if (window.google?.accounts?.id) {
         google.accounts.id.disableAutoSelect();
       }
 
-      // 🔁 Redirect ke halaman login
+      // ⏩ Redirect ke login
       window.location.href = "https://5g88-login.vercel.app/";
     }
+  }
+
+  // ✅ Tambahkan juga pengecekan forceLogout individual (optional)
+  if (data?.target === userId && data.forceLogout === true) {
+    alert("🚫 Kamu telah di-logout oleh sistem.");
+
+    localStorage.removeItem("gmailLogin");
+    sessionStorage.setItem("forceLogout", "1");
+
+    loginDb.ref("logins/admin_override").remove();
+
+    if (window.google?.accounts?.id) {
+      google.accounts.id.disableAutoSelect();
+    }
+
+    window.location.href = "https://5g88-login.vercel.app/";
   }
 });
   // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
