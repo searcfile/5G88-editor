@@ -1074,7 +1074,7 @@ function saveLoginFromURL() {
 }
 
 function sanitizeEmail(email) {
-  return email.replace(/\./g, "_"); // hanya ganti titik, biarkan @
+  return email.replace(/\./g, "_");
 }
 
 function checkLogin() {
@@ -1126,23 +1126,18 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // ✅ Gunakan hanya 1 cara sanitasi
   const userId = sanitizeEmail(loginData.email);
 
-  // 🔁 Cek force logout
   loginDb.ref("logins/admin_override").on("value", (snapshot) => {
     const data = snapshot.val();
 
     if (data?.forceLogoutAll && Array.isArray(data.users)) {
-      const shouldLogout = data.users.includes(userId);
-      if (shouldLogout) {
+      if (data.users.includes(userId)) {
         alert("🚫 Kamu telah di-logout oleh sistem.");
         localStorage.removeItem("gmailLogin");
         sessionStorage.setItem("forceLogout", "1");
         loginDb.ref("logins/admin_override").remove();
-        if (window.google?.accounts?.id) {
-          google.accounts.id.disableAutoSelect();
-        }
+        if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
         window.location.href = "https://5g88-login.vercel.app/";
       }
     }
@@ -1152,14 +1147,11 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.removeItem("gmailLogin");
       sessionStorage.setItem("forceLogout", "1");
       loginDb.ref("logins/admin_override").remove();
-      if (window.google?.accounts?.id) {
-        google.accounts.id.disableAutoSelect();
-      }
+      if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
       window.location.href = "https://5g88-login.vercel.app/";
     }
   });
 
-  // ✅ Simpan data login ke Firebase
   const now = Date.now();
   const sanitizedEmail = sanitizeEmail(loginData.email);
 
