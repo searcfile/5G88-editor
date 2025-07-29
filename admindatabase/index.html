@@ -246,7 +246,15 @@
   </tbody>
 </table>
 </div>
-
+  
+<div id="confirmAllBox" class="confirm-box" style="display: none; position: absolute; z-index: 9999;">
+  <div class="confirm-message">Logout all users?</div>
+  <div class="confirm-actions">
+    <button id="confirmAllNo" class="btn-no">No</button>
+    <button id="confirmAllYes" class="btn-yes">Yes</button>
+  </div>
+</div>
+  
 <div id="confirmBox" class="confirm-box" style="display: none; position: absolute; z-index: 9999;">
   <div class="confirm-message">Logout this user?</div>
   <div class="confirm-user-info">
@@ -417,6 +425,29 @@ function renderLoginTable(dataArray) {
     const filtered = filterTable(query, allLoginData);
     renderLoginTable(filtered);
   });
+function showConfirmAllBox(button) {
+  const box = document.getElementById("confirmAllBox");
+  const yesBtn = document.getElementById("confirmAllYes");
+  const noBtn = document.getElementById("confirmAllNo");
+
+  const rect = button.getBoundingClientRect();
+  box.style.display = "block";
+  box.style.top = `${rect.bottom + window.scrollY + 4}px`;
+  box.style.left = `${rect.left + (rect.width / 2) - (box.offsetWidth / 2)}px`;
+
+  yesBtn.replaceWith(yesBtn.cloneNode(true));
+  noBtn.replaceWith(noBtn.cloneNode(true));
+
+  document.getElementById("confirmAllYes").onclick = () => {
+    box.style.display = "none";
+    doForceLogoutAll(); // ✅ Fungsi utama logout all
+  };
+
+  document.getElementById("confirmAllNo").onclick = () => {
+    box.style.display = "none";
+  };
+}
+
 function showConfirmBox(button, email, name = '-') {
   const box = document.getElementById("confirmBox");
   const yesBtn = document.getElementById("confirmYes");
@@ -446,9 +477,10 @@ function showConfirmBox(button, email, name = '-') {
   };
 }
 
-document.getElementById('forceLogoutAllBtn').addEventListener('click', () => {
-  if (!confirm("⚠️ Are you sure you want to force logout ALL users?")) return;
-
+document.getElementById('forceLogoutAllBtn').addEventListener('click', function () {
+  showConfirmAllBox(this);
+});
+ function doForceLogoutAll() {
   const updates = {
     time: Date.now(),
     users: allLoginData
@@ -460,16 +492,16 @@ document.getElementById('forceLogoutAllBtn').addEventListener('click', () => {
     forceLogoutAll: true,
     ...updates
   }).then(() => {
-    alert("✅ Semua user telah dikirim perintah logout.");
+    // ✅ Optional: replace alert with custom toast
+    console.log("✅ Semua user telah dikirim perintah logout.");
 
-    // ✅ Hapus perintah forceLogoutAll setelah 5 detik
     setTimeout(() => {
       firebase.database().ref("logins/admin_override").remove();
     }, 3000);
   }).catch(err => {
     alert("❌ Gagal logout semua user: " + err.message);
   });
-});
+}
 </script>
 </body>
 </html>
