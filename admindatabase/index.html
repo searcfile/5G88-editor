@@ -11,7 +11,15 @@
     color: #3b8cff;
     padding: 0;
     margin: 0;
+    overflow-x: hidden;
   }
+  html, body {
+  overflow-x: hidden;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
   .header {
   background-color: #1668dc;
   font-size: 30px;
@@ -47,11 +55,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between; /* ✅ */
-  width: 100%;
+  max-width: 100%;
   padding: 0 20px;
   margin: 20px 0 10px;
   background-color: transparent;
   gap: 10px;
+  box-sizing: border-box;
 }
 .search-box {
   display: flex;
