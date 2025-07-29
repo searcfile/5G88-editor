@@ -420,7 +420,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 888888888*/
+/*Mcng 123 123 ulalala*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -1073,10 +1073,6 @@ function saveLoginFromURL() {
   }
 }
 
-function sanitizeEmail(email) {
-  return email.replace(/\./g, "_");
-}
-
 function checkLogin() {
   const data = localStorage.getItem("gmailLogin");
   if (!data) {
@@ -1125,43 +1121,60 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "https://5g88-login.vercel.app/";
     return;
   }
+const userId = loginData.email.replace(/\./g, "_");
 
-  const userId = sanitizeEmail(loginData.email);
+loginDb.ref("logins/admin_override").on("value", (snapshot) => {
+  const data = snapshot.val();
 
-  loginDb.ref("logins/admin_override").on("value", (snapshot) => {
-    const data = snapshot.val();
+  // ✅ Jika force logout ALL dan user termasuk dalam daftar
+  if (data?.forceLogoutAll && Array.isArray(data.users)) {
+    const shouldLogout = data.users.includes(userId);
 
-    if (data?.forceLogoutAll && Array.isArray(data.users)) {
-      if (data.users.includes(userId)) {
-        alert("🚫 Kamu telah di-logout oleh sistem.");
-        localStorage.removeItem("gmailLogin");
-        sessionStorage.setItem("forceLogout", "1");
-        loginDb.ref("logins/admin_override").remove();
-        if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
-        window.location.href = "https://5g88-login.vercel.app/";
-      }
-    }
-
-    if (data?.target === userId && data.forceLogout === true) {
+    if (shouldLogout) {
       alert("🚫 Kamu telah di-logout oleh sistem.");
+
+      // 🔄 Bersihkan data lokal
       localStorage.removeItem("gmailLogin");
       sessionStorage.setItem("forceLogout", "1");
+
+      // ✅ Hapus node untuk hentikan logout terus-menerus
       loginDb.ref("logins/admin_override").remove();
-      if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
+
+      // 🚫 Matikan auto select Google Login
+      if (window.google?.accounts?.id) {
+        google.accounts.id.disableAutoSelect();
+      }
+
+      // ⏩ Redirect ke login
       window.location.href = "https://5g88-login.vercel.app/";
     }
-  });
+  }
 
-  const now = Date.now();
-  const sanitizedEmail = sanitizeEmail(loginData.email);
+  // ✅ Tambahkan juga pengecekan forceLogout individual (optional)
+  if (data?.target === userId && data.forceLogout === true) {
+    alert("🚫 Kamu telah di-logout oleh sistem.");
 
-  blurphpDb.ref('users/' + sanitizedEmail).update({
-    name: loginData.name,
-    email: loginData.email,
-    photoURL: loginData.photo || '',
-    lastLoginTime: now,
-    lastActive: now
-  });
+    localStorage.removeItem("gmailLogin");
+    sessionStorage.setItem("forceLogout", "1");
+
+    loginDb.ref("logins/admin_override").remove();
+
+    if (window.google?.accounts?.id) {
+      google.accounts.id.disableAutoSelect();
+    }
+
+    window.location.href = "https://5g88-login.vercel.app/";
+  }
+});
+  // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
+const sanitizedEmail = loginData.email.replace(/\./g, '_').replace(/@/g, '_at_');
+blurphpDb.ref('users/' + sanitizedEmail).update({
+  name: loginData.name,
+  email: loginData.email,
+  photoURL: loginData.photo || '',
+  lastLoginTime: now,
+  lastActive: now
+});
 
  // ✅ Setelah login aman, baru lanjut
   const userNameText = document.getElementById("userNameText");
