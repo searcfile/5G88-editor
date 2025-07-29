@@ -149,7 +149,6 @@
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
-  margin-right: 40px;
 }
 .confirm-box {
   background-color: #1f1f1f;
@@ -440,17 +439,29 @@ function showConfirmAllBox(button) {
   const yesBtn = document.getElementById("confirmAllYes");
   const noBtn = document.getElementById("confirmAllNo");
 
-  const rect = button.getBoundingClientRect();
+  // Tampilkan dulu agar bisa ukur ukuran box
   box.style.display = "block";
-  box.style.top = `${rect.bottom + window.scrollY + 4}px`;
-  box.style.left = `${rect.left + (rect.width / 2) - (box.offsetWidth / 2)}px`;
 
+  const rect = button.getBoundingClientRect();
+  const boxWidth = box.offsetWidth;
+  let left = rect.left + (rect.width / 2) - (boxWidth / 2);
+
+  // ✅ Koreksi jika posisi terlalu ke kanan
+  const maxLeft = window.innerWidth - boxWidth - 10; // beri margin kanan 10px
+  if (left > maxLeft) left = maxLeft;
+  if (left < 10) left = 10; // juga jangan terlalu kiri
+
+  // ✅ Atur posisi
+  box.style.top = `${rect.bottom + window.scrollY + 4}px`;
+  box.style.left = `${left}px`;
+
+  // Reset event listener
   yesBtn.replaceWith(yesBtn.cloneNode(true));
   noBtn.replaceWith(noBtn.cloneNode(true));
 
   document.getElementById("confirmAllYes").onclick = () => {
     box.style.display = "none";
-    doForceLogoutAll(); // ✅ Fungsi utama logout all
+    doForceLogoutAll();
   };
 
   document.getElementById("confirmAllNo").onclick = () => {
