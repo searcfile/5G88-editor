@@ -420,7 +420,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 3333333*/
+/*Mcng 123 123 999999*/
 // ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -1166,27 +1166,13 @@ loginDb.ref("logins/admin_override").on("value", (snapshot) => {
     window.location.href = "https://5g88-login.vercel.app/";
   }
 });
-
+  // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
 const sanitizedEmail = loginData.email.replace(/\./g, '_').replace(/@/g, '_at_');
-const userRef = blurphpDb.ref('users/' + sanitizedEmail);
-
-// 🔄 Simpan login info
-userRef.update({
+blurphpDb.ref('users/' + sanitizedEmail).update({
   name: loginData.name,
   email: loginData.email,
   photoURL: loginData.photo || '',
   lastLoginTime: Date.now()
-});
-
-// ✅ Tambahan: Set status online
-const connectedRef = firebase.database().ref(".info/connected");
-const onlineRef = userRef.child("online");
-
-connectedRef.on("value", (snap) => {
-  if (snap.val() === true) {
-    onlineRef.set(true);
-    onlineRef.onDisconnect().set(false);
-  }
 });
 
  // ✅ Setelah login aman, baru lanjut
