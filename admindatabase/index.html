@@ -422,16 +422,17 @@ function showConfirmBox(button, email, name = '-') {
   const yesBtn = document.getElementById("confirmYes");
   const noBtn = document.getElementById("confirmNo");
 
-  // ✅ Tampilkan nama & email
+  // ✅ Set nama dan email ke dalam box
   document.getElementById("confirmUserName").textContent = name;
   document.getElementById("confirmUserEmail").textContent = email;
 
+  // ✅ Posisi tepat di bawah tombol & tengah
   const rect = button.getBoundingClientRect();
-  box.style.top = `${rect.top + window.scrollY}px`;
-  box.style.left = `${rect.right + 2}px`;
-  box.style.display = "block";
+  box.style.display = "block"; // ⬅ tampilkan dulu supaya bisa ukur lebar
+  box.style.top = `${rect.bottom + window.scrollY + 4}px`;
+  box.style.left = `${rect.left + (rect.width / 2) - (box.offsetWidth / 2)}px`;
 
-  // Reset event listener
+  // ✅ Reset event handler YES/NO
   yesBtn.replaceWith(yesBtn.cloneNode(true));
   noBtn.replaceWith(noBtn.cloneNode(true));
 
