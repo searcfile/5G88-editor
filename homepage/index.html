@@ -1073,6 +1073,10 @@ function saveLoginFromURL() {
   }
 }
 
+function sanitizeEmail(email) {
+  return email.replace(/\./g, "_"); // hanya ganti titik, biarkan @
+}
+
 function checkLogin() {
   const data = localStorage.getItem("gmailLogin");
   if (!data) {
@@ -1121,58 +1125,51 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "https://5g88-login.vercel.app/";
     return;
   }
-const userId = loginData.email.replace(/\./g, "_");
 
-loginDb.ref("logins/admin_override").on("value", (snapshot) => {
-  const data = snapshot.val();
+  // ✅ Gunakan hanya 1 cara sanitasi
+  const userId = sanitizeEmail(loginData.email);
 
-  // ✅ Jika force logout ALL dan user termasuk dalam daftar
-  if (data?.forceLogoutAll && Array.isArray(data.users)) {
-    const shouldLogout = data.users.includes(userId);
+  // 🔁 Cek force logout
+  loginDb.ref("logins/admin_override").on("value", (snapshot) => {
+    const data = snapshot.val();
 
-    if (shouldLogout) {
+    if (data?.forceLogoutAll && Array.isArray(data.users)) {
+      const shouldLogout = data.users.includes(userId);
+      if (shouldLogout) {
+        alert("🚫 Kamu telah di-logout oleh sistem.");
+        localStorage.removeItem("gmailLogin");
+        sessionStorage.setItem("forceLogout", "1");
+        loginDb.ref("logins/admin_override").remove();
+        if (window.google?.accounts?.id) {
+          google.accounts.id.disableAutoSelect();
+        }
+        window.location.href = "https://5g88-login.vercel.app/";
+      }
+    }
+
+    if (data?.target === userId && data.forceLogout === true) {
       alert("🚫 Kamu telah di-logout oleh sistem.");
-
-      // 🔄 Bersihkan data lokal
       localStorage.removeItem("gmailLogin");
       sessionStorage.setItem("forceLogout", "1");
-
-      // ✅ Hapus node untuk hentikan logout terus-menerus
       loginDb.ref("logins/admin_override").remove();
-
-      // 🚫 Matikan auto select Google Login
       if (window.google?.accounts?.id) {
         google.accounts.id.disableAutoSelect();
       }
-
-      // ⏩ Redirect ke login
       window.location.href = "https://5g88-login.vercel.app/";
     }
-  }
+  });
 
-  // ✅ Tambahkan juga pengecekan forceLogout individual (optional)
-  if (data?.target === userId && data.forceLogout === true) {
-    alert("🚫 Kamu telah di-logout oleh sistem.");
+  // ✅ Simpan data login ke Firebase
+  const now = Date.now();
+  const sanitizedEmail = sanitizeEmail(loginData.email);
 
-    localStorage.removeItem("gmailLogin");
-    sessionStorage.setItem("forceLogout", "1");
-
-    loginDb.ref("logins/admin_override").remove();
-
-    if (window.google?.accounts?.id) {
-      google.accounts.id.disableAutoSelect();
-    }
-
-    window.location.href = "https://5g88-login.vercel.app/";
-  }
-});
-  // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
-const sanitizedEmail = loginData.email.replace(/\./g, '_').replace(/@/g, '_at_');
-blurphpDb.ref('users/' + sanitizedEmail).update({
-  name: loginData.name,
-  email: loginData.email,
-  photoURL: loginData.photo || '',
-  lastLoginTime: Date.now()
+  blurphpDb.ref('users/' + sanitizedEmail).update({
+    name: loginData.name,
+    email: loginData.email,
+    photoURL: loginData.photo || '',
+    lastLoginTime: now,
+    lastActive: now
+  });
 });
 
  // ✅ Setelah login aman, baru lanjut
