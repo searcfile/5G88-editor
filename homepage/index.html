@@ -413,11 +413,11 @@ a.tab-open .check-icon {
     <div id="messageContent" style="margin-top: 2px;font-size:12px; white-space: normal; word-wrap: break-word; overflow-wrap: anywhere;"></div>
   </div>
   
-
+<audio id="notifSound" src="https://easypay88.com/assets/sound/notification.wav" preload="auto"></audio>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 updated online/offlice*/
+/*Mcng 123 123 updated sound*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -1264,66 +1264,87 @@ window.addEventListener("beforeunload", () => {
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
-window.addEventListener("message", async function (e) {
-  // ✅ Daftar asal (origin) yang dibenarkan
-  const allowedOrigins = [
-    "https://5g88-logogame.vercel.app","https://5g88-userlivechatphp.vercel.app",
-    "https://searcfile.github.io",
-    "https://searcfile.github.io/5G88-editor/mega888/",
-    "https://searcfile.github.io/5G88-editor/pussy888/",
-    "https://searcfile.github.io/5G88-editor/918kiss/",
-    "https://searcfile.github.io/5G88-editor/scr888h5/",
-    "https://5g88-main.vercel.app"
-  ];
+  // ✅ Bunyi & dot merah jika ada pesan baru admin (tanpa buka tab iframe)
+  let lastNotifTime = 0;
 
-  // ❌ Tolak jika bukan dari sumber yang sah
-  if (!allowedOrigins.includes(e.origin)) {
-    console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
-    return;
-  }
-
-  const data = e.data;
-
-  // ✅ Tampilkan dot merah LiveChat dari iframe
-  if (data?.action === "show-livechat-notif") {
+  firebase.database().ref("livechat/messages").on("child_added", (snapshot) => {
+    const msg = snapshot.val();
     const livechatDot = document.getElementById("livechatDot");
-    if (livechatDot) livechatDot.style.display = "block";
-  }
+    const notifSound = document.getElementById("notifSound");
 
-  // ✅ Sembunyikan dot merah LiveChat dari iframe
-  else if (data?.action === "hide-livechat-notif") {
-    const livechatDot = document.getElementById("livechatDot");
-    if (livechatDot) livechatDot.style.display = "none";
-  }
+    if (!msg) return;
 
-  // ✅ Untuk salin gambar dari base64
-  else if (data?.action === "copy-image-base64" && data.base64) {
-    try {
-      const response = await fetch(data.base64);
-      const blob = await response.blob();
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
-      console.log("✅ Gambar dari base64 telah disalin.");
-    } catch (err) {
-      console.error("❌ Gagal salin gambar dari base64:", err);
-      alert("❌ Gagal salin gambar dari base64.");
+    const unread = msg.readByAdmin === false || msg.readByAdmin === undefined;
+    const timestamp = msg.timestamp || Date.now();
+
+    if (unread && timestamp > lastNotifTime) {
+      lastNotifTime = timestamp;
+
+      if (livechatDot) livechatDot.style.display = "inline";
+      if (notifSound) notifSound.play().catch(() => {});
     }
-  }
+  });
 
-  // ✅ Untuk salin gambar dari URL
-  else if (data?.action === "copy-image" && data.url) {
-    try {
-      const response = await fetch(data.url);
-      const blob = await response.blob();
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
-      console.log("✅ Gambar dari URL telah disalin.");
-    } catch (err) {
-      console.error("❌ Gagal salin gambar dari URL:", err);
-      alert("❌ Gagal salin gambar dari URL.");
+  window.addEventListener("message", async function (e) {
+    // ✅ Daftar asal (origin) yang dibenarkan
+    const allowedOrigins = [
+      "https://5g88-logogame.vercel.app","https://5g88-userlivechatphp.vercel.app",
+      "https://searcfile.github.io",
+      "https://searcfile.github.io/5G88-editor/mega888/",
+      "https://searcfile.github.io/5G88-editor/pussy888/",
+      "https://searcfile.github.io/5G88-editor/918kiss/",
+      "https://searcfile.github.io/5G88-editor/scr888h5/",
+      "https://5g88-main.vercel.app"
+    ];
+
+    // ❌ Tolak jika bukan dari sumber yang sah
+    if (!allowedOrigins.includes(e.origin)) {
+      console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
+      return;
     }
-  }
-});
+
+    const data = e.data;
+
+    // ✅ Tampilkan dot merah LiveChat dari iframe
+    if (data?.action === "show-livechat-notif") {
+      const livechatDot = document.getElementById("livechatDot");
+      if (livechatDot) livechatDot.style.display = "block";
+    }
+
+    // ✅ Sembunyikan dot merah LiveChat dari iframe
+    else if (data?.action === "hide-livechat-notif") {
+      const livechatDot = document.getElementById("livechatDot");
+      if (livechatDot) livechatDot.style.display = "none";
+    }
+
+    // ✅ Untuk salin gambar dari base64
+    else if (data?.action === "copy-image-base64" && data.base64) {
+      try {
+        const response = await fetch(data.base64);
+        const blob = await response.blob();
+        const item = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([item]);
+        console.log("✅ Gambar dari base64 telah disalin.");
+      } catch (err) {
+        console.error("❌ Gagal salin gambar dari base64:", err);
+        alert("❌ Gagal salin gambar dari base64.");
+      }
+    }
+
+    // ✅ Untuk salin gambar dari URL
+    else if (data?.action === "copy-image" && data.url) {
+      try {
+        const response = await fetch(data.url);
+        const blob = await response.blob();
+        const item = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([item]);
+        console.log("✅ Gambar dari URL telah disalin.");
+      } catch (err) {
+        console.error("❌ Gagal salin gambar dari URL:", err);
+        alert("❌ Gagal salin gambar dari URL.");
+      }
+    }
+  });
 
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
