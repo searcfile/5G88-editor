@@ -417,7 +417,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 updated sound5*/
+/*Mcng 123 123 updated sound6*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -455,36 +455,6 @@ const loginApp = firebase.initializeApp({
 }, "loginApp");
 const loginDb = loginApp.database();
 
-const checkLivechatNotif = () => {
-  const livechatDot = document.getElementById("livechatDot");
-  if (!livechatDot) return;
-
-  firebase.database().ref("livechat/messages").once("value").then(snapshot => {
-    let foundUnread = false;
-    snapshot.forEach(child => {
-      const msg = child.val();
-      if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
-        foundUnread = true;
-      }
-    });
-    livechatDot.style.display = foundUnread ? "inline" : "none";
-  });
-};
-
-window.addEventListener("load", checkLivechatNotif);
-
-// 🔁 Pantau realtime juga
-firebase.database().ref("livechat/messages").on("value", snapshot => {
-  const livechatDot = document.getElementById("livechatDot");
-  let foundUnread = false;
-  snapshot.forEach(child => {
-    const msg = child.val();
-    if (msg && (msg.readByAdmin === false || msg.readByAdmin === undefined)) {
-      foundUnread = true;
-    }
-  });
-  if (livechatDot) livechatDot.style.display = foundUnread ? "inline" : "none";
-});
 // ✅ Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
@@ -713,34 +683,41 @@ function addTab(label, url) {
     existingTabs.push({ label, url });
     saveTabs(existingTabs);
   }
+
   const linkBtn = document.getElementById("linkDownloadBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
   const gameLogBtn = document.getElementById("gameLogBtn");
-if (gameLogBtn) {
-  if (label === "MEGA888" || label === "PUSSY888" || label === "918KISS" || label === "SCR888H5") {
-    gameLogBtn.classList.add("active-gamelog");
-  } else {
-    gameLogBtn.classList.remove("active-gamelog");
+
+  if (gameLogBtn) {
+    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+    if (gameLogLabels.includes(label)) {
+      gameLogBtn.classList.add("active-gamelog");
+    } else {
+      gameLogBtn.classList.remove("active-gamelog");
+    }
   }
-}
 
   if (liveBtn) {
     if (label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
-      if (liveDot) liveDot.style.display = "none"; // ✅ Hilang saat diklik
+      if (liveDot) liveDot.style.display = "none";
+
+      // ✅ Tandai semua pesan admin sebagai sudah dibaca
+      markLivechatAsRead();
     } else {
       liveBtn.classList.remove("active-livechat");
     }
   }
 
   if (linkBtn) {
-  if (label === "LINK DOWNLOAD") {
-    linkBtn.classList.add("active-linkdownload");
-  } else {
-    linkBtn.classList.remove("active-linkdownload");
+    if (label === "LINK DOWNLOAD") {
+      linkBtn.classList.add("active-linkdownload");
+    } else {
+      linkBtn.classList.remove("active-linkdownload");
+    }
   }
-}
+
   loadPage(url);
   renderTabs();
   updateGameLogCheckmarks();
@@ -753,7 +730,6 @@ function sendLoginToIframe() {
   if (!iframe || !iframe.contentWindow) return;
 
   const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-
   if (user.email) {
     console.log("📤 Mengirim data user ke iframe:", user);
     iframe.contentWindow.postMessage({
@@ -1090,6 +1066,39 @@ function checkLogin() {
   return true;
 }
 
+function initLivechatNotifListener() {
+  if (!loginData?.email) return;
+
+  blurphpDb.ref("chats/" + userId).on("value", (snapshot) => {
+    let hasUnread = false;
+    snapshot.forEach((child) => {
+      const msg = child.val();
+      if (msg.from === "admin" && msg.seenByUser !== true) {
+        hasUnread = true;
+      }
+    });
+
+    const livechatDot = document.getElementById("livechatDot");
+    if (livechatDot) {
+      livechatDot.style.display = hasUnread ? "inline" : "none";
+    }
+  });
+}
+
+function markLivechatAsRead() {
+  if (!loginData?.email) return;
+
+  const chatRef = blurphpDb.ref("chats/" + userId);
+
+  chatRef.once("value", (snapshot) => {
+    snapshot.forEach((child) => {
+      if (child.val().from === "admin" && child.val().seenByUser !== true) {
+        child.ref.update({ seenByUser: true });
+      }
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const forceLogout = sessionStorage.getItem("forceLogout");
   if (forceLogout === "1") {
@@ -1118,7 +1127,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 const userId = loginData.email.replace(/\./g, "_");
-
 loginDb.ref("logins/admin_override").on("value", (snapshot) => {
   const data = snapshot.val();
 
@@ -1286,7 +1294,7 @@ blurphpDb.ref("chats/" + userId).on("child_added", (snapshot) => {
     }
   }
 });
-
+initLivechatNotifListener();
 // ✅ PostMessage Handler
 window.addEventListener("message", async function (e) {
   const allowedOrigins = [
