@@ -1165,7 +1165,7 @@ loginDb.ref("logins/admin_override").on("value", (snapshot) => {
   }
 });
   // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
-const sanitizedEmail = loginData.email.replace(/\./g, '_').replace(/@/g, '_at_');
+const sanitizedEmail = loginData.email.toLowerCase().replace(/\./g, '_');
 blurphpDb.ref('users/' + sanitizedEmail).update({
   name: loginData.name,
   email: loginData.email,
