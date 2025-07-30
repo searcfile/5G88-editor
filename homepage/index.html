@@ -417,7 +417,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 updated sound6*/
+/*Mcng 123 123 updated sound7*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -455,15 +455,15 @@ const loginApp = firebase.initializeApp({
 }, "loginApp");
 const loginDb = loginApp.database();
 
+let loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+let userId = "";
+let currentEmail = loginData?.email || "guest";
 // ✅ Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
 const popup = document.getElementById("messagePopup");
 const content = document.getElementById("messageContent");
 const notifTooltip = document.getElementById("notifTooltip");
-
-const loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-const currentEmail = loginData?.email || "guest";
 
 document.addEventListener("DOMContentLoaded", () => {
   const savedMessage = localStorage.getItem("latestNotifMessage");
@@ -1126,7 +1126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "https://5g88-login.vercel.app/";
     return;
   }
-const userId = loginData.email.replace(/\./g, "_");
+userId = loginData.email.replace(/\./g, "_");
 loginDb.ref("logins/admin_override").on("value", (snapshot) => {
   const data = snapshot.val();
 
