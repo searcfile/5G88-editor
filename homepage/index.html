@@ -417,8 +417,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 sankew*/
-// ✅ Konfigurasi Firebase
+/*Mcng 123 123 updated online/offlice*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -1170,6 +1169,21 @@ blurphpDb.ref('users/' + sanitizedEmail).update({
   email: loginData.email,
   photoURL: loginData.photo || '',
   lastLoginTime: Date.now()
+});
+
+// ✅ Tambah status online user di Firebase
+const connectedRef = firebase.database().ref(".info/connected");
+const onlineRef = firebase.database().ref("users/" + sanitizedEmail + "/online");
+
+connectedRef.on("value", (snap) => {
+  if (snap.val() === true) {
+    onlineRef.set(true);
+    onlineRef.onDisconnect().set(false);
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  firebase.database().ref("users/" + sanitizedEmail + "/online").set(false);
 });
 
  // ✅ Setelah login aman, baru lanjut
