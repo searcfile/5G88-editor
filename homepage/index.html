@@ -417,7 +417,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 updated sound*/
+/*Mcng 123 123 updated sound2*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -1235,116 +1235,106 @@ window.addEventListener("beforeunload", () => {
 });
   }
 
-  // ✅ Tombol logout
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("gmailLogin");
-      sessionStorage.setItem("forceLogout", "1");
-      if (window.google?.accounts?.id) {
-        google.accounts.id.disableAutoSelect();
-      }
-      window.location.href = "https://5g88-login.vercel.app/";
-    });
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("gmailLogin");
+    sessionStorage.setItem("forceLogout", "1");
+    if (window.google?.accounts?.id) {
+      google.accounts.id.disableAutoSelect();
+    }
+    window.location.href = "https://5g88-login.vercel.app/";
+  });
+}
+
+function updateDateTime() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+  const month = monthNames[now.getMonth()];
+  const year = now.getFullYear();
+  const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
+  document.getElementById('dateTime').textContent = timeString;
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+
+// ✅ Notifikasi LiveChat dari Admin (blurphp)
+const loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+const email = loginData.email || "";
+const userId = email.toLowerCase().replace(/\./g, "_");
+
+let lastNotifTime = 0;
+let userHasInteracted = false;
+document.body.addEventListener("click", () => {
+  userHasInteracted = true;
+});
+
+blurphpDb.ref("chats/" + userId).on("child_added", (snapshot) => {
+  const msg = snapshot.val();
+  const livechatDot = document.getElementById("livechatDot");
+  const notifSound = document.getElementById("notifSound");
+
+  if (!msg || msg.from !== "admin") return;
+
+  const timestamp = msg.time || Date.now();
+  if (timestamp > lastNotifTime) {
+    lastNotifTime = timestamp;
+    if (livechatDot) livechatDot.style.display = "inline";
+    if (notifSound && userHasInteracted) {
+      notifSound.currentTime = 0;
+      notifSound.play().catch(() => {});
+    }
+  }
+});
+
+// ✅ PostMessage Handler
+window.addEventListener("message", async function (e) {
+  const allowedOrigins = [
+    "https://5g88-logogame.vercel.app", "https://5g88-userlivechatphp.vercel.app",
+    "https://searcfile.github.io", "https://searcfile.github.io/5G88-editor/mega888/",
+    "https://searcfile.github.io/5G88-editor/pussy888/", "https://searcfile.github.io/5G88-editor/918kiss/",
+    "https://searcfile.github.io/5G88-editor/scr888h5/", "https://5g88-main.vercel.app"
+  ];
+  if (!allowedOrigins.includes(e.origin)) {
+    console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
+    return;
   }
 
-  function updateDateTime() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
-    const month = monthNames[now.getMonth()];
-    const year = now.getFullYear();
+  const data = e.data;
+  const livechatDot = document.getElementById("livechatDot");
 
-    const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
-    document.getElementById('dateTime').textContent = timeString;
+  if (data?.action === "show-livechat-notif" && livechatDot) {
+    livechatDot.style.display = "block";
+  } else if (data?.action === "hide-livechat-notif" && livechatDot) {
+    livechatDot.style.display = "none";
+  } else if (data?.action === "copy-image-base64" && data.base64) {
+    try {
+      const response = await fetch(data.base64);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+      console.log("✅ Gambar dari base64 telah disalin.");
+    } catch (err) {
+      console.error("❌ Gagal salin gambar dari base64:", err);
+      alert("❌ Gagal salin gambar dari base64.");
+    }
+  } else if (data?.action === "copy-image" && data.url) {
+    try {
+      const response = await fetch(data.url);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+      console.log("✅ Gambar dari URL telah disalin.");
+    } catch (err) {
+      console.error("❌ Gagal salin gambar dari URL:", err);
+      alert("❌ Gagal salin gambar dari URL.");
+    }
   }
-  setInterval(updateDateTime, 1000);
-  updateDateTime();
-
-  // ✅ Bunyi & dot merah jika ada pesan baru admin (tanpa buka tab iframe)
-  let lastNotifTime = 0;
-
-  firebase.database().ref("livechat/messages").on("child_added", (snapshot) => {
-    const msg = snapshot.val();
-    const livechatDot = document.getElementById("livechatDot");
-    const notifSound = document.getElementById("notifSound");
-
-    if (!msg) return;
-
-    const unread = msg.readByAdmin === false || msg.readByAdmin === undefined;
-    const timestamp = msg.timestamp || Date.now();
-
-    if (unread && timestamp > lastNotifTime) {
-      lastNotifTime = timestamp;
-
-      if (livechatDot) livechatDot.style.display = "inline";
-      if (notifSound) notifSound.play().catch(() => {});
-    }
-  });
-
-  window.addEventListener("message", async function (e) {
-    // ✅ Daftar asal (origin) yang dibenarkan
-    const allowedOrigins = [
-      "https://5g88-logogame.vercel.app","https://5g88-userlivechatphp.vercel.app",
-      "https://searcfile.github.io",
-      "https://searcfile.github.io/5G88-editor/mega888/",
-      "https://searcfile.github.io/5G88-editor/pussy888/",
-      "https://searcfile.github.io/5G88-editor/918kiss/",
-      "https://searcfile.github.io/5G88-editor/scr888h5/",
-      "https://5g88-main.vercel.app"
-    ];
-
-    // ❌ Tolak jika bukan dari sumber yang sah
-    if (!allowedOrigins.includes(e.origin)) {
-      console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
-      return;
-    }
-
-    const data = e.data;
-
-    // ✅ Tampilkan dot merah LiveChat dari iframe
-    if (data?.action === "show-livechat-notif") {
-      const livechatDot = document.getElementById("livechatDot");
-      if (livechatDot) livechatDot.style.display = "block";
-    }
-
-    // ✅ Sembunyikan dot merah LiveChat dari iframe
-    else if (data?.action === "hide-livechat-notif") {
-      const livechatDot = document.getElementById("livechatDot");
-      if (livechatDot) livechatDot.style.display = "none";
-    }
-
-    // ✅ Untuk salin gambar dari base64
-    else if (data?.action === "copy-image-base64" && data.base64) {
-      try {
-        const response = await fetch(data.base64);
-        const blob = await response.blob();
-        const item = new ClipboardItem({ [blob.type]: blob });
-        await navigator.clipboard.write([item]);
-        console.log("✅ Gambar dari base64 telah disalin.");
-      } catch (err) {
-        console.error("❌ Gagal salin gambar dari base64:", err);
-        alert("❌ Gagal salin gambar dari base64.");
-      }
-    }
-
-    // ✅ Untuk salin gambar dari URL
-    else if (data?.action === "copy-image" && data.url) {
-      try {
-        const response = await fetch(data.url);
-        const blob = await response.blob();
-        const item = new ClipboardItem({ [blob.type]: blob });
-        await navigator.clipboard.write([item]);
-        console.log("✅ Gambar dari URL telah disalin.");
-      } catch (err) {
-        console.error("❌ Gagal salin gambar dari URL:", err);
-        alert("❌ Gagal salin gambar dari URL.");
-      }
-    }
-  });
+});
 
   const loadingScreen = document.getElementById("loadingScreen");
   if (loadingScreen) {
