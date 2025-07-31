@@ -319,6 +319,8 @@ html {
   const dbRef = firebase.database().ref('logins');
 
   let allLoginData = [];
+  let currentConfirmEmail = null;
+  let isConfirmAllVisible = false;
 
   function parseDateString(dateString) {
     if (!dateString) return null;
@@ -465,11 +467,21 @@ function renderLoginTable(dataArray) {
   });
 function showConfirmAllBox(button) {
   const box = document.getElementById("confirmAllBox");
+
+  // ✅ Kalau sedang tampil, klik lagi = tutup
+  if (isConfirmAllVisible) {
+    box.style.display = "none";
+    box.classList.remove("show");
+    isConfirmAllVisible = false;
+    return;
+  }
+
   const yesBtn = document.getElementById("confirmAllYes");
   const noBtn = document.getElementById("confirmAllNo");
 
   box.style.display = "block";
-  box.classList.add("show"); // ✅ tambahkan ini
+  box.classList.add("show");
+  isConfirmAllVisible = true;
 
   const rect = button.getBoundingClientRect();
   const boxWidth = box.offsetWidth;
@@ -488,25 +500,38 @@ function showConfirmAllBox(button) {
   document.getElementById("confirmAllYes").onclick = () => {
     box.style.display = "none";
     box.classList.remove("show");
+    isConfirmAllVisible = false;
     doForceLogoutAll();
   };
 
   document.getElementById("confirmAllNo").onclick = () => {
     box.style.display = "none";
     box.classList.remove("show");
+    isConfirmAllVisible = false;
   };
 }
 
 function showConfirmBox(button, email, name = '-') {
   const box = document.getElementById("confirmBox");
+
+  // ✅ Kalau email yang sama, maka sembunyikan
+  if (box.style.display === "block" && currentConfirmEmail === email) {
+    box.style.display = "none";
+    box.classList.remove("show");
+    currentConfirmEmail = null;
+    return;
+  }
+
   const yesBtn = document.getElementById("confirmYes");
   const noBtn = document.getElementById("confirmNo");
+
+  currentConfirmEmail = email; // ✅ Simpan email saat ini
 
   document.getElementById("confirmUserName").textContent = name;
   document.getElementById("confirmUserEmail").textContent = email;
 
   box.style.display = "block";
-  box.classList.add("show"); // ✅ tambahkan ini
+  box.classList.add("show");
 
   const rect = button.getBoundingClientRect();
   const boxWidth = box.offsetWidth;
@@ -519,19 +544,20 @@ function showConfirmBox(button, email, name = '-') {
   box.style.top = `${rect.bottom + window.scrollY + 6}px`;
   box.style.left = `${left}px`;
 
-  // Reset listener
   yesBtn.replaceWith(yesBtn.cloneNode(true));
   noBtn.replaceWith(noBtn.cloneNode(true));
 
   document.getElementById("confirmYes").onclick = () => {
     box.style.display = "none";
     box.classList.remove("show");
+    currentConfirmEmail = null;
     forceLogoutUser(email);
   };
 
   document.getElementById("confirmNo").onclick = () => {
     box.style.display = "none";
     box.classList.remove("show");
+    currentConfirmEmail = null;
   };
 }
 document.getElementById('forceLogoutAllBtn').addEventListener('click', function () {
@@ -549,8 +575,6 @@ document.getElementById('forceLogoutAllBtn').addEventListener('click', function 
     forceLogoutAll: true,
     ...updates
   }).then(() => {
-    // ✅ Optional: replace alert with custom toast
-    console.log("✅ Semua user telah dikirim perintah logout.");
 
     setTimeout(() => {
       firebase.database().ref("logins/admin_override").remove();
@@ -563,6 +587,7 @@ document.addEventListener('click', function (e) {
   const confirmBox = document.getElementById('confirmBox');
   const confirmAllBox = document.getElementById('confirmAllBox');
 
+  // Tutup confirmBox jika klik di luar dan bukan tombol logout
   if (
     confirmBox.style.display === 'block' &&
     !confirmBox.contains(e.target) &&
@@ -570,15 +595,16 @@ document.addEventListener('click', function (e) {
   ) {
     confirmBox.style.display = 'none';
     confirmBox.classList.remove('show');
+    currentConfirmEmail = null;
   }
-
   if (
     confirmAllBox.style.display === 'block' &&
     !confirmAllBox.contains(e.target) &&
     !e.target.closest('#forceLogoutAllBtn')
   ) {
     confirmAllBox.style.display = 'none';
-    confirmBox.classList.remove('show');
+    confirmAllBox.classList.remove('show');
+    isConfirmAllVisible = false;
   }
 });
 </script>
