@@ -469,6 +469,8 @@ function showConfirmAllBox(button) {
   const noBtn = document.getElementById("confirmAllNo");
 
   box.style.display = "block";
+  box.classList.add("show"); // ✅ tambahkan ini
+
   const rect = button.getBoundingClientRect();
   const boxWidth = box.offsetWidth;
   let left = rect.left + (rect.width / 2) - (boxWidth / 2);
@@ -480,7 +482,6 @@ function showConfirmAllBox(button) {
   box.style.top = `${rect.bottom + window.scrollY + 6}px`;
   box.style.left = `${left}px`;
 
-  // Reset listener
   yesBtn.replaceWith(yesBtn.cloneNode(true));
   noBtn.replaceWith(noBtn.cloneNode(true));
 
@@ -505,6 +506,8 @@ function showConfirmBox(button, email, name = '-') {
   document.getElementById("confirmUserEmail").textContent = email;
 
   box.style.display = "block";
+  box.classList.add("show"); // ✅ tambahkan ini
+
   const rect = button.getBoundingClientRect();
   const boxWidth = box.offsetWidth;
   let left = rect.left + (rect.width / 2) - (boxWidth / 2);
@@ -531,7 +534,6 @@ function showConfirmBox(button, email, name = '-') {
     box.classList.remove("show");
   };
 }
-
 document.getElementById('forceLogoutAllBtn').addEventListener('click', function () {
   showConfirmAllBox(this);
 });
