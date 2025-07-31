@@ -217,6 +217,14 @@ html {
   line-height: 1.2;
   color: #ccc;
 }
+.confirm-box {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.confirm-box.show {
+  opacity: 1;
+}
 .user-line {
   background: #2c1618;
   border: 1px solid #5b2526;
@@ -226,6 +234,14 @@ html {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+  @media (max-width: 480px) {
+  .confirm-box {
+    width: 95vw !important;
+    max-width: 95vw;
+    left: 10px !important;
+    right: 10px !important;
+  }
 }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -452,33 +468,31 @@ function showConfirmAllBox(button) {
   const yesBtn = document.getElementById("confirmAllYes");
   const noBtn = document.getElementById("confirmAllNo");
 
-  // Tampilkan dulu agar bisa ukur ukuran box
   box.style.display = "block";
-
   const rect = button.getBoundingClientRect();
   const boxWidth = box.offsetWidth;
   let left = rect.left + (rect.width / 2) - (boxWidth / 2);
 
-  // ✅ Koreksi jika posisi terlalu ke kanan
-  const maxLeft = window.innerWidth - boxWidth - 10; // beri margin kanan 10px
+  const maxLeft = window.innerWidth - boxWidth - 10;
   if (left > maxLeft) left = maxLeft;
-  if (left < 10) left = 10; // juga jangan terlalu kiri
+  if (left < 10) left = 10;
 
-  // ✅ Atur posisi
-  box.style.top = `${rect.bottom + window.scrollY + 4}px`;
+  box.style.top = `${rect.bottom + window.scrollY + 6}px`;
   box.style.left = `${left}px`;
 
-  // Reset event listener
+  // Reset listener
   yesBtn.replaceWith(yesBtn.cloneNode(true));
   noBtn.replaceWith(noBtn.cloneNode(true));
 
   document.getElementById("confirmAllYes").onclick = () => {
     box.style.display = "none";
+    box.classList.remove("show");
     doForceLogoutAll();
   };
 
   document.getElementById("confirmAllNo").onclick = () => {
     box.style.display = "none";
+    box.classList.remove("show");
   };
 }
 
@@ -487,27 +501,34 @@ function showConfirmBox(button, email, name = '-') {
   const yesBtn = document.getElementById("confirmYes");
   const noBtn = document.getElementById("confirmNo");
 
-  // ✅ Set nama dan email ke dalam box
   document.getElementById("confirmUserName").textContent = name;
   document.getElementById("confirmUserEmail").textContent = email;
 
-  // ✅ Posisi tepat di bawah tombol & tengah
+  box.style.display = "block";
   const rect = button.getBoundingClientRect();
-  box.style.display = "block"; // ⬅ tampilkan dulu supaya bisa ukur lebar
-  box.style.top = `${rect.bottom + window.scrollY + 4}px`;
-  box.style.left = `${rect.left + (rect.width / 2) - (box.offsetWidth / 2)}px`;
+  const boxWidth = box.offsetWidth;
+  let left = rect.left + (rect.width / 2) - (boxWidth / 2);
 
-  // ✅ Reset event handler YES/NO
+  const maxLeft = window.innerWidth - boxWidth - 10;
+  if (left > maxLeft) left = maxLeft;
+  if (left < 10) left = 10;
+
+  box.style.top = `${rect.bottom + window.scrollY + 6}px`;
+  box.style.left = `${left}px`;
+
+  // Reset listener
   yesBtn.replaceWith(yesBtn.cloneNode(true));
   noBtn.replaceWith(noBtn.cloneNode(true));
 
   document.getElementById("confirmYes").onclick = () => {
     box.style.display = "none";
+    box.classList.remove("show");
     forceLogoutUser(email);
   };
 
   document.getElementById("confirmNo").onclick = () => {
     box.style.display = "none";
+    box.classList.remove("show");
   };
 }
 
@@ -536,6 +557,28 @@ document.getElementById('forceLogoutAllBtn').addEventListener('click', function 
     alert("❌ Gagal logout semua user: " + err.message);
   });
 }
+document.addEventListener('click', function (e) {
+  const confirmBox = document.getElementById('confirmBox');
+  const confirmAllBox = document.getElementById('confirmAllBox');
+
+  if (
+    confirmBox.style.display === 'block' &&
+    !confirmBox.contains(e.target) &&
+    !e.target.closest('.logout-btn')
+  ) {
+    confirmBox.style.display = 'none';
+    confirmBox.classList.remove('show');
+  }
+
+  if (
+    confirmAllBox.style.display === 'block' &&
+    !confirmAllBox.contains(e.target) &&
+    !e.target.closest('#forceLogoutAllBtn')
+  ) {
+    confirmAllBox.style.display = 'none';
+    confirmBox.classList.remove('show');
+  }
+});
 </script>
 </body>
 </html>
