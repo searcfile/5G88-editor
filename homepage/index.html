@@ -604,7 +604,6 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// Jika iframe load & domain sama, deteksi klik iframe
 let iframe = document.getElementById("pageFrame");
 iframe?.addEventListener("load", () => {
   try {
@@ -612,8 +611,6 @@ iframe?.addEventListener("load", () => {
       gameLogDropdown.style.display = "none";
     });
   } catch (err) {
-    // Jika beda origin
-    console.warn("❌ Tidak bisa akses iframe karena beda origin.");
   }
 });
 
@@ -734,13 +731,11 @@ function addTab(label, url) {
 
 function sendLoginToIframe() {
   iframe = document.getElementById("pageFrame"); // ✅ tanpa const
-  console.log("iframe saat load:", iframe); 
   
   if (!iframe || !iframe.contentWindow) return;
 
   const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
   if (user.email) {
-    console.log("📤 Mengirim data user ke iframe:", user);
     iframe.contentWindow.postMessage({
       type: "user-login",
       user: {
@@ -749,9 +744,7 @@ function sendLoginToIframe() {
         photo: user.photo
       }
     }, "*");
-  } else {
-    console.warn("⚠️ User belum login atau data tidak lengkap");
-  }
+  } 
 }
 
 // 🔁 Jalankan saat iframe load DAN saat tab LiveChat dibuka
@@ -1144,7 +1137,7 @@ loginDb.ref("logins/admin_override").on("value", (snapshot) => {
     const shouldLogout = data.users.includes(userId);
 
     if (shouldLogout) {
-      alert("🚫 Kamu telah di-logout oleh sistem.");
+      alert("🚫 You Logout By System!");
 
       // 🔄 Bersihkan data lokal
       localStorage.removeItem("gmailLogin");
@@ -1270,7 +1263,7 @@ function updateDateTime() {
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
-  const monthNames = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'];
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const month = monthNames[now.getMonth()];
   const year = now.getFullYear();
   const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
