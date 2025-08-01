@@ -1181,26 +1181,32 @@ loginDb.ref("logins/admin_override").on("value", (snapshot) => {
 });
   // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
 const sanitizedEmail = loginData.email.toLowerCase().replace(/\./g, '_');
-blurphpDb.ref('users/' + sanitizedEmail).update({
-  name: loginData.name,
-  email: loginData.email,
+const userData = {
+  name: loginData.name || "Guest",
+  email: loginData.email || "guest",
   photoURL: loginData.photo || '',
   lastLoginTime: Date.now()
-});
+};
+
+// ✅ Simpan ke Firebase 'logins'
+loginDb.ref('users/' + sanitizedEmail).update(userData).catch(() => {});
+
+// ✅ Simpan ke Firebase 'blurphp'
+blurphpDb.ref('users/' + sanitizedEmail).update(userData).catch(() => {});
 
 // ✅ Tambah status online user di Firebase
 const connectedRef = firebase.database().ref(".info/connected");
-const onlineRef = firebase.database().ref("users/" + sanitizedEmail + "/online");
+const blurOnlineRef = blurphpDb.ref("users/" + sanitizedEmail + "/online");
 
 connectedRef.on("value", (snap) => {
   if (snap.val() === true) {
-    onlineRef.set(true);
-    onlineRef.onDisconnect().set(false);
+    blurOnlineRef.set(true);
+    blurOnlineRef.onDisconnect().set(false);
   }
 });
 
 window.addEventListener("beforeunload", () => {
-  firebase.database().ref("users/" + sanitizedEmail + "/online").set(false);
+  blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
 });
 
  // ✅ Setelah login aman, baru lanjut
