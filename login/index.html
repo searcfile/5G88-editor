@@ -179,7 +179,7 @@
 
   <div class="login-box">
     <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo">
-    <button class="login-btn" onclick="signInWithGoogle()">Login with Google</button>
+    <button class="login-btn" id="googleLoginBtn">Login with Google</button>
   </div>
 </body>
 
@@ -232,56 +232,67 @@ function formatTimestamp(date) {
 }
 
 function signInWithGoogle() {
+  const loginBtn = document.getElementById("googleLoginBtn");
+  loginBtn.disabled = true;
+  loginBtn.innerText = "Logging in...";
+
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
     .then(result => {
       const user = result.user;
       if (!user) {
         alert("Login gagal: User tidak ditemukan.");
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Login with Google";
         return;
       }
 
-       // ✅ BLOCK EMAIL TERTENTU
       const blockedEmails = ["sukrizalujangwkg61@gmail.com"];
       if (blockedEmails.includes(user.email)) {
         alert("This Page Already Blocked!!!");
         auth.signOut();
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Login with Google";
         return;
       }
-      
-      const emailKey = user.email.replace(/\./g, "_");
 
+      const emailKey = user.email.replace(/\./g, "_");
       db.ref("logins/" + emailKey).set({
         name: user.displayName,
         email: user.email,
         loginAt: formatTimestamp(new Date())
       })
       .then(() => {
-        console.log("✅ Login data saved to Firebase");
-const photo = user.photoURL;
-
-localStorage.setItem("gmailLogin", JSON.stringify({
-  name: user.displayName,
-  email: user.email,
-  photo: photo
-}));
-
-const name = encodeURIComponent(user.displayName);
-const email = encodeURIComponent(user.email);
-const photoURL = encodeURIComponent(photo || "");
-window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photoURL}`;
+        localStorage.setItem("gmailLogin", JSON.stringify({
+          name: user.displayName,
+          email: user.email,
+          photo: user.photoURL
+        }));
+        const name = encodeURIComponent(user.displayName);
+        const email = encodeURIComponent(user.email);
+        const photoURL = encodeURIComponent(user.photoURL || "");
+        window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photoURL}`;
       })
       .catch(err => {
         console.error("❌ Gagal simpan ke Firebase:", err);
         alert("Gagal simpan data login. Coba lagi.");
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Login with Google";
       });
     })
     .catch(error => {
       console.error("❌ Login gagal:", error);
       alert("Login gagal. Coba lagi.");
+      loginBtn.disabled = false;
+      loginBtn.innerText = "Login with Google";
     });
 }
+document.addEventListener("DOMContentLoaded", () => {
+  const loginBtn = document.getElementById("googleLoginBtn");
+  if (loginBtn) {
+    loginBtn.addEventListener("click", signInWithGoogle);
+  }
+});
 </script>
-
 </body>
 </html>
