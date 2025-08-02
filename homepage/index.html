@@ -32,15 +32,9 @@
      .tab-bar::-webkit-scrollbar {display: none;}
      .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px;
       cursor: default;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;} 
-    .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;font-size: 14px;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;
-       justify-content: center;transition: all 0.3s ease;
-    }
-    .tab:hover {
-      color: #ffe34d !important;
-      font-weight: bold !important;
-      transition: all 0.3s ease;
-    }
-    .active-tab {
+     .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;font-size: 14px;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: all 0.3s ease;}
+     .tab:hover {color: #ffe34d !important;font-weight: bold !important;transition: all 0.3s ease;}
+     .active-tab {
       background-color: #141414 !important;
       color: gold !important;
       font-weight: bold;
@@ -1031,23 +1025,18 @@ function isValidEmail(email) {
 }
 
 function saveLoginFromURL() {
-  const alreadyLogin = localStorage.getItem("gmailLogin");
   const params = new URLSearchParams(window.location.search);
-
-  // ⛔ Jangan login ulang jika logout=1
-  if (alreadyLogin || params.get("logout") === "1") return;
-
   const name = params.get("name");
   const email = params.get("email");
-  const photo = params.get("photo");
+  const photo = params.get("photo"); // ✅ Tambah ini
 
   if (name && email && isValidEmail(email)) {
     localStorage.setItem("gmailLogin", JSON.stringify({
       name: decodeURIComponent(name),
       email: decodeURIComponent(email).toLowerCase(),
-      photo: decodeURIComponent(photo || "")
+      photo: decodeURIComponent(photo || "") // ✅ Simpan photo
     }));
-    cleanUrl(); // remove all query from URL
+    cleanUrl();
   }
 }
 
@@ -1249,17 +1238,17 @@ window.addEventListener("beforeunload", () => {
 });
   }
 
-logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("gmailLogin");
-  sessionStorage.setItem("forceLogout", "1");
-
-  if (window.google?.accounts?.id) {
-    google.accounts.id.disableAutoSelect();
-  }
-
-  // ✅ Redirect TANPA parameter name/email supaya tidak auto login ulang
-  window.location.href = "https://5g88-login.vercel.app?logout=1";
-});
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("gmailLogin");
+    sessionStorage.setItem("forceLogout", "1");
+    if (window.google?.accounts?.id) {
+      google.accounts.id.disableAutoSelect();
+    }
+    window.location.href = "https://5g88-login.vercel.app/";
+  });
+}
 
 function updateDateTime() {
   const now = new Date();
