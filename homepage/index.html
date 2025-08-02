@@ -1032,18 +1032,21 @@ function isValidEmail(email) {
 }
 
 function saveLoginFromURL() {
+  const alreadyLogin = localStorage.getItem("gmailLogin");
+  if (alreadyLogin) return; // ⛔ Jangan ambil dari URL lagi kalau sudah login
+
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
   const email = params.get("email");
-  const photo = params.get("photo"); // ✅ Tambah ini
+  const photo = params.get("photo");
 
   if (name && email && isValidEmail(email)) {
     localStorage.setItem("gmailLogin", JSON.stringify({
       name: decodeURIComponent(name),
       email: decodeURIComponent(email).toLowerCase(),
-      photo: decodeURIComponent(photo || "") // ✅ Simpan photo
+      photo: decodeURIComponent(photo || "")
     }));
-    cleanUrl();
+    cleanUrl(); // buang ?name=..&email=.. dari URL
   }
 }
 
