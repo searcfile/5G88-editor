@@ -1338,7 +1338,7 @@ let rows = `
 
   if (isNaN(jackpotAmount) || jackpotAmount < 0) {
     return;
-  }
+ }
 
   const tbody = document.querySelector("#gameLog tbody");
   let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
@@ -1350,7 +1350,6 @@ let rows = `
     if (match) {
       const oldJackpotValue = parseFloat(match[1]);
 
-     
       const index = Array.from(tbody.children).indexOf(jackpotRow);
       const prevRow = tbody.children[index - 1];
       const oldWin = parseFloat(prevRow.children[3].textContent);
@@ -1366,11 +1365,11 @@ let rows = `
 
     jackpotRow.remove();
   }
-
+  
   if (hiddenRow) {
   tbody.appendChild(hiddenRow);
   hiddenRow = null;
-}
+} 
 
   rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) {
@@ -1407,14 +1406,13 @@ let rows = `
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
- const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-const specialRows = tbody.querySelectorAll("tr.set-score-row"); 
+   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+const specialRows = tbody.querySelectorAll("tr.set-score-row");
 
 while (allRows.length + specialRows.length > 11) {
   const lastRow = allRows.pop(); 
   lastRow.remove();
 }
-
 
 const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
 for (let i = updatedRows.length - 1; i > 0; i--) {
@@ -1430,22 +1428,13 @@ for (let i = updatedRows.length - 1; i > 0; i--) {
 }
 
   if (updatedRows.length > 0) {
-  const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
-  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-  if (setScoreRowTop) {
-    const scoreCell = setScoreRowTop.children[1];
-    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-
-    const beginCell = setScoreRowTop.children[4];
-      const oldBegin = parseFloat(beginCell.textContent);
-      const newBegin = oldBegin + jackpotAmount;
-      beginCell.textContent = newBegin.toFixed(2);
-
-    
-      scoreCell.textContent = `Set score：${(-Math.abs(newBegin)).toFixed(2)}`;
+    const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
+    const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+    if (setScoreRowTop) {
+      const scoreCell = setScoreRowTop.children[1];
+      scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+    }
   }
-}
-
 
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
