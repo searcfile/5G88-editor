@@ -257,21 +257,19 @@ function signInWithGoogle() {
       }
 
       const emailKey = user.email.replace(/\./g, "_");
+
       db.ref("logins/" + emailKey).set({
         name: user.displayName,
         email: user.email,
         loginAt: formatTimestamp(new Date())
       })
       .then(() => {
+        // Data akan disimpan, tapi tidak langsung redirect di sini
         localStorage.setItem("gmailLogin", JSON.stringify({
           name: user.displayName,
           email: user.email,
           photo: user.photoURL
         }));
-        const name = encodeURIComponent(user.displayName);
-        const email = encodeURIComponent(user.email);
-        const photoURL = encodeURIComponent(user.photoURL || "");
-        window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photoURL}`;
       })
       .catch(err => {
         console.error("❌ Gagal simpan ke Firebase:", err);
@@ -287,6 +285,27 @@ function signInWithGoogle() {
       loginBtn.innerText = "Login with Google";
     });
 }
+
+// ✅ Tambahkan listener ini sekali saja di bawah script kamu:
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    const name = encodeURIComponent(user.displayName);
+    const email = encodeURIComponent(user.email);
+    const photo = encodeURIComponent(user.photoURL || "");
+
+    // Simpan localStorage jika belum ada
+    if (!localStorage.getItem("gmailLogin")) {
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL
+      }));
+    }
+
+    // ✅ Redirect langsung setelah login terdeteksi
+    window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photo}`;
+  }
+});
 document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.getElementById("googleLoginBtn");
   if (loginBtn) {
