@@ -1033,9 +1033,11 @@ function isValidEmail(email) {
 
 function saveLoginFromURL() {
   const alreadyLogin = localStorage.getItem("gmailLogin");
-  if (alreadyLogin) return; // ⛔ Jangan ambil dari URL lagi kalau sudah login
-
   const params = new URLSearchParams(window.location.search);
+
+  // ⛔ Jangan login ulang jika logout=1
+  if (alreadyLogin || params.get("logout") === "1") return;
+
   const name = params.get("name");
   const email = params.get("email");
   const photo = params.get("photo");
@@ -1046,7 +1048,7 @@ function saveLoginFromURL() {
       email: decodeURIComponent(email).toLowerCase(),
       photo: decodeURIComponent(photo || "")
     }));
-    cleanUrl(); // buang ?name=..&email=.. dari URL
+    cleanUrl(); // remove all query from URL
   }
 }
 
@@ -1248,16 +1250,17 @@ window.addEventListener("beforeunload", () => {
 });
   }
 
-const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("gmailLogin");
-    sessionStorage.setItem("forceLogout", "1");
-    if (window.google?.accounts?.id) {
-      google.accounts.id.disableAutoSelect();
-    }
-    window.location.href = "https://5g88-login.vercel.app/";
-  });
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("gmailLogin");
+  sessionStorage.setItem("forceLogout", "1");
+
+  if (window.google?.accounts?.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+
+  // ✅ Redirect TANPA parameter name/email supaya tidak auto login ulang
+  window.location.href = "https://5g88-login.vercel.app?logout=1";
+});
 }
 
 function updateDateTime() {
