@@ -426,7 +426,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 updated sound7*/
+/*Mcng 123 123 updated online*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -1182,8 +1182,8 @@ blurphpDb.ref('users/' + sanitizedEmail).update({
 });
 
 // ✅ Tambah status online user di Firebase
-const connectedRef = firebase.database().ref(".info/connected");
-const onlineRef = firebase.database().ref("users/" + sanitizedEmail + "/online");
+const connectedRef = blurphpDb.ref(".info/connected");
+const onlineRef = blurphpDb.ref("users/" + sanitizedEmail + "/online");
 
 connectedRef.on("value", (snap) => {
   if (snap.val() === true) {
@@ -1193,7 +1193,7 @@ connectedRef.on("value", (snap) => {
 });
 
 window.addEventListener("beforeunload", () => {
-  firebase.database().ref("users/" + sanitizedEmail + "/online").set(false);
+  blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
 });
 
  // ✅ Setelah login aman, baru lanjut
