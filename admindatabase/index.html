@@ -269,6 +269,27 @@ html {
   background: #b31616;
   color: white;
 }
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #1e293b;
+  color: #cbd5e1;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  z-index: 99999;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.toast.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -330,6 +351,7 @@ html {
     <button id="confirmYes" class="btn-yes">Yes</button>
   </div>
 </div>
+<div id="toast" class="toast" style="display: none;"></div>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
@@ -392,12 +414,22 @@ function forceLogoutUser(email) {
     forceLogout: true,
     time: Date.now()
   }).then(() => {
-    alert(`✅ Logout command sent for ${email}`);
+    showToast(`✅ Logout command sent for ${email}`);
   }).catch(err => {
     alert(`❌ Gagal logout: ${err.message}`);
   });
 }
-
+function showToast(message, duration = 4000) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  
+  // Reset & auto hide
+  clearTimeout(toast.hideTimeout);
+  toast.hideTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, duration);
+}
 function renderLoginTable(dataArray) {
   const tbody = document.getElementById('loginTableBody');
   if (!dataArray.length) {
