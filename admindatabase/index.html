@@ -444,7 +444,7 @@ html {
 
 function forceLogoutUser(email) {
   const userId = email.replace(/\./g, "_");
-  firebase.database().ref("logins/admin_override").set({
+  firebase.database().ref("logins/").set({
     target: userId,
     forceLogout: true,
     time: Date.now()
