@@ -310,6 +310,9 @@ html {
   color: #22c55e; /* green */
   font-size: 16px;
 }
+.toast-icon {
+  flex-shrink: 0;
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -371,10 +374,12 @@ html {
     <button id="confirmYes" class="btn-yes">Yes</button>
   </div>
 </div>
-<div id="toast" class="toast" style="display: none;">
-  <span class="toast-icon">✔️</span>
-  <span class="toast-message"></span>
-  <button class="close-btn" onclick="hideToast()">✖</button>
+<div id="toast" class="toast">
+  <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="#00ff00" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 17l-5-5.299 1.399-1.43 3.574 3.736 6.572-7.007 1.455 1.403-8 8.597z" />
+  </svg>
+  <span id="toast-message">Logout command sent</span>
+  <span class="toast-close" onclick="hideToast()">✖</span>
 </div>
 <script>
   const firebaseConfig = {
@@ -438,7 +443,7 @@ function forceLogoutUser(email) {
     forceLogout: true,
     time: Date.now()
   }).then(() => {
-    showToast(`Logout Successfuly${email}`);
+    showToast(`Logout Successfuly ${email}`);
   }).catch(err => {
     alert(`❌ Gagal logout: ${err.message}`);
   });
