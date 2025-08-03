@@ -379,10 +379,10 @@ html {
   </div>
 </div>
 <div id="toast" class="toast">
-  <svg class="toast-icon" viewBox="0 0 24 24" fill="#00ff00" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 17l-5-5.299 1.399-1.43 3.574 3.736 6.572-7.007 1.455 1.403-8 8.597z" />
+  <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 17l-5-5.299 1.399-1.43 3.574 3.736 6.572-7.007 1.455 1.403-8 8.597z" />
   </svg>
-  <span class="toast-message" id="toast-message">Logout command sent</span>
+  <span class="toast-message" id="toast-message">Logout Successfully</span>
   <span class="toast-close" onclick="hideToast()">✖</span>
 </div>
 <script>
@@ -457,8 +457,10 @@ function showToast(message, duration = 4000) {
   const msgSpan = toast.querySelector(".toast-message");
 
   msgSpan.textContent = message;
-  toast.style.display = "flex";
-  toast.classList.add("show");
+  toast.style.display = "flex"; // Munculkan
+  requestAnimationFrame(() => {
+    toast.classList.add("show"); // Trigger animasi
+  });
 
   clearTimeout(window.toastTimeout);
   window.toastTimeout = setTimeout(() => {
@@ -471,7 +473,7 @@ function hideToast() {
   toast.classList.remove("show");
   setTimeout(() => {
     toast.style.display = "none";
-  }, 300);
+  }, 300); // Match durasi transition
 }
 function renderLoginTable(dataArray) {
   const tbody = document.getElementById('loginTableBody');
