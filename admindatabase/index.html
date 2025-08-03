@@ -305,8 +305,12 @@ html {
 .toast .close-btn:hover {
   color: #fff;
 }
-.toast .toast-icon {
-  color: #00ff00; /* green */
+.toast.success .toast-icon {
+  color: #22c55e; /* hijau */
+  font-size: 14px;
+}
+.toast.error .toast-icon {
+  color: #ef4444; /* merah */
   font-size: 14px;
 }
 .toast-icon {
@@ -316,6 +320,7 @@ html {
   width: 20px;
   height: 20px;
 }
+
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -378,10 +383,8 @@ html {
   </div>
 </div>
 <div id="toast" class="toast">
-  <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 17l-5-5.299 1.399-1.43 3.574 3.736 6.572-7.007 1.455 1.403-8 8.597z" />
-  </svg>
-  <span class="toast-message" id="toast-message">Logout Successfully</span>
+  <span class="toast-icon"></span>
+  <span class="toast-message" id="toast-message"></span>
   <button type="button" class="close-btn" onclick="hideToast()">✖</button>
 </div>
 <script>
@@ -448,17 +451,40 @@ function forceLogoutUser(email) {
   }).then(() => {
     showToast(`Logout Successfuly ${email}`);
   }).catch(err => {
-    alert(`❌ Gagal logout: ${err.message}`);
+    showToast(`Error logout: ${err.message}`, "error");
   });
 }
-function showToast(message, duration = 4000) {
+function showToast(message, type = "success", duration = 4000) {
   const toast = document.getElementById("toast");
   const msgSpan = toast.querySelector(".toast-message");
+  const iconSvg = toast.querySelector(".toast-icon");
+
+  // Reset kelas
+  toast.classList.remove("success", "error");
+  toast.classList.add(type);
 
   msgSpan.textContent = message;
-  toast.style.display = "flex"; // Munculkan
+
+  // Tukar ikon SVG berdasarkan tipe
+  if (type === "success") {
+    iconSvg.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12
+                 12-5.373 12-12-5.373-12-12-12zm-1 17l-5-5.299
+                 1.399-1.43 3.574 3.736 6.572-7.007 
+                 1.455 1.403-8 8.597z" /></svg>`;
+  } else if (type === "error") {
+    iconSvg.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 
+                 12-5.4 12-12S18.6 0 12 0zm5.5 15.1L15.1 17.5 
+                 12 14.4 8.9 17.5 6.5 15.1 9.6 12 6.5 8.9 
+                 8.9 6.5 12 9.6l3.1-3.1 2.4 2.4L14.4 12l3.1 3.1z"/></svg>`;
+  }
+
+  toast.style.display = "flex";
   requestAnimationFrame(() => {
-    toast.classList.add("show"); // Trigger animasi
+    toast.classList.add("show");
   });
 
   clearTimeout(window.toastTimeout);
@@ -472,7 +498,7 @@ function hideToast() {
   toast.classList.remove("show");
   setTimeout(() => {
     toast.style.display = "none";
-  }, 300); // Match durasi transition
+  }, 300);
 }
 function renderLoginTable(dataArray) {
   const tbody = document.getElementById('loginTableBody');
