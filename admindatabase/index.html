@@ -286,7 +286,7 @@ html {
 }
 
 .toast.show {
-  display: block;
+  display: block !important;
   opacity: 1;
   transform: translateY(0);
 }
@@ -351,7 +351,7 @@ html {
     <button id="confirmYes" class="btn-yes">Yes</button>
   </div>
 </div>
-<div id="toast" class="toast" style="display: none;"></div>
+<div id="toast" class="toast"></div>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
@@ -419,14 +419,15 @@ function forceLogoutUser(email) {
     alert(`❌ Gagal logout: ${err.message}`);
   });
 }
-function showToast(message, duration = 4000) {
+showToast(message, duration = 4000) {
   const toast = document.getElementById("toast");
+  if (!toast) return;
+
   toast.textContent = message;
   toast.classList.add("show");
-  
-  // Reset & auto hide
-  clearTimeout(toast.hideTimeout);
-  toast.hideTimeout = setTimeout(() => {
+
+  clearTimeout(window.toastTimeout);
+  window.toastTimeout = setTimeout(() => {
     toast.classList.remove("show");
   }, duration);
 }
