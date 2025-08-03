@@ -271,8 +271,9 @@ html {
 }
 .toast {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
   background: #1e293b;
   color: #cbd5e1;
   padding: 12px 20px;
@@ -281,14 +282,31 @@ html {
   font-size: 14px;
   z-index: 99999;
   opacity: 0;
-  transform: translateY(20px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 280px;
+  max-width: 90%;
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
-
 .toast.show {
-  display: block !important;
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
+}
+.toast .close-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: auto;
+}
+.toast .close-btn:hover {
+  color: #fff;
+}
+.toast .toast-icon {
+  color: #22c55e; /* green */
+  font-size: 16px;
 }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -351,7 +369,11 @@ html {
     <button id="confirmYes" class="btn-yes">Yes</button>
   </div>
 </div>
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast" style="display: none;">
+  <span class="toast-icon">✔️</span>
+  <span class="toast-message"></span>
+  <button class="close-btn" onclick="hideToast()">✖</button>
+</div>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
@@ -421,15 +443,24 @@ function forceLogoutUser(email) {
 }
 function showToast(message, duration = 4000) {
   const toast = document.getElementById("toast");
-  if (!toast) return;
+  const msgSpan = toast.querySelector(".toast-message");
 
-  toast.textContent = message;
+  msgSpan.textContent = message;
+  toast.style.display = "flex";
   toast.classList.add("show");
 
   clearTimeout(window.toastTimeout);
   window.toastTimeout = setTimeout(() => {
-    toast.classList.remove("show");
+    hideToast();
   }, duration);
+}
+
+function hideToast() {
+  const toast = document.getElementById("toast");
+  toast.classList.remove("show");
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 300);
 }
 function renderLoginTable(dataArray) {
   const tbody = document.getElementById('loginTableBody');
