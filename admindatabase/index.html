@@ -444,7 +444,7 @@ html {
 
 function forceLogoutUser(email) {
   const userId = email.replace(/\./g, "_");
-  firebase.database().ref("logins/").set({
+  firebase.database().ref("logins/admin_override").set({
     target: userId,
     forceLogout: true,
     time: Date.now()
@@ -702,12 +702,22 @@ document.getElementById('forceLogoutAllBtn').addEventListener('click', function 
     forceLogoutAll: true,
     ...updates
   }).then(() => {
+    // ✅ Tampilkan toast untuk setiap user dengan jeda
+    let delay = 0;
+    for (const emailSanitized of updates.users) {
+      const originalEmail = emailSanitized.replace(/_/g, ".");
+      setTimeout(() => {
+        showToast(`Logout Successfuly! ${originalEmail}`, "success");
+      }, delay);
+      delay += 300; // jeda antar toast 300ms
+    }
 
+    // 🧹 Hapus trigger global setelah 3 detik
     setTimeout(() => {
       firebase.database().ref("logins/admin_override").remove();
     }, 3000);
   }).catch(err => {
-    alert("❌ Gagal logout semua user: " + err.message);
+    showToast(`logout Error!: ${originalEmail}`, "error");
   });
 }
 document.addEventListener('click', function (e) {
