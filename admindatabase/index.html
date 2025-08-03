@@ -278,7 +278,7 @@ html {
   color: #cbd5e1;
   padding: 12px 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   font-size: 14px;
   z-index: 99999;
   opacity: 0;
@@ -287,11 +287,13 @@ html {
   gap: 10px;
   min-width: 280px;
   max-width: 90%;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none; /* untuk cegah klik waktu animasi */
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
 }
 .toast .close-btn {
   background: transparent;
@@ -436,7 +438,7 @@ function forceLogoutUser(email) {
     forceLogout: true,
     time: Date.now()
   }).then(() => {
-    showToast(`✅ Logout command sent for ${email}`);
+    showToast(`Logout Successfuly${email}`);
   }).catch(err => {
     alert(`❌ Gagal logout: ${err.message}`);
   });
