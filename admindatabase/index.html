@@ -343,6 +343,16 @@ html {
   background: #9ca3af; /* abu abu */
   color: white;
 }
+.action-buttons {
+  display: flex;
+  gap: 6px; /* jarak antar tombol */
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.logout-btn,
+.block-btn {
+  min-width: 70px;
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -553,12 +563,15 @@ function renderLoginTable(dataArray) {
       <td>${email}</td>
       <td>${item.dateObj ? formatDateTime(item.dateObj) : item.loginRaw}</td>
       <td>
-        <button class="logout-btn"
-          onclick="showConfirmBox(this, '${email}', '${item.name || '-'}')">
-          Logout
-        </button>
-        <button class="block-btn" data-email="${email}" onclick="toggleBlockUser(this)">...</button>
-      </td>
+  <div class="action-buttons">
+    <button class="logout-btn"
+      onclick="showConfirmBox(this, '${email}', '${item.name || '-'}')">
+      Logout
+    </button>
+    <button class="block-btn" data-email="${email}" onclick="toggleBlockUser(this)">
+    </button>
+  </div>
+</td>
     </tr>`;
   });
 
