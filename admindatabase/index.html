@@ -435,8 +435,8 @@ td:last-child {
 
 
 function sanitizeEmail(email) {
-  if (!email) return ""; // ⛔️ cegah undefined/null
-  return email.replace(/\./g, "_");
+  if (!email || typeof email !== 'string') return '';
+  return email.replace(/\./g, "_").replace(/[#$\[\]]/g, '');
 }
 
 function isEmailBlocked(email) {
@@ -545,6 +545,7 @@ function hideToast() {
 }
 function renderLoginTable(dataArray) {
   const tbody = document.getElementById('loginTableBody');
+
   if (!dataArray.length) {
     tbody.innerHTML = '<tr><td colspan="5">No matching login data found.</td></tr>';
     return;
@@ -566,7 +567,7 @@ function renderLoginTable(dataArray) {
             onclick="showConfirmBox(this, '${email}', '${item.name || '-'}')">
             Logout
           </button>
-          <button class="block-btn" data-email="${email}">...</button>
+          <button class="block-btn" data-email="${email}" data-blocked="">Block</button>
         </div>
       </td>
     </tr>`;
@@ -574,16 +575,19 @@ function renderLoginTable(dataArray) {
 
   tbody.innerHTML = html;
 
-  // Update tombol block setelah render
+  // 🔁 Update tombol block setelah render
   dataArray.forEach(item => {
     const email = item.email || '';
     const btn = tbody.querySelector(`.block-btn[data-email="${email}"]`);
-    if (btn) {
-      isEmailBlocked(email).then(blocked => {
-        btn.textContent = blocked ? "Unblock" : "Block";
-        btn.classList.toggle("blocked", blocked);
-      });
-    }
+
+    // ⛔ Skip jika email kosong atau tombol tidak ada
+    if (!email || !btn) return;
+
+    isEmailBlocked(email).then(blocked => {
+      btn.setAttribute("data-blocked", blocked ? "yes" : "no");
+      btn.textContent = blocked ? "Unblock" : "Block";
+      btn.classList.toggle("blocked", blocked);
+    });
   });
 }
 
