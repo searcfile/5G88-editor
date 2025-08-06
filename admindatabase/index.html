@@ -560,19 +560,28 @@ function renderLoginTable(dataArray) {
   }
 
   let html = '';
-  dataArray.forEach((item, index) => {
+  let validIndex = 0;
+
+  dataArray.forEach((item) => {
     const email = item.email || '';
+    const name = item.name || '';
+    const loginAt = item.loginRaw || '';
+
+    // 🧹 Skip jika semua field kosong
+    if (!email && !name && !loginAt) return;
+
     const sanitizedEmail = sanitizeEmail(email);
+    validIndex++;
 
     html += `<tr data-email="${email}">
-      <td>${index + 1}</td>
-      <td>${item.name || '-'}</td>
+      <td>${validIndex}</td>
+      <td>${name || '-'}</td>
       <td>${email}</td>
-      <td>${item.dateObj ? formatDateTime(item.dateObj) : item.loginRaw}</td>
+      <td>${item.dateObj ? formatDateTime(item.dateObj) : loginAt}</td>
       <td>
         <div class="action-buttons">
           <button class="logout-btn"
-            onclick="showConfirmBox(this, '${email}', '${item.name || '-'}')">
+            onclick="showConfirmBox(this, '${email}', '${name || '-'}')">
             Logout
           </button>
           <button class="block-btn" data-email="${email}" data-blocked="" onclick="toggleBlockUser(this)">Block</button>
@@ -587,8 +596,6 @@ function renderLoginTable(dataArray) {
   dataArray.forEach(item => {
     const email = item.email || '';
     const btn = tbody.querySelector(`.block-btn[data-email="${email}"]`);
-
-    // ⛔ Skip jika email kosong atau tombol tidak ada
     if (!email || !btn) return;
 
     isEmailBlocked(email).then(blocked => {
@@ -627,21 +634,22 @@ function renderLoginTable(dataArray) {
         return;
       }
 
-      allLoginData = Object.values(data)
-        .map(item => {
-          const dateObj = parseDateString(item.loginAt);
-          return {
-            ...item,
-            dateObj,
-            loginRaw: item.loginAt || '-'
-          };
-        })
-        .sort((a, b) => {
-          if (!a.dateObj && !b.dateObj) return 0;
-          if (!a.dateObj) return 1;
-          if (!b.dateObj) return -1;
-          return b.dateObj - a.dateObj;
-        });
+     allLoginData = Object.values(data)
+  .map(item => {
+    const dateObj = parseDateString(item.loginAt);
+    return {
+      ...item,
+      dateObj,
+      loginRaw: item.loginAt || '-'
+    };
+  })
+  .filter(item => item.email || item.name || item.loginRaw) // 🧹 Hapus data kosong
+  .sort((a, b) => {
+    if (!a.dateObj && !b.dateObj) return 0;
+    if (!a.dateObj) return 1;
+    if (!b.dateObj) return -1;
+    return b.dateObj - a.dateObj;
+  });
 
       const searchTerm = document.getElementById('searchInput')?.value || '';
       const filteredData = filterTable(searchTerm, allLoginData);
