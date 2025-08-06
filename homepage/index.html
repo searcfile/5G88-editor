@@ -231,6 +231,11 @@ a.tab-open .check-icon {
   display: none;
   z-index: 2;
 }
+.dragging {
+  opacity: 0.5;
+  transform: scale(1.05);
+  z-index: 999;
+}
   </style>
 </head>
 <body>
@@ -400,7 +405,7 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/*Mcng 123 123 updated papapa*/
+/*Mcng 123 123 updated 232131*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
   authDomain: "notice-83ae5.firebaseapp.com",
@@ -864,7 +869,13 @@ function renderTabs() {
 function initSortableTabs() {
   if (!window.Sortable || !tabBar) return;
 
-  Sortable.create(tabBar, {
+  // 🔁 Destroy instance sebelumnya jika ada
+  if (tabBar._sortable) {
+    tabBar._sortable.destroy();
+  }
+
+  // ✅ Buat baru & simpan ke properti _sortable
+  tabBar._sortable = Sortable.create(tabBar, {
     animation: 200,
     ghostClass: "dragging",
     onEnd: function (evt) {
@@ -872,11 +883,10 @@ function initSortableTabs() {
       const [movedTab] = tabs.splice(evt.oldIndex, 1);
       tabs.splice(evt.newIndex, 0, movedTab);
       saveTabs(tabs);
-      renderTabs();
+      renderTabs(); // akan auto-panggil initSortableTabs()
     }
   });
 }
-
 function loadPage(url) {
   const iframeLoader = document.getElementById("iframeLoader");
   const frame = document.getElementById("pageFrame");
