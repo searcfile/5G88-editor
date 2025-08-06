@@ -320,7 +320,23 @@ html {
   width: 20px;
   height: 20px;
 }
-
+.block-btn {
+  background: #facc15;
+  color: black;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 5px;
+  transition: background 0.2s;
+}
+.block-btn:hover {
+  background: #fcd34d;
+}
+.block-btn.blocked {
+  background: #9ca3af; /* abu abu */
+  color: white;
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -401,6 +417,23 @@ html {
   firebase.initializeApp(firebaseConfig);
   const dbRef = firebase.database().ref('logins');
 
+  const blockedRef = firebase.database().ref('logins/blocked_users');
+
+
+function sanitizeEmail(email) {
+  return email.replace(/\./g, "_");
+}
+
+function isEmailBlocked(email) {
+  const key = sanitizeEmail(email);
+  return blockedRef.child(key).once('value').then(snapshot => !!snapshot.val());
+}
+
+function setEmailBlocked(email, isBlocked) {
+  const key = sanitizeEmail(email);
+  return blockedRef.child(key).set(isBlocked);
+}
+
   let allLoginData = [];
   let currentConfirmEmail = null;
   let isConfirmAllVisible = false;
@@ -437,11 +470,6 @@ html {
       (item.email || '').toLowerCase().includes(lowerQuery)
     );
   }
-
-  function sanitizeEmail(email) {
-  return email.replace(/\./g, "_");
-}
-
 function forceLogoutUser(email) {
   const userId = email.replace(/\./g, "_");
   firebase.database().ref("logins/admin_override").set({
@@ -509,21 +537,55 @@ function renderLoginTable(dataArray) {
 
   let html = '';
   dataArray.forEach((item, index) => {
-    const sanitizedEmail = item.email || '';
-    html += `<tr>
+    const email = item.email || '';
+    const sanitizedEmail = sanitizeEmail(email);
+
+    html += `<tr data-email="${email}">
       <td>${index + 1}</td>
       <td>${item.name || '-'}</td>
-      <td>${item.email || '-'}</td>
+      <td>${email}</td>
       <td>${item.dateObj ? formatDateTime(item.dateObj) : item.loginRaw}</td>
       <td>
         <button class="logout-btn"
-          onclick="showConfirmBox(this, '${sanitizedEmail}', '${item.name || '-'}')">
+          onclick="showConfirmBox(this, '${email}', '${item.name || '-'}')">
           Logout
+        </button>
+        <button class="block-btn" data-email="${email}" onclick="toggleBlockUser(this)">
+          Loading...
         </button>
       </td>
     </tr>`;
   });
+
   tbody.innerHTML = html;
+
+  // Setelah render, update status tombol block/unblock
+  dataArray.forEach(item => {
+    const email = item.email || '';
+    const btn = tbody.querySelector(`.block-btn[data-email="${email}"]`);
+    if (btn) {
+      isEmailBlocked(email).then(blocked => {
+        btn.textContent = blocked ? "Unblock" : "Block";
+        btn.classList.toggle("blocked", blocked);
+      });
+    }
+  });
+}
+
+  function toggleBlockUser(button) {
+  const email = button.getAttribute("data-email");
+  isEmailBlocked(email).then(isBlocked => {
+    const newStatus = !isBlocked;
+    setEmailBlocked(email, newStatus)
+      .then(() => {
+        showToast(`${newStatus ? "Blocked" : "Unblocked"}: ${email}`, "success");
+        button.textContent = newStatus ? "Unblock" : "Block";
+        button.classList.toggle("blocked", newStatus);
+      })
+      .catch(err => {
+        showToast(`Failed to update block status: ${err.message}`, "error");
+      });
+  });
 }
 
   function loadLoginData() {
