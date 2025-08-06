@@ -328,17 +328,15 @@ html {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s, visibility 0.2s;
-  min-width: auto;
-  visibility: hidden;
-  opacity: 0;
-}
-.block-btn.ready {
-  visibility: visible;    /* ✅ akan tampil saat status blokir sudah diketahui */
-  opacity: 1;
+  transition: all 0.2s;
+  min-width: 75px;
+  text-align: center;
 }
 .block-btn:hover {
   background: #fcd34d;
+}
+.block-btn:active {
+  background: #a5882b;
 }
 .block-btn.blocked {
   background: #9ca3af; /* abu abu */
@@ -563,38 +561,28 @@ function renderLoginTable(dataArray) {
       <td>${email}</td>
       <td>${item.dateObj ? formatDateTime(item.dateObj) : item.loginRaw}</td>
       <td>
-  <div class="action-buttons">
-    <button class="logout-btn"
-      onclick="showConfirmBox(this, '${email}', '${item.name || '-'}')">
-      Logout
-    </button>
-    <button class="block-btn" data-email="${email}" onclick="toggleBlockUser(this)">
-    </button>
-  </div>
-</td>
+        <div class="action-buttons">
+          <button class="logout-btn"
+            onclick="showConfirmBox(this, '${email}', '${item.name || '-'}')">
+            Logout
+          </button>
+          <button class="block-btn" data-email="${email}">...</button>
+        </div>
+      </td>
     </tr>`;
   });
 
   tbody.innerHTML = html;
 
-  // ✅ Update status tombol block/unblock setelah render
+  // Update tombol block setelah render
   dataArray.forEach(item => {
     const email = item.email || '';
-    if (!email) return; // ⛔ Lewati jika email kosong
-
     const btn = tbody.querySelector(`.block-btn[data-email="${email}"]`);
     if (btn) {
-      btn.textContent = "..."; // tampilkan loading
-      isEmailBlocked(email)
-        .then(blocked => {
-          btn.textContent = blocked ? "Unblock" : "Block";
-          btn.classList.toggle("blocked", blocked);
-          btn.classList.add("ready");
-        })
-        .catch(err => {
-          btn.textContent = "Block";
-          console.error("❌ Error checking blocked status:", err);
-        });
+      isEmailBlocked(email).then(blocked => {
+        btn.textContent = blocked ? "Unblock" : "Block";
+        btn.classList.toggle("blocked", blocked);
+      });
     }
   });
 }
