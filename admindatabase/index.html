@@ -634,8 +634,9 @@ function renderLoginTable(dataArray) {
         return;
       }
 
-     allLoginData = Object.values(data)
-  .map(item => {
+  allLoginData = Object.entries(data)
+  .filter(([key, _]) => key !== "blocked_users" && key !== "admin_override")
+  .map(([_, item]) => {
     const dateObj = parseDateString(item.loginAt);
     return {
       ...item,
