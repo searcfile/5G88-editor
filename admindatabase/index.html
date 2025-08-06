@@ -328,7 +328,14 @@ html {
   border-radius: 4px;
   cursor: pointer;
   margin-left: 5px;
-  transition: background 0.2s;
+  transition: background 0.2s, visibility 0.2s;
+  min-width: 75px;
+  visibility: hidden;
+  opacity: 0;
+}
+.block-btn.ready {
+  visibility: visible;    /* ✅ akan tampil saat status blokir sudah diketahui */
+  opacity: 1;
 }
 .block-btn:hover {
   background: #fcd34d;
@@ -551,7 +558,6 @@ function renderLoginTable(dataArray) {
           Logout
         </button>
         <button class="block-btn" data-email="${email}" onclick="toggleBlockUser(this)">
-          Loading...
         </button>
       </td>
     </tr>`;
@@ -567,6 +573,7 @@ function renderLoginTable(dataArray) {
       isEmailBlocked(email).then(blocked => {
         btn.textContent = blocked ? "Unblock" : "Block";
         btn.classList.toggle("blocked", blocked);
+        btn.classList.add("ready");
       });
     }
   });
