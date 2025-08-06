@@ -416,6 +416,7 @@ a.tab-open .check-icon {
   </div>
   
 <audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
@@ -796,8 +797,9 @@ function renderTabs() {
   tabs.forEach((tab, index) => {
     const tabElement = document.createElement("div");
     tabElement.className = "tab";
-    tabElement.draggable = true;
     tabElement.dataset.index = index;
+
+    // Style
     tabElement.style.background = "rgba(255, 255, 255, 0.04)";
     tabElement.style.color = "rgba(255, 255, 255, 0.85)";
     tabElement.style.padding = "6px 16px";
@@ -810,7 +812,7 @@ function renderTabs() {
     tabElement.style.userSelect = "none";
     tabElement.style.cursor = "pointer";
 
-    // ✅ Efek tekan (gelap) saat mouse click
+    // Klik efek
     tabElement.addEventListener("mousedown", () => {
       tabElement.style.filter = "brightness(0.7)";
     });
@@ -821,63 +823,27 @@ function renderTabs() {
       tabElement.style.filter = "none";
     });
 
-    tabElement.addEventListener("dragstart", function (e) {
-      e.dataTransfer.setData("text/plain", index);
-      tabElement.style.opacity = "0.5";
-    });
-
-    tabElement.addEventListener("dragend", function () {
-      tabElement.style.opacity = "1";
-    });
-
-    tabElement.addEventListener("dragover", function (e) {
-      e.preventDefault();
-    });
-
-    tabElement.addEventListener("drop", function (e) {
-      e.preventDefault();
-      const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
-      const toIndex = index;
-
-      if (fromIndex !== toIndex) {
-        const updatedTabs = getTabs();
-        const [movedTab] = updatedTabs.splice(fromIndex, 1);
-        updatedTabs.splice(toIndex, 0, movedTab);
-        saveTabs(updatedTabs);
-        renderTabs();
-      }
-    });
-
+    // Klik tab → buka page
     tabElement.onclick = () => {
-    loadPage(tab.url);
+      loadPage(tab.url);
 
-  const gameLogBtn = document.getElementById("gameLogBtn");
-  const liveBtn = document.getElementById("liveChatBtn");
-  const linkBtn = document.getElementById("linkDownloadBtn");
-  if (liveBtn) {
-    if (tab.label === "LIVE CHAT") {
-      liveBtn.classList.add("active-livechat");
-    } else {
-      liveBtn.classList.remove("active-livechat"); // 🟡 Tambah ini
-    }
-  }
-if (linkBtn) {
-    if (tab.label === "LINK DOWNLOAD") {
-      linkBtn.classList.add("active-linkdownload");
-    } else {
-      linkBtn.classList.remove("active-linkdownload");
-    }
-  }
-  if (gameLogBtn) {
-  const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
-  if (gameLogLabels.includes(tab.label)) {
-    gameLogBtn.classList.add("active-gamelog");
-  } else {
-    gameLogBtn.classList.remove("active-gamelog");
-  }
-}
-};
+      const gameLogBtn = document.getElementById("gameLogBtn");
+      const liveBtn = document.getElementById("liveChatBtn");
+      const linkBtn = document.getElementById("linkDownloadBtn");
 
+      if (liveBtn)
+        liveBtn.classList.toggle("active-livechat", tab.label === "LIVE CHAT");
+
+      if (linkBtn)
+        linkBtn.classList.toggle("active-linkdownload", tab.label === "LINK DOWNLOAD");
+
+      if (gameLogBtn) {
+        const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+        gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
+      }
+    };
+
+    // Tab aktif highlight
     const currentFrame = document.getElementById("pageFrame");
     if (currentFrame && tab.url === currentFrame.src) {
       tabElement.classList.add("active-tab");
@@ -908,7 +874,6 @@ if (linkBtn) {
       closeBtn.style.color = "red";
       closeBtn.style.transform = "scale(1)";
     };
-
     closeBtn.onclick = (e) => {
       e.stopPropagation();
       closeTab(tab.label);
@@ -917,6 +882,24 @@ if (linkBtn) {
     tabElement.appendChild(title);
     tabElement.appendChild(closeBtn);
     tabBar.appendChild(tabElement);
+  });
+
+  // ✅ Inisialisasi Sortable.js drag (auto spacing)
+  initSortableTabs();
+}
+function initSortableTabs() {
+  if (!window.Sortable || !tabBar) return;
+
+  Sortable.create(tabBar, {
+    animation: 200,
+    ghostClass: "dragging",
+    onEnd: function (evt) {
+      const tabs = getTabs();
+      const [movedTab] = tabs.splice(evt.oldIndex, 1);
+      tabs.splice(evt.newIndex, 0, movedTab);
+      saveTabs(tabs);
+      renderTabs();
+    }
   });
 }
 
