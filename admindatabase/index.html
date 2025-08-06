@@ -428,6 +428,7 @@ html {
 
 
 function sanitizeEmail(email) {
+  if (!email) return ""; // ⛔️ cegah undefined/null
   return email.replace(/\./g, "_");
 }
 
@@ -557,24 +558,31 @@ function renderLoginTable(dataArray) {
           onclick="showConfirmBox(this, '${email}', '${item.name || '-'}')">
           Logout
         </button>
-        <button class="block-btn" data-email="${email}" onclick="toggleBlockUser(this)">
-        </button>
+        <button class="block-btn" data-email="${email}" onclick="toggleBlockUser(this)">...</button>
       </td>
     </tr>`;
   });
 
   tbody.innerHTML = html;
 
-  // Setelah render, update status tombol block/unblock
+  // ✅ Update status tombol block/unblock setelah render
   dataArray.forEach(item => {
     const email = item.email || '';
+    if (!email) return; // ⛔ Lewati jika email kosong
+
     const btn = tbody.querySelector(`.block-btn[data-email="${email}"]`);
     if (btn) {
-      isEmailBlocked(email).then(blocked => {
-        btn.textContent = blocked ? "Unblock" : "Block";
-        btn.classList.toggle("blocked", blocked);
-        btn.classList.add("ready");
-      });
+      btn.textContent = "..."; // tampilkan loading
+      isEmailBlocked(email)
+        .then(blocked => {
+          btn.textContent = blocked ? "Unblock" : "Block";
+          btn.classList.toggle("blocked", blocked);
+          btn.classList.add("ready");
+        })
+        .catch(err => {
+          btn.textContent = "Block";
+          console.error("❌ Error checking blocked status:", err);
+        });
     }
   });
 }
