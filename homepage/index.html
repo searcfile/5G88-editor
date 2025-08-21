@@ -36,54 +36,13 @@
      .tab:hover {color: #ffe34d !important;font-weight: bold !important;transition: all 0.3s ease;}
      .active-tab {background-color: #141414 !important;color: gold !important;font-weight: bold;transition: all 0.3s ease;}.tab:active {color: #dbb900!important;font-weight: bold !important;transition: all 0.3s ease;}
     .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
-    .header.shrink {
-      margin-left: 260px;
-      transition: margin-left 0.3s;
-    }
-  .tab-bar.shrink {
-   margin-left: 260px;
-   transition: margin-left 0.3s;
-   }
-  #logoutBtn {
-   display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;
-   background-color: #141414;
-   color: rgba(255,255,255,0.85);
-   padding: 5px 10px;
-   border-radius: 4px;
-   cursor: pointer;
-   width: 100%;
-   border: none;
-   box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
-   transition: all 0.3s ease;
-   border: 1px solid #424242;
-   font-size: 14px;
-  }
-   #logoutBtn:hover {
-    color: #ffe34d;
-    transition: all 0.3s ease;
-    border: 1px solid #ffe34d;
-   }
-   #logoutBtn:active {
-    color: #dbb900;
-    transition: all 0.3s ease;
-    border: 1px solid #dbb900;
-    background-color: #141414;
-   }
-    #notifTooltip {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-    #notifButton:hover #notifTooltip {
-  display: block !important;
-  opacity: 1;
-      z-index: 10000;
-}
- .user-dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.user-button {
+    .header.shrink {margin-left: 260px;transition: margin-left 0.3s;}
+    .tab-bar.shrink {margin-left: 260px;transition: margin-left 0.3s;}
+  #logoutBtn {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;background-color: #141414;color: rgba(255,255,255,0.85);padding: 5px 10px;border-radius: 4px;cursor: pointer;width: 100%;border: none;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid #424242;font-size: 14px;}#logoutBtn:hover {color: #ffe34d;transition: all 0.3s ease;border: 1px solid #ffe34d;}#logoutBtn:active {color: #dbb900;transition: all 0.3s ease;border: 1px solid #dbb900;background-color: #141414;}
+  #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
+  #notifButton:hover #notifTooltip {display: block !important;opacity: 1;z-index: 10000;}
+ .user-dropdown {position: relative;display: inline-block;}
+ .user-button {
   display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;
   background-color: #141414;
   color: rgba(255,255,255,0.85);
@@ -418,8 +377,6 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-
-// Tambah koneksi ke Firebase blurphp
 const blurphpApp = firebase.initializeApp({
   apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
   authDomain: "blurphp.firebaseapp.com",
@@ -431,7 +388,6 @@ const blurphpApp = firebase.initializeApp({
   measurementId: "G-R494S2DPZ5"
 }, "blurphpApp");
 const blurphpDb = blurphpApp.database();
-
 const loginApp = firebase.initializeApp({
   apiKey: "AIzaSyCLHO-NGVdMVAZKaqBOf7WBzRQh7NL3XJ8",
   authDomain: "logins-d615f.firebaseapp.com",
@@ -446,7 +402,7 @@ const loginDb = loginApp.database();
 let loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
 let userId = "";
 let currentEmail = loginData?.email || "guest";
-// ✅ Notifikasi popup atas
+// Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
 const popup = document.getElementById("messagePopup");
@@ -469,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// ✅ Realtime notifikasi pesan baru dari Firebase
+// Realtime notifikasi pesan baru dari Firebase
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
@@ -533,7 +489,7 @@ notifButton.addEventListener("click", () => {
   localStorage.setItem(seenKey, "1");
 });
 
-// ✅ Tooltip muncul saat hover
+// Tooltip muncul saat hover
 notifButton.addEventListener("mouseenter", () => {
   notifTooltip.style.display = "block";
 });
@@ -541,7 +497,7 @@ notifButton.addEventListener("mouseleave", () => {
   notifTooltip.style.display = "none";
 });
 
-// ✅ Klik luar = tutup popup
+// Klik luar = tutup popup
 document.addEventListener("click", function (event) {
   if (
     popup &&
@@ -688,7 +644,7 @@ function addTab(label, url) {
       liveBtn.classList.add("active-livechat");
       if (liveDot) liveDot.style.display = "none";
 
-      // ✅ Tandai semua pesan admin sebagai sudah dibaca
+      // Tandai semua pesan admin sebagai sudah dibaca
       markLivechatAsRead();
     } else {
       liveBtn.classList.remove("active-livechat");
@@ -736,7 +692,7 @@ if (liveChatBtn) {
   });
 }
 
-iframe = document.getElementById("pageFrame"); // ✅ TANPA const
+iframe = document.getElementById("pageFrame"); // TANPA const
 if (iframe) {
   iframe.addEventListener("load", sendLoginToIframe);
 }
@@ -754,7 +710,7 @@ function closeTab(label) {
     const lastTab = tabs[tabs.length - 1];
     loadPage(lastTab.url);
 
-    // ✅ Set status aktif tombol sesuai tab terakhir
+    // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
     gameLogBtn?.classList.toggle("active-gamelog", gameLogLabels.includes(lastTab.label));
     liveBtn?.classList.toggle("active-livechat", lastTab.label === "LIVE CHAT");
@@ -863,18 +819,18 @@ function renderTabs() {
     tabBar.appendChild(tabElement);
   });
 
-  // ✅ Inisialisasi Sortable.js drag (auto spacing)
+  // Inisialisasi Sortable.js drag (auto spacing)
   initSortableTabs();
 }
 function initSortableTabs() {
   if (!window.Sortable || !tabBar) return;
 
-  // 🔁 Destroy instance sebelumnya jika ada
+  // Destroy instance sebelumnya jika ada
   if (tabBar._sortable) {
     tabBar._sortable.destroy();
   }
 
-  // ✅ Buat baru & simpan ke properti _sortable
+  // Buat baru & simpan ke properti _sortable
   tabBar._sortable = Sortable.create(tabBar, {
     animation: 200,
     ghostClass: "dragging",
@@ -919,7 +875,7 @@ function loadPage(url) {
   });
 }
 
-  // ✅ Ceklis GameLog Dropdown
+  // Ceklis GameLog Dropdown
 function updateGameLogCheckmarks() {
   const tabs = getTabs();
   const labelsOpen = tabs.map(tab => tab.label);
@@ -1001,13 +957,13 @@ function saveLoginFromURL() {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
   const email = params.get("email");
-  const photo = params.get("photo"); // ✅ Tambah ini
+  const photo = params.get("photo");
 
   if (name && email && isValidEmail(email)) {
     localStorage.setItem("gmailLogin", JSON.stringify({
       name: decodeURIComponent(name),
       email: decodeURIComponent(email).toLowerCase(),
-      photo: decodeURIComponent(photo || "") // ✅ Simpan photo
+      photo: decodeURIComponent(photo || "")
     }));
     cleanUrl();
   }
@@ -1134,7 +1090,7 @@ loginDb.ref("logins/admin_override").on("value", (snapshot) => {
     window.location.href = "https://5g88-login.vercel.app/";
   }
 });
-  // ✅ Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
+  //  Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
 const sanitizedEmail = loginData.email.toLowerCase().replace(/\./g, '_');
 blurphpDb.ref('users/' + sanitizedEmail).update({
   name: loginData.name,
@@ -1143,7 +1099,7 @@ blurphpDb.ref('users/' + sanitizedEmail).update({
   lastLoginTime: Date.now()
 });
 
-// ✅ Tambah status online user di Firebase
+// Tambah status online user di Firebase
 const connectedRef = blurphpDb.ref(".info/connected");
 const onlineRef = blurphpDb.ref("users/" + sanitizedEmail + "/online");
 
@@ -1158,7 +1114,7 @@ window.addEventListener("beforeunload", () => {
   blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
 });
 
- // ✅ Setelah login aman, baru lanjut
+ //Setelah login aman, baru lanjut
   const userNameText = document.getElementById("userNameText");
   const dropdownContent = document.getElementById("dropdownContent");
   const userEmailElem = document.getElementById("userEmail");
@@ -1234,7 +1190,7 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 
-// ✅ Notifikasi LiveChat dari Admin (blurphp)
+//  Notifikasi LiveChat dari Admin (blurphp)
 let lastNotifTime = 0;
 let userHasInteracted = false;
 document.body.addEventListener("click", () => {
@@ -1259,7 +1215,7 @@ blurphpDb.ref("chats/" + userId).on("child_added", (snapshot) => {
   }
 });
 initLivechatNotifListener();
-// ✅ PostMessage Handler
+// PostMessage Handler
 window.addEventListener("message", async function (e) {
   const allowedOrigins = [
     "https://5g88-logogame.vercel.app", "https://5g88-userlivechatphp.vercel.app",
