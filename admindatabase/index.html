@@ -693,7 +693,7 @@ function renderLoginTable(dataArray) {
 function showConfirmAllBox(button) {
   const box = document.getElementById("confirmAllBox");
 
-  // ✅ Kalau sedang tampil, klik lagi = tutup
+  // Kalau sedang tampil, klik lagi = tutup
   if (isConfirmAllVisible) {
     box.style.display = "none";
     box.classList.remove("show");
@@ -750,7 +750,7 @@ function showConfirmBox(button, email, name = '-') {
   const yesBtn = document.getElementById("confirmYes");
   const noBtn = document.getElementById("confirmNo");
 
-  currentConfirmEmail = email; // ✅ Simpan email saat ini
+  currentConfirmEmail = email; //  Simpan email saat ini
 
   document.getElementById("confirmUserName").textContent = name;
   document.getElementById("confirmUserEmail").textContent = email;
@@ -800,7 +800,7 @@ document.getElementById('forceLogoutAllBtn').addEventListener('click', function 
     forceLogoutAll: true,
     ...updates
   }).then(() => {
-    // ✅ Tampilkan toast untuk setiap user dengan jeda
+    // Tampilkan toast untuk setiap user dengan jeda
     let delay = 0;
     for (const emailSanitized of updates.users) {
       const originalEmail = emailSanitized.replace(/_/g, ".");
