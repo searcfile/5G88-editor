@@ -630,12 +630,6 @@ window.addEventListener("DOMContentLoaded", () => {
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
 });
 function copyGameLogImage() {
-  // 🔍 Cek dukungan Clipboard API
-  if (!navigator.clipboard || !window.ClipboardItem) {
-    alert("❌ Browser tidak support Clipboard API (copy image tidak bisa).");
-    return;
-  }
-
   const gameLogTable = document.getElementById("gameLog");
   if (!gameLogTable) {
     alert("❌ Tidak jumpa elemen #gameLog");
@@ -643,24 +637,38 @@ function copyGameLogImage() {
   }
 
   gameLogTable.classList.add("screenshot-mode");
-
-  html2canvas(gameLogTable, {
-    scale: 2,
-    useCORS: true
-  }).then(canvas => {
+  html2canvas(gameLogTable, { scale: 2, useCORS: true }).then(async (canvas) => {
     gameLogTable.classList.remove("screenshot-mode");
 
-    // ✅ Gantikan toBlob dengan toDataURL
-    const dataURL = canvas.toDataURL("image/png");
+    // ✅ Coba langsung copy PNG ke clipboard
+    try {
+      if (!navigator.clipboard || !window.ClipboardItem) throw new Error("Clipboard API tidak tersedia");
 
-    // ✅ Kirim base64 ke parent
-    window.parent.postMessage({
-      action: "copy-image-base64",
-      base64: dataURL
-    }, "https://5g88-main.vercel.app/");
+      await new Promise((resolve, reject) => {
+        canvas.toBlob(async (blob) => {
+          if (!blob) return reject(new Error("Gagal buat blob"));
+          try {
+            await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+            resolve();
+          } catch (err) {
+            reject(err);
+          }
+        }, "image/png");
+      });
+
+      alert("✅ Gambar tabel sudah di-copy ke Clipboard (PNG).");
+      return; // sukses, selesai
+
+    } catch (err) {
+      // 🔁 Fallback: kirim base64 ke parent seperti versi kamu
+      const dataURL = canvas.toDataURL("image/png");
+      window.parent.postMessage({
+        action: "copy-image-base64",
+        base64: dataURL
+      }, "https://5g88-main.vercel.app/");
+    }
   });
 }
 </script>
-
 </body>
 </html>
