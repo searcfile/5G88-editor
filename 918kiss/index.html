@@ -26,6 +26,29 @@
   .set-score-row td {color: rgb(51, 51, 51);font-size: 26px;padding-top: 22px !important;padding-bottom: 22px !important;line-height: 1.1 !important;white-space: nowrap;background-color: #fff;}.set-score-row td.negatif {color: #dd4b39;font-weight: bold;font-size: 26px;background-color: #fff;}.set-score-row td.setscore {color: #dd4b39;font-weight: 750;;font-size: 26px;white-space: nowrap;background-color: #fff;}
   #gameSelect {max-height: 38px;overflow-y: auto;cursor: pointer;transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);}#gameSelect:hover {border: 1px solid #ffe34d;}#gameSelect:focus {border: 1px solid gold;outline: none;}
   .reset-button {background:red;color:white;margin-bottom:15px;border: 1px solid white;padding:0px 15px;height:32px;font-size: 14px;}.reset-button:hover {background: #ff4d4d;color: white;}.reset-button:active {background: #bf0000;color: white;}
+  .toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2c2f36;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
+  z-index: 9999;
+}
+.toast.show { opacity: 1; }
+.toast .icon { font-weight: 900; color: #4CAF50; }
+.toast .close { margin-left: 8px; cursor: pointer; color: #aaa; }
+.toast .close:hover { color: #fff; }
   </style>
 </head>
 <body>
@@ -628,34 +651,68 @@ window.addEventListener("DOMContentLoaded", () => {
 
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
 });
+function showToast(message) {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.innerHTML = `
+    <span class="icon">✔</span>
+    <span>${message}</span>
+    <span class="close">&times;</span>
+  `;
+  document.body.appendChild(el);
+
+  // show
+  requestAnimationFrame(() => el.classList.add("show"));
+
+  // close by click
+  el.querySelector(".close").addEventListener("click", () => {
+    el.classList.remove("show");
+    setTimeout(() => el.remove(), 350);
+  });
+
+  // auto-hide
+  setTimeout(() => {
+    el.classList.remove("show");
+    setTimeout(() => el.remove(), 350);
+  }, 3500);
+}
 function copyGameLogImage() {
-  // 🔍 Cek dukungan Clipboard API
-  if (!navigator.clipboard || !window.ClipboardItem) {
-    alert("❌ Browser tidak support Clipboard API (copy image tidak bisa).");
-    return;
-  }
   const gameLogTable = document.getElementById("gameLog");
   if (!gameLogTable) {
     alert("❌ Tidak jumpa elemen #gameLog");
     return;
   }
- 
+
   gameLogTable.classList.add("screenshot-mode");
 
-  html2canvas(gameLogTable, {
-    scale: 2,
-    useCORS: true
-  }).then(canvas => {
+  html2canvas(gameLogTable, { scale: 2, useCORS: true }).then(async (canvas) => {
     gameLogTable.classList.remove("screenshot-mode");
 
-    // ✅ Gantikan toBlob dengan toDataURL
-    const dataURL = canvas.toDataURL("image/png");
+    try {
+      // Copy PNG terus ke clipboard (butuh user gesture – Ctrl+C / klik button)
+      if (!navigator.clipboard || !window.ClipboardItem) throw new Error("Clipboard API tidak tersedia");
+      await new Promise((resolve, reject) => {
+        canvas.toBlob(async (blob) => {
+          if (!blob) return reject(new Error("Gagal buat blob"));
+          try {
+            await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+            resolve();
+          } catch (err) { reject(err); }
+        }, "image/png");
+      });
 
-    // ✅ Kirim base64 ke parent
-    window.parent.postMessage({
-      action: "copy-image-base64",
-      base64: dataURL
-    }, "https://5g88-main.vercel.app/");
+      showToast("✅ Image copied to clipboard");
+      return;
+
+    } catch (err) {
+      // Fallback: hantar base64 ke parent
+      const dataURL = canvas.toDataURL("image/png");
+      window.parent.postMessage({
+        action: "copy-image-base64",
+        base64: dataURL
+      }, "https://5g88-main.vercel.app/");
+      showToast("✅ Image sent to parent (fallback)");
+    }
   });
 }
 document.addEventListener("keydown", function(e) {
