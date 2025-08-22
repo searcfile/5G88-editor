@@ -65,7 +65,10 @@
 </head>
 <body>
 <div class="header">918KISS GENERATE</div>
-<button onclick="resetLog()" class="reset-button">Reset Log</button>
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+  <button onclick="resetLog()" class="reset-button">Reset Log</button>
+  <span style="color: rgba(255, 255, 255, 0.65); font-size: 16px;">Key (CTRL + C) Copy Image</span>
+</div>
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
   <label for="gameSelect" style="color: white;padding-left:5px;">Game:</label>
   <select id="gameSelect" class="select2" style="height: 38px; font-size: 16px; color: white;">
@@ -113,6 +116,7 @@
 </table>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
+document.addEventListener("contextmenu", e => e.preventDefault());document.onkeydown = function (e) {if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {return false;}};
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let hiddenRow = null;
 const gameData = {
