@@ -78,7 +78,6 @@
 </table>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-document.addEventListener("contextmenu", e => e.preventDefault());document.onkeydown = function (e) {if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {return false;}};
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let hiddenRow = null;
 const gameData = {
@@ -630,45 +629,41 @@ window.addEventListener("DOMContentLoaded", () => {
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
 });
 function copyGameLogImage() {
+  // 🔍 Cek dukungan Clipboard API
+  if (!navigator.clipboard || !window.ClipboardItem) {
+    alert("❌ Browser tidak support Clipboard API (copy image tidak bisa).");
+    return;
+  }
   const gameLogTable = document.getElementById("gameLog");
   if (!gameLogTable) {
     alert("❌ Tidak jumpa elemen #gameLog");
     return;
   }
-
+ 
   gameLogTable.classList.add("screenshot-mode");
-  html2canvas(gameLogTable, { scale: 2, useCORS: true }).then(async (canvas) => {
+
+  html2canvas(gameLogTable, {
+    scale: 2,
+    useCORS: true
+  }).then(canvas => {
     gameLogTable.classList.remove("screenshot-mode");
 
-    // ✅ Coba langsung copy PNG ke clipboard
-    try {
-      if (!navigator.clipboard || !window.ClipboardItem) throw new Error("Clipboard API tidak tersedia");
+    // ✅ Gantikan toBlob dengan toDataURL
+    const dataURL = canvas.toDataURL("image/png");
 
-      await new Promise((resolve, reject) => {
-        canvas.toBlob(async (blob) => {
-          if (!blob) return reject(new Error("Gagal buat blob"));
-          try {
-            await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
-            resolve();
-          } catch (err) {
-            reject(err);
-          }
-        }, "image/png");
-      });
-
-      alert("✅ Gambar tabel sudah di-copy ke Clipboard (PNG).");
-      return; // sukses, selesai
-
-    } catch (err) {
-      // 🔁 Fallback: kirim base64 ke parent seperti versi kamu
-      const dataURL = canvas.toDataURL("image/png");
-      window.parent.postMessage({
-        action: "copy-image-base64",
-        base64: dataURL
-      }, "https://5g88-main.vercel.app/");
-    }
+    // ✅ Kirim base64 ke parent
+    window.parent.postMessage({
+      action: "copy-image-base64",
+      base64: dataURL
+    }, "https://5g88-main.vercel.app/");
   });
 }
+document.addEventListener("keydown", function(e) {
+  if (e.ctrlKey && e.key.toLowerCase() === "c") {
+    e.preventDefault();
+    copyGameLogImage();
+  }
+});
 </script>
 </body>
 </html>
