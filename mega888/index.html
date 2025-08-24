@@ -81,25 +81,7 @@
    align-items: center;      
    margin: 10px auto;         
     }
-    button {
-     padding: 5px 10px;
-     font-size: 14px;
-     background: gold;
-     color: black;
-     border: none;
-     border-radius: 6px;
-     cursor: pointer;
-     border: 1px solid black;
-     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-    button:hover {
-     background: #ffe34d;
-     color: black;
-    }
-    button:active {
-     background: #dbb900;
-     color: black;
-    }
+button {padding: 5px 10px;font-size: 14px;background: gold;color: black;border: 1px solid gold;border-radius: 6px;outline: none;appearance: none; -webkit-appearance: none;background-clip: padding-box;cursor: pointer;position: relative;overflow: visible;transition:background .2s cubic-bezier(0.645,0.045,0.355,1),transform  .15s ease,box-shadow .6s ease;}button:hover {background:#ffe34d;}button:active {background:#dbb900;}button.clicked::after{content:"";position:absolute;inset: 0;border-radius: inherit;box-shadow: 0 0 2px 6px rgb(57 52 28);animation: fadeOut .9s ease forwards;pointer-events:none;}@keyframes fadeOut { from {opacity:1} to {opacity:0} }
     select, input {
       padding: 3px 6px;
       font-size: 13px;
@@ -950,6 +932,13 @@ document.addEventListener("keydown", function(e) {
     copyGameLogImage();
   }
 });
+document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      btn.classList.remove("clicked");   // reset animasi
+      void btn.offsetWidth;              // trick restart animasi
+      btn.classList.add("clicked");
+    });
+  });
 </script>
 </body>
 </html>
