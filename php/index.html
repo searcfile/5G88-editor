@@ -60,49 +60,41 @@ button {
   font-size: 14px;
   background: gold;
   color: black;
-  border: none;                 /* <— pastikan nol */
-  outline: none;                /* <— matikan outline default */
   border-radius: 6px;
-  appearance: none;
+  outline: none;                    /* buang outline fokus default */
+  appearance: none;                 /* netralisir style native */
   -webkit-appearance: none;
-  background-clip: padding-box; /* tepi rapi tanpa fringe */
   cursor: pointer;
+  transition: all .2s cubic-bezier(0.645,0.045,0.355,1);
   position: relative;
   overflow: visible;
-  transition:
-    background .2s cubic-bezier(0.645,0.045,0.355,1),
-    transform  .15s ease,
-    box-shadow .6s ease;        /* buat glow memudar halus */
 }
 
-/* Firefox inner border */
-button::-moz-focus-inner { border: 0; }
-
-/* Hover */
 button:hover { background:#ffe34d; }
 
-/* Klik: glow biru langsung dari tombol (tanpa border) */
 button:active {
   background:#dbb900;
   transform: translateY(1px);
-  box-shadow: 0 0 22px 10px rgba(0,123,255,.45);
+  box-shadow:none;
 }
 
-/* Kalau TIDAK mau ada ring keyboard sama sekali, hapus blok ini */
-button:focus,
+/* ring fokus custom (muncul saat keyboard focus saja) */
 button:focus-visible {
-  box-shadow: none;             /* <— hilangkan “garis” ring 2px */
+  box-shadow:
+    0 0 0 2px rgba(0,123,255,.9),
+    0 0 18px 6px rgba(0,123,255,.45);
 }
 
-/* —opsional— kalau mau efek sekali klik + fade (tanpa garis) */
+/* Glow klik sekali lalu memudar */
 button.clicked::after{
   content:"";
   position:absolute; inset:-4px;
   border-radius:6px;
-  box-shadow:0 0 18px 8px rgba(0,123,255,.45);
+  box-shadow:0 0 2px 3px rgba(0,123,255,.7);
   animation:fadeOut 1s ease forwards;
   pointer-events:none;
 }
+
 @keyframes fadeOut { from{opacity:1} to{opacity:0} }
     select, input {
       padding: 3px 6px;
