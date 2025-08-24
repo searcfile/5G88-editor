@@ -60,36 +60,53 @@ button {
   font-size: 14px;
   background: gold;
   color: black;
-  border: none;                 /* no solid border */
   border-radius: 6px;
-  outline: none;                /* no black outline */
-  appearance: none;
+  outline: none;                    /* buang outline fokus default */
+  appearance: none;                 /* netralisir style native */
   -webkit-appearance: none;
+  background-clip: padding-box;     /* jaga warna tepi */
   cursor: pointer;
+  transition: all .2s cubic-bezier(0.645,0.045,0.355,1);
   position: relative;
-  transition:
-    background .2s cubic-bezier(0.645,0.045,0.355,1),
-    transform  .15s ease,
-    box-shadow .6s ease;        /* glow memudar halus */
+  overflow: visible;
 }
 
 button:hover { background:#ffe34d; }
 
 button:active {
   background:#dbb900;
-  transform: translateY(1px);   /* rasa ditekan */
-  /* Glow biru langsung dari tombol */
-  box-shadow:
-    0 0 0 2px rgba(0,123,255,.9),
-    0 0 22px 10px rgba(0,123,255,.45);
+  transform: translateY(1px);
+  box-shadow:none;
 }
 
-/* Opsional: ring fokus keyboard yang halus (bisa dihapus jika tak mau) */
+/* ring fokus custom (muncul saat keyboard focus saja) */
 button:focus-visible {
   box-shadow:
-    0 0 0 2px rgba(0,123,255,.7),
-    0 0 14px 6px rgba(0,123,255,.35);
+    0 0 0 2px rgba(0,123,255,.9),
+    0 0 18px 6px rgba(0,123,255,.45);
 }
+
+/* Glow klik sekali lalu memudar */
+button.clicked::after{
+  content:"";
+  position:absolute; inset:-4px;
+  border-radius:6px;
+  box-shadow:0 0 2px 3px rgba(0,123,255,.7);
+  animation:fadeOut 1s ease forwards;
+  pointer-events:none;
+}
+
+@keyframes fadeOut { from{opacity:1} to{opacity:0} }
+    select, input {
+      padding: 3px 6px;
+      font-size: 13px;
+      margin-left: 10px;
+      border-radius: 5px;
+      background: #141414;
+      border: 1px solid #424242;
+      color: white;
+      transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
     input:hover {
       border: 1px solid #ffe34d;
     }
@@ -259,6 +276,7 @@ button:focus-visible {
 </table>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
+document.addEventListener("contextmenu", e => e.preventDefault());document.onkeydown = function (e) {if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {return false;}};
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let skipAutoLoad = false;
 let hiddenRow = null;
