@@ -60,15 +60,18 @@ button {
   font-size: 14px;
   background: gold;
   color: black;
+  border: 1px solid transparent;  /* hindari garis solid */
   border-radius: 6px;
-  border: 1px solid gold;
-  outline: none;                    /* buang outline fokus default */
-  appearance: none;                 /* netralisir style native */
-  -webkit-appearance: none;
+  outline: none;
+  appearance: none; -webkit-appearance: none;
+  background-clip: padding-box;   /* tepi mulus */
   cursor: pointer;
-  transition: all .2s cubic-bezier(0.645,0.045,0.355,1);
   position: relative;
   overflow: visible;
+  transition:
+    background .2s cubic-bezier(0.645,0.045,0.355,1),
+    transform  .15s ease,
+    box-shadow .6s ease;
 }
 
 button:hover { background:#ffe34d; }
@@ -76,26 +79,27 @@ button:hover { background:#ffe34d; }
 button:active {
   background:#dbb900;
   transform: translateY(1px);
-  box-shadow:none;
+  /* biarkan box-shadow di-transition untuk fade-out */
 }
 
-/* ring fokus custom (muncul saat keyboard focus saja) */
+/* Fokus keyboard: glow tanpa ring 1px/2px (tidak terlihat “padding”) */
+button:focus,
 button:focus-visible {
-  box-shadow: 
-    0 0 20px 8px rgba(0,123,255,.5);
+  box-shadow: 0 0 16px 8px rgba(0,123,255,.45);
 }
 
-/* Glow klik sekali lalu memudar */
+/* Glow klik sekali, RAPAT ke tombol (tanpa jarak) */
 button.clicked::after{
   content:"";
-  position:absolute; inset:-4px;
-  border-radius:6px;
-  box-shadow:0 0 2px 3px rgba(0,123,255,.7);
-  animation:fadeOut 1s ease forwards;
+  position:absolute;
+  inset: 0;                   /* ⬅️ rapat, tidak -4px */
+  border-radius: inherit;     /* samakan radius */
+  box-shadow: 0 0 16px 8px rgba(0,123,255,.45);
+  animation: fadeOut .9s ease forwards;
   pointer-events:none;
 }
 
-@keyframes fadeOut { from{opacity:1} to{opacity:0} }
+@keyframes fadeOut { from {opacity:1} to {opacity:0} }
     select, input {
       padding: 3px 6px;
       font-size: 13px;
