@@ -55,37 +55,36 @@
    align-items: center;      
    margin: 10px auto;         
     }
-    button {
+  button {
   padding: 5px 10px;
   font-size: 14px;
   background: gold;
   color: black;
-  border: none;
+  border: 1px solid black;
   border-radius: 6px;
   cursor: pointer;
-  border: 1px solid black;
-  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-  overflow: hidden; /* biar efek glow stay di dalam */
+  transition: all .2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  position: relative;        /* penting utk ::after */
+  overflow: visible;         /* biar glow tak terpotong */
 }
 
 button:hover {
   background: #ffe34d;
-  color: black;
 }
 
 button:active {
   background: #dbb900;
-  color: black;
-  box-shadow: 0 10px 0 white;
+  transform: translateY(1px); /* rasa dipencet */
+  box-shadow: none;           /* hapus blok putih */
 }
 
-/* Glow effect saat diklik */
+/* Glow klik yang muncul lalu hilang */
 button.clicked::after {
   content: "";
   position: absolute;
-  top: -4px; left: -4px; right: -4px; bottom: -4px;
+  inset: -4px;                /* sama dengan top/left/right/bottom -4px */
   border-radius: 8px;
-  box-shadow: 0 0 20px 8px rgba(0, 123, 255, 0.7);
+  box-shadow: 0 0 20px 8px rgba(0,123,255,.7);
   animation: fadeOut 1s ease forwards;
   pointer-events: none;
 }
