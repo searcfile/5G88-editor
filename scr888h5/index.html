@@ -216,6 +216,30 @@ button.clicked::after{
   height: 20px;
   display: block;
 }
+.cs-wrap{position:relative;display:inline-block;min-width:150px;z-index:20;margin-left:10px}
+.cs-display{
+  height:38px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 10px;background:#141414;color:white;border:1px solid #424242;border-radius:6px;font-size:16px;
+  cursor:pointer;transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);user-select:none
+}
+.cs-display:hover {border: 1px solid #ffe34d;}
+.cs-arrow{margin-left:8px;border:6px solid transparent;border-top-color:white}
+.cs-wrap.open .cs-arrow{transform:rotate(180deg)}
+.cs-list{
+  position:absolute;top:calc(100% + 2px);left:0;right:0;background:#141414;color:white;
+  border:1px solid gold;border-radius:6px;max-height:500px;overflow:auto;cursor:pointer;display:none
+}
+.cs-wrap.open .cs-list{display:block}
+.cs-item{padding:2px 8px;font-size:16px;white-space:nowrap}
+.cs-item:hover,.cs-item.active{background:gold;color:black}
+.cs-wrap.open .cs-display,
+.cs-wrap:focus-within .cs-display{
+  border-color: gold;
+}
+/* scrollbar emas */
+.cs-list::-webkit-scrollbar{width:8px}
+.cs-list::-webkit-scrollbar-thumb{background:gold;border-radius:6px}
+.cs-list::-webkit-scrollbar-track{background:transparent}
   </style>
 </head>
 <body>
@@ -327,7 +351,65 @@ const gameData = {
 { bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],pecahan: {1.00: [30.00, 50.00, 100.00, 130.00],1.25: [50.00, 80.00, 100.00, 150.00],1.75: [80.00, 100.00, 130.00, 180.00],2.50: [100.00, 130.00, 150.00, 200.00],3.00: [130.00, 150.00, 180.00, 220.00],3.75: [150.00, 180.00, 200.00, 240.00],5.00: [180.00, 200.00, 220.00, 260.00],7.50: [200.00, 240.00, 280.00, 320.00],12.50: [350.00, 400.00, 450.00, 500.00],15.00: [500.00, 550.00, 600.00, 650.00],25.00: [650.00, 700.00, 750.00, 800.00]}}
 };
   let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
-  
+  (function initCustomGameSelect(){
+  const native = document.getElementById('gameSelect');
+  if(!native) return;
+
+  // Sembunyikan select asli (tetap dipakai untuk value & event)
+  native.style.position='absolute';
+  native.style.left='-9999px';
+
+  // Bungkus baru
+  const wrap = document.createElement('div');
+  wrap.className = 'cs-wrap';
+  const display = document.createElement('div');
+  display.className = 'cs-display';
+  const label = document.createElement('span');
+  label.textContent = native.options[native.selectedIndex]?.text || '-- Choose --';
+  const arrow = document.createElement('i'); arrow.className='cs-arrow';
+  display.appendChild(label); display.appendChild(arrow);
+
+  const list = document.createElement('div'); list.className='cs-list';
+
+  // Render item dari option native
+  Array.from(native.options).forEach(opt => {
+    const item = document.createElement('div');
+    item.className='cs-item';
+    item.textContent = opt.text;
+    item.dataset.value = opt.value;
+    if(opt.selected) item.classList.add('active');
+    item.addEventListener('click', () => {
+      // Set ke select asli + trigger change (BIAR JS KAMU JALAN)
+      native.value = opt.value;
+      native.dispatchEvent(new Event('change', {bubbles:true}));
+
+      // Update UI custom
+      label.textContent = opt.text || '-- Choose --';
+      list.querySelectorAll('.cs-item').forEach(i=>i.classList.remove('active'));
+      item.classList.add('active');
+      wrap.classList.remove('open');
+    });
+    list.appendChild(item);
+  });
+
+  // Toggle open/close
+  display.addEventListener('click', () => wrap.classList.toggle('open'));
+  document.addEventListener('click', (e)=>{ if(!wrap.contains(e.target)) wrap.classList.remove('open'); });
+
+  // Sisipkan setelah select asli
+  native.parentNode.insertBefore(wrap, native.nextSibling);
+  wrap.appendChild(display);
+  wrap.appendChild(list);
+
+  // Jika ada kode yang mengubah value select via JS, sinkronkan label
+  native.addEventListener('change', () => {
+    const txt = native.options[native.selectedIndex]?.text || '-- Choose --';
+    label.textContent = txt;
+    list.querySelectorAll('.cs-item').forEach(i=>{
+      i.classList.toggle('active', i.dataset.value===native.value);
+    });
+  });
+})();
   document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
