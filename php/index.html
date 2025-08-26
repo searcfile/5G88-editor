@@ -206,7 +206,6 @@ button {padding: 5px 10px;font-size: 14px;background: gold;color: black;border: 
   cursor:pointer;user-select:none
 }
 .cs-display:hover {border: 1px solid #ffe34d;}
-.cs-display:focus {border: 1px solid gold;outline: none;}
 .cs-arrow{margin-left:8px;border:6px solid transparent;border-top-color:white}
 .cs-wrap.open .cs-arrow{transform:rotate(180deg)}
 .cs-list{
@@ -216,7 +215,11 @@ button {padding: 5px 10px;font-size: 14px;background: gold;color: black;border: 
 .cs-wrap.open .cs-list{display:block}
 .cs-item{padding:2px 8px;font-size:16px;white-space:nowrap}
 .cs-item:hover,.cs-item.active{background:gold;color:black}
-
+.cs-wrap.open .cs-display,
+.cs-wrap:focus-within .cs-display{
+  border-color: gold;
+  box-shadow: 0 0 0 1px gold, 0 0 10px rgba(255,215,0,.28);
+}
 /* scrollbar emas */
 .cs-list::-webkit-scrollbar{width:8px}
 .cs-list::-webkit-scrollbar-thumb{background:gold;border-radius:6px}
