@@ -84,14 +84,54 @@
 .cs-list::-webkit-scrollbar-thumb{background:gold;border-radius:6px}
 .cs-list::-webkit-scrollbar-track{background:transparent}
 /* search bar di dalam dropdown custom */
-.cs-search{position:sticky; top:0; background:#141414;padding:6px; border-bottom:1px solid #2a2a2a; z-index:1;}
-.cs-search input{width:100%; height:30px;box-sizing:border-box;border:1px solid #424242; border-radius:6px;background:#0f0f0f; color:#fff;padding:0 8px; font-size:14px; outline:none; transition:border .2s;}
-.cs-search input:hover{border-color:#ffe34d}
-.cs-search input:focus{border-color:gold}
-.cs-items{ max-height:510px; overflow:auto; }
-.cs-items::-webkit-scrollbar{ width:8px }
-.cs-items::-webkit-scrollbar-thumb{ background:gold; border-radius:6px }
-.cs-items::-webkit-scrollbar-track{ background:transparent }
+.cs-search {
+  position: sticky;
+  top: 0;
+  background: #141414;
+  padding: 6px 0; /* ⬅️ Hanya padding atas & bawah (tidak ganggu lebar input) */
+  border-bottom: 1px solid #2a2a2a;
+  z-index: 1;
+}
+
+.cs-search input {
+  width: 100%;
+  box-sizing: border-box; /* ⬅️ Biar 100% benar-benar pas */
+  height: 30px;
+  border: 1px solid #424242;
+  border-radius: 6px;
+  background: #0f0f0f;
+  color: #fff;
+  padding: 0 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.cs-search input:hover {
+  border-color: #ffe34d;
+}
+
+.cs-search input:focus {
+  border-color: gold;
+}
+
+.cs-items {
+  max-height: 510px;
+  overflow: auto;
+}
+
+.cs-items::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cs-items::-webkit-scrollbar-thumb {
+  background: gold;
+  border-radius: 6px;
+}
+
+.cs-items::-webkit-scrollbar-track {
+  background: transparent;
+}
   </style>
 </head>
 <body>
