@@ -1,212 +1,350 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login</title>
-  <link rel="icon" type="image/png" href="https://i.imgur.com/uGijtpF.png" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <style>
-    body {
-    background: url('https://i.imgur.com/UCZqSrT.png') no-repeat center center fixed;
-    background-size: cover;
-    color: #fff;
-    font-family: sans-serif;
-    margin: 0;
+<meta charset="utf-8">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+/>
+<title>5G88 — Login</title>
+<link rel="icon" type="image/png" href="https://i.imgur.com/uGijtpF.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<style>
+  :root{
+    --bg1:#0a1024;
+    --bg2:#0b1330;
+    --card:#0d1536b3;            /* glass */
+    --edge:#1b2a6bcc;            /* edge glow */
+    --neon:#60a5fa;              /* blue neon */
+    --neon-2:#8b5cf6;            /* violet accent */
+    --text:#e6e8ef;
+    --sub:#a9b1c6;
+    --gold:#ffd166;
+    --ok:#22c55e;
+    --err:#ef4444;
+    --ring:rgba(96,165,250,.55);
+    --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
   }
 
-  .login-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    text-align: center;
-    padding: 50px 20px;
-    border: 2px solid gold;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-    width: 450px;
-    min-height: 130px;
-    margin: 300px auto;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* untuk Safari */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--text);
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 700px at -10% -20%, #11307b 0%, transparent 60%),
+      radial-gradient(1200px 800px at 110% 10%, #2a1279 0%, transparent 55%),
+      linear-gradient(160deg, var(--bg1), var(--bg2));
+    position:relative;
+    overflow-x:hidden;
   }
 
-  .login-box:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0 18px rgba(255, 215, 0, 0.9);
+  /* animated aurora lines */
+  .bg-lines::before,
+  .bg-lines::after{
+    content:"";
+    position:fixed; inset:0; pointer-events:none;
+    background:
+      repeating-linear-gradient(120deg, rgba(96,165,250,.08) 0 2px, transparent 2px 6px);
+    mask-image: radial-gradient(70% 50% at 40% 50%, #000 40%, transparent 70%);
+    animation: drift 30s linear infinite;
+  }
+  .bg-lines::after{
+    opacity:.5;
+    background:
+      repeating-linear-gradient(60deg, rgba(139,92,246,.07) 0 2px, transparent 2px 8px);
+    animation-duration: 38s;
+  }
+  @keyframes drift{
+    from{transform: translateX(-8%) translateY(-4%)}
+    to{transform: translateX(8%) translateY(4%)}
   }
 
-  .login-box img {
-    max-width: 380px;
-    margin-bottom: 25px;
-    margin-top: -20px;
+  /* center wrapper */
+  .wrap{
+    min-height:100dvh;
+    display:grid; place-items:center;
+    padding:24px;
   }
 
-  .login-btn {
-    background: #FFD700;
-    color: #000;
-    border: 2px solid gold;
-    padding: 10px 20px;
-    font-size: 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    display: block;
-    margin: 0 auto;
+  .card{
+    width:min(92vw, 470px);
+    border-radius:20px;
+    background:linear-gradient(180deg, var(--card), rgba(13,21,54,.72));
+    border:1px solid rgba(96,165,250,.25);
+    box-shadow: var(--shadow), 0 0 0 4px rgba(96,165,250,.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position:relative;
+    overflow:hidden;
   }
 
-  .login-btn:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
-    font-weight: bold;
-    color: white;
-    border: 2px solid white;
+  .card::before{
+    /* elegant edge glow */
+    content:"";
+    position:absolute; inset:-1px;
+    border-radius:20px;
+    padding:1px;
+    background: conic-gradient(from 210deg at 50% 50%,
+      rgba(96,165,250,.0),
+      rgba(96,165,250,.35),
+      rgba(139,92,246,.32),
+      rgba(96,165,250,.0) 70%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events:none;
   }
-    @keyframes zoomIn {
-      from {
-        transform: scale(0.7);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-    .zoom-in {
-  animation: zoomIn 0.3s ease forwards;
-}
-    .popup-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
 
-    /* Popup box */
-    .popup-box {
-      border: 2px solid gold;
-      border-radius: 12px;
-      padding: 40px 20px 30px;
-      text-align: center;
-      position: relative;
-      width: 550px;
-      min-height: 650px;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-      transition: transform 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
+  .card-head{
+    padding:28px 26px 10px;
+    display:flex; align-items:center; gap:14px; justify-content:center;
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+  }
+  .brand img{
+    width:min(320px, 78%);
+    max-width:360px;
+    height:auto; display:block;
+    filter: drop-shadow(0 6px 18px rgba(96,165,250,.35));
+  }
 
-  
-    .popup-box img {
-      max-width: 350px;
-      margin-bottom: 20px;
-    }
+  .card-body{
+    padding:6px 26px 26px;
+  }
 
-    .popup-btn {
-  background: transparent;
-  border: 2px solid gold;
-  color: gold;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 10px auto 0; /* auto kiri kanan supaya center, margin top 10px */
-  display: inline-block;
-  transition: transform 0.3s ease, background 0.3s ease;
-}
+  .hint{
+    color:var(--sub); font-size:13px; text-align:center; margin:8px 0 14px;
+  }
 
-    .popup-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  border: none;
-  color: gold;
-  font-size: 18px;
-  cursor: pointer;
-  transition: transform 0.3s ease, background 0.3s ease;
-      background: #111;
-      border: 2px solid gold;
-      border-radius: 5px;
-}
-    .popup-close:hover {
-  transform: scale(1.1);
-  color: gold;
-  font-weight: bold;
-}
-   .popup-btn:hover {
-  transform: scale(1.05);
-  background: gold;
-  color: black;
-}
-    /* Close X at top right */
-    .popup-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-    .popup-title {
-  font-size: 30px;
-  font-weight: bold;
-  margin-top: 20px;
-  color: gold;
-}
-    
-  </style>
+  /* button base */
+  .btn{
+    -webkit-tap-highlight-color: transparent;
+    user-select:none;
+    appearance:none;
+    border:0; outline:0; cursor:pointer;
+    height:48px; border-radius:12px;
+    font-weight:700; font-size:16px; line-height:1;
+    width:100%; display:inline-flex; align-items:center; justify-content:center;
+    gap:12px; position:relative; overflow:hidden;
+    transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+    box-shadow: 0 8px 20px rgba(96,165,250,.22);
+  }
+  .btn:active{ transform: translateY(1px) scale(.995); }
+
+  .btn-primary{
+    color:#0b1220;
+    background: linear-gradient(180deg, #93c5fd, #60a5fa);
+    border:1px solid rgba(96,165,250,.65);
+  }
+  .btn-primary:hover{ filter:brightness(1.05) saturate(1.02) }
+  .btn-primary:focus-visible{
+    box-shadow: 0 0 0 4px var(--ring);
+  }
+
+  .btn .ico{
+    width:22px; height:22px; display:inline-block;
+  }
+
+  /* ripple */
+  .btn .ripple{
+    position:absolute; border-radius:100%;
+    transform:scale(0); opacity:.35; pointer-events:none;
+    background:#fff; width:8px; height:8px;
+    animation: ripple .6s ease-out;
+  }
+  @keyframes ripple{
+    to{ transform:scale(28); opacity:0; }
+  }
+
+  /* spinner */
+  .spinner{
+    width:18px; height:18px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.6);
+    border-top-color: transparent;
+    animation: spin .9s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg) } }
+
+  .meta{
+    margin-top:16px; font-size:12px; color:#9fb0d8; text-align:center;
+  }
+
+  /* welcome popup */
+  .popup-overlay{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background: rgba(3,8,23,.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 50;
+  }
+  .popup-box{
+    width:min(92vw, 560px);
+    min-height: 520px;
+    background: linear-gradient(180deg, rgba(14,22,56,.92), rgba(14,22,56,.8));
+    border:1px solid rgba(96,165,250,.35);
+    border-radius:18px;
+    padding:28px 22px 24px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    box-shadow: var(--shadow);
+    position:relative; overflow:hidden;
+  }
+  .popup-box::before{
+    content:"";
+    position:absolute; inset:-1px; border-radius:18px; padding:1px;
+    background: conic-gradient(from 210deg at 50% 50%,
+      rgba(96,165,250,.0),
+      rgba(96,165,250,.35),
+      rgba(139,92,246,.28),
+      rgba(96,165,250,.0) 70%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+  .popup-title{
+    font-size:28px; font-weight:800; letter-spacing:.2px;
+    background: linear-gradient(90deg, #93c5fd, #c084fc);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align:center; margin:0 0 6px;
+  }
+  .popup-logo{
+    width:min(360px, 72vw); height:auto;
+    filter: drop-shadow(0 8px 24px rgba(96,165,250,.4));
+  }
+  .popup-actions{ display:flex; gap:10px; margin-top:6px; }
+  .popup-btn{
+    height:42px; padding:0 16px; border-radius:10px;
+    background: transparent; color:#c7d2fe;
+    border:1px solid rgba(96,165,250,.55);
+    cursor:pointer; font-weight:700;
+    transition: background .15s ease, transform .12s ease;
+  }
+  .popup-btn:hover{ background: rgba(96,165,250,.12) }
+  .popup-close{
+    position:absolute; top:10px; right:10px;
+    height:36px; padding:0 12px; border-radius:10px;
+    border:1px solid rgba(96,165,250,.45); background: rgba(13,21,54,.6);
+    color:#c7d2fe; font-weight:700; cursor:pointer;
+  }
+
+  /* enter animation */
+  @keyframes zoomIn{
+    from{ transform: scale(.9); opacity:0 }
+    to{ transform: scale(1); opacity:1 }
+  }
+  .zoom-in{ animation: zoomIn .28s ease forwards }
+
+  /* footer */
+  .foot{
+    margin-top:18px; padding:0 10px 24px; text-align:center; color:#7f8bb3; font-size:12px;
+  }
+
+  /* accessibility helpers */
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0 }
+
+  /* small screens */
+  @media (max-width:420px){
+    .card{ border-radius:16px }
+    .card-head{ padding:22px 18px 6px }
+    .card-body{ padding:6px 18px 20px }
+  }
+</style>
 </head>
 <body>
-  
-  <div class="popup-overlay" id="popup">
-  <div class="popup-box" id="popupBox">
-    <button class="popup-close" onclick="closePopup()">X</button>
-    <p class="popup-title">Welcome to 5G88!</p>
-    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" class="popup-logo">
-    <button class="popup-btn" onclick="closePopup()">OK</button>
-  </div>
-</div>
+  <div class="bg-lines" aria-hidden="true"></div>
 
-  <div class="login-box">
-    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo">
-    <button class="login-btn" id="googleLoginBtn">Login with Google</button>
+  <!-- Welcome Popup -->
+  <div class="popup-overlay" id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+    <div class="popup-box zoom-in" id="popupBox">
+      <button class="popup-close" onclick="closePopup()" aria-label="Close welcome">×</button>
+      <h2 class="popup-title" id="popupTitle">Welcome to 5G88</h2>
+      <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" class="popup-logo">
+      <div class="popup-actions">
+        <button class="popup-btn" onclick="closePopup()">
+          OK
+        </button>
+      </div>
+    </div>
   </div>
-</body>
+
+  <!-- Main Card -->
+  <main class="wrap" role="main">
+    <section class="card" aria-label="Login card">
+      <header class="card-head">
+        <div class="brand" aria-label="5G88">
+          <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88">
+        </div>
+      </header>
+
+      <div class="card-body">
+        <p class="hint">Sign in with Google to continue</p>
+
+        <button class="btn btn-primary" id="googleLoginBtn" aria-label="Login with Google">
+          <svg class="ico" viewBox="0 0 533.5 544.3" aria-hidden="true">
+            <path d="M533.5 278.4c0-18.5-1.7-36.4-4.9-53.6H272v101.4h147c-6.3 34-25 62.8-53.3 82v68.1h86.1c50.5-46.6 81.7-115.3 81.7-198z" fill="#4285f4"/>
+            <path d="M272 544.3c71.4 0 131.4-23.6 175.2-64.1l-86.1-68.1c-23.9 16.1-54.5 25.7-89.1 25.7-68.5 0-126.4-46.2-147.2-108.2H36.7v67.8C79.9 490.7 169.6 544.3 272 544.3z" fill="#34a853"/>
+            <path d="M124.8 329.6c-10.2-30.6-10.2-63.7 0-94.3V167.4H36.7c-37.7 75.5-37.7 165.9 0 241.4l88.1-79.2z" fill="#fbbc05"/>
+            <path d="M272 106.1c38.9-.6 76.2 13.7 105 40.2l78.3-78.3C402.9 24.3 340.2-.2 272 0 169.6 0 79.9 53.6 36.7 135.5l88.1 67.8C145.6 152.3 203.5 106.1 272 106.1z" fill="#ea4335"/>
+          </svg>
+          <span class="btn-text">Login with Google</span>
+        </button>
+
+        <div class="meta">Your access is protected. Unauthorized users will be blocked.</div>
+      </div>
+
+      <div class="foot">© <span id="year"></span> 5G88 — All rights reserved</div>
+    </section>
+  </main>
 
 <script>
+  // Optional deterrents (tidak benar-benar mencegah, hanya mempersulit)
   document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key.toUpperCase()))) {
+      e.preventDefault();
     }
-  };
+  });
 
-  function closePopup() {
-    document.getElementById("popup").style.display = "none";
+  // Popup controls
+  function closePopup(){
+    const p = document.getElementById('popup');
+    if (p) p.style.display = 'none';
   }
-
-  window.addEventListener("click", function(e) {
-    const popup = document.getElementById("popup");
-    const box = document.getElementById("popupBox");
-    if (e.target === popup) {
-      popup.style.display = "none";
-    }
+  window.addEventListener('click', (e) => {
+    const overlay = document.getElementById('popup');
+    const box = document.getElementById('popupBox');
+    if (e.target === overlay) closePopup();
   });
 
-  window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("popupBox").classList.add("zoom-in");
+  // Ripple effect for buttons
+  function addRipple(e){
+    const btn = e.currentTarget;
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    const rect = btn.getBoundingClientRect();
+    r.style.left = (e.clientX - rect.left) + 'px';
+    r.style.top  = (e.clientY - rect.top)  + 'px';
+    btn.appendChild(r);
+    setTimeout(()=> r.remove(), 600);
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.querySelectorAll('.btn').forEach(b=>{
+      b.addEventListener('click', addRipple, {passive:true});
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
   });
 
+  // ===== Firebase Config (gunakan punyamu) =====
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
     authDomain: "logins-d615f.firebaseapp.com",
@@ -217,88 +355,113 @@
     appId: "1:580872784703:web:07957551c3214f3d32618a"
   };
 
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
-  const db = firebase.database();
+  const db   = firebase.database();
 
-  function formatTimestamp(date) {
+  // Helpers
+  function sanitizeEmail(email){
+    return String(email || '').toLowerCase().replace(/[.#$[\]/]/g, "_");
+  }
+  function formatTimestamp(date){
     const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    const hh = String(date.getHours()).padStart(2, '0');
-    const mm = String(date.getMinutes()).padStart(2, '0');
-    const ss = String(date.getSeconds()).padStart(2, '0');
-    return `${y} - ${m} - ${d} ${hh}:${mm}:${ss}`;
+    const m = String(date.getMonth()+1).padStart(2,'0');
+    const d = String(date.getDate()).padStart(2,'0');
+    const hh = String(date.getHours()).padStart(2,'0');
+    const mm = String(date.getMinutes()).padStart(2,'0');
+    const ss = String(date.getSeconds()).padStart(2,'0');
+    return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
   }
 
-  function signInWithGoogle() {
-    const loginBtn = document.getElementById("googleLoginBtn");
-    loginBtn.disabled = true;
-    loginBtn.innerText = "Logging in...";
+  // UI State for login button
+  function setLoginBusy(isBusy){
+    const btn = document.getElementById('googleLoginBtn');
+    if(!btn) return;
+    const text = btn.querySelector('.btn-text');
+    if(isBusy){
+      btn.disabled = true;
+      text.textContent = 'Logging in...';
+      // swap icon to spinner
+      const ico = btn.querySelector('.ico');
+      if(ico) ico.replaceWith(spinnerNode());
+    }else{
+      btn.disabled = false;
+      text.textContent = 'Login with Google';
+      const sp = btn.querySelector('.spinner');
+      if(sp) sp.replaceWith(googleIconNode());
+    }
+  }
+  function spinnerNode(){
+    const s = document.createElement('span');
+    s.className = 'spinner';
+    s.setAttribute('aria-hidden','true');
+    return s;
+  }
+  function googleIconNode(){
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('class','ico');
+    svg.setAttribute('viewBox','0 0 533.5 544.3');
+    svg.innerHTML = `
+      <path d="M533.5 278.4c0-18.5-1.7-36.4-4.9-53.6H272v101.4h147c-6.3 34-25 62.8-53.3 82v68.1h86.1c50.5-46.6 81.7-115.3 81.7-198z" fill="#4285f4"/>
+      <path d="M272 544.3c71.4 0 131.4-23.6 175.2-64.1l-86.1-68.1c-23.9 16.1-54.5 25.7-89.1 25.7-68.5 0-126.4-46.2-147.2-108.2H36.7v67.8C79.9 490.7 169.6 544.3 272 544.3z" fill="#34a853"/>
+      <path d="M124.8 329.6c-10.2-30.6-10.2-63.7 0-94.3V167.4H36.7c-37.7 75.5-37.7 165.9 0 241.4l88.1-79.2z" fill="#fbbc05"/>
+      <path d="M272 106.1c38.9-.6 76.2 13.7 105 40.2l78.3-78.3C402.9 24.3 340.2-.2 272 0 169.6 0 79.9 53.6 36.7 135.5l88.1 67.8C145.6 152.3 203.5 106.1 272 106.1z" fill="#ea4335"/>
+    `;
+    return svg;
+  }
 
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-      .then(result => {
-        const user = result.user;
-        if (!user) {
-          alert("Login gagal: User tidak ditemukan.");
-          loginBtn.disabled = false;
-          loginBtn.innerText = "Login with Google";
-          return;
-        }
+  async function signInWithGoogle(){
+    setLoginBusy(true);
+    try{
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const result = await auth.signInWithPopup(provider);
+      const user = result.user;
+      if(!user) throw new Error('User not found');
 
-        const emailKey = user.email.replace(/\./g, "_");
+      const emailKey = sanitizeEmail(user.email);
 
-        db.ref("logins/blocked_users/" + emailKey).once("value").then(snapshot => {
-          const isBlocked = snapshot.val();
-          if (isBlocked === true) {
-            alert("⚠️ Access denied: Please contact us 5G88!.");
-            auth.signOut();
-            loginBtn.disabled = false;
-            loginBtn.innerText = "Login with Google";
-            return;
-          }
+      const blockedSnap = await db.ref(`logins/blocked_users/${emailKey}`).get();
+      const isBlocked = blockedSnap.val() === true;
 
-          // ✅ Jika tidak diblokir, lanjut simpan login
-          db.ref("logins/" + emailKey).set({
-            name: user.displayName,
-            email: user.email,
-            loginAt: formatTimestamp(new Date())
-          })
-          .then(() => {
-            localStorage.setItem("gmailLogin", JSON.stringify({
-              name: user.displayName,
-              email: user.email,
-              photo: user.photoURL
-            }));
-            const name = encodeURIComponent(user.displayName);
-            const email = encodeURIComponent(user.email);
-            const photoURL = encodeURIComponent(user.photoURL || "");
-            window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photoURL}`;
-          })
-          .catch(err => {
-            console.error("❌ Gagal simpan ke Firebase:", err);
-            alert("Gagal simpan data login. Coba lagi.");
-            loginBtn.disabled = false;
-            loginBtn.innerText = "Login with Google";
-          });
-        });
-      })
-      .catch(error => {
-        console.error("❌ Login gagal:", error);
-        alert("Login gagal. Coba lagi.");
-        loginBtn.disabled = false;
-        loginBtn.innerText = "Login with Google";
+      if(isBlocked){
+        alert("⚠️ Access denied: Please contact 5G88.");
+        await auth.signOut();
+        setLoginBusy(false);
+        return;
+      }
+
+      await db.ref(`logins/${emailKey}`).set({
+        name: user.displayName || "",
+        email: user.email || "",
+        loginAt: formatTimestamp(new Date())
       });
+
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name: user.displayName || "",
+        email: user.email || "",
+        photo: user.photoURL || ""
+      }));
+
+      const name  = encodeURIComponent(user.displayName || "");
+      const email = encodeURIComponent(user.email || "");
+      const photo = encodeURIComponent(user.photoURL || "");
+      window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photo}`;
+    }catch(err){
+      console.error("❌ Login failed:", err);
+      const msg =
+        (err && err.code === 'auth/popup-blocked') ? "Popup diblokir browser. Izinkan popup untuk melanjutkan." :
+        (err && err.code === 'auth/unauthorized-domain') ? "Domain ini belum diizinkan di Firebase Auth." :
+        "Login gagal. Silakan coba lagi.";
+      alert(msg);
+    }finally{
+      setLoginBusy(false);
+    }
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const loginBtn = document.getElementById("googleLoginBtn");
-    if (loginBtn) {
-      loginBtn.addEventListener("click", signInWithGoogle);
+    const btn = document.getElementById("googleLoginBtn");
+    if(btn){
+      btn.addEventListener("click", signInWithGoogle);
     }
   });
 </script>
