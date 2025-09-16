@@ -18,19 +18,17 @@
 
 <style>
   :root{
-    --bg1:#0a1024;
-    --bg2:#0b1330;
-    --card:#0d1536b3;            /* glass */
-    --edge:#1b2a6bcc;            /* edge glow */
-    --neon:#60a5fa;              /* blue neon */
-    --neon-2:#8b5cf6;            /* violet accent */
-    --text:#e6e8ef;
-    --sub:#a9b1c6;
-    --gold:#ffd166;
-    --ok:#22c55e;
-    --err:#ef4444;
-    --ring:rgba(96,165,250,.55);
-    --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
+    --bg1:#080a10;                 /* dark base */
+    --bg2:#0b0e17;                 /* deeper */
+    --card:#0f1422cc;              /* glass card */
+    --edge:rgba(255,215,0,.25);    /* gold edge */
+    --gold:#ffd36a;                /* main gold */
+    --gold-2:#ffbf40;              /* warm gold */
+    --gold-3:#ffea9e;              /* light gold */
+    --text:#ececec;
+    --sub:#a9a9b2;
+    --ring:rgba(255,215,0,.45);
+    --shadow:0 10px 40px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
   }
 
   *{box-sizing:border-box}
@@ -39,121 +37,87 @@
     margin:0; color:var(--text);
     font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
     background:
-      radial-gradient(1200px 700px at -10% -20%, #11307b 0%, transparent 60%),
-      radial-gradient(1200px 800px at 110% 10%, #2a1279 0%, transparent 55%),
+      radial-gradient(1200px 700px at -10% -20%, rgba(255,185,0,.12) 0%, transparent 60%),
+      radial-gradient(1200px 800px at 110% 10%, rgba(255,215,0,.10) 0%, transparent 55%),
       linear-gradient(160deg, var(--bg1), var(--bg2));
-    position:relative;
-    overflow-x:hidden;
+    position:relative; overflow-x:hidden;
   }
 
-  /* animated aurora lines */
-  .bg-lines::before,
-  .bg-lines::after{
-    content:"";
-    position:fixed; inset:0; pointer-events:none;
+  /* subtle diagonal texture */
+  .bg-lines::before{
+    content:""; position:fixed; inset:0; pointer-events:none;
     background:
-      repeating-linear-gradient(120deg, rgba(96,165,250,.08) 0 2px, transparent 2px 6px);
-    mask-image: radial-gradient(70% 50% at 40% 50%, #000 40%, transparent 70%);
-    animation: drift 30s linear infinite;
+      repeating-linear-gradient(135deg, rgba(255,215,0,.05) 0 2px, transparent 2px 8px);
+    mask-image: radial-gradient(80% 60% at 50% 50%, #000 55%, transparent 80%);
+    animation: drift 36s linear infinite;
   }
-  .bg-lines::after{
-    opacity:.5;
-    background:
-      repeating-linear-gradient(60deg, rgba(139,92,246,.07) 0 2px, transparent 2px 8px);
-    animation-duration: 38s;
-  }
-  @keyframes drift{
-    from{transform: translateX(-8%) translateY(-4%)}
-    to{transform: translateX(8%) translateY(4%)}
-  }
+  @keyframes drift{ from{transform:translateX(-4%)} to{transform:translateX(4%)} }
 
   /* center wrapper */
-  .wrap{
-    min-height:100dvh;
-    display:grid; place-items:center;
-    padding:24px;
-  }
+  .wrap{ min-height:100dvh; display:grid; place-items:center; padding:24px }
 
   .card{
-    width:min(92vw, 470px);
-    border-radius:20px;
-    background:linear-gradient(180deg, var(--card), rgba(13,21,54,.72));
-    border:1px solid rgba(96,165,250,.25);
-    box-shadow: var(--shadow), 0 0 0 4px rgba(96,165,250,.08);
+    width:min(92vw, 520px);
+    border-radius:22px;
+    background:linear-gradient(180deg, var(--card), rgba(15,20,34,.78));
+    border:1px solid var(--edge);
+    box-shadow: var(--shadow), 0 0 0 4px rgba(255,215,0,.08);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    position:relative;
-    overflow:hidden;
+    position:relative; overflow:hidden;
   }
-
   .card::before{
-    /* elegant edge glow */
-    content:"";
-    position:absolute; inset:-1px;
-    border-radius:20px;
-    padding:1px;
+    /* elegant gold edge glow */
+    content:""; position:absolute; inset:-1px; border-radius:22px; padding:1px;
     background: conic-gradient(from 210deg at 50% 50%,
-      rgba(96,165,250,.0),
-      rgba(96,165,250,.35),
-      rgba(139,92,246,.32),
-      rgba(96,165,250,.0) 70%);
+      rgba(255,215,0,.0),
+      rgba(255,215,0,.35),
+      rgba(255,185,0,.28),
+      rgba(255,215,0,.0) 70%);
     -webkit-mask:
       linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude;
+    -webkit-mask-composite: xor; mask-composite: exclude;
     pointer-events:none;
   }
 
-  .card-head{
-    padding:28px 26px 10px;
-    display:flex; align-items:center; gap:14px; justify-content:center;
-  }
+  .card-head{ padding:28px 26px 4px; display:flex; justify-content:center }
   .brand{
-    display:flex; align-items:center; gap:12px;
+    width:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
   }
   .brand img{
-    width:min(320px, 78%);
-    max-width:360px;
-    height:auto; display:block;
-    filter: drop-shadow(0 6px 18px rgba(96,165,250,.35));
+    width:min(360px, 80%); max-width:360px; height:auto;
+    display:block; margin:0 auto;               /* <-- center */
+    filter: drop-shadow(0 10px 24px rgba(255,215,0,.25));
   }
 
-  .card-body{
-    padding:6px 26px 26px;
-  }
-
-  .hint{
-    color:var(--sub); font-size:13px; text-align:center; margin:8px 0 14px;
-  }
+  .card-body{ padding:10px 26px 24px }
+  .hint{ color:var(--sub); font-size:13px; text-align:center; margin:8px 0 16px }
 
   /* button base */
   .btn{
     -webkit-tap-highlight-color: transparent;
-    user-select:none;
-    appearance:none;
-    border:0; outline:0; cursor:pointer;
-    height:48px; border-radius:12px;
-    font-weight:700; font-size:16px; line-height:1;
+    user-select:none; appearance:none; border:0; outline:0; cursor:pointer;
+    height:50px; border-radius:14px;
+    font-weight:800; font-size:16px; letter-spacing:.2px;
     width:100%; display:inline-flex; align-items:center; justify-content:center;
     gap:12px; position:relative; overflow:hidden;
     transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
-    box-shadow: 0 8px 20px rgba(96,165,250,.22);
+    box-shadow: 0 10px 24px rgba(255,185,0,.20);
   }
-  .btn:active{ transform: translateY(1px) scale(.995); }
+  .btn:active{ transform: translateY(1px) scale(.995) }
 
+  /* gold primary button */
   .btn-primary{
-    color:#0b1220;
-    background: linear-gradient(180deg, #93c5fd, #60a5fa);
-    border:1px solid rgba(96,165,250,.65);
+    color:#2c2100;
+    background: linear-gradient(180deg, var(--gold-3), var(--gold));
+    border:1px solid rgba(255,185,0,.7);
   }
   .btn-primary:hover{ filter:brightness(1.05) saturate(1.02) }
-  .btn-primary:focus-visible{
-    box-shadow: 0 0 0 4px var(--ring);
-  }
+  .btn-primary:focus-visible{ box-shadow: 0 0 0 4px var(--ring) }
 
-  .btn .ico{
-    width:22px; height:22px; display:inline-block;
-  }
+  .btn .ico{ width:22px; height:22px; display:inline-block }
 
   /* ripple */
   .btn .ripple{
@@ -162,101 +126,90 @@
     background:#fff; width:8px; height:8px;
     animation: ripple .6s ease-out;
   }
-  @keyframes ripple{
-    to{ transform:scale(28); opacity:0; }
-  }
+  @keyframes ripple{ to{ transform:scale(28); opacity:0 } }
 
   /* spinner */
   .spinner{
     width:18px; height:18px; border-radius:50%;
-    border:2px solid rgba(255,255,255,.6);
-    border-top-color: transparent;
+    border:2px solid rgba(0,0,0,.35); border-top-color: transparent;
     animation: spin .9s linear infinite;
   }
   @keyframes spin{ to{ transform: rotate(360deg) } }
 
-  .meta{
-    margin-top:16px; font-size:12px; color:#9fb0d8; text-align:center;
+  .meta{ margin-top:16px; font-size:12px; color:#c9b67a; text-align:center }
+
+  /* footer */
+  .foot{
+    margin-top:14px; padding:0 10px 24px; text-align:center; color:#a79662; font-size:12px;
   }
 
-  /* welcome popup */
+  /* popup */
   .popup-overlay{
     position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-    background: rgba(3,8,23,.65);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 50;
+    background: rgba(10,8,2,.60);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    z-index: 50;                   /* over everything */
   }
   .popup-box{
     width:min(92vw, 560px);
     min-height: 520px;
-    background: linear-gradient(180deg, rgba(14,22,56,.92), rgba(14,22,56,.8));
-    border:1px solid rgba(96,165,250,.35);
+    background: linear-gradient(180deg, rgba(24,20,8,.92), rgba(22,18,6,.85));
+    border:1px solid rgba(255,215,0,.35);
     border-radius:18px;
     padding:28px 22px 24px;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
     box-shadow: var(--shadow);
     position:relative; overflow:hidden;
+    animation: zoomIn .28s ease forwards;
   }
   .popup-box::before{
-    content:"";
-    position:absolute; inset:-1px; border-radius:18px; padding:1px;
+    content:""; position:absolute; inset:-1px; border-radius:18px; padding:1px;
     background: conic-gradient(from 210deg at 50% 50%,
-      rgba(96,165,250,.0),
-      rgba(96,165,250,.35),
-      rgba(139,92,246,.28),
-      rgba(96,165,250,.0) 70%);
+      rgba(255,215,0,.0),
+      rgba(255,215,0,.35),
+      rgba(255,185,0,.28),
+      rgba(255,215,0,.0) 70%);
     -webkit-mask:
       linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events:none;           /* make sure not blocking clicks */
   }
   .popup-title{
-    font-size:28px; font-weight:800; letter-spacing:.2px;
-    background: linear-gradient(90deg, #93c5fd, #c084fc);
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size:28px; font-weight:800;
+    background: linear-gradient(90deg, var(--gold-3), var(--gold));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     text-align:center; margin:0 0 6px;
   }
   .popup-logo{
-    width:min(360px, 72vw); height:auto;
-    filter: drop-shadow(0 8px 24px rgba(96,165,250,.4));
+    width:min(380px, 72vw); height:auto;
+    filter: drop-shadow(0 8px 28px rgba(255,215,0,.40));
+    display:block; margin: 8px auto 0;
   }
-  .popup-actions{ display:flex; gap:10px; margin-top:6px; }
+  .popup-actions{ display:flex; gap:10px; margin-top:14px; pointer-events:auto }
   .popup-btn{
-    height:42px; padding:0 16px; border-radius:10px;
-    background: transparent; color:#c7d2fe;
-    border:1px solid rgba(96,165,250,.55);
-    cursor:pointer; font-weight:700;
-    transition: background .15s ease, transform .12s ease;
+    height:42px; padding:0 18px; border-radius:12px;
+    background: linear-gradient(180deg, var(--gold-3), var(--gold));
+    border:1px solid rgba(255,185,0,.7);
+    color:#2c2100; font-weight:800; cursor:pointer;
+    transition: background .15s ease, transform .12s ease, filter .2s ease;
+    box-shadow: 0 10px 18px rgba(255,185,0,.20);
   }
-  .popup-btn:hover{ background: rgba(96,165,250,.12) }
+  .popup-btn:hover{ filter:brightness(1.05) }
   .popup-close{
     position:absolute; top:10px; right:10px;
     height:36px; padding:0 12px; border-radius:10px;
-    border:1px solid rgba(96,165,250,.45); background: rgba(13,21,54,.6);
-    color:#c7d2fe; font-weight:700; cursor:pointer;
+    border:1px solid rgba(255,215,0,.45); background: rgba(24,20,8,.65);
+    color:#ffe9a8; font-weight:800; cursor:pointer; z-index:2;
   }
+  @keyframes zoomIn{ from{ transform: scale(.9); opacity:0 } to{ transform: scale(1); opacity:1 } }
 
-  /* enter animation */
-  @keyframes zoomIn{
-    from{ transform: scale(.9); opacity:0 }
-    to{ transform: scale(1); opacity:1 }
-  }
-  .zoom-in{ animation: zoomIn .28s ease forwards }
-
-  /* footer */
-  .foot{
-    margin-top:18px; padding:0 10px 24px; text-align:center; color:#7f8bb3; font-size:12px;
-  }
-
-  /* accessibility helpers */
+  /* accessibility helper */
   .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0 }
 
-  /* small screens */
   @media (max-width:420px){
-    .card{ border-radius:16px }
-    .card-head{ padding:22px 18px 6px }
-    .card-body{ padding:6px 18px 20px }
+    .card{ border-radius:18px }
+    .card-head{ padding:22px 18px 0 }
+    .card-body{ padding:10px 18px 18px }
   }
 </style>
 </head>
@@ -265,14 +218,12 @@
 
   <!-- Welcome Popup -->
   <div class="popup-overlay" id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
-    <div class="popup-box zoom-in" id="popupBox">
+    <div class="popup-box" id="popupBox">
       <button class="popup-close" onclick="closePopup()" aria-label="Close welcome">×</button>
       <h2 class="popup-title" id="popupTitle">Welcome to 5G88</h2>
       <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" class="popup-logo">
       <div class="popup-actions">
-        <button class="popup-btn" onclick="closePopup()">
-          OK
-        </button>
+        <button class="popup-btn" onclick="closePopup()">OK</button>
       </div>
     </div>
   </div>
@@ -281,8 +232,9 @@
   <main class="wrap" role="main">
     <section class="card" aria-label="Login card">
       <header class="card-head">
-        <div class="brand" aria-label="5G88">
-          <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88">
+        <div class="brand">
+          <!-- CENTERED LOGO -->
+          <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 x EVO VIP">
         </div>
       </header>
 
@@ -307,7 +259,7 @@
   </main>
 
 <script>
-  // Optional deterrents (tidak benar-benar mencegah, hanya mempersulit)
+  // (Optional) kecilkan peluang inspect — hanya deterrent
   document.addEventListener("contextmenu", e => e.preventDefault());
   document.addEventListener("keydown", (e) => {
     if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key.toUpperCase()))) {
@@ -315,18 +267,19 @@
     }
   });
 
-  // Popup controls
+  // Popup controls (pastikan OK bisa di-klik)
   function closePopup(){
     const p = document.getElementById('popup');
     if (p) p.style.display = 'none';
   }
+  // klik overlay untuk tutup
   window.addEventListener('click', (e) => {
     const overlay = document.getElementById('popup');
     const box = document.getElementById('popupBox');
     if (e.target === overlay) closePopup();
   });
 
-  // Ripple effect for buttons
+  // Ripple effect
   function addRipple(e){
     const btn = e.currentTarget;
     const r = document.createElement('span');
@@ -338,13 +291,13 @@
     setTimeout(()=> r.remove(), 600);
   }
   document.addEventListener('DOMContentLoaded', ()=>{
-    document.querySelectorAll('.btn').forEach(b=>{
+    document.querySelectorAll('.btn, .popup-btn').forEach(b=>{
       b.addEventListener('click', addRipple, {passive:true});
     });
     document.getElementById('year').textContent = new Date().getFullYear();
   });
 
-  // ===== Firebase Config (gunakan punyamu) =====
+  // ===== Firebase Config (punyamu) =====
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
     authDomain: "logins-d615f.firebaseapp.com",
@@ -360,9 +313,9 @@
   const db   = firebase.database();
 
   // Helpers
-  function sanitizeEmail(email){
-    return String(email || '').toLowerCase().replace(/[.#$[\]/]/g, "_");
-  }
+  const sanitizeEmail = (email) =>
+    String(email || '').toLowerCase().replace(/[.#$[\]/]/g, "_");
+
   function formatTimestamp(date){
     const y = date.getFullYear();
     const m = String(date.getMonth()+1).padStart(2,'0');
@@ -373,7 +326,7 @@
     return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
   }
 
-  // UI State for login button
+  // Swap icon <-> spinner
   function setLoginBusy(isBusy){
     const btn = document.getElementById('googleLoginBtn');
     if(!btn) return;
@@ -381,7 +334,6 @@
     if(isBusy){
       btn.disabled = true;
       text.textContent = 'Logging in...';
-      // swap icon to spinner
       const ico = btn.querySelector('.ico');
       if(ico) ico.replaceWith(spinnerNode());
     }else{
@@ -419,14 +371,10 @@
       if(!user) throw new Error('User not found');
 
       const emailKey = sanitizeEmail(user.email);
-
       const blockedSnap = await db.ref(`logins/blocked_users/${emailKey}`).get();
-      const isBlocked = blockedSnap.val() === true;
-
-      if(isBlocked){
+      if (blockedSnap.val() === true){
         alert("⚠️ Access denied: Please contact 5G88.");
         await auth.signOut();
-        setLoginBusy(false);
         return;
       }
 
@@ -459,10 +407,9 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('year').textContent = new Date().getFullYear();
     const btn = document.getElementById("googleLoginBtn");
-    if(btn){
-      btn.addEventListener("click", signInWithGoogle);
-    }
+    if(btn){ btn.addEventListener("click", signInWithGoogle); }
   });
 </script>
 </body>
