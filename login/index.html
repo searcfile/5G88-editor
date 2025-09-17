@@ -5,34 +5,76 @@
   <title>5G88 Login</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="icon" type="image/png" href="https://i.imgur.com/uGijtpF.png" />
-  <style>
-    html,body{height:100%} body{
-      margin:0; font-family:system-ui,Segoe UI,Inter,Arial;
-      background: url('https://i.imgur.com/UCZqSrT.png') center/cover no-repeat fixed;
-      color:#fff; display:grid; place-items:center;
-    }
-    .login-box{width:460px; padding:34px 24px; text-align:center;
-      border:2px solid gold; border-radius:12px; background:rgba(0,0,0,.4);
-      box-shadow:0 0 12px rgba(255,215,0,.6)}
-    .login-btn{display:inline-block; margin-top:8px; padding:10px 20px;
-      border:2px solid gold; background:#FFD700; color:#000; font-size:18px;
-      border-radius:8px; cursor:pointer}
-    .login-btn:disabled{opacity:.6; cursor:not-allowed}
-  </style>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body{
+      margin:0; font-family:system-ui,Segoe UI,Inter,Arial; color:#fff;
+      background:url('https://i.imgur.com/UCZqSrT.png') center/cover no-repeat fixed;
+    }
+    .login-box{
+      width:450px; margin:140px auto; padding:32px 24px; text-align:center;
+      border:2px solid gold; border-radius:10px; background:rgba(0,0,0,.4);
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      box-shadow:0 0 12px rgba(255,215,0,.6); transition:.25s transform,.25s box-shadow;
+    }
+    .login-box:hover{ transform:scale(1.03); box-shadow:0 0 18px rgba(255,215,0,.9) }
+    .login-box img{ max-width:380px; display:block; margin:0 auto 20px }
+    .login-btn{
+      display:inline-block; padding:10px 20px; border-radius:8px; font-size:18px; cursor:pointer;
+      border:2px solid gold; background:#FFD700; color:#000; transition:.25s;
+    }
+    .login-btn:hover{ background:rgba(255,255,255,.1); color:#fff; border-color:#fff }
+    .login-btn:disabled{ opacity:.6; cursor:not-allowed }
+    #msg{ color:#ffd700; margin:12px 0 0; min-height:20px }
+
+    /* Popup */
+    .popup-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; z-index:9999 }
+    .popup-box{
+      width:550px; min-height:420px; padding:40px 20px 30px; border:2px solid gold; border-radius:12px;
+      background:rgba(0,0,0,.4); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      box-shadow:0 0 10px rgba(255,215,0,.7); text-align:center; position:relative;
+      animation:zoomIn .3s ease forwards;
+    }
+    .popup-box img{ max-width:350px; margin-bottom:20px }
+    .popup-title{ font-size:28px; font-weight:700; margin:0 0 12px; color:gold }
+    .popup-btn, .popup-close{
+      border:2px solid gold; background:#111; color:gold; border-radius:6px; cursor:pointer; padding:8px 14px;
+    }
+    .popup-close{ position:absolute; top:10px; right:10px }
+    .popup-btn:hover, .popup-close:hover{ transform:scale(1.05) }
+    @keyframes zoomIn{ from{ transform:scale(.7); opacity:0 } to{ transform:scale(1); opacity:1 } }
+  </style>
 </head>
 <body>
+
+  <!-- Popup Welcome (opsional) -->
+  <div class="popup-overlay" id="popup">
+    <div class="popup-box" id="popupBox">
+      <button class="popup-close" onclick="closePopup()">X</button>
+      <p class="popup-title">Welcome to 5G88!</p>
+      <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" class="popup-logo">
+      <button class="popup-btn" onclick="closePopup()">OK</button>
+    </div>
+  </div>
+
   <div class="login-box">
-    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88" style="max-width:360px; display:block; margin:0 auto 20px">
-    <button id="googleLoginBtn" class="login-btn">Login with Google</button>
-    <p id="msg" style="color:#ffd700;margin:12px 0 0;min-height:20px"></p>
+    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo">
+    <button class="login-btn" id="googleLoginBtn">Login with Google</button>
+    <p id="msg"></p>
   </div>
 
 <script>
 (() => {
-  // === CONFIG (punyamu) ===
+  /** =============================
+   *  ⚙️ SETUP
+   *  ============================= */
+  // UBAH kalau home kamu bukan root. Contoh: '/menu/' atau '/index.html'
+  const HOME_PATH = '/';                                         // <<— EDIT kalau perlu
+  const REDIRECT_URL = location.origin + HOME_PATH;              // same-origin redirect ✅
+  const ENABLE_DETERRANTS = true;
+
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
     authDomain: "logins-d615f.firebaseapp.com",
@@ -43,69 +85,109 @@
     appId: "1:580872784703:web:07957551c3214f3d32618a"
   };
 
-  // ✅ SAME-ORIGIN redirect (HAPUS hardcode domain lain)
-  const REDIRECT_URL = location.origin + '/';             // <— DIUBAH
-
-  // Init
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db   = firebase.database();
-
+  /** =============================
+   *  🧩 HELPERS
+   *  ============================= */
   const $ = s => document.querySelector(s);
-  const btn = $('#googleLoginBtn');
   const msg = $('#msg');
-
   const sanitizeEmailKey = (email) => String(email||'').toLowerCase().replace(/[.#$[\]/]/g,'_');
   const fmtTime = (d=new Date())=>{
     const p=n=>String(n).padStart(2,'0');
     return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
   };
 
+  function setLoginBusy(b){
+    const btn = $('#googleLoginBtn'); if (!btn) return;
+    btn.disabled = !!b; btn.textContent = b ? 'Signing in...' : 'Login with Google';
+  }
+
+  function initDeterrents(){
+    if (!ENABLE_DETERRANTS) return;
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      const k = (e.key||'').toUpperCase();
+      if (k==='F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k))) e.preventDefault();
+    });
+  }
+
+  function initPopup(){
+    const overlay = $('#popup'); const box = $('#popupBox');
+    if(!overlay || !box) return;
+    window.closePopup = () => overlay.style.display = 'none';
+    window.addEventListener('click', (e)=>{ if (e.target===overlay) window.closePopup(); });
+  }
+
+  /** =============================
+   *  🔥 FIREBASE INIT
+   *  ============================= */
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db   = firebase.database();
+
+  /** =============================
+   *  🔐 LOGIN FLOW
+   *  ============================= */
   async function signInWithGoogle(){
-    btn.disabled = true; msg.textContent = 'Signing in...';
+    setLoginBusy(true); msg.textContent = 'Signing in...';
     try{
-      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);  // <— DITAMBAH (opsional)
+      // simpan session di browser (default LOCAL, dibuat eksplisit)
+      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
       const provider = new firebase.auth.GoogleAuthProvider();
       const { user } = await auth.signInWithPopup(provider);
       if (!user) throw new Error('User not found');
 
-      // blocklist check
+      // cek blocklist
       const key = sanitizeEmailKey(user.email);
-      const blk = await db.ref(`logins/blocked_users/${key}`).get();
-      if (blk.val() === true){
+      const blocked = await db.ref(`logins/blocked_users/${key}`).get();
+      if (blocked.val() === true){
         await auth.signOut();
         msg.textContent = 'Access denied. Contact 5G88.';
-        btn.disabled = false;
+        setLoginBusy(false);
         return;
       }
 
-      // simpan jejak
+      // simpan jejak login
       await db.ref(`logins/${key}`).set({
         name: user.displayName || '',
         email: user.email || '',
         loginAt: fmtTime()
       });
 
-      // kirim profil via query (dipakai main page buat UI)
+      // simpan profil kecil di localStorage (dipakai UI halaman utama)
+      localStorage.setItem('gmailLogin', JSON.stringify({
+        name: user.displayName || '',
+        email: user.email || '',
+        photo: user.photoURL || ''
+      }));
+
+      // kirim juga via query (opsional, biar main page bisa read & bersihkan URL)
       const qs = new URLSearchParams({
         name:  user.displayName || '',
         email: user.email || '',
         photo: user.photoURL || ''
       }).toString();
 
-      // ✅ pakai replace agar Back tidak kembali ke login
-      location.replace(`${REDIRECT_URL}?${qs}`);           // <— DIUBAH
-    }catch(e){
-      console.error(e);
+      // pakai replace agar tombol Back tidak kembali ke login
+      location.replace(`${REDIRECT_URL}?${qs}`);
+    }catch(err){
+      console.error('Login failed:', err);
       msg.textContent =
-        e?.code === 'auth/popup-blocked' ? 'Popup diblokir. Izinkan popup.'
-      : e?.code === 'auth/unauthorized-domain' ? 'Domain belum diizinkan di Firebase Auth.'
+        err?.code === 'auth/popup-blocked'       ? 'Popup diblokir. Izinkan popup.'
+      : err?.code === 'auth/unauthorized-domain' ? 'Domain ini belum diizinkan di Firebase Auth.'
       : 'Login gagal. Coba lagi.';
-      btn.disabled = false;
+      setLoginBusy(false);
     }
   }
 
-  btn.addEventListener('click', signInWithGoogle);
+  /** =============================
+   *  🚀 BOOT
+   *  ============================= */
+  document.addEventListener('DOMContentLoaded', () => {
+    initDeterrents();
+    initPopup();
+    $('#googleLoginBtn')?.addEventListener('click', signInWithGoogle);
+  });
 })();
 </script>
 </body>
