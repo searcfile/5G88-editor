@@ -5,905 +5,585 @@
   <link rel="icon" type="image/png" href="https://i.imgur.com/uGijtpF.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Home | 5G88</title>
+
   <style>
-    * {margin: 0;padding: 0;box-sizing: border-box;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';}
-    body {background-color: #000;color: #fff;overflow-x: hidden;display: flex;flex-direction: column;height: 100vh;-ms-overflow-style: none;scrollbar-width: none;}body::-webkit-scrollbar{display: none;} html{-ms-overflow-style: none;scrollbar-width: none;}html::-webkit-scrollbar{display: none;} 
-    .sidebar-overlay {position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;background: rgba(0, 0, 0, 0.5);display: none;z-index: 999;}
-    .sidebar {position: fixed;top: 0;left: -260px;width: 260px;height: 100vh;background: #111;padding: 20px;transition: 0.3s;z-index: 1002;}
-    .sidebar.active {left: 0;}.sidebar-overlay.active {display: block;}.sidebar h2 {color: white;margin-bottom: 10px;border-bottom:3px solid white;}
-    .sidebar a {display: block;margin: 10px 0;color: gold;text-decoration: none;font-size: 14px;font-weight: bold;border-radius: 6px;transition: background 0.2s;padding: 4px 8px;gap: 5px;white-space: nowrap;}
-    .sidebar a:hover {background: gold;color: #111;}
-    .close-btn {background: gold;color: #111;padding: 3px 6px;font-size: 12px;cursor: pointer;border-radius: 6px;margin-bottom: 20px;border: 1px solid gold;}
-    .header {position: fixed;width: 100%;z-index: 1003;height: 55px;background: #000;display: flex;justify-content: center;align-items: center;padding: 0 20px;top: 0;left: 0;}.close-btn:hover {background:#ffe34d;color:black;transition: color 0.2s;}.close-btn:active {background:#dbb900;color:black;transition: color 0.2s;}
-    .header img {position: absolute;max-height: 40px;top: 5px;}
-    .user-info {position: absolute;right: 20px;top: 50%;transform: translateY(-50%);display: flex;align-items: center;gap: 10px;white-space: nowrap;flex-wrap: nowrap;}
-    .user-text {gap: 10px;display: flex;align-items: center;}
-    .user-details {display: flex;flex-direction: column;align-items: flex-end;}
-    .date-time {color: white;font-size: 14px;white-space: nowrap;transition: color 0.3s;}
-    .container {transition: margin-left 0.3s ease;position: relative;}
-    .container.shrink { margin-left: 260px;}
-    .menu-icon {position: absolute;top: 5px;left: 10px;font-size: 28px;color: rgba(255, 255, 255, 0.65);cursor: pointer;z-index: 1100;transition: color 0.3s;}.menu-icon:hover {color: #ffe34d;transition: color 0.2s;}.active-menu-icon {color: gold;transition: all 0.2s ease;}.menu-icon:active {color: #dbb900;transition: color 0.2s;}
-    .menu-img {width: 20px;height: 20px;vertical-align: middle;margin-right: 8px;border-radius: 4px;}
-    @media (max-width: 600px) {
-    .container.shrink {margin-left: 0;}}
-     html, body {height: 100%;}
-     #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;}
-     .tab-bar {position: relative;transition: all 0.2s ease;width: 100%;height: 40px;background: black;display: flex;align-items: center;gap: 0;z-index: 1000;justify-content: flex-start;white-space: nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;}
-     .tab-bar::-webkit-scrollbar {display: none;}
-     .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px;
-      cursor: default;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;} 
-     .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;font-size: 14px;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: all 0.3s ease;}
-     .tab:hover {color: #ffe34d !important;font-weight: bold !important;transition: all 0.3s ease;}
-     .active-tab {background-color: #141414 !important;color: gold !important;font-weight: bold;transition: all 0.3s ease;}.tab:active {color: #dbb900!important;font-weight: bold !important;transition: all 0.3s ease;}
-    .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
-    .header.shrink {margin-left: 260px;transition: margin-left 0.3s;}
-    .tab-bar.shrink {margin-left: 260px;transition: margin-left 0.3s;}
-  #logoutBtn {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;background-color: #141414;color: rgba(255,255,255,0.85);padding: 5px 10px;border-radius: 4px;cursor: pointer;width: 100%;border: none;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid #424242;font-size: 14px;}#logoutBtn:hover {color: #ffe34d;transition: all 0.3s ease;border: 1px solid #ffe34d;}#logoutBtn:active {color: #dbb900;transition: all 0.3s ease;border: 1px solid #dbb900;background-color: #141414;}
-  #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
-  #notifButton:hover #notifTooltip {display: block !important;opacity: 1;z-index: 10000;}
- .user-dropdown {position: relative;display: inline-block;}
- .user-button {
-  display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;
-  background-color: #141414;
-  color: rgba(255,255,255,0.85);
-  border: 1px solid #424242;
-  border-radius: 6px;
-  padding: 0px 15px;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-  height: 32px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
-}
+    *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'}
+    html,body{height:100%}
+    body{background:#000;color:#fff;overflow-x:hidden;display:flex;flex-direction:column;-ms-overflow-style:none;scrollbar-width:none}
+    body::-webkit-scrollbar,html::-webkit-scrollbar{display:none}
 
-.user-button:hover {
-  border: 1px solid #ffe34d;
-  background-color: #141414;
-  color: #ffe34d;
-  transition: all 0.3s ease;
-}
-.user-button:active {
-  border: 1px solid gold;
-  background-color: #141414;
-  color: gold;
-  transition: all 0.3s ease;
-}
+    /* Sidebar */
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:999}
+    .sidebar-overlay.active{display:block}
+    .sidebar{position:fixed;top:0;left:-260px;width:260px;height:100vh;background:#111;padding:20px;transition:.3s;z-index:1002}
+    .sidebar.active{left:0}
+    .sidebar h2{color:#fff;margin-bottom:10px;border-bottom:3px solid #fff}
+    .sidebar a{display:block;margin:10px 0;color:gold;text-decoration:none;font-size:14px;font-weight:700;border-radius:6px;padding:4px 8px;white-space:nowrap}
+    .sidebar a:hover{background:gold;color:#111}
+    .close-btn{background:gold;color:#111;padding:3px 6px;font-size:12px;cursor:pointer;border-radius:6px;margin-bottom:20px;border:1px solid gold}
+    .close-btn:hover{background:#ffe34d}
+    .close-btn:active{background:#dbb900}
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #1f1f1f;
-  min-width: 220px;
-  border: 1px solid #424242;
-  border-radius: 6px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
-  padding: 10px;
-  z-index: 1;
-  color: rgba(255,255,255,0.85);
-  top: 110%;
-  right: 0;
-  left: auto;
-  transform: none;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
- .dropdown-content {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
+    /* Header */
+    .header{position:fixed;top:0;left:0;width:100%;height:55px;background:#000;display:flex;justify-content:center;align-items:center;padding:0 20px;z-index:1003}
+    .menu-icon{position:absolute;top:5px;left:10px;font-size:28px;color:rgba(255,255,255,.65);cursor:pointer;z-index:1100;transition:color .3s}
+    .menu-icon:hover{color:#ffe34d}
+    .active-menu-icon{color:gold}
+    .floating-logo{position:fixed;top:5px;left:50%;transform:translateX(-50%);height:40px;z-index:1103}
+    .header.shrink,.tab-bar.shrink{margin-left:260px;transition:margin-left .3s}
+    .floating-logo.shrink{transform:translateX(calc(-50% + 130px))}
 
-.user-dropdown:hover .dropdown-content {
-  opacity: 1;
-  visibility: visible;
-  display: block;
-}
-  .live-chat-button {
-  color: rgba(255,255,255,0.65);
-  border: none;
-  font-size: 15px;
-  cursor: pointer;
-  transition: color 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  background: transparent;
-  position: relative;
-}
-.live-chat-button:hover {
-  color: rgba(255,255,255,0.85);
-  background: transparent;
-  transition: color 0.3s;
-}
-.live-chat-button:active {
-  color: #8d8d8d !important;
-  background: transparent;
-}
- 
-.live-chat-button.active-livechat,
-.live-chat-button.active-linkdownload,
-.live-chat-button.active-gamelog {
-  background: transparent;
-  color: gold;
-}
-.dropdown-wrapper {
-  position: relative;
-  display: inline-block;
-}
+    /* User / action buttons */
+    .user-info{position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:10px;white-space:nowrap}
+    .user-button{display:flex;align-items:center;gap:6px;background:#141414;color:rgba(255,255,255,.85);border:1px solid #424242;border-radius:6px;padding:0 15px;height:32px;font-size:14px;cursor:pointer;transition:.3s;box-shadow:0 2px 0 rgba(255,255,255,.04)}
+    .user-button:hover{border-color:#ffe34d;color:#ffe34d}
+    .dropdown-content{display:none;position:absolute;background:#1f1f1f;min-width:220px;border:1px solid #424242;border-radius:6px;box-shadow:0 8px 16px rgba(0,0,0,.3);padding:10px;color:rgba(255,255,255,.85);top:110%;right:0;z-index:1;font-size:14px}
+    .user-dropdown{position:relative;display:inline-block}
 
-.dropdown-links {
-  display: none;
-  position: fixed;
-  top: 60px;
-  z-index: 10000;
-  background-color: #1f1f1f;
-  border: 1px solid #424242;
-  border-radius: 6px;
-  min-width: 180px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-  padding: 6px 0;
-  transition: color 0.3s;
-}
-.check-icon {
-  flex-shrink: 0;
-  margin-left: 10px;
-  width: 16px;
-  height: 16px;
-  color: transparent;
-  transition: color 0.3s;
-  display: none;
-}
-a.tab-open .check-icon {
-  color: gold;
-}
-.dropdown-links a {
-  display: flex; /* ✅ ubah dari block ke flex */
-  justify-content: space-between; /* ✅ label kiri, icon kanan */
-  align-items: center;
-  padding: 8px 16px;
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
-  gap: 10px; /* opsional jarak label dengan icon */
-}
+    .live-chat-button{color:rgba(255,255,255,.65);border:none;background:transparent;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:3px;position:relative;transition:color .3s}
+    .live-chat-button:hover{color:rgba(255,255,255,.85)}
+    .live-chat-button.active-livechat,.live-chat-button.active-linkdownload,.live-chat-button.active-gamelog{color:gold}
 
-.dropdown-links a:hover {
-  background: transparent;
-  color:  #ffe34d;
-  transition: color 0.3s;
-}
-.dropdown-links a:active {
-  background: transparent;
-  color: #dbb900!important;
-}
-#gameLogBtn.active-gamelog {
-  color: gold;
-  background: transparent;
-  transition: all 0.2s ease;
-}
- .dot-icon {
-  position: absolute;
-  top: -6px;
-  right: -13px;
-  display: none;
-  z-index: 2;
-}
-.dragging {
-  opacity: 0.5;
-  transform: scale(1.05);
-  z-index: 999;
-}
+    .dot-icon{position:absolute;top:-6px;right:-13px;display:none;z-index:2}
+
+    /* Tabs */
+    #pageFrame{width:100%;height:calc(100vh - 95px);border:none}
+    .tab-bar{position:relative;width:100%;height:40px;background:black;display:flex;align-items:center;gap:0;z-index:1000;justify-content:flex-start;margin-top:55px;overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth}
+    .tab-bar::-webkit-scrollbar{display:none}
+    .tab{background:rgba(255,255,255,.04);color:rgba(255,255,255,.85);padding:6px 16px;margin-right:0;border-radius:6px;border:1px solid #303030;display:inline-flex;align-items:center;font-size:14px;cursor:pointer;user-select:none;transition:.2s}
+    .tab:hover{filter:brightness(1.2)}
+    .active-tab{background:#141414!important;color:gold!important}
+    .close-tab{margin-left:4px;background:none;border:none;color:red;font-size:14px;cursor:pointer;transition:.2s}
+    .close-tab:hover{color:#ff1a1a;transform:scale(1.2)}
+
+    /* Dropdown GameLog */
+    .dropdown-wrapper{position:relative;display:inline-block}
+    .dropdown-links{display:none;position:fixed;top:60px;z-index:10000;background:#1f1f1f;border:1px solid #424242;border-radius:6px;min-width:180px;box-shadow:0 4px 8px rgba(0,0,0,.4);padding:6px 0}
+    .dropdown-links a{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;color:#fff;text-decoration:none;font-size:14px}
+    .dropdown-links a:hover{color:#ffe34d}
+    .check-icon{margin-left:10px;width:16px;height:16px;color:transparent;display:none}
+    a.tab-open .check-icon{color:gold;display:inline}
+
+    /* Announcement popover */
+    #messagePopup{display:none;position:fixed;top:0;left:0;background:#1f1f1f;font-size:14px;color:rgba(255,255,255,.85);border:1px solid #424242;border-radius:6px;padding:3px 10px;max-width:220px;z-index:9999}
+
+    /* Loader overlay */
+    #iframeLoader{position:fixed;inset:0;width:100%;height:100vh;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:1000}
+
+    /* Responsive */
+    @media (max-width:600px){.header.shrink,.tab-bar.shrink,.container.shrink{margin-left:0}}
+    .container{transition:margin-left .3s;position:relative}
+    .container.shrink{margin-left:260px}
   </style>
 </head>
 <body>
-
+  <!-- Overlay + Sidebar -->
   <div class="sidebar-overlay" id="overlay"></div>
-
-  
   <div class="sidebar" id="sidebar">
     <button class="close-btn" onclick="closeSidebar()">✖ Close</button>
     <h2>Menu list</h2>
-    <a href="#" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LIVE CHAT
-    </a>
-    <a href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> MEGA888
-    </a>
-    <a href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> PUSSY888
-    </a>
-    <a href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> 918KISS
-    </a>
-    <a href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> SCR888H5
-    </a>
-    <a href="#" onclick="addTab('LOGO GAME', 'https://5g88-logogame.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LOGO GAME
-    </a>
-    <a href="#" onclick="addTab('TIPS GAME', 'https://searcfile.github.io/5G88-editor/tipsgenerate/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> TIPS GAME
-    </a>
-    <a href="#" onclick="addTab('FIND GAME', 'https://5g88-findgame.vercel.app')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> FIND GAME
-    </a>
-    <a href="#" onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LINK DOWNLOAD
-    </a>
-    <a href="#" onclick="addTab('MAYBANK', 'https://searcfile.github.io/5G88-editor/maybank/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> MAYBANK
-    </a>
-    <a href="#" onclick="addTab('CIMB BANK', 'https://5g88-cimb.vercel.app/')">
-      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK
-    </a>
+    <a href="#" onclick="addTab('LIVE CHAT','https://searcfile.github.io/5g88-php/userlivechatphp/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> LIVE CHAT</a>
+    <a href="#" onclick="addTab('MEGA888','https://searcfile.github.io/5G88-editor/mega888/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> MEGA888</a>
+    <a href="#" onclick="addTab('PUSSY888','https://searcfile.github.io/5G88-editor/pussy888/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> PUSSY888</a>
+    <a href="#" onclick="addTab('918KISS','https://searcfile.github.io/5G88-editor/918kiss/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> 918KISS</a>
+    <a href="#" onclick="addTab('SCR888H5','https://searcfile.github.io/5G88-editor/scr888h5/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> SCR888H5</a>
+    <a href="#" onclick="addTab('LOGO GAME','https://5g88-logogame.vercel.app/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> LOGO GAME</a>
+    <a href="#" onclick="addTab('TIPS GAME','https://searcfile.github.io/5G88-editor/tipsgenerate/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> TIPS GAME</a>
+    <a href="#" onclick="addTab('FIND GAME','https://5g88-findgame.vercel.app')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> FIND GAME</a>
+    <a href="#" onclick="addTab('LINK DOWNLOAD','https://searcfile.github.io/5g88-php/linkdownload/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> LINK DOWNLOAD</a>
+    <a href="#" onclick="addTab('MAYBANK','https://searcfile.github.io/5G88-editor/maybank/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> MAYBANK</a>
+    <a href="#" onclick="addTab('CIMB BANK','https://5g88-cimb.vercel.app/')"><img src="https://i.imgur.com/WDjH3BZ.png" class="menu-img" alt=""> CIMB BANK</a>
   </div>
 
-
-  <div class="header">
+  <!-- Header -->
+  <div class="header" id="header">
     <div class="menu-icon" id="menuIcon">☰</div>
-  <div style="display: flex; gap: 20px; position: absolute; top: 15px; left: 60px;">
-   <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
-  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
-    <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
-  </svg>
-  LiveChat
-  <svg id="livechatDot" class="dot-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="red" viewBox="0 0 24 24">
-    <path d="M12 1c-6.338 0-12 4.226-12 10.007 0 2.05.739 4.063 2.047 5.625.055 1.83-1.023 4.456-1.993 6.368 2.602-.47 6.301-1.508 7.978-2.536 9.236 2.247 15.968-3.405 15.968-9.457 0-5.812-5.701-10.007-12-10.007zm1 15h-2v-6h2v6zm-1-7.75c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
-  </svg>
-</button>
 
-<button id="linkDownloadBtn" class="live-chat-button" onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
-    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
-      <path d="M9 2h6v1h-6v-1zm6-1v-1h-6v1h6zm-5.146 21l-1.854 2h8l-1.854-2h-4.292zm10.146-14h-5v-4h-6v4h-5l8 8 8-8zm-2 11h-12v-6.172l-2-2v10.172h16v-10.172l-2 2v6.172z"/>
-    </svg>
-    LinkDownload
-  </button>
+    <div style="display:flex;gap:20px;position:absolute;top:15px;left:60px;">
+      <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT','https://searcfile.github.io/5g88-php/userlivechatphp/')">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/></svg>
+        LiveChat
+        <svg id="livechatDot" class="dot-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="red"/></svg>
+      </button>
 
-<div class="dropdown-wrapper">
-  <button id="gameLogBtn" class="live-chat-button">
-    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
-      <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
-    </svg>
-    GameLog
-  </button>
- <div id="gameLogDropdown" class="dropdown-links">
-  <a data-label="MEGA888" href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/');">
-    MEGA888
-    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
-      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-    </svg>
-  </a>
-  <a data-label="PUSSY888" href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/');">
-    PUSSY888
-    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
-      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-    </svg>
-  </a>
-  <a data-label="918KISS" href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/');">
-    918KISS
-    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
-      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-    </svg>
-  </a>
-  <a data-label="SCR888H5" href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/');">
-    SCR888H5
-    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
-      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-    </svg>
-  </a>
-</div>
-</div>
-</div>
+      <button id="linkDownloadBtn" class="live-chat-button" onclick="addTab('LINK DOWNLOAD','https://searcfile.github.io/5g88-php/linkdownload/')">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M9 2h6v1h-6v-1zm6-1v-1h-6v1h6zm-5.146 21l-1.854 2h8l-1.854-2h-4.292zm10.146-14h-5v-4h-6v4h-5l8 8 8-8zm-2 11h-12v-6.172l-2-2v10.172h16v-10.172l-2 2v6.172z"/></svg>
+        LinkDownload
+      </button>
+
+      <div class="dropdown-wrapper">
+        <button id="gameLogBtn" class="live-chat-button">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/></svg>
+          GameLog
+        </button>
+        <div id="gameLogDropdown" class="dropdown-links">
+          <a data-label="MEGA888" href="#" onclick="addTab('MEGA888','https://searcfile.github.io/5G88-editor/mega888/');">MEGA888
+            <svg class="check-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/></svg>
+          </a>
+          <a data-label="PUSSY888" href="#" onclick="addTab('PUSSY888','https://searcfile.github.io/5G88-editor/pussy888/');">PUSSY888
+            <svg class="check-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/></svg>
+          </a>
+          <a data-label="918KISS" href="#" onclick="addTab('918KISS','https://searcfile.github.io/5G88-editor/918kiss/');">918KISS
+            <svg class="check-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/></svg>
+          </a>
+          <a data-label="SCR888H5" href="#" onclick="addTab('SCR888H5','https://searcfile.github.io/5G88-editor/scr888h5/');">SCR888H5
+            <svg class="check-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
 
     <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
     <div class="user-info">
-      <div class="user-text">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div id="notificationBell" style="width: 18px; height: 18px; background-color: red; border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 12px; color: white; font-weight: bold; cursor: pointer;" title="You have a new message">!</div>
-
-          <div id="notifButton" style="background: #111; border: 1px solid gold; border-radius: 50%; width: 26px; height: 26px; color: gold; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 6px rgba(255, 215, 0, 0.4); position: relative; font-size: 14px;">
-            🔔
-            <span id="notifDot" style="position: absolute; top: 2px; right: 2px; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;"></span>
-            <div id="notifTooltip" style="display: none; position: absolute;border: 1px solid #424242; top: 2%; left: calc(100% + 8px); transform: translateX(1%); background: #141414; color: gold; padding: 4px 8px; font-size: 11px; border-radius: 6px; white-space: nowrap; z-index: 10000;">Notice</div>
-          </div>
-
-          <div id="dateTime" class="date-time"></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div id="notifButton" title="Notice" style="background:#111;border:1px solid gold;border-radius:50%;width:26px;height:26px;color:gold;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 0 6px rgba(255,215,0,.4);position:relative;font-size:14px;">
+          🔔
+          <span id="notifDot" style="position:absolute;top:2px;right:2px;background:red;width:10px;height:10px;border-radius:50%;display:none;border:1px solid #fff"></span>
         </div>
+        <div id="dateTime" class="date-time"></div>
+      </div>
 
-        <div class="user-dropdown">
-  <button id="userName" class="user-button">
-  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
-    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
-  </svg>
-  <span id="userNameText"></span>
-</button>
-  <div id="dropdownContent" class="dropdown-content">
-    <div id="userEmail" style="margin-bottom: 8px;"></div>
-    <hr style="border: 0; border-top: 1px solid #424242; margin: 8px 0;">
-    <button id="logoutBtn"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
-    <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
-  </svg>Logout</button>
+      <div class="user-dropdown">
+        <button id="userName" class="user-button">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          <span id="userNameText"></span>
+        </button>
+        <div id="dropdownContent" class="dropdown-content">
+          <div id="userEmail" style="margin-bottom:8px;"></div>
+          <hr style="border:0;border-top:1px solid #424242;margin:8px 0;">
+          <button id="logoutBtn" class="user-button" style="width:100%;justify-content:center">
+            <svg width="16" height="16" viewBox="0 0 24 24" style="margin-right:6px"><path fill="currentColor" d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/></svg>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
-</div> 
-</div> 
-</div> 
 
+  <!-- Tabs -->
   <div id="tabBar" class="tab-bar"></div>
 
-
+  <!-- Main container + iframe -->
   <div class="container" id="mainContainer">
-    <div id="iframeLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0, 0, 0, 0.8); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 1000;">
-      <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 150px; height: auto;" />
-      <div style="margin-top: 3px; color: white; font-size: 14px; font-family: sans-serif;">Loading...</div>
+    <div id="iframeLoader">
+      <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width:150px;height:auto">
+      <div style="margin-top:3px">Loading...</div>
     </div>
-    <iframe
-  id="pageFrame"
-  allow="clipboard-write"
-  sandbox="allow-scripts allow-same-origin"
-  style="width: 100%; height: calc(100vh - 95px); border: none;">
-</iframe>
+    <iframe id="pageFrame" allow="clipboard-write" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
 
-
- <div id="messagePopup" style="display: none; position: fixed; top: 0; left: 0;background: #1f1f1f; font-size: 14px; color: rgba(255,255,255,0.85); border: 1px solid #424242; border-radius: 6px; padding: 3px 10px; max-width: 220px; z-index: 9999;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <strong style="color: red;font-size:14px;font-weight: bold;">📢- Announcement!</strong>
-      <button onclick="closeMessage()" style="background: none; color: white; border: none; font-size: 18px; cursor: pointer; transition: transform 0.2s, color 0.2s;" 
-        onmouseover="this.style.transform='scale(1.3)'; this.style.color='red';"
-        onmouseout="this.style.transform='scale(1)'; this.style.color='white';">×</button>
+  <!-- Announcement popup -->
+  <div id="messagePopup">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <strong style="color:red;font-weight:700">📢 Announcement</strong>
+      <button onclick="closeMessage()" style="background:none;color:#fff;border:none;font-size:18px;cursor:pointer">×</button>
     </div>
-    <div id="messageContent" style="margin-top: 2px;font-size:12px; white-space: normal; word-wrap: break-word; overflow-wrap: anywhere;"></div>
+    <div id="messageContent" style="margin-top:2px;font-size:12px;white-space:normal;word-wrap:break-word;overflow-wrap:anywhere"></div>
   </div>
-  
-<audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script>
-document.addEventListener("contextmenu", e => e.preventDefault());
-document.addEventListener("keydown", e => {
-  const k = (e.key||'').toUpperCase();
-  if (k==='F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k))) e.preventDefault();
-});
 
-/* === Firebase Apps === */
-const firebaseConfig = {
-  apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
-  authDomain: "notice-83ae5.firebaseapp.com",
-  databaseURL: "https://notice-83ae5-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "notice-83ae5",
-  storageBucket: "notice-83ae5.appspot.com",
-  messagingSenderId: "268106877488",
-  appId: "1:268106877488:web:798beadfe45104297e7bf5",
-  measurementId: "G-8EY4MCZKK2"
-};
-// ✅ guard init default app (DIUBAH)
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+  <!-- Assets & Libs -->
+  <audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-const blurphpApp = firebase.initializeApp({
-  apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
-  authDomain: "blurphp.firebaseapp.com",
-  databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "blurphp",
-  storageBucket: "blurphp.appspot.com",
-  messagingSenderId: "593904200464",
-  appId: "1:593904200464:web:cea7bc1360532c20d99395",
-  measurementId: "G-R494S2DPZ5"
-}, "blurphpApp");
-const blurphpDb = blurphpApp.database();
-
-const loginApp = firebase.initializeApp({
-  apiKey: "AIzaSyCLHO-NGVdMVAZKaqBOf7WBzRQh7NL3XJ8",
-  authDomain: "logins-d615f.firebaseapp.com",
-  databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "logins-d615f",
-  storageBucket: "logins-d615f.appspot.com",
-  messagingSenderId: "648022690285",
-  appId: "1:648022690285:web:aefad61a2f46e6cf39f05b"
-}, "loginApp");
-const loginDb = loginApp.database();
-
-/* === State Login === */
-// ✅ Satu variabel global saja (DIUBAH)
-let loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-let userId = "";
-const LOGIN_URL = location.origin + "/login/"; // ✅ same-origin (DIUBAH)
-
-/* === UI elemen === */
-const notifButton   = document.getElementById("notifButton");
-const notifDot      = document.getElementById("notifDot");
-const popup         = document.getElementById("messagePopup");
-const content       = document.getElementById("messageContent");
-const notifTooltip  = document.getElementById("notifTooltip");
-const gameLogBtn    = document.getElementById("gameLogBtn");
-const gameLogDropdown = document.getElementById("gameLogDropdown");
-let iframe = document.getElementById("pageFrame");
-
-/* === Helpers === */
-const isValidEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-const cleanUrl = () => {
-  const clean = location.origin + location.pathname;
-  history.replaceState({}, document.title, clean);
-};
-function saveLoginFromURL(){
-  const p = new URLSearchParams(location.search);
-  const name  = p.get("name");
-  const email = p.get("email");
-  const photo = p.get("photo");
-  // ❌ jangan decodeURIComponent lagi — URLSearchParams sudah decode (DIUBAH)
-  if (name && email && isValidEmail(email)){
-    localStorage.setItem("gmailLogin", JSON.stringify({
-      name, email: email.toLowerCase(), photo: photo || ""
-    }));
-    cleanUrl();
-  }
-}
-function checkLogin(){
-  const data = localStorage.getItem("gmailLogin");
-  if (!data){
-    // ✅ same-origin login (DIUBAH)
-    location.href = LOGIN_URL;
-    return false;
-  }
-  return true;
-}
-
-/* === Notifikasi Atas: single listener (DIUBAH: hapus duplikat) === */
-db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
-  const data = snapshot.val();
-  if (!data || !data.message || !data.timestamp) return;
-  showNotification(data.message, data.timestamp);
-});
-function showNotification(message, timestamp){
-  const currentEmail = (loginData?.email || "guest");
-  const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
-  if (!localStorage.getItem(seenKey)){
-    if (notifButton){
-      notifButton.dataset.message = message;
-      notifButton.dataset.timestamp = timestamp;
-    }
-    localStorage.setItem("latestNotifMessage", message);
-    localStorage.setItem("latestNotifTimestamp", timestamp);
-    if (notifDot) notifDot.style.display = "block";
-  }
-}
-if (notifButton){
-  notifButton.addEventListener("click", () => {
-    const message = notifButton.dataset.message;
-    const timestamp = Number(notifButton.dataset.timestamp);
-    if (!message || !timestamp) return;
-
-    const d = new Date(timestamp);
-    const ok = !isNaN(d.getTime());
-    if (content){
-      content.innerHTML = `
-        <div>${message}</div>
-        <div style="text-align:right;font-size:12px;color:#aaa;margin-top:10px;">
-          ${ok ? `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}` : `Waktu tidak valid`}
-        </div>`;
-    }
-    if (popup){
-      popup.style.display = "block";
-      setTimeout(()=>{
-        const rect = notifButton.getBoundingClientRect();
-        popup.style.position = "fixed";
-        popup.style.top = `${rect.bottom + 4}px`;
-        popup.style.right = `${window.innerWidth - rect.right}px`;
-        popup.style.left = "auto";
-      },0);
-    }
-    if (notifDot) notifDot.style.display = "none";
-    const currentEmail = (loginData?.email || "guest");
-    localStorage.setItem(`seenNotif_${timestamp}_${currentEmail}`,"1");
-  });
-}
-
-/* === GameLog Dropdown === */
-if (gameLogBtn && gameLogDropdown){
-  gameLogBtn.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    const r = gameLogBtn.getBoundingClientRect();
-    gameLogDropdown.style.left = `${r.left}px`;
-    gameLogDropdown.style.top  = `${r.bottom + 6}px`;
-    gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
-  });
-  document.addEventListener("click", (e)=>{
-    if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)){
-      gameLogDropdown.style.display = "none";
-    }
-  });
-  if (iframe){
-    iframe.addEventListener("load", ()=>{
-      try{
-        iframe.contentWindow.document.addEventListener("click", ()=> gameLogDropdown.style.display="none");
-      }catch(_){}
+  <script>
+  (()=>{
+    /* ====== Guard anti-inspect (opsional) ====== */
+    document.addEventListener("contextmenu", e=>e.preventDefault());
+    document.addEventListener("keydown", e=>{
+      const k=(e.key||"").toUpperCase();
+      if(k==="F12"||(e.ctrlKey&&e.shiftKey&&["I","J","C"].includes(k))) e.preventDefault();
     });
-  }
-  window.addEventListener("blur", ()=> {
-    if (gameLogDropdown.style.display === "block") gameLogDropdown.style.display = "none";
-  });
-}
 
-/* === Tabs === */
-const tabBar = document.getElementById("tabBar");
-function saveTabs(t){ localStorage.setItem("openTabs", JSON.stringify(t)); }
-function getTabs(){ return JSON.parse(localStorage.getItem("openTabs")||"[]"); }
-function loadPage(url){
-  const loader = document.getElementById("iframeLoader");
-  const frame  = document.getElementById("pageFrame");
-  if (!frame) return;
-  if (loader) loader.style.display = "flex";
-  frame.onload = ()=>{ if (loader) loader.style.display = "none"; };
-  frame.src = url;
-  localStorage.setItem("activeTabUrl", url);
-  closeSidebar();
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active-tab"));
-  const tabs = getTabs();
-  const els  = document.querySelectorAll(".tab");
-  tabs.forEach((t,i)=>{ if (t.url===url && els[i]) els[i].classList.add("active-tab"); });
-}
-function updateGameLogCheckmarks(){
-  const labelsOpen = getTabs().map(t=>t.label);
-  document.querySelectorAll('#gameLogDropdown a').forEach(link=>{
-    const label = link.getAttribute("data-label");
-    const icon  = link.querySelector(".check-icon");
-    const open  = labelsOpen.includes(label);
-    link.classList.toggle("tab-open", open);
-    if (icon) icon.style.display = open ? "inline" : "none";
-  });
-}
-function renderTabs(){
-  if (!tabBar) return;
-  tabBar.innerHTML = "";
-  const tabs = getTabs();
-  tabs.forEach((tab, index) => {
-    const el = document.createElement("div");
-    el.className = "tab";
-    el.dataset.index = index;
-    el.style.cssText = "background:rgba(255,255,255,.04);color:rgba(255,255,255,.85);padding:6px 16px;margin-right:0;border-radius:6px;border:1px solid #303030;display:inline-flex;align-items:center;font-size:14px;cursor:pointer;user-select:none;";
-    el.addEventListener("mousedown",()=> el.style.filter="brightness(.7)");
-    el.addEventListener("mouseup",()=> el.style.filter="");
-    el.addEventListener("mouseleave",()=> el.style.filter="");
-
-    el.onclick = ()=>{
-      loadPage(tab.url);
-      const liveBtn = document.getElementById("liveChatBtn");
-      const linkBtn = document.getElementById("linkDownloadBtn");
-      const glBtn   = document.getElementById("gameLogBtn");
-      if (liveBtn) liveBtn.classList.toggle("active-livechat", tab.label==="LIVE CHAT");
-      if (linkBtn) linkBtn.classList.toggle("active-linkdownload", tab.label==="LINK DOWNLOAD");
-      if (glBtn){
-        const gls = ["MEGA888","PUSSY888","918KISS","SCR888H5"];
-        glBtn.classList.toggle("active-gamelog", gls.includes(tab.label));
-      }
+    /* ====== Firebase Apps ====== */
+    const noticeCfg={
+      apiKey:"AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
+      authDomain:"notice-83ae5.firebaseapp.com",
+      databaseURL:"https://notice-83ae5-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId:"notice-83ae5",
+      storageBucket:"notice-83ae5.appspot.com",
+      messagingSenderId:"268106877488",
+      appId:"1:268106877488:web:798beadfe45104297e7bf5",
+      measurementId:"G-8EY4MCZKK2"
     };
-    const title = document.createElement("span");
-    title.textContent = tab.label;
-    title.style.pointerEvents="none";
+    if(!firebase.apps.length) firebase.initializeApp(noticeCfg);
+    const db=firebase.database();
 
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "×";
-    closeBtn.className = "close-tab";
-    closeBtn.style.cssText="margin-left:4px;background:none;border:none;color:red;font-size:14px;cursor:pointer;transition:.2s";
-    closeBtn.onmouseover = ()=>{ closeBtn.style.color="#ff1a1a"; closeBtn.style.transform="scale(1.2)"; };
-    closeBtn.onmouseout  = ()=>{ closeBtn.style.color="red";     closeBtn.style.transform=""; };
-    closeBtn.onclick = (e)=>{ e.stopPropagation(); closeTab(tab.label); };
+    const blurphpApp=firebase.initializeApp({
+      apiKey:"AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+      authDomain:"blurphp.firebaseapp.com",
+      databaseURL:"https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId:"blurphp",
+      storageBucket:"blurphp.appspot.com",
+      messagingSenderId:"593904200464",
+      appId:"1:593904200464:web:cea7bc1360532c20d99395",
+      measurementId:"G-R494S2DPZ5"
+    },"blurphpApp");
+    const blurphpDb=blurphpApp.database();
 
-    el.appendChild(title); el.appendChild(closeBtn);
-    tabBar.appendChild(el);
-  });
-  initSortableTabs();
-}
-function initSortableTabs(){
-  if (!window.Sortable || !tabBar) return;
-  if (tabBar._sortable) tabBar._sortable.destroy();
-  tabBar._sortable = Sortable.create(tabBar, {
-    animation:200, ghostClass:"dragging",
-    onEnd: (evt)=>{
-      const tabs = getTabs();
-      const [moved] = tabs.splice(evt.oldIndex,1);
-      tabs.splice(evt.newIndex,0,moved);
-      saveTabs(tabs);
-      renderTabs();
+    const loginApp=firebase.initializeApp({
+      apiKey:"AIzaSyCLHO-NGVdMVAZKaqBOf7WBzRQh7NL3XJ8",
+      authDomain:"logins-d615f.firebaseapp.com",
+      databaseURL:"https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId:"logins-d615f",
+      storageBucket:"logins-d615f.appspot.com",
+      messagingSenderId:"648022690285",
+      appId:"1:648022690285:web:aefad61a2f46e6cf39f05b"
+    },"loginApp");
+    const loginDb=loginApp.database();
+
+    /* ====== State Login (same-origin) ====== */
+    let loginData=JSON.parse(localStorage.getItem("gmailLogin")||"{}");
+    let userId="";
+    const LOGIN_URL=location.origin+"/login/";
+
+    const $=s=>document.querySelector(s);
+    const tabBar=$("#tabBar"), iframe=$("#pageFrame");
+    const notifButton=$("#notifButton"), notifDot=$("#notifDot"), popup=$("#messagePopup"), content=$("#messageContent");
+    const gameLogBtn=$("#gameLogBtn"), gameLogDropdown=$("#gameLogDropdown");
+
+    /* Helpers */
+    const isValidEmail=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+    const cleanUrl=()=>history.replaceState({},document.title,location.origin+location.pathname);
+
+    function saveLoginFromURL(){
+      const p=new URLSearchParams(location.search);
+      const name=p.get("name"), email=p.get("email"), photo=p.get("photo");
+      if(name && email && isValidEmail(email)){
+        localStorage.setItem("gmailLogin",JSON.stringify({name, email:email.toLowerCase(), photo:photo||""}));
+        cleanUrl();
+      }
     }
-  });
-}
-function addTab(label,url){
-  const tabs = getTabs();
-  if (!tabs.some(t=>t.label===label)){ tabs.push({label,url}); saveTabs(tabs); }
-  const glBtn = document.getElementById("gameLogBtn");
-  if (glBtn){
-    const gls = ["MEGA888","PUSSY888","918KISS","SCR888H5"];
-    glBtn.classList.toggle("active-gamelog", gls.includes(label));
-  }
-  const liveBtn = document.getElementById("liveChatBtn");
-  if (liveBtn){
-    if (label==="LIVE CHAT"){ liveBtn.classList.add("active-livechat"); markLivechatAsRead(); }
-    else liveBtn.classList.remove("active-livechat");
-  }
-  const linkBtn = document.getElementById("linkDownloadBtn");
-  if (linkBtn) linkBtn.classList.toggle("active-linkdownload", label==="LINK DOWNLOAD");
-  loadPage(url); renderTabs(); updateGameLogCheckmarks();
-}
-function closeTab(label){
-  let tabs = getTabs().filter(t=>t.label!==label);
-  saveTabs(tabs); renderTabs(); updateGameLogCheckmarks();
-  const glBtn = document.getElementById("gameLogBtn");
-  const liveBtn = document.getElementById("liveChatBtn");
-  const linkBtn = document.getElementById("linkDownloadBtn");
-  if (tabs.length){
-    const last = tabs[tabs.length-1];
-    loadPage(last.url);
-    const gls = ["MEGA888","PUSSY888","918KISS","SCR888H5"];
-    glBtn?.classList.toggle("active-gamelog", gls.includes(last.label));
-    liveBtn?.classList.toggle("active-livechat", last.label==="LIVE CHAT");
-    linkBtn?.classList.toggle("active-linkdownload", last.label==="LINK DOWNLOAD");
-  }else{
-    const frame = document.getElementById("pageFrame");
-    if (frame) frame.src="";
-    glBtn?.classList.remove("active-gamelog");
-    liveBtn?.classList.remove("active-livechat");
-    linkBtn?.classList.remove("active-linkdownload");
-  }
-}
-
-/* === Sidebar open/close (tak diubah, tambahkan null-check jika perlu) === */
-const menuIcon = document.getElementById("menuIcon");
-const sidebar  = document.getElementById("sidebar");
-const overlay  = document.getElementById("overlay");
-const container= document.getElementById("mainContainer");
-function openSidebar(){
-  sidebar?.classList.add("active");
-  overlay?.classList.add("active");
-  container?.classList.add("shrink");
-  document.querySelector(".floating-logo")?.classList.add("shrink");
-  document.querySelector(".header")?.classList.add("shrink");
-  document.getElementById("tabBar")?.classList.add("shrink");
-  document.getElementById("menuIcon")?.classList.add("active-menu-icon");
-}
-function closeSidebar(){
-  sidebar?.classList.remove("active");
-  overlay?.classList.remove("active");
-  container?.classList.remove("shrink");
-  document.querySelector(".floating-logo")?.classList.remove("shrink");
-  document.querySelector(".header")?.classList.remove("shrink");
-  document.getElementById("tabBar")?.classList.remove("shrink");
-  document.getElementById("menuIcon")?.classList.remove("active-menu-icon");
-}
-menuIcon?.addEventListener("click", ()=> sidebar?.classList.contains("active")? closeSidebar():openSidebar());
-overlay?.addEventListener("click", closeSidebar);
-document.addEventListener("click",(e)=>{
-  const isSidebar = e.target.closest?.("#sidebar");
-  const isMenuIcon= e.target.closest?.("#menuIcon");
-  if (!isSidebar && !isMenuIcon && sidebar?.classList.contains("active")) closeSidebar();
-});
-
-/* === PostMessage whitelist (tanpa path) (DIUBAH) === */
-const allowedOrigins = [
-  "https://5g88-logogame.vercel.app",
-  "https://5g88-userlivechatphp.vercel.app",
-  "https://searcfile.github.io",
-  "https://5g88-main.vercel.app"
-];
-window.addEventListener("message", async (e)=>{
-  if (!allowedOrigins.includes(e.origin)) return;
-  const data = e.data;
-  const livechatDot = document.getElementById("livechatDot");
-  if (data?.action === "show-livechat-notif" && livechatDot) livechatDot.style.display = "block";
-  else if (data?.action === "hide-livechat-notif" && livechatDot) livechatDot.style.display = "none";
-  else if (data?.action === "copy-image-base64" && data.base64){
-    try{
-      const blob = await (await fetch(data.base64)).blob();
-      await navigator.clipboard.write([ new ClipboardItem({ [blob.type]: blob }) ]);
-    }catch(e){ alert("❌ Gagal salin gambar dari base64."); }
-  }else if (data?.action === "copy-image" && data.url){
-    try{
-      const blob = await (await fetch(data.url)).blob();
-      await navigator.clipboard.write([ new ClipboardItem({ [blob.type]: blob }) ]);
-    }catch(e){ /* ignore */ }
-  }
-});
-
-/* === Livechat notif & sound === */
-let lastNotifTime = 0;
-let userHasInteracted = false;
-document.body.addEventListener("click", ()=> userHasInteracted = true);
-
-/* === BOOT === */
-window.addEventListener("DOMContentLoaded", () => {
-  // bersihkan state redirect paksa (punyamu)
-  if (sessionStorage.getItem("forceLogout")==="1"){
-    sessionStorage.removeItem("forceLogout");
-    cleanUrl();
-  }
-
-  // ambil profil dari query (set localStorage) → refresh loginData (DIUBAH)
-  saveLoginFromURL();
-  loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");   // <— DIUBAH
-
-  // guard login via localStorage (same-origin saja) (DIUBAH)
-  if (!checkLogin()) return;
-
-  // validasi JSON
-  try{
-    loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}"); // <— DIUBAH
-  }catch(e){
-    localStorage.removeItem("gmailLogin");
-    location.href = LOGIN_URL;
-    return;
-  }
-  if (!loginData || !loginData.email){
-    location.href = LOGIN_URL;
-    return;
-  }
-
-  // userId SIAP dulu baru pasang listener lain (DIUBAH)
-  userId = (loginData.email || '').toLowerCase().replace(/\./g,"_");
-
-  // force logout dari admin
-  loginDb.ref("logins/admin_override").on("value", (snap)=>{
-    const data = snap.val();
-    if (data?.forceLogoutAll && Array.isArray(data.users) && data.users.includes(userId)){
-      alert("⚠️ System Updated. Please re-login!");
-      localStorage.removeItem("gmailLogin");
-      sessionStorage.setItem("forceLogout","1");
-      loginDb.ref("logins/admin_override").remove();
-      if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
-      location.href = LOGIN_URL;
+    function checkLogin(){
+      if(!localStorage.getItem("gmailLogin")){ location.href=LOGIN_URL; return false; }
+      return true;
     }
-    if (data?.target === userId && data.forceLogout === true){
-      alert("🚫 Kamu telah di-logout oleh sistem.");
-      localStorage.removeItem("gmailLogin");
-      sessionStorage.setItem("forceLogout","1");
-      loginDb.ref("logins/admin_override").remove();
-      if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
-      location.href = LOGIN_URL;
-    }
-  });
 
-  // simpan ke blurphp (presence)
-  const sanitizedEmail = userId;
-  blurphpDb.ref('users/' + sanitizedEmail).update({
-    name: loginData.name || '',
-    email: loginData.email || '',
-    photoURL: loginData.photo || '',
-    lastLoginTime: Date.now()
-  });
-  const connectedRef = blurphpDb.ref(".info/connected");
-  const onlineRef    = blurphpDb.ref("users/" + sanitizedEmail + "/online");
-  connectedRef.on("value", snap=>{
-    if (snap.val() === true){
-      onlineRef.set(true);
-      onlineRef.onDisconnect().set(false);
-    }
-  });
-  window.addEventListener("beforeunload", ()=> {
-    blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
-  });
-
-  // header user dropdown (biarkan punyamu, tidak diubah)
-  const userNameText = document.getElementById("userNameText");
-  const dropdownContent = document.getElementById("dropdownContent");
-  const userEmailElem = document.getElementById("userEmail");
-  const dropdownWrapper = document.querySelector(".user-dropdown");
-  const userButton = document.getElementById("userName");
-  if (userNameText && dropdownContent && dropdownWrapper && userButton){
-    const nameParts = (loginData.name||'').trim().split(" ");
-    const displayName = (nameParts.length>=2 && nameParts[0].toLowerCase()===nameParts[1]?.toLowerCase()) ? nameParts[0] : (loginData.name||'');
-    userNameText.textContent = displayName || 'User';
-    if (userEmailElem) userEmailElem.textContent = loginData.email||'';
-
-    dropdownWrapper.addEventListener("mouseenter", ()=> dropdownContent.style.display="block");
-    dropdownWrapper.addEventListener("mouseleave", ()=>{
-      if (!dropdownWrapper.classList.contains("force-open")) dropdownContent.style.display="none";
+    /* ====== Notifikasi atas (single listener) ====== */
+    db.ref("notifikasi/pesanTerbaru").on("value",(snap)=>{
+      const data=snap.val(); if(!data||!data.message||!data.timestamp) return;
+      const currentEmail=(loginData?.email||"guest");
+      const seenKey=`seenNotif_${data.timestamp}_${currentEmail}`;
+      if(!localStorage.getItem(seenKey)){
+        if(notifButton){ notifButton.dataset.message=data.message; notifButton.dataset.timestamp=data.timestamp; }
+        localStorage.setItem("latestNotifMessage",data.message);
+        localStorage.setItem("latestNotifTimestamp",data.timestamp);
+        if(notifDot) notifDot.style.display="block";
+      }
     });
-    userButton?.addEventListener("click", (e)=>{
+    notifButton?.addEventListener("click",()=>{
+      const message=notifButton.dataset.message, ts=Number(notifButton.dataset.timestamp);
+      if(!message||!ts) return;
+      const d=new Date(ts), ok=!isNaN(d.getTime());
+      if(content){
+        content.innerHTML = `
+          <div>${message}</div>
+          <div style="text-align:right;font-size:12px;color:#aaa;margin-top:10px;">
+            ${ok?`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`:`Waktu tidak valid`}
+          </div>`;
+      }
+      popup.style.display="block";
+      setTimeout(()=>{
+        const r=notifButton.getBoundingClientRect();
+        popup.style.position="fixed";
+        popup.style.top=`${r.bottom+4}px`;
+        popup.style.right=`${window.innerWidth-r.right}px`;
+        popup.style.left="auto";
+      },0);
+      if(notifDot) notifDot.style.display="none";
+      const currentEmail=(loginData?.email||"guest");
+      localStorage.setItem(`seenNotif_${ts}_${currentEmail}`,"1");
+    });
+    window.closeMessage=()=>{ if(popup) popup.style.display="none"; };
+
+    /* ====== GameLog dropdown ====== */
+    gameLogBtn?.addEventListener("click",(e)=>{
       e.stopPropagation();
-      const isOpen = dropdownWrapper.classList.toggle("force-open");
-      dropdownContent.style.display = isOpen ? "block" : "none";
-      userButton.classList.toggle("active-user-button", isOpen);
+      const r=gameLogBtn.getBoundingClientRect();
+      gameLogDropdown.style.left=`${r.left}px`;
+      gameLogDropdown.style.top =`${r.bottom+6}px`;
+      gameLogDropdown.style.display=gameLogDropdown.style.display==="block"?"none":"block";
     });
     document.addEventListener("click",(e)=>{
-      if (!dropdownWrapper.contains(e.target)){
-        dropdownContent.style.display="none";
-        dropdownWrapper.classList.remove("force-open");
-        userButton?.classList.remove("active-user-button");
-      }
+      if(!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) gameLogDropdown.style.display="none";
     });
-  }
+    iframe?.addEventListener("load",()=>{
+      try{ iframe.contentWindow.document.addEventListener("click",()=> gameLogDropdown.style.display="none"); }catch{}
+    });
+    window.addEventListener("blur",()=>{ if(gameLogDropdown.style.display==="block") gameLogDropdown.style.display="none"; });
 
-  // Logout button → same-origin login (DIUBAH)
-  const logoutBtn = document.getElementById("logoutBtn");
-  logoutBtn?.addEventListener("click", ()=>{
-    localStorage.removeItem("gmailLogin");
-    sessionStorage.setItem("forceLogout","1");
-    if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
-    location.href = LOGIN_URL;
-  });
-
-  // Livechat notif sound
-  blurphpDb.ref("chats/" + userId).on("child_added",(snap)=>{
-    const msg = snap.val();
-    if (!msg || msg.from !== "admin") return;
-    const t = msg.time || Date.now();
-    if (t > lastNotifTime){
-      lastNotifTime = t;
-      const livechatDot = document.getElementById("livechatDot");
-      const snd = document.getElementById("notifSound");
-      if (livechatDot) livechatDot.style.display = "inline";
-      if (snd && userHasInteracted){
-        snd.currentTime = 0;
-        snd.play().catch(()=>{});
+    /* ====== Tabs ====== */
+    function saveTabs(t){ localStorage.setItem("openTabs",JSON.stringify(t)); }
+    function getTabs(){ return JSON.parse(localStorage.getItem("openTabs")||"[]"); }
+    function updateGameLogCheckmarks(){
+      const labelsOpen=getTabs().map(t=>t.label);
+      document.querySelectorAll('#gameLogDropdown a').forEach(a=>{
+        const label=a.getAttribute("data-label"); const icon=a.querySelector(".check-icon");
+        const open=labelsOpen.includes(label);
+        a.classList.toggle("tab-open",open);
+        if(icon) icon.style.display=open?"inline":"none";
+      });
+    }
+    function loadPage(url){
+      const loader=$("#iframeLoader"); const frame=$("#pageFrame");
+      if(!frame) return;
+      if(loader) loader.style.display="flex";
+      frame.onload=()=>{ if(loader) loader.style.display="none"; };
+      frame.src=url;
+      localStorage.setItem("activeTabUrl",url);
+      closeSidebar();
+      document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active-tab"));
+      const tabs=getTabs(), els=document.querySelectorAll(".tab");
+      tabs.forEach((t,i)=>{ if(t.url===url && els[i]) els[i].classList.add("active-tab"); });
+    }
+    function renderTabs(){
+      if(!tabBar) return;
+      tabBar.innerHTML="";
+      const tabs=getTabs();
+      tabs.forEach((tab,index)=>{
+        const el=document.createElement("div");
+        el.className="tab"; el.dataset.index=index;
+        el.onclick=()=>{
+          loadPage(tab.url);
+          const liveBtn=$("#liveChatBtn"), linkBtn=$("#linkDownloadBtn"), glBtn=$("#gameLogBtn");
+          liveBtn?.classList.toggle("active-livechat", tab.label==="LIVE CHAT");
+          linkBtn?.classList.toggle("active-linkdownload", tab.label==="LINK DOWNLOAD");
+          if(glBtn){
+            const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"];
+            glBtn.classList.toggle("active-gamelog", gls.includes(tab.label));
+          }
+        };
+        const title=document.createElement("span"); title.textContent=tab.label; title.style.pointerEvents="none";
+        const x=document.createElement("button"); x.className="close-tab"; x.textContent="×";
+        x.onclick=(e)=>{ e.stopPropagation(); closeTab(tab.label); };
+        el.appendChild(title); el.appendChild(x); tabBar.appendChild(el);
+      });
+      initSortableTabs();
+    }
+    function initSortableTabs(){
+      if(!window.Sortable || !tabBar) return;
+      if(tabBar._sortable) tabBar._sortable.destroy();
+      tabBar._sortable=Sortable.create(tabBar,{
+        animation:200, ghostClass:"dragging",
+        onEnd:(evt)=>{
+          const tabs=getTabs(); const [moved]=tabs.splice(evt.oldIndex,1);
+          tabs.splice(evt.newIndex,0,moved); saveTabs(tabs); renderTabs();
+        }
+      });
+    }
+    window.addTab=function(label,url){
+      const tabs=getTabs();
+      if(!tabs.some(t=>t.label===label)){ tabs.push({label,url}); saveTabs(tabs); }
+      const glBtn=$("#gameLogBtn");
+      if(glBtn){
+        const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"];
+        glBtn.classList.toggle("active-gamelog", gls.includes(label));
+      }
+      const liveBtn=$("#liveChatBtn");
+      liveBtn?.classList.toggle("active-livechat", label==="LIVE CHAT");
+      if(label==="LIVE CHAT") markLivechatAsRead();
+      const linkBtn=$("#linkDownloadBtn");
+      linkBtn?.classList.toggle("active-linkdownload", label==="LINK DOWNLOAD");
+      loadPage(url); renderTabs(); updateGameLogCheckmarks();
+    }
+    function closeTab(label){
+      let tabs=getTabs().filter(t=>t.label!==label); saveTabs(tabs); renderTabs(); updateGameLogCheckmarks();
+      const glBtn=$("#gameLogBtn"), liveBtn=$("#liveChatBtn"), linkBtn=$("#linkDownloadBtn");
+      if(tabs.length){
+        const last=tabs[tabs.length-1]; loadPage(last.url);
+        const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"];
+        glBtn?.classList.toggle("active-gamelog", gls.includes(last.label));
+        liveBtn?.classList.toggle("active-livechat", last.label==="LIVE CHAT");
+        linkBtn?.classList.toggle("active-linkdownload", last.label==="LINK DOWNLOAD");
+      }else{
+        const frame=$("#pageFrame"); if(frame) frame.src="";
+        glBtn?.classList.remove("active-gamelog");
+        liveBtn?.classList.remove("active-livechat");
+        linkBtn?.classList.remove("active-linkdownload");
       }
     }
-  });
 
-  // Notif dot real-time (seenByUser)
-  initLivechatNotifListener();
-
-  // Tabs boot
-  renderTabs();
-  updateGameLogCheckmarks();
-  const tabs = getTabs();
-  const activeUrl = localStorage.getItem("activeTabUrl");
-  const match = tabs.find(t => t.url === activeUrl);
-  const liveBtn = document.getElementById("liveChatBtn");
-  const linkBtn = document.getElementById("linkDownloadBtn");
-  const glBtn   = document.getElementById("gameLogBtn");
-  liveBtn?.classList.remove("active-livechat");
-  linkBtn?.classList.remove("active-linkdownload");
-  glBtn?.classList.remove("active-gamelog");
-  if (match){
-    loadPage(match.url);
-    updateGameLogCheckmarks();
-    if (match.label==="LIVE CHAT") liveBtn?.classList.add("active-livechat");
-    const gls = ["MEGA888","PUSSY888","918KISS","SCR888H5"];
-    if (glBtn && gls.includes(match.label)) glBtn.classList.add("active-gamelog");
-  }else if (tabs.length) loadPage(tabs[tabs.length-1].url);
-
-  // TabBar drag scroll → null-check (DIUBAH)
-  if (tabBar){
-    let isDown=false, startX=0, scrollLeft=0;
-    tabBar.addEventListener('mousedown',(e)=>{ isDown=true; startX=e.pageX-tabBar.offsetLeft; scrollLeft=tabBar.scrollLeft; });
-    ['mouseleave','mouseup'].forEach(ev=> tabBar.addEventListener(ev,()=> isDown=false));
-    tabBar.addEventListener('mousemove',(e)=>{
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - tabBar.offsetLeft;
-      tabBar.scrollLeft = scrollLeft - (x - startX) * 1.5;
+    /* ====== Sidebar ====== */
+    const menuIcon=$("#menuIcon"), sidebar=$("#sidebar"), overlay=$("#overlay"), container=$("#mainContainer"), header=$("#header");
+    function openSidebar(){
+      sidebar?.classList.add("active"); overlay?.classList.add("active"); container?.classList.add("shrink");
+      $(".floating-logo")?.classList.add("shrink"); header?.classList.add("shrink"); $(".tab-bar")?.classList.add("shrink");
+      $("#menuIcon")?.classList.add("active-menu-icon");
+    }
+    window.closeSidebar=function(){
+      sidebar?.classList.remove("active"); overlay?.classList.remove("active"); container?.classList.remove("shrink");
+      $(".floating-logo")?.classList.remove("shrink"); header?.classList.remove("shrink"); $(".tab-bar")?.classList.remove("shrink");
+      $("#menuIcon")?.classList.remove("active-menu-icon");
+    }
+    menuIcon?.addEventListener("click",()=> sidebar?.classList.contains("active")? closeSidebar():openSidebar());
+    overlay?.addEventListener("click",closeSidebar);
+    document.addEventListener("click",(e)=>{
+      const isSidebar=e.target.closest?.("#sidebar"); const isMenuIcon=e.target.closest?.("#menuIcon");
+      if(!isSidebar && !isMenuIcon && sidebar?.classList.contains("active")) closeSidebar();
     });
-    tabBar.addEventListener('wheel',(e)=>{
-      if (e.deltaY!==0){ e.preventDefault(); tabBar.scrollLeft += e.deltaY; }
-    });
-  }
-});
 
-/* === Livechat helpers === */
-function initLivechatNotifListener(){
-  if (!loginData?.email) return;
-  blurphpDb.ref("chats/" + userId).on("value",(snapshot)=>{
-    let hasUnread=false;
-    snapshot.forEach((c)=>{ const m=c.val(); if (m.from==="admin" && m.seenByUser!==true) hasUnread=true; });
-    const dot = document.getElementById("livechatDot");
-    if (dot) dot.style.display = hasUnread ? "inline" : "none";
-  });
-}
-function markLivechatAsRead(){
-  if (!loginData?.email) return;
-  const ref = blurphpDb.ref("chats/" + userId);
-  ref.once("value",(snap)=>{
-    snap.forEach((c)=>{
-      const v=c.val();
-      if (v.from==="admin" && v.seenByUser!==true) c.ref.update({seenByUser:true});
+    /* ====== postMessage whitelist ====== */
+    const allowedOrigins=[
+      "https://5g88-logogame.vercel.app",
+      "https://5g88-userlivechatphp.vercel.app",
+      "https://searcfile.github.io",
+      "https://5g88-main.vercel.app"
+      // "https://5g88-findgame.vercel.app" // tambahkan kalau nanti perlu postMessage
+    ];
+    window.addEventListener("message",async(e)=>{
+      if(!allowedOrigins.includes(e.origin)) return;
+      const data=e.data, livechatDot=$("#livechatDot");
+      if(data?.action==="show-livechat-notif" && livechatDot) livechatDot.style.display="block";
+      else if(data?.action==="hide-livechat-notif" && livechatDot) livechatDot.style.display="none";
+      else if(data?.action==="copy-image-base64" && data.base64){
+        try{
+          const blob=await (await fetch(data.base64)).blob();
+          await navigator.clipboard.write([new ClipboardItem({[blob.type]:blob})]);
+        }catch{ alert("❌ Gagal salin gambar dari base64."); }
+      }else if(data?.action==="copy-image" && data.url){
+        try{
+          const blob=await (await fetch(data.url)).blob();
+          await navigator.clipboard.write([new ClipboardItem({[blob.type]:blob})]);
+        }catch{}
+      }
     });
-  });
-}
-function closeMessage(){ const p = document.getElementById("messagePopup"); if (p) p.style.display="none"; }
-</script>
+
+    /* ====== Livechat notif & sound ====== */
+    let lastNotifTime=0, userHasInteracted=false;
+    document.body.addEventListener("click",()=> userHasInteracted=true);
+    function initLivechatNotifListener(){
+      if(!loginData?.email) return;
+      blurphpDb.ref("chats/"+userId).on("value",(snap)=>{
+        let hasUnread=false;
+        snap.forEach(c=>{ const v=c.val(); if(v.from==="admin" && v.seenByUser!==true) hasUnread=true; });
+        const dot=$("#livechatDot"); if(dot) dot.style.display = hasUnread ? "inline" : "none";
+      });
+    }
+    function markLivechatAsRead(){
+      if(!loginData?.email) return;
+      const ref=blurphpDb.ref("chats/"+userId);
+      ref.once("value",(snap)=>{
+        snap.forEach(c=>{ const v=c.val(); if(v.from==="admin" && v.seenByUser!==true) c.ref.update({seenByUser:true}); });
+      });
+    }
+
+    /* ====== DateTime kecil (optional UI) ====== */
+    function updateDateTime(){
+      const el=$("#dateTime"); if(!el) return;
+      const now=new Date();
+      const pad=n=>String(n).padStart(2,'0');
+      const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      el.textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} ${pad(now.getDate())} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    }
+    setInterval(updateDateTime,1000);
+
+    /* ====== BOOT ====== */
+    window.addEventListener("DOMContentLoaded",()=>{
+      // cleanup relogin state
+      if(sessionStorage.getItem("forceLogout")==="1"){ sessionStorage.removeItem("forceLogout"); cleanUrl(); }
+
+      // ambil profil dari query → simpan → refresh state
+      saveLoginFromURL();
+      try{ loginData=JSON.parse(localStorage.getItem("gmailLogin")||"{}"); }catch{ localStorage.removeItem("gmailLogin"); }
+      if(!checkLogin()) return;
+      if(!loginData || !loginData.email){ location.href=LOGIN_URL; return; }
+
+      // siap userId
+      userId=(loginData.email||"").toLowerCase().replace(/\./g,"_");
+
+      // force logout oleh admin
+      loginDb.ref("logins/admin_override").on("value",(snap)=>{
+        const data=snap.val();
+        if(data?.forceLogoutAll && Array.isArray(data.users) && data.users.includes(userId)){
+          alert("⚠️ System Updated. Please re-login!");
+          localStorage.removeItem("gmailLogin"); sessionStorage.setItem("forceLogout","1");
+          loginDb.ref("logins/admin_override").remove();
+          if(window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
+          location.href=LOGIN_URL;
+        }
+        if(data?.target===userId && data.forceLogout===true){
+          alert("🚫 Kamu telah di-logout oleh sistem.");
+          localStorage.removeItem("gmailLogin"); sessionStorage.setItem("forceLogout","1");
+          loginDb.ref("logins/admin_override").remove();
+          if(window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
+          location.href=LOGIN_URL;
+        }
+      });
+
+      // presence user blurphp
+      const sanitizedEmail=userId;
+      blurphpDb.ref('users/'+sanitizedEmail).update({
+        name:loginData.name||'', email:loginData.email||'', photoURL:loginData.photo||'', lastLoginTime:Date.now()
+      });
+      const connectedRef=blurphpDb.ref(".info/connected");
+      const onlineRef=blurphpDb.ref("users/"+sanitizedEmail+"/online");
+      connectedRef.on("value",s=>{ if(s.val()===true){ onlineRef.set(true); onlineRef.onDisconnect().set(false); } });
+      window.addEventListener("beforeunload",()=> blurphpDb.ref("users/"+sanitizedEmail+"/online").set(false));
+
+      // user dropdown
+      const userNameText=$("#userNameText"), dropdownContent=$("#dropdownContent"), userEmailElem=$("#userEmail");
+      const dropdownWrapper=document.querySelector(".user-dropdown"), userButton=$("#userName");
+      if(userNameText && dropdownContent && dropdownWrapper && userButton){
+        const parts=(loginData.name||"").trim().split(" ");
+        const display=(parts.length>=2 && parts[0].toLowerCase()===parts[1]?.toLowerCase())?parts[0]:(loginData.name||"User");
+        userNameText.textContent=display; if(userEmailElem) userEmailElem.textContent=loginData.email||"";
+        dropdownWrapper.addEventListener("mouseenter",()=> dropdownContent.style.display="block");
+        dropdownWrapper.addEventListener("mouseleave",()=>{ if(!dropdownWrapper.classList.contains("force-open")) dropdownContent.style.display="none"; });
+        userButton?.addEventListener("click",(e)=>{
+          e.stopPropagation(); const isOpen=dropdownWrapper.classList.toggle("force-open");
+          dropdownContent.style.display=isOpen?"block":"none"; userButton.classList.toggle("active-user-button",isOpen);
+        });
+        document.addEventListener("click",(e)=>{
+          if(!dropdownWrapper.contains(e.target)){ dropdownContent.style.display="none"; dropdownWrapper.classList.remove("force-open"); userButton?.classList.remove("active-user-button"); }
+        });
+      }
+
+      // logout
+      $("#logoutBtn")?.addEventListener("click",()=>{
+        localStorage.removeItem("gmailLogin"); sessionStorage.setItem("forceLogout","1");
+        if(window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
+        location.href=LOGIN_URL;
+      });
+
+      // livechat: dot & sound
+      blurphpDb.ref("chats/"+userId).on("child_added",(snap)=>{
+        const msg=snap.val(); if(!msg || msg.from!=="admin") return;
+        const t=msg.time||Date.now();
+        if(t>lastNotifTime){
+          lastNotifTime=t;
+          const dot=$("#livechatDot"), snd=$("#notifSound");
+          if(dot) dot.style.display="inline";
+          if(snd && userHasInteracted){ snd.currentTime=0; snd.play().catch(()=>{}); }
+        }
+      });
+      initLivechatNotifListener();
+
+      // tabs boot
+      renderTabs(); updateGameLogCheckmarks();
+      const tabs=getTabs(), activeUrl=localStorage.getItem("activeTabUrl");
+      const match=tabs.find(t=>t.url===activeUrl);
+      const liveBtn=$("#liveChatBtn"), linkBtn=$("#linkDownloadBtn"), glBtn=$("#gameLogBtn");
+      liveBtn?.classList.remove("active-livechat"); linkBtn?.classList.remove("active-linkdownload"); glBtn?.classList.remove("active-gamelog");
+      if(match){
+        loadPage(match.url); updateGameLogCheckmarks();
+        if(match.label==="LIVE CHAT") liveBtn?.classList.add("active-livechat");
+        const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"]; if(glBtn && gls.includes(match.label)) glBtn.classList.add("active-gamelog");
+      }else if(tabs.length){ loadPage(tabs[tabs.length-1].url); }
+
+      // tabbar drag-scroll
+      if(tabBar){
+        let isDown=false,startX=0,scrollLeft=0;
+        tabBar.addEventListener("mousedown",(e)=>{ isDown=true; startX=e.pageX-tabBar.offsetLeft; scrollLeft=tabBar.scrollLeft; });
+        ["mouseleave","mouseup"].forEach(ev=> tabBar.addEventListener(ev,()=> isDown=false));
+        tabBar.addEventListener("mousemove",(e)=>{ if(!isDown) return; e.preventDefault(); const x=e.pageX-tabBar.offsetLeft; tabBar.scrollLeft=scrollLeft-(x-startX)*1.5; });
+        tabBar.addEventListener("wheel",(e)=>{ if(e.deltaY!==0){ e.preventDefault(); tabBar.scrollLeft+=e.deltaY; } });
+      }
+
+      updateDateTime();
+    });
+  })();
+  </script>
 </body>
 </html>
