@@ -255,7 +255,7 @@
         db.ref("logins/blocked_users/" + emailKey).once("value").then(snapshot => {
           const isBlocked = snapshot.val();
           if (isBlocked === true) {
-            alert("⚠️ Access denied: Please contact us 5G88!.");
+            alert("⚠️ Access denied: You need permission at 5G88!.");
             auth.signOut();
             loginBtn.disabled = false;
             loginBtn.innerText = "Login with Google";
