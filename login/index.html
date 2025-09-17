@@ -184,14 +184,29 @@
 </body>
 
 <script>
-(() => {
-  /** =============================
-   *  ⚙️  SETUP
-   *  ============================= */
-  const REDIRECT_URL = 'https://5g88-main.vercel.app/'; // <<— tujuan setelah login
-  const ENABLE_DETERRANTS = true; // set false kalau tak mau blok context menu / devtools
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.onkeydown = function (e) {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
+      return false;
+    }
+  };
 
-  // Firebase config (punyamu)
+  function closePopup() {
+    document.getElementById("popup").style.display = "none";
+  }
+
+  window.addEventListener("click", function(e) {
+    const popup = document.getElementById("popup");
+    const box = document.getElementById("popupBox");
+    if (e.target === popup) {
+      popup.style.display = "none";
+    }
+  });
+
+  window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("popupBox").classList.add("zoom-in");
+  });
+
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
     authDomain: "logins-d615f.firebaseapp.com",
@@ -202,120 +217,90 @@
     appId: "1:580872784703:web:07957551c3214f3d32618a"
   };
 
-  /** =============================
-   *  🧩  HELPERS
-   *  ============================= */
-  const $ = s => document.querySelector(s);
-  const fmtTime = (d = new Date()) => {
-    const pad = n => String(n).padStart(2,'0');
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-  };
-  const sanitizeEmailKey = (email) => String(email||'').toLowerCase().replace(/[.#$[\]/]/g,'_');
-
-  // UI busy state sederhana
-  function setLoginBusy(busy){
-    const btn = $('#googleLoginBtn');
-    if(!btn) return;
-    btn.disabled = !!busy;
-    btn.textContent = busy ? 'Logging in...' : 'Login with Google';
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
   }
 
-  // optional deterrents (tidak benar-benar aman, hanya pemanis)
-  function initDeterrents(){
-    if(!ENABLE_DETERRANTS) return;
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-      const k = e.key?.toUpperCase?.() || '';
-      if (k === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k))) {
-        e.preventDefault();
-      }
-    });
-  }
-
-  // Popup close (OK & klik overlay)
-  function initPopup(){
-    const overlay = $('#popup');
-    const box = $('#popupBox');
-    if(!overlay || !box) return;
-    window.closePopup = () => (overlay.style.display = 'none');
-    window.addEventListener('click', (e) => { if (e.target === overlay) window.closePopup(); });
-  }
-
-  /** =============================
-   *  🔥  FIREBASE INIT
-   *  ============================= */
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
-  const db   = firebase.database();
+  const db = firebase.database();
 
-  /** =============================
-   *  🔐  LOGIN FLOW
-   *  ============================= */
-  async function signInWithGoogle(){
-    setLoginBusy(true);
-    try{
-      const provider = new firebase.auth.GoogleAuthProvider();
-      const { user } = await auth.signInWithPopup(provider);
-      if(!user) throw new Error('User not found');
-
-      // cek diblokir?
-      const key = sanitizeEmailKey(user.email);
-      const snap = await db.ref(`logins/blocked_users/${key}`).get();
-      if (snap.val() === true){
-        await auth.signOut();
-        alert('⚠️ Access denied: Please contact 5G88.');
-        return;
-      }
-
-      // simpan jejak login
-      await db.ref(`logins/${key}`).set({
-        name: user.displayName || '',
-        email: user.email || '',
-        loginAt: fmtTime(new Date())
-      });
-
-      // simpan di localStorage domain INI
-      localStorage.setItem('gmailLogin', JSON.stringify({
-        name: user.displayName || '',
-        email: user.email || '',
-        photo: user.photoURL || ''
-      }));
-
-      // ⚠️ CATATAN PENTING tentang "klik 2x login":
-      // Kamu redirect ke DOMAIN BERBEDA (REDIRECT_URL). Session Firebase tidak ikut pindah origin.
-      // Di halaman tujuan (domain lain), JANGAN panggil signInWithPopup lagi.
-      // Cukup baca query params di sana & simpan ke localStorage domain tujuan.
-      const qs = new URLSearchParams({
-        name:  user.displayName || '',
-        email: user.email || '',
-        photo: user.photoURL || ''
-      });
-      window.location.href = `${REDIRECT_URL}?${qs.toString()}`;
-    }catch(err){
-      console.error('Login failed:', err);
-      // pesan yang ramah
-      let msg = 'Login gagal. Silakan coba lagi.';
-      if (err?.code === 'auth/popup-blocked')       msg = 'Popup diblokir browser. Izinkan popup untuk melanjutkan.';
-      if (err?.code === 'auth/unauthorized-domain') msg = 'Domain ini belum diizinkan di Firebase Auth (Authorized domains).';
-      alert(msg);
-    }finally{
-      setLoginBusy(false);
-    }
+  function formatTimestamp(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    const mm = String(date.getMinutes()).padStart(2, '0');
+    const ss = String(date.getSeconds()).padStart(2, '0');
+    return `${y} - ${m} - ${d} ${hh}:${mm}:${ss}`;
   }
 
-  /** =============================
-   *  🚀  BOOT
-   *  ============================= */
-  document.addEventListener('DOMContentLoaded', () => {
-    initDeterrents();
-    initPopup();
-    const loginBtn = $('#googleLoginBtn');
-    if (loginBtn) loginBtn.addEventListener('click', signInWithGoogle);
-    const yearEl = $('#year');
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-  });
-})();
-</script>
+  function signInWithGoogle() {
+    const loginBtn = document.getElementById("googleLoginBtn");
+    loginBtn.disabled = true;
+    loginBtn.innerText = "Logging in...";
 
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .then(result => {
+        const user = result.user;
+        if (!user) {
+          alert("Login gagal: User tidak ditemukan.");
+          loginBtn.disabled = false;
+          loginBtn.innerText = "Login with Google";
+          return;
+        }
+
+        const emailKey = user.email.replace(/\./g, "_");
+
+        db.ref("logins/blocked_users/" + emailKey).once("value").then(snapshot => {
+          const isBlocked = snapshot.val();
+          if (isBlocked === true) {
+            alert("⚠️ Access denied: Please contact us 5G88!.");
+            auth.signOut();
+            loginBtn.disabled = false;
+            loginBtn.innerText = "Login with Google";
+            return;
+          }
+
+          // ✅ Jika tidak diblokir, lanjut simpan login
+          db.ref("logins/" + emailKey).set({
+            name: user.displayName,
+            email: user.email,
+            loginAt: formatTimestamp(new Date())
+          })
+          .then(() => {
+            localStorage.setItem("gmailLogin", JSON.stringify({
+              name: user.displayName,
+              email: user.email,
+              photo: user.photoURL
+            }));
+            const name = encodeURIComponent(user.displayName);
+            const email = encodeURIComponent(user.email);
+            const photoURL = encodeURIComponent(user.photoURL || "");
+            window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photoURL}`;
+          })
+          .catch(err => {
+            console.error("❌ Gagal simpan ke Firebase:", err);
+            alert("Gagal simpan data login. Coba lagi.");
+            loginBtn.disabled = false;
+            loginBtn.innerText = "Login with Google";
+          });
+        });
+      })
+      .catch(error => {
+        console.error("❌ Login gagal:", error);
+        alert("Login gagal. Coba lagi.");
+        loginBtn.disabled = false;
+        loginBtn.innerText = "Login with Google";
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const loginBtn = document.getElementById("googleLoginBtn");
+    if (loginBtn) {
+      loginBtn.addEventListener("click", signInWithGoogle);
+    }
+  });
+</script>
 </body>
 </html>
