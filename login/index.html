@@ -1,66 +1,197 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <title>5G88 Login</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login</title>
   <link rel="icon" type="image/png" href="https://i.imgur.com/uGijtpF.png" />
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
-    html,body{height:100%}
-    body{
-      margin:0;background:url('https://i.imgur.com/UCZqSrT.png') center/cover no-repeat fixed;
-      color:#fff;font-family:system-ui,Segoe UI,Inter,Arial;display:grid;place-items:center;
+    body {
+    background: url('https://i.imgur.com/UCZqSrT.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    font-family: sans-serif;
+    margin: 0;
+  }
+
+  .login-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    text-align: center;
+    padding: 50px 20px;
+    border: 2px solid gold;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    width: 450px;
+    min-height: 130px;
+    margin: 300px auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* untuk Safari */
+  }
+
+  .login-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.9);
+  }
+
+  .login-box img {
+    max-width: 380px;
+    margin-bottom: 25px;
+    margin-top: -20px;
+  }
+
+  .login-btn {
+    background: #FFD700;
+    color: #000;
+    border: 2px solid gold;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .login-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    font-weight: bold;
+    color: white;
+    border: 2px solid white;
+  }
+    @keyframes zoomIn {
+      from {
+        transform: scale(0.7);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
-    .login-box{
-      width:460px;padding:34px 24px;text-align:center;border:2px solid gold;border-radius:12px;
-      background:rgba(0,0,0,.4);box-shadow:0 0 12px rgba(255,215,0,.6);
-      transition:transform .25s ease, box-shadow .25s ease
+    .zoom-in {
+  animation: zoomIn 0.3s ease forwards;
+}
+    .popup-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
     }
-    .login-box:hover{transform:scale(1.02);box-shadow:0 0 18px rgba(255,215,0,.9)}
-    .login-box img{max-width:360px;display:block;margin:0 auto 20px}
-    .login-btn{
-      display:inline-block;margin-top:8px;padding:10px 20px;border:2px solid gold;background:#FFD700;
-      color:#000;font-size:18px;border-radius:8px;cursor:pointer
+
+    /* Popup box */
+    .popup-box {
+      border: 2px solid gold;
+      border-radius: 12px;
+      padding: 40px 20px 30px;
+      text-align: center;
+      position: relative;
+      width: 550px;
+      min-height: 650px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
-    .login-btn:hover{filter:brightness(1.05)}
-    .login-btn:disabled{opacity:.6;cursor:not-allowed}
-    #msg{color:#ffd700;margin-top:12px;min-height:20px}
-    /* popup welcome (opsional) */
-    .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999}
-    .popup-box{border:2px solid gold;border-radius:12px;padding:40px 20px 30px;text-align:center;position:relative;width:550px;min-height:320px;box-shadow:0 0 10px rgba(255,215,0,.7);background:rgba(0,0,0,.4);backdrop-filter:blur(10px)}
-    .popup-close{position:absolute;top:10px;right:10px;background:#111;border:2px solid gold;border-radius:6px;color:gold;font-size:16px;cursor:pointer;padding:2px 8px}
-    .popup-title{font-size:26px;font-weight:700;margin:6px 0 12px;color:gold}
-    .popup-btn{background:transparent;border:2px solid gold;color:gold;padding:8px 16px;border-radius:6px;cursor:pointer}
+
+  
+    .popup-box img {
+      max-width: 350px;
+      margin-bottom: 20px;
+    }
+
+    .popup-btn {
+  background: transparent;
+  border: 2px solid gold;
+  color: gold;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px auto 0; /* auto kiri kanan supaya center, margin top 10px */
+  display: inline-block;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+    .popup-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  color: gold;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+      background: #111;
+      border: 2px solid gold;
+      border-radius: 5px;
+}
+    .popup-close:hover {
+  transform: scale(1.1);
+  color: gold;
+  font-weight: bold;
+}
+   .popup-btn:hover {
+  transform: scale(1.05);
+  background: gold;
+  color: black;
+}
+    /* Close X at top right */
+    .popup-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .popup-title {
+  font-size: 30px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: gold;
+}
+    
   </style>
 </head>
 <body>
-
-  <!-- Popup (opsional) -->
+  
   <div class="popup-overlay" id="popup">
-    <div class="popup-box" id="popupBox">
-      <button class="popup-close" onclick="closePopup()">X</button>
-      <p class="popup-title">Welcome to 5G88!</p>
-      <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88" style="max-width:220px;margin:10px auto 16px;display:block">
-      <button class="popup-btn" onclick="closePopup()">OK</button>
-    </div>
+  <div class="popup-box" id="popupBox">
+    <button class="popup-close" onclick="closePopup()">X</button>
+    <p class="popup-title">Welcome to 5G88!</p>
+    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" class="popup-logo">
+    <button class="popup-btn" onclick="closePopup()">OK</button>
   </div>
+</div>
 
   <div class="login-box">
-    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88">
-    <button id="googleLoginBtn" class="login-btn">Login with Google</button>
-    <p id="msg"></p>
+    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo">
+    <button class="login-btn" id="googleLoginBtn">Login with Google</button>
   </div>
+</body>
 
 <script>
 (() => {
-  /* ========= KONFIG ========= */
-  // Alamat homepage (domain utama)
-  const HOME_URL = "https://5g88-main.vercel.app/";   // <-- ganti kalau beda
+  /** =============================
+   *  ⚙️  SETUP
+   *  ============================= */
+  const REDIRECT_URL = 'https://5g88-main.vercel.app/'; // <<— tujuan setelah login
+  const ENABLE_DETERRANTS = true; // set false kalau tak mau blok context menu / devtools
 
-  // Firebase project untuk LOGIN
+  // Firebase config (punyamu)
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
     authDomain: "logins-d615f.firebaseapp.com",
@@ -71,94 +202,120 @@
     appId: "1:580872784703:web:07957551c3214f3d32618a"
   };
 
-  /* ========= INIT ========= */
+  /** =============================
+   *  🧩  HELPERS
+   *  ============================= */
+  const $ = s => document.querySelector(s);
+  const fmtTime = (d = new Date()) => {
+    const pad = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+  const sanitizeEmailKey = (email) => String(email||'').toLowerCase().replace(/[.#$[\]/]/g,'_');
+
+  // UI busy state sederhana
+  function setLoginBusy(busy){
+    const btn = $('#googleLoginBtn');
+    if(!btn) return;
+    btn.disabled = !!busy;
+    btn.textContent = busy ? 'Logging in...' : 'Login with Google';
+  }
+
+  // optional deterrents (tidak benar-benar aman, hanya pemanis)
+  function initDeterrents(){
+    if(!ENABLE_DETERRANTS) return;
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      const k = e.key?.toUpperCase?.() || '';
+      if (k === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k))) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  // Popup close (OK & klik overlay)
+  function initPopup(){
+    const overlay = $('#popup');
+    const box = $('#popupBox');
+    if(!overlay || !box) return;
+    window.closePopup = () => (overlay.style.display = 'none');
+    window.addEventListener('click', (e) => { if (e.target === overlay) window.closePopup(); });
+  }
+
+  /** =============================
+   *  🔥  FIREBASE INIT
+   *  ============================= */
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db   = firebase.database();
 
-  const $ = s => document.querySelector(s);
-  const btn = $('#googleLoginBtn');
-  const msgEl = $('#msg');              // opsional, kalau ada <div id="msg"></div>
-
-  const setMsg = (t) => { if (msgEl) msgEl.textContent = t; };
-  const p2 = n => String(n).padStart(2,'0');
-  const fmtTime = (d=new Date()) => `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`;
-  const keyOf = (email) => String(email||'').toLowerCase().replace(/[.#$[\]/]/g,'_');
-
-  // Tutup popup welcome, bila ada
-  function initPopup(){
-    const overlay = $('#popup');
-    if (!overlay) return;
-    window.closePopup = () => overlay.style.display = 'none';
-    window.addEventListener('click', (e)=>{ if (e.target === overlay) closePopup(); });
-  }
-
-  /* ========= REDIRECT DENGAN PROFIL ========= */
-  function goHomeWithProfile(user){
-    const qs = new URLSearchParams({
-      name:  user.displayName || '',
-      email: user.email || '',
-      photo: user.photoURL || ''
-    }).toString();
-    // Pakai replace agar tidak kembali ke login saat Back
-    location.replace(`${HOME_URL}?${qs}`);
-  }
-
-  /* ========= LOGIN ========= */
+  /** =============================
+   *  🔐  LOGIN FLOW
+   *  ============================= */
   async function signInWithGoogle(){
-    if (btn) btn.disabled = true;
-    setMsg('Signing in...');
+    setLoginBusy(true);
     try{
-      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       const provider = new firebase.auth.GoogleAuthProvider();
       const { user } = await auth.signInWithPopup(provider);
       if(!user) throw new Error('User not found');
 
-      // cek blocklist
-      const key = keyOf(user.email);
-      const blocked = await db.ref(`logins/blocked_users/${key}`).get();
-      if (blocked.val() === true){
+      // cek diblokir?
+      const key = sanitizeEmailKey(user.email);
+      const snap = await db.ref(`logins/blocked_users/${key}`).get();
+      if (snap.val() === true){
         await auth.signOut();
-        setMsg('Access denied. Contact 5G88.');
-        if (btn) btn.disabled = false;
+        alert('⚠️ Access denied: Please contact 5G88.');
         return;
       }
 
-      // catat login
+      // simpan jejak login
       await db.ref(`logins/${key}`).set({
         name: user.displayName || '',
         email: user.email || '',
-        loginAt: fmtTime()
+        loginAt: fmtTime(new Date())
       });
 
-      // kirim profil → homepage akan simpan ke localStorage & bersihkan URL
-      goHomeWithProfile(user);
+      // simpan di localStorage domain INI
+      localStorage.setItem('gmailLogin', JSON.stringify({
+        name: user.displayName || '',
+        email: user.email || '',
+        photo: user.photoURL || ''
+      }));
 
-    }catch(e){
-      console.error(e);
-      const m =
-        e?.code === 'auth/popup-blocked'       ? 'Popup diblokir. Izinkan popup.'
-      : e?.code === 'auth/unauthorized-domain' ? 'Domain ini belum diizinkan di Firebase Auth.'
-      : e?.code === 'auth/cancelled-popup-request' ? 'Popup login dibatalkan. Coba lagi.'
-      : e?.code === 'auth/popup-closed-by-user' ? 'Popup ditutup sebelum selesai.'
-      : 'Login gagal. Coba lagi.';
-      setMsg(m);
-      if (btn) btn.disabled = false;
+      // ⚠️ CATATAN PENTING tentang "klik 2x login":
+      // Kamu redirect ke DOMAIN BERBEDA (REDIRECT_URL). Session Firebase tidak ikut pindah origin.
+      // Di halaman tujuan (domain lain), JANGAN panggil signInWithPopup lagi.
+      // Cukup baca query params di sana & simpan ke localStorage domain tujuan.
+      const qs = new URLSearchParams({
+        name:  user.displayName || '',
+        email: user.email || '',
+        photo: user.photoURL || ''
+      });
+      window.location.href = `${REDIRECT_URL}?${qs.toString()}`;
+    }catch(err){
+      console.error('Login failed:', err);
+      // pesan yang ramah
+      let msg = 'Login gagal. Silakan coba lagi.';
+      if (err?.code === 'auth/popup-blocked')       msg = 'Popup diblokir browser. Izinkan popup untuk melanjutkan.';
+      if (err?.code === 'auth/unauthorized-domain') msg = 'Domain ini belum diizinkan di Firebase Auth (Authorized domains).';
+      alert(msg);
+    }finally{
+      setLoginBusy(false);
     }
   }
 
-  /* ========= BOOT ========= */
+  /** =============================
+   *  🚀  BOOT
+   *  ============================= */
   document.addEventListener('DOMContentLoaded', () => {
+    initDeterrents();
     initPopup();
-
-    // Jika user sudah pernah login di domain ini, langsung redirect
-    auth.onAuthStateChanged((user) => {
-      if (user) goHomeWithProfile(user);
-    });
-
-    btn?.addEventListener('click', signInWithGoogle);
+    const loginBtn = $('#googleLoginBtn');
+    if (loginBtn) loginBtn.addEventListener('click', signInWithGoogle);
+    const yearEl = $('#year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
   });
 })();
 </script>
+
 </body>
 </html>
