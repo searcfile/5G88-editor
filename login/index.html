@@ -56,11 +56,11 @@
 
 <script>
 (() => {
-  // ====== CONFIG ======
-  // ✅ Redirect ke homepage SAME-ORIGIN supaya nyambung dengan kode main page kamu
-  const HOME_URL = location.origin + "/";  // ganti ke "/main/" kalau homepage kamu di subpath
+  /* ========= KONFIG ========= */
+  // Alamat homepage (domain utama)
+  const HOME_URL = "https://5g88-main.vercel.app/";   // <-- ganti kalau beda
 
-  // Firebase project utk login (punyamu)
+  // Firebase project untuk LOGIN
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
     authDomain: "logins-d615f.firebaseapp.com",
@@ -71,20 +71,21 @@
     appId: "1:580872784703:web:07957551c3214f3d32618a"
   };
 
-  // ====== INIT ======
+  /* ========= INIT ========= */
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db   = firebase.database();
 
   const $ = s => document.querySelector(s);
   const btn = $('#googleLoginBtn');
-  const msg = $('#msg');
+  const msgEl = $('#msg');              // opsional, kalau ada <div id="msg"></div>
 
-  const sanitizeKey = (email) => String(email||'').toLowerCase().replace(/[.#$[\]/]/g,'_');
+  const setMsg = (t) => { if (msgEl) msgEl.textContent = t; };
   const p2 = n => String(n).padStart(2,'0');
   const fmtTime = (d=new Date()) => `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`;
+  const keyOf = (email) => String(email||'').toLowerCase().replace(/[.#$[\]/]/g,'_');
 
-  // Popup
+  // Tutup popup welcome, bila ada
   function initPopup(){
     const overlay = $('#popup');
     if (!overlay) return;
@@ -92,25 +93,34 @@
     window.addEventListener('click', (e)=>{ if (e.target === overlay) closePopup(); });
   }
 
-  // ====== LOGIN FLOW ======
-  async function signInWithGoogle(){
-    btn.disabled = true; msg.textContent = 'Signing in...';
-    try{
-      // simpan sesi di browser (tetap aman di origin ini)
-      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+  /* ========= REDIRECT DENGAN PROFIL ========= */
+  function goHomeWithProfile(user){
+    const qs = new URLSearchParams({
+      name:  user.displayName || '',
+      email: user.email || '',
+      photo: user.photoURL || ''
+    }).toString();
+    // Pakai replace agar tidak kembali ke login saat Back
+    location.replace(`${HOME_URL}?${qs}`);
+  }
 
+  /* ========= LOGIN ========= */
+  async function signInWithGoogle(){
+    if (btn) btn.disabled = true;
+    setMsg('Signing in...');
+    try{
+      await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       const provider = new firebase.auth.GoogleAuthProvider();
-      const cred = await auth.signInWithPopup(provider);
-      const user = cred?.user;
+      const { user } = await auth.signInWithPopup(provider);
       if(!user) throw new Error('User not found');
 
       // cek blocklist
-      const key = sanitizeKey(user.email);
-      const blk = await db.ref(`logins/blocked_users/${key}`).get();
-      if (blk.val() === true){
+      const key = keyOf(user.email);
+      const blocked = await db.ref(`logins/blocked_users/${key}`).get();
+      if (blocked.val() === true){
         await auth.signOut();
-        msg.textContent = 'Access denied. Contact 5G88.';
-        btn.disabled = false;
+        setMsg('Access denied. Contact 5G88.');
+        if (btn) btn.disabled = false;
         return;
       }
 
@@ -121,28 +131,31 @@
         loginAt: fmtTime()
       });
 
-      // kirim profil via query → akan dibaca di halaman utama, disimpan ke localStorage, lalu URL dibersihkan
-      const qs = new URLSearchParams({
-        name:  user.displayName || '',
-        email: user.email || '',
-        photo: user.photoURL || ''
-      }).toString();
+      // kirim profil → homepage akan simpan ke localStorage & bersihkan URL
+      goHomeWithProfile(user);
 
-      // ✅ replace agar tombol Back tidak kembali ke login
-      location.replace(`${HOME_URL}?${qs}`);
     }catch(e){
       console.error(e);
-      msg.textContent =
+      const m =
         e?.code === 'auth/popup-blocked'       ? 'Popup diblokir. Izinkan popup.'
-      : e?.code === 'auth/unauthorized-domain' ? 'Domain ini belum diizinkan di Firebase Auth (Authorized domains).'
+      : e?.code === 'auth/unauthorized-domain' ? 'Domain ini belum diizinkan di Firebase Auth.'
+      : e?.code === 'auth/cancelled-popup-request' ? 'Popup login dibatalkan. Coba lagi.'
+      : e?.code === 'auth/popup-closed-by-user' ? 'Popup ditutup sebelum selesai.'
       : 'Login gagal. Coba lagi.';
-      btn.disabled = false;
+      setMsg(m);
+      if (btn) btn.disabled = false;
     }
   }
 
-  // ====== BOOT ======
+  /* ========= BOOT ========= */
   document.addEventListener('DOMContentLoaded', () => {
     initPopup();
+
+    // Jika user sudah pernah login di domain ini, langsung redirect
+    auth.onAuthStateChanged((user) => {
+      if (user) goHomeWithProfile(user);
+    });
+
     btn?.addEventListener('click', signInWithGoogle);
   });
 })();
