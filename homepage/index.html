@@ -183,407 +183,422 @@
   </div>
 
   <!-- Assets & Libs -->
-  <audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  <script>
-  (()=>{
-    /* ====== Guard anti-inspect (opsional) ====== */
-    document.addEventListener("contextmenu", e=>e.preventDefault());
-    document.addEventListener("keydown", e=>{
-      const k=(e.key||"").toUpperCase();
-      if(k==="F12"||(e.ctrlKey&&e.shiftKey&&["I","J","C"].includes(k))) e.preventDefault();
+<script>
+(()=>{
+  /* ====== Guard anti-inspect (opsional) ====== */
+  document.addEventListener("contextmenu", e=>e.preventDefault());
+  document.addEventListener("keydown", e=>{
+    const k=(e.key||"").toUpperCase();
+    if(k==="F12"||(e.ctrlKey&&e.shiftKey&&["I","J","C"].includes(k))) e.preventDefault();
+  });
+
+  /* ====== Firebase Apps ====== */
+  const noticeCfg={
+    apiKey:"AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
+    authDomain:"notice-83ae5.firebaseapp.com",
+    databaseURL:"https://notice-83ae5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"notice-83ae5",
+    storageBucket:"notice-83ae5.appspot.com",
+    messagingSenderId:"268106877488",
+    appId:"1:268106877488:web:798beadfe45104297e7bf5",
+    measurementId:"G-8EY4MCZKK2"
+  };
+  if(!firebase.apps.length) firebase.initializeApp(noticeCfg);
+  const db=firebase.database();
+
+  const blurphpApp=firebase.initializeApp({
+    apiKey:"AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+    authDomain:"blurphp.firebaseapp.com",
+    databaseURL:"https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"blurphp",
+    storageBucket:"blurphp.appspot.com",
+    messagingSenderId:"593904200464",
+    appId:"1:593904200464:web:cea7bc1360532c20d99395",
+    measurementId:"G-R494S2DPZ5"
+  },"blurphpApp");
+  const blurphpDb=blurphpApp.database();
+
+  const loginApp=firebase.initializeApp({
+    apiKey:"AIzaSyCLHO-NGVdMVAZKaqBOf7WBzRQh7NL3XJ8",
+    authDomain:"logins-d615f.firebaseapp.com",
+    databaseURL:"https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"logins-d615f",
+    storageBucket:"logins-d615f.appspot.com",
+    messagingSenderId:"648022690285",
+    appId:"1:648022690285:web:aefad61a2f46e6cf39f05b"
+  },"loginApp");
+  const loginDb=loginApp.database();
+
+  /* ====== State Login (2 domain) ====== */
+  let loginData=JSON.parse(localStorage.getItem("gmailLogin")||"{}");
+  let userId="";
+  const LOGIN_URL='https://5g88-login.vercel.app/';   // ⬅️ FIX: pakai domain login, bukan location.origin
+
+  const $=s=>document.querySelector(s);
+  const tabBar=$("#tabBar"), iframe=$("#pageFrame");
+  const notifButton=$("#notifButton"), notifDot=$("#notifDot"), popup=$("#messagePopup"), content=$("#messageContent");
+  const gameLogBtn=$("#gameLogBtn"), gameLogDropdown=$("#gameLogDropdown");
+
+  /* Helpers */
+  const isValidEmail=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  const cleanUrl=()=>history.replaceState({},document.title,location.origin+location.pathname);
+
+  function saveLoginFromURL(){
+    const p=new URLSearchParams(location.search);
+    const name=p.get("name"), email=p.get("email"), photo=p.get("photo");
+    if(name && email && isValidEmail(email)){
+      localStorage.setItem("gmailLogin",JSON.stringify({name, email:email.toLowerCase(), photo:photo||""}));
+      cleanUrl();
+    }
+  }
+  function checkLogin(){
+    if(!localStorage.getItem("gmailLogin")){
+      location.replace(LOGIN_URL);            // ⬅️ FIX: replace agar tidak loop saat Back
+      return false;
+    }
+    return true;
+  }
+
+  /* ====== Notifikasi atas ====== */
+  db.ref("notifikasi/pesanTerbaru").on("value",(snap)=>{
+    const data=snap.val(); if(!data||!data.message||!data.timestamp) return;
+    const currentEmail=(loginData?.email||"guest");
+    const seenKey=`seenNotif_${data.timestamp}_${currentEmail}`;
+    if(!localStorage.getItem(seenKey)){
+      if(notifButton){ notifButton.dataset.message=data.message; notifButton.dataset.timestamp=data.timestamp; }
+      localStorage.setItem("latestNotifMessage",data.message);
+      localStorage.setItem("latestNotifTimestamp",data.timestamp);
+      if(notifDot) notifDot.style.display="block";
+    }
+  });
+  notifButton?.addEventListener("click",()=>{
+    const message=notifButton.dataset.message, ts=Number(notifButton.dataset.timestamp);
+    if(!message||!ts) return;
+    const d=new Date(ts), ok=!isNaN(d.getTime());
+    if(content){
+      content.innerHTML = `
+        <div>${message}</div>
+        <div style="text-align:right;font-size:12px;color:#aaa;margin-top:10px;">
+          ${ok?`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`:`Waktu tidak valid`}
+        </div>`;
+    }
+    popup.style.display="block";
+    setTimeout(()=>{
+      const r=notifButton.getBoundingClientRect();
+      popup.style.position="fixed";
+      popup.style.top=`${r.bottom+4}px`;
+      popup.style.right=`${window.innerWidth-r.right}px`;
+      popup.style.left="auto";
+    },0);
+    if(notifDot) notifDot.style.display="none";
+    const currentEmail=(loginData?.email||"guest");
+    localStorage.setItem(`seenNotif_${ts}_${currentEmail}`,"1");
+  });
+  window.closeMessage=()=>{ if(popup) popup.style.display="none"; };
+
+  /* ====== GameLog dropdown ====== */
+  gameLogBtn?.addEventListener("click",(e)=>{
+    e.stopPropagation();
+    const r=gameLogBtn.getBoundingClientRect();
+    gameLogDropdown.style.left=`${r.left}px`;
+    gameLogDropdown.style.top =`${r.bottom+6}px`;
+    gameLogDropdown.style.display=gameLogDropdown.style.display==="block"?"none":"block";
+  });
+  document.addEventListener("click",(e)=>{
+    if(!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) gameLogDropdown.style.display="none";
+  });
+  iframe?.addEventListener("load",()=>{
+    try{ iframe.contentWindow.document.addEventListener("click",()=> gameLogDropdown.style.display="none"); }catch{}
+  });
+  window.addEventListener("blur",()=>{ if(gameLogDropdown.style.display==="block") gameLogDropdown.style.display="none"; });
+
+  /* ====== Tabs ====== */
+  function saveTabs(t){ localStorage.setItem("openTabs",JSON.stringify(t)); }
+  function getTabs(){
+    try{ return JSON.parse(localStorage.getItem("openTabs")||"[]"); }
+    catch{ localStorage.removeItem("openTabs"); return []; }
+  }
+  function updateGameLogCheckmarks(){
+    const labelsOpen=getTabs().map(t=>t.label);
+    document.querySelectorAll('#gameLogDropdown a').forEach(a=>{
+      const label=a.getAttribute("data-label"); const icon=a.querySelector(".check-icon");
+      const open=labelsOpen.includes(label);
+      a.classList.toggle("tab-open",open);
+      if(icon) icon.style.display=open?"inline":"none";
     });
-
-    /* ====== Firebase Apps ====== */
-    const noticeCfg={
-      apiKey:"AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
-      authDomain:"notice-83ae5.firebaseapp.com",
-      databaseURL:"https://notice-83ae5-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId:"notice-83ae5",
-      storageBucket:"notice-83ae5.appspot.com",
-      messagingSenderId:"268106877488",
-      appId:"1:268106877488:web:798beadfe45104297e7bf5",
-      measurementId:"G-8EY4MCZKK2"
+  }
+  function loadPage(url){
+    const loader=$("#iframeLoader"); const frame=$("#pageFrame");
+    if(!frame) return;
+    frame.style.display="none";                // ⬅️ sembunyikan dulu supaya tak putih
+    if(loader) loader.style.display="flex";
+    frame.onload=()=>{
+      if(loader) loader.style.display="none";
+      frame.style.display="block";            // ⬅️ tampilkan setelah load
     };
-    if(!firebase.apps.length) firebase.initializeApp(noticeCfg);
-    const db=firebase.database();
-
-    const blurphpApp=firebase.initializeApp({
-      apiKey:"AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
-      authDomain:"blurphp.firebaseapp.com",
-      databaseURL:"https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId:"blurphp",
-      storageBucket:"blurphp.appspot.com",
-      messagingSenderId:"593904200464",
-      appId:"1:593904200464:web:cea7bc1360532c20d99395",
-      measurementId:"G-R494S2DPZ5"
-    },"blurphpApp");
-    const blurphpDb=blurphpApp.database();
-
-    const loginApp=firebase.initializeApp({
-      apiKey:"AIzaSyCLHO-NGVdMVAZKaqBOf7WBzRQh7NL3XJ8",
-      authDomain:"logins-d615f.firebaseapp.com",
-      databaseURL:"https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId:"logins-d615f",
-      storageBucket:"logins-d615f.appspot.com",
-      messagingSenderId:"648022690285",
-      appId:"1:648022690285:web:aefad61a2f46e6cf39f05b"
-    },"loginApp");
-    const loginDb=loginApp.database();
-
-    /* ====== State Login (same-origin) ====== */
-    let loginData=JSON.parse(localStorage.getItem("gmailLogin")||"{}");
-    let userId="";
-    const LOGIN_URL=location.origin+"/login/";
-
-    const $=s=>document.querySelector(s);
-    const tabBar=$("#tabBar"), iframe=$("#pageFrame");
-    const notifButton=$("#notifButton"), notifDot=$("#notifDot"), popup=$("#messagePopup"), content=$("#messageContent");
-    const gameLogBtn=$("#gameLogBtn"), gameLogDropdown=$("#gameLogDropdown");
-
-    /* Helpers */
-    const isValidEmail=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-    const cleanUrl=()=>history.replaceState({},document.title,location.origin+location.pathname);
-
-    function saveLoginFromURL(){
-      const p=new URLSearchParams(location.search);
-      const name=p.get("name"), email=p.get("email"), photo=p.get("photo");
-      if(name && email && isValidEmail(email)){
-        localStorage.setItem("gmailLogin",JSON.stringify({name, email:email.toLowerCase(), photo:photo||""}));
-        cleanUrl();
-      }
-    }
-    function checkLogin(){
-      if(!localStorage.getItem("gmailLogin")){ location.href=LOGIN_URL; return false; }
-      return true;
-    }
-
-    /* ====== Notifikasi atas (single listener) ====== */
-    db.ref("notifikasi/pesanTerbaru").on("value",(snap)=>{
-      const data=snap.val(); if(!data||!data.message||!data.timestamp) return;
-      const currentEmail=(loginData?.email||"guest");
-      const seenKey=`seenNotif_${data.timestamp}_${currentEmail}`;
-      if(!localStorage.getItem(seenKey)){
-        if(notifButton){ notifButton.dataset.message=data.message; notifButton.dataset.timestamp=data.timestamp; }
-        localStorage.setItem("latestNotifMessage",data.message);
-        localStorage.setItem("latestNotifTimestamp",data.timestamp);
-        if(notifDot) notifDot.style.display="block";
-      }
-    });
-    notifButton?.addEventListener("click",()=>{
-      const message=notifButton.dataset.message, ts=Number(notifButton.dataset.timestamp);
-      if(!message||!ts) return;
-      const d=new Date(ts), ok=!isNaN(d.getTime());
-      if(content){
-        content.innerHTML = `
-          <div>${message}</div>
-          <div style="text-align:right;font-size:12px;color:#aaa;margin-top:10px;">
-            ${ok?`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`:`Waktu tidak valid`}
-          </div>`;
-      }
-      popup.style.display="block";
-      setTimeout(()=>{
-        const r=notifButton.getBoundingClientRect();
-        popup.style.position="fixed";
-        popup.style.top=`${r.bottom+4}px`;
-        popup.style.right=`${window.innerWidth-r.right}px`;
-        popup.style.left="auto";
-      },0);
-      if(notifDot) notifDot.style.display="none";
-      const currentEmail=(loginData?.email||"guest");
-      localStorage.setItem(`seenNotif_${ts}_${currentEmail}`,"1");
-    });
-    window.closeMessage=()=>{ if(popup) popup.style.display="none"; };
-
-    /* ====== GameLog dropdown ====== */
-    gameLogBtn?.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      const r=gameLogBtn.getBoundingClientRect();
-      gameLogDropdown.style.left=`${r.left}px`;
-      gameLogDropdown.style.top =`${r.bottom+6}px`;
-      gameLogDropdown.style.display=gameLogDropdown.style.display==="block"?"none":"block";
-    });
-    document.addEventListener("click",(e)=>{
-      if(!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) gameLogDropdown.style.display="none";
-    });
-    iframe?.addEventListener("load",()=>{
-      try{ iframe.contentWindow.document.addEventListener("click",()=> gameLogDropdown.style.display="none"); }catch{}
-    });
-    window.addEventListener("blur",()=>{ if(gameLogDropdown.style.display==="block") gameLogDropdown.style.display="none"; });
-
-    /* ====== Tabs ====== */
-    function saveTabs(t){ localStorage.setItem("openTabs",JSON.stringify(t)); }
-    function getTabs(){ return JSON.parse(localStorage.getItem("openTabs")||"[]"); }
-    function updateGameLogCheckmarks(){
-      const labelsOpen=getTabs().map(t=>t.label);
-      document.querySelectorAll('#gameLogDropdown a').forEach(a=>{
-        const label=a.getAttribute("data-label"); const icon=a.querySelector(".check-icon");
-        const open=labelsOpen.includes(label);
-        a.classList.toggle("tab-open",open);
-        if(icon) icon.style.display=open?"inline":"none";
-      });
-    }
-    function loadPage(url){
-      const loader=$("#iframeLoader"); const frame=$("#pageFrame");
-      if(!frame) return;
-      if(loader) loader.style.display="flex";
-      frame.onload=()=>{ if(loader) loader.style.display="none"; };
-      frame.src=url;
-      localStorage.setItem("activeTabUrl",url);
-      closeSidebar();
-      document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active-tab"));
-      const tabs=getTabs(), els=document.querySelectorAll(".tab");
-      tabs.forEach((t,i)=>{ if(t.url===url && els[i]) els[i].classList.add("active-tab"); });
-    }
-    function renderTabs(){
-      if(!tabBar) return;
-      tabBar.innerHTML="";
-      const tabs=getTabs();
-      tabs.forEach((tab,index)=>{
-        const el=document.createElement("div");
-        el.className="tab"; el.dataset.index=index;
-        el.onclick=()=>{
-          loadPage(tab.url);
-          const liveBtn=$("#liveChatBtn"), linkBtn=$("#linkDownloadBtn"), glBtn=$("#gameLogBtn");
-          liveBtn?.classList.toggle("active-livechat", tab.label==="LIVE CHAT");
-          linkBtn?.classList.toggle("active-linkdownload", tab.label==="LINK DOWNLOAD");
-          if(glBtn){
-            const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"];
-            glBtn.classList.toggle("active-gamelog", gls.includes(tab.label));
-          }
-        };
-        const title=document.createElement("span"); title.textContent=tab.label; title.style.pointerEvents="none";
-        const x=document.createElement("button"); x.className="close-tab"; x.textContent="×";
-        x.onclick=(e)=>{ e.stopPropagation(); closeTab(tab.label); };
-        el.appendChild(title); el.appendChild(x); tabBar.appendChild(el);
-      });
-      initSortableTabs();
-    }
-    function initSortableTabs(){
-      if(!window.Sortable || !tabBar) return;
-      if(tabBar._sortable) tabBar._sortable.destroy();
-      tabBar._sortable=Sortable.create(tabBar,{
-        animation:200, ghostClass:"dragging",
-        onEnd:(evt)=>{
-          const tabs=getTabs(); const [moved]=tabs.splice(evt.oldIndex,1);
-          tabs.splice(evt.newIndex,0,moved); saveTabs(tabs); renderTabs();
+    frame.src=url;
+    localStorage.setItem("activeTabUrl",url);
+    closeSidebar();
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active-tab"));
+    const tabs=getTabs(), els=document.querySelectorAll(".tab");
+    tabs.forEach((t,i)=>{ if(t.url===url && els[i]) els[i].classList.add("active-tab"); });
+  }
+  function renderTabs(){
+    if(!tabBar) return;
+    tabBar.innerHTML="";
+    const tabs=getTabs();
+    tabs.forEach((tab,index)=>{
+      const el=document.createElement("div");
+      el.className="tab"; el.dataset.index=index;
+      el.onclick=()=>{
+        loadPage(tab.url);
+        const liveBtn=$("#liveChatBtn"), linkBtn=$("#linkDownloadBtn"), glBtn=$("#gameLogBtn");
+        liveBtn?.classList.toggle("active-livechat", tab.label==="LIVE CHAT");
+        linkBtn?.classList.toggle("active-linkdownload", tab.label==="LINK DOWNLOAD");
+        if(glBtn){
+          const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"];
+          glBtn.classList.toggle("active-gamelog", gls.includes(tab.label));
         }
-      });
-    }
-    window.addTab=function(label,url){
-      const tabs=getTabs();
-      if(!tabs.some(t=>t.label===label)){ tabs.push({label,url}); saveTabs(tabs); }
-      const glBtn=$("#gameLogBtn");
-      if(glBtn){
-        const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"];
-        glBtn.classList.toggle("active-gamelog", gls.includes(label));
-      }
-      const liveBtn=$("#liveChatBtn");
-      liveBtn?.classList.toggle("active-livechat", label==="LIVE CHAT");
-      if(label==="LIVE CHAT") markLivechatAsRead();
-      const linkBtn=$("#linkDownloadBtn");
-      linkBtn?.classList.toggle("active-linkdownload", label==="LINK DOWNLOAD");
-      loadPage(url); renderTabs(); updateGameLogCheckmarks();
-    }
-    function closeTab(label){
-      let tabs=getTabs().filter(t=>t.label!==label); saveTabs(tabs); renderTabs(); updateGameLogCheckmarks();
-      const glBtn=$("#gameLogBtn"), liveBtn=$("#liveChatBtn"), linkBtn=$("#linkDownloadBtn");
-      if(tabs.length){
-        const last=tabs[tabs.length-1]; loadPage(last.url);
-        const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"];
-        glBtn?.classList.toggle("active-gamelog", gls.includes(last.label));
-        liveBtn?.classList.toggle("active-livechat", last.label==="LIVE CHAT");
-        linkBtn?.classList.toggle("active-linkdownload", last.label==="LINK DOWNLOAD");
-      }else{
-        const frame=$("#pageFrame"); if(frame) frame.src="";
-        glBtn?.classList.remove("active-gamelog");
-        liveBtn?.classList.remove("active-livechat");
-        linkBtn?.classList.remove("active-linkdownload");
-      }
-    }
-
-    /* ====== Sidebar ====== */
-    const menuIcon=$("#menuIcon"), sidebar=$("#sidebar"), overlay=$("#overlay"), container=$("#mainContainer"), header=$("#header");
-    function openSidebar(){
-      sidebar?.classList.add("active"); overlay?.classList.add("active"); container?.classList.add("shrink");
-      $(".floating-logo")?.classList.add("shrink"); header?.classList.add("shrink"); $(".tab-bar")?.classList.add("shrink");
-      $("#menuIcon")?.classList.add("active-menu-icon");
-    }
-    window.closeSidebar=function(){
-      sidebar?.classList.remove("active"); overlay?.classList.remove("active"); container?.classList.remove("shrink");
-      $(".floating-logo")?.classList.remove("shrink"); header?.classList.remove("shrink"); $(".tab-bar")?.classList.remove("shrink");
-      $("#menuIcon")?.classList.remove("active-menu-icon");
-    }
-    menuIcon?.addEventListener("click",()=> sidebar?.classList.contains("active")? closeSidebar():openSidebar());
-    overlay?.addEventListener("click",closeSidebar);
-    document.addEventListener("click",(e)=>{
-      const isSidebar=e.target.closest?.("#sidebar"); const isMenuIcon=e.target.closest?.("#menuIcon");
-      if(!isSidebar && !isMenuIcon && sidebar?.classList.contains("active")) closeSidebar();
+      };
+      const title=document.createElement("span"); title.textContent=tab.label; title.style.pointerEvents="none";
+      const x=document.createElement("button"); x.className="close-tab"; x.textContent="×";
+      x.onclick=(e)=>{ e.stopPropagation(); closeTab(tab.label); };
+      el.appendChild(title); el.appendChild(x); tabBar.appendChild(el);
     });
-
-    /* ====== postMessage whitelist ====== */
-    const allowedOrigins=[
-      "https://5g88-logogame.vercel.app",
-      "https://5g88-userlivechatphp.vercel.app",
-      "https://searcfile.github.io",
-      "https://5g88-main.vercel.app"
-      // "https://5g88-findgame.vercel.app" // tambahkan kalau nanti perlu postMessage
-    ];
-    window.addEventListener("message",async(e)=>{
-      if(!allowedOrigins.includes(e.origin)) return;
-      const data=e.data, livechatDot=$("#livechatDot");
-      if(data?.action==="show-livechat-notif" && livechatDot) livechatDot.style.display="block";
-      else if(data?.action==="hide-livechat-notif" && livechatDot) livechatDot.style.display="none";
-      else if(data?.action==="copy-image-base64" && data.base64){
-        try{
-          const blob=await (await fetch(data.base64)).blob();
-          await navigator.clipboard.write([new ClipboardItem({[blob.type]:blob})]);
-        }catch{ alert("❌ Gagal salin gambar dari base64."); }
-      }else if(data?.action==="copy-image" && data.url){
-        try{
-          const blob=await (await fetch(data.url)).blob();
-          await navigator.clipboard.write([new ClipboardItem({[blob.type]:blob})]);
-        }catch{}
+    initSortableTabs();
+  }
+  function initSortableTabs(){
+    if(!window.Sortable || !tabBar) return;
+    if(tabBar._sortable) tabBar._sortable.destroy();
+    tabBar._sortable=Sortable.create(tabBar,{
+      animation:200, ghostClass:"dragging",
+      onEnd:(evt)=>{
+        const tabs=getTabs(); const [moved]=tabs.splice(evt.oldIndex,1);
+        tabs.splice(evt.newIndex,0,moved); saveTabs(tabs); renderTabs();
       }
     });
-
-    /* ====== Livechat notif & sound ====== */
-    let lastNotifTime=0, userHasInteracted=false;
-    document.body.addEventListener("click",()=> userHasInteracted=true);
-    function initLivechatNotifListener(){
-      if(!loginData?.email) return;
-      blurphpDb.ref("chats/"+userId).on("value",(snap)=>{
-        let hasUnread=false;
-        snap.forEach(c=>{ const v=c.val(); if(v.from==="admin" && v.seenByUser!==true) hasUnread=true; });
-        const dot=$("#livechatDot"); if(dot) dot.style.display = hasUnread ? "inline" : "none";
-      });
+  }
+  window.addTab=function(label,url){
+    const tabs=getTabs();
+    if(!tabs.some(t=>t.label===label)){ tabs.push({label,url}); saveTabs(tabs); }
+    const glBtn=$("#gameLogBtn");
+    if(glBtn){
+      const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"];
+      glBtn.classList.toggle("active-gamelog", gls.includes(label));
     }
-    function markLivechatAsRead(){
-      if(!loginData?.email) return;
-      const ref=blurphpDb.ref("chats/"+userId);
-      ref.once("value",(snap)=>{
-        snap.forEach(c=>{ const v=c.val(); if(v.from==="admin" && v.seenByUser!==true) c.ref.update({seenByUser:true}); });
-      });
+    const liveBtn=$("#liveChatBtn");
+    liveBtn?.classList.toggle("active-livechat", label==="LIVE CHAT");
+    if(label==="LIVE CHAT") markLivechatAsRead();
+    const linkBtn=$("#linkDownloadBtn");
+    linkBtn?.classList.toggle("active-linkdownload", label==="LINK DOWNLOAD");
+    loadPage(url); renderTabs(); updateGameLogCheckmarks();
+  }
+  function closeTab(label){
+    let tabs=getTabs().filter(t=>t.label!==label); saveTabs(tabs); renderTabs(); updateGameLogCheckmarks();
+    const glBtn=$("#gameLogBtn"), liveBtn=$("#liveChatBtn"), linkBtn=$("#linkDownloadBtn");
+    if(tabs.length){
+      const last=tabs[tabs.length-1]; loadPage(last.url);
+      const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"];
+      glBtn?.classList.toggle("active-gamelog", gls.includes(last.label));
+      liveBtn?.classList.toggle("active-livechat", last.label==="LIVE CHAT");
+      linkBtn?.classList.toggle("active-linkdownload", last.label==="LINK DOWNLOAD");
+    }else{
+      const frame=$("#pageFrame"); if(frame) frame.src="";
+      glBtn?.classList.remove("active-gamelog");
+      liveBtn?.classList.remove("active-livechat");
+      linkBtn?.classList.remove("active-linkdownload");
     }
+  }
 
-    /* ====== DateTime kecil (optional UI) ====== */
-    function updateDateTime(){
-      const el=$("#dateTime"); if(!el) return;
-      const now=new Date();
-      const pad=n=>String(n).padStart(2,'0');
-      const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      el.textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} ${pad(now.getDate())} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  /* ====== Sidebar ====== */
+  const menuIcon=$("#menuIcon"), sidebar=$("#sidebar"), overlay=$("#overlay"), container=$("#mainContainer"), header=$("#header");
+  function openSidebar(){
+    sidebar?.classList.add("active"); overlay?.classList.add("active"); container?.classList.add("shrink");
+    $(".floating-logo")?.classList.add("shrink"); header?.classList.add("shrink"); $(".tab-bar")?.classList.add("shrink");
+    $("#menuIcon")?.classList.add("active-menu-icon");
+  }
+  window.closeSidebar=function(){
+    sidebar?.classList.remove("active"); overlay?.classList.remove("active"); container?.classList.remove("shrink");
+    $(".floating-logo")?.classList.remove("shrink"); header?.classList.remove("shrink"); $(".tab-bar")?.classList.remove("shrink");
+    $("#menuIcon")?.classList.remove("active-menu-icon");
+  }
+  menuIcon?.addEventListener("click",()=> sidebar?.classList.contains("active")? closeSidebar():openSidebar());
+  overlay?.addEventListener("click",closeSidebar);
+  document.addEventListener("click",(e)=>{
+    const isSidebar=e.target.closest?.("#sidebar"); const isMenuIcon=e.target.closest?.("#menuIcon");
+    if(!isSidebar && !isMenuIcon && sidebar?.classList.contains("active")) closeSidebar();
+  });
+
+  /* ====== postMessage whitelist ====== */
+  const allowedOrigins=[
+    "https://searcfile.github.io",
+    "https://5g88-logogame.vercel.app",
+    "https://5g88-userlivechatphp.vercel.app"
+    // tambah jika ada iframe lain yang kirim postMessage
+  ];
+  window.addEventListener("message",async(e)=>{
+    if(!allowedOrigins.includes(e.origin)) return;
+    const data=e.data, livechatDot=$("#livechatDot");
+    if(data?.action==="show-livechat-notif" && livechatDot) livechatDot.style.display="block";
+    else if(data?.action==="hide-livechat-notif" && livechatDot) livechatDot.style.display="none";
+    else if(data?.action==="copy-image-base64" && data.base64){
+      try{
+        const blob=await (await fetch(data.base64)).blob();
+        await navigator.clipboard.write([new ClipboardItem({[blob.type]:blob})]);
+      }catch{ alert("❌ Gagal salin gambar dari base64."); }
+    }else if(data?.action==="copy-image" && data.url){
+      try{
+        const blob=await (await fetch(data.url)).blob();
+        await navigator.clipboard.write([new ClipboardItem({[blob.type]:blob})]);
+      }catch{}
     }
-    setInterval(updateDateTime,1000);
+  });
 
-    /* ====== BOOT ====== */
-    window.addEventListener("DOMContentLoaded",()=>{
-      // cleanup relogin state
-      if(sessionStorage.getItem("forceLogout")==="1"){ sessionStorage.removeItem("forceLogout"); cleanUrl(); }
+  /* ====== Livechat notif & sound ====== */
+  let lastNotifTime=0, userHasInteracted=false;
+  document.body.addEventListener("click",()=> userHasInteracted=true);
+  function initLivechatNotifListener(){
+    if(!loginData?.email) return;
+    blurphpDb.ref("chats/"+userId).on("value",(snap)=>{
+      let hasUnread=false;
+      snap.forEach(c=>{ const v=c.val(); if(v.from==="admin" && v.seenByUser!==true) hasUnread=true; });
+      const dot=$("#livechatDot"); if(dot) dot.style.display = hasUnread ? "inline" : "none";
+    });
+  }
+  function markLivechatAsRead(){
+    if(!loginData?.email) return;
+    const ref=blurphpDb.ref("chats/"+userId);
+    ref.once("value",(snap)=>{
+      snap.forEach(c=>{ const v=c.val(); if(v.from==="admin" && v.seenByUser!==true) c.ref.update({seenByUser:true}); });
+    });
+  }
 
-      // ambil profil dari query → simpan → refresh state
-      saveLoginFromURL();
-      try{ loginData=JSON.parse(localStorage.getItem("gmailLogin")||"{}"); }catch{ localStorage.removeItem("gmailLogin"); }
-      if(!checkLogin()) return;
-      if(!loginData || !loginData.email){ location.href=LOGIN_URL; return; }
+  /* ====== DateTime kecil (optional UI) ====== */
+  function updateDateTime(){
+    const el=$("#dateTime"); if(!el) return;
+    const now=new Date();
+    const pad=n=>String(n).padStart(2,'0');
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    el.textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} ${pad(now.getDate())} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  }
+  setInterval(updateDateTime,1000);
 
-      // siap userId
-      userId=(loginData.email||"").toLowerCase().replace(/\./g,"_");
+  /* ====== BOOT ====== */
+  window.addEventListener("DOMContentLoaded",()=>{
+    // cleanup relogin state
+    if(sessionStorage.getItem("forceLogout")==="1"){ sessionStorage.removeItem("forceLogout"); cleanUrl(); }
 
-      // force logout oleh admin
-      loginDb.ref("logins/admin_override").on("value",(snap)=>{
-        const data=snap.val();
-        if(data?.forceLogoutAll && Array.isArray(data.users) && data.users.includes(userId)){
-          alert("⚠️ System Updated. Please re-login!");
-          localStorage.removeItem("gmailLogin"); sessionStorage.setItem("forceLogout","1");
-          loginDb.ref("logins/admin_override").remove();
-          if(window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
-          location.href=LOGIN_URL;
-        }
-        if(data?.target===userId && data.forceLogout===true){
-          alert("🚫 Kamu telah di-logout oleh sistem.");
-          localStorage.removeItem("gmailLogin"); sessionStorage.setItem("forceLogout","1");
-          loginDb.ref("logins/admin_override").remove();
-          if(window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
-          location.href=LOGIN_URL;
-        }
-      });
+    // ambil profil dari query → simpan → refresh state
+    saveLoginFromURL();
+    try{ loginData=JSON.parse(localStorage.getItem("gmailLogin")||"{}"); }catch{ localStorage.removeItem("gmailLogin"); }
+    if(!checkLogin()) return;
+    if(!loginData || !loginData.email){ location.replace(LOGIN_URL); return; }
 
-      // presence user blurphp
-      const sanitizedEmail=userId;
-      blurphpDb.ref('users/'+sanitizedEmail).update({
-        name:loginData.name||'', email:loginData.email||'', photoURL:loginData.photo||'', lastLoginTime:Date.now()
-      });
-      const connectedRef=blurphpDb.ref(".info/connected");
-      const onlineRef=blurphpDb.ref("users/"+sanitizedEmail+"/online");
-      connectedRef.on("value",s=>{ if(s.val()===true){ onlineRef.set(true); onlineRef.onDisconnect().set(false); } });
-      window.addEventListener("beforeunload",()=> blurphpDb.ref("users/"+sanitizedEmail+"/online").set(false));
+    // siap userId
+    userId=(loginData.email||"").toLowerCase().replace(/\./g,"_");
 
-      // user dropdown
-      const userNameText=$("#userNameText"), dropdownContent=$("#dropdownContent"), userEmailElem=$("#userEmail");
-      const dropdownWrapper=document.querySelector(".user-dropdown"), userButton=$("#userName");
-      if(userNameText && dropdownContent && dropdownWrapper && userButton){
-        const parts=(loginData.name||"").trim().split(" ");
-        const display=(parts.length>=2 && parts[0].toLowerCase()===parts[1]?.toLowerCase())?parts[0]:(loginData.name||"User");
-        userNameText.textContent=display; if(userEmailElem) userEmailElem.textContent=loginData.email||"";
-        dropdownWrapper.addEventListener("mouseenter",()=> dropdownContent.style.display="block");
-        dropdownWrapper.addEventListener("mouseleave",()=>{ if(!dropdownWrapper.classList.contains("force-open")) dropdownContent.style.display="none"; });
-        userButton?.addEventListener("click",(e)=>{
-          e.stopPropagation(); const isOpen=dropdownWrapper.classList.toggle("force-open");
-          dropdownContent.style.display=isOpen?"block":"none"; userButton.classList.toggle("active-user-button",isOpen);
-        });
-        document.addEventListener("click",(e)=>{
-          if(!dropdownWrapper.contains(e.target)){ dropdownContent.style.display="none"; dropdownWrapper.classList.remove("force-open"); userButton?.classList.remove("active-user-button"); }
-        });
-      }
-
-      // logout
-      $("#logoutBtn")?.addEventListener("click",()=>{
+    // force logout oleh admin
+    loginDb.ref("logins/admin_override").on("value",(snap)=>{
+      const data=snap.val();
+      if(data?.forceLogoutAll && Array.isArray(data.users) && data.users.includes(userId)){
+        alert("⚠️ System Updated. Please re-login!");
         localStorage.removeItem("gmailLogin"); sessionStorage.setItem("forceLogout","1");
+        loginDb.ref("logins/admin_override").remove();
         if(window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
-        location.href=LOGIN_URL;
-      });
-
-      // livechat: dot & sound
-      blurphpDb.ref("chats/"+userId).on("child_added",(snap)=>{
-        const msg=snap.val(); if(!msg || msg.from!=="admin") return;
-        const t=msg.time||Date.now();
-        if(t>lastNotifTime){
-          lastNotifTime=t;
-          const dot=$("#livechatDot"), snd=$("#notifSound");
-          if(dot) dot.style.display="inline";
-          if(snd && userHasInteracted){ snd.currentTime=0; snd.play().catch(()=>{}); }
-        }
-      });
-      initLivechatNotifListener();
-
-      // tabs boot
-      renderTabs(); updateGameLogCheckmarks();
-      const tabs=getTabs(), activeUrl=localStorage.getItem("activeTabUrl");
-      const match=tabs.find(t=>t.url===activeUrl);
-      const liveBtn=$("#liveChatBtn"), linkBtn=$("#linkDownloadBtn"), glBtn=$("#gameLogBtn");
-      liveBtn?.classList.remove("active-livechat"); linkBtn?.classList.remove("active-linkdownload"); glBtn?.classList.remove("active-gamelog");
-      if(match){
-        loadPage(match.url); updateGameLogCheckmarks();
-        if(match.label==="LIVE CHAT") liveBtn?.classList.add("active-livechat");
-        const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"]; if(glBtn && gls.includes(match.label)) glBtn.classList.add("active-gamelog");
-      }else if(tabs.length){ loadPage(tabs[tabs.length-1].url); }
-
-      // tabbar drag-scroll
-      if(tabBar){
-        let isDown=false,startX=0,scrollLeft=0;
-        tabBar.addEventListener("mousedown",(e)=>{ isDown=true; startX=e.pageX-tabBar.offsetLeft; scrollLeft=tabBar.scrollLeft; });
-        ["mouseleave","mouseup"].forEach(ev=> tabBar.addEventListener(ev,()=> isDown=false));
-        tabBar.addEventListener("mousemove",(e)=>{ if(!isDown) return; e.preventDefault(); const x=e.pageX-tabBar.offsetLeft; tabBar.scrollLeft=scrollLeft-(x-startX)*1.5; });
-        tabBar.addEventListener("wheel",(e)=>{ if(e.deltaY!==0){ e.preventDefault(); tabBar.scrollLeft+=e.deltaY; } });
+        location.replace(LOGIN_URL);
       }
-
-      updateDateTime();
+      if(data?.target===userId && data.forceLogout===true){
+        alert("🚫 Kamu telah di-logout oleh sistem.");
+        localStorage.removeItem("gmailLogin"); sessionStorage.setItem("forceLogout","1");
+        loginDb.ref("logins/admin_override").remove();
+        if(window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
+        location.replace(LOGIN_URL);
+      }
     });
-  })();
-  </script>
+
+    // presence user blurphp
+    const sanitizedEmail=userId;
+    blurphpDb.ref('users/'+sanitizedEmail).update({
+      name:loginData.name||'', email:loginData.email||'', photoURL:loginData.photo||'', lastLoginTime:Date.now()
+    });
+    const connectedRef=blurphpDb.ref(".info/connected");
+    const onlineRef=blurphpDb.ref("users/"+sanitizedEmail+"/online");
+    connectedRef.on("value",s=>{ if(s.val()===true){ onlineRef.set(true); onlineRef.onDisconnect().set(false); } });
+    window.addEventListener("beforeunload",()=> blurphpDb.ref("users/"+sanitizedEmail+"/online").set(false));
+
+    // user dropdown
+    const userNameText=$("#userNameText"), dropdownContent=$("#dropdownContent"), userEmailElem=$("#userEmail");
+    const dropdownWrapper=document.querySelector(".user-dropdown"), userButton=$("#userName");
+    if(userNameText && dropdownContent && dropdownWrapper && userButton){
+      const parts=(loginData.name||"").trim().split(" ");
+      const display=(parts.length>=2 && parts[0].toLowerCase()===parts[1]?.toLowerCase())?parts[0]:(loginData.name||"User");
+      userNameText.textContent=display; if(userEmailElem) userEmailElem.textContent=loginData.email||"";
+      dropdownWrapper.addEventListener("mouseenter",()=> dropdownContent.style.display="block");
+      dropdownWrapper.addEventListener("mouseleave",()=>{ if(!dropdownWrapper.classList.contains("force-open")) dropdownContent.style.display="none"; });
+      userButton?.addEventListener("click",(e)=>{
+        e.stopPropagation(); const isOpen=dropdownWrapper.classList.toggle("force-open");
+        dropdownContent.style.display=isOpen?"block":"none"; userButton.classList.toggle("active-user-button",isOpen);
+      });
+      document.addEventListener("click",(e)=>{
+        if(!dropdownWrapper.contains(e.target)){ dropdownContent.style.display="none"; dropdownWrapper.classList.remove("force-open"); userButton?.classList.remove("active-user-button"); }
+      });
+    }
+
+    // logout
+    $("#logoutBtn")?.addEventListener("click",()=>{
+      localStorage.removeItem("gmailLogin"); sessionStorage.setItem("forceLogout","1");
+      if(window.google?.accounts?.id) google.accounts.id.disableAutoSelect?.();
+      location.replace(LOGIN_URL);
+    });
+
+    // livechat: dot & sound
+    blurphpDb.ref("chats/"+userId).on("child_added",(snap)=>{
+      const msg=snap.val(); if(!msg || msg.from!=="admin") return;
+      const t=msg.time||Date.now();
+      if(t>lastNotifTime){
+        lastNotifTime=t;
+        const dot=$("#livechatDot"), snd=$("#notifSound");
+        if(dot) dot.style.display="inline";
+        if(snd && userHasInteracted){ snd.currentTime=0; snd.play().catch(()=>{}); }
+      }
+    });
+    initLivechatNotifListener();
+
+    // tabs boot
+    renderTabs(); updateGameLogCheckmarks();
+    const tabs=getTabs(), activeUrl=localStorage.getItem("activeTabUrl");
+    const match=tabs.find(t=>t.url===activeUrl);
+    const liveBtn=$("#liveChatBtn"), linkBtn=$("#linkDownloadBtn"), glBtn=$("#gameLogBtn");
+    liveBtn?.classList.remove("active-livechat"); linkBtn?.classList.remove("active-linkdownload"); glBtn?.classList.remove("active-gamelog");
+
+    if(match){
+      loadPage(match.url); updateGameLogCheckmarks();
+      if(match.label==="LIVE CHAT") liveBtn?.classList.add("active-livechat");
+      const gls=["MEGA888","PUSSY888","918KISS","SCR888H5"]; if(glBtn && gls.includes(match.label)) glBtn.classList.add("active-gamelog");
+    }else if(tabs.length){
+      loadPage(tabs[tabs.length-1].url);
+    }else{
+      // ⬅️ FIX: buka satu tab default biar tidak blank
+      addTab('LIVE CHAT','https://searcfile.github.io/5g88-php/userlivechatphp/');
+    }
+
+    // tabbar drag-scroll
+    if(tabBar){
+      let isDown=false,startX=0,scrollLeft=0;
+      tabBar.addEventListener("mousedown",(e)=>{ isDown=true; startX=e.pageX-tabBar.offsetLeft; scrollLeft=tabBar.scrollLeft; });
+      ["mouseleave","mouseup"].forEach(ev=> tabBar.addEventListener(ev,()=> isDown=false));
+      tabBar.addEventListener("mousemove",(e)=>{ if(!isDown) return; e.preventDefault(); const x=e.pageX-tabBar.offsetLeft; tabBar.scrollLeft=scrollLeft-(x-startX)*1.5; });
+      tabBar.addEventListener("wheel",(e)=>{ if(e.deltaY!==0){ e.preventDefault(); tabBar.scrollLeft+=e.deltaY; } });
+    }
+
+    updateDateTime();
+  });
+})();
+</script>
 </body>
 </html>
