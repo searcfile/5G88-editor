@@ -23,13 +23,12 @@ body{
   width:520px; max-width:92vw;
   margin:0; padding:36px 22px 28px;
   border:1px solid gold; border-radius:16px;
-  background-color:rgba(0,0,0,.45);
+  background-color:#141414;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   box-shadow:0 0 8px rgba(255,215,0,.6);
   transition: transform .3s ease, box-shadow .3s ease;
   overflow:hidden;                        /* jaga-jaga biar tak keluar */
 }
-.login-box:hover { transform: scale(1.03); box-shadow: 0 0 18px rgba(255,215,0,.9); }
 .login-box img { max-width: 100%; width:360px; height:auto; margin: -10px auto 18px; display:block; }
 
 /* ===== Tabs (Username / Google) ===== */
@@ -120,17 +119,39 @@ body{
 
 /* ===== Blocked Popup ===== */
 .blocked-overlay::before{
-  content:""; position: fixed; inset: 0; backdrop-filter: brightness(.55); -webkit-backdrop-filter: brightness(.55); pointer-events: none;
+  content:"";
+  position: absolute;       /* relatif ke overlay */
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(10px) brightness(.75);
+  -webkit-backdrop-filter: blur(10px) brightness(.75);
+  pointer-events: none;
 }
-.blocked-overlay{ position:fixed; inset:0; background:transparent; display:none; align-items:center; justify-content:center; z-index:10000; }
-.blocked-overlay.show{ display:flex; }
-.blocked-box{
-  position:relative; width:min(520px, 92vw);
-  border:1px solid gold; border-radius:12px; background:rgba(0,0,0,.45);
-  backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
-  box-shadow:0 0 14px rgba(255,215,0,.6);
-  padding:26px 22px 20px; animation: zoomIn .25s ease forwards; color:#fff; text-align:left;
+.blocked-overlay{
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
 }
+.blocked-box { position: relative; }
+.blocked-box .popup-close{
+  position: absolute;
+  top: 12px;
+  right: 12px;   /* ← pojok kanan */
+  left: auto;
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border: 1px solid gold;
+  border-radius: 10px;
+  background: transparent;
+  color: gold;
+  cursor: pointer;
+  transition: .2s;
+}
+.blocked-box .popup-close:hover{ background: gold; color:#111; }
 .blocked-title{ margin:6px 6px 2px; font-size:26px; font-weight:700; color:#d50000; }
 .blocked-sub{ margin:0 6px 12px; color:#f1f5f9; opacity:.9; }
 .blocked-info{
