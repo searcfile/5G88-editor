@@ -194,7 +194,7 @@
 .blocked-close:hover{ transform:scale(1.06); box-shadow:0 0 10px rgba(255,215,0,.6); }
 
 .blocked-title{
-  margin:6px 6px 2px; font-size:26px; font-weight:800; color:gold;
+  margin:6px 6px 2px; font-size:26px; font-weight:600; color:red;
 }
 .blocked-sub{
   margin:0 6px 12px; color:#f1f5f9; opacity:.9;
@@ -255,13 +255,6 @@
 </body>
 
 <script>
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
-
   function closePopup() {
     document.getElementById("popup").style.display = "none";
   }
@@ -305,32 +298,43 @@ function showBlockedPopup(user){
     <div style="margin-top:10px">If you believe this is a mistake, please contact admin to request access.</div>
   `;
 
-  // ===== Contact via Telegram =====
+  // ===== Contact via Telegram: app jika ada, fallback ke web =====
   const contactBtn = document.getElementById('contactBtn');
   contactBtn.textContent = 'Contact us on Telegram';
   contactBtn.href = 'https://t.me/Kiwi5G88';
   contactBtn.target = '_blank';
   contactBtn.rel = 'noopener';
 
-  // (Opsional) Coba buka app Telegram dulu, lalu fallback ke web
   contactBtn.onclick = (e) => {
     e.preventDefault();
-    const appLink = 'tg://resolve?domain=Kiwi5G88';
+
     const webLink = 'https://t.me/Kiwi5G88';
+    const tgScheme = 'tg://resolve?domain=Kiwi5G88';
+    const androidIntent =
+      'intent://resolve?domain=Kiwi5G88#Intent;scheme=tg;package=org.telegram.messenger;'
+      + 'S.browser_fallback_url=' + encodeURIComponent(webLink) + ';end';
 
-    let openedWeb = false;
-    const timer = setTimeout(() => {
-      if (!openedWeb) {
-        openedWeb = true;
-        window.open(webLink, '_blank', 'noopener');
-      }
-    }, 700);
+    const ua = navigator.userAgent;
+    const isAndroid = /Android/i.test(ua);
+    const isIOS     = /iPhone|iPad|iPod/i.test(ua);
 
-    // Coba buka app
-    window.location.href = appLink;
+    if (isAndroid) {
+      // Android: intent → buka app jika ada; kalau tak, fallback ke web auto
+      window.location.href = androidIntent;
+      return;
+    }
 
-    // Bersih-bersih timer kalau page benar-benar berpindah
-    window.addEventListener('pagehide', () => clearTimeout(timer), { once:true });
+    if (isIOS) {
+      // iOS: cuba app scheme; jika gagal, fallback ke web
+      let done = false;
+      const t = setTimeout(() => { if (!done) { done = true; window.location.href = webLink; } }, 800);
+      window.location.href = tgScheme;
+      window.addEventListener('pagehide', () => { done = true; clearTimeout(t); }, { once:true });
+      return;
+    }
+
+    // Desktop: elak prompt → terus ke Telegram Web
+    window.open(webLink, '_blank', 'noopener');
   };
 
   // ===== Tampilkan popup =====
