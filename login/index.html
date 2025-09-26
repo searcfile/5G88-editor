@@ -84,7 +84,7 @@ body{
 
     /* Popup box */
     .popup-box {
-      border: 2px solid gold;
+      border: 1px solid gold;
       border-radius: 12px;
       padding: 40px 20px 30px;
       text-align: center;
@@ -98,27 +98,22 @@ body{
       align-items: center;
       justify-content: center;
       background-color: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
-
-  
-    .popup-box img {
-      max-width: 350px;
-      margin-bottom: 20px;
-    }
+    .popup-box img {max-width: 350px;margin-bottom: 20px;}
 
     .popup-btn {
   background: transparent;
-  border: 2px solid gold;
+  border:1px solid gold;
   color: gold;
   padding: 10px 20px;
   font-size: 16px;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   margin: 10px auto 0; /* auto kiri kanan supaya center, margin top 10px */
   display: inline-block;
-  transition: transform 0.3s ease, background 0.3s ease;
+  transition: all 0.2s;
 }
 
   .popup-close {
@@ -130,20 +125,17 @@ body{
   cursor: pointer;
   background: transparent;
   border:none;
+  font-weight:700;
+  transition: all 0.2s;
 }
-  .popup-close:hover {color: #ffe34d;font-weight: 700;}.popup-close:active {color:#dbb900;font-weight: 700;}
+  .popup-close:hover {color: #ffe34d;}.popup-close:active {color:#dbb900;}
   .popup-btn:hover {
   transform: scale(1.05);
   background: gold;
   color: black;
 }
-    /* Close X at top right */
-    .popup-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-    .popup-title {
+
+  .popup-title {
   font-size: 30px;
   font-weight: bold;
   margin-top: 20px;
@@ -218,7 +210,7 @@ body{
   
   <div class="popup-overlay" id="popup">
   <div class="popup-box" id="popupBox">
-    <button class="popup-close" onclick="closePopup()">X</button>
+    <button class="popup-close" onclick="closePopup()">✕</button>
     <p class="popup-title">Welcome to 5G88!</p>
     <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" class="popup-logo">
     <button class="popup-btn" onclick="closePopup()">OK</button>
