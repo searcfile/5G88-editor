@@ -164,10 +164,17 @@
   margin-top: 20px;
   color: gold;
 }
+.blocked-overlay::before{
+  content:"";
+  position: fixed; inset: 0;
+  backdrop-filter: brightness(.55);        /* gelap tanpa menutup tekstur */
+  -webkit-backdrop-filter: brightness(.55);
+  pointer-events: none;
+}
 /* ===== BLOCKED POPUP ===== */
 .blocked-overlay{
   position:fixed; inset:0;
-  background:rgba(0,0,0,.65);
+  background:transparent;
   display:none; align-items:center; justify-content:center;
   z-index:10000;
 }
