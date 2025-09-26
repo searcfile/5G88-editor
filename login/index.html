@@ -64,12 +64,20 @@ body{
 }
 
 /* ===== Password eye (tengah tepat) ===== */
-.password-wrap{ position:relative; }
+.password-wrap { /* boleh kosong atau biarkan seperti ini */ }
+.password-wrap .field {              /* NEW */
+  position: relative;
+}
 .password-wrap .input{ padding-right:46px; }           /* ruang untuk icon */
 .toggle-eye{
-  position:absolute; right:12px; top:50%; transform:translateY(-50%);
-  width:28px; height:28px; display:grid; place-items:center;
-  border:0; background:transparent; color:gold; cursor:pointer; line-height:0;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border: 0; background: transparent; color: gold;
+  cursor: pointer; line-height: 0;
 }
 .toggle-eye:focus{ outline:none; }
 .toggle-eye svg{ width:20px; height:20px; display:block; }
@@ -182,20 +190,19 @@ body{
       </div>
 <div class="group password-wrap">
   <label class="label" for="password">Password</label>
-  <input class="input" id="password" type="password" autocomplete="current-password" placeholder="Your password" required>
 
-  <!-- NEW: Eye button (SVG) -->
-  <button type="button"
-          class="toggle-eye"
-          id="eyeBtn"
-          aria-label="Show password"
-          aria-pressed="false"
-          data-state="hide">
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-      <path id="eyePath" fill="currentColor"
-        d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/>
-    </svg>
-  </button>
+  <div class="field">
+    <input class="input" id="password" type="password"
+           autocomplete="current-password" placeholder="Your password" required>
+
+    <button type="button" class="toggle-eye" id="eyeBtn"
+            aria-label="Show password" aria-pressed="false" data-state="hide">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path id="eyePath" fill="currentColor"
+          d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/>
+      </svg>
+    </button>
+  </div>
 </div>
       <button class="btn" id="btnUserpass">Login</button>
       <!-- (Opsional) Buat akaun baru -->
