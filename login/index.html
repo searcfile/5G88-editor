@@ -1,125 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <link rel="icon" type="image/png" href="https://i.imgur.com/uGijtpF.png" />
 
-  <!-- Firebase (compat) -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
   <style>
-/* ===== Layout & background ===== */
-*{box-sizing:border-box}
-html, body { height:100%; }
+/* ===== Root layout ===== */
+html, body { height: 100%; }
+* { box-sizing: border-box; }
+
 body{
-  margin:0; color:#fff; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
-  background: url('https://i.imgur.com/UCZqSrT.png') no-repeat center/cover fixed;
+  background: url('https://i.imgur.com/UCZqSrT.png') no-repeat center/cover; /* fixed khusus desktop di bawah */
+  color:#fff; font-family:sans-serif; margin:0;
   display:flex; align-items:center; justify-content:center;
-  min-height:100svh;
-  /* safe area iOS */
+  min-height: 100dvh;          /* modern */
+  min-height: 100svh;          /* safari/iOS modern */
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
            env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
+@media (min-width: 768px){
+  body{ background-attachment: fixed; } /* mobile skip fixed agar smooth */
+}
 
-/* ===== Login Card ===== */
+/* ===== Login box ===== */
 .login-box{
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
   width:min(450px, 92vw);
-  padding:32px 20px;
-  border:1px solid gold; border-radius:12px;
-  box-shadow:0 0 8px rgba(255,215,0,.6);
-  background: rgba(0,0,0,.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: transform .25s ease, box-shadow .25s ease;
-  will-change: transform, box-shadow, backdrop-filter;
+  margin:0;
+  padding: clamp(24px, 6vw, 50px) 20px;
+  border:1px solid gold; box-shadow:0 0 8px rgba(255,215,0,.6);
+  border-radius:12px;
+  background-color:rgba(0,0,0,.45);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  transition: transform .3s ease, box-shadow .3s ease;
 }
-.login-box:hover{ transform:scale(1.03); box-shadow:0 0 18px rgba(255,215,0,.9); }
-
+.login-box:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.9);
+}
 .login-box img{
-  max-width: 86%;
+  width: min(380px, 80vw);
   height:auto;
-  margin: 0 0 20px 0;
-  display:block;
+  margin: clamp(4px, 1vw, 10px) 0 25px;
 }
 
-.login-btn{
-  background:#FFD700; color:#000;
-  border:2px solid gold; border-radius:8px;
-  padding:12px 20px; font-size:18px; font-weight:600;
-  cursor:pointer; display:block; margin:0 auto;
-  min-height:44px;            /* touch target nyaman */
-  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .12s ease;
+/* ===== Buttons ===== */
+.login-btn {
+  background: #FFD700;
+  color: #000;
+  border: 2px solid gold;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform .15s ease;
+  display: block;
+  margin: 0 auto;
+  min-height:44px; min-width:44px;
 }
-.login-btn:hover{ background:rgba(255,255,255,.1); color:#fff; border-color:#fff; }
-.login-btn:active{ transform:scale(.98); }
-.login-btn[disabled]{ opacity:.6; cursor:not-allowed; }
+.login-btn:hover { background: rgba(255, 255, 255, 0.1) !important; font-weight: bold; color: white; border: 2px solid white; }
+.login-btn:active{ transform: scale(.98); }
+.login-btn:focus{ outline:2px solid #ffd700; outline-offset:2px; }
 
-/* ===== Keyframes ===== */
-@keyframes zoomIn { from{transform:scale(.7);opacity:0;} to{transform:scale(1);opacity:1;} }
-.zoom-in{ animation: zoomIn .3s ease forwards; }
-
-/* ===== Welcome Popup ===== */
+/* ===== Intro popup (overlay) ===== */
 .popup-overlay{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.7);
-  display:flex; align-items:center; justify-content:center;
-  z-index:9999;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  padding: 16px;      /* biar ada ruang saat layar pendek */
 }
-.popup-box{
-  position:relative; width:min(550px,92vw);
-  border:1px solid gold; border-radius:12px;
-  padding:28px 16px 22px;
-  text-align:center;
-  box-shadow:0 0 10px rgba(255,215,0,.7);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  background: rgba(0,0,0,.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-.popup-title{ font-size:28px; font-weight:800; color:gold; margin:8px 0 14px; }
-.popup-box img{ max-width:80%; height:auto; margin:0 0 16px; }
-.popup-btn{
-  background:transparent; color:gold; border:1px solid gold;
-  padding:10px 18px; border-radius:8px; font-weight:600; cursor:pointer;
-  min-height:44px; transition: all .2s ease;
-}
-.popup-btn:hover{ background:gold; color:#111; }
-.popup-close{
-  position:absolute; top:10px; right:10px;
-  background:transparent; border:none; color:gold; font-weight:800; cursor:pointer;
-  padding:6px 10px; border-radius:8px; line-height:1;
-}
-.popup-close:hover{ color:#ffe34d; }
 
-/* ===== Blocked Popup (glass) ===== */
-.blocked-overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:10000; }
-.blocked-overlay.show{ display:flex; }
-/* gelapkan layar via filter supaya blur terlihat */
+/* Popup box */
+.popup-box{
+  border: 1px solid gold; border-radius: 12px;
+  padding: 24px 16px 20px;
+  text-align: center; position: relative;
+  width: min(550px, 92vw);
+  max-height: min(85vh, 85svh);
+  overflow: auto;       /* aman di HP kecil */
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+  transition: transform 0.3s ease;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap:14px;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.popup-box img{ width:min(350px, 70vw); height:auto; }
+.popup-title{ font-size: 30px; font-weight: bold; margin-top: 6px; color: gold; }
+.popup-btn{
+  background: transparent; border:1px solid gold; color: gold;
+  padding: 10px 20px; font-size: 16px; border-radius: 8px; cursor: pointer;
+  margin: 6px auto 0; display: inline-block; transition: all 0.2s;
+  min-height:44px; min-width:44px;
+}
+.popup-btn:hover{ transform: scale(1.05); background: gold; color: black; }
+.popup-btn:focus{ outline:2px solid #ffd700; outline-offset:2px; }
+.popup-close{
+  position: absolute; top: 10px; right: 10px;
+  border: none; color: gold; cursor: pointer; background: transparent; font-weight:700;
+  transition: all 0.2s; border-radius:8px; min-width:44px; min-height:44px;
+}
+.popup-close:hover {color: #ffe34d;} .popup-close:active {color:#dbb900;}
+.popup-close:focus{ outline:2px solid #ffd700; outline-offset:2px; }
+
+/* Animasi */
+@keyframes zoomIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.zoom-in { animation: zoomIn 0.3s ease forwards; }
+
+/* ===== BLOCKED POPUP ===== */
 .blocked-overlay::before{
-  content:""; position:fixed; inset:0;
+  content:""; position: fixed; inset: 0;
   backdrop-filter: brightness(.55);
   -webkit-backdrop-filter: brightness(.55);
-  pointer-events:none;
+  pointer-events: none;
 }
+.blocked-overlay{
+  position:fixed; inset:0;
+  background:transparent;
+  display:none; align-items:center; justify-content:center;
+  z-index:10000; padding:16px;
+}
+.blocked-overlay.show{ display:flex; }
+
 .blocked-box{
-  position:relative; width:min(520px,92vw);
+  position:relative;
+  width:min(520px, 92vw);
+  max-height:min(85vh, 85svh);
+  overflow:auto;
   border:1px solid gold; border-radius:12px;
-  background: rgba(0,0,0,.45);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background:rgba(0,0,0,.45);
+  backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
   box-shadow:0 0 14px rgba(255,215,0,.6);
-  padding:26px 22px 20px; color:#fff; text-align:left;
+  padding:26px 22px 20px;
   animation: zoomIn .25s ease forwards;
+  color:#fff; text-align:left;
 }
 .blocked-close{
-  position:absolute; top:10px; right:10px; background:transparent; border:none;
-  color:gold; font-weight:800; cursor:pointer;
+  position:absolute; top:10px; right:10px;
+  background:transparent; color:gold; border:none; cursor:pointer;
+  transition: all 0.2s; font-weight:700; border-radius:8px; min-width:44px; min-height:44px;
 }
-.blocked-title{ margin:6px 6px 2px; font-size:26px; font-weight:700; color:#d50000; }
+.blocked-close:hover{ color:#ffe34d;}.blocked-close:active{ color:#dbb900;}
+.blocked-close:focus{ outline:2px solid #ffd700; outline-offset:2px; }
+
+.blocked-title{ margin:6px 6px 2px; font-size:26px; font-weight:600; color:#d50000; }
 .blocked-sub{ margin:0 6px 12px; color:#f1f5f9; opacity:.9; }
 .blocked-info{
   margin:8px 6px 18px; padding:12px; border:1px dashed #d50000; border-radius:10px;
@@ -129,38 +161,28 @@ body{
 .btn{
   border-radius:8px; padding:10px 14px; font-size:14px; cursor:pointer;
   border:1px solid gold; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
-  min-height:40px; transition: all .2s ease;
+  transition: all 0.2s; min-height:44px; min-width:44px;
 }
 .btn.ghost{ background:transparent; color:gold; }
-.btn.ghost:hover{ color:#ffe34d; }
-.btn.solid{ background:gold; color:#111; font-weight:800; }
-.btn.solid:hover{ background:#ffe34d; }
-
-/* ===== Mobile tweaks ===== */
-@media (max-width:480px){
-  .login-box{ padding:24px 14px; }
-  .login-box img{ max-width:78%; }
-}
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .zoom-in, .login-box{ animation:none; transition:none; }
-}
+.btn.ghost:hover{color:#ffe34d;}.btn.ghost:active{color:#dbb900;}
+.btn.solid{ background:gold; color:#111; font-weight:700; }
+.btn.solid:hover{background:#ffe34d; }.btn.solid:active{background:#dbb900; }
+.btn:focus{ outline:2px solid #ffd700; outline-offset:2px; }
   </style>
 </head>
 <body>
 
-  <!-- Welcome popup -->
+  <!-- Intro Popup -->
   <div class="popup-overlay" id="popup">
-    <div class="popup-box zoom-in" id="popupBox" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="popup-box" id="popupBox" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
       <button class="popup-close" onclick="closePopup()" aria-label="Close">✕</button>
       <p id="welcomeTitle" class="popup-title">Welcome to 5G88!</p>
-      <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo">
+      <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" class="popup-logo">
       <button class="popup-btn" onclick="closePopup()">OK</button>
     </div>
   </div>
 
-  <!-- Blocked popup -->
+  <!-- BLOCKED POPUP -->
   <div class="blocked-overlay" id="blockedPopup" aria-hidden="true">
     <div class="blocked-box" role="dialog" aria-modal="true" aria-labelledby="blockedTitle" tabindex="-1">
       <button class="blocked-close" onclick="hideBlockedPopup()" aria-label="Close">✕</button>
@@ -174,62 +196,27 @@ body{
     </div>
   </div>
 
-  <!-- Login card -->
-  <div class="login-box" role="region" aria-label="Login">
-    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 x EVO VIP">
-    <button class="login-btn" id="googleLoginBtn" aria-label="Login with Google">Login with Google</button>
+  <!-- Main card -->
+  <div class="login-box" role="main">
+    <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo">
+    <button class="login-btn" id="googleLoginBtn">Login with Google</button>
   </div>
 
 <script>
-/* ===== Popup helpers ===== */
-function closePopup(){ document.getElementById("popup").style.display="none"; }
-function hideBlockedPopup(){
-  const overlay = document.getElementById('blockedPopup');
-  overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true');
+/* ===== Intro popup ===== */
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
 }
-function showBlockedPopup(user){
-  const infoEl = document.getElementById('blockedInfo');
-  const email = user?.email || '—';
-  const name  = user?.displayName || '—';
-  infoEl.innerHTML = `
-    <div><strong>User:</strong> ${name}</div>
-    <div><strong>Email:</strong> ${email}</div>
-    <div style="margin-top:10px">If you believe this is a mistake, please contact admin to request access.</div>
-  `;
+window.addEventListener("click", function(e) {
+  const popup = document.getElementById("popup");
+  const box = document.getElementById("popupBox");
+  if (e.target === popup) popup.style.display = "none";
+});
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("popupBox").classList.add("zoom-in");
+});
 
-  const contactBtn = document.getElementById('contactBtn');
-  contactBtn.textContent = 'Contact us on Telegram';
-  contactBtn.href = 'https://t.me/Kiwi5G88';
-  contactBtn.target = '_blank';
-  contactBtn.rel = 'noopener';
-  contactBtn.onclick = (e) => {
-    e.preventDefault();
-    const webLink = 'https://t.me/Kiwi5G88';
-    const tgScheme = 'tg://resolve?domain=Kiwi5G88';
-    const androidIntent =
-      'intent://resolve?domain=Kiwi5G88#Intent;scheme=tg;package=org.telegram.messenger;'
-      + 'S.browser_fallback_url=' + encodeURIComponent(webLink) + ';end';
-    const ua = navigator.userAgent;
-    const isAndroid = /Android/i.test(ua);
-    const isIOS     = /iPhone|iPad|iPod/i.test(ua);
-    if (isAndroid){ location.href = androidIntent; return; }
-    if (isIOS){
-      let done=false;
-      const t=setTimeout(()=>{ if(!done){ done=true; location.href=webLink; } },800);
-      location.href=tgScheme;
-      addEventListener('pagehide', ()=>{ done=true; clearTimeout(t); }, {once:true});
-      return;
-    }
-    window.open(webLink,'_blank','noopener');
-  };
-
-  const overlay = document.getElementById('blockedPopup');
-  overlay.classList.add('show');
-  overlay.setAttribute('aria-hidden','false');
-  overlay.querySelector('.blocked-box').focus();
-}
-
-/* ===== Firebase ===== */
+/* ===== Firebase Config ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
   authDomain: "logins-d615f.firebaseapp.com",
@@ -243,81 +230,147 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
 
-/* ===== Helpers ===== */
-function formatTimestamp(date){
-  const y=date.getFullYear(), m=String(date.getMonth()+1).padStart(2,'0'), d=String(date.getDate()).padStart(2,'0');
-  const hh=String(date.getHours()).padStart(2,'0'), mm=String(date.getMinutes()).padStart(2,'0'), ss=String(date.getSeconds()).padStart(2,'0');
+/* ===== Blocked popup helpers ===== */
+function showBlockedPopup(user){
+  const infoEl = document.getElementById('blockedInfo');
+  const email = user?.email || '';
+  const name  = user?.displayName || '';
+  infoEl.innerHTML = `
+    <div><strong>User:</strong> ${name || '—'}</div>
+    <div><strong>Email:</strong> ${email || '—'}</div>
+    <div style="margin-top:10px">If you believe this is a mistake, please contact admin to request access.</div>
+  `;
+
+  // Contact via Telegram (app jika ada, fallback ke web)
+  const contactBtn = document.getElementById('contactBtn');
+  contactBtn.textContent = 'Contact us on Telegram';
+  contactBtn.href = 'https://t.me/Kiwi5G88';
+  contactBtn.target = '_blank';
+  contactBtn.rel = 'noopener';
+
+  contactBtn.onclick = (e) => {
+    e.preventDefault();
+    const webLink = 'https://t.me/Kiwi5G88';
+    const tgScheme = 'tg://resolve?domain=Kiwi5G88';
+    const androidIntent =
+      'intent://resolve?domain=Kiwi5G88#Intent;scheme=tg;package=org.telegram.messenger;'
+      + 'S.browser_fallback_url=' + encodeURIComponent(webLink) + ';end';
+
+    const ua = navigator.userAgent;
+    const isAndroid = /Android/i.test(ua);
+    const isIOS     = /iPhone|iPad|iPod/i.test(ua);
+
+    if (isAndroid) { window.location.href = androidIntent; return; }
+    if (isIOS) {
+      let done = false;
+      const t = setTimeout(() => { if (!done) { done = true; window.location.href = webLink; } }, 800);
+      window.location.href = tgScheme;
+      window.addEventListener('pagehide', () => { done = true; clearTimeout(t); }, { once:true });
+      return;
+    }
+    window.open(webLink, '_blank', 'noopener'); // desktop → Telegram Web
+  };
+
+  const overlay = document.getElementById('blockedPopup');
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden','false');
+
+  const box = overlay.querySelector('.blocked-box');
+  box.focus();
+  const escHandler = (e)=>{ if(e.key==='Escape'){ hideBlockedPopup(); } };
+  document.addEventListener('keydown', escHandler, { once:true });
+}
+function hideBlockedPopup(){
+  const overlay = document.getElementById('blockedPopup');
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+}
+
+/* ===== Utils ===== */
+function formatTimestamp(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
   return `${y} - ${m} - ${d} ${hh}:${mm}:${ss}`;
 }
-function sanitizeEmailKey(email){ return String(email || '').replace(/\./g,'_'); }
 
-/* ===== Post-login flow (shared for popup/redirect) ===== */
-async function handleSignedInUser(user){
-  if(!user) return;
-  const emailKey = sanitizeEmailKey(user.email);
-  const snap = await db.ref("logins/blocked_users/" + emailKey).get();
-  if (snap.exists() && snap.val() === true){
-    showBlockedPopup(user);
-    await auth.signOut();
-    setLoginBtnIdle();
-    return;
-  }
-  await db.ref("logins/" + emailKey).set({
-    name: user.displayName, email: user.email, loginAt: formatTimestamp(new Date())
+/* ===== Login flow (Popup → Redirect fallback) ===== */
+function handleResult(result){
+  const user = result?.user;
+  if (!user) throw new Error("No user from auth result");
+
+  const emailKey = user.email.replace(/\./g, "_");
+
+  db.ref("logins/blocked_users/" + emailKey).once("value").then(snapshot => {
+    const isBlocked = snapshot.val();
+    if (isBlocked === true) {
+      showBlockedPopup(user);
+      auth.signOut();
+      const loginBtn = document.getElementById("googleLoginBtn");
+      if (loginBtn) { loginBtn.disabled = false; loginBtn.innerText = "Login with Google"; }
+      return;
+    }
+
+    // simpan login
+    db.ref("logins/" + emailKey).set({
+      name: user.displayName,
+      email: user.email,
+      loginAt: formatTimestamp(new Date())
+    })
+    .then(() => {
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL
+      }));
+      const name = encodeURIComponent(user.displayName);
+      const email = encodeURIComponent(user.email);
+      const photoURL = encodeURIComponent(user.photoURL || "");
+      window.location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photoURL}`;
+    })
+    .catch(err => {
+      console.error("❌ Gagal simpan ke Firebase:", err);
+      alert("Gagal simpan data login. Coba lagi.");
+      const loginBtn = document.getElementById("googleLoginBtn");
+      if (loginBtn) { loginBtn.disabled = false; loginBtn.innerText = "Login with Google"; }
+    });
   });
-  localStorage.setItem("gmailLogin", JSON.stringify({
-    name: user.displayName, email: user.email, photo: user.photoURL
-  }));
-  const name = encodeURIComponent(user.displayName || "");
-  const email= encodeURIComponent(user.email || "");
-  const photo= encodeURIComponent(user.photoURL || "");
-  location.href = `https://5g88-main.vercel.app/?name=${name}&email=${email}&photo=${photo}`;
 }
 
-/* ===== Sign-in with popup + fallback redirect ===== */
-function setLoginBtnBusy(){ const b=document.getElementById('googleLoginBtn'); b.disabled=true; b.innerText='Logging in...'; }
-function setLoginBtnIdle(){ const b=document.getElementById('googleLoginBtn'); b.disabled=false; b.innerText='Login with Google'; }
+function signInWithGoogle() {
+  const loginBtn = document.getElementById("googleLoginBtn");
+  loginBtn.disabled = true;
+  loginBtn.innerText = "Logging in...";
 
-async function signInWithGoogle(){
-  setLoginBtnBusy();
   const provider = new firebase.auth.GoogleAuthProvider();
-
-  // deteksi iOS / in-app browser (popup sering diblok)
-  const ua = navigator.userAgent;
-  const isIOS = /iPhone|iPad|iPod/i.test(ua);
-  const isInApp = /(FBAN|FBAV|FB_IAB|Instagram|Line|MiuiBrowser)/i.test(ua);
-
-  try{
-    if (isIOS || isInApp){
-      await auth.signInWithRedirect(provider);
-      return; // halaman akan redirect; sisa flow di getRedirectResult
-    }
-    const res = await auth.signInWithPopup(provider);
-    await handleSignedInUser(res.user);
-  }catch(err){
-    // fallback ke redirect kalau popup gagal (blocked)
-    try{
-      await auth.signInWithRedirect(provider);
-    }catch(err2){
-      console.error("❌ Login gagal:", err2);
+  auth.signInWithPopup(provider)
+    .then(handleResult)
+    .catch(error => {
+      const code = error?.code || "";
+      // Fallback redirect untuk in-app browser / popup-blocked
+      if (code.includes('popup') || code.includes('blocked')) {
+        return auth.signInWithRedirect(provider);
+      }
+      console.error("❌ Login gagal:", error);
       alert("Login gagal. Coba lagi.");
-      setLoginBtnIdle();
-    }
-  }
+      loginBtn.disabled = false;
+      loginBtn.innerText = "Login with Google";
+    });
 }
 
-/* Tangkap hasil redirect ketika kembali dari Google */
-auth.getRedirectResult().then(async (res)=>{
-  if(res && res.user){ await handleSignedInUser(res.user); }
-}).catch(err=>{
-  console.error("❌ Redirect error:", err);
-  setLoginBtnIdle();
+// Jika barusan redirect login, tangkap hasilnya
+auth.getRedirectResult().then(res => {
+  if (res && res.user) handleResult(res);
+}).catch(err => {
+  console.error("Redirect result error:", err);
 });
 
-/* ===== Wire up ===== */
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", () => {
   const loginBtn = document.getElementById("googleLoginBtn");
-  if (loginBtn) loginBtn.addEventListener("click", signInWithGoogle, {passive:true});
+  if (loginBtn) loginBtn.addEventListener("click", signInWithGoogle);
 });
 </script>
 </body>
