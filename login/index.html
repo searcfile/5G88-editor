@@ -175,9 +175,9 @@
 .blocked-box{
   position:relative;
   width:min(520px, 92vw);
-  border:2px solid gold; border-radius:14px;
+  border:2px solid gold; border-radius:12px;
   background:rgba(0,0,0,.45);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
   box-shadow:0 0 14px rgba(255,215,0,.6);
   padding:26px 22px 20px;
   animation: zoomIn .25s ease forwards;
@@ -186,12 +186,11 @@
 
 .blocked-close{
   position:absolute; top:10px; right:10px;
-  background:#111; color:gold; border:2px solid gold;
-  border-radius:8px; padding:4px 10px; cursor:pointer;
-  font-weight:700;
-  transition:transform .2s ease, box-shadow .2s ease;
+  background:transparent; color:gold; border:none;
+  cursor:pointer;
+  transition: all 0.2s;
 }
-.blocked-close:hover{ transform:scale(1.06); box-shadow:0 0 10px rgba(255,215,0,.6); }
+.blocked-close:hover{ color:#ffe34d;}.blocked-close:active{ color:#dbb900;}
 
 .blocked-title{
   margin:6px 6px 2px; font-size:26px; font-weight:600; color:#d50000;
@@ -213,12 +212,12 @@
 .btn{
   border-radius:8px; padding:10px 14px; font-size:14px; cursor:pointer;
   border:2px solid gold; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
-  transition:transform .15s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+  transition: all 0.2s;
 }
 .btn.ghost{ background:transparent; color:gold; }
-.btn.ghost:hover{ transform:translateY(-1px); box-shadow:0 0 10px rgba(255,215,0,.5); }
+.btn.ghost:hover{color:#ffe34d;}.btn.ghost:active{color:#dbb900;}
 .btn.solid{ background:gold; color:#111; font-weight:700; }
-.btn.solid:hover{ transform:translateY(-1px); box-shadow:0 0 12px rgba(255,215,0,.7); }
+.btn.solid:hover{background:#ffe34d; }.btn.solid:active{background:#dbb900; }
   </style>
 </head>
 <body>
