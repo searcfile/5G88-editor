@@ -168,12 +168,19 @@
 </head>
 <body>
   
-  <div class="popup-overlay" id="popup">
-  <div class="popup-box" id="popupBox">
-    <button class="popup-close" onclick="closePopup()">X</button>
-    <p class="popup-title">Welcome to 5G88!</p>
-    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="5G88 Logo" class="popup-logo">
-    <button class="popup-btn" onclick="closePopup()">OK</button>
+<!-- POPUP KHUSUS BLOKIR -->
+<div class="popup-overlay" id="blockedPopup" style="display:none">
+  <div class="popup-box zoom-in">
+    <button class="popup-close" onclick="closeBlockedPopup()">X</button>
+    <p class="popup-title">Access Denied</p>
+    <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Blocked Logo" class="popup-logo">
+    <p style="color:white;font-size:16px;margin-top:20px" id="blockedMessage">
+      Access denied. Your account has been blocked by 5G88 Admin.
+    </p>
+    <div style="margin-top:30px; display:flex; gap:10px;">
+      <button class="popup-btn" onclick="closeBlockedPopup()">Cancel</button>
+      <a class="popup-btn" id="contactBtn" target="_blank">Contact Us</a>
+    </div>
   </div>
 </div>
 
@@ -194,6 +201,17 @@
   function closePopup() {
     document.getElementById("popup").style.display = "none";
   }
+  function showBlockedPopup(message, contactLink) {
+  document.getElementById("blockedPopup").style.display = "flex";
+  document.getElementById("blockedMessage").innerText = message;
+  document.getElementById("contactBtn").href = contactLink || "#";
+  document.body.style.overflow = "hidden";
+}
+
+function closeBlockedPopup() {
+  document.getElementById("blockedPopup").style.display = "none";
+  document.body.style.overflow = "";
+}
 
   window.addEventListener("click", function(e) {
     const popup = document.getElementById("popup");
@@ -255,11 +273,14 @@
         db.ref("logins/blocked_users/" + emailKey).once("value").then(snapshot => {
           const isBlocked = snapshot.val();
           if (isBlocked === true) {
-            alert("⚠️ Access denied: You need permission at 5G88!.");
-            auth.signOut();
-            loginBtn.disabled = false;
-            loginBtn.innerText = "Login with Google";
-            return;
+           showBlockedPopup(
+           "Access denied. Your account has been blocked by 5G88 Admin.",
+           "https://t.me/Kiwi5G88" // <-- ganti ini ke link contact kamu
+           );
+           auth.signOut();
+           loginBtn.disabled = false;
+           loginBtn.innerText = "Login with Google";
+           return;
           }
 
           // ✅ Jika tidak diblokir, lanjut simpan login
