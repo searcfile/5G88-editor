@@ -7,35 +7,27 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
-    body {
-    background: url('https://i.imgur.com/UCZqSrT.png') no-repeat center center fixed;
-    background-size: cover;
-    color: #fff;
-    font-family: sans-serif;
-    margin: 0;
-  }
-
-  .login-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    text-align: center;
-    padding: 50px 20px;
-    border: 1px solid gold;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-    width: 450px;
-    min-height: 130px;
-    margin: 300px auto;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 12px;
-    background-color:rgba(0,0,0,.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px); /* untuk Safari */
-    transition: all 0.2s;
-  }
-
+/* 1) Body jadi centering container */
+html, body { height: 100%; }
+body{
+  background: url('https://i.imgur.com/UCZqSrT.png') no-repeat center/cover fixed;
+  color:#fff; font-family:sans-serif; margin:0;
+  display:flex;                 /* atau: display:grid; place-items:center; */
+  align-items:center;           /* center vertikal */
+  justify-content:center;       /* center horizontal */
+  min-height:100svh;            /* aman untuk mobile */
+}
+.login-box{
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  width:450px; max-width:92vw;
+  margin:0;                      /* was: 300px auto */
+  padding:50px 20px;
+  border:1px solid gold; box-shadow:0 0 8px rgba(255,215,0,.6);
+  border-radius:12px;
+  background-color:rgba(0,0,0,.45);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
   .login-box:hover {
     transform: scale(1.03);
     box-shadow: 0 0 18px rgba(255, 215, 0, 0.9);
