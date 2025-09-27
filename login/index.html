@@ -119,7 +119,7 @@ body{
 .btn-contact{
   border:1px solid transparent; background:gold; color: black; padding: 10px 20px; border-radius: 6px;text-decoration:none; cursor:pointer; transition:.2s;
 }
-.btn-contact:hover{background:#ffe34d;}.btn-contact:hover{background:#dbb900;}
+.btn-contact:hover{background:#ffe34d;}.btn-contact:active{background:#dbb900;}
 /* === Posisi tombol X di pojok kanan atas === */
 .popup-box .popup-close,
 .blocked-box .popup-close{
@@ -244,7 +244,7 @@ body{
   </div>
 </div>
 <div class="forgot-row">
-  <button type="button" id="forgotBtn" class="link-btn">Lupa password?</button>
+  <button type="button" id="forgotBtn" class="link-btn">Forgot password?</button>
 </div>
       <button class="btn" id="btnUserpass">Login</button>
       <!-- (Opsional) Buat akaun baru -->
@@ -265,16 +265,16 @@ body{
 <div id="forgotOverlay" class="blocked-overlay" aria-hidden="true">
   <div class="blocked-box forgot-box zoom-in" role="dialog" aria-modal="true">
     <button class="popup-close" id="forgotClose" aria-label="Close">✕</button>
-    <h3 class="popup-title" style="margin-bottom:14px">Lupa Password</h3>
+    <h3 class="popup-title" style="margin-bottom:14px">Forgot Password</h3>
 
     <div class="group">
-      <label class="label" for="fpUsername">Username terdaftar</label>
+      <label class="label" for="fpUsername">Username register</label>
       <input id="fpUsername" class="input" placeholder="contoh: johndoe">
-      <div id="fpUserErr" class="err-msg" style="display:none">Username ini tidak terdaftar</div>
+      <div id="fpUserErr" class="err-msg" style="display:none">Username not register</div>
     </div>
 
     <div class="group" style="margin-bottom:6px">
-      <label class="label" for="fpNote">Optional (pesan untuk admin)</label>
+      <label class="label" for="fpNote">Optional (forgot password)</label>
       <input id="fpNote" class="input" placeholder="(opsional)">
     </div>
 
@@ -440,11 +440,11 @@ fpRequest?.addEventListener('click', async () => {
       verify: ok === true ? 'exists' : 'unknown',  // catat hasil verifikasi
       ua: navigator.userAgent
     });
-    alert('Request terkirim. Admin akan memproses reset password kamu.');
+    alert('Request successfully. New password will procces.');
     closeForgot();
   }catch(e){
     console.error(e);
-    alert('Gagal mengirim request. Coba lagi.');
+    alert('Request error. Try again.');
   }finally{
     fpRequest.disabled = false;
   }
