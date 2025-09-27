@@ -362,12 +362,6 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-document.addEventListener("contextmenu", e => e.preventDefault());
-  document.onkeydown = function (e) {
-    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {
-      return false;
-    }
-  };
 /*Mcng 123 123 updated 232131*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -1062,38 +1056,36 @@ let lastOverrideTs = 0;
 let loginAuth = null;
 try { loginAuth = loginApp.auth(); } catch (_) {}
 
-loginDb.ref("logins/admin_override").on("value", async (snap) => {
+// userId = email yg diganti '.' -> '_'
+userId = (loginData.email || '').toLowerCase().replace(/\./g, '_');
+
+// listen ke node override khusus saya
+const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
+let lastAt = 0;
+
+myOverrideRef.on('value', async (snap) => {
   const v = snap.val();
-  if (!v) return;
+  console.log('[override:me]', v); // bantu debug
 
-  // gunakan at/time bila ada agar tidak dobel trigger
-  const at = Number(v.at || v.time || 0);
-  if (at && at <= lastOverrideTs) return;
-  lastOverrideTs = at || Date.now();
+  if (!v || v.forceLogout !== true) return;
+  if (v.at && v.at <= lastAt) return; // cegah retrigger
+  lastAt = v.at || Date.now();
 
-  const me = userId; // emailKey yang sudah disanitasi
+  // (opsional) sign out auth kalau ada
+  try { loginApp.auth && (await loginApp.auth().signOut()); } catch (_) {}
 
-  const iAmTarget =
-    (v.forceLogoutAll === true && Array.isArray(v.users) && v.users.includes(me)) ||
-    (v.forceLogout === true && v.target === me);
-
-  if (!iAmTarget) return;
-
-  // signOut (kalau auth tersedia), aman kalau gagal
-  try { if (loginAuth) await loginAuth.signOut(); } catch (_) {}
-
-  // bereskan sesi lokal & alihkan
-  localStorage.removeItem("gmailLogin");
-  sessionStorage.setItem("forceLogout", "1");
+  // bersihkan sesi lokal
+  localStorage.removeItem('gmailLogin');
+  sessionStorage.setItem('forceLogout', '1');
   if (window.google?.accounts?.id) {
-    try { google.accounts.id.disableAutoSelect(); } catch(_) {}
+    try { google.accounts.id.disableAutoSelect(); } catch (_) {}
   }
 
-  // PENTING:
-  // ❗JANGAN hapus node admin_override dari sisi user.
-  // Biarkan ADMIN PAGE yg menghapus setelah beberapa detik,
-  // supaya semua user sempat menerima sinyalnya.
-  window.location.href = "https://5g88-login.vercel.app/";
+  // HAPUS HANYA node saya sendiri, JANGAN root admin_override
+  myOverrideRef.remove().catch(()=>{});
+
+  // redirect ke login
+  window.location.href = 'https://5g88-login.vercel.app/';
 });
 loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
   if (s.val() === true) {
@@ -1310,6 +1302,6 @@ tabBar.addEventListener('wheel', (e) => {
   }
 });
 });
-  </script>
+</script>
 </body>
 </html>
