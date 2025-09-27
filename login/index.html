@@ -262,8 +262,8 @@ body{
     </div>
   </div>
 <!-- FORGOT PASSWORD POPUP -->
-<div id="forgotOverlay" class="popup-overlay" hidden>
-  <div class="popup-box forgot-box zoom-in">
+<div id="forgotOverlay" class="blocked-overlay" aria-hidden="true">
+  <div class="blocked-box forgot-box zoom-in" role="dialog" aria-modal="true">
     <button class="popup-close" id="forgotClose" aria-label="Close">✕</button>
     <h3 class="popup-title" style="margin-bottom:14px">Lupa Password</h3>
 
@@ -471,7 +471,37 @@ elFpRequest?.addEventListener('click', async () => {
     overlay.classList.remove('show');
     overlay.setAttribute('aria-hidden','true');
   }
+ // ===== Forgot overlay open/close (pakai gaya "blocked") =====
+const forgotOverlay = document.getElementById('forgotOverlay');
+const forgotClose   = document.getElementById('forgotClose');
+const forgotBtn     = document.getElementById('forgotBtn');
+const fpCancel      = document.getElementById('fpCancel');
+const fpUserInput   = document.getElementById('fpUsername');
 
+function openForgot(){
+  // tutup welcome bila masih terbuka (biar tidak tumpuk)
+  const welcome = document.getElementById('popup');
+  if (welcome) welcome.style.display = 'none';
+
+  forgotOverlay.classList.add('show');
+  forgotOverlay.setAttribute('aria-hidden', 'false');
+  setTimeout(()=> fpUserInput?.focus(), 10);
+
+  const esc = (e)=>{ if (e.key === 'Escape') closeForgot(); };
+  document.addEventListener('keydown', esc, { once:true });
+}
+
+function closeForgot(){
+  forgotOverlay.classList.remove('show');
+  forgotOverlay.setAttribute('aria-hidden', 'true');
+}
+
+forgotBtn?.addEventListener('click', openForgot);
+forgotClose?.addEventListener('click', closeForgot);
+fpCancel?.addEventListener('click', closeForgot);
+forgotOverlay?.addEventListener('click', (e)=>{
+  if (e.target === forgotOverlay) closeForgot();   // klik luar box = close
+});
   function finishLogin(userLike){
     // userLike: {displayName?, email, photoURL?}
     const email = userLike.email;
