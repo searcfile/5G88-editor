@@ -173,6 +173,17 @@ body{
   .tab{ font-size:13px; padding:10px 12px; }
   .input, .btn{ padding:12px; }
 }
+/* === Forgot Password UI === */
+.forgot-row{ width:100%; display:flex; justify-content:flex-end; margin:6px 0 10px; }
+.link-btn{ background:transparent; border:0; color:gold; font-size:13px; cursor:pointer; text-decoration:underline; padding:0; }
+.link-btn:hover{ opacity:.85; }
+
+.err-msg{ color:#ff4d4f; font-size:12px; margin-top:6px; }
+.input.invalid{ border-color:#ff4d4f !important; box-shadow:0 0 0 3px rgba(255,77,79,.2); }
+
+.forgot-box{ width:min(420px,92vw); text-align:left; align-items:stretch; }
+.actions-row{ display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
+#forgotOverlay .popup-close{ top:12px; right:12px; }
   </style>
 </head>
 <body>
@@ -232,6 +243,9 @@ body{
     </button>
   </div>
 </div>
+<div class="forgot-row">
+  <button type="button" id="forgotBtn" class="link-btn">Lupa password?</button>
+</div>
       <button class="btn" id="btnUserpass">Login</button>
       <!-- (Opsional) Buat akaun baru -->
       <!-- <button type="button" class="btn ghost" onclick="createAccount()">Create Account</button> -->
@@ -247,7 +261,29 @@ body{
       By continuing, you agree to our Terms and acknowledge our Privacy Policy.
     </div>
   </div>
+<!-- FORGOT PASSWORD POPUP -->
+<div id="forgotOverlay" class="popup-overlay" hidden>
+  <div class="popup-box forgot-box zoom-in">
+    <button class="popup-close" id="forgotClose" aria-label="Close">✕</button>
+    <h3 class="popup-title" style="margin-bottom:14px">Lupa Password</h3>
 
+    <div class="group">
+      <label class="label" for="fpUsername">Username terdaftar</label>
+      <input id="fpUsername" class="input" placeholder="contoh: johndoe">
+      <div id="fpUserErr" class="err-msg" style="display:none">Username ini tidak terdaftar</div>
+    </div>
+
+    <div class="group" style="margin-bottom:6px">
+      <label class="label" for="fpNote">Optional (pesan untuk admin)</label>
+      <input id="fpNote" class="input" placeholder="(opsional)">
+    </div>
+
+    <div class="actions-row">
+      <button id="fpCancel" class="btn ghost" type="button">Cancel</button>
+      <button id="fpRequest" class="btn" type="button">Request</button>
+    </div>
+  </div>
+</div>
 <script>
   /* ====== Popup welcome ====== */
   function closePopup(){ document.getElementById("popup").style.display="none"; }
@@ -274,6 +310,107 @@ body{
   const auth = firebase.auth();
   const db   = firebase.database();
 
+  /* ===== Forgot Password ===== */
+/** Node untuk menyimpan request reset password */
+const PATH_RESET = 'password_reset_requests';
+
+/** Elemen */
+const elForgotOverlay = document.getElementById('forgotOverlay');
+const elForgotBtn     = document.getElementById('forgotBtn');
+const elFpClose       = document.getElementById('forgotClose');
+const elFpCancel      = document.getElementById('fpCancel');
+const elFpRequest     = document.getElementById('fpRequest');
+const elFpUsername    = document.getElementById('fpUsername');
+const elFpUserErr     = document.getElementById('fpUserErr');
+const elFpNote        = document.getElementById('fpNote');
+
+/** Helpers */
+function sanitizeUsername(u){
+  return (u || '').trim().toLowerCase().replace(/[^a-z0-9._-]/g,'');
+}
+function clearFpError(){
+  if (!elFpUsername) return;
+  elFpUserErr.style.display = 'none';
+  elFpUsername.classList.remove('invalid');
+}
+function openForgot(){
+  elForgotOverlay.hidden = false;
+  setTimeout(()=> elFpUsername && elFpUsername.focus(), 10);
+}
+function closeForgot(){
+  elForgotOverlay.hidden = true;
+  if (elFpUsername) elFpUsername.value = '';
+  if (elFpNote)     elFpNote.value = '';
+  clearFpError();
+}
+
+/** Cek username ada/tidak via Firebase Auth (email/password di domain @5g88.local) */
+async function usernameExists(uname){
+  const email = toPseudoEmail(uname);
+  try{
+    const methods = await auth.fetchSignInMethodsForEmail(email);
+    return Array.isArray(methods) && methods.includes('password');
+  }catch(e){
+    console.warn('fetchSignInMethodsForEmail failed:', e);
+    return false;
+  }
+}
+
+/** Events */
+elForgotBtn?.addEventListener('click', openForgot);
+elFpClose?.addEventListener('click', closeForgot);
+elFpCancel?.addEventListener('click', closeForgot);
+elFpUsername?.addEventListener('input', clearFpError);
+
+/** Validasi on blur (optional) */
+elFpUsername?.addEventListener('blur', async () => {
+  const u = sanitizeUsername(elFpUsername.value);
+  if (!u) return;
+  const ok = await usernameExists(u);
+  if (!ok){
+    elFpUserErr.style.display = 'block';
+    elFpUsername.classList.add('invalid');
+  } else {
+    clearFpError();
+  }
+});
+
+/** Kirim request ke RTDB untuk diproses admin */
+elFpRequest?.addEventListener('click', async () => {
+  const u = sanitizeUsername(elFpUsername.value);
+  const note = (elFpNote?.value || '').trim();
+  if (!u){
+    elFpUsername?.focus();
+    return;
+  }
+
+  // pastikan username terdaftar
+  const ok = await usernameExists(u);
+  if (!ok){
+    elFpUserErr.style.display = 'block';
+    elFpUsername.classList.add('invalid');
+    return;
+  }
+
+  try{
+    elFpRequest.disabled = true;
+    await db.ref(PATH_RESET).push({
+      username: u,
+      email: toPseudoEmail(u),
+      note,
+      createdAt: Date.now(),
+      status: 'pending',
+      ua: navigator.userAgent
+    });
+    alert('Request terkirim. Admin akan memproses reset password kamu.');
+    closeForgot();
+  }catch(e){
+    console.error(e);
+    alert('Gagal mengirim request. Coba lagi.');
+  }finally{
+    elFpRequest.disabled = false;
+  }
+});
   /* ====== Helpers ====== */
   const MAIN_URL = "https://5g88-main.vercel.app";
   const toPseudoEmail = (uname) => `${uname.trim()}@5g88.local`;
