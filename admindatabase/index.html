@@ -438,14 +438,54 @@ td:last-child {
 
   firebase.initializeApp(firebaseConfig);
   const dbRef = firebase.database().ref('logins');
+  // --- init blurphp di ADMIN (pakai config yang sama seperti di halaman user) ---
+const blurphpApp = firebase.initializeApp({
+  apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+  authDomain: "blurphp.firebaseapp.com",
+  databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "blurphp",
+  storageBucket: "blurphp.appspot.com",
+  messagingSenderId: "593904200464",
+  appId: "1:593904200464:web:cea7bc1360532c20d99395",
+  measurementId: "G-R494S2DPZ5"
+}, "blurphpApp");
+const blurphpDb = blurphpApp.database();
+
+// konsisten dengan client: lowercase + ganti '.' -> '_'
+function sanitizeEmail(email){
+  return String(email||'').toLowerCase().replace(/\./g,'_').replace(/[#$\[\]]/g,'');
+}
+
+// Kumpulkan target dari 2 sumber: logins (kalau masih ada), kalau kosong fallback users online (blurphp)
+async function collectEmailKeys(){
+  const keys = new Set();
+
+  // coba ambil dari /logins
+  try {
+    const snap = await firebase.database().ref('logins').once('value');
+    const v = snap.val() || {};
+    Object.keys(v).forEach(k => {
+      if (k === 'admin_override' || k === 'blocked_users') return;
+      const row = v[k];
+      if (row && (row.email || row.name || row.loginAt)) keys.add(k.toLowerCase());
+    });
+  } catch(_) {}
+
+  // fallback ke /blurphp/users yang online === true
+  if (keys.size === 0) {
+    try{
+      const ss = await blurphpDb.ref('users').orderByChild('online').equalTo(true).once('value');
+      ss.forEach(ch => {
+        const k = String(ch.key || '').toLowerCase(); // di blurphp sudah format emailKey
+        if (k) keys.add(k);
+      });
+    }catch(_){}
+  }
+
+  return Array.from(keys);
+}
 
   const blockedRef = firebase.database().ref('logins/blocked_users');
-
-
-function sanitizeEmail(email) {
-  if (!email || typeof email !== 'string') return '';
-  return email.replace(/\./g, "_").replace(/[#$\[\]]/g, '');
-}
 
 function isEmailBlocked(email) {
   const key = sanitizeEmail(email);
@@ -493,23 +533,19 @@ function setEmailBlocked(email, isBlocked) {
       (item.email || '').toLowerCase().includes(lowerQuery)
     );
   }
-function forceLogoutUser(email) {
-  const key = sanitizeEmail(email); // sama dengan format yang dipakai di app login (ganti '.' -> '_')
-  const payload = {
-    forceLogout: true,
-    at: Date.now()
-  };
+async function forceLogoutUser(email){
+  const key = sanitizeEmail(email);
+  const ts = Date.now();
 
-  // TULIS ke child: /logins/admin_override/<emailKey>
-  firebase.database()
-    .ref('logins/admin_override/' + key)
-    .set(payload)
-    .then(() => {
-      showToast(`Logout sent to ${email}`);
-    })
-    .catch(err => {
-      showToast(`Error logout: ${err.message}`, "error");
-    });
+  // gaya baru: child per-user
+  await firebase.database().ref('logins/admin_override/'+key)
+    .set({ forceLogout: true, at: ts });
+
+  // legacy: root dengan array 1 user
+  await firebase.database().ref('logins/admin_override')
+    .update({ forceLogoutAll: true, users: [key], time: ts });
+
+  showToast(`Logout sent to ${email}`);
 }
 function showToast(message, type = "success", duration = 4000) {
   const toast = document.getElementById("toast");
@@ -698,17 +734,10 @@ function renderLoginTable(dataArray) {
   });
 function showConfirmAllBox(button) {
   const box = document.getElementById("confirmAllBox");
-
-  // Kalau sedang tampil, klik lagi = tutup
-  if (isConfirmAllVisible) {
-    box.style.display = "none";
-    box.classList.remove("show");
-    isConfirmAllVisible = false;
-    return;
-  }
+  if (isConfirmAllVisible) { box.style.display="none"; box.classList.remove("show"); isConfirmAllVisible=false; return; }
 
   const yesBtn = document.getElementById("confirmAllYes");
-  const noBtn = document.getElementById("confirmAllNo");
+  const noBtn  = document.getElementById("confirmAllNo");
 
   box.style.display = "block";
   box.classList.add("show");
@@ -716,23 +745,23 @@ function showConfirmAllBox(button) {
 
   const rect = button.getBoundingClientRect();
   const boxWidth = box.offsetWidth;
-  let left = rect.left + (rect.width / 2) - (boxWidth / 2);
-
+  let left = rect.left + (rect.width/2) - (boxWidth/2);
   const maxLeft = window.innerWidth - boxWidth - 10;
   if (left > maxLeft) left = maxLeft;
   if (left < 10) left = 10;
-
-  box.style.top = `${rect.bottom + window.scrollY + 6}px`;
+  box.style.top  = `${rect.bottom + window.scrollY + 6}px`;
   box.style.left = `${left}px`;
 
+  // reset handler
   yesBtn.replaceWith(yesBtn.cloneNode(true));
   noBtn.replaceWith(noBtn.cloneNode(true));
 
-  document.getElementById("confirmAllYes").onclick = () => {
+  document.getElementById("confirmAllYes").onclick = async () => {
     box.style.display = "none";
     box.classList.remove("show");
     isConfirmAllVisible = false;
-    doForceLogoutAll();
+    // 🔁 gunakan yang ada fallback ke blurphp
+    await logoutAll_DualBroadcast();
   };
 
   document.getElementById("confirmAllNo").onclick = () => {
@@ -791,44 +820,43 @@ function showConfirmBox(button, email, name = '-') {
     currentConfirmEmail = null;
   };
 }
-document.getElementById('forceLogoutAllBtn').addEventListener('click', function () {
-  showConfirmAllBox(this);
-});
- function doForceLogoutAll() {
+document.getElementById('forceLogoutAllBtn')
+  ?.addEventListener('click', function(){ showConfirmAllBox(this); });
+  
+async function logoutAll_DualBroadcast(){
   const ts = Date.now();
+  const keys = await collectEmailKeys();
 
-  // Kumpulkan semua email yang valid dari tabel
-  const emails = allLoginData
-    .filter(u => u.email)
-    .map(u => u.email);
-
-  if (emails.length === 0) {
-    showToast('Tidak ada user untuk di-logout.', 'error');
+  if (keys.length === 0){
+    showToast('Tidak ada target ditemukan (logins kosong & users offline).', 'error');
     return;
   }
 
-  // Build multipath update: /logins/admin_override/<emailKey> = {forceLogout:true, at:...}
+  // 1) NEW STYLE — per-user child
   const updates = {};
-  emails.forEach(email => {
-    const key = sanitizeEmail(email);
-    updates['logins/admin_override/' + key] = { forceLogout: true, at: ts };
+  keys.forEach(k => {
+    updates[`logins/admin_override/${k}`] = { forceLogout: true, at: ts };
+  });
+  await firebase.database().ref().update(updates);
+
+  // 2) LEGACY ROOT — agar klien lama juga logout
+  await firebase.database().ref('logins/admin_override').update({
+    forceLogoutAll: true,
+    users: keys,
+    time: ts
   });
 
-  firebase.database().ref()
-    .update(updates)
-    .then(() => {
-      // Tampilkan toast bertahap (opsional)
-      let delay = 0;
-      emails.forEach(email => {
-        setTimeout(() => showToast(`Logout sent to ${email}`), delay);
-        delay += 200;
-      });
-      // ⚠️ JANGAN remove() admin_override di sini — biarkan app user yang membersihkan node miliknya.
-    })
-    .catch(err => {
-      showToast(`Error force logout all: ${err.message}`, "error");
-    });
+  showToast(`Signal logout dikirim ke ${keys.length} user.`);
+
+  // opsional: bersihkan hanya FLAG legacy setelah 10 dtk (root node tetap ada)
+  setTimeout(() => {
+    const root = firebase.database().ref('logins/admin_override');
+    root.child('forceLogoutAll').remove().catch(()=>{});
+    root.child('users').remove().catch(()=>{});
+    root.child('time').remove().catch(()=>{});
+  }, 10000);
 }
+
 document.addEventListener('click', function (e) {
   const confirmBox = document.getElementById('confirmBox');
   const confirmAllBox = document.getElementById('confirmAllBox');
