@@ -181,7 +181,7 @@ body{
 .err-msg{ color:#ff4d4f; font-size:12px; margin-top:6px; }
 .input.invalid{ border-color:#ff4d4f !important; box-shadow:0 0 0 3px rgba(255,77,79,.2); }
 
-.forgot-box{ width:min(420px,92vw); text-align:left; align-items:stretch; }
+.forgot-box{ width:min(650px,92vw); text-align:left; align-items:stretch; }
 .actions-row{ display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
 #forgotOverlay .popup-close{ top:12px; right:12px; }
   </style>
@@ -321,7 +321,7 @@ function formatTimestamp(date){
 
 /* ===== Forgot Password (final) ===== */
 const PATH_RESET = 'password_reset_requests';
-
+const USERNAME_INDEX = 'user_index/usernames';
 // Elemen
 const forgotOverlay = document.getElementById('forgotOverlay'); // gunakan class="blocked-overlay"
 const forgotClose   = document.getElementById('forgotClose');
@@ -372,20 +372,27 @@ function closeForgot(){
   _clearFpErr();
 }
 
-// Cek username di Firebase Auth (graceful fallback bila referrer blocked)
+// Cek di RTDB dulu, Auth jadi fallback saja
 async function usernameExists(uname){
-  const email = toPseudoEmail(uname);
+  const u = _sanitizeUsername(uname);
+  if (!u) return null;
+
+  // 1) Cek index di RTDB (paling akurat & cepat)
   try{
-    const methods = await auth.fetchSignInMethodsForEmail(email);
-    return Array.isArray(methods) && methods.includes('password'); // true/false
+    const snap = await db.ref(`${USERNAME_INDEX}/${u}`).once('value');
+    const v = snap.val();
+    if (v === true || v === 'true') return true;   // boolean true (atau string 'true')
+  }catch(e){
+    console.warn('index read failed:', e);
+  }
+
+  // 2) Fallback ke Auth; kalau tidak yakin → return null (jangan merah)
+  try{
+    const methods = await auth.fetchSignInMethodsForEmail(toPseudoEmail(u));
+    return (Array.isArray(methods) && methods.includes('password')) ? true : null;
   }catch(e){
     console.warn('fetchSignInMethodsForEmail failed:', e?.code || e);
-    // kalau key dibatasi / referer diblok, kembalikan null → biarkan request tetap bisa dikirim
-    const msg = String(e?.code || e?.message || '');
-    if (msg.includes('requests-from-referer') || msg.includes('referer') || msg.includes('identitytoolkit')) {
-      return null; // unknown
-    }
-    return null;   // default: unknown → jangan blok user
+    return null; // unknown → jangan blok user
   }
 }
 
