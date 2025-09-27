@@ -1055,43 +1055,54 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 userId = loginData.email.replace(/\./g, "_");
-loginDb.ref("logins/admin_override").on("value", (snapshot) => {
-  const data = snapshot.val();
+// Simpan timestamp terakhir supaya tidak eksekusi ulang
+let lastOverrideTs = 0;
 
-  // Jika force logout ALL dan user termasuk dalam daftar
-  if (data?.forceLogoutAll && Array.isArray(data.users)) {
-    const shouldLogout = data.users.includes(userId);
+// (opsional) auth dari app yg sama, kalau library auth dimuat
+let loginAuth = null;
+try { loginAuth = loginApp.auth(); } catch (_) {}
 
-    if (shouldLogout) {
-      alert("⚠️System Updated Please Relogin!");
+loginDb.ref("logins/admin_override").on("value", async (snap) => {
+  const v = snap.val();
+  if (!v) return;
 
-      // 🔄 Bersihkan data lokal
-      localStorage.removeItem("gmailLogin");
-      sessionStorage.setItem("forceLogout", "1");
+  // gunakan at/time bila ada agar tidak dobel trigger
+  const at = Number(v.at || v.time || 0);
+  if (at && at <= lastOverrideTs) return;
+  lastOverrideTs = at || Date.now();
 
-      //Hapus node untuk hentikan logout terus-menerus
-      loginDb.ref("logins/admin_override").remove();
-      if (window.google?.accounts?.id) {
-        google.accounts.id.disableAutoSelect();
-      }
-      window.location.href = "https://5g88-login.vercel.app/";
-    }
+  const me = userId; // emailKey yang sudah disanitasi
+
+  const iAmTarget =
+    (v.forceLogoutAll === true && Array.isArray(v.users) && v.users.includes(me)) ||
+    (v.forceLogout === true && v.target === me);
+
+  if (!iAmTarget) return;
+
+  // signOut (kalau auth tersedia), aman kalau gagal
+  try { if (loginAuth) await loginAuth.signOut(); } catch (_) {}
+
+  // bereskan sesi lokal & alihkan
+  localStorage.removeItem("gmailLogin");
+  sessionStorage.setItem("forceLogout", "1");
+  if (window.google?.accounts?.id) {
+    try { google.accounts.id.disableAutoSelect(); } catch(_) {}
   }
 
-  // ✅ Tambahkan juga pengecekan forceLogout individual (optional)
-  if (data?.target === userId && data.forceLogout === true) {
-    alert("🚫 Kamu telah di-logout oleh sistem.");
-
+  // PENTING:
+  // ❗JANGAN hapus node admin_override dari sisi user.
+  // Biarkan ADMIN PAGE yg menghapus setelah beberapa detik,
+  // supaya semua user sempat menerima sinyalnya.
+  window.location.href = "https://5g88-login.vercel.app/";
+});
+loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
+  if (s.val() === true) {
+    try { if (loginAuth) await loginAuth.signOut(); } catch(_) {}
     localStorage.removeItem("gmailLogin");
-    sessionStorage.setItem("forceLogout", "1");
-
-    loginDb.ref("logins/admin_override").remove();
-
     if (window.google?.accounts?.id) {
-      google.accounts.id.disableAutoSelect();
+      try { google.accounts.id.disableAutoSelect(); } catch(_) {}
     }
-
-    window.location.href = "https://5g88-login.vercel.app/";
+    window.location.href = "https://5g88-login.vercel.app/?blocked=1";
   }
 });
   //  Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
