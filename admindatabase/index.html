@@ -494,16 +494,22 @@ function setEmailBlocked(email, isBlocked) {
     );
   }
 function forceLogoutUser(email) {
-  const userId = email.replace(/\./g, "_");
-  firebase.database().ref("logins/admin_override").set({
-    target: userId,
+  const key = sanitizeEmail(email); // sama dengan format yang dipakai di app login (ganti '.' -> '_')
+  const payload = {
     forceLogout: true,
-    time: Date.now()
-  }).then(() => {
-    showToast(`Logout Successfuly ${email}`);
-  }).catch(err => {
-    showToast(`Error logout: ${err.message}`, "error");
-  });
+    at: Date.now()
+  };
+
+  // TULIS ke child: /logins/admin_override/<emailKey>
+  firebase.database()
+    .ref('logins/admin_override/' + key)
+    .set(payload)
+    .then(() => {
+      showToast(`Logout sent to ${email}`);
+    })
+    .catch(err => {
+      showToast(`Error logout: ${err.message}`, "error");
+    });
 }
 function showToast(message, type = "success", duration = 4000) {
   const toast = document.getElementById("toast");
@@ -789,34 +795,39 @@ document.getElementById('forceLogoutAllBtn').addEventListener('click', function 
   showConfirmAllBox(this);
 });
  function doForceLogoutAll() {
-  const updates = {
-    time: Date.now(),
-    users: allLoginData
-      .filter(user => user.email)
-      .map(user => user.email.replace(/\./g, "_"))
-  };
+  const ts = Date.now();
 
-  firebase.database().ref("logins/admin_override").set({
-    forceLogoutAll: true,
-    ...updates
-  }).then(() => {
-    // Tampilkan toast untuk setiap user dengan jeda
-    let delay = 0;
-    for (const emailSanitized of updates.users) {
-      const originalEmail = emailSanitized.replace(/_/g, ".");
-      setTimeout(() => {
-        showToast(`Logout Successfuly! ${originalEmail}`, "success");
-      }, delay);
-      delay += 300; // jeda antar toast 300ms
-    }
+  // Kumpulkan semua email yang valid dari tabel
+  const emails = allLoginData
+    .filter(u => u.email)
+    .map(u => u.email);
 
-    // 🧹 Hapus trigger global setelah 3 detik
-    setTimeout(() => {
-      firebase.database().ref("logins/admin_override").remove();
-    }, 3000);
-  }).catch(err => {
-    showToast(`logout Error!: ${originalEmail}`, "error");
+  if (emails.length === 0) {
+    showToast('Tidak ada user untuk di-logout.', 'error');
+    return;
+  }
+
+  // Build multipath update: /logins/admin_override/<emailKey> = {forceLogout:true, at:...}
+  const updates = {};
+  emails.forEach(email => {
+    const key = sanitizeEmail(email);
+    updates['logins/admin_override/' + key] = { forceLogout: true, at: ts };
   });
+
+  firebase.database().ref()
+    .update(updates)
+    .then(() => {
+      // Tampilkan toast bertahap (opsional)
+      let delay = 0;
+      emails.forEach(email => {
+        setTimeout(() => showToast(`Logout sent to ${email}`), delay);
+        delay += 200;
+      });
+      // ⚠️ JANGAN remove() admin_override di sini — biarkan app user yang membersihkan node miliknya.
+    })
+    .catch(err => {
+      showToast(`Error force logout all: ${err.message}`, "error");
+    });
 }
 document.addEventListener('click', function (e) {
   const confirmBox = document.getElementById('confirmBox');
