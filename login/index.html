@@ -118,6 +118,28 @@ body{
 .popup-close{
   background:transparent; color: gold;border:none; cursor:pointer; transition:.2s;
 }
+/* === Posisi tombol X di pojok kanan atas === */
+.popup-box .popup-close,
+.blocked-box .popup-close{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border: 0; background: transparent;
+  color: gold; cursor: pointer;
+  line-height: 1; font-size: 22px;   /* ikon ✕ jelas */
+  border-radius: 8px;
+  z-index: 1;
+}
+.popup-box .popup-close:hover,
+.blocked-box .popup-close:hover{
+  background: rgba(255,215,0,.15);
+  color: #fff;
+}
+/* beri ruang kanan agar X tidak menimpa judul/konten */
+.popup-box{ padding-right: 56px; }
+.blocked-box{ padding-right: 56px; }
 .popup-close:hover{color:#111; }
 .popup-btn:hover{ background:gold; color:#111; }
 
