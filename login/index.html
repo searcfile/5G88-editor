@@ -23,7 +23,7 @@ body{
   width:520px; max-width:92vw;
   margin:0; padding:36px 22px 28px;
   border:1px solid gold; border-radius:16px;
-  background-color:#141414;
+  background: rgba(20,20,20,.35); 
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   box-shadow:0 0 8px rgba(255,215,0,.6);
   transition: transform .3s ease, box-shadow .3s ease;
@@ -101,13 +101,13 @@ body{
 @keyframes zoomIn{ from{transform:scale(.7);opacity:0} to{transform:scale(1);opacity:1} }
 .zoom-in{ animation: zoomIn .3s ease forwards; }
 .popup-overlay{
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  position: fixed; inset: 0; background: rgba(0,0,0,.25);
   display: flex; align-items: center; justify-content: center; z-index: 9999;
 }
 .popup-box{
   border: 1px solid gold; border-radius: 12px; padding: 40px 20px 30px; text-align: center; position: relative;
   width:min(550px,92vw); min-height: 420px; box-shadow: 0 0 10px rgba(255,215,0,.7);
-  background-color: rgba(0,0,0,0.4); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  background-color: rgba(0,0,0,0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
 .popup-box img {max-width: 280px; margin-bottom: 18px;}
@@ -144,14 +144,14 @@ body{
 
 /* ===== Blocked Popup ===== */
 .blocked-overlay::before{
-  content:""; position: fixed; inset: 0; backdrop-filter: brightness(.55); -webkit-backdrop-filter: brightness(.55); pointer-events: none;
+  content: none !important; position: fixed; inset: 0; backdrop-filter: brightness(.55); -webkit-backdrop-filter: brightness(.55); pointer-events: none;
 }
-.blocked-overlay{ position:fixed; inset:0; background:transparent; display:none; align-items:center; justify-content:center; z-index:10000; }
+.blocked-overlay{ position:fixed; inset:0; background: rgba(0,0,0,.25); display:none; align-items:center; justify-content:center; z-index:10000; }
 .blocked-overlay.show{ display:flex; }
 .blocked-box{
   position:relative; width:min(650px, 92vw);
   border:1px solid gold; border-radius:12px; background:rgba(0,0,0,.45);
-  backdrop-filter: blur(3px) !important; -webkit-backdrop-filter: blur(3px) !important;
+  backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
   box-shadow:0 0 14px rgba(255,215,0,.6);
   padding:26px 22px 20px; animation: zoomIn .25s ease forwards; color:#fff; text-align:left;
 }
