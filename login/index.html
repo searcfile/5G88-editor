@@ -115,9 +115,7 @@ body{
 .popup-btn{
   border:1px solid gold; background:transparent; color: gold; padding: 10px 20px; border-radius: 8px; cursor:pointer; transition:.2s;
 }
-.popup-close{
-  background:transparent; color: gold;border:none; cursor:pointer; transition:.2s;
-}
+
 .btn-contact{
   border:1px solid gold; background:transparent; color: gold; padding: 10px 20px; border-radius: 8px; cursor:pointer; transition:.2s;
 }
@@ -137,8 +135,12 @@ body{
   transition:.2s;
 }
 /* beri ruang kanan agar X tidak menimpa judul/konten */
-.popup-box{ padding-right: 56px; }
-.blocked-box{ padding-right: 56px; }
+.popup-box,
+.blocked-box{
+  padding-right: 24px !important;   /* samakan dengan kiri */
+  padding-left: 24px !important;    /* (opsional) biar simetris */
+  padding-top: 56px !important;     /* ruang aman untuk tombol X */
+}
 .popup-close:hover{color:#ffe34d; }.popup-close:active{color:#dbb900; }
 .popup-btn:hover{ background:gold; color:#111; }
 
