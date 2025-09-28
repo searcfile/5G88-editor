@@ -38,7 +38,7 @@
     .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
     .header.shrink {margin-left: 260px;transition: margin-left 0.3s;}
     .tab-bar.shrink {margin-left: 260px;transition: margin-left 0.3s;}
-  #logoutBtn {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 2px;background-color: #141414;color: rgba(255,255,255,0.85);padding: 5px 10px;border-radius: 4px;cursor: pointer;width: 100%;border: none;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid #424242;font-size: 14px;}#logoutBtn:hover {color: #ffe34d;transition: all 0.3s ease;border: 1px solid #ffe34d;}#logoutBtn:active {color: #dbb900;transition: all 0.3s ease;border: 1px solid #dbb900;background-color: #141414;}
+  #logoutBtn {display: flex;align-items: center;justify-content: center;height:32px;line-height: 1;gap: 2px;background-color: #141414;color: rgba(255,255,255,0.85);padding: 5px 10px;border-radius: 6px;cursor: pointer;width: 100%;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid #424242;font-size: 14px;}#logoutBtn:hover {color: #ffe34d;transition: all 0.3s ease;border: 1px solid #ffe34d;}#logoutBtn:active {color: #dbb900;transition: all 0.3s ease;border: 1px solid #dbb900;background-color: #141414;}
   #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
   #notifButton:hover #notifTooltip {display: block !important;opacity: 1;z-index: 10000;}
  .user-dropdown {position: relative;display: inline-block;}
@@ -193,6 +193,8 @@ a.tab-open .check-icon {
   .cp-hint{font-size:12px;color:#aaa;margin-top:-4px;margin-bottom:8px}
   .cp-error{font-size:12px;color:#ff6b6b;display:none;margin:-2px 0 8px}
   .cp-ok{font-size:12px;color:#7CFC7C;display:none;margin:-2px 0 8px}
+  .btn-cpw{display:none;width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1;background-color:#141414;color:rgba(255,255,255,0.85);border:1px solid #424242;border-radius:6px;padding:0 12px;cursor:pointer;font-size:14px;transition:all .3s ease;box-shadow:0 2px 0 rgba(255,255,255,0.04);margin-bottom:8px;}
+  .btn-cpw:hover{border:1px solid #ffe34d; color:#ffe34d;}.btn-cpw:hover{border:1px solid #dbb900; color:#dbb900;}
   </style>
 </head>
 <body>
@@ -321,8 +323,7 @@ a.tab-open .check-icon {
   <div id="dropdownContent" class="dropdown-content">
     <div id="userEmail" style="margin-bottom: 8px;"></div>
     <hr style="border: 0; border-top: 1px solid #424242; margin: 8px 0;">
-    <button id="changePwBtn" style="display:none;width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1;background-color:#141414;color:rgba(255,255,255,0.85);border:1px solid #424242;border-radius:6px;padding:0 12px;cursor:pointer;font-size:14px;transition:all .3s ease;box-shadow:0 2px 0 rgba(255,255,255,0.04);margin-bottom:8px;">
-  <!-- icon dari path yang kamu kasih -->
+    <button id="changePwBtn" class="btn-cpw">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px">
     <path d="M10 17c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm3 0c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm3 0c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm2-7v-4c0-3.313-2.687-6-6-6s-6 2.687-6 6v4h-3v14h18v-14h-3zm-10-4c0-2.206 1.795-4 4-4s4 1.794 4 4v4h-8v-4zm11 16h-14v-10h14v10z"/>
   </svg>
@@ -435,7 +436,26 @@ const loginApp = firebase.initializeApp({
   appId: "1:648022690285:web:aefad61a2f46e6cf39f05b"
 }, "loginApp");
 const loginDb = loginApp.database();
+// === Helper: cek tipe login & update tombol Change Password ===
+function isUsernameLoginNow() {
+  try {
+    const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
+    const email = (login?.email || '').toLowerCase();
+    return email.endsWith('@5g88.local');
+  } catch {
+    return false;
+  }
+}
 
+function updateChangePwVisibility() {
+  const btn = document.getElementById('changePwBtn');
+  if (!btn) return;
+  btn.style.display = isUsernameLoginNow() ? 'flex' : 'none';
+}
+window.addEventListener('load', updateChangePwVisibility);
+window.addEventListener('storage', (e)=> {
+  if (e.key === 'gmailLogin') updateChangePwVisibility();
+});
 let loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
 let userId = "";
 let currentEmail = loginData?.email || "guest";
@@ -550,13 +570,6 @@ window.addEventListener("blur", () => {
     popup.style.display = "none";
   }
 });
-
-db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
-  const data = snapshot.val();
-  if (!data || !data.message || !data.timestamp) return;
-  showNotification(data.message, data.timestamp);
-});
-
 const gameLogBtn = document.getElementById("gameLogBtn");
 const gameLogDropdown = document.getElementById("gameLogDropdown");
 
@@ -1068,7 +1081,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   saveLoginFromURL();
-
+  updateChangePwVisibility();
   if (!checkLogin()) return;
 
   const loginDataRaw = localStorage.getItem("gmailLogin");
@@ -1175,7 +1188,7 @@ window.addEventListener("beforeunload", () => {
       : loginData.name;
     userNameText.textContent = displayName;
     if (userEmailElem) userEmailElem.textContent = loginData.email;
-
+    updateChangePwVisibility();
     // 1. Hover: tampilkan dropdown
     dropdownWrapper.addEventListener("mouseenter", () => {
       dropdownContent.style.display = "block";
@@ -1342,108 +1355,74 @@ tabBar.addEventListener('wheel', (e) => {
 });
 });
 (function(){
-    const btn = document.getElementById('changePwBtn');
-    if (!btn) return;
+  const btn = document.getElementById('changePwBtn');
+  if (!btn) return;
 
-    // Ambil loginData yang sudah ada
-    const loginData = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
-    const email = (loginData?.email || '').toLowerCase();
+  // set state awal secara dinamis
+  updateChangePwVisibility();
 
-    // Hanya tampil untuk akun username/password (pseudo email '@5g88.local')
-    const isUsernameLogin = email.endsWith('@5g88.local');
-    btn.style.display = isUsernameLogin ? 'flex' : 'none';
+  // Elemen modal
+  const modal   = document.getElementById('cpModal');
+  const closeX  = document.getElementById('cpClose');
+  const cancel  = document.getElementById('cpCancel');
+  const submit  = document.getElementById('cpSubmit');
+  const inOld   = document.getElementById('cpOld');
+  const inNew   = document.getElementById('cpNew');
+  const inNew2  = document.getElementById('cpNew2');
+  const errBox  = document.getElementById('cpErr');
+  const okBox   = document.getElementById('cpOk');
 
-    // Elemen modal
-    const modal   = document.getElementById('cpModal');
-    const closeX  = document.getElementById('cpClose');
-    const cancel  = document.getElementById('cpCancel');
-    const submit  = document.getElementById('cpSubmit');
-    const inOld   = document.getElementById('cpOld');
-    const inNew   = document.getElementById('cpNew');
-    const inNew2  = document.getElementById('cpNew2');
-    const errBox  = document.getElementById('cpErr');
-    const okBox   = document.getElementById('cpOk');
+  function openCp(){
+    // cek ulang status login SAAT INI (bukan nilai lama)
+    if (!isUsernameLoginNow()) return;
+    errBox.style.display = 'none'; errBox.textContent = '';
+    okBox.style.display  = 'none'; okBox.textContent  = '';
+    inOld.value = inNew.value = inNew2.value = '';
+    modal.style.display = 'flex';
+    setTimeout(()=>inOld.focus(), 0);
+  }
+  function closeCp(){ modal.style.display = 'none'; }
+  function showErr(msg){ errBox.textContent = msg; errBox.style.display='block'; okBox.style.display='none'; }
+  function showOk(msg){  okBox.textContent  = msg; okBox.style.display='block'; errBox.style.display='none'; }
 
-    function openCp(){
-      if (!isUsernameLogin) return; // double guard
-      errBox.style.display = 'none'; errBox.textContent = '';
-      okBox.style.display  = 'none'; okBox.textContent  = '';
-      inOld.value = inNew.value = inNew2.value = '';
-      modal.style.display = 'flex';
-      setTimeout(()=>inOld.focus(), 0);
+  btn.addEventListener('click', openCp);
+  closeX.addEventListener('click', closeCp);
+  cancel.addEventListener('click', closeCp);
+  window.addEventListener('click', (e)=>{ if(e.target === modal) closeCp(); });
+
+  async function doChange(){
+    const oldPw = inOld.value.trim();
+    const newPw = inNew.value.trim();
+    const newPw2= inNew2.value.trim();
+
+    if (!oldPw || !newPw || !newPw2) { showErr('All fields are required to be filled in.'); return; }
+    if (newPw.length < 6)            { showErr('New password must be at least 6 characters.'); return; }
+    if (newPw !== newPw2)            { showErr('Confirm password does not match.'); return; }
+
+    try{
+      const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
+      const email = (login?.email || '').toLowerCase();
+
+      const auth = loginApp.auth();
+      await auth.signInWithEmailAndPassword(email, oldPw); // re-auth
+      const user = auth.currentUser;
+      if (!user) throw new Error('Unable to get active user.');
+
+      await user.updatePassword(newPw);
+
+      showOk('Password changed successfully ✅');
+      setTimeout(closeCp, 1200);
+    }catch(err){
+      const code = err?.code || '';
+      if (code === 'auth/wrong-password') showErr('Wrong current password.');
+      else if (code === 'auth/user-not-found') showErr('Username does not exist.');
+      else if (code === 'auth/too-many-requests') showErr('Too many attempts. Please try again later.');
+      else showErr('Gagal mengubah password. ' + (err?.message || ''));
     }
-    function closeCp(){
-      modal.style.display = 'none';
-    }
-    function showErr(msg){
-      errBox.textContent = msg;
-      errBox.style.display = 'block';
-      okBox.style.display = 'none';
-    }
-    function showOk(msg){
-      okBox.textContent = msg;
-      okBox.style.display = 'block';
-      errBox.style.display = 'none';
-    }
-
-    // Open modal
-    btn.addEventListener('click', openCp);
-    // Close handlers
-    closeX.addEventListener('click', closeCp);
-    cancel.addEventListener('click', closeCp);
-    window.addEventListener('click', (e)=>{ if(e.target === modal) closeCp(); });
-
-    // Submit: reauth + update password (pakai Firebase Auth di loginApp)
-    async function doChange(){
-      const oldPw = inOld.value.trim();
-      const newPw = inNew.value.trim();
-      const newPw2= inNew2.value.trim();
-
-      if (!oldPw || !newPw || !newPw2){
-        showErr('All fields are required to be filled in.');
-        return;
-      }
-      if (newPw.length < 6){
-        showErr('New password must be at least 6 characters.');
-        return;
-      }
-      if (newPw !== newPw2){
-        showErr('Confirm password does not match.');
-        return;
-      }
-
-      try{
-        const auth = loginApp.auth(); // sudah di-init di kode kamu
-        // Re-auth pakai email pseudo + old password
-        await auth.signInWithEmailAndPassword(email, oldPw);
-        const user = auth.currentUser;
-        if (!user) throw new Error('Unable to get active user.');
-
-        await user.updatePassword(newPw);
-
-        showOk('Password changed successfully ✅');
-        // (opsional) sign out & force login ulang:
-        // await auth.signOut();
-
-        // Tutup modal setelah 1.2s
-        setTimeout(closeCp, 1200);
-      }catch(err){
-        console.error(err);
-        // Beberapa kode error umum
-        const code = err?.code || '';
-        if (code === 'auth/wrong-password') showErr('Wrong current password.');
-        else if (code === 'auth/user-not-found') showErr('Username does not exist.');
-        else if (code === 'auth/too-many-requests') showErr('Too many attempts. Please try again later.');
-        else showErr('Gagal mengubah password. ' + (err?.message || ''));
-      }
-    }
-
-    submit.addEventListener('click', doChange);
-    // Enter submit support
-    [inOld,inNew,inNew2].forEach(i=>i.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter') doChange();
-    }));
-  })();
+  }
+  submit.addEventListener('click', doChange);
+  [inOld,inNew,inNew2].forEach(i=>i.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doChange(); }));
+})();
 </script>
 </body>
 </html>
