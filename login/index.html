@@ -196,6 +196,24 @@ body{
 .forgot-box{ width:min(650px,92vw); text-align:left; align-items:stretch; }
 .actions-row{ display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
 #forgotOverlay .popup-close{ top:12px; right:12px; }
+  /* Livechat floating widget */
+  .lc-wrap{position:fixed; right:16px; bottom:16px; z-index:9999; font-family:inherit;}
+  .lc-btn{
+    display:flex; align-items:center; gap:8px;
+    padding:10px 14px; border-radius:999px; border:1px solid gold;
+    background:gold; color:#000; font-weight:700; cursor:pointer;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+  .lc-btn:hover{ filter:brightness(1.05); }
+  .lc-dot{ width:8px; height:8px; background:#ff3b30; border-radius:50%; display:none; }
+
+  .lc-panel{
+    position:absolute; right:0; bottom:56px; width:min(420px, 92vw); height:520px;
+    background:#111; border:1px solid #333; border-radius:12px; overflow:hidden;
+    box-shadow:0 12px 40px rgba(0,0,0,.45); display:none;
+  }
+  .lc-panel.active{ display:block; }
+  .lc-iframe{ width:100%; height:100%; border:0; }
   </style>
 </head>
 <body>
@@ -297,6 +315,16 @@ body{
       <button id="fpCancel" class="btn-cfp" type="button">Cancel</button>
       <button id="fpRequest" class="btn-req" type="button">Request</button>
     </div>
+  </div>
+</div>
+<!-- Live Chat floating widget -->
+<div class="lc-wrap" id="lcWrap">
+  <button class="lc-btn" id="lcToggle">
+    <span>Live Chat</span>
+    <span class="lc-dot" id="lcDot"></span>
+  </button>
+  <div class="lc-panel" id="lcPanel" aria-hidden="true">
+    <iframe id="lcFrame" class="lc-iframe" title="Live Chat"></iframe>
   </div>
 </div>
 <script>
@@ -665,7 +693,78 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("googleLoginBtn")?.addEventListener("click", signInWithGoogle);
   document.getElementById('eyeBtn')?.addEventListener('click', togglePassword);
 });
-</script>
+  // ====== CONFIG ======
+  const LC_URL = "https://searcfile.github.io/5g88-php/userlivechatphp/";   // URL app livechat kamu
+  const LC_ORIGIN = new URL(LC_URL).origin;
 
+  // ====== Elemen ======
+  const lcToggle = document.getElementById("lcToggle");
+  const lcPanel  = document.getElementById("lcPanel");
+  const lcFrame  = document.getElementById("lcFrame");
+  const lcDot    = document.getElementById("lcDot");
+  let lcLoaded = false;
+
+  // ====== Ambil identitas user utk pre-chat ======
+  function getPrechatUser(){
+    // 1) kalau sudah login (gmailLogin ada), pakai itu
+    try {
+      const gl = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+      if (gl?.email) return { name: gl.name || gl.email, email: gl.email, photo: gl.photo || "" };
+    } catch {}
+
+    // 2) belum login → ambil dari input username form login (kalau ada)
+    const unameEl = document.getElementById("username");
+    const uname = (unameEl?.value || "").trim();
+    if (uname) return { name: uname, email: (uname + "@5g88.local").toLowerCase(), photo: "" };
+
+    // 3) fallback guest
+    return { name: "Guest", email: "guest@5g88.local", photo: "" };
+  }
+
+  function postIdentityToChat(){
+    if (!lcFrame?.contentWindow) return;
+    const u = getPrechatUser();
+    lcFrame.contentWindow.postMessage({ type: "user-login", user: u }, LC_ORIGIN);
+  }
+
+  // ====== Toggle panel open/close ======
+  lcToggle.addEventListener("click", () => {
+    const open = !lcPanel.classList.contains("active");
+    if (open){
+      lcPanel.classList.add("active");
+      lcPanel.setAttribute("aria-hidden","false");
+
+      if (!lcLoaded){
+        lcFrame.src = LC_URL;  // load iframe ketika pertama dibuka
+        lcFrame.addEventListener("load", () => {
+          lcLoaded = true;
+          postIdentityToChat();   // kirim identitas setelah iframe siap
+        }, { once:true });
+      } else {
+        postIdentityToChat();     // update identitas kalau user ganti username
+      }
+      lcDot.style.display = "none";  // anggap terbaca
+    } else {
+      lcPanel.classList.remove("active");
+      lcPanel.setAttribute("aria-hidden","true");
+    }
+  });
+
+  // Update identitas jika user mengisi username lalu keluar dari input
+  document.getElementById("username")?.addEventListener("blur", () => {
+    if (lcPanel.classList.contains("active")) postIdentityToChat();
+  });
+
+  // ====== Notifikasi dari iframe -> tampilkan dot merah ======
+  window.addEventListener("message", (e) => {
+    if (e.origin !== LC_ORIGIN) return;
+    const data = e.data || {};
+    if (data.action === "show-livechat-notif") {
+      lcDot.style.display = "inline-block";
+    } else if (data.action === "hide-livechat-notif") {
+      lcDot.style.display = "none";
+    }
+  });
+</script>
 </body>
 </html>
