@@ -106,11 +106,14 @@ body{
   position: fixed; inset: 0; background: rgba(0,0,0,0.7);
   display: flex; align-items: center; justify-content: center; z-index: 9999;
 }
+#popupBox{ position: relative; }
 #popupBox .popup-btn{
-  margin-top: auto;              /* dorong ke paling bawah */
-  width: 100%;                   /* full width */
-  padding: 12px 16px;
-  border-radius: 10px;
+  position: absolute;
+  left: 20px;          /* samakan dengan padding kiri */
+  right: 20px;         /* samakan dengan padding kanan */
+  bottom: 8px;         /* seberapa dekat ke tepi bawah */
+  width: auto;         /* biar ikut left/right */
+  margin-top: 0;
 }
 .popup-box{
   border: 1px solid gold; border-radius: 12px; padding: 40px 20px 30px; text-align: center; position: relative;
