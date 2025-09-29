@@ -352,6 +352,7 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
   
+let ANON_STATE = localStorage.getItem('anon.state') || 'unknown';
 const sanitizeKey = (s) => String(s || '').replace(/[.$#[\]/]/g, "_");
 
 function getOrCreateLocalGuest() {
@@ -368,28 +369,34 @@ function getOrCreateLocalGuest() {
 
 // --- Anonymous Auth + fallback lokal bila dinonaktifkan ---
 async function ensureGuestAuth(){
+  // kalau sudah tahu disabled, langsung pakai guest lokal (hindari call berulang & 400 di console)
+  if (ANON_STATE === 'disabled') return getOrCreateLocalGuest();
+
   try{
     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    if (!auth.currentUser) await auth.signInAnonymously(); // kalau di-enable, dapat UID unik
+    if (!auth.currentUser) await auth.signInAnonymously();
     const u = auth.currentUser;
     if (u && u.isAnonymous){
       const code = (u.uid || '').slice(-5).toUpperCase();
       localStorage.setItem('guest.uid', u.uid);
       localStorage.setItem('guest.name', `Guest-${code}`);
+      ANON_STATE = 'enabled';
+      localStorage.setItem('anon.state','enabled');
       return { uid: u.uid, name: localStorage.getItem('guest.name') };
     }
   }catch(e){
-    // fallback kalau anonymous auth tidak diizinkan
-    if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed') {
-      console.warn('Anonymous Auth disabled → using local guest ID');
+    // project ini Anonymous Auth OFF → set flag dan pakai guest lokal
+    if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed'){
+      ANON_STATE = 'disabled';
+      localStorage.setItem('anon.state','disabled');
       return getOrCreateLocalGuest();
     }
-    console.warn('ensureGuestAuth error:', e);
+    // error lain → fallback juga
+    return getOrCreateLocalGuest();
   }
-  // kalau tidak ada currentUser juga, tetap pakai lokal
+  // jaga-jaga
   return getOrCreateLocalGuest();
 }
-
 /* ===== Helpers (dipakai lintas fitur, diletak di awal agar siap pakai) ===== */
 const MAIN_URL = "https://5g88-main.vercel.app";
 const toPseudoEmail = (uname) => `${String(uname || '').trim()}@5g88.local`;
@@ -726,10 +733,9 @@ const formGoo = document.getElementById('form-google');
 tabUser?.addEventListener('click', ()=>{ tabUser.classList.add('active'); tabGoo.classList.remove('active'); formUser.classList.add('active'); formGoo.classList.remove('active'); });
 tabGoo?.addEventListener('click', ()=>{ tabGoo.classList.add('active'); tabUser.classList.remove('active'); formGoo.classList.add('active'); formUser.classList.remove('active'); });
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("googleLoginBtn")?.addEventListener("click", signInWithGoogle);
   document.getElementById('eyeBtn')?.addEventListener('click', togglePassword);
-  try { await ensureGuestAuth(); } catch {}
 });
   // ====== CONFIG ======
   const LC_URL = "https://searcfile.github.io/5g88-php/userlivechatphp/";   // URL app livechat kamu
@@ -740,9 +746,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const lcPanel  = document.getElementById("lcPanel");
   const lcFrame  = document.getElementById("lcFrame");
   const lcDot    = document.getElementById("lcDot");
-  auth.onAuthStateChanged(async () => {
+  auth.onAuthStateChanged(() => {
   if (lcPanel?.classList.contains("active")) {
-    try { await ensureGuestAuth(); } catch {}
     postIdentityToChat();
   }
 });
@@ -798,15 +803,16 @@ lcToggle?.addEventListener("click", async () => {
     lcPanel.classList.add("active");
     lcPanel.setAttribute("aria-hidden","false");
 
-    try { await ensureGuestAuth(); } catch {}
+    // PANGGIL DI SINI SAJA
+    await ensureGuestAuth();
 
     if (!lcLoaded){
       lcFrame.src = LC_URL;
       lcFrame.addEventListener("load", async () => {
         lcLoaded = true;
-        try { await ensureGuestAuth(); } catch {}
-        postIdentityToChat();               // pertama
-        setTimeout(postIdentityToChat, 300); // retry singkat
+        await ensureGuestAuth();  
+        postIdentityToChat();            
+        setTimeout(postIdentityToChat, 300);
       }, { once:true });
     } else {
       postIdentityToChat();
@@ -817,12 +823,8 @@ lcToggle?.addEventListener("click", async () => {
     lcPanel.setAttribute("aria-hidden","true");
   }
 });
-
-
-  // Update identitas jika user mengisi username lalu keluar dari input
-document.getElementById("username")?.addEventListener("blur", async () => {
+document.getElementById("username")?.addEventListener("blur", () => {
   if (lcPanel.classList.contains("active")) {
-    try { await ensureGuestAuth(); } catch {}
     postIdentityToChat();
   }
 });
