@@ -351,6 +351,20 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
+
+// Pastikan sesi disimpan di browser
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+// Tangkap hasil signInWithRedirect sekali saja
+let __handledRedirect = false;
+auth.getRedirectResult()
+  .then((res) => {
+    if (__handledRedirect) return;
+    __handledRedirect = true;
+    const user = res.user || auth.currentUser;
+    if (user) finishLogin(user);
+  })
+  .catch(console.error);
   
 let ANON_STATE = localStorage.getItem('anon.state') || 'unknown';
 const sanitizeKey = (s) => String(s || '').replace(/[.$#[\]/]/g, "_");
@@ -398,7 +412,6 @@ async function ensureGuestAuth(){
   return getOrCreateLocalGuest();
 }
 /* ===== Helpers (dipakai lintas fitur, diletak di awal agar siap pakai) ===== */
-const MAIN_URL = "https://5g88-main.vercel.app";
 const toPseudoEmail = (uname) => `${String(uname || '').trim()}@5g88.local`;
 function formatTimestamp(date){
   const y=date.getFullYear(), m=String(date.getMonth()+1).padStart(2,'0'), d=String(date.getDate()).padStart(2,'0');
@@ -603,16 +616,17 @@ function finishLogin(userLike){
     }
 
     db.ref("logins/" + emailKey).set({
-      name, email, loginAt: formatTimestamp(new Date())
-    }).then(()=>{
-      localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
-      const q = new URLSearchParams({ name, email, photo }).toString();
-      window.location.href = `${MAIN_URL}/?${q}`;
-    }).catch(err=>{
-      console.error("❌ Gagal simpan ke Firebase:", err);
-      alert("Gagal simpan data login. Coba lagi.");
-      setLoading(false);
-    });
+  name, email, loginAt: formatTimestamp(new Date())
+}).then(()=>{
+  // Boleh simpan LS untuk kebutuhan UI/iframe, tapi ini bukan autentikasi utama
+  localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
+  // SAME-ORIGIN → sesi auth tetap ada; langsung ke halaman utama
+  window.location.replace("/"); // ke root domain yang sama
+}).catch(err=>{
+  console.error("❌ Gagal simpan ke Firebase:", err);
+  alert("Gagal simpan data login. Coba lagi.");
+  setLoading(false);
+});
   });
 }
 
@@ -628,19 +642,15 @@ function setLoading(state, which='both'){
 }
 
 function signInWithGoogle(){
-  setLoading(true,'google');
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .then(res=>{
-      const user = res.user;
-      if (!user){ throw new Error("User not found"); }
-      finishLogin(user);
-    })
-    .catch(err=>{
-      console.error("❌ Login Google gagal:", err);
-      alert("Login Google gagal. Coba lagi.");
-      setLoading(false,'google');
-    });
+  const cu = auth.currentUser;
+
+  // Jika saat ini anonymous → upgrade (link) supaya sesi tidak bentrok
+  if (cu && cu.isAnonymous) {
+    cu.linkWithRedirect(provider);
+  } else {
+    auth.signInWithRedirect(provider);
+  }
 }
 
 function loginWithUsername(){
