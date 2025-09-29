@@ -351,27 +351,48 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
+  
+const sanitizeKey = (s) => String(s || '').replace(/[.$#[\]/]/g, "_");
 
-// ===== Anonymous Guest per-device =====
+function getOrCreateLocalGuest() {
+  let uid = localStorage.getItem('guest.uid');
+  if (!uid) {
+    uid = 'g_' + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
+    localStorage.setItem('guest.uid', uid);
+  }
+  if (!localStorage.getItem('guest.name')) {
+    localStorage.setItem('guest.name', 'Guest-' + uid.slice(-5).toUpperCase());
+  }
+  return { uid, name: localStorage.getItem('guest.name') };
+}
+
+// --- Anonymous Auth + fallback lokal bila dinonaktifkan ---
 async function ensureGuestAuth(){
   try{
     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    if (!auth.currentUser){
-      await auth.signInAnonymously();             // ← UID unik per device
-    }
+    if (!auth.currentUser) await auth.signInAnonymously(); // kalau di-enable, dapat UID unik
     const u = auth.currentUser;
     if (u && u.isAnonymous){
       const code = (u.uid || '').slice(-5).toUpperCase();
       localStorage.setItem('guest.uid', u.uid);
       localStorage.setItem('guest.name', `Guest-${code}`);
+      return { uid: u.uid, name: localStorage.getItem('guest.name') };
     }
-  }catch(e){ console.warn('ensureGuestAuth error:', e); }
+  }catch(e){
+    // fallback kalau anonymous auth tidak diizinkan
+    if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed') {
+      console.warn('Anonymous Auth disabled → using local guest ID');
+      return getOrCreateLocalGuest();
+    }
+    console.warn('ensureGuestAuth error:', e);
+  }
+  // kalau tidak ada currentUser juga, tetap pakai lokal
+  return getOrCreateLocalGuest();
 }
 
 /* ===== Helpers (dipakai lintas fitur, diletak di awal agar siap pakai) ===== */
 const MAIN_URL = "https://5g88-main.vercel.app";
 const toPseudoEmail = (uname) => `${String(uname || '').trim()}@5g88.local`;
-const sanitizeKey = (email) => String(email || '').replace(/\./g, "_");
 function formatTimestamp(date){
   const y=date.getFullYear(), m=String(date.getMonth()+1).padStart(2,'0'), d=String(date.getDate()).padStart(2,'0');
   const hh=String(date.getHours()).padStart(2,'0'), mm=String(date.getMinutes()).padStart(2,'0'), ss=String(date.getSeconds()).padStart(2,'0');
@@ -719,10 +740,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const lcPanel  = document.getElementById("lcPanel");
   const lcFrame  = document.getElementById("lcFrame");
   const lcDot    = document.getElementById("lcDot");
+  auth.onAuthStateChanged(async () => {
+  if (lcPanel?.classList.contains("active")) {
+    try { await ensureGuestAuth(); } catch {}
+    postIdentityToChat();
+  }
+});
   let lcLoaded = false;
 
 function getPrechatUser(){
-  // 1) Kalau sudah login di Firebase AUTH (bukan anonymous)
+  // 1) Sudah login normal (bukan anonymous)
   const cu = auth.currentUser;
   if (cu && !cu.isAnonymous) {
     return {
@@ -734,7 +761,7 @@ function getPrechatUser(){
     };
   }
 
-  // 2) (opsional) cek cache Google login di localStorage
+  // 2) Cache Google di localStorage
   try {
     const gl = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
     if (gl?.email) {
@@ -742,21 +769,21 @@ function getPrechatUser(){
     }
   } catch {}
 
-  // 3) Fallback: Guest Anonymous Auth (unik per-device)
-  const u = auth.currentUser;
-  if (u && u.isAnonymous){
-    const code = (u.uid || '').slice(-5).toUpperCase();
+  // 3) Anonymous Auth (punya UID Firebase)
+  if (cu && cu.isAnonymous){
+    const code = (cu.uid || '').slice(-5).toUpperCase();
     return {
       name: localStorage.getItem('guest.name') || `Guest-${code}`,
       email: "",
       photo: "",
-      uid: u.uid,
+      uid: cu.uid,
       isGuest: true
     };
   }
 
-  // 4) fallback terakhir (seandainya anon belum kebentuk)
-  return { name: "Guest", email: "", photo: "", uid: null, isGuest: true };
+  // 4) **Fallback PASTI**: pakai UID lokal per-device
+  const g = getOrCreateLocalGuest();
+  return { name: g.name, email: "", photo: "", uid: g.uid, isGuest: true };
 }
 
   function postIdentityToChat(){
@@ -765,13 +792,12 @@ function getPrechatUser(){
     lcFrame.contentWindow.postMessage({ type: "user-login", user: u }, LC_ORIGIN);
   }
 
-lcToggle.addEventListener("click", async () => {
+lcToggle?.addEventListener("click", async () => {
   const open = !lcPanel.classList.contains("active");
   if (open){
     lcPanel.classList.add("active");
     lcPanel.setAttribute("aria-hidden","false");
 
-    // pastikan UID guest sudah ada
     try { await ensureGuestAuth(); } catch {}
 
     if (!lcLoaded){
@@ -779,7 +805,8 @@ lcToggle.addEventListener("click", async () => {
       lcFrame.addEventListener("load", async () => {
         lcLoaded = true;
         try { await ensureGuestAuth(); } catch {}
-        postIdentityToChat();
+        postIdentityToChat();               // pertama
+        setTimeout(postIdentityToChat, 300); // retry singkat
       }, { once:true });
     } else {
       postIdentityToChat();
