@@ -402,6 +402,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+
 const blurphpApp = firebase.initializeApp({
   apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
   authDomain: "blurphp.firebaseapp.com",
@@ -413,6 +414,7 @@ const blurphpApp = firebase.initializeApp({
   measurementId: "G-R494S2DPZ5"
 }, "blurphpApp");
 const blurphpDb = blurphpApp.database();
+
 const loginApp = firebase.initializeApp({
   apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
   authDomain: "logins-d615f.firebaseapp.com",
@@ -423,7 +425,167 @@ const loginApp = firebase.initializeApp({
   appId: "1:648022690285:web:aefad61a2f46e6cf39f05b"
 }, "loginApp");
 const loginDb = loginApp.database();
-// === Helper: cek tipe login & update tombol Change Password ===
+const loginAuth = loginApp.auth();
+loginAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+function startAppWith(user){
+  if (window.__APP_STARTED__) return; 
+  window.__APP_STARTED__ = true;
+  const loginData = {
+    name:  user.displayName || (user.email?.split('@')[0]) || 'User',
+    email: user.email || '',
+    photo: user.photoURL || ''
+  };
+  localStorage.setItem('gmailLogin', JSON.stringify(loginData));
+  window.loginData = loginData;
+  window.userId = (loginData.email || '').toLowerCase().replace(/\./g, '_');
+  window.currentEmail = loginData.email || 'guest';
+
+  const userId = window.userId;
+  const sanitizedEmail = userId;
+
+  // A) Admin override (logout paksa)
+  const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
+  let lastAt = 0;
+  myOverrideRef.on('value', async (snap) => {
+    const v = snap.val();
+    if (!v || v.forceLogout !== true) return;
+    if (v.at && v.at <= lastAt) return;
+    lastAt = v.at || Date.now();
+
+    try { await loginAuth.signOut(); } catch(_) {}
+    localStorage.removeItem('gmailLogin');
+    if (window.google?.accounts?.id) { try { google.accounts.id.disableAutoSelect(); } catch(_) {} }
+    myOverrideRef.remove().catch(()=>{});
+    location.replace('/login/');
+  });
+
+  // B) Blocked users
+  loginDb.ref(`logins/blocked_users/${userId}`).on('value', async (s) => {
+    if (s.val() === true) {
+      try { await loginAuth.signOut(); } catch(_) {}
+      localStorage.removeItem('gmailLogin');
+      if (window.google?.accounts?.id) { try { google.accounts.id.disableAutoSelect(); } catch(_) {} }
+      location.replace('/login/?blocked=1');
+    }
+  });
+
+  // C) Update profil user di blurphp + presence
+  blurphpDb.ref('users/' + sanitizedEmail).update({
+    name: loginData.name,
+    email: loginData.email,
+    photoURL: loginData.photo || '',
+    lastLoginTime: Date.now()
+  });
+  const connectedRef = blurphpDb.ref(".info/connected");
+  const onlineRef    = blurphpDb.ref("users/" + sanitizedEmail + "/online");
+  connectedRef.on("value", (snap) => {
+    if (snap.val() === true) {
+      onlineRef.set(true);
+      onlineRef.onDisconnect().set(false);
+    }
+  });
+  window.addEventListener("beforeunload", () => {
+    blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
+  });
+
+  // D) UI: set nama/email di header + dropdown
+  const userNameText    = document.getElementById("userNameText");
+  const dropdownContent = document.getElementById("dropdownContent");
+  const userEmailElem   = document.getElementById("userEmail");
+  const dropdownWrapper = document.querySelector(".user-dropdown");
+  const userButton      = document.getElementById("userName");
+
+  if (userNameText && dropdownContent && dropdownWrapper && userButton) {
+    const nameParts   = loginData.name.trim().split(" ");
+    const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
+      ? nameParts[0] : loginData.name;
+
+    userNameText.textContent = displayName;
+    if (userEmailElem) userEmailElem.textContent = loginData.email;
+    updateChangePwVisibility();
+
+    dropdownWrapper.addEventListener("mouseenter", () => { dropdownContent.style.display = "block"; });
+    dropdownWrapper.addEventListener("mouseleave", () => {
+      if (dropdownWrapper.classList.contains("force-open")) return;
+      dropdownContent.style.display = "none";
+      userButton.classList.remove("active-user-button");
+    });
+    userButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = dropdownWrapper.classList.toggle("force-open");
+      dropdownContent.style.display = isOpen ? "block" : "none";
+      userButton.classList.toggle("active-user-button", isOpen);
+    });
+    document.addEventListener("click", (e) => {
+      if (!dropdownWrapper.contains(e.target)) {
+        dropdownContent.style.display = "none";
+        dropdownWrapper.classList.remove("force-open");
+        userButton.classList.remove("active-user-button");
+      }
+    });
+  }
+
+  // E) Notifikasi & Livechat listener
+  initLivechatNotifListenerBound(userId, loginData);
+  setupLivechatMessageDot(userId);
+
+  // F) Tab-bar, iframe, dll
+  renderTabs();
+  updateGameLogCheckmarks();
+  const activeUrl = localStorage.getItem("activeTabUrl");
+  const tabs = getTabs();
+  const match = tabs.find(tab => tab.url === activeUrl);
+  const liveBtn = document.getElementById("liveChatBtn");
+  const linkBtn = document.getElementById("linkDownloadBtn");
+  const gameLogBtn = document.getElementById("gameLogBtn");
+
+  if (liveBtn) liveBtn.classList.remove("active-livechat");
+  if (linkBtn) linkBtn.classList.remove("active-linkdownload");
+  if (gameLogBtn) gameLogBtn.classList.remove("active-gamelog");
+
+  if (match) {
+    loadPage(match.url);
+    updateGameLogCheckmarks();
+    if (match.label === "LIVE CHAT")   liveBtn?.classList.add("active-livechat");
+    if (match.label === "LINK DOWNLOAD") linkBtn?.classList.add("active-linkdownload");
+    const gameLogLabels = ["MEGA888","PUSSY888","918KISS","SCR888H5"];
+    if (gameLogBtn && gameLogLabels.includes(match.label)) gameLogBtn.classList.add("active-gamelog");
+  } else if (tabs.length > 0) {
+    loadPage(tabs[tabs.length - 1].url);
+  }
+
+  // G) Logout
+  document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+    try { await loginAuth.signOut(); } catch(_) {}
+    localStorage.removeItem("gmailLogin");
+    if (window.google?.accounts?.id) { try { google.accounts.id.disableAutoSelect(); } catch(_) {} }
+    location.replace("/login/");
+  });
+
+  // H) Waktu real-time
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+}
+
+// === Gate: tunggu sesi Firebase ===
+document.addEventListener('DOMContentLoaded', () => {
+  loginAuth.onAuthStateChanged((user) => {
+    if (!user || user.isAnonymous) {
+      location.replace('/login/');
+      return;
+    }
+    startAppWith(user);
+  });
+});
+
+// === Utils ===
+function getTabs() {
+  try { return JSON.parse(localStorage.getItem("openTabs") || "[]"); }
+  catch { return []; }
+}
+
+// Helper: tipe login
 function isUsernameLoginNow() {
   try {
     const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
@@ -432,6 +594,42 @@ function isUsernameLoginNow() {
   } catch {
     return false;
   }
+}
+
+function initLivechatNotifListenerBound(userId, loginData) {
+  if (!loginData?.email) return;
+  blurphpDb.ref("chats/" + userId).on("value", (snapshot) => {
+    let hasUnread = false;
+    snapshot.forEach((child) => {
+      const msg = child.val();
+      if (msg.from === "admin" && msg.seenByUser !== true) hasUnread = true;
+    });
+    const livechatDot = document.getElementById("livechatDot");
+    if (livechatDot) livechatDot.style.display = hasUnread ? "inline" : "none";
+  });
+}
+
+function setupLivechatMessageDot(userId) {
+  let lastNotifTime = 0;
+  let userHasInteracted = false;
+  document.body.addEventListener("click", () => { userHasInteracted = true; });
+
+  blurphpDb.ref("chats/" + userId).on("child_added", (snapshot) => {
+    const msg = snapshot.val();
+    const livechatDot = document.getElementById("livechatDot");
+    const notifSound = document.getElementById("notifSound");
+    if (!msg || msg.from !== "admin") return;
+
+    const timestamp = msg.time || Date.now();
+    if (timestamp > lastNotifTime) {
+      lastNotifTime = timestamp;
+      if (livechatDot) livechatDot.style.display = "inline";
+      if (notifSound && userHasInteracted) {
+        notifSound.currentTime = 0;
+        notifSound.play().catch(() => {});
+      }
+    }
+  });
 }
 
 function updateChangePwVisibility() {
@@ -443,9 +641,7 @@ window.addEventListener('load', updateChangePwVisibility);
 window.addEventListener('storage', (e)=> {
   if (e.key === 'gmailLogin') updateChangePwVisibility();
 });
-let loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-let userId = "";
-let currentEmail = loginData?.email || "guest";
+
 // Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
@@ -456,20 +652,17 @@ const notifTooltip = document.getElementById("notifTooltip");
 document.addEventListener("DOMContentLoaded", () => {
   const savedMessage = localStorage.getItem("latestNotifMessage");
   const savedTimestamp = localStorage.getItem("latestNotifTimestamp");
-  const seenKey = `seenNotif_${savedTimestamp}_${currentEmail}`;
+  const current = window.currentEmail || 'guest';
+  const seenKey = `seenNotif_${savedTimestamp}_${current}`;
 
   if (savedMessage && savedTimestamp) {
     const alreadySeen = localStorage.getItem(seenKey);
     notifButton.dataset.message = savedMessage;
     notifButton.dataset.timestamp = savedTimestamp;
-
-    if (!alreadySeen) {
-      if (notifDot) notifDot.style.display = "block";
-    }
+    if (!alreadySeen && notifDot) notifDot.style.display = "block";
   }
 });
 
-// Realtime notifikasi pesan baru dari Firebase
 db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.message || !data.timestamp) return;
@@ -477,16 +670,14 @@ db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
 });
 
 function showNotification(message, timestamp) {
-  const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
+  const current = window.currentEmail || 'guest';
+  const seenKey = `seenNotif_${timestamp}_${current}`;
   const alreadySeen = localStorage.getItem(seenKey);
-
   if (!alreadySeen) {
     notifButton.dataset.message = message;
     notifButton.dataset.timestamp = timestamp;
-
     localStorage.setItem("latestNotifMessage", message);
     localStorage.setItem("latestNotifTimestamp", timestamp);
-
     if (notifDot) notifDot.style.display = "block";
   }
 }
@@ -495,11 +686,7 @@ notifButton.addEventListener("click", () => {
   const message = notifButton.dataset.message;
   const timestamp = Number(notifButton.dataset.timestamp);
   if (!message || !timestamp) return;
-
-  if (popup.style.display === "block") {
-    popup.style.display = "none";
-    return;
-  }
+  if (popup.style.display === "block") { popup.style.display = "none"; return; }
 
   const dateObj = new Date(timestamp);
   const isValidDate = !isNaN(dateObj.getTime());
@@ -517,7 +704,6 @@ notifButton.addEventListener("click", () => {
       ` : `Waktu tidak valid`}
     </div>
   `;
-
   popup.style.display = "block";
 
   setTimeout(() => {
@@ -528,76 +714,63 @@ notifButton.addEventListener("click", () => {
     popup.style.right = `${window.innerWidth - rect.right}px`;
   }, 0);
 
-  notifDot.style.display = "none";
-  const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
+  if (notifDot) notifDot.style.display = "none";
+  const current = window.currentEmail || 'guest';
+  const seenKey = `seenNotif_${timestamp}_${current}`;
   localStorage.setItem(seenKey, "1");
 });
 
-// Tooltip muncul saat hover
-notifButton.addEventListener("mouseenter", () => {
-  notifTooltip.style.display = "block";
-});
-notifButton.addEventListener("mouseleave", () => {
-  notifTooltip.style.display = "none";
-});
+notifButton.addEventListener("mouseenter", () => { if (notifTooltip) notifTooltip.style.display = "block"; });
+notifButton.addEventListener("mouseleave", () => { if (notifTooltip) notifTooltip.style.display = "none"; });
 
-// Klik luar = tutup popup
 document.addEventListener("click", function (event) {
-  if (
-    popup &&
-    popup.style.display === "block" &&
-    !popup.contains(event.target) &&
-    !notifButton.contains(event.target)
-  ) {
+  if (popup && popup.style.display === "block" && !popup.contains(event.target) && !notifButton.contains(event.target)) {
     popup.style.display = "none";
   }
 });
 window.addEventListener("blur", () => {
-  if (popup && popup.style.display === "block") {
-    popup.style.display = "none";
-  }
+  if (popup && popup.style.display === "block") popup.style.display = "none";
 });
+
+// GameLog dropdown
 const gameLogBtn = document.getElementById("gameLogBtn");
 const gameLogDropdown = document.getElementById("gameLogDropdown");
+if (gameLogBtn && gameLogDropdown) {
+  gameLogBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const rect = gameLogBtn.getBoundingClientRect();
+    gameLogDropdown.style.left = `${rect.left}px`;
+    gameLogDropdown.style.top = `${rect.bottom + 6}px`;
+    gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
+  });
+  document.addEventListener("click", (e) => {
+    if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
+      gameLogDropdown.style.display = "none";
+    }
+  });
+}
 
-// Tampilkan/Hide dropdown saat tombol GameLog diklik
-gameLogBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  const rect = gameLogBtn.getBoundingClientRect();
-  gameLogDropdown.style.left = `${rect.left}px`;
-  gameLogDropdown.style.top = `${rect.bottom + 6}px`;
-  gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
-});
-
-// Klik luar = tutup
-document.addEventListener("click", (e) => {
-  if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
-    gameLogDropdown.style.display = "none";
-  }
-});
-
+// Iframe messaging / helpers
 let iframe = document.getElementById("pageFrame");
 iframe?.addEventListener("load", () => {
   try {
     iframe.contentWindow.document.addEventListener("click", () => {
-      gameLogDropdown.style.display = "none";
+      gameLogDropdown && (gameLogDropdown.style.display = "none");
     });
-  } catch (err) {
-  }
+  } catch (err) {}
 });
-
-// Jika user klik iframe (fokus keluar), juga tutup dropdown
 window.addEventListener("blur", () => {
-  if (gameLogDropdown.style.display === "block") {
+  if (gameLogDropdown && gameLogDropdown.style.display === "block") {
     gameLogDropdown.style.display = "none";
   }
 });
-
 
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
 }
+
+// Bar, sidebar, dll
 const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
 const sidebar = document.getElementById("sidebar");
@@ -605,53 +778,78 @@ const overlay = document.getElementById("overlay");
 const container = document.getElementById("mainContainer");
 const pageFrame = document.getElementById("pageFrame");
 
-tabBar.style.display = "flex";
-tabBar.style.alignItems = "center";
-tabBar.style.padding = "10px 2px";
-tabBar.style.background = "#000";
+// Tab bar + drag/scroll (aman kalau elemennya ada)
+if (tabBar) {
+  tabBar.style.display = "flex";
+  tabBar.style.alignItems = "center";
+  tabBar.style.padding = "10px 2px";
+  tabBar.style.background = "#000";
 
+  let isDown = false, startX, scrollLeft;
 
-menuIcon.addEventListener("click", () => {
-  if (sidebar.classList.contains("active")) {
-    closeSidebar();
-  } else {
-    openSidebar();
-  }
-});
-overlay.addEventListener("click", closeSidebar);
+  tabBar.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - tabBar.offsetLeft;
+    scrollLeft = tabBar.scrollLeft;
+  });
+  tabBar.addEventListener('mouseleave', () => { isDown = false; });
+  tabBar.addEventListener('mouseup', () => { isDown = false; });
+  tabBar.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - tabBar.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    tabBar.scrollLeft = scrollLeft - walk;
+  });
+  tabBar.addEventListener('wheel', (e) => {
+    if (e.deltaY !== 0) {
+      e.preventDefault();
+      tabBar.scrollLeft += e.deltaY;
+    }
+  });
+}
+
+// Sidebar open/close — aman kalau elemennya ada
 function openSidebar() {
+  if (!sidebar || !overlay || !container) return;
   sidebar.classList.add("active");
   overlay.classList.add("active");
   container.classList.add("shrink");
-  document.querySelector(".floating-logo").classList.add("shrink");
-  document.querySelector('.header').classList.add('shrink');
-  document.getElementById("tabBar").classList.add('shrink');
-  document.getElementById("menuIcon").classList.add("active-menu-icon");
+  document.querySelector(".floating-logo")?.classList.add("shrink");
+  document.querySelector('.header')?.classList.add('shrink');
+  document.getElementById("tabBar")?.classList.add('shrink');
+  document.getElementById("menuIcon")?.classList.add("active-menu-icon");
 }
-
 function closeSidebar() {
+  if (!sidebar || !overlay || !container) return;
   sidebar.classList.remove("active");
   overlay.classList.remove("active");
   container.classList.remove("shrink");
-  document.querySelector(".floating-logo").classList.remove("shrink");
-  document.querySelector('.header').classList.remove('shrink');
-  document.getElementById("tabBar").classList.remove('shrink');
-  document.getElementById("menuIcon").classList.remove("active-menu-icon");
+  document.querySelector(".floating-logo")?.classList.remove("shrink");
+  document.querySelector('.header')?.classList.remove('shrink');
+  document.getElementById("tabBar")?.classList.remove('shrink');
+  document.getElementById("menuIcon")?.classList.remove("active-menu-icon");
 }
 
+if (menuIcon) {
+  menuIcon.addEventListener("click", () => {
+    if (sidebar?.classList.contains("active")) closeSidebar();
+    else openSidebar();
+  });
+}
+if (overlay) overlay.addEventListener("click", closeSidebar);
 document.addEventListener("click", (e) => {
+  if (!sidebar || !menuIcon) return;
   const isSidebar = e.target.closest("#sidebar");
   const isMenuIcon = e.target.closest("#menuIcon");
-
   if (!isSidebar && !isMenuIcon && sidebar.classList.contains("active")) {
     closeSidebar();
   }
 });
+
+// Tabs helpers
 function saveTabs(tabs) {
   localStorage.setItem("openTabs", JSON.stringify(tabs));
-}
-function getTabs() {
-  return JSON.parse(localStorage.getItem("openTabs")) || [];
 }
 
 function addTab(label, url) {
@@ -669,19 +867,14 @@ function addTab(label, url) {
 
   if (gameLogBtn) {
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
-    if (gameLogLabels.includes(label)) {
-      gameLogBtn.classList.add("active-gamelog");
-    } else {
-      gameLogBtn.classList.remove("active-gamelog");
-    }
+    if (gameLogLabels.includes(label)) gameLogBtn.classList.add("active-gamelog");
+    else gameLogBtn.classList.remove("active-gamelog");
   }
 
   if (liveBtn) {
     if (label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
       if (liveDot) liveDot.style.display = "none";
-
-      // Tandai semua pesan admin sebagai sudah dibaca
       markLivechatAsRead();
     } else {
       liveBtn.classList.remove("active-livechat");
@@ -689,11 +882,8 @@ function addTab(label, url) {
   }
 
   if (linkBtn) {
-    if (label === "LINK DOWNLOAD") {
-      linkBtn.classList.add("active-linkdownload");
-    } else {
-      linkBtn.classList.remove("active-linkdownload");
-    }
+    if (label === "LINK DOWNLOAD") linkBtn.classList.add("active-linkdownload");
+    else linkBtn.classList.remove("active-linkdownload");
   }
 
   loadPage(url);
@@ -702,37 +892,26 @@ function addTab(label, url) {
 }
 
 function sendLoginToIframe() {
-  iframe = document.getElementById("pageFrame"); // ✅ tanpa const
-  
+  iframe = document.getElementById("pageFrame");
   if (!iframe || !iframe.contentWindow) return;
-
   const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
   if (user.email) {
     iframe.contentWindow.postMessage({
       type: "user-login",
-      user: {
-        name: user.name,
-        email: user.email,
-        photo: user.photo
-      }
+      user: { name: user.name, email: user.email, photo: user.photo }
     }, "*");
   } 
 }
 
-// 🔁 Jalankan saat iframe load DAN saat tab LiveChat dibuka
 const liveChatBtn = document.getElementById("liveChatBtn");
 if (liveChatBtn) {
   liveChatBtn.addEventListener("click", () => {
-    setTimeout(() => {
-      sendLoginToIframe();
-    }, 500); // beri waktu iframe sempat load
+    setTimeout(() => { sendLoginToIframe(); }, 500);
   });
 }
+iframe = document.getElementById("pageFrame");
+if (iframe) iframe.addEventListener("load", sendLoginToIframe);
 
-iframe = document.getElementById("pageFrame"); // TANPA const
-if (iframe) {
-  iframe.addEventListener("load", sendLoginToIframe);
-}
 function closeTab(label) {
   let tabs = getTabs().filter(tab => tab.label !== label);
   saveTabs(tabs);
@@ -747,15 +926,12 @@ function closeTab(label) {
     const lastTab = tabs[tabs.length - 1];
     loadPage(lastTab.url);
 
-    // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
     gameLogBtn?.classList.toggle("active-gamelog", gameLogLabels.includes(lastTab.label));
     liveBtn?.classList.toggle("active-livechat", lastTab.label === "LIVE CHAT");
     linkBtn?.classList.toggle("active-linkdownload", lastTab.label === "LINK DOWNLOAD");
-
   } else {
-    // Tidak ada tab tersisa → matikan semua status aktif
-    pageFrame.src = "";
+    if (pageFrame) pageFrame.src = "";
     gameLogBtn?.classList.remove("active-gamelog");
     liveBtn?.classList.remove("active-livechat");
     linkBtn?.classList.remove("active-linkdownload");
@@ -763,6 +939,7 @@ function closeTab(label) {
 }
  
 function renderTabs() {
+  if (!tabBar) return;
   tabBar.innerHTML = "";
   const tabs = getTabs();
 
@@ -771,7 +948,6 @@ function renderTabs() {
     tabElement.className = "tab";
     tabElement.dataset.index = index;
 
-    // Style
     tabElement.style.background = "rgba(255, 255, 255, 0.04)";
     tabElement.style.color = "rgba(255, 255, 255, 0.85)";
     tabElement.style.padding = "6px 16px";
@@ -784,42 +960,25 @@ function renderTabs() {
     tabElement.style.userSelect = "none";
     tabElement.style.cursor = "pointer";
 
-    // Klik efek
-    tabElement.addEventListener("mousedown", () => {
-      tabElement.style.filter = "brightness(0.7)";
-    });
-    tabElement.addEventListener("mouseup", () => {
-      tabElement.style.filter = "none";
-    });
-    tabElement.addEventListener("mouseleave", () => {
-      tabElement.style.filter = "none";
-    });
+    tabElement.addEventListener("mousedown", () => { tabElement.style.filter = "brightness(0.7)"; });
+    tabElement.addEventListener("mouseup", () => { tabElement.style.filter = "none"; });
+    tabElement.addEventListener("mouseleave", () => { tabElement.style.filter = "none"; });
 
-    // Klik tab → buka page
     tabElement.onclick = () => {
       loadPage(tab.url);
-
       const gameLogBtn = document.getElementById("gameLogBtn");
       const liveBtn = document.getElementById("liveChatBtn");
       const linkBtn = document.getElementById("linkDownloadBtn");
-
-      if (liveBtn)
-        liveBtn.classList.toggle("active-livechat", tab.label === "LIVE CHAT");
-
-      if (linkBtn)
-        linkBtn.classList.toggle("active-linkdownload", tab.label === "LINK DOWNLOAD");
-
+      liveBtn?.classList.toggle("active-livechat", tab.label === "LIVE CHAT");
+      linkBtn?.classList.toggle("active-linkdownload", tab.label === "LINK DOWNLOAD");
       if (gameLogBtn) {
         const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
         gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
       }
     };
 
-    // Tab aktif highlight
     const currentFrame = document.getElementById("pageFrame");
-    if (currentFrame && tab.url === currentFrame.src) {
-      tabElement.classList.add("active-tab");
-    }
+    if (currentFrame && tab.url === currentFrame.src) tabElement.classList.add("active-tab");
 
     const title = document.createElement("span");
     title.textContent = tab.label;
@@ -838,36 +997,21 @@ function renderTabs() {
     closeBtn.style.padding = "0";
     closeBtn.style.pointerEvents = "auto";
 
-    closeBtn.onmouseover = () => {
-      closeBtn.style.color = "#ff1a1a";
-      closeBtn.style.transform = "scale(1.2)";
-    };
-    closeBtn.onmouseout = () => {
-      closeBtn.style.color = "red";
-      closeBtn.style.transform = "scale(1)";
-    };
-    closeBtn.onclick = (e) => {
-      e.stopPropagation();
-      closeTab(tab.label);
-    };
+    closeBtn.onmouseover = () => { closeBtn.style.color = "#ff1a1a"; closeBtn.style.transform = "scale(1.2)"; };
+    closeBtn.onmouseout  = () => { closeBtn.style.color = "red";     closeBtn.style.transform = "scale(1)"; };
+    closeBtn.onclick = (e) => { e.stopPropagation(); closeTab(tab.label); };
 
     tabElement.appendChild(title);
     tabElement.appendChild(closeBtn);
     tabBar.appendChild(tabElement);
   });
 
-  // Inisialisasi Sortable.js drag (auto spacing)
   initSortableTabs();
 }
+
 function initSortableTabs() {
   if (!window.Sortable || !tabBar) return;
-
-  // Destroy instance sebelumnya jika ada
-  if (tabBar._sortable) {
-    tabBar._sortable.destroy();
-  }
-
-  // Buat baru & simpan ke properti _sortable
+  if (tabBar._sortable) tabBar._sortable.destroy();
   tabBar._sortable = Sortable.create(tabBar, {
     animation: 200,
     ghostClass: "dragging",
@@ -876,97 +1020,49 @@ function initSortableTabs() {
       const [movedTab] = tabs.splice(evt.oldIndex, 1);
       tabs.splice(evt.newIndex, 0, movedTab);
       saveTabs(tabs);
-      renderTabs(); // akan auto-panggil initSortableTabs()
+      renderTabs();
     }
   });
 }
+
 function loadPage(url) {
   const iframeLoader = document.getElementById("iframeLoader");
   const frame = document.getElementById("pageFrame");
-
   if (!frame) return;
 
-  iframeLoader.style.display = "flex";
-
-  frame.onload = () => {
-    iframeLoader.style.display = "none";
-  };
-
+  if (iframeLoader) iframeLoader.style.display = "flex";
+  frame.onload = () => { if (iframeLoader) iframeLoader.style.display = "none"; };
   frame.src = url;
 
   localStorage.setItem("activeTabUrl", url);
   closeSidebar();
 
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.classList.remove("active-tab");
-  });
+  document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active-tab"));
 
   const tabs = getTabs();
   const tabElements = document.querySelectorAll(".tab");
   tabs.forEach((tab, index) => {
-    if (tab.url === url) {
-      if (tabElements[index]) {
-        tabElements[index].classList.add("active-tab");
-      }
+    if (tab.url === url && tabElements[index]) {
+      tabElements[index].classList.add("active-tab");
     }
   });
 }
 
-  // Ceklis GameLog Dropdown
+// Ceklis GameLog Dropdown
 function updateGameLogCheckmarks() {
   const tabs = getTabs();
   const labelsOpen = tabs.map(tab => tab.label);
   const dropdownLinks = document.querySelectorAll('#gameLogDropdown a');
-
   dropdownLinks.forEach(link => {
     const label = link.getAttribute("data-label");
     const icon = link.querySelector(".check-icon");
-     if (labelsOpen.includes(label)) {
-     link.classList.add("tab-open");
-     icon.style.display = "inline";
-     } else {
-     link.classList.remove("tab-open");
-     icon.style.display = "none";
-    }
+    if (!label || !icon) return;
+    if (labelsOpen.includes(label)) { link.classList.add("tab-open"); icon.style.display = "inline"; }
+    else { link.classList.remove("tab-open"); icon.style.display = "none"; }
   });
 }
 
-window.onload = () => {
-  renderTabs();
-  const tabs = getTabs();
-  updateGameLogCheckmarks();
-  const activeUrl = localStorage.getItem("activeTabUrl");
-  const match = tabs.find(tab => tab.url === activeUrl);
-
-  const liveBtn = document.getElementById("liveChatBtn");
-  const linkBtn = document.getElementById("linkDownloadBtn");
-  const gameLogBtn = document.getElementById("gameLogBtn");
-
-  if (liveBtn) liveBtn.classList.remove("active-livechat");
-  if (linkBtn) linkBtn.classList.remove("active-linkdownload");
-  if (gameLogBtn) gameLogBtn.classList.remove("active-gamelog");
-
-  if (match) {
-    loadPage(match.url);
-    updateGameLogCheckmarks();
-
-    if (match.label === "LIVE CHAT") {
-      liveBtn.classList.add("active-livechat");
-    }
-
-    if (match.label === "LINK DOWNLOAD") {
-      linkBtn.classList.add("active-linkdownload");
-    }
-
-    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
-    if (gameLogBtn && gameLogLabels.includes(match.label)) {
-      gameLogBtn.classList.add("active-gamelog");
-    }
-  } else if (tabs.length > 0) {
-    loadPage(tabs[tabs.length - 1].url);
-  }
-};
-
+// Admin utils
 const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
 const _0xadmins = encodedAdmins.map(e => atob(e));
 const allowedAdmins = [..._0xadmins, "admin@example.com"];
@@ -981,76 +1077,11 @@ function formatTimestamp(date) {
   return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
 }
 
-function cleanUrl() {
-  const cleanUrl = window.location.origin + window.location.pathname;
-  window.history.replaceState({}, document.title, cleanUrl);
-}
-
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function saveLoginFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
-  const email = params.get("email");
-  const photo = params.get("photo");
-
-  if (name && email && isValidEmail(email)) {
-    localStorage.setItem("gmailLogin", JSON.stringify({
-      name: decodeURIComponent(name),
-      email: decodeURIComponent(email).toLowerCase(),
-      photo: decodeURIComponent(photo || "")
-    }));
-    cleanUrl();
-  }
-}
-
-function checkLogin() {
-  const data = localStorage.getItem("gmailLogin");
-  if (!data) {
-    const params = new URLSearchParams(window.location.search);
-    const adminBypass = params.get("admin");
-
-    if (adminBypass && allowedAdmins.includes(adminBypass.toLowerCase())) {
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: "Admin",
-        email: adminBypass.toLowerCase()
-      }));
-      cleanUrl();
-      return true;
-    } else {
-      window.location.href = "https://5g88-login.vercel.app/";
-      return false;
-    }
-  }
-  return true;
-}
-
-function initLivechatNotifListener() {
-  if (!loginData?.email) return;
-
-  blurphpDb.ref("chats/" + userId).on("value", (snapshot) => {
-    let hasUnread = false;
-    snapshot.forEach((child) => {
-      const msg = child.val();
-      if (msg.from === "admin" && msg.seenByUser !== true) {
-        hasUnread = true;
-      }
-    });
-
-    const livechatDot = document.getElementById("livechatDot");
-    if (livechatDot) {
-      livechatDot.style.display = hasUnread ? "inline" : "none";
-    }
-  });
-}
-
 function markLivechatAsRead() {
-  if (!loginData?.email) return;
-
-  const chatRef = blurphpDb.ref("chats/" + userId);
-
+  const g = window.loginData || {};
+  if (!g.email) return;
+  const uid = window.userId || g.email.toLowerCase().replace(/\./g, '_');
+  const chatRef = blurphpDb.ref("chats/" + uid);
   chatRef.once("value", (snapshot) => {
     snapshot.forEach((child) => {
       if (child.val().from === "admin" && child.val().seenByUser !== true) {
@@ -1060,208 +1091,21 @@ function markLivechatAsRead() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const forceLogout = sessionStorage.getItem("forceLogout");
-  if (forceLogout === "1") {
-    sessionStorage.removeItem("forceLogout");
-    cleanUrl();
-  }
-
-  saveLoginFromURL();
-  updateChangePwVisibility();
-  if (!checkLogin()) return;
-
-  const loginDataRaw = localStorage.getItem("gmailLogin");
-  let loginData = null;
-
-  try {
-    loginData = JSON.parse(loginDataRaw);
-  } catch (e) {
-    console.error("❌ Failed to parse login data:", e);
-    localStorage.removeItem("gmailLogin");
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
-
-  if (!loginData || !loginData.email) {
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
-userId = loginData.email.replace(/\./g, "_");
-// Simpan timestamp terakhir supaya tidak eksekusi ulang
-let lastOverrideTs = 0;
-
-// (opsional) auth dari app yg sama, kalau library auth dimuat
-let loginAuth = null;
-try { loginAuth = loginApp.auth(); } catch (_) {}
-
-// userId = email yg diganti '.' -> '_'
-userId = (loginData.email || '').toLowerCase().replace(/\./g, '_');
-
-// listen ke node override khusus saya
-const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
-let lastAt = 0;
-
-myOverrideRef.on('value', async (snap) => {
-  const v = snap.val();
-  console.log('[override:me]', v); // bantu debug
-
-  if (!v || v.forceLogout !== true) return;
-  if (v.at && v.at <= lastAt) return; // cegah retrigger
-  lastAt = v.at || Date.now();
-
-  // (opsional) sign out auth kalau ada
-  try { loginApp.auth && (await loginApp.auth().signOut()); } catch (_) {}
-
-  // bersihkan sesi lokal
-  localStorage.removeItem('gmailLogin');
-  sessionStorage.setItem('forceLogout', '1');
-  if (window.google?.accounts?.id) {
-    try { google.accounts.id.disableAutoSelect(); } catch (_) {}
-  }
-
-  // HAPUS HANYA node saya sendiri, JANGAN root admin_override
-  myOverrideRef.remove().catch(()=>{});
-
-  // redirect ke login
-  window.location.href = 'https://5g88-login.vercel.app/';
-});
-loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
-  if (s.val() === true) {
-    try { if (loginAuth) await loginAuth.signOut(); } catch(_) {}
-    localStorage.removeItem("gmailLogin");
-    if (window.google?.accounts?.id) {
-      try { google.accounts.id.disableAutoSelect(); } catch(_) {}
-    }
-    window.location.href = "https://5g88-login.vercel.app/?blocked=1";
-  }
-});
-  //  Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
-const sanitizedEmail = loginData.email.toLowerCase().replace(/\./g, '_');
-blurphpDb.ref('users/' + sanitizedEmail).update({
-  name: loginData.name,
-  email: loginData.email,
-  photoURL: loginData.photo || '',
-  lastLoginTime: Date.now()
-});
-
-// Tambah status online user di Firebase
-const connectedRef = blurphpDb.ref(".info/connected");
-const onlineRef = blurphpDb.ref("users/" + sanitizedEmail + "/online");
-
-connectedRef.on("value", (snap) => {
-  if (snap.val() === true) {
-    onlineRef.set(true);
-    onlineRef.onDisconnect().set(false);
-  }
-});
-
-window.addEventListener("beforeunload", () => {
-  blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
-});
-
- //Setelah login aman, baru lanjut
-  const userNameText = document.getElementById("userNameText");
-  const dropdownContent = document.getElementById("dropdownContent");
-  const userEmailElem = document.getElementById("userEmail");
-  const dropdownWrapper = document.querySelector(".user-dropdown");
-  const userButton = document.getElementById("userName");
-
-  if (userNameText && dropdownContent && dropdownWrapper && userButton) {
-    const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
-    const nameParts = loginData.name.trim().split(" ");
-    const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
-      ? nameParts[0]
-      : loginData.name;
-    userNameText.textContent = displayName;
-    if (userEmailElem) userEmailElem.textContent = loginData.email;
-    updateChangePwVisibility();
-    // 1. Hover: tampilkan dropdown
-    dropdownWrapper.addEventListener("mouseenter", () => {
-      dropdownContent.style.display = "block";
-    });
-
-    // 2. Hover keluar: sembunyikan jika belum diklik
-   dropdownWrapper.addEventListener("mouseleave", () => {
-  // Jika sedang force-open (hasil dari klik), biarkan tetap tampil
-  if (dropdownWrapper.classList.contains("force-open")) return;
-
-  // Kalau bukan dari klik, artinya hanya hover → tutup dropdown
-  dropdownContent.style.display = "none";
-  userButton.classList.remove("active-user-button");
-});
-
-    // 3. Klik user button = toggle tampil dan class
-   userButton.addEventListener("click", (e) => {
-  e.stopPropagation(); // 🛑 ini bantu cegah konflik click luar
-  const isOpen = dropdownWrapper.classList.toggle("force-open");
-  dropdownContent.style.display = isOpen ? "block" : "none";
-  userButton.classList.toggle("active-user-button", isOpen);
-});
-
-    // 4. Klik di luar dropdown → tutup semua
-   document.addEventListener("click", (e) => {
-  if (!dropdownWrapper.contains(e.target)) {
-    dropdownContent.style.display = "none";
-    dropdownWrapper.classList.remove("force-open");
-    userButton.classList.remove("active-user-button");
-  }
-});
-  }
-
-const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("gmailLogin");
-    sessionStorage.setItem("forceLogout", "1");
-    if (window.google?.accounts?.id) {
-      google.accounts.id.disableAutoSelect();
-    }
-    window.location.href = "https://5g88-login.vercel.app/";
-  });
-}
-
 function updateDateTime() {
   const now = new Date();
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const month = monthNames[now.getMonth()];
   const year = now.getFullYear();
   const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
-  document.getElementById('dateTime').textContent = timeString;
+  const el = document.getElementById('dateTime');
+  if (el) el.textContent = timeString;
 }
-setInterval(updateDateTime, 1000);
-updateDateTime();
 
-//  Notifikasi LiveChat dari Admin (blurphp)
-let lastNotifTime = 0;
-let userHasInteracted = false;
-document.body.addEventListener("click", () => {
-  userHasInteracted = true;
-});
-
-blurphpDb.ref("chats/" + userId).on("child_added", (snapshot) => {
-  const msg = snapshot.val();
-  const livechatDot = document.getElementById("livechatDot");
-  const notifSound = document.getElementById("notifSound");
-
-  if (!msg || msg.from !== "admin") return;
-
-  const timestamp = msg.time || Date.now();
-  if (timestamp > lastNotifTime) {
-    lastNotifTime = timestamp;
-    if (livechatDot) livechatDot.style.display = "inline";
-    if (notifSound && userHasInteracted) {
-      notifSound.currentTime = 0;
-      notifSound.play().catch(() => {});
-    }
-  }
-});
-initLivechatNotifListener();
-// PostMessage Handler
+// postMessage handler (copy image, notif dot, dll)
 window.addEventListener("message", async function (e) {
   const allowedOrigins = [
     "https://5g88-logogame.vercel.app", "https://5g88-userlivechatphp.vercel.app",
@@ -1293,62 +1137,29 @@ window.addEventListener("message", async function (e) {
       alert("❌ Gagal salin gambar dari base64.");
     }
   } else if (data?.action === "copy-image" && data.url) {
-  try {
-    const response = await fetch(data.url);
-    const blob = await response.blob();
-    const item = new ClipboardItem({ [blob.type]: blob });
-    await navigator.clipboard.write([item]);
-    console.log("✅ Gambar dari URL telah disalin.");
-  } catch (err) {
-    console.error("❌ Gagal salin gambar dari URL:", err);
-  }
-}
-});
-
-  const loadingScreen = document.getElementById("loadingScreen");
-  if (loadingScreen) {
-    loadingScreen.style.display = "none";
-  }
-  const tabBar = document.getElementById('tabBar');
-let isDown = false;
-let startX, scrollLeft;
-
-tabBar.addEventListener('mousedown', (e) => {
-  isDown = true;
-  startX = e.pageX - tabBar.offsetLeft;
-  scrollLeft = tabBar.scrollLeft;
-});
-
-tabBar.addEventListener('mouseleave', () => {
-  isDown = false;
-});
-
-tabBar.addEventListener('mouseup', () => {
-  isDown = false;
-});
-
-tabBar.addEventListener('mousemove', (e) => {
-  if (!isDown) return;
-  e.preventDefault();
-  const x = e.pageX - tabBar.offsetLeft;
-  const walk = (x - startX) * 1.5;
-  tabBar.scrollLeft = scrollLeft - walk;
-});
-tabBar.addEventListener('wheel', (e) => {
-  if (e.deltaY !== 0) {
-    e.preventDefault();
-    tabBar.scrollLeft += e.deltaY;
+    try {
+      const response = await fetch(data.url);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([item]);
+      console.log("✅ Gambar dari URL telah disalin.");
+    } catch (err) {
+      console.error("❌ Gagal salin gambar dari URL:", err);
+    }
   }
 });
-});
+
+// loading screen off
+const loadingScreen = document.getElementById("loadingScreen");
+if (loadingScreen) loadingScreen.style.display = "none";
+
+// === Change Password Modal IIFE ===
 (function(){
   const btn = document.getElementById('changePwBtn');
   if (!btn) return;
 
-  // set state awal secara dinamis
   updateChangePwVisibility();
 
-  // Elemen modal
   const modal   = document.getElementById('cpModal');
   const closeX  = document.getElementById('cpClose');
   const cancel  = document.getElementById('cpCancel');
@@ -1360,7 +1171,6 @@ tabBar.addEventListener('wheel', (e) => {
   const okBox   = document.getElementById('cpOk');
 
   function openCp(){
-    // cek ulang status login SAAT INI (bukan nilai lama)
     if (!isUsernameLoginNow()) return;
     errBox.style.display = 'none'; errBox.textContent = '';
     okBox.style.display  = 'none'; okBox.textContent  = '';
@@ -1413,3 +1223,4 @@ tabBar.addEventListener('wheel', (e) => {
 </script>
 </body>
 </html>
+
