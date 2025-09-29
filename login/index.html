@@ -352,6 +352,22 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
 
+// ===== Anonymous Guest per-device =====
+async function ensureGuestAuth(){
+  try{
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    if (!auth.currentUser){
+      await auth.signInAnonymously();             // ← UID unik per device
+    }
+    const u = auth.currentUser;
+    if (u && u.isAnonymous){
+      const code = (u.uid || '').slice(-5).toUpperCase();
+      localStorage.setItem('guest.uid', u.uid);
+      localStorage.setItem('guest.name', `Guest-${code}`);
+    }
+  }catch(e){ console.warn('ensureGuestAuth error:', e); }
+}
+
 /* ===== Helpers (dipakai lintas fitur, diletak di awal agar siap pakai) ===== */
 const MAIN_URL = "https://5g88-main.vercel.app";
 const toPseudoEmail = (uname) => `${String(uname || '').trim()}@5g88.local`;
@@ -689,9 +705,10 @@ const formGoo = document.getElementById('form-google');
 tabUser?.addEventListener('click', ()=>{ tabUser.classList.add('active'); tabGoo.classList.remove('active'); formUser.classList.add('active'); formGoo.classList.remove('active'); });
 tabGoo?.addEventListener('click', ()=>{ tabGoo.classList.add('active'); tabUser.classList.remove('active'); formGoo.classList.add('active'); formUser.classList.remove('active'); });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("googleLoginBtn")?.addEventListener("click", signInWithGoogle);
   document.getElementById('eyeBtn')?.addEventListener('click', togglePassword);
+  try { await ensureGuestAuth(); } catch {}
 });
   // ====== CONFIG ======
   const LC_URL = "https://searcfile.github.io/5g88-php/userlivechatphp/";   // URL app livechat kamu
@@ -704,22 +721,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const lcDot    = document.getElementById("lcDot");
   let lcLoaded = false;
 
-  // ====== Ambil identitas user utk pre-chat ======
-  function getPrechatUser(){
-    // 1) kalau sudah login (gmailLogin ada), pakai itu
-    try {
-      const gl = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-      if (gl?.email) return { name: gl.name || gl.email, email: gl.email, photo: gl.photo || "" };
-    } catch {}
-
-    // 2) belum login → ambil dari input username form login (kalau ada)
-    const unameEl = document.getElementById("username");
-    const uname = (unameEl?.value || "").trim();
-    if (uname) return { name: uname, email: (uname + "@5g88.local").toLowerCase(), photo: "" };
-
-    // 3) fallback guest
-    return { name: "Guest", email: "guest@5g88.local", photo: "" };
+function getPrechatUser(){
+  // 1) Kalau sudah login di Firebase AUTH (bukan anonymous)
+  const cu = auth.currentUser;
+  if (cu && !cu.isAnonymous) {
+    return {
+      name: cu.displayName || cu.email || 'User',
+      email: cu.email || '',
+      photo: cu.photoURL || '',
+      uid: null,
+      isGuest: false
+    };
   }
+
+  // 2) (opsional) cek cache Google login di localStorage
+  try {
+    const gl = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+    if (gl?.email) {
+      return { name: gl.name || gl.email, email: gl.email, photo: gl.photo || "", uid: null, isGuest: false };
+    }
+  } catch {}
+
+  // 3) Fallback: Guest Anonymous Auth (unik per-device)
+  const u = auth.currentUser;
+  if (u && u.isAnonymous){
+    const code = (u.uid || '').slice(-5).toUpperCase();
+    return {
+      name: localStorage.getItem('guest.name') || `Guest-${code}`,
+      email: "",
+      photo: "",
+      uid: u.uid,
+      isGuest: true
+    };
+  }
+
+  // 4) fallback terakhir (seandainya anon belum kebentuk)
+  return { name: "Guest", email: "", photo: "", uid: null, isGuest: true };
+}
 
   function postIdentityToChat(){
     if (!lcFrame?.contentWindow) return;
@@ -727,33 +765,40 @@ document.addEventListener("DOMContentLoaded", () => {
     lcFrame.contentWindow.postMessage({ type: "user-login", user: u }, LC_ORIGIN);
   }
 
-  // ====== Toggle panel open/close ======
-  lcToggle.addEventListener("click", () => {
-    const open = !lcPanel.classList.contains("active");
-    if (open){
-      lcPanel.classList.add("active");
-      lcPanel.setAttribute("aria-hidden","false");
+lcToggle.addEventListener("click", async () => {
+  const open = !lcPanel.classList.contains("active");
+  if (open){
+    lcPanel.classList.add("active");
+    lcPanel.setAttribute("aria-hidden","false");
 
-      if (!lcLoaded){
-        lcFrame.src = LC_URL;  // load iframe ketika pertama dibuka
-        lcFrame.addEventListener("load", () => {
-          lcLoaded = true;
-          postIdentityToChat();   // kirim identitas setelah iframe siap
-        }, { once:true });
-      } else {
-        postIdentityToChat();     // update identitas kalau user ganti username
-      }
-      lcDot.style.display = "none";  // anggap terbaca
+    // pastikan UID guest sudah ada
+    try { await ensureGuestAuth(); } catch {}
+
+    if (!lcLoaded){
+      lcFrame.src = LC_URL;
+      lcFrame.addEventListener("load", async () => {
+        lcLoaded = true;
+        try { await ensureGuestAuth(); } catch {}
+        postIdentityToChat();
+      }, { once:true });
     } else {
-      lcPanel.classList.remove("active");
-      lcPanel.setAttribute("aria-hidden","true");
+      postIdentityToChat();
     }
-  });
+    lcDot.style.display = "none";
+  } else {
+    lcPanel.classList.remove("active");
+    lcPanel.setAttribute("aria-hidden","true");
+  }
+});
+
 
   // Update identitas jika user mengisi username lalu keluar dari input
-  document.getElementById("username")?.addEventListener("blur", () => {
-    if (lcPanel.classList.contains("active")) postIdentityToChat();
-  });
+document.getElementById("username")?.addEventListener("blur", async () => {
+  if (lcPanel.classList.contains("active")) {
+    try { await ensureGuestAuth(); } catch {}
+    postIdentityToChat();
+  }
+});
 
   // ====== Notifikasi dari iframe -> tampilkan dot merah ======
   window.addEventListener("message", (e) => {
