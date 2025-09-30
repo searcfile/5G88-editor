@@ -377,8 +377,20 @@ td:last-child {
 
 /* Responsif HP: biar bisa geser horizontal kalau kolom banyak */
 @media (max-width: 640px){
-  .table-viewport{ max-height: 60vh; } /* lebih lega di HP */
-  .tbl{ min-width: 640px; }            /* aktifkan horizontal scroll */
+  .table-viewport{ max-height: 60vh; }   /* biar lega di HP */
+  .tbl{ table-layout: auto; min-width: 0; }
+  .tbl th, .tbl td{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  /* Tombol Action tetap satu baris */
+  td:last-child{ white-space: nowrap; }
+}
+@media (max-width: 640px){
+  .search-box{ width: 100%; }
 }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -461,9 +473,46 @@ td:last-child {
 
   firebase.initializeApp(firebaseConfig);
   const dbRef = firebase.database().ref('logins');
-
   const blockedRef = firebase.database().ref('logins/blocked_users');
-  
+
+  // ---------- Utils ----------
+  function esc(s){
+    return String(s ?? '').replace(/[&<>"']/g, m => (
+      {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]
+    ));
+  }
+  function sanitizeEmail(email) {
+    if (!email || typeof email !== 'string') return '';
+    return email.replace(/\./g, "_").replace(/[#$\[\]]/g, '');
+  }
+  function parseDateString(dateString) {
+    if (!dateString) return null;
+    const cleaned = dateString.replace(/\s*-\s*/g, '-').trim();
+    const parts = cleaned.split(' ');
+    if (parts.length < 2) return null;
+    const [y,m,d] = parts[0].split('-');
+    const iso = `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T${parts[1]}`;
+    const dt = new Date(iso);
+    return isNaN(dt) ? null : dt;
+  }
+  function formatDateTime(date) {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yy = date.getFullYear();
+    const hh = String(date.getHours()).padStart(2, '0');
+    const mi = String(date.getMinutes()).padStart(2, '0');
+    const ss = String(date.getSeconds()).padStart(2, '0');
+    return `${dd}/${mm}/${yy}, ${hh}:${mi}:${ss}`;
+  }
+  function filterTable(query, data) {
+    const q = (query || '').toLowerCase();
+    return data.filter(it =>
+      (it.name  || '').toLowerCase().includes(q) ||
+      (it.email || '').toLowerCase().includes(q)
+    );
+  }
+
+  // ---------- Tinggi viewport = header + 15 baris ----------
   function fitViewportToRows(n = 15){
     const vp  = document.getElementById('tableViewport');
     const tbl = document.getElementById('loginTable');
@@ -474,418 +523,318 @@ td:last-child {
     vp.style.maxHeight = (headH + rowsH) + 'px';
   }
 
-function sanitizeEmail(email) {
-  if (!email || typeof email !== 'string') return '';
-  return email.replace(/\./g, "_").replace(/[#$\[\]]/g, '');
-}
-
-function isEmailBlocked(email) {
-  const key = sanitizeEmail(email);
-  return blockedRef.child(key).once('value').then(snapshot => !!snapshot.val());
-}
-
-function setEmailBlocked(email, isBlocked) {
-  const key = sanitizeEmail(email);
-  return blockedRef.child(key).set(isBlocked);
-}
-
+  // ---------- Global state ----------
   let allLoginData = [];
   let currentConfirmEmail = null;
   let isConfirmAllVisible = false;
 
-  function parseDateString(dateString) {
-    if (!dateString) return null;
-    const cleaned = dateString.replace(/\s*-\s*/g, '-').trim();
-    const parts = cleaned.split(' ');
-    if (parts.length < 2) return null;
-
-    const datePart = parts[0];
-    const timePart = parts[1];
-    const [year, month, day] = datePart.split('-');
-
-    const isoString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart}`;
-    const date = new Date(isoString);
-    return isNaN(date) ? null : date;
+  // ---------- Toast ----------
+  function showToast(message, type = "success", duration = 4000) {
+    const toast = document.getElementById("toast");
+    const msgSpan = toast.querySelector(".toast-message");
+    const iconSvg = toast.querySelector(".toast-icon");
+    toast.classList.remove("success", "error");
+    toast.classList.add(type);
+    msgSpan.textContent = message;
+    iconSvg.innerHTML = (type === "success")
+      ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 17l-5-5.299 1.399-1.43 3.574 3.736 6.572-7.007 1.455 1.403-8 8.597z"/></svg>`
+      : `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.5 15.1L15.1 17.5 12 14.4 8.9 17.5 6.5 15.1 9.6 12 6.5 8.9 8.9 6.5 12 9.6l3.1-3.1 2.4 2.4L14.4 12l3.1 3.1z"/></svg>`;
+    toast.style.display = "flex";
+    requestAnimationFrame(() => toast.classList.add("show"));
+    clearTimeout(window.toastTimeout);
+    window.toastTimeout = setTimeout(hideToast, duration);
+  }
+  function hideToast() {
+    const toast = document.getElementById("toast");
+    toast.classList.remove("show");
+    setTimeout(() => { toast.style.display = "none"; }, 300);
   }
 
-  function formatDateTime(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
-  }
-
-  function filterTable(query, data) {
-    const lowerQuery = query.toLowerCase();
-    return data.filter(item =>
-      (item.name || '').toLowerCase().includes(lowerQuery) ||
-      (item.email || '').toLowerCase().includes(lowerQuery)
+  // ---------- Block cache (hemat query) ----------
+  let blockedSet = new Set();
+  blockedRef.on('value', (snap) => {
+    const val = snap.val() || {};
+    blockedSet = new Set(
+      Object.entries(val).filter(([_,v]) => Boolean(v)).map(([k]) => k)
     );
-  }
-function forceLogoutUser(email) {
-  const key = sanitizeEmail(email); // sama dengan format yang dipakai di app login (ganti '.' -> '_')
-  const payload = {
-    forceLogout: true,
-    at: Date.now()
-  };
-
-  // TULIS ke child: /logins/admin_override/<emailKey>
-  firebase.database()
-    .ref('logins/admin_override/' + key)
-    .set(payload)
-    .then(() => {
-      showToast(`Logout sent to ${email}`);
-    })
-    .catch(err => {
-      showToast(`Error logout: ${err.message}`, "error");
+    // sinkronkan tombol yang sudah ada
+    document.querySelectorAll('.block-btn').forEach(btn => {
+      const email = btn.dataset.email || '';
+      const isBlocked = blockedSet.has(sanitizeEmail(email));
+      btn.textContent = isBlocked ? 'Unblock' : 'Block';
+      btn.classList.toggle('blocked', isBlocked);
     });
-}
-function showToast(message, type = "success", duration = 4000) {
-  const toast = document.getElementById("toast");
-  const msgSpan = toast.querySelector(".toast-message");
-  const iconSvg = toast.querySelector(".toast-icon");
-
-  // Reset kelas
-  toast.classList.remove("success", "error");
-  toast.classList.add(type);
-
-  msgSpan.textContent = message;
-
-  // Tukar ikon SVG berdasarkan tipe
-  if (type === "success") {
-    iconSvg.innerHTML = `
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12
-                 12-5.373 12-12-5.373-12-12-12zm-1 17l-5-5.299
-                 1.399-1.43 3.574 3.736 6.572-7.007 
-                 1.455 1.403-8 8.597z" /></svg>`;
-  } else if (type === "error") {
-    iconSvg.innerHTML = `
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 
-                 12-5.4 12-12S18.6 0 12 0zm5.5 15.1L15.1 17.5 
-                 12 14.4 8.9 17.5 6.5 15.1 9.6 12 6.5 8.9 
-                 8.9 6.5 12 9.6l3.1-3.1 2.4 2.4L14.4 12l3.1 3.1z"/></svg>`;
+  });
+  function isEmailBlockedFast(email){
+    return blockedSet.has(sanitizeEmail(email));
   }
 
-  toast.style.display = "flex";
-  requestAnimationFrame(() => {
-    toast.classList.add("show");
-  });
-
-  clearTimeout(window.toastTimeout);
-  window.toastTimeout = setTimeout(() => {
-    hideToast();
-  }, duration);
-}
-
-function hideToast() {
-  const toast = document.getElementById("toast");
-  toast.classList.remove("show");
-  setTimeout(() => {
-    toast.style.display = "none";
-  }, 300);
-}
-function renderLoginTable(dataArray) {
-  const tbody = document.getElementById('loginTableBody');
-
-  // ⬇️ PASTE blok ini di paling atas fungsi
-  if (!dataArray.length) {
-    tbody.innerHTML = '<tr><td colspan="5">No matching login data found.</td></tr>';
-    requestAnimationFrame(() => fitViewportToRows(1)); // set tinggi kecil biar rapi
-    return;
+  // ---------- Actions ----------
+  function forceLogoutUser(email) {
+    const key = sanitizeEmail(email);
+    const payload = { forceLogout: true, at: Date.now() };
+    firebase.database()
+      .ref('logins/admin_override/' + key)
+      .set(payload)
+      .then(() => showToast(`Logout sent to ${email}`))
+      .catch(err => showToast(`Error logout: ${err.message}`, "error"));
   }
 
-  let html = '';
-  let validIndex = 0;
+  function toggleBlockUser(button) {
+    const email = button.getAttribute("data-email");
+    const key = sanitizeEmail(email);
+    const newStatus = !isEmailBlockedFast(email);
+    blockedRef.child(key).set(newStatus)
+      .then(() => showToast(`${newStatus ? "Blocked" : "Unblocked"}: ${email}`, "success"))
+      .catch(err => showToast(`Failed: ${err.message}`, "error"));
+  }
 
-  dataArray.forEach((item) => {
-    const email = item.email || '';
-    const name = item.name || '';
-    const loginAt = item.loginRaw || '';
-    if (!email && !name && !loginAt) return;
+  // ---------- Render table ----------
+  function renderLoginTable(dataArray) {
+    const tbody = document.getElementById('loginTableBody');
 
-    validIndex++;
-    html += `<tr data-email="${email}">
-      <td>${validIndex}</td>
-      <td>${name || '-'}</td>
-      <td>${email}</td>
-      <td>${item.dateObj ? formatDateTime(item.dateObj) : loginAt}</td>
-      <td>
-        <div class="action-buttons">
-          <button class="logout-btn"
-            onclick="showConfirmBox(this, '${email}', '${name || '-'}')">
-            Logout
-          </button>
-          <button class="block-btn" data-email="${email}" data-blocked="" onclick="toggleBlockUser(this)">Block</button>
-        </div>
-      </td>
-    </tr>`;
-  });
+    if (!dataArray.length) {
+      tbody.innerHTML = '<tr><td colspan="5">No matching login data found.</td></tr>';
+      requestAnimationFrame(() => fitViewportToRows(1));
+      return;
+    }
 
-  tbody.innerHTML = html;
+    let html = '';
+    let no = 0;
 
-  // update tombol block (boleh tetap seperti punyamu)
-  dataArray.forEach(item => {
-    const email = item.email || '';
-    const btn = tbody.querySelector(`.block-btn[data-email="${email}"]`);
-    if (!email || !btn) return;
-    isEmailBlocked(email).then(blocked => {
-      btn.setAttribute("data-blocked", blocked ? "yes" : "no");
+    dataArray.forEach(item => {
+      const email = item.email || '';
+      const name  = item.name  || '';
+      const tStr  = item.dateObj ? formatDateTime(item.dateObj) : (item.loginRaw || '');
+
+      if (!email && !name && !tStr) return;
+      no++;
+
+      html += `
+        <tr data-email="${esc(email)}">
+          <td>${no}</td>
+          <td title="${esc(name)}">${esc(name || '-')}</td>
+          <td title="${esc(email)}">${esc(email)}</td>
+          <td title="${esc(tStr)}">${esc(tStr)}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="logout-btn"
+                      data-email="${esc(email)}"
+                      data-name="${esc(name || '-')}"
+                      onclick="showConfirmBox(this, this.dataset.email, this.dataset.name)">
+                Logout
+              </button>
+              <button class="block-btn"
+                      data-email="${esc(email)}"
+                      onclick="toggleBlockUser(this)">
+                Block
+              </button>
+            </div>
+          </td>
+        </tr>`;
+    });
+
+    tbody.innerHTML = html;
+
+    // Set tampilan tombol block dari cache
+    tbody.querySelectorAll('.block-btn').forEach(btn => {
+      const email = btn.dataset.email || '';
+      const blocked = isEmailBlockedFast(email);
       btn.textContent = blocked ? "Unblock" : "Block";
       btn.classList.toggle("blocked", blocked);
     });
-  });
 
-  // ⬇️ Panggil SEKALI setelah HTML jadi
-  requestAnimationFrame(() => fitViewportToRows(15));
-}
+    requestAnimationFrame(() => fitViewportToRows(15));
+  }
 
-  function toggleBlockUser(button) {
-  const email = button.getAttribute("data-email");
-  isEmailBlocked(email).then(isBlocked => {
-    const newStatus = !isBlocked;
-    setEmailBlocked(email, newStatus)
-      .then(() => {
-        showToast(`${newStatus ? "Blocked" : "Unblocked"}: ${email}`, "success");
-        button.textContent = newStatus ? "Unblock" : "Block";
-        button.classList.toggle("blocked", newStatus);
-      })
-      .catch(err => {
-        showToast(`Failed to update block status: ${err.message}`, "error");
-      });
-  });
-}
-
-  function loadLoginData() {
+  // ---------- Realtime data (ganti polling) ----------
+  function startRealtime() {
     const searchBtn = document.getElementById('searchBtn');
-    searchBtn.classList.add('loading'); // 🔵 Aktifkan efek glowing tombol + icon
+    searchBtn.classList.add('loading');
 
-    dbRef.once('value', snapshot => {
-      const data = snapshot.val();
-      if (!data) {
-      renderLoginTable([]);                 // <- biar panggil fitViewportToRows(1)
+    dbRef.on('value', (snapshot) => {
+      const data = snapshot.val() || {};
+
+      allLoginData = Object.entries(data)
+        .filter(([k]) => k !== "blocked_users" && k !== "admin_override")
+        .map(([_, item]) => {
+          const dateObj = parseDateString(item.loginAt);
+          return { ...item, dateObj, loginRaw: item.loginAt || '-' };
+        })
+        .filter(it => it.email || it.name || it.loginRaw)
+        .sort((a, b) => {
+          if (!a.dateObj && !b.dateObj) return 0;
+          if (!a.dateObj) return 1;
+          if (!b.dateObj) return -1;
+          return b.dateObj - a.dateObj;
+        });
+
+      const q = document.getElementById('searchInput')?.value || '';
+      renderLoginTable(filterTable(q, allLoginData));
       searchBtn.classList.remove('loading');
-      return;
-     }
-
-  allLoginData = Object.entries(data)
-  .filter(([key, _]) => key !== "blocked_users" && key !== "admin_override")
-  .map(([_, item]) => {
-    const dateObj = parseDateString(item.loginAt);
-    return {
-      ...item,
-      dateObj,
-      loginRaw: item.loginAt || '-'
-    };
-  })
-  .filter(item => item.email || item.name || item.loginRaw) // 🧹 Hapus data kosong
-  .sort((a, b) => {
-    if (!a.dateObj && !b.dateObj) return 0;
-    if (!a.dateObj) return 1;
-    if (!b.dateObj) return -1;
-    return b.dateObj - a.dateObj;
-  });
-
-      const searchTerm = document.getElementById('searchInput')?.value || '';
-      const filteredData = filterTable(searchTerm, allLoginData);
-      renderLoginTable(filteredData);
-
-      searchBtn.classList.remove('loading');
-    }, error => {
-      document.getElementById('loginTableBody').innerHTML = `<tr><td colspan="5">Error: ${error.message}</td></tr>`;
+    }, (error) => {
+      document.getElementById('loginTableBody').innerHTML =
+        `<tr><td colspan="5">Error: ${error.message}</td></tr>`;
       searchBtn.classList.remove('loading');
     });
   }
 
-  function preserveScrollAndLoad() {
-    const scrollY = window.scrollY;
-    loadLoginData();
-    setTimeout(() => {
-      window.scrollTo({ top: scrollY, behavior: 'instant' });
-    }, 50);
-  }
-
+  // ---------- Search ----------
   function setupSearchListener() {
     const input = document.getElementById('searchInput');
     if (input) {
       input.addEventListener('input', () => {
-        const filteredData = filterTable(input.value, allLoginData);
-        renderLoginTable(filteredData);
+        renderLoginTable(filterTable(input.value, allLoginData));
       });
     }
-  }
-
-  preserveScrollAndLoad();
-  setInterval(preserveScrollAndLoad, 5000);
-  window.onload = setupSearchListener;
-
-  document.getElementById('searchBtn').addEventListener('click', () => {
-    const query = document.getElementById('searchInput').value;
-    const filtered = filterTable(query, allLoginData);
-    renderLoginTable(filtered);
-  });
-function showConfirmAllBox(button) {
-  const box = document.getElementById("confirmAllBox");
-
-  // Kalau sedang tampil, klik lagi = tutup
-  if (isConfirmAllVisible) {
-    box.style.display = "none";
-    box.classList.remove("show");
-    isConfirmAllVisible = false;
-    return;
-  }
-
-  const yesBtn = document.getElementById("confirmAllYes");
-  const noBtn = document.getElementById("confirmAllNo");
-
-  box.style.display = "block";
-  box.classList.add("show");
-  isConfirmAllVisible = true;
-
-  const rect = button.getBoundingClientRect();
-  const boxWidth = box.offsetWidth;
-  let left = rect.left + (rect.width / 2) - (boxWidth / 2);
-
-  const maxLeft = window.innerWidth - boxWidth - 10;
-  if (left > maxLeft) left = maxLeft;
-  if (left < 10) left = 10;
-
-  box.style.top = `${rect.bottom + window.scrollY + 6}px`;
-  box.style.left = `${left}px`;
-
-  yesBtn.replaceWith(yesBtn.cloneNode(true));
-  noBtn.replaceWith(noBtn.cloneNode(true));
-
-  document.getElementById("confirmAllYes").onclick = () => {
-    box.style.display = "none";
-    box.classList.remove("show");
-    isConfirmAllVisible = false;
-    doForceLogoutAll();
-  };
-
-  document.getElementById("confirmAllNo").onclick = () => {
-    box.style.display = "none";
-    box.classList.remove("show");
-    isConfirmAllVisible = false;
-  };
-}
-
-function showConfirmBox(button, email, name = '-') {
-  const box = document.getElementById("confirmBox");
-
-  // ✅ Kalau email yang sama, maka sembunyikan
-  if (box.style.display === "block" && currentConfirmEmail === email) {
-    box.style.display = "none";
-    box.classList.remove("show");
-    currentConfirmEmail = null;
-    return;
-  }
-
-  const yesBtn = document.getElementById("confirmYes");
-  const noBtn = document.getElementById("confirmNo");
-
-  currentConfirmEmail = email; //  Simpan email saat ini
-
-  document.getElementById("confirmUserName").textContent = name;
-  document.getElementById("confirmUserEmail").textContent = email;
-
-  box.style.display = "block";
-  box.classList.add("show");
-
-  const rect = button.getBoundingClientRect();
-  const boxWidth = box.offsetWidth;
-  let left = rect.left + (rect.width / 2) - (boxWidth / 2);
-
-  const maxLeft = window.innerWidth - boxWidth - 10;
-  if (left > maxLeft) left = maxLeft;
-  if (left < 10) left = 10;
-
-  box.style.top = `${rect.bottom + window.scrollY + 6}px`;
-  box.style.left = `${left}px`;
-
-  yesBtn.replaceWith(yesBtn.cloneNode(true));
-  noBtn.replaceWith(noBtn.cloneNode(true));
-
-  document.getElementById("confirmYes").onclick = () => {
-    box.style.display = "none";
-    box.classList.remove("show");
-    currentConfirmEmail = null;
-    forceLogoutUser(email);
-  };
-
-  document.getElementById("confirmNo").onclick = () => {
-    box.style.display = "none";
-    box.classList.remove("show");
-    currentConfirmEmail = null;
-  };
-}
-document.getElementById('forceLogoutAllBtn').addEventListener('click', function () {
-  showConfirmAllBox(this);
-});
- function doForceLogoutAll() {
-  const ts = Date.now();
-
-  // Kumpulkan semua email yang valid dari tabel
-  const emails = allLoginData
-    .filter(u => u.email)
-    .map(u => u.email);
-
-  if (emails.length === 0) {
-    showToast('Tidak ada user untuk di-logout.', 'error');
-    return;
-  }
-
-  // Build multipath update: /logins/admin_override/<emailKey> = {forceLogout:true, at:...}
-  const updates = {};
-  emails.forEach(email => {
-    const key = sanitizeEmail(email);
-    updates['logins/admin_override/' + key] = { forceLogout: true, at: ts };
-  });
-
-  firebase.database().ref()
-    .update(updates)
-    .then(() => {
-      // Tampilkan toast bertahap (opsional)
-      let delay = 0;
-      emails.forEach(email => {
-        setTimeout(() => showToast(`Logout sent to ${email}`), delay);
-        delay += 200;
-      });
-      // ⚠️ JANGAN remove() admin_override di sini — biarkan app user yang membersihkan node miliknya.
-    })
-    .catch(err => {
-      showToast(`Error force logout all: ${err.message}`, "error");
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      const q = document.getElementById('searchInput').value;
+      renderLoginTable(filterTable(q, allLoginData));
     });
-}
-document.addEventListener('click', function (e) {
-  const confirmBox = document.getElementById('confirmBox');
-  const confirmAllBox = document.getElementById('confirmAllBox');
+  }
 
-  // Tutup confirmBox jika klik di luar dan bukan tombol logout
-  if (
-    confirmBox.style.display === 'block' &&
-    !confirmBox.contains(e.target) &&
-    !e.target.closest('.logout-btn')
-  ) {
-    confirmBox.style.display = 'none';
-    confirmBox.classList.remove('show');
-    currentConfirmEmail = null;
+  // ---------- Confirm popovers ----------
+  function showConfirmAllBox(button) {
+    const box = document.getElementById("confirmAllBox");
+    if (isConfirmAllVisible) {
+      box.style.display = "none";
+      box.classList.remove("show");
+      isConfirmAllVisible = false;
+      return;
+    }
+    const yesBtn = document.getElementById("confirmAllYes");
+    const noBtn  = document.getElementById("confirmAllNo");
+
+    box.style.display = "block";
+    box.classList.add("show");
+    isConfirmAllVisible = true;
+
+    const rect = button.getBoundingClientRect();
+    const bw   = box.offsetWidth;
+    let left   = rect.left + (rect.width/2) - (bw/2);
+    const maxL = window.innerWidth - bw - 10;
+    if (left > maxL) left = maxL;
+    if (left < 10)  left = 10;
+
+    box.style.top  = `${rect.bottom + window.scrollY + 6}px`;
+    box.style.left = `${left}px`;
+
+    yesBtn.replaceWith(yesBtn.cloneNode(true));
+    noBtn.replaceWith(noBtn.cloneNode(true));
+
+    document.getElementById("confirmAllYes").onclick = () => {
+      box.style.display = "none";
+      box.classList.remove("show");
+      isConfirmAllVisible = false;
+      doForceLogoutAll();
+    };
+    document.getElementById("confirmAllNo").onclick = () => {
+      box.style.display = "none";
+      box.classList.remove("show");
+      isConfirmAllVisible = false;
+    };
   }
-  if (
-    confirmAllBox.style.display === 'block' &&
-    !confirmAllBox.contains(e.target) &&
-    !e.target.closest('#forceLogoutAllBtn')
-  ) {
-    confirmAllBox.style.display = 'none';
-    confirmAllBox.classList.remove('show');
-    isConfirmAllVisible = false;
+  function showConfirmBox(button, email, name = '-') {
+    const box = document.getElementById("confirmBox");
+    if (box.style.display === "block" && currentConfirmEmail === email) {
+      box.style.display = "none";
+      box.classList.remove("show");
+      currentConfirmEmail = null;
+      return;
+    }
+    const yesBtn = document.getElementById("confirmYes");
+    const noBtn  = document.getElementById("confirmNo");
+
+    currentConfirmEmail = email;
+    document.getElementById("confirmUserName").textContent  = name || '-';
+    document.getElementById("confirmUserEmail").textContent = email;
+
+    box.style.display = "block";
+    box.classList.add("show");
+
+    const rect = button.getBoundingClientRect();
+    const bw   = box.offsetWidth;
+    let left   = rect.left + (rect.width/2) - (bw/2);
+    const maxL = window.innerWidth - bw - 10;
+    if (left > maxL) left = maxL;
+    if (left < 10)  left = 10;
+
+    box.style.top  = `${rect.bottom + window.scrollY + 6}px`;
+    box.style.left = `${left}px`;
+
+    yesBtn.replaceWith(yesBtn.cloneNode(true));
+    noBtn.replaceWith(noBtn.cloneNode(true));
+
+    document.getElementById("confirmYes").onclick = () => {
+      box.style.display = "none";
+      box.classList.remove("show");
+      currentConfirmEmail = null;
+      forceLogoutUser(email);
+    };
+    document.getElementById("confirmNo").onclick = () => {
+      box.style.display = "none";
+      box.classList.remove("show");
+      currentConfirmEmail = null;
+    };
   }
-});
-window.addEventListener('resize', () => fitViewportToRows(15));
+  document.getElementById('forceLogoutAllBtn')
+    .addEventListener('click', function(){ showConfirmAllBox(this); });
+
+  function doForceLogoutAll() {
+    const ts = Date.now();
+    const emails = allLoginData.filter(u => u.email).map(u => u.email);
+    if (emails.length === 0) return showToast('Tidak ada user untuk di-logout.', 'error');
+
+    const updates = {};
+    emails.forEach(email => {
+      const key = sanitizeEmail(email);
+      updates['logins/admin_override/' + key] = { forceLogout: true, at: ts };
+    });
+
+    firebase.database().ref().update(updates)
+      .then(() => {
+        let delay = 0;
+        emails.forEach(email => {
+          setTimeout(() => showToast(`Logout sent to ${email}`), delay);
+          delay += 200;
+        });
+      })
+      .catch(err => showToast(`Error force logout all: ${err.message}`, "error"));
+  }
+
+  // Tutup popover jika klik luar
+  document.addEventListener('click', function (e) {
+    const confirmBox    = document.getElementById('confirmBox');
+    const confirmAllBox = document.getElementById('confirmAllBox');
+
+    if (confirmBox.style.display === 'block' &&
+        !confirmBox.contains(e.target) &&
+        !e.target.closest('.logout-btn')) {
+      confirmBox.style.display = 'none';
+      confirmBox.classList.remove('show');
+      currentConfirmEmail = null;
+    }
+    if (confirmAllBox.style.display === 'block' &&
+        !confirmAllBox.contains(e.target) &&
+        !e.target.closest('#forceLogoutAllBtn')) {
+      confirmAllBox.style.display = 'none';
+      confirmAllBox.classList.remove('show');
+      isConfirmAllVisible = false;
+    }
+  });
+
+  // --------- Startup ----------
+  startRealtime();
+  setupSearchListener();
+
+  // Tinggi viewport ikut berubah kalau isi tabel berubah
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => fitViewportToRows(15));
+    const tbody = document.getElementById('loginTableBody');
+    if (tbody) ro.observe(tbody);
+  } else {
+    window.addEventListener('resize', () => fitViewportToRows(15));
+  }
 </script>
 </body>
 </html>
