@@ -207,13 +207,13 @@ a.tab-open .check-icon {
     <a href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> SCR888H5
     </a>
-    <a href="#" onclick="addTab('LOGO GAME', 'https://5g88-logogame.vercel.app/')">
+    <a href="#" onclick="addTab('LOGO GAME', 'https://searcfile.github.io/5G88-editor/logogame/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> LOGO GAME
     </a>
     <a href="#" onclick="addTab('TIPS GAME', 'https://searcfile.github.io/5G88-editor/tipsgenerate/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> TIPS GAME
     </a>
-    <a href="#" onclick="addTab('FIND GAME', 'https://5g88-findgame.vercel.app')">
+    <a href="#" onclick="addTab('FIND GAME', 'https://searcfile.github.io/5G88-editor/findgame/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> FIND GAME
     </a>
     <a href="#" onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
@@ -222,7 +222,7 @@ a.tab-open .check-icon {
     <a href="#" onclick="addTab('MAYBANK', 'https://searcfile.github.io/5G88-editor/maybank/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> MAYBANK
     </a>
-    <a href="#" onclick="addTab('CIMB BANK', 'https://5g88-cimb.vercel.app/')">
+    <a href="#" onclick="addTab('CIMB BANK', 'https://searcfile.github.io/5g88-php/cimb/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK
     </a>
   </div>
@@ -702,22 +702,38 @@ function addTab(label, url) {
 }
 
 function sendLoginToIframe() {
-  iframe = document.getElementById("pageFrame"); // ✅ tanpa const
-  
+  const iframe = document.getElementById("pageFrame");
   if (!iframe || !iframe.contentWindow) return;
 
   const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-  if (user.email) {
-    iframe.contentWindow.postMessage({
-      type: "user-login",
-      user: {
-        name: user.name,
-        email: user.email,
-        photo: user.photo
-      }
-    }, "*");
-  } 
+  if (!user.email) return;
+
+  // Tentukan origin anak dari URL yang sedang dimuat di iframe
+  let childOrigin = "https://searcfile.github.io"; // fallback aman
+  try {
+    if (iframe.src) childOrigin = new URL(iframe.src).origin || childOrigin;
+  } catch (_) {}
+
+  const payload = {
+    type: "user-login",
+    user: { name: user.name, email: user.email, photo: user.photo || "" }
+  };
+
+  // Kirim segera + retry beberapa kali kalau listener di anak belum siap
+  iframe.contentWindow.postMessage(payload, childOrigin);
+  setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 200);
+  setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 600);
 }
+
+// Panggil setiap kali iframe selesai load
+const pageFrame = document.getElementById("pageFrame");
+if (pageFrame) {
+  pageFrame.addEventListener("load", () => {
+    // beri sedikit waktu untuk script anak memasang event 'message'
+    setTimeout(sendLoginToIframe, 150);
+  });
+}
+
 
 // 🔁 Jalankan saat iframe load DAN saat tab LiveChat dibuka
 const liveChatBtn = document.getElementById("liveChatBtn");
