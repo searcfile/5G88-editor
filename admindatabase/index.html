@@ -46,24 +46,7 @@ html {
   .table-container {
   padding: 0 20px;
 }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    background: transparent;
-  }
-  th, td {
-    border: 1px solid #444;
-    padding: 8px;
-    text-align: left;
-  }
-  th {
-    background: #1668dc;
-    color: #fff;
-  }
-  tbody tr:nth-child(even) {
-    background: #141414;
-  }
+
  .search-container {
   display: flex;
   align-items: center;
@@ -359,6 +342,44 @@ td:last-child {
   width: 1%;
   white-space: nowrap;
 }
+/* viewport scroll max 15 baris */
+.table-viewport{
+  --row-h: 48px;
+  --head-h: 52px;
+  max-height: calc(var(--head-h) + var(--row-h) * 15);
+  overflow: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #3b8cff;
+  border-radius: 8px;
+  background: #0b0b0b;
+}
+
+/* table rapi + ellipsis */
+.tbl{ width:100%; border-collapse: collapse; table-layout: fixed; }
+.tbl th, .tbl td{
+  padding: 8px 12px;
+  border-bottom: 1px solid #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* header sticky saat di-scroll */
+.tbl thead th{
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #1668dc; /* samakan dengan temamu */
+  color: #fff;
+  text-align: left;
+}
+
+/* Responsif HP: biar bisa geser horizontal kalau kolom banyak */
+@media (max-width: 640px){
+  .table-viewport{ max-height: 60vh; } /* lebih lega di HP */
+  .tbl{ min-width: 640px; }            /* aktifkan horizontal scroll */
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -385,20 +406,22 @@ td:last-child {
 </div>
   
 <div class="table-container">
-<table>
-  <thead>
-    <tr>
-      <th>No</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Time Logged In</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody id="loginTableBody">
-    <tr><td colspan="4">Loading data...</td></tr>
-  </tbody>
-</table>
+  <div class="table-viewport" id="tableViewport">
+    <table class="tbl" id="loginTable">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Time Logged In</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="loginTableBody">
+        <tr><td colspan="5">Loading data...</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
   
 <div id="confirmAllBox" class="confirm-box" style="display: none; position: absolute; z-index: 9999;">
@@ -440,7 +463,16 @@ td:last-child {
   const dbRef = firebase.database().ref('logins');
 
   const blockedRef = firebase.database().ref('logins/blocked_users');
-
+  
+  function fitViewportToRows(n = 15){
+    const vp  = document.getElementById('tableViewport');
+    const tbl = document.getElementById('loginTable');
+    if (!vp || !tbl) return;
+    const headH = tbl.tHead ? tbl.tHead.offsetHeight : 0;
+    const rows  = Array.from(tbl.tBodies[0]?.rows || []).slice(0, n);
+    const rowsH = rows.reduce((sum, tr) => sum + tr.getBoundingClientRect().height, 0);
+    vp.style.maxHeight = (headH + rowsH) + 'px';
+  }
 
 function sanitizeEmail(email) {
   if (!email || typeof email !== 'string') return '';
@@ -560,8 +592,10 @@ function hideToast() {
 function renderLoginTable(dataArray) {
   const tbody = document.getElementById('loginTableBody');
 
+  // ⬇️ PASTE blok ini di paling atas fungsi
   if (!dataArray.length) {
     tbody.innerHTML = '<tr><td colspan="5">No matching login data found.</td></tr>';
+    requestAnimationFrame(() => fitViewportToRows(1)); // set tinggi kecil biar rapi
     return;
   }
 
@@ -572,13 +606,9 @@ function renderLoginTable(dataArray) {
     const email = item.email || '';
     const name = item.name || '';
     const loginAt = item.loginRaw || '';
-
-    // 🧹 Skip jika semua field kosong
     if (!email && !name && !loginAt) return;
 
-    const sanitizedEmail = sanitizeEmail(email);
     validIndex++;
-
     html += `<tr data-email="${email}">
       <td>${validIndex}</td>
       <td>${name || '-'}</td>
@@ -598,18 +628,20 @@ function renderLoginTable(dataArray) {
 
   tbody.innerHTML = html;
 
-  // 🔁 Update tombol block setelah render
+  // update tombol block (boleh tetap seperti punyamu)
   dataArray.forEach(item => {
     const email = item.email || '';
     const btn = tbody.querySelector(`.block-btn[data-email="${email}"]`);
     if (!email || !btn) return;
-
     isEmailBlocked(email).then(blocked => {
       btn.setAttribute("data-blocked", blocked ? "yes" : "no");
       btn.textContent = blocked ? "Unblock" : "Block";
       btn.classList.toggle("blocked", blocked);
     });
   });
+
+  // ⬇️ Panggil SEKALI setelah HTML jadi
+  requestAnimationFrame(() => fitViewportToRows(15));
 }
 
   function toggleBlockUser(button) {
@@ -635,10 +667,10 @@ function renderLoginTable(dataArray) {
     dbRef.once('value', snapshot => {
       const data = snapshot.val();
       if (!data) {
-        document.getElementById('loginTableBody').innerHTML = '<tr><td colspan="4">No login data found.</td></tr>';
-        searchBtn.classList.remove('loading');
-        return;
-      }
+      renderLoginTable([]);                 // <- biar panggil fitViewportToRows(1)
+      searchBtn.classList.remove('loading');
+      return;
+     }
 
   allLoginData = Object.entries(data)
   .filter(([key, _]) => key !== "blocked_users" && key !== "admin_override")
@@ -853,6 +885,7 @@ document.addEventListener('click', function (e) {
     isConfirmAllVisible = false;
   }
 });
+window.addEventListener('resize', () => fitViewportToRows(15));
 </script>
 </body>
 </html>
