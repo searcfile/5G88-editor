@@ -57,6 +57,23 @@ html {
   background-color: transparent;
   gap: 10px;
   box-sizing: border-box;
+  flex-wrap: wrap;
+}
+@media (max-width: 640px){
+  .search-container{
+    justify-content: flex-start;  /* jangan space-between saat wrap */
+    gap: 8px;
+  }
+  .search-box{
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
+  #forceLogoutAllBtn{
+    flex: 0 0 auto;
+    margin-left: auto; /* dorong ke kanan */
+    margin-top: 4px;   /* jarak dari input */
+  }
 }
 .search-box {
   display: flex;
@@ -389,7 +406,7 @@ td:last-child {
 }
 
 .table-viewport::-webkit-scrollbar-thumb:hover{
-  background: #9ca3af;                   /* saat hover */
+  background: #3c89e8;                   /* saat hover */
 }
 
 .table-viewport::-webkit-scrollbar-corner{
@@ -418,20 +435,6 @@ td:last-child {
   background: #1668dc; /* samakan dengan temamu */
   color: #fff;
   text-align: left;
-}
-
-/* Responsif HP: biar bisa geser horizontal kalau kolom banyak */
-@media (max-width: 640px){
-  .table-viewport{ max-height: 60vh; }   /* biar lega di HP */
-  .tbl{ table-layout: auto; min-width: 0; }
-  .tbl th, .tbl td{
-    overflow: visible;
-    text-overflow: clip;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
-  /* Tombol Action tetap satu baris */
-  td:last-child{ white-space: nowrap; }
 }
 @media (max-width: 640px){
   .search-container{ gap:8px; }              /* rapatkan sedikit */
