@@ -354,7 +354,43 @@ td:last-child {
   border-radius: 8px;
   background: #0b0b0b;
 }
+/* === Custom scrollbar untuk table-viewport saja === */
+/* Firefox */
+.table-viewport{
+  scrollbar-width: thin;                 /* tipis */
+  scrollbar-color: #6b7280 #0f172a;      /* thumb | track */
+}
 
+/* Chrome/Edge/Safari (WebKit) */
+.table-viewport::-webkit-scrollbar{
+  width: 10px;      /* vertikal */
+  height: 10px;     /* horizontal */
+}
+
+.table-viewport::-webkit-scrollbar-track{
+  background: #0f172a;                   /* track gelap */
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px #1f2937;   /* garis tepi tipis seperti contoh */
+}
+
+.table-viewport::-webkit-scrollbar-thumb{
+  background: #6b7280;                   /* thumb abu */
+  border-radius: 8px;
+  border: 2px solid #0f172a;             /* jarak di sekeliling thumb */
+}
+
+.table-viewport::-webkit-scrollbar-thumb:hover{
+  background: #9ca3af;                   /* saat hover */
+}
+
+.table-viewport::-webkit-scrollbar-corner{
+  background: #0f172a;
+}
+
+/* (opsional) tombol panah bila browser mendukung */
+.table-viewport::-webkit-scrollbar-button{
+  height: 10px; width: 10px; background: #0f172a;
+}
 /* table rapi + ellipsis */
 .tbl{ width:100%; border-collapse: collapse; table-layout: fixed; }
 .tbl th, .tbl td{
@@ -389,7 +425,9 @@ td:last-child {
   td:last-child{ white-space: nowrap; }
 }
 @media (max-width: 640px){
-  .search-box{ width: 100%; }
+  .search-container{ gap:8px; }              /* rapatkan sedikit */
+  .search-box{ width:auto; flex:1 1 auto; min-width:0; } /* biar bisa mengecil */
+  #forceLogoutAllBtn{ flex:0 0 auto; }       /* jangan ikut mengecil/tersembunyi */
 }
 /* === OVERRIDE: satu baris + kolom ramping + scroll horizontal === */
 .table-viewport{ overflow-x: auto !important; }
