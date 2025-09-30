@@ -4,6 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>5G88 Game Logo</title>
+    <style>html{visibility:hidden}</style>
+  <script>
+  (function(){
+    const LOGIN_URL = "https://5g88-login.vercel.app/";
+    const ALLOWED_PARENTS = ["https://searcfile.github.io","https://5g88-main.vercel.app"];
+    const TIMEOUT_MS = 1500;
+    function goLogin(){
+      const rt = encodeURIComponent(location.href);
+      location.replace(`${LOGIN_URL}?returnTo=${rt}`);
+    }
+    if (window.top === window.self) { goLogin(); return; }
+    try {
+      const parentOrigin = window.parent.location.origin;
+      if (!ALLOWED_PARENTS.includes(parentOrigin)) { goLogin(); return; }
+    } catch(_) { /* cross-origin, lanjut tunggu postMessage */ }
+    let authed = false;
+    function onMsg(ev){
+      if (!ALLOWED_PARENTS.includes(ev.origin)) return;
+      const d = ev.data || {};
+      if (d && d.type === "user-login" && d.user && d.user.email){
+        authed = true;
+        window.removeEventListener("message", onMsg);
+        try { sessionStorage.setItem("child_login_user", d.user.email.toLowerCase()); }catch(_){}
+        document.documentElement.style.visibility = "visible";
+      }
+    }
+    window.addEventListener("message", onMsg, false);
+    setTimeout(() => { if (!authed) { window.removeEventListener("message", onMsg); goLogin(); }}, TIMEOUT_MS);
+  })();
+  </script>
   <style>
     body {
       background-color: #000;
