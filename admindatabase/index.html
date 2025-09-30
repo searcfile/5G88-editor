@@ -380,7 +380,6 @@ td:last-child {
   .table-viewport{ max-height: 60vh; }   /* biar lega di HP */
   .tbl{ table-layout: auto; min-width: 0; }
   .tbl th, .tbl td{
-    white-space: normal;
     overflow: visible;
     text-overflow: clip;
     word-break: break-word;
@@ -391,6 +390,53 @@ td:last-child {
 }
 @media (max-width: 640px){
   .search-box{ width: 100%; }
+}
+/* === OVERRIDE: satu baris + kolom ramping + scroll horizontal === */
+.table-viewport{ overflow-x: auto !important; }
+
+.tbl{
+  table-layout: auto !important;          /* jangan fixed, biar tabel boleh melebar */
+  width: max-content !important;           /* lebar ikut isi */
+  min-width: 100% !important;              /* min. selebar layar */
+}
+
+/* jangan potong jadi '...' dan jangan turun baris */
+.tbl th, .tbl td{
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: initial !important;
+}
+
+/* Kolom "No" kecil & center */
+.tbl th:nth-child(1),
+.tbl td:nth-child(1){
+  width: 56px !important;
+  text-align: center;
+}
+
+/* Kolom "Action" pas muat 2 tombol */
+.tbl th:nth-child(5),
+.tbl td:nth-child(5){
+  width: 170px !important;
+}
+
+/* Tombol tidak memaksa kolom melebar */
+.action-buttons{
+  display: inline-flex;         /* lebar ikut konten */
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.logout-btn,
+.block-btn{
+  min-width: 0 !important;      /* override min-width:75px */
+}
+
+/* — HP — */
+@media (max-width: 640px){
+  .tbl th:nth-child(1), .tbl td:nth-child(1){ width: 46px !important; }
+  .tbl th:nth-child(5), .tbl td:nth-child(5){ width: 140px !important; }
+  .logout-btn, .block-btn{ padding: 6px 10px; } /* tombol sedikit diperkecil */
 }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
