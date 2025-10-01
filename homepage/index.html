@@ -97,6 +97,25 @@
   background: transparent;
   color: gold;
 }
+  .live-chat-button .btn-label {
+  display: inline;
+}
+@media (max-width: 768px) {
+  .live-chat-button .btn-label { 
+    display: none;
+  }
+  .live-chat-button svg:first-child {
+    margin-right: 0 !important;
+  }
+}
+@media (min-width: 769px) {
+  .live-chat-button .btn-label {
+    display: inline;
+  }
+}
+@media (max-width: 480px){
+  #dateTime { display: none; }
+}
 .dropdown-wrapper {
   position: relative;
   display: inline-block;
@@ -227,30 +246,35 @@ a.tab-open .check-icon {
   <div class="header">
     <div class="menu-icon" id="menuIcon">☰</div>
   <div style="display: flex; gap: 20px; position: absolute; top: 15px; left: 60px;">
-   <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
+<button id="liveChatBtn" class="live-chat-button"
+        aria-label="Live Chat"
+        onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
     <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
   </svg>
-  LiveChat
+  <span class="btn-label">LiveChat</span>
   <svg id="livechatDot" class="dot-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="red" viewBox="0 0 24 24">
     <path d="M12 1c-6.338 0-12 4.226-12 10.007 0 2.05.739 4.063 2.047 5.625.055 1.83-1.023 4.456-1.993 6.368 2.602-.47 6.301-1.508 7.978-2.536 9.236 2.247 15.968-3.405 15.968-9.457 0-5.812-5.701-10.007-12-10.007zm1 15h-2v-6h2v6zm-1-7.75c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
   </svg>
 </button>
 
-<button id="linkDownloadBtn" class="live-chat-button" onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
-    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
-      <path d="M9 2h6v1h-6v-1zm6-1v-1h-6v1h6zm-5.146 21l-1.854 2h8l-1.854-2h-4.292zm10.146-14h-5v-4h-6v4h-5l8 8 8-8zm-2 11h-12v-6.172l-2-2v10.172h16v-10.172l-2 2v6.172z"/>
-    </svg>
-    LinkDownload
-  </button>
+<button id="linkDownloadBtn" class="live-chat-button"
+        aria-label="Link Download"
+        onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
+  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+    <path d="M9 2h6v1h-6v-1zm6-1v-1h-6v1h6zm-5.146 21l-1.854 2h8l-1.854-2h-4.292zm10.146-14h-5v-4h-6v4h-5l8 8 8-8zm-2 11h-12v-6.172l-2-2v10.172h16v-10.172l-2 2v6.172z"/>
+  </svg>
+  <span class="btn-label">LinkDownload</span>
+</button>
 
-<div class="dropdown-wrapper">
-  <button id="gameLogBtn" class="live-chat-button">
-    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
-      <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
-    </svg>
-    GameLog
-  </button>
+<button id="gameLogBtn" class="live-chat-button"
+        aria-haspopup="true" aria-expanded="false" aria-label="Game Log">
+  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+    <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
+  </svg>
+  <span class="btn-label">GameLog</span>
+</button>
+  
  <div id="gameLogDropdown" class="dropdown-links">
   <a data-label="MEGA888" href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/');">
     MEGA888
