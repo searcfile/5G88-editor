@@ -399,7 +399,7 @@ async function ensureGuestAuth(){
 }
 /* ===== Helpers (dipakai lintas fitur, diletak di awal agar siap pakai) ===== */
 const MAIN_URL = "https://5g88-main.vercel.app";
-const toPseudoEmail = (uname) => `${String(uname || '').trim()}@5g88.local`;
+const toPseudoEmail = (uname) =>`${String(uname || '').trim().toLowerCase()}@5g88.local`;
 function formatTimestamp(date){
   const y=date.getFullYear(), m=String(date.getMonth()+1).padStart(2,'0'), d=String(date.getDate()).padStart(2,'0');
   const hh=String(date.getHours()).padStart(2,'0'), mm=String(date.getMinutes()).padStart(2,'0'), ss=String(date.getSeconds()).padStart(2,'0');
@@ -591,7 +591,7 @@ function finishLogin(userLike){
   const email = userLike.email;
   const name  = userLike.displayName || email.split('@')[0];
   const photo = userLike.photoURL || "";
-  const emailKey = sanitizeKey(email);
+  const emailKey = sanitizeKey(email.toLowerCase());
 
   db.ref("logins/blocked_users/" + emailKey).once("value").then(snap=>{
     const isBlocked = snap.val();
