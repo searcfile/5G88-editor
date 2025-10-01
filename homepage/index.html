@@ -446,7 +446,9 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script>window.renderMobileUserBtn = window.renderMobileUserBtn || function(){};</script>
 <script>
+
 /*Mcng 112 updated 232131*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -522,12 +524,12 @@ function updateChangePwVisibility() {
 }
 window.addEventListener('load', () => {
   updateChangePwVisibility();
-  renderMobileUserBtn();
+  window.renderMobileUserBtn && window.renderMobileUserBtn();
 });
 window.addEventListener('storage', (e)=> {
   if (e.key === 'gmailLogin') {
     updateChangePwVisibility();
-    renderMobileUserBtn();
+    window.renderMobileUserBtn && window.renderMobileUserBtn();
   }
 });
 let userId = "";
@@ -643,17 +645,25 @@ const gameLogBtn = document.getElementById("gameLogBtn");
 const gameLogDropdown = document.getElementById("gameLogDropdown");
 
 // Tampilkan/Hide dropdown saat tombol GameLog diklik
-gameLogBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  const rect = gameLogBtn.getBoundingClientRect();
-  gameLogDropdown.style.left = `${rect.left}px`;
-  gameLogDropdown.style.top = `${rect.bottom + 6}px`;
-  gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
-});
+if (gameLogBtn) {
+  gameLogBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const rect = gameLogBtn.getBoundingClientRect();
+    if (gameLogDropdown) {
+      gameLogDropdown.style.left = `${rect.left}px`;
+      gameLogDropdown.style.top = `${rect.bottom + 6}px`;
+      gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
+    }
+  });
+}
 
-// Klik luar = tutup
 document.addEventListener("click", (e) => {
-  if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
+  if (
+    gameLogDropdown &&
+    gameLogBtn &&
+    !gameLogDropdown.contains(e.target) &&
+    !gameLogBtn.contains(e.target)
+  ) {
     gameLogDropdown.style.display = "none";
   }
 });
@@ -687,10 +697,12 @@ const overlay = document.getElementById("overlay");
 const container = document.getElementById("mainContainer");
 const pageFrame = document.getElementById("pageFrame");
 
-tabBar.style.display = "flex";
-tabBar.style.alignItems = "center";
-tabBar.style.padding = "10px 2px";
-tabBar.style.background = "#000";
+if (tabBar) {
+  tabBar.style.display = "flex";
+  tabBar.style.alignItems = "center";
+  tabBar.style.padding = "10px 2px";
+  tabBar.style.background = "#000";
+}
 
 
 menuIcon.addEventListener("click", () => {
@@ -808,13 +820,11 @@ function sendLoginToIframe() {
 }
 
 // Panggil setiap kali iframe selesai load
-if (pageFrame) {
+if (pageFrame && pageFrame.contentWindow) {
   pageFrame.addEventListener("load", () => {
-    // beri sedikit waktu untuk script anak memasang event 'message'
     setTimeout(sendLoginToIframe, 150);
   });
 }
-
 
 // 🔁 Jalankan saat iframe load DAN saat tab LiveChat dibuka
 const liveChatBtn = document.getElementById("liveChatBtn");
@@ -1271,7 +1281,7 @@ initLivechatNotifListener(userId);
       : loginData.name;
     userNameText.textContent = displayName;
     if (userEmailElem) userEmailElem.textContent = loginData.email;
-    renderMobileUserBtn();
+    window.renderMobileUserBtn && window.renderMobileUserBtn();
     updateChangePwVisibility();
     // 1. Hover: tampilkan dropdown
     dropdownWrapper.addEventListener("mouseenter", () => {
@@ -1317,10 +1327,9 @@ if (logoutBtn) {
     window.location.href = "https://5g88-login.vercel.app/";
   });
 }
-  function renderMobileUserBtn(){
+window.renderMobileUserBtn = function renderMobileUserBtn(){ 
   const btn = document.getElementById('menuUserBtn');
   if (!btn) return;
-
   let login, label = 'User';
   try {
     login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
@@ -1329,17 +1338,15 @@ if (logoutBtn) {
     const dedupName = (parts.length >= 2 && parts[0].toLowerCase() === parts[1].toLowerCase())
       ? parts[0]
       : fullName;
-
     label = dedupName || (login?.email ? login.email.split('@')[0] : 'User');
   } catch(_){}
-
   btn.innerHTML = `
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-right:6px">
       <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
     </svg>
     <span>${label}</span>
   `;
-}
+};
 (function setAriaLabels(){
   const pairs = [
     ['liveChatBtn','LiveChat'],
