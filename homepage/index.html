@@ -670,7 +670,7 @@ iframe?.addEventListener("load", () => {
 
 // Jika user klik iframe (fokus keluar), juga tutup dropdown
 window.addEventListener("blur", () => {
-  if (gameLogDropdown.style.display === "block") {
+  if (gameLogDropdown && gameLogDropdown.style.display === "block") {
     gameLogDropdown.style.display = "none";
   }
 });
