@@ -160,37 +160,14 @@ a.tab-open .check-icon {
   display: none;
   z-index: 2;
 }
-.menu-username{
-  color:#fff;font-weight:700;font-size:14px;
-  margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #424242;
-}
+#dropdownContent .menu-username{ display:none !important; }
 
-/* MOBILE */
-@media (max-width: 768px){
-  /* nav jadi icon-only */
-  .live-chat-button .btn-label{ display:none; }
-
-  /* sembunyikan logo & jam */
-  .floating-logo{ display:none !important; }
-  .date-time{ display:none !important; }
-
-  /* tombol user (kanan) icon-only */
-  #userNameText{ display:none !important; }
-
-  /* tampilkan header username di dropdown */
-  #dropdownContent .menu-username{ display:block !important; }
-
-  /* tinggi bar tetap */
-  .header{ height:55px; }
-  .tab-bar{ margin-top:55px; }
-}
-/* tombol username di dalam dropdown (stylenya seperti tombol lain) */
-/* tombol username (hidden di desktop) */
-.menu-user-btn{
-  display:none;
+/* Tombol username di dropdown – default: sembunyi (desktop) */
+#dropdownContent .menu-user-btn{
+  display:none;                 /* <-- penting: hidden di desktop */
   width:100%;
   height:32px;
-  display:flex;
+  /* jangan set display:flex di sini */
   align-items:center;
   justify-content:center;
   gap:6px;
@@ -206,12 +183,28 @@ a.tab-open .check-icon {
   box-shadow:0 2px 0 rgba(255,255,255,0.04);
   margin-bottom:8px;
 }
-.menu-user-btn:hover{ border-color:#ffe34d; color:#ffe34d; }
+#dropdownContent .menu-user-btn:hover{
+  border-color:#ffe34d; color:#ffe34d;
+}
 
-/* Mobile only */
+/* Muncul HANYA di mobile */
 @media (max-width: 768px){
+  /* nav jadi icon-only */
+  .live-chat-button .btn-label{ display:none; }
+
+  /* sembunyikan logo & jam */
+  .floating-logo{ display:none !important; }
+  .date-time{ display:none !important; }
+
+  /* tombol user (kanan) icon-only */
+  #userNameText{ display:none !important; }
+
+  /* tampilkan tombol username mobile */
   #dropdownContent .menu-user-btn{ display:flex !important; }
-  /*#dropdownContent .menu-username{ display:none !important; }  jika masih ada */
+
+  /* tinggi bar tetap */
+  .header{ height:55px; }
+  .tab-bar{ margin-top:55px; }
 }
   .dragging {opacity: 0.5;transform: scale(1.05);z-index: 999;}
   #cpModal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:10050}
@@ -529,12 +522,12 @@ function updateChangePwVisibility() {
 }
 window.addEventListener('load', () => {
   updateChangePwVisibility();
-  renderMobileUserBtn();
+  if (typeof renderMobileUserBtn === 'function') renderMobileUserBtn();
 });
 window.addEventListener('storage', (e)=> {
   if (e.key === 'gmailLogin') {
     updateChangePwVisibility();
-    renderMobileUserBtn();
+    if (typeof renderMobileUserBtn === 'function') renderMobileUserBtn();
   }
 });
 let userId = "";
@@ -642,37 +635,37 @@ document.addEventListener("click", function (event) {
   }
 });
 window.addEventListener("blur", () => {
-  if (popup && popup.style.display === "block") {
-    popup.style.display = "none";
+  if (gameLogDropdown && gameLogDropdown.style.display === "block") {
+    gameLogDropdown.style.display = "none";
   }
 });
 const gameLogBtn = document.getElementById("gameLogBtn");
 const gameLogDropdown = document.getElementById("gameLogDropdown");
 
-// Tampilkan/Hide dropdown saat tombol GameLog diklik
-gameLogBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  const rect = gameLogBtn.getBoundingClientRect();
-  gameLogDropdown.style.left = `${rect.left}px`;
-  gameLogDropdown.style.top = `${rect.bottom + 6}px`;
-  gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
-});
+if (gameLogBtn && gameLogDropdown) {
+  gameLogBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const rect = gameLogBtn.getBoundingClientRect();
+    gameLogDropdown.style.left = `${rect.left}px`;
+    gameLogDropdown.style.top = `${rect.bottom + 6}px`;
+    gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
+  });
 
-// Klik luar = tutup
-document.addEventListener("click", (e) => {
-  if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
-    gameLogDropdown.style.display = "none";
-  }
-});
+  // Klik luar = tutup
+  document.addEventListener("click", (e) => {
+    if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
+      gameLogDropdown.style.display = "none";
+    }
+  });
+}
 
 let iframe = document.getElementById("pageFrame");
 iframe?.addEventListener("load", () => {
   try {
     iframe.contentWindow.document.addEventListener("click", () => {
-      gameLogDropdown.style.display = "none";
+      if (gameLogDropdown) gameLogDropdown.style.display = "none";
     });
-  } catch (err) {
-  }
+  } catch (err) {}
 });
 
 // Jika user klik iframe (fokus keluar), juga tutup dropdown
@@ -694,46 +687,65 @@ const overlay = document.getElementById("overlay");
 const container = document.getElementById("mainContainer");
 const pageFrame = document.getElementById("pageFrame");
 
-tabBar.style.display = "flex";
-tabBar.style.alignItems = "center";
-tabBar.style.padding = "10px 2px";
-tabBar.style.background = "#000";
+if (tabBar) {
+  tabBar.style.display = "flex";
+  tabBar.style.alignItems = "center";
+  tabBar.style.padding = "10px 2px";
+  tabBar.style.background = "#000";
+}
 
-
-menuIcon.addEventListener("click", () => {
-  if (sidebar.classList.contains("active")) {
-    closeSidebar();
-  } else {
-    openSidebar();
-  }
-});
-overlay.addEventListener("click", closeSidebar);
+if (menuIcon) {
+  menuIcon.addEventListener("click", () => {
+    if (sidebar?.classList.contains("active")) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  });
+}
+if (overlay) overlay.addEventListener("click", closeSidebar);
+  
 function openSidebar() {
-  sidebar.classList.add("active");
-  overlay.classList.add("active");
-  container.classList.add("shrink");
-  document.querySelector(".floating-logo").classList.add("shrink");
-  document.querySelector('.header').classList.add('shrink');
-  document.getElementById("tabBar").classList.add('shrink');
-  document.getElementById("menuIcon").classList.add("active-menu-icon");
+  sidebar?.classList.add("active");
+  overlay?.classList.add("active");
+  container?.classList.add("shrink");
+
+  const fl = document.querySelector(".floating-logo");
+  if (fl) fl.classList.add("shrink");
+
+  const header = document.querySelector(".header");
+  if (header) header.classList.add("shrink");
+
+  const tbar = document.getElementById("tabBar");
+  if (tbar) tbar.classList.add("shrink");
+
+  const mi = document.getElementById("menuIcon");
+  if (mi) mi.classList.add("active-menu-icon");
 }
 
 function closeSidebar() {
-  sidebar.classList.remove("active");
-  overlay.classList.remove("active");
-  container.classList.remove("shrink");
-  document.querySelector(".floating-logo").classList.remove("shrink");
-  document.querySelector('.header').classList.remove('shrink');
-  document.getElementById("tabBar").classList.remove('shrink');
-  document.getElementById("menuIcon").classList.remove("active-menu-icon");
-}
+  sidebar?.classList.remove("active");
+  overlay?.classList.remove("active");
+  container?.classList.remove("shrink");
 
+  const fl = document.querySelector(".floating-logo");
+  if (fl) fl.classList.remove("shrink");
+
+  const header = document.querySelector(".header");
+  if (header) header.classList.remove("shrink");
+
+  const tbar = document.getElementById("tabBar");
+  if (tbar) tbar.classList.remove("shrink");
+
+  const mi = document.getElementById("menuIcon");
+  if (mi) mi.classList.remove("active-menu-icon");
+}
 document.addEventListener("click", (e) => {
   const isSidebar = e.target.closest("#sidebar");
   const isMenuIcon = e.target.closest("#menuIcon");
 
-  if (!isSidebar && !isMenuIcon && sidebar.classList.contains("active")) {
-    closeSidebar();
+  if (!isSidebar && !isMenuIcon && sidebar?.classList.contains("active")) {
+  closeSidebar();
   }
 });
 function saveTabs(tabs) {
@@ -862,6 +874,7 @@ function closeTab(label) {
 }
  
 function renderTabs() {
+  if (!tabBar) return;
   tabBar.innerHTML = "";
   const tabs = getTabs();
 
@@ -1030,7 +1043,8 @@ function updateGameLogCheckmarks() {
   });
 }
 
-window.onload = () => {
+
+window.addEventListener('load', () => {
   renderTabs();
   const tabs = getTabs();
   updateGameLogCheckmarks();
@@ -1064,7 +1078,7 @@ window.onload = () => {
   } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
   }
-};
+});
 
 const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
 const _0xadmins = encodedAdmins.map(e => atob(e));
@@ -1369,7 +1383,7 @@ function updateDateTime() {
   const month = monthNames[now.getMonth()];
   const year = now.getFullYear();
   const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
-  document.getElementById('dateTime').textContent = timeString;
+  const dt = document.getElementById('dateTime');if (dt) dt.textContent = timeString;
 }
 setInterval(updateDateTime, 1000);
 updateDateTime();
@@ -1420,37 +1434,40 @@ if (!allowedOrigins.has(e.origin)) {            // <— pakai .has untuk Set
   if (loadingScreen) {
     loadingScreen.style.display = "none";
   }
-let isDown = false;
-let startX, scrollLeft;
 
-tabBar.addEventListener('mousedown', (e) => {
-  isDown = true;
-  startX = e.pageX - tabBar.offsetLeft;
-  scrollLeft = tabBar.scrollLeft;
-});
+if (tabBar) {
+  let isDown = false;
+  let startX, scrollLeft;
 
-tabBar.addEventListener('mouseleave', () => {
-  isDown = false;
-});
+  tabBar.addEventListener('mousedown', (e) => {
+    isDown = true;
+    startX = e.pageX - tabBar.offsetLeft;
+    scrollLeft = tabBar.scrollLeft;
+  });
 
-tabBar.addEventListener('mouseup', () => {
-  isDown = false;
-});
+  tabBar.addEventListener('mouseleave', () => {
+    isDown = false;
+  });
 
-tabBar.addEventListener('mousemove', (e) => {
-  if (!isDown) return;
-  e.preventDefault();
-  const x = e.pageX - tabBar.offsetLeft;
-  const walk = (x - startX) * 1.5;
-  tabBar.scrollLeft = scrollLeft - walk;
-});
-tabBar.addEventListener('wheel', (e) => {
-  if (e.deltaY !== 0) {
+  tabBar.addEventListener('mouseup', () => {
+    isDown = false;
+  });
+
+  tabBar.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
     e.preventDefault();
-    tabBar.scrollLeft += e.deltaY;
-  }
-});
-});
+    const x = e.pageX - tabBar.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    tabBar.scrollLeft = scrollLeft - walk;
+  });
+
+  tabBar.addEventListener('wheel', (e) => {
+    if (e.deltaY !== 0) {
+      e.preventDefault();
+      tabBar.scrollLeft += e.deltaY;
+    }
+  });
+}
 (function(){
   const btn = document.getElementById('changePwBtn');
   if (!btn) return;
