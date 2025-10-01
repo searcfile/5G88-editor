@@ -522,12 +522,12 @@ function updateChangePwVisibility() {
 }
 window.addEventListener('load', () => {
   updateChangePwVisibility();
-  if (typeof renderMobileUserBtn === 'function') renderMobileUserBtn();
+  renderMobileUserBtn();
 });
 window.addEventListener('storage', (e)=> {
   if (e.key === 'gmailLogin') {
     updateChangePwVisibility();
-    if (typeof renderMobileUserBtn === 'function') renderMobileUserBtn();
+    renderMobileUserBtn();
   }
 });
 let userId = "";
@@ -635,42 +635,42 @@ document.addEventListener("click", function (event) {
   }
 });
 window.addEventListener("blur", () => {
-  if (gameLogDropdown && gameLogDropdown.style.display === "block") {
-    gameLogDropdown.style.display = "none";
+  if (popup && popup.style.display === "block") {
+    popup.style.display = "none";
   }
 });
 const gameLogBtn = document.getElementById("gameLogBtn");
 const gameLogDropdown = document.getElementById("gameLogDropdown");
 
-if (gameLogBtn && gameLogDropdown) {
-  gameLogBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const rect = gameLogBtn.getBoundingClientRect();
-    gameLogDropdown.style.left = `${rect.left}px`;
-    gameLogDropdown.style.top = `${rect.bottom + 6}px`;
-    gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
-  });
+// Tampilkan/Hide dropdown saat tombol GameLog diklik
+gameLogBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const rect = gameLogBtn.getBoundingClientRect();
+  gameLogDropdown.style.left = `${rect.left}px`;
+  gameLogDropdown.style.top = `${rect.bottom + 6}px`;
+  gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
+});
 
-  // Klik luar = tutup
-  document.addEventListener("click", (e) => {
-    if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
-      gameLogDropdown.style.display = "none";
-    }
-  });
-}
+// Klik luar = tutup
+document.addEventListener("click", (e) => {
+  if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
+    gameLogDropdown.style.display = "none";
+  }
+});
 
 let iframe = document.getElementById("pageFrame");
 iframe?.addEventListener("load", () => {
   try {
     iframe.contentWindow.document.addEventListener("click", () => {
-      if (gameLogDropdown) gameLogDropdown.style.display = "none";
+      gameLogDropdown.style.display = "none";
     });
-  } catch (err) {}
+  } catch (err) {
+  }
 });
 
 // Jika user klik iframe (fokus keluar), juga tutup dropdown
 window.addEventListener("blur", () => {
-  if (gameLogDropdown && gameLogDropdown.style.display === "block") {
+  if (gameLogDropdown.style.display === "block") {
     gameLogDropdown.style.display = "none";
   }
 });
@@ -687,65 +687,46 @@ const overlay = document.getElementById("overlay");
 const container = document.getElementById("mainContainer");
 const pageFrame = document.getElementById("pageFrame");
 
-if (tabBar) {
-  tabBar.style.display = "flex";
-  tabBar.style.alignItems = "center";
-  tabBar.style.padding = "10px 2px";
-  tabBar.style.background = "#000";
-}
+tabBar.style.display = "flex";
+tabBar.style.alignItems = "center";
+tabBar.style.padding = "10px 2px";
+tabBar.style.background = "#000";
 
-if (menuIcon) {
-  menuIcon.addEventListener("click", () => {
-    if (sidebar?.classList.contains("active")) {
-      closeSidebar();
-    } else {
-      openSidebar();
-    }
-  });
-}
-if (overlay) overlay.addEventListener("click", closeSidebar);
-  
+
+menuIcon.addEventListener("click", () => {
+  if (sidebar.classList.contains("active")) {
+    closeSidebar();
+  } else {
+    openSidebar();
+  }
+});
+overlay.addEventListener("click", closeSidebar);
 function openSidebar() {
-  sidebar?.classList.add("active");
-  overlay?.classList.add("active");
-  container?.classList.add("shrink");
-
-  const fl = document.querySelector(".floating-logo");
-  if (fl) fl.classList.add("shrink");
-
-  const header = document.querySelector(".header");
-  if (header) header.classList.add("shrink");
-
-  const tbar = document.getElementById("tabBar");
-  if (tbar) tbar.classList.add("shrink");
-
-  const mi = document.getElementById("menuIcon");
-  if (mi) mi.classList.add("active-menu-icon");
+  sidebar.classList.add("active");
+  overlay.classList.add("active");
+  container.classList.add("shrink");
+  document.querySelector(".floating-logo").classList.add("shrink");
+  document.querySelector('.header').classList.add('shrink');
+  document.getElementById("tabBar").classList.add('shrink');
+  document.getElementById("menuIcon").classList.add("active-menu-icon");
 }
 
 function closeSidebar() {
-  sidebar?.classList.remove("active");
-  overlay?.classList.remove("active");
-  container?.classList.remove("shrink");
-
-  const fl = document.querySelector(".floating-logo");
-  if (fl) fl.classList.remove("shrink");
-
-  const header = document.querySelector(".header");
-  if (header) header.classList.remove("shrink");
-
-  const tbar = document.getElementById("tabBar");
-  if (tbar) tbar.classList.remove("shrink");
-
-  const mi = document.getElementById("menuIcon");
-  if (mi) mi.classList.remove("active-menu-icon");
+  sidebar.classList.remove("active");
+  overlay.classList.remove("active");
+  container.classList.remove("shrink");
+  document.querySelector(".floating-logo").classList.remove("shrink");
+  document.querySelector('.header').classList.remove('shrink');
+  document.getElementById("tabBar").classList.remove('shrink');
+  document.getElementById("menuIcon").classList.remove("active-menu-icon");
 }
+
 document.addEventListener("click", (e) => {
   const isSidebar = e.target.closest("#sidebar");
   const isMenuIcon = e.target.closest("#menuIcon");
 
-  if (!isSidebar && !isMenuIcon && sidebar?.classList.contains("active")) {
-  closeSidebar();
+  if (!isSidebar && !isMenuIcon && sidebar.classList.contains("active")) {
+    closeSidebar();
   }
 });
 function saveTabs(tabs) {
@@ -874,7 +855,6 @@ function closeTab(label) {
 }
  
 function renderTabs() {
-  if (!tabBar) return;
   tabBar.innerHTML = "";
   const tabs = getTabs();
 
@@ -1043,8 +1023,7 @@ function updateGameLogCheckmarks() {
   });
 }
 
-
-window.addEventListener('load', () => {
+window.onload = () => {
   renderTabs();
   const tabs = getTabs();
   updateGameLogCheckmarks();
@@ -1078,7 +1057,7 @@ window.addEventListener('load', () => {
   } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
   }
-});
+};
 
 const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
 const _0xadmins = encodedAdmins.map(e => atob(e));
@@ -1383,7 +1362,7 @@ function updateDateTime() {
   const month = monthNames[now.getMonth()];
   const year = now.getFullYear();
   const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
-  const dt = document.getElementById('dateTime');if (dt) dt.textContent = timeString;
+  document.getElementById('dateTime').textContent = timeString;
 }
 setInterval(updateDateTime, 1000);
 updateDateTime();
@@ -1434,40 +1413,37 @@ if (!allowedOrigins.has(e.origin)) {            // <— pakai .has untuk Set
   if (loadingScreen) {
     loadingScreen.style.display = "none";
   }
+let isDown = false;
+let startX, scrollLeft;
 
-if (tabBar) {
-  let isDown = false;
-  let startX, scrollLeft;
+tabBar.addEventListener('mousedown', (e) => {
+  isDown = true;
+  startX = e.pageX - tabBar.offsetLeft;
+  scrollLeft = tabBar.scrollLeft;
+});
 
-  tabBar.addEventListener('mousedown', (e) => {
-    isDown = true;
-    startX = e.pageX - tabBar.offsetLeft;
-    scrollLeft = tabBar.scrollLeft;
-  });
+tabBar.addEventListener('mouseleave', () => {
+  isDown = false;
+});
 
-  tabBar.addEventListener('mouseleave', () => {
-    isDown = false;
-  });
+tabBar.addEventListener('mouseup', () => {
+  isDown = false;
+});
 
-  tabBar.addEventListener('mouseup', () => {
-    isDown = false;
-  });
-
-  tabBar.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
+tabBar.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - tabBar.offsetLeft;
+  const walk = (x - startX) * 1.5;
+  tabBar.scrollLeft = scrollLeft - walk;
+});
+tabBar.addEventListener('wheel', (e) => {
+  if (e.deltaY !== 0) {
     e.preventDefault();
-    const x = e.pageX - tabBar.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    tabBar.scrollLeft = scrollLeft - walk;
-  });
-
-  tabBar.addEventListener('wheel', (e) => {
-    if (e.deltaY !== 0) {
-      e.preventDefault();
-      tabBar.scrollLeft += e.deltaY;
-    }
-  });
-}
+    tabBar.scrollLeft += e.deltaY;
+  }
+});
+});
 (function(){
   const btn = document.getElementById('changePwBtn');
   if (!btn) return;
