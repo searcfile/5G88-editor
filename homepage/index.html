@@ -184,6 +184,35 @@ a.tab-open .check-icon {
   .header{ height:55px; }
   .tab-bar{ margin-top:55px; }
 }
+/* tombol username di dalam dropdown (stylenya seperti tombol lain) */
+/* tombol username (hidden di desktop) */
+.menu-user-btn{
+  display:none;
+  width:100%;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  line-height:1;
+  background-color:#141414;
+  color:rgba(255,255,255,0.85);
+  border:1px solid #424242;
+  border-radius:6px;
+  padding:0 12px;
+  cursor:default; /* info only */
+  font-size:14px;
+  transition:all .3s ease;
+  box-shadow:0 2px 0 rgba(255,255,255,0.04);
+  margin-bottom:8px;
+}
+.menu-user-btn:hover{ border-color:#ffe34d; color:#ffe34d; }
+
+/* Mobile only */
+@media (max-width: 768px){
+  #dropdownContent .menu-user-btn{ display:flex !important; }
+  /*#dropdownContent .menu-username{ display:none !important; }  jika masih ada */
+}
   .dragging {opacity: 0.5;transform: scale(1.05);z-index: 999;}
   #cpModal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:10050}
   #cpDialog{width:min(650px,92vw);background:#1f1f1f;border:1px solid gold;border-radius:12px;box-shadow:0 0 14px rgba(255, 215, 0, .6);overflow:hidden;transition: all 0.3s ease;animation: zoomIn .25s ease forwards;}
@@ -339,12 +368,9 @@ a.tab-open .check-icon {
         </button>
 
         <div id="dropdownContent" class="dropdown-content">
-          <!-- NEW: header username di atas (muncul saat mobile) -->
-          <div class="menu-username" id="menuUsername" style="display:none"></div>
-
           <div id="userEmail" style="margin-bottom: 8px;"></div>
           <hr style="border: 0; border-top: 1px solid #424242; margin: 8px 0;">
-
+          <button id="menuUserBtn" class="menu-user-btn" type="button" aria-disabled="true"></button>
           <button id="changePwBtn" class="btn-cpw">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px">
               <path d="M10 17c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm3 0c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm3 0c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm2-7v-4c0-3.313-2.687-6-6-6s-6 2.687-6 6v4h-3v14h18v-14h-3zm-10-4c0-2.206 1.795-4 4-4s4 1.794 4 4v4h-8v-4zm11 16h-14v-10h14v10z"/>
@@ -501,9 +527,15 @@ function updateChangePwVisibility() {
   if (!btn) return;
   btn.style.display = isUsernameLoginNow() ? 'flex' : 'none';
 }
-window.addEventListener('load', updateChangePwVisibility);
+window.addEventListener('load', () => {
+  updateChangePwVisibility();
+  renderMobileUserBtn();
+});
 window.addEventListener('storage', (e)=> {
-  if (e.key === 'gmailLogin') updateChangePwVisibility();
+  if (e.key === 'gmailLogin') {
+    updateChangePwVisibility();
+    renderMobileUserBtn();
+  }
 });
 let userId = "";
 // Notifikasi popup atas
@@ -1246,23 +1278,7 @@ initLivechatNotifListener(userId);
       : loginData.name;
     userNameText.textContent = displayName;
     if (userEmailElem) userEmailElem.textContent = loginData.email;
-    (function syncUserIntoDropdown(){
-  const menuHead = document.getElementById('menuUsername');
-  if (!menuHead) return;
-
-  // ambil nama yang sudah dipasang di tombol user
-  const name = (document.getElementById('userNameText')?.textContent || '').trim();
-  // ambil email yang sudah dipasang di dropdown
-  const rawEmail = (document.getElementById('userEmail')?.textContent || '').trim();
-
-  // kalau nama kosong, pakai bagian depan email
-  const display = name || (rawEmail.includes('@') ? rawEmail.split('@')[0] : rawEmail);
-
-  if (display) {
-    menuHead.textContent = display;
-    menuHead.style.display = 'block';
-  }
-})();
+    renderMobileUserBtn();
     updateChangePwVisibility();
     // 1. Hover: tampilkan dropdown
     dropdownWrapper.addEventListener("mouseenter", () => {
@@ -1307,6 +1323,29 @@ if (logoutBtn) {
     }
     window.location.href = "https://5g88-login.vercel.app/";
   });
+}
+  function renderMobileUserBtn(){
+  const btn = document.getElementById('menuUserBtn');
+  if (!btn) return;
+
+  let login, label = 'User';
+  try {
+    login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
+    const fullName = (login?.name || '').trim();
+    const parts = fullName.split(' ').filter(Boolean);
+    const dedupName = (parts.length >= 2 && parts[0].toLowerCase() === parts[1].toLowerCase())
+      ? parts[0]
+      : fullName;
+
+    label = dedupName || (login?.email ? login.email.split('@')[0] : 'User');
+  } catch(_){}
+
+  btn.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-right:6px">
+      <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
+    </svg>
+    <span>${label}</span>
+  `;
 }
 (function setAriaLabels(){
   const pairs = [
