@@ -396,7 +396,9 @@ const firebaseConfig = {
   appId: "1:268106877488:web:798beadfe45104297e7bf5",
   measurementId: "G-8EY4MCZKK2"
 };
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.database();
 const blurphpApp = firebase.initializeApp({
   apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
@@ -419,6 +421,27 @@ const loginApp = firebase.initializeApp({
   appId: "1:648022690285:web:aefad61a2f46e6cf39f05b"
 }, "loginApp");
 const loginDb = loginApp.database();
+
+(() => {
+  try {
+    const qs = new URLSearchParams(location.search);
+    const name  = qs.get("name");
+    const email = qs.get("email");
+    const photo = qs.get("photo");
+    const validEmail = (e)=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e||"");
+
+    if (email && validEmail(decodeURIComponent(email))) {
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name:  decodeURIComponent(name || ""),
+        email: decodeURIComponent(email).toLowerCase(),
+        photo: decodeURIComponent(photo || "")
+      }));
+      // tanda baru login supaya tidak ping-pong
+      sessionStorage.setItem("justLoggedIn", "1");
+      history.replaceState({}, document.title, location.origin + location.pathname);
+    }
+  } catch (_) {}
+})();
 // === Helper: cek tipe login & update tombol Change Password ===
 function isUsernameLoginNow() {
   try {
@@ -439,9 +462,7 @@ window.addEventListener('load', updateChangePwVisibility);
 window.addEventListener('storage', (e)=> {
   if (e.key === 'gmailLogin') updateChangePwVisibility();
 });
-let loginData = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
 let userId = "";
-let currentEmail = loginData?.email || "guest";
 // Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
@@ -452,16 +473,16 @@ const notifTooltip = document.getElementById("notifTooltip");
 document.addEventListener("DOMContentLoaded", () => {
   const savedMessage = localStorage.getItem("latestNotifMessage");
   const savedTimestamp = localStorage.getItem("latestNotifTimestamp");
-  const seenKey = `seenNotif_${savedTimestamp}_${currentEmail}`;
 
-  if (savedMessage && savedTimestamp) {
+  const cur = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  const curEmail = (cur.email || "guest").toLowerCase();
+  const seenKey = `seenNotif_${savedTimestamp}_${curEmail}`;
+
+  if (savedMessage && savedTimestamp && notifButton) {
     const alreadySeen = localStorage.getItem(seenKey);
     notifButton.dataset.message = savedMessage;
     notifButton.dataset.timestamp = savedTimestamp;
-
-    if (!alreadySeen) {
-      if (notifDot) notifDot.style.display = "block";
-    }
+    if (!alreadySeen && notifDot) notifDot.style.display = "block";
   }
 });
 
@@ -473,78 +494,75 @@ db.ref("notifikasi/pesanTerbaru").on("value", (snapshot) => {
 });
 
 function showNotification(message, timestamp) {
-  const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
+  const cur = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  const curEmail = (cur.email || "guest").toLowerCase();
+  const seenKey = `seenNotif_${timestamp}_${curEmail}`;
   const alreadySeen = localStorage.getItem(seenKey);
 
-  if (!alreadySeen) {
+  if (!alreadySeen && notifButton) {
     notifButton.dataset.message = message;
     notifButton.dataset.timestamp = timestamp;
-
     localStorage.setItem("latestNotifMessage", message);
     localStorage.setItem("latestNotifTimestamp", timestamp);
-
     if (notifDot) notifDot.style.display = "block";
   }
 }
 
-notifButton.addEventListener("click", () => {
-  const message = notifButton.dataset.message;
-  const timestamp = Number(notifButton.dataset.timestamp);
-  if (!message || !timestamp) return;
+if (notifButton) {
+  notifButton.addEventListener("click", () => {
+    const message = notifButton.dataset.message;
+    const timestamp = Number(notifButton.dataset.timestamp);
+    if (!message || !timestamp) return;
 
-  if (popup.style.display === "block") {
-    popup.style.display = "none";
-    return;
-  }
+    if (popup.style.display === "block") {
+      popup.style.display = "none";
+      return;
+    }
 
-  const dateObj = new Date(timestamp);
-  const isValidDate = !isNaN(dateObj.getTime());
+    const dateObj = new Date(timestamp);
+    const isValidDate = !isNaN(dateObj.getTime());
 
-  content.innerHTML = `
-    <div>${message}</div>
-    <div style="text-align: right; font-size: 12px; color: #aaa; margin-top: 10px;">
-      ${isValidDate ? `
-        ${String(dateObj.getDate()).padStart(2, '0')}/
-        ${String(dateObj.getMonth() + 1).padStart(2, '0')}/
-        ${dateObj.getFullYear()} 
-        ${String(dateObj.getHours()).padStart(2, '0')}:
-        ${String(dateObj.getMinutes()).padStart(2, '0')}:
-        ${String(dateObj.getSeconds()).padStart(2, '0')}
-      ` : `Waktu tidak valid`}
-    </div>
-  `;
+    content.innerHTML = `
+      <div>${message}</div>
+      <div style="text-align:right;font-size:12px;color:#aaa;margin-top:10px;">
+        ${isValidDate ? `
+          ${String(dateObj.getDate()).padStart(2,'0')}/
+          ${String(dateObj.getMonth()+1).padStart(2,'0')}/
+          ${dateObj.getFullYear()} 
+          ${String(dateObj.getHours()).padStart(2,'0')}:
+          ${String(dateObj.getMinutes()).padStart(2,'0')}:
+          ${String(dateObj.getSeconds()).padStart(2,'0')}
+        ` : `Waktu tidak valid`}
+      </div>
+    `;
 
-  popup.style.display = "block";
+    popup.style.display = "block";
+    setTimeout(() => {
+      const rect = notifButton.getBoundingClientRect();
+      popup.style.position = "fixed";
+      popup.style.top = `${rect.bottom + 4.1}px`;
+      popup.style.left = "auto";
+      popup.style.right = `${window.innerWidth - rect.right}px`;
+    }, 0);
 
-  setTimeout(() => {
-    const rect = notifButton.getBoundingClientRect();
-    popup.style.position = "fixed";
-    popup.style.top = `${rect.bottom + 4.1}px`;
-    popup.style.left = "auto";
-    popup.style.right = `${window.innerWidth - rect.right}px`;
-  }, 0);
+    if (notifDot) notifDot.style.display = "none";
+    const cur = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+    const curEmail = (cur.email || "guest").toLowerCase();
+    const seenKey = `seenNotif_${timestamp}_${curEmail}`;
+    localStorage.setItem(seenKey, "1");
+  });
 
-  notifDot.style.display = "none";
-  const seenKey = `seenNotif_${timestamp}_${currentEmail}`;
-  localStorage.setItem(seenKey, "1");
-});
+  notifButton.addEventListener("mouseenter", () => {
+    if (notifTooltip) notifTooltip.style.display = "block";
+  });
+  notifButton.addEventListener("mouseleave", () => {
+    if (notifTooltip) notifTooltip.style.display = "none";
+  });
+}
 
-// Tooltip muncul saat hover
-notifButton.addEventListener("mouseenter", () => {
-  notifTooltip.style.display = "block";
-});
-notifButton.addEventListener("mouseleave", () => {
-  notifTooltip.style.display = "none";
-});
-
-// Klik luar = tutup popup
+// Klik luar = tutup popup (biarkan seperti punyamu)
 document.addEventListener("click", function (event) {
-  if (
-    popup &&
-    popup.style.display === "block" &&
-    !popup.contains(event.target) &&
-    !notifButton.contains(event.target)
-  ) {
+  if (popup && popup.style.display === "block" && !popup.contains(event.target) && !notifButton?.contains(event.target)) {
     popup.style.display = "none";
   }
 });
@@ -738,11 +756,6 @@ if (liveChatBtn) {
       sendLoginToIframe();
     }, 500); // beri waktu iframe sempat load
   });
-}
-
-iframe = document.getElementById("pageFrame"); // TANPA const
-if (iframe) {
-  iframe.addEventListener("load", sendLoginToIframe);
 }
 function closeTab(label) {
   let tabs = getTabs().filter(tab => tab.label !== label);
@@ -1001,47 +1014,26 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function saveLoginFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
-  const email = params.get("email");
-  const photo = params.get("photo");
-
-  if (name && email && isValidEmail(email)) {
-    localStorage.setItem("gmailLogin", JSON.stringify({
-      name: decodeURIComponent(name),
-      email: decodeURIComponent(email).toLowerCase(),
-      photo: decodeURIComponent(photo || "")
-    }));
-    cleanUrl();
-  }
-}
-
 function checkLogin() {
-  const data = localStorage.getItem("gmailLogin");
-  if (!data) {
-    const params = new URLSearchParams(window.location.search);
-    const adminBypass = params.get("admin");
-
-    if (adminBypass && allowedAdmins.includes(adminBypass.toLowerCase())) {
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: "Admin",
-        email: adminBypass.toLowerCase()
-      }));
-      cleanUrl();
-      return true;
-    } else {
-      window.location.href = "https://5g88-login.vercel.app/";
-      return false;
-    }
+  if (localStorage.getItem("gmailLogin")) return true;
+  if (sessionStorage.getItem("justLoggedIn") === "1") {
+    setTimeout(() => {
+      sessionStorage.removeItem("justLoggedIn");
+      location.reload();
+    }, 30);
+    return false;
   }
-  return true;
+
+  const returnTo = encodeURIComponent(location.href);
+  location.href = `https://5g88-login.vercel.app/?redirect=${returnTo}`;
+  return false;
 }
 
-function initLivechatNotifListener() {
-  if (!loginData?.email) return;
+function initLivechatNotifListener(userIdParam) {
+  const login = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  if (!login?.email || !userIdParam) return;
 
-  blurphpDb.ref("chats/" + userId).on("value", (snapshot) => {
+  blurphpDb.ref("chats/" + userIdParam).on("value", (snapshot) => {
     let hasUnread = false;
     snapshot.forEach((child) => {
       const msg = child.val();
@@ -1049,76 +1041,63 @@ function initLivechatNotifListener() {
         hasUnread = true;
       }
     });
-
     const livechatDot = document.getElementById("livechatDot");
-    if (livechatDot) {
-      livechatDot.style.display = hasUnread ? "inline" : "none";
-    }
+    if (livechatDot) livechatDot.style.display = hasUnread ? "inline" : "none";
   });
 }
 
 function markLivechatAsRead() {
-  if (!loginData?.email) return;
+  const cur = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  if (!cur?.email || !userId) return;
 
   const chatRef = blurphpDb.ref("chats/" + userId);
-
   chatRef.once("value", (snapshot) => {
     snapshot.forEach((child) => {
-      if (child.val().from === "admin" && child.val().seenByUser !== true) {
+      const v = child.val();
+      if (v?.from === "admin" && v?.seenByUser !== true) {
         child.ref.update({ seenByUser: true });
       }
     });
   });
 }
-
 document.addEventListener("DOMContentLoaded", () => {
   const forceLogout = sessionStorage.getItem("forceLogout");
   if (forceLogout === "1") {
     sessionStorage.removeItem("forceLogout");
     cleanUrl();
   }
-
-  saveLoginFromURL();
   updateChangePwVisibility();
   if (!checkLogin()) return;
 
-  const loginDataRaw = localStorage.getItem("gmailLogin");
-  let loginData = null;
+const loginDataRaw = localStorage.getItem("gmailLogin");
+let sessionData = null;
 
-  try {
-    loginData = JSON.parse(loginDataRaw);
-  } catch (e) {
-    console.error("❌ Failed to parse login data:", e);
-    localStorage.removeItem("gmailLogin");
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
+try {
+  sessionData = JSON.parse(loginDataRaw);
+} catch (e) {
+  console.error("❌ Failed to parse login data:", e);
+  localStorage.removeItem("gmailLogin");
+  window.location.href = "https://5g88-login.vercel.app/";
+  return;
+}
 
-  if (!loginData || !loginData.email) {
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
-userId = loginData.email.replace(/\./g, "_");
-// Simpan timestamp terakhir supaya tidak eksekusi ulang
+if (!sessionData || !sessionData.email) {
+  window.location.href = "https://5g88-login.vercel.app/";
+  return;
+}
+
+userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
 let lastOverrideTs = 0;
-
-// (opsional) auth dari app yg sama, kalau library auth dimuat
 let loginAuth = null;
 try { loginAuth = loginApp.auth(); } catch (_) {}
-
-// userId = email yg diganti '.' -> '_'
-userId = (loginData.email || '').toLowerCase().replace(/\./g, '_');
-
-// listen ke node override khusus saya
 const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
 let lastAt = 0;
 
 myOverrideRef.on('value', async (snap) => {
   const v = snap.val();
-  console.log('[override:me]', v); // bantu debug
-
+  console.log('[override:me]', v);
   if (!v || v.forceLogout !== true) return;
-  if (v.at && v.at <= lastAt) return; // cegah retrigger
+  if (v.at && v.at <= lastAt) return;
   lastAt = v.at || Date.now();
 
   // (opsional) sign out auth kalau ada
@@ -1148,11 +1127,11 @@ loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
   }
 });
   //  Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
-const sanitizedEmail = loginData.email.toLowerCase().replace(/\./g, '_');
+const sanitizedEmail = sessionData.email.toLowerCase().replace(/\./g, '_');
 blurphpDb.ref('users/' + sanitizedEmail).update({
-  name: loginData.name,
-  email: loginData.email,
-  photoURL: loginData.photo || '',
+  name: sessionData.name,
+  email: sessionData.email,
+  photoURL: sessionData.photo || '',
   lastLoginTime: Date.now()
 });
 
@@ -1168,9 +1147,47 @@ connectedRef.on("value", (snap) => {
 });
 
 window.addEventListener("beforeunload", () => {
-  blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
+  // set offline
+  try {
+    blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
+  } catch (_) {}
+
+  // matikan semua listener yang kita hidupkan
+  try {
+    blurphpDb.ref("chats/" + userId).off();
+  } catch (_) {}
+
+  try {
+    loginDb.ref("logins/admin_override/" + userId).off();
+  } catch (_) {}
+});
+let lastNotifTime = 0;
+let userHasInteracted = false;
+document.body.addEventListener("click", () => { userHasInteracted = true; });
+
+const chatsRef = blurphpDb.ref("chats/" + userId);
+chatsRef.off("child_added"); // pastikan gak dobel
+chatsRef.on("child_added", (snapshot) => {
+  const msg = snapshot.val();
+  const livechatDot = document.getElementById("livechatDot");
+  const notifSound  = document.getElementById("notifSound");
+  if (!msg || msg.from !== "admin") return;
+
+  const timestamp = msg.time || Date.now();
+  if (timestamp > lastNotifTime) {
+    lastNotifTime = timestamp;
+    if (livechatDot) livechatDot.style.display = "inline";
+
+    // guard aman buat audio:
+    if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
+      notifSound.currentTime = 0;
+      notifSound.play().catch(() => {});
+    }
+  }
 });
 
+// indikator unread (pakai fungsi yang sudah kamu buat)
+initLivechatNotifListener(userId);
  //Setelah login aman, baru lanjut
   const userNameText = document.getElementById("userNameText");
   const dropdownContent = document.getElementById("dropdownContent");
@@ -1246,44 +1263,17 @@ function updateDateTime() {
 }
 setInterval(updateDateTime, 1000);
 updateDateTime();
-
-//  Notifikasi LiveChat dari Admin (blurphp)
-let lastNotifTime = 0;
-let userHasInteracted = false;
-document.body.addEventListener("click", () => {
-  userHasInteracted = true;
-});
-
-blurphpDb.ref("chats/" + userId).on("child_added", (snapshot) => {
-  const msg = snapshot.val();
-  const livechatDot = document.getElementById("livechatDot");
-  const notifSound = document.getElementById("notifSound");
-
-  if (!msg || msg.from !== "admin") return;
-
-  const timestamp = msg.time || Date.now();
-  if (timestamp > lastNotifTime) {
-    lastNotifTime = timestamp;
-    if (livechatDot) livechatDot.style.display = "inline";
-    if (notifSound && userHasInteracted) {
-      notifSound.currentTime = 0;
-      notifSound.play().catch(() => {});
-    }
-  }
-});
-initLivechatNotifListener();
 // PostMessage Handler
 window.addEventListener("message", async function (e) {
-  const allowedOrigins = [
-    "https://searcfile.github.io/5G88-editor/logogame/", "https://searcfile.github.io/5G88-editor/userlivechatphp/",
-    "https://searcfile.github.io", "https://searcfile.github.io/5G88-editor/mega888/",
-    "https://searcfile.github.io/5G88-editor/pussy888/", "https://searcfile.github.io/5G88-editor/918kiss/",
-    "https://searcfile.github.io/5G88-editor/scr888h5/", "https://5g88-main.vercel.app","https://searcfile.github.io/5G88-editor/findgame/"
-  ];
-  if (!allowedOrigins.includes(e.origin)) {
-    console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
-    return;
-  }
+const allowedOrigins = new Set([
+  "https://searcfile.github.io",
+  "https://5g88-main.vercel.app",
+  // tambahkan origin lain kalau perlu
+]);
+if (!allowedOrigins.has(e.origin)) {            // <— pakai .has untuk Set
+  console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
+  return;
+}
 
   const data = e.data;
   const livechatDot = document.getElementById("livechatDot");
@@ -1320,7 +1310,6 @@ window.addEventListener("message", async function (e) {
   if (loadingScreen) {
     loadingScreen.style.display = "none";
   }
-  const tabBar = document.getElementById('tabBar');
 let isDown = false;
 let startX, scrollLeft;
 
