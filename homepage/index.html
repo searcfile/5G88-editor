@@ -78,32 +78,6 @@
 }
 .dropdown-content {opacity: 0;visibility: hidden;transition: opacity 0.3s ease, visibility 0.3s ease;}
 .user-dropdown:hover .dropdown-content {opacity: 1;visibility: visible;display: block;}
-/* Username di header:
-   Desktop = ikon + nama; Mobile = ikon sahaja */
-#userName span#userNameText { display: inline; }
-@media (max-width: 768px){
-  #userName span#userNameText { display: none; }
-  #userName { padding: 0 8px; min-width: 32px; } /* lebih compact masa ikon-only */
-}
-
-/* Identiti dalam dropdown:
-   Desktop = sorok; Mobile = tunjuk */
-.dropdown-identity, .dropdown-sep { display: none; }
-@media (max-width: 768px){
-  .dropdown-identity{
-    display:flex; align-items:center; gap:8px; margin-bottom:6px;
-  }
-  .dropdown-sep{
-    display:block; border:0; border-top:1px solid #424242; margin:8px 0;
-  }
-  /* Elak gandaan email di mobile: pakai versi Mobile, sorok yang lama */
-  #userEmail{ display:none; }
-}
-
-/* (Opsyen) Sorok jam di skrin sangat kecil */
-@media (max-width: 480px){
-  #dateTime{ display:none; }
-}
   .live-chat-button {
   color: rgba(255,255,255,0.65);
   border: none;
@@ -122,25 +96,6 @@
 .live-chat-button.active-gamelog {
   background: transparent;
   color: gold;
-}
-  .live-chat-button .btn-label {
-  display: inline;
-}
-@media (max-width: 768px) {
-  .live-chat-button .btn-label { 
-    display: none;
-  }
-  .live-chat-button svg:first-child {
-    margin-right: 0 !important;
-  }
-}
-@media (min-width: 769px) {
-  .live-chat-button .btn-label {
-    display: inline;
-  }
-}
-@media (max-width: 480px){
-  #dateTime { display: none; }
 }
 .dropdown-wrapper {
   position: relative;
@@ -269,124 +224,102 @@ a.tab-open .check-icon {
     </a>
   </div>
 
-<div class="header">
-  <div class="menu-icon" id="menuIcon">☰</div>
+  <div class="header">
+    <div class="menu-icon" id="menuIcon">☰</div>
+  <div style="display: flex; gap: 20px; position: absolute; top: 15px; left: 60px;">
+   <button id="liveChatBtn" class="live-chat-button" onclick="addTab('LIVE CHAT', 'https://searcfile.github.io/5g88-php/userlivechatphp/')">
+  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+    <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
+  </svg>
+  LiveChat
+  <svg id="livechatDot" class="dot-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="red" viewBox="0 0 24 24">
+    <path d="M12 1c-6.338 0-12 4.226-12 10.007 0 2.05.739 4.063 2.047 5.625.055 1.83-1.023 4.456-1.993 6.368 2.602-.47 6.301-1.508 7.978-2.536 9.236 2.247 15.968-3.405 15.968-9.457 0-5.812-5.701-10.007-12-10.007zm1 15h-2v-6h2v6zm-1-7.75c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
+  </svg>
+</button>
 
-  <!-- Kiri: tombol-tombol utama -->
-  <div style="display:flex; gap:20px; position:absolute; top:15px; left:60px;">
-    <button id="liveChatBtn" class="live-chat-button"
-            aria-label="Live Chat"
-            onclick="addTab('LIVE CHAT','https://searcfile.github.io/5g88-php/userlivechatphp/')">
-      <svg width="1.2rem" height="1.2rem" viewBox="0 0 24 24" style="margin-right:1px" fill="currentColor">
-        <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
-      </svg>
-      <span class="btn-label">LiveChat</span>
-      <svg id="livechatDot" class="dot-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="red" viewBox="0 0 24 24">
-        <path d="M12 1c-6.338 0-12 4.226-12 10.007 0 2.05.739 4.063 2.047 5.625.055 1.83-1.023 4.456-1.993 6.368 2.602-.47 6.301-1.508 7.978-2.536 9.236 2.247 15.968-3.405 15.968-9.457 0-5.812-5.701-10.007-12-10.007zm1 15h-2v-6h2v6zm-1-7.75c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
-      </svg>
-    </button>
+<button id="linkDownloadBtn" class="live-chat-button" onclick="addTab('LINK DOWNLOAD', 'https://searcfile.github.io/5g88-php/linkdownload/')">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+      <path d="M9 2h6v1h-6v-1zm6-1v-1h-6v1h6zm-5.146 21l-1.854 2h8l-1.854-2h-4.292zm10.146-14h-5v-4h-6v4h-5l8 8 8-8zm-2 11h-12v-6.172l-2-2v10.172h16v-10.172l-2 2v6.172z"/>
+    </svg>
+    LinkDownload
+  </button>
 
-    <button id="linkDownloadBtn" class="live-chat-button"
-            aria-label="Link Download"
-            onclick="addTab('LINK DOWNLOAD','https://searcfile.github.io/5g88-php/linkdownload/')">
-      <svg width="1.2rem" height="1.2rem" viewBox="0 0 24 24" style="margin-right:1px" fill="currentColor">
-        <path d="M9 2h6v1h-6v-1zm6-1v-1h-6v1h6zm-5.146 21l-1.854 2h8l-1.854-2h-4.292zm10.146-14h-5v-4h-6v4h-5l8 8 8-8zm-2 11h-12v-6.172l-2-2v10.172h16v-10.172l-2 2v6.172z"/>
-      </svg>
-      <span class="btn-label">LinkDownload</span>
-    </button>
+<div class="dropdown-wrapper">
+  <button id="gameLogBtn" class="live-chat-button">
+    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+      <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
+    </svg>
+    GameLog
+  </button>
+ <div id="gameLogDropdown" class="dropdown-links">
+  <a data-label="MEGA888" href="#" onclick="addTab('MEGA888', 'https://searcfile.github.io/5G88-editor/mega888/');">
+    MEGA888
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+    </svg>
+  </a>
+  <a data-label="PUSSY888" href="#" onclick="addTab('PUSSY888', 'https://searcfile.github.io/5G88-editor/pussy888/');">
+    PUSSY888
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+    </svg>
+  </a>
+  <a data-label="918KISS" href="#" onclick="addTab('918KISS', 'https://searcfile.github.io/5G88-editor/918kiss/');">
+    918KISS
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+    </svg>
+  </a>
+  <a data-label="SCR888H5" href="#" onclick="addTab('SCR888H5', 'https://searcfile.github.io/5G88-editor/scr888h5/');">
+    SCR888H5
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
+      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+    </svg>
+  </a>
+</div>
+</div>
+</div>
 
-    <button id="gameLogBtn" class="live-chat-button" aria-haspopup="true" aria-expanded="false" aria-label="Game Log">
-      <svg width="1.2rem" height="1.2rem" viewBox="0 0 24 24" style="margin-right:1px" fill="currentColor">
-        <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
-      </svg>
-      <span class="btn-label">GameLog</span>
-    </button>
+    <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
-    <div id="gameLogDropdown" class="dropdown-links">
-      <a data-label="MEGA888" href="#" onclick="addTab('MEGA888','https://searcfile.github.io/5G88-editor/mega888/');">
-        MEGA888
-        <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
-          <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-        </svg>
-      </a>
-      <a data-label="PUSSY888" href="#" onclick="addTab('PUSSY888','https://searcfile.github.io/5G88-editor/pussy888/');">
-        PUSSY888
-        <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
-          <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-        </svg>
-      </a>
-      <a data-label="918KISS" href="#" onclick="addTab('918KISS','https://searcfile.github.io/5G88-editor/918kiss/');">
-        918KISS
-        <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
-          <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-        </svg>
-      </a>
-      <a data-label="SCR888H5" href="#" onclick="addTab('SCR888H5','https://searcfile.github.io/5G88-editor/scr888h5/');">
-        SCR888H5
-        <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
-          <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-        </svg>
-      </a>
-    </div>
-  </div>
+    <div class="user-info">
+      <div class="user-text">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div id="notificationBell" style="width: 18px; height: 18px; background-color: red; border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 12px; color: white; font-weight: bold; cursor: pointer;" title="You have a new message">!</div>
 
-  <!-- Kanan: notif, waktu, & user — SEKARANG di dalam .header -->
-  <div class="user-info">
-    <div class="user-text">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div id="notificationBell" style="width:18px;height:18px;background:red;border-radius:50%;display:none;justify-content:center;align-items:center;font-size:12px;color:#fff;font-weight:bold;cursor:pointer;" title="You have a new message">!</div>
-
-        <div id="notifButton" style="background:#111;border:1px solid gold;border-radius:50%;width:26px;height:26px;color:gold;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 0 6px rgba(255,215,0,.4);position:relative;font-size:14px;">
-          🔔
-          <span id="notifDot" style="position:absolute;top:2px;right:2px;background:red;width:10px;height:10px;border-radius:50%;display:none;border:1px solid white;"></span>
-          <div id="notifTooltip" style="display:none;position:absolute;border:1px solid #424242;top:2%;left:calc(100% + 8px);transform:translateX(1%);background:#141414;color:gold;padding:4px 8px;font-size:11px;border-radius:6px;white-space:nowrap;z-index:10000;">Notice</div>
-        </div>
-
-        <div id="dateTime" class="date-time"></div>
-      </div>
-    </div>
-
-    <div class="user-dropdown">
-      <button id="userName" class="user-button" aria-label="User menu">
-        <svg width="16" height="16" viewBox="0 0 24 24" style="margin-right:6px" fill="currentColor">
-          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
-        </svg>
-        <span id="userNameText"></span>
-      </button>
-
-      <div id="dropdownContent" class="dropdown-content">
-        <!-- Identitas khusus mobile -->
-        <div class="dropdown-identity">
-          <svg width="18" height="18" viewBox="0 0 24 24" style="flex-shrink:0" fill="currentColor">
-            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
-          </svg>
-          <div style="display:flex;flex-direction:column;line-height:1.2;">
-            <div id="userNameTextMobile" style="font-weight:600;"></div>
-            <div id="userEmailMobile" style="font-size:12px;color:#aaa;"></div>
+          <div id="notifButton" style="background: #111; border: 1px solid gold; border-radius: 50%; width: 26px; height: 26px; color: gold; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 6px rgba(255, 215, 0, 0.4); position: relative; font-size: 14px;">
+            🔔
+            <span id="notifDot" style="position: absolute; top: 2px; right: 2px; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;"></span>
+            <div id="notifTooltip" style="display: none; position: absolute;border: 1px solid #424242; top: 2%; left: calc(100% + 8px); transform: translateX(1%); background: #141414; color: gold; padding: 4px 8px; font-size: 11px; border-radius: 6px; white-space: nowrap; z-index: 10000;">Notice</div>
           </div>
+
+          <div id="dateTime" class="date-time"></div>
         </div>
-        <hr class="dropdown-sep">
 
-        <div id="userEmail" style="margin-bottom:8px;"></div>
-        <hr style="border:0;border-top:1px solid #424242;margin:8px 0;">
-
-        <button id="changePwBtn" class="btn-cpw">
-          <svg width="16" height="16" viewBox="0 0 24 24" style="margin-right:4px" fill="currentColor">
-            <path d="M10 17c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm3 0c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm3 0c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm2-7v-4c0-3.313-2.687-6-6-6s-6 2.687-6 6v4h-3v14h18v-14h-3zm-10-4c0-2.206 1.795-4 4-4s4 1.794 4 4v4h-8v-4zm11 16h-14v-10h14v10z"/>
-          </svg>
-          Change Password
-        </button>
-
-        <button id="logoutBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" style="margin-right:6px" fill="currentColor">
-            <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
-          </svg>
-          Logout
-        </button>
-      </div>
-    </div>
+        <div class="user-dropdown">
+  <button id="userName" class="user-button">
+  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
+  </svg>
+  <span id="userNameText"></span>
+</button>
+  <div id="dropdownContent" class="dropdown-content">
+    <div id="userEmail" style="margin-bottom: 8px;"></div>
+    <hr style="border: 0; border-top: 1px solid #424242; margin: 8px 0;">
+    <button id="changePwBtn" class="btn-cpw">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px">
+    <path d="M10 17c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm3 0c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm3 0c0 .552-.447 1-1 1s-1-.448-1-1 .447-1 1-1 1 .448 1 1zm2-7v-4c0-3.313-2.687-6-6-6s-6 2.687-6 6v4h-3v14h18v-14h-3zm-10-4c0-2.206 1.795-4 4-4s4 1.794 4 4v4h-8v-4zm11 16h-14v-10h14v10z"/>
+  </svg>
+  Change Password
+</button>
+    <button id="logoutBtn"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+    <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
+  </svg>Logout</button>
   </div>
 </div>
+</div> 
+</div> 
+</div> 
 
   <div id="tabBar" class="tab-bar"></div>
 
@@ -509,7 +442,6 @@ const loginDb = loginApp.database();
     }
   } catch (_) {}
 })();
-
 // === Helper: cek tipe login & update tombol Change Password ===
 function isUsernameLoginNow() {
   try {
@@ -530,9 +462,7 @@ window.addEventListener('load', updateChangePwVisibility);
 window.addEventListener('storage', (e)=> {
   if (e.key === 'gmailLogin') updateChangePwVisibility();
 });
-
 let userId = "";
-
 // Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
@@ -636,123 +566,101 @@ document.addEventListener("click", function (event) {
     popup.style.display = "none";
   }
 });
-
-// === GameLog Dropdown ===
+window.addEventListener("blur", () => {
+  if (popup && popup.style.display === "block") {
+    popup.style.display = "none";
+  }
+});
 const gameLogBtn = document.getElementById("gameLogBtn");
 const gameLogDropdown = document.getElementById("gameLogDropdown");
 
-if (gameLogBtn && gameLogDropdown) {
-  function positionGameLog() {
-    if (gameLogDropdown.style.display !== "block") return;
-    const rect = gameLogBtn.getBoundingClientRect();
-    gameLogDropdown.style.left = `${rect.left}px`;
-    gameLogDropdown.style.top  = `${rect.bottom + 6}px`;
+// Tampilkan/Hide dropdown saat tombol GameLog diklik
+gameLogBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const rect = gameLogBtn.getBoundingClientRect();
+  gameLogDropdown.style.left = `${rect.left}px`;
+  gameLogDropdown.style.top = `${rect.bottom + 6}px`;
+  gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
+});
+
+// Klik luar = tutup
+document.addEventListener("click", (e) => {
+  if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
+    gameLogDropdown.style.display = "none";
   }
+});
 
-  gameLogBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const willShow = gameLogDropdown.style.display !== "block";
-    gameLogDropdown.style.display = willShow ? "block" : "none";
-    if (willShow) positionGameLog();
-    gameLogBtn.setAttribute("aria-expanded", willShow ? "true" : "false");
-  });
-
-  // Klik luar → tutup
-  document.addEventListener("click", (e) => {
-    if (!gameLogDropdown.contains(e.target) && !gameLogBtn.contains(e.target)) {
+let iframe = document.getElementById("pageFrame");
+iframe?.addEventListener("load", () => {
+  try {
+    iframe.contentWindow.document.addEventListener("click", () => {
       gameLogDropdown.style.display = "none";
-      gameLogBtn.setAttribute("aria-expanded", "false");
-    }
-  });
+    });
+  } catch (err) {
+  }
+});
 
-  // Reposisi saat resize/scroll
-  window.addEventListener("resize", positionGameLog);
-  window.addEventListener("scroll", positionGameLog, true);
+// Jika user klik iframe (fokus keluar), juga tutup dropdown
+window.addEventListener("blur", () => {
+  if (gameLogDropdown.style.display === "block") {
+    gameLogDropdown.style.display = "none";
+  }
+});
 
-  // ✅ BLUR dipasang SEKALI di sini
-  window.addEventListener("blur", () => {
-    if (gameLogDropdown.style.display === "block") {
-      gameLogDropdown.style.display = "none";
-      gameLogBtn.setAttribute("aria-expanded", "false");
-    }
-  });
-}
 
-// ==== DEKLARASI pageFrame SEKALI & DINI ====
-const pageFrame = document.getElementById("pageFrame");
-
-// Klik di dalam iframe → tutup dropdown
-if (pageFrame) {
-  pageFrame.addEventListener("load", () => {
-    try {
-      const childDoc = pageFrame.contentWindow?.document;
-      childDoc?.addEventListener("click", () => {
-        const dd = document.getElementById("gameLogDropdown");
-        if (dd) dd.style.display = "none";
-      });
-    } catch (_) {}
-  });
-}
-
-// Util popup
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
 }
-
-// Header/Sidebar/Tabbar
 const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const container = document.getElementById("mainContainer");
+const pageFrame = document.getElementById("pageFrame");
 
-// Style tabBar (guarded)
-if (tabBar) {
-  tabBar.style.display = "flex";
-  tabBar.style.alignItems = "center";
-  tabBar.style.padding = "10px 2px";
-  tabBar.style.background = "#000";
-}
+tabBar.style.display = "flex";
+tabBar.style.alignItems = "center";
+tabBar.style.padding = "10px 2px";
+tabBar.style.background = "#000";
 
-menuIcon?.addEventListener("click", () => {
-  if (sidebar?.classList.contains("active")) {
+
+menuIcon.addEventListener("click", () => {
+  if (sidebar.classList.contains("active")) {
     closeSidebar();
   } else {
     openSidebar();
   }
 });
-overlay?.addEventListener("click", closeSidebar);
-
+overlay.addEventListener("click", closeSidebar);
 function openSidebar() {
-  sidebar?.classList.add("active");
-  overlay?.classList.add("active");
-  container?.classList.add("shrink");
-  document.querySelector(".floating-logo")?.classList.add("shrink");
-  document.querySelector('.header')?.classList.add('shrink');
-  document.getElementById("tabBar")?.classList.add('shrink');
-  document.getElementById("menuIcon")?.classList.add("active-menu-icon");
+  sidebar.classList.add("active");
+  overlay.classList.add("active");
+  container.classList.add("shrink");
+  document.querySelector(".floating-logo").classList.add("shrink");
+  document.querySelector('.header').classList.add('shrink');
+  document.getElementById("tabBar").classList.add('shrink');
+  document.getElementById("menuIcon").classList.add("active-menu-icon");
 }
 
 function closeSidebar() {
-  sidebar?.classList.remove("active");
-  overlay?.classList.remove("active");
-  container?.classList.remove("shrink");
-  document.querySelector(".floating-logo")?.classList.remove("shrink");
-  document.querySelector('.header')?.classList.remove('shrink');
-  document.getElementById("tabBar")?.classList.remove('shrink');
-  document.getElementById("menuIcon")?.classList.remove("active-menu-icon");
+  sidebar.classList.remove("active");
+  overlay.classList.remove("active");
+  container.classList.remove("shrink");
+  document.querySelector(".floating-logo").classList.remove("shrink");
+  document.querySelector('.header').classList.remove('shrink');
+  document.getElementById("tabBar").classList.remove('shrink');
+  document.getElementById("menuIcon").classList.remove("active-menu-icon");
 }
 
 document.addEventListener("click", (e) => {
-  const isSidebar = e.target.closest?.("#sidebar");
-  const isMenuIcon = e.target.closest?.("#menuIcon");
-  if (!isSidebar && !isMenuIcon && sidebar?.classList.contains("active")) {
+  const isSidebar = e.target.closest("#sidebar");
+  const isMenuIcon = e.target.closest("#menuIcon");
+
+  if (!isSidebar && !isMenuIcon && sidebar.classList.contains("active")) {
     closeSidebar();
   }
 });
-
-// Tabs state
 function saveTabs(tabs) {
   localStorage.setItem("openTabs", JSON.stringify(tabs));
 }
@@ -786,7 +694,8 @@ function addTab(label, url) {
     if (label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
       if (liveDot) liveDot.style.display = "none";
-      // Tandai pesan admin sebagai dibaca
+
+      // Tandai semua pesan admin sebagai sudah dibaca
       markLivechatAsRead();
     } else {
       liveBtn.classList.remove("active-livechat");
@@ -813,7 +722,7 @@ function sendLoginToIframe() {
   const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
   if (!user.email) return;
 
-  // Tentukan origin anak
+  // Tentukan origin anak dari URL yang sedang dimuat di iframe
   let childOrigin = "https://searcfile.github.io"; // fallback aman
   try {
     if (iframe.src) childOrigin = new URL(iframe.src).origin || childOrigin;
@@ -824,29 +733,30 @@ function sendLoginToIframe() {
     user: { name: user.name, email: user.email, photo: user.photo || "" }
   };
 
-  // Kirim + retry
+  // Kirim segera + retry beberapa kali kalau listener di anak belum siap
   iframe.contentWindow.postMessage(payload, childOrigin);
   setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 200);
   setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 600);
 }
 
-// Panggil saat iframe load → kirim user
+// Panggil setiap kali iframe selesai load
 if (pageFrame) {
   pageFrame.addEventListener("load", () => {
+    // beri sedikit waktu untuk script anak memasang event 'message'
     setTimeout(sendLoginToIframe, 150);
   });
 }
 
-// 🔁 Jalankan saat tab LiveChat dibuka
+
+// 🔁 Jalankan saat iframe load DAN saat tab LiveChat dibuka
 const liveChatBtn = document.getElementById("liveChatBtn");
 if (liveChatBtn) {
   liveChatBtn.addEventListener("click", () => {
     setTimeout(() => {
       sendLoginToIframe();
-    }, 500);
+    }, 500); // beri waktu iframe sempat load
   });
 }
-
 function closeTab(label) {
   let tabs = getTabs().filter(tab => tab.label !== label);
   saveTabs(tabs);
@@ -861,21 +771,22 @@ function closeTab(label) {
     const lastTab = tabs[tabs.length - 1];
     loadPage(lastTab.url);
 
+    // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
     gameLogBtn?.classList.toggle("active-gamelog", gameLogLabels.includes(lastTab.label));
     liveBtn?.classList.toggle("active-livechat", lastTab.label === "LIVE CHAT");
     linkBtn?.classList.toggle("active-linkdownload", lastTab.label === "LINK DOWNLOAD");
+
   } else {
-    // Tidak ada tab tersisa
-    if (pageFrame) pageFrame.src = "";
+    // Tidak ada tab tersisa → matikan semua status aktif
+    pageFrame.src = "";
     gameLogBtn?.classList.remove("active-gamelog");
     liveBtn?.classList.remove("active-livechat");
     linkBtn?.classList.remove("active-linkdownload");
   }
 }
-
+ 
 function renderTabs() {
-  if (!tabBar) return;
   tabBar.innerHTML = "";
   const tabs = getTabs();
 
@@ -929,7 +840,8 @@ function renderTabs() {
     };
 
     // Tab aktif highlight
-    if (pageFrame && tab.url === pageFrame.src) {
+    const currentFrame = document.getElementById("pageFrame");
+    if (currentFrame && tab.url === currentFrame.src) {
       tabElement.classList.add("active-tab");
     }
 
@@ -971,14 +883,15 @@ function renderTabs() {
   // Inisialisasi Sortable.js drag (auto spacing)
   initSortableTabs();
 }
-
 function initSortableTabs() {
   if (!window.Sortable || !tabBar) return;
 
+  // Destroy instance sebelumnya jika ada
   if (tabBar._sortable) {
     tabBar._sortable.destroy();
   }
 
+  // Buat baru & simpan ke properti _sortable
   tabBar._sortable = Sortable.create(tabBar, {
     animation: 200,
     ghostClass: "dragging",
@@ -987,21 +900,23 @@ function initSortableTabs() {
       const [movedTab] = tabs.splice(evt.oldIndex, 1);
       tabs.splice(evt.newIndex, 0, movedTab);
       saveTabs(tabs);
-      renderTabs();
+      renderTabs(); // akan auto-panggil initSortableTabs()
     }
   });
 }
-
 function loadPage(url) {
   const iframeLoader = document.getElementById("iframeLoader");
-  if (!pageFrame) return;
+  const frame = document.getElementById("pageFrame");
 
-  if (iframeLoader) iframeLoader.style.display = "flex";
-  pageFrame.onload = () => {
-    if (iframeLoader) iframeLoader.style.display = "none";
+  if (!frame) return;
+
+  iframeLoader.style.display = "flex";
+
+  frame.onload = () => {
+    iframeLoader.style.display = "none";
   };
 
-  pageFrame.src = url;
+  frame.src = url;
 
   localStorage.setItem("activeTabUrl", url);
   closeSidebar();
@@ -1021,7 +936,7 @@ function loadPage(url) {
   });
 }
 
-// Ceklis GameLog Dropdown
+  // Ceklis GameLog Dropdown
 function updateGameLogCheckmarks() {
   const tabs = getTabs();
   const labelsOpen = tabs.map(tab => tab.label);
@@ -1030,18 +945,17 @@ function updateGameLogCheckmarks() {
   dropdownLinks.forEach(link => {
     const label = link.getAttribute("data-label");
     const icon = link.querySelector(".check-icon");
-    if (labelsOpen.includes(label)) {
-      link.classList.add("tab-open");
-      if (icon) icon.style.display = "inline";
-    } else {
-      link.classList.remove("tab-open");
-      if (icon) icon.style.display = "none";
+     if (labelsOpen.includes(label)) {
+     link.classList.add("tab-open");
+     icon.style.display = "inline";
+     } else {
+     link.classList.remove("tab-open");
+     icon.style.display = "none";
     }
   });
 }
 
-// Saat window load → restore tab terakhir
-window.addEventListener('load', () => {
+window.onload = () => {
   renderTabs();
   const tabs = getTabs();
   updateGameLogCheckmarks();
@@ -1061,10 +975,11 @@ window.addEventListener('load', () => {
     updateGameLogCheckmarks();
 
     if (match.label === "LIVE CHAT") {
-      liveBtn?.classList.add("active-livechat");
+      liveBtn.classList.add("active-livechat");
     }
+
     if (match.label === "LINK DOWNLOAD") {
-      linkBtn?.classList.add("active-linkdownload");
+      linkBtn.classList.add("active-linkdownload");
     }
 
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
@@ -1074,9 +989,9 @@ window.addEventListener('load', () => {
   } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
   }
-});
+};
 
-const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZp2FsQGdtYWlsLmNvbQ==".replace("2","")];
+const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
 const _0xadmins = encodedAdmins.map(e => atob(e));
 const allowedAdmins = [..._0xadmins, "admin@example.com"];
 
@@ -1145,8 +1060,6 @@ function markLivechatAsRead() {
     });
   });
 }
-
-// ==== Sesi & override/blocked listener ====
 document.addEventListener("DOMContentLoaded", () => {
   const forceLogout = sessionStorage.getItem("forceLogout");
   if (forceLogout === "1") {
@@ -1156,209 +1069,174 @@ document.addEventListener("DOMContentLoaded", () => {
   updateChangePwVisibility();
   if (!checkLogin()) return;
 
-  const loginDataRaw = localStorage.getItem("gmailLogin");
-  let sessionData = null;
+const loginDataRaw = localStorage.getItem("gmailLogin");
+let sessionData = null;
 
-  try {
-    sessionData = JSON.parse(loginDataRaw);
-  } catch (e) {
-    console.error("❌ Failed to parse login data:", e);
+try {
+  sessionData = JSON.parse(loginDataRaw);
+} catch (e) {
+  console.error("❌ Failed to parse login data:", e);
+  localStorage.removeItem("gmailLogin");
+  window.location.href = "https://5g88-login.vercel.app/";
+  return;
+}
+
+if (!sessionData || !sessionData.email) {
+  window.location.href = "https://5g88-login.vercel.app/";
+  return;
+}
+
+userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
+let lastOverrideTs = 0;
+let loginAuth = null;
+try { loginAuth = loginApp.auth(); } catch (_) {}
+const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
+let lastAt = 0;
+
+myOverrideRef.on('value', async (snap) => {
+  const v = snap.val();
+  console.log('[override:me]', v);
+  if (!v || v.forceLogout !== true) return;
+  if (v.at && v.at <= lastAt) return;
+  lastAt = v.at || Date.now();
+
+  // (opsional) sign out auth kalau ada
+  try { loginApp.auth && (await loginApp.auth().signOut()); } catch (_) {}
+
+  // bersihkan sesi lokal
+  localStorage.removeItem('gmailLogin');
+  sessionStorage.setItem('forceLogout', '1');
+  if (window.google?.accounts?.id) {
+    try { google.accounts.id.disableAutoSelect(); } catch (_) {}
+  }
+
+  // HAPUS HANYA node saya sendiri, JANGAN root admin_override
+  myOverrideRef.remove().catch(()=>{});
+
+  // redirect ke login
+  window.location.href = 'https://5g88-login.vercel.app/';
+});
+loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
+  if (s.val() === true) {
+    try { if (loginAuth) await loginAuth.signOut(); } catch(_) {}
     localStorage.removeItem("gmailLogin");
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
-
-  if (!sessionData || !sessionData.email) {
-    window.location.href = "https://5g88-login.vercel.app/";
-    return;
-  }
-
-  userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
-  let loginAuth = null;
-  try { loginAuth = loginApp.auth(); } catch (_) {}
-
-  const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
-  let lastAt = 0;
-
-  myOverrideRef.on('value', async (snap) => {
-    const v = snap.val();
-    console.log('[override:me]', v);
-    if (!v || v.forceLogout !== true) return;
-    if (v.at && v.at <= lastAt) return;
-    lastAt = v.at || Date.now();
-
-    try { loginApp.auth && (await loginApp.auth().signOut()); } catch (_) {}
-
-    localStorage.removeItem('gmailLogin');
-    sessionStorage.setItem('forceLogout', '1');
     if (window.google?.accounts?.id) {
-      try { google.accounts.id.disableAutoSelect(); } catch (_) {}
+      try { google.accounts.id.disableAutoSelect(); } catch(_) {}
     }
-
-    myOverrideRef.remove().catch(()=>{});
-    window.location.href = 'https://5g88-login.vercel.app/';
-  });
-
-  loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
-    if (s.val() === true) {
-      try { if (loginAuth) await loginAuth.signOut(); } catch(_) {}
-      localStorage.removeItem("gmailLogin");
-      if (window.google?.accounts?.id) {
-        try { google.accounts.id.disableAutoSelect(); } catch(_) {}
-      }
-      window.location.href = "https://5g88-login.vercel.app/?blocked=1";
-    }
-  });
-
-  // Simpan data login ke Firebase
-  const sanitizedEmail = sessionData.email.toLowerCase().replace(/\./g, '_');
-  blurphpDb.ref('users/' + sanitizedEmail).update({
-    name: sessionData.name,
-    email: sessionData.email,
-    photoURL: sessionData.photo || '',
-    lastLoginTime: Date.now()
-  });
-
-  // Online presence
-  const connectedRef = blurphpDb.ref(".info/connected");
-  const onlineRef = blurphpDb.ref("users/" + sanitizedEmail + "/online");
-
-  connectedRef.on("value", (snap) => {
-    if (snap.val() === true) {
-      onlineRef.set(true);
-      onlineRef.onDisconnect().set(false);
-    }
-  });
-
-  window.addEventListener("beforeunload", () => {
-    try {
-      blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
-    } catch (_) {}
-    try {
-      blurphpDb.ref("chats/" + userId).off();
-    } catch (_) {}
-    try {
-      loginDb.ref("logins/admin_override/" + userId).off();
-    } catch (_) {}
-  });
-
-  // Livechat notif sound
-  let lastNotifTime = 0;
-  let userHasInteracted = false;
-  document.body.addEventListener("click", () => { userHasInteracted = true; });
-
-  const chatsRef = blurphpDb.ref("chats/" + userId);
-  chatsRef.off("child_added");
-  chatsRef.on("child_added", (snapshot) => {
-    const msg = snapshot.val();
-    const livechatDot = document.getElementById("livechatDot");
-    const notifSound  = document.getElementById("notifSound");
-    if (!msg || msg.from !== "admin") return;
-
-    const timestamp = msg.time || Date.now();
-    if (timestamp > lastNotifTime) {
-      lastNotifTime = timestamp;
-      if (livechatDot) livechatDot.style.display = "inline";
-
-      if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
-        notifSound.currentTime = 0;
-        notifSound.play().catch(() => {});
-      }
-    }
-  });
-
-  initLivechatNotifListener(userId);
+    window.location.href = "https://5g88-login.vercel.app/?blocked=1";
+  }
+});
+  //  Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
+const sanitizedEmail = sessionData.email.toLowerCase().replace(/\./g, '_');
+blurphpDb.ref('users/' + sanitizedEmail).update({
+  name: sessionData.name,
+  email: sessionData.email,
+  photoURL: sessionData.photo || '',
+  lastLoginTime: Date.now()
 });
 
-// User dropdown (nama/email, ARIA, dll)
-const userNameText     = document.getElementById("userNameText");
-const dropdownContent  = document.getElementById("dropdownContent");
-const userEmailElem    = document.getElementById("userEmail");
-const dropdownWrapper  = document.querySelector(".user-dropdown");
-const userButton       = document.getElementById("userName");
+// Tambah status online user di Firebase
+const connectedRef = blurphpDb.ref(".info/connected");
+const onlineRef = blurphpDb.ref("users/" + sanitizedEmail + "/online");
 
-function safeParse(json, fallback=null){
-  try { return JSON.parse(json); } catch { return fallback; }
-}
-function debounce(fn, wait=150){
-  let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(null,args), wait); };
-}
-
-if (userNameText && dropdownContent && dropdownWrapper && userButton) {
-  const loginData = safeParse(localStorage.getItem("gmailLogin"), {});
-  const fullName  = (loginData?.name || "User").trim();
-  const parts     = fullName.split(/\s+/);
-  const displayBase = (parts.length >= 2 && parts[0].toLowerCase() === parts[1].toLowerCase())
-    ? parts[0]
-    : fullName;
-
-  function shortNameForHeader(raw){
-    const isNarrow = window.matchMedia("(max-width: 1100px)").matches;
-    const max = isNarrow ? 10 : 16;
-    const first = (raw.split(" ")[0] || raw);
-    return first.length > max ? (first.slice(0, max-1) + "…") : first;
+connectedRef.on("value", (snap) => {
+  if (snap.val() === true) {
+    onlineRef.set(true);
+    onlineRef.onDisconnect().set(false);
   }
-  function refreshHeaderName(){
-    userNameText.textContent = shortNameForHeader(displayBase);
+});
+
+window.addEventListener("beforeunload", () => {
+  // set offline
+  try {
+    blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
+  } catch (_) {}
+
+  // matikan semua listener yang kita hidupkan
+  try {
+    blurphpDb.ref("chats/" + userId).off();
+  } catch (_) {}
+
+  try {
+    loginDb.ref("logins/admin_override/" + userId).off();
+  } catch (_) {}
+});
+let lastNotifTime = 0;
+let userHasInteracted = false;
+document.body.addEventListener("click", () => { userHasInteracted = true; });
+
+const chatsRef = blurphpDb.ref("chats/" + userId);
+chatsRef.off("child_added"); // pastikan gak dobel
+chatsRef.on("child_added", (snapshot) => {
+  const msg = snapshot.val();
+  const livechatDot = document.getElementById("livechatDot");
+  const notifSound  = document.getElementById("notifSound");
+  if (!msg || msg.from !== "admin") return;
+
+  const timestamp = msg.time || Date.now();
+  if (timestamp > lastNotifTime) {
+    lastNotifTime = timestamp;
+    if (livechatDot) livechatDot.style.display = "inline";
+
+    // guard aman buat audio:
+    if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
+      notifSound.currentTime = 0;
+      notifSound.play().catch(() => {});
+    }
   }
-  refreshHeaderName();
-  window.addEventListener("resize", debounce(refreshHeaderName, 150));
+});
 
-  if (userEmailElem && loginData?.email) userEmailElem.textContent = loginData.email;
-  const userNameTextMobile = document.getElementById("userNameTextMobile");
-  const userEmailMobile    = document.getElementById("userEmailMobile");
-  if (userNameTextMobile) userNameTextMobile.textContent = displayBase;
-  if (userEmailMobile && loginData?.email) userEmailMobile.textContent = loginData.email;
+// indikator unread (pakai fungsi yang sudah kamu buat)
+initLivechatNotifListener(userId);
+ //Setelah login aman, baru lanjut
+  const userNameText = document.getElementById("userNameText");
+  const dropdownContent = document.getElementById("dropdownContent");
+  const userEmailElem = document.getElementById("userEmail");
+  const dropdownWrapper = document.querySelector(".user-dropdown");
+  const userButton = document.getElementById("userName");
 
-  userButton.setAttribute("aria-label", `User: ${displayBase}`);
-  userButton.setAttribute("aria-expanded", "false");
-
-  if (typeof updateChangePwVisibility === "function") updateChangePwVisibility();
-
-  const openMenu  = () => {
-    dropdownWrapper.classList.add("force-open");
-    dropdownContent.style.display = "block";
-    userButton.classList.add("active-user-button");
-    userButton.setAttribute("aria-expanded", "true");
-  };
-  const closeMenu = () => {
-    dropdownWrapper.classList.remove("force-open");
-    dropdownContent.style.display = "none";
-    userButton.classList.remove("active-user-button");
-    userButton.setAttribute("aria-expanded", "false");
-  };
-
-  dropdownWrapper.addEventListener("mouseenter", () => {
-    if (!dropdownWrapper.classList.contains("force-open")) {
+  if (userNameText && dropdownContent && dropdownWrapper && userButton) {
+    const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
+    const nameParts = loginData.name.trim().split(" ");
+    const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
+      ? nameParts[0]
+      : loginData.name;
+    userNameText.textContent = displayName;
+    if (userEmailElem) userEmailElem.textContent = loginData.email;
+    updateChangePwVisibility();
+    // 1. Hover: tampilkan dropdown
+    dropdownWrapper.addEventListener("mouseenter", () => {
       dropdownContent.style.display = "block";
-    }
-  });
-  dropdownWrapper.addEventListener("mouseleave", () => {
-    if (!dropdownWrapper.classList.contains("force-open")) {
-      dropdownContent.style.display = "none";
-      userButton.classList.remove("active-user-button");
-    }
-  });
+    });
 
-  userButton.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (dropdownWrapper.classList.contains("force-open")) {
-      closeMenu();
-    } else {
-      openMenu();
-    }
-  });
+    // 2. Hover keluar: sembunyikan jika belum diklik
+   dropdownWrapper.addEventListener("mouseleave", () => {
+  // Jika sedang force-open (hasil dari klik), biarkan tetap tampil
+  if (dropdownWrapper.classList.contains("force-open")) return;
 
-  document.addEventListener("click", (e) => {
-    if (!dropdownWrapper.contains(e.target)) closeMenu();
-  });
+  // Kalau bukan dari klik, artinya hanya hover → tutup dropdown
+  dropdownContent.style.display = "none";
+  userButton.classList.remove("active-user-button");
+});
 
-  dropdownContent.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeMenu();
-  });
-}
+    // 3. Klik user button = toggle tampil dan class
+   userButton.addEventListener("click", (e) => {
+  e.stopPropagation(); // 🛑 ini bantu cegah konflik click luar
+  const isOpen = dropdownWrapper.classList.toggle("force-open");
+  dropdownContent.style.display = isOpen ? "block" : "none";
+  userButton.classList.toggle("active-user-button", isOpen);
+});
 
-// Logout
+    // 4. Klik di luar dropdown → tutup semua
+   document.addEventListener("click", (e) => {
+  if (!dropdownWrapper.contains(e.target)) {
+    dropdownContent.style.display = "none";
+    dropdownWrapper.classList.remove("force-open");
+    userButton.classList.remove("active-user-button");
+  }
+});
+  }
+
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
@@ -1371,7 +1249,6 @@ if (logoutBtn) {
   });
 }
 
-// Jam di header
 function updateDateTime() {
   const now = new Date();
   const hours = String(now.getHours()).padStart(2, '0');
@@ -1382,23 +1259,21 @@ function updateDateTime() {
   const month = monthNames[now.getMonth()];
   const year = now.getFullYear();
   const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
-  const el = document.getElementById('dateTime');
-  if (el) el.textContent = timeString;
+  document.getElementById('dateTime').textContent = timeString;
 }
 setInterval(updateDateTime, 1000);
 updateDateTime();
-
 // PostMessage Handler
 window.addEventListener("message", async function (e) {
-  const allowedOrigins = new Set([
-    "https://searcfile.github.io",
-    "https://5g88-main.vercel.app",
-    // tambahkan origin lain kalau perlu
-  ]);
-  if (!allowedOrigins.has(e.origin)) {
-    console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
-    return;
-  }
+const allowedOrigins = new Set([
+  "https://searcfile.github.io",
+  "https://5g88-main.vercel.app",
+  // tambahkan origin lain kalau perlu
+]);
+if (!allowedOrigins.has(e.origin)) {            // <— pakai .has untuk Set
+  console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
+  return;
+}
 
   const data = e.data;
   const livechatDot = document.getElementById("livechatDot");
@@ -1419,66 +1294,61 @@ window.addEventListener("message", async function (e) {
       alert("❌ Gagal salin gambar dari base64.");
     }
   } else if (data?.action === "copy-image" && data.url) {
-    try {
-      const response = await fetch(data.url);
-      const blob = await response.blob();
-      const item = new ClipboardItem({ [blob.type]: blob });
-      await navigator.clipboard.write([item]);
-      console.log("✅ Gambar dari URL telah disalin.");
-    } catch (err) {
-      console.error("❌ Gagal salin gambar dari URL:", err);
-    }
+  try {
+    const response = await fetch(data.url);
+    const blob = await response.blob();
+    const item = new ClipboardItem({ [blob.type]: blob });
+    await navigator.clipboard.write([item]);
+    console.log("✅ Gambar dari URL telah disalin.");
+  } catch (err) {
+    console.error("❌ Gagal salin gambar dari URL:", err);
   }
+}
 });
 
-// Loading screen
-const loadingScreen = document.getElementById("loadingScreen");
-if (loadingScreen) {
-  loadingScreen.style.display = "none";
-}
+  const loadingScreen = document.getElementById("loadingScreen");
+  if (loadingScreen) {
+    loadingScreen.style.display = "none";
+  }
+let isDown = false;
+let startX, scrollLeft;
 
-// === Drag-scroll tab bar (guarded) ===
-if (tabBar) {
-  let isDown = false;
-  let startX, scrollLeft;
+tabBar.addEventListener('mousedown', (e) => {
+  isDown = true;
+  startX = e.pageX - tabBar.offsetLeft;
+  scrollLeft = tabBar.scrollLeft;
+});
 
-  tabBar.addEventListener('mousedown', (e) => {
-    isDown = true;
-    startX = e.pageX - tabBar.offsetLeft;
-    scrollLeft = tabBar.scrollLeft;
-  });
+tabBar.addEventListener('mouseleave', () => {
+  isDown = false;
+});
 
-  tabBar.addEventListener('mouseleave', () => {
-    isDown = false;
-  });
+tabBar.addEventListener('mouseup', () => {
+  isDown = false;
+});
 
-  tabBar.addEventListener('mouseup', () => {
-    isDown = false;
-  });
-
-  tabBar.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
+tabBar.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - tabBar.offsetLeft;
+  const walk = (x - startX) * 1.5;
+  tabBar.scrollLeft = scrollLeft - walk;
+});
+tabBar.addEventListener('wheel', (e) => {
+  if (e.deltaY !== 0) {
     e.preventDefault();
-    const x = e.pageX - tabBar.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    tabBar.scrollLeft = scrollLeft - walk;
-  });
-
-  tabBar.addEventListener('wheel', (e) => {
-    if (e.deltaY !== 0) {
-      e.preventDefault();
-      tabBar.scrollLeft += e.deltaY;
-    }
-  });
-}
-
-// === Modal Change Password ===
+    tabBar.scrollLeft += e.deltaY;
+  }
+});
+});
 (function(){
   const btn = document.getElementById('changePwBtn');
   if (!btn) return;
 
+  // set state awal secara dinamis
   updateChangePwVisibility();
 
+  // Elemen modal
   const modal   = document.getElementById('cpModal');
   const closeX  = document.getElementById('cpClose');
   const cancel  = document.getElementById('cpCancel');
@@ -1490,6 +1360,7 @@ if (tabBar) {
   const okBox   = document.getElementById('cpOk');
 
   function openCp(){
+    // cek ulang status login SAAT INI (bukan nilai lama)
     if (!isUsernameLoginNow()) return;
     errBox.style.display = 'none'; errBox.textContent = '';
     okBox.style.display  = 'none'; okBox.textContent  = '';
