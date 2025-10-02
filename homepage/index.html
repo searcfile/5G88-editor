@@ -695,12 +695,14 @@ document.addEventListener("click", (e) => {
   }
 });
 
-pageFrame?.addEventListener("load", () => {
+let iframe = document.getElementById("pageFrame");
+iframe?.addEventListener("load", () => {
   try {
-    pageFrame.contentWindow.document.addEventListener("click", () => {
+    iframe.contentWindow.document.addEventListener("click", () => {
       gameLogDropdown.style.display = "none";
     });
-  } catch (err) {}
+  } catch (err) {
+  }
 });
 
 // Jika user klik iframe (fokus keluar), juga tutup dropdown
