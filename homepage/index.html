@@ -668,98 +668,57 @@ window.addEventListener("blur", () => {
     popup.style.display = "none";
   }
 });
-const gameLogBtn = document.getElementById("gameLogBtn");
-const gameLogDropdown = document.getElementById("gameLogDropdown");
-
-// Tampilkan/Hide dropdown saat tombol GameLog diklik
-if (gameLogBtn) {
-  gameLogBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const rect = gameLogBtn.getBoundingClientRect();
-    if (gameLogDropdown) {
-      gameLogDropdown.style.left = `${rect.left}px`;
-      gameLogDropdown.style.top = `${rect.bottom + 6}px`;
-      gameLogDropdown.style.display = gameLogDropdown.style.display === "block" ? "none" : "block";
-    }
-  });
-}
-
-document.addEventListener("click", (e) => {
-  if (
-    gameLogDropdown &&
-    gameLogBtn &&
-    !gameLogDropdown.contains(e.target) &&
-    !gameLogBtn.contains(e.target)
-  ) {
-    gameLogDropdown.style.display = "none";
-  }
-});
-
-let iframe = document.getElementById("pageFrame");
-iframe?.addEventListener("load", () => {
-  try {
-    iframe.contentWindow.document.addEventListener("click", () => {
-      gameLogDropdown.style.display = "none";
-    });
-  } catch (err) {
-  }
-});
-
-// Jika user klik iframe (fokus keluar), juga tutup dropdown
-window.addEventListener("blur", () => {
-  if (gameLogDropdown.style.display === "block") {
-    gameLogDropdown.style.display = "none";
-  }
-});
-// ===== BANK RESIT (dropdown mirip GameLog) =====
-const bankResitBtn = document.getElementById("bankResitBtn");
+// ===== DROPDOWNS (GameLog & Bank Resit) – versi terpadu =====
+const gameLogBtn        = document.getElementById("gameLogBtn");
+const gameLogDropdown   = document.getElementById("gameLogDropdown");
+const bankResitBtn      = document.getElementById("bankResitBtn");
 const bankResitDropdown = document.getElementById("bankResitDropdown");
 
-// Tampilkan/Hide dropdown saat tombol Bank Resit diklik
-if (bankResitBtn) {
-  bankResitBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    // tutup dropdown GameLog biar tidak dobel
-    if (gameLogDropdown) gameLogDropdown.style.display = "none";
-
-    const rect = bankResitBtn.getBoundingClientRect();
-    if (bankResitDropdown) {
-      bankResitDropdown.style.left = `${rect.left}px`;
-      bankResitDropdown.style.top  = `${rect.bottom + 6}px`;
-      bankResitDropdown.style.display =
-        bankResitDropdown.style.display === "block" ? "none" : "block";
-    }
-  });
+function closeAllDropdowns() {
+  if (gameLogDropdown)   gameLogDropdown.style.display   = "none";
+  if (bankResitDropdown) bankResitDropdown.style.display = "none";
 }
 
-// Klik luar = tutup dropdown Bank Resit
-document.addEventListener("click", (e) => {
-  if (
-    bankResitDropdown &&
-    bankResitBtn &&
-    !bankResitDropdown.contains(e.target) &&
-    !bankResitBtn.contains(e.target)
-  ) {
-    bankResitDropdown.style.display = "none";
+function toggleDropdown(btnEl, ddEl) {
+  if (!btnEl || !ddEl) return;
+  const rect = btnEl.getBoundingClientRect();
+  const willOpen = ddEl.style.display !== "block";
+
+  // Tutup semua sebelum buka salah satu
+  closeAllDropdowns();
+
+  if (willOpen) {
+    ddEl.style.left = `${rect.left}px`;
+    ddEl.style.top  = `${rect.bottom + 6}px`;
+    ddEl.style.display = "block";
   }
+}
+
+// Klik tombol -> toggle & tutup yang lain otomatis
+gameLogBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleDropdown(gameLogBtn, gameLogDropdown);
 });
 
-// Jika user klik iframe (fokus keluar), juga tutup dropdown Bank Resit
-iframe?.addEventListener("load", () => {
+bankResitBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleDropdown(bankResitBtn, bankResitDropdown);
+});
+
+// Klik di luar -> tutup semua dropdown
+document.addEventListener("click", () => closeAllDropdowns());
+
+// Klik pada dokumen di dalam iframe -> tutup juga
+const pageFrame = document.getElementById("pageFrame");
+pageFrame?.addEventListener("load", () => {
   try {
-    iframe.contentWindow.document.addEventListener("click", () => {
-      if (bankResitDropdown) bankResitDropdown.style.display = "none";
-    });
-  } catch (err) {}
+    pageFrame.contentWindow.document.addEventListener("click", closeAllDropdowns);
+  } catch (_) {}
 });
 
-// Jika window blur, tutup dropdown Bank Resit juga
-window.addEventListener("blur", () => {
-  if (bankResitDropdown && bankResitDropdown.style.display === "block") {
-    bankResitDropdown.style.display = "none";
-  }
-});
-
+// Blur/ESC -> tutup semuanya
+window.addEventListener("blur", closeAllDropdowns);
+window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAllDropdowns(); });
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
@@ -769,7 +728,6 @@ const menuIcon = document.getElementById("menuIcon");
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const container = document.getElementById("mainContainer");
-const pageFrame = document.getElementById("pageFrame");
 
 if (tabBar) {
   tabBar.style.display = "flex";
