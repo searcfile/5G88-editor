@@ -228,6 +228,23 @@ a.tab-open .check-icon {
   .cp-ok{font-size:12px;color:#7CFC7C;display:none;margin:-2px 0 8px}
   .btn-cpw{display:none;width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1;background-color:#141414;color:rgba(255,255,255,0.85);border:1px solid #424242;border-radius:6px;padding:0 12px;cursor:pointer;font-size:14px;transition:all .3s ease;box-shadow:0 2px 0 rgba(255,255,255,0.04);margin-bottom:8px;}
   .btn-cpw:hover{border:1px solid #ffe34d; color:#ffe34d;}.btn-cpw:active{border:1px solid #dbb900; color:#dbb900;}
+  /* Empty state */
+#mainContainer { position: relative; }          /* container harus relative */
+
+.empty-state{
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; text-align: center;
+  color: rgba(255,255,255,.7);
+  pointer-events: none;                         /* biar tidak ganggu klik header/menu */
+  z-index: 0;                                   /* loader kamu (z-index 1000) tetap di atas */
+}
+.empty-state .empty-title{ font-size: 16px; color: rgba(255,255,255,.85); }
+.empty-state .empty-icon{ opacity: .6 }
+.empty-state .empty-desc{ font-size: 14px; opacity: .8 }
+
+.empty-state.hidden{ display: none; }
   </style>
 </head>
 <body>
@@ -302,7 +319,7 @@ a.tab-open .check-icon {
       
       <button id="gameLogBtn" class="live-chat-button" aria-label="Game Log" title="Game Log">
         <svg width="1.2rem" height="1.2rem" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
-          <path d="m11.239 15.533c-1.045 3.004-1.238 3.451-1.238 3.84 0 .441.385.627.627.627.272 0 1.108-.301 3.829-1.249zm.888-.888 3.22 3.22 6.408-6.401c.163-.163.245-.376.245-.591 0-.213-.082-.427-.245-.591-.58-.579-1.458-1.457-2.039-2.036-.163-.163-.377-.245-.591-.245-.213 0-.428.082-.592.245zm-3.127-.895c0-.402-.356-.75-.75-.75-2.561 0-2.939 0-5.5 0-.394 0-.75.348-.75.75s.356.75.75.75h5.5c.394 0 .75-.348.75-.75zm5-3c0-.402-.356-.75-.75-.75-2.561 0-7.939 0-10.5 0-.394 0-.75.348-.75.75s.356.75.75.75h10.5c.394 0 .75-.348.75-.75zm0-3c0-.402-.356-.75-.75-.75-2.561 0-7.939 0-10.5 0-.394 0-.75.348-.75.75s.356.75.75.75h10.5c.394 0 .75-.348.75-.75zm0-3c0-.402-.356-.75-.75-.75-2.561 0-7.939 0-10.5 0-.394 0-.75.348-.75.75s.356.75.75.75h10.5c.394 0 .75-.348.75-.75z"/>
+          <path d="m11.25 6c.398 0 .75.352.75.75 0 .414-.336.75-.75.75-1.505 0-7.75 0-7.75 0v12h17v-8.749c0-.414.336-.75.75-.75s.75.336.75.75v9.249c0 .621-.522 1-1 1h-18c-.48 0-1-.379-1-1v-13c0-.481.38-1 1-1zm1.521 9.689 9.012-9.012c.133-.133.217-.329.217-.532 0-.179-.065-.363-.218-.515l-2.423-2.415c-.143-.143-.333-.215-.522-.215s-.378.072-.523.215l-9.027 8.996c-.442 1.371-1.158 3.586-1.264 3.952-.126.433.198.834.572.834.41 0 .696-.099 4.176-1.308zm-2.258-2.392 1.17 1.171c-.704.232-1.274.418-1.729.566zm.968-1.154 7.356-7.331 1.347 1.342-7.346 7.347z"/>
         </svg>
         <span class="btn-label">GameLog</span>
       </button>
@@ -417,6 +434,19 @@ a.tab-open .check-icon {
     <div id="iframeLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0, 0, 0, 0.55); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 1000;">
       <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 150px; height: auto;" />
       <div style="margin-top: 1px; color: white; font-size: 14px; font-family: sans-serif;">Loading...</div>
+      <!-- EMPTY STATE (muncul saat belum ada tab) -->
+<div id="emptyState" class="empty-state hidden" role="status" aria-live="polite">
+  <h3 class="empty-title">Pilih menu di atas untuk mulai</h3>
+
+  <!-- ikon inbox -->
+  <svg class="empty-icon" width="64" height="64" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+          fill="none" stroke="currentColor" stroke-width="1.5" />
+    <path d="M3 13h5l2 3h4l2-3h5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  </svg>
+
+  <p class="empty-desc">No data</p>
+</div>
     </div>
     <iframe
   id="pageFrame"
@@ -779,6 +809,13 @@ function saveTabs(tabs) {
 function getTabs() {
   return JSON.parse(localStorage.getItem("openTabs")) || [];
 }
+const emptyState = document.getElementById('emptyState');
+function updateEmptyState(){
+  if (!emptyState) return;
+  const tabs = getTabs();
+  if (tabs.length === 0) emptyState.classList.remove('hidden');
+  else emptyState.classList.add('hidden');
+}
 
 function addTab(label, url) {
   const existingTabs = getTabs();
@@ -835,6 +872,7 @@ function addTab(label, url) {
   renderTabs();
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
+  updateEmptyState();
 }
 
 function sendLoginToIframe() {
@@ -883,6 +921,7 @@ function closeTab(label) {
   renderTabs();
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
+  updateEmptyState();
 
   const gameLogBtn = document.getElementById("gameLogBtn");
   const liveBtn = document.getElementById("liveChatBtn");
@@ -1037,6 +1076,7 @@ function initSortableTabs() {
   });
 }
 function loadPage(url) {
+  if (emptyState) emptyState.classList.add('hidden');
   const iframeLoader = document.getElementById("iframeLoader");
   const frame = document.getElementById("pageFrame");
 
@@ -1125,6 +1165,7 @@ window.onload = () => {
     loadPage(match.url);
     updateGameLogCheckmarks();
     updateBankResitCheckmarks();
+    updateEmptyState();
     
     if (match.label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
