@@ -238,7 +238,7 @@ a.tab-open .check-icon {
   gap: 12px; text-align: center;
   color: rgba(255,255,255,.7);
   pointer-events: none;                         /* biar tidak ganggu klik header/menu */
-  z-index: 0;                                   /* loader kamu (z-index 1000) tetap di atas */
+  z-index: 10;                                   /* loader kamu (z-index 1000) tetap di atas */
 }
 .empty-state .empty-title{ font-size: 16px; color: rgba(255,255,255,.85); }
 .empty-state .empty-icon{ opacity: .6 }
@@ -431,22 +431,18 @@ a.tab-open .check-icon {
 
 
   <div class="container" id="mainContainer">
+      <div id="emptyState" class="empty-state hidden" role="status" aria-live="polite">
+    <h3 class="empty-title">Pilih menu di atas untuk mulai</h3>
+    <svg class="empty-icon" width="64" height="64" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+            fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M3 13h5l2 3h4l2-3h5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    <p class="empty-desc">No data</p>
+  </div>
     <div id="iframeLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0, 0, 0, 0.55); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 1000;">
       <img src="https://api.5g88.homes/media/LOADING_GIF.webp" alt="Loading..." style="width: 150px; height: auto;" />
       <div style="margin-top: 1px; color: white; font-size: 14px; font-family: sans-serif;">Loading...</div>
-      <!-- EMPTY STATE (muncul saat belum ada tab) -->
-<div id="emptyState" class="empty-state hidden" role="status" aria-live="polite">
-  <h3 class="empty-title">Pilih menu di atas untuk mulai</h3>
-
-  <!-- ikon inbox -->
-  <svg class="empty-icon" width="64" height="64" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
-          fill="none" stroke="currentColor" stroke-width="1.5" />
-    <path d="M3 13h5l2 3h4l2-3h5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-  </svg>
-
-  <p class="empty-desc">No data</p>
-</div>
     </div>
     <iframe
   id="pageFrame"
@@ -1147,6 +1143,7 @@ function updateBankResitCheckmarks() {
 window.onload = () => {
   renderTabs();
   const tabs = getTabs();
+  updateEmptyState();
   updateGameLogCheckmarks();
   const activeUrl = localStorage.getItem("activeTabUrl");
   const match = tabs.find(tab => tab.url === activeUrl);
