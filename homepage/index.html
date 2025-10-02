@@ -299,6 +299,7 @@ a.tab-open .check-icon {
 
     <!-- GameLog (judul tombol; dropdown di bawahnya tetap sama) -->
     <div class="dropdown-wrapper">
+      
       <button id="gameLogBtn" class="live-chat-button" aria-label="Game Log" title="Game Log">
         <svg width="1.2rem" height="1.2rem" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
           <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
@@ -334,42 +335,33 @@ a.tab-open .check-icon {
         </a>
       </div>
     </div>
-  </div>
-            <div class="dropdown-wrapper">
-      <button id="gameLogBtn" class="live-chat-button" aria-label="Game Log" title="Game Log">
-        <svg width="1.2rem" height="1.2rem" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
-          <path d="M8.424 12.282l4.402 4.399-5.826 1.319 1.424-5.718zm15.576-6.748l-9.689 9.804-4.536-4.536 9.689-9.802 4.536 4.534zm-6 8.916v6.55h-16v-12h6.743l1.978-2h-10.721v16h20v-10.573l-2 2.023z"/>
-        </svg>
-        <span class="btn-label">GameLog</span>
-      </button>
+    <!-- BANK RESIT (copy gaya GameLog) -->
+<div class="dropdown-wrapper">
+  <button id="bankResitBtn" class="live-chat-button" aria-label="Bank Resit" title="Bank Resit">
+    <svg width="1.2rem" height="1.2rem" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+      <path d="M12 2l10 6v2h-2v10h-5v-6h-6v6h-5v-10h-2v-2l10-6zm0 2.197l-6.764 4.054h13.528l-6.764-4.054z"/>
+    </svg>
+    <span class="btn-label">Bank Resit</span>
+  </button>
 
-      <div id="gameLogDropdown" class="dropdown-links">
-        <!-- (isi a href kamu tetap) -->
-        <a data-label="MEGA888" href="#" onclick="addTab('MEGA888','https://searcfile.github.io/5G88-editor/mega888/');">
-          MEGA888
-          <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
-            <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-          </svg>
-        </a>
-        <a data-label="PUSSY888" href="#" onclick="addTab('PUSSY888','https://searcfile.github.io/5G88-editor/pussy888/');">
-          PUSSY888
-          <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
-            <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-          </svg>
-        </a>
-        <a data-label="918KISS" href="#" onclick="addTab('918KISS','https://searcfile.github.io/5G88-editor/918kiss/');">
-          918KISS
-          <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
-            <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-          </svg>
-        </a>
-        <a data-label="SCR888H5" href="#" onclick="addTab('SCR888H5','https://searcfile.github.io/5G88-editor/scr888h5/');">
-          SCR888H5
-          <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display: none;">
-            <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
-          </svg>
-        </a>
-      </div>
+  <div id="bankResitDropdown" class="dropdown-links">
+    <a data-label="MAYBANK" href="#"
+       onclick="addTab('MAYBANK','https://searcfile.github.io/5G88-editor/maybank/');">
+      MAYBANK
+      <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
+        <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+      </svg>
+    </a>
+    <a data-label="CIMB BANK" href="#"
+       onclick="addTab('CIMB BANK','https://searcfile.github.io/5g88-php/cimb/');">
+      CIMB BANK
+      <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
+        <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+      </svg>
+    </a>
+  </div>
+</div>
+  </div>
 
   <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
 
@@ -703,14 +695,12 @@ document.addEventListener("click", (e) => {
   }
 });
 
-let iframe = document.getElementById("pageFrame");
-iframe?.addEventListener("load", () => {
+pageFrame?.addEventListener("load", () => {
   try {
-    iframe.contentWindow.document.addEventListener("click", () => {
+    pageFrame.contentWindow.document.addEventListener("click", () => {
       gameLogDropdown.style.display = "none";
     });
-  } catch (err) {
-  }
+  } catch (err) {}
 });
 
 // Jika user klik iframe (fokus keluar), juga tutup dropdown
@@ -719,7 +709,54 @@ window.addEventListener("blur", () => {
     gameLogDropdown.style.display = "none";
   }
 });
+// ===== BANK RESIT (dropdown mirip GameLog) =====
+const bankResitBtn = document.getElementById("bankResitBtn");
+const bankResitDropdown = document.getElementById("bankResitDropdown");
 
+// Tampilkan/Hide dropdown saat tombol Bank Resit diklik
+if (bankResitBtn) {
+  bankResitBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    // tutup dropdown GameLog biar tidak dobel
+    if (gameLogDropdown) gameLogDropdown.style.display = "none";
+
+    const rect = bankResitBtn.getBoundingClientRect();
+    if (bankResitDropdown) {
+      bankResitDropdown.style.left = `${rect.left}px`;
+      bankResitDropdown.style.top  = `${rect.bottom + 6}px`;
+      bankResitDropdown.style.display =
+        bankResitDropdown.style.display === "block" ? "none" : "block";
+    }
+  });
+}
+
+// Klik luar = tutup dropdown Bank Resit
+document.addEventListener("click", (e) => {
+  if (
+    bankResitDropdown &&
+    bankResitBtn &&
+    !bankResitDropdown.contains(e.target) &&
+    !bankResitBtn.contains(e.target)
+  ) {
+    bankResitDropdown.style.display = "none";
+  }
+});
+
+// Jika user klik iframe (fokus keluar), juga tutup dropdown Bank Resit
+iframe?.addEventListener("load", () => {
+  try {
+    iframe.contentWindow.document.addEventListener("click", () => {
+      if (bankResitDropdown) bankResitDropdown.style.display = "none";
+    });
+  } catch (err) {}
+});
+
+// Jika window blur, tutup dropdown Bank Resit juga
+window.addEventListener("blur", () => {
+  if (bankResitDropdown && bankResitDropdown.style.display === "block") {
+    bankResitDropdown.style.display = "none";
+  }
+});
 
 function closeMessage() {
   const popup = document.getElementById("messagePopup");
@@ -790,11 +827,12 @@ function addTab(label, url) {
     existingTabs.push({ label, url });
     saveTabs(existingTabs);
   }
-
+  
   const linkBtn = document.getElementById("linkDownloadBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
   const gameLogBtn = document.getElementById("gameLogBtn");
+  const bankResitBtnEl = document.getElementById("bankResitBtn");
 
   if (gameLogBtn) {
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
@@ -804,6 +842,14 @@ function addTab(label, url) {
       gameLogBtn.classList.remove("active-gamelog");
     }
   }
+  if (bankResitBtnEl) {
+  const bankResitLabels = ["MAYBANK", "CIMB BANK"];
+  if (bankResitLabels.includes(label)) {
+    bankResitBtnEl.classList.add("active-gamelog"); // reuse class biar gaya sama
+  } else {
+    bankResitBtnEl.classList.remove("active-gamelog");
+  }
+}
 
   if (liveBtn) {
     if (label === "LIVE CHAT") {
@@ -828,6 +874,7 @@ function addTab(label, url) {
   loadPage(url);
   renderTabs();
   updateGameLogCheckmarks();
+  updateBankResitCheckmarks();
 }
 
 function sendLoginToIframe() {
@@ -875,10 +922,12 @@ function closeTab(label) {
   saveTabs(tabs);
   renderTabs();
   updateGameLogCheckmarks();
-  
+  updateBankResitCheckmarks();
+
   const gameLogBtn = document.getElementById("gameLogBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const linkBtn = document.getElementById("linkDownloadBtn");
+  const bankResitBtnEl = document.getElementById("bankResitBtn");
 
   if (tabs.length > 0) {
     const lastTab = tabs[tabs.length - 1];
@@ -886,14 +935,17 @@ function closeTab(label) {
 
     // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+    const bankResitLabels = ["MAYBANK", "CIMB BANK"];
+
     gameLogBtn?.classList.toggle("active-gamelog", gameLogLabels.includes(lastTab.label));
+    bankResitBtnEl?.classList.toggle("active-gamelog", bankResitLabels.includes(lastTab.label));
     liveBtn?.classList.toggle("active-livechat", lastTab.label === "LIVE CHAT");
     linkBtn?.classList.toggle("active-linkdownload", lastTab.label === "LINK DOWNLOAD");
-
   } else {
     // Tidak ada tab tersisa → matikan semua status aktif
     pageFrame.src = "";
     gameLogBtn?.classList.remove("active-gamelog");
+    bankResitBtnEl?.classList.remove("active-gamelog");
     liveBtn?.classList.remove("active-livechat");
     linkBtn?.classList.remove("active-linkdownload");
   }
@@ -939,6 +991,7 @@ function renderTabs() {
       const gameLogBtn = document.getElementById("gameLogBtn");
       const liveBtn = document.getElementById("liveChatBtn");
       const linkBtn = document.getElementById("linkDownloadBtn");
+      const bankResitBtnEl = document.getElementById("bankResitBtn");
 
       if (liveBtn)
         liveBtn.classList.toggle("active-livechat", tab.label === "LIVE CHAT");
@@ -950,8 +1003,12 @@ function renderTabs() {
         const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
         gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
       }
+      if (bankResitBtnEl) {
+      const bankResitLabels = ["MAYBANK", "CIMB BANK"];
+      bankResitBtnEl.classList.toggle("active-gamelog", bankResitLabels.includes(tab.label));
+      }
     };
-
+   
     // Tab aktif highlight
     const currentFrame = document.getElementById("pageFrame");
     if (currentFrame && tab.url === currentFrame.src) {
@@ -995,6 +1052,8 @@ function renderTabs() {
 
   // Inisialisasi Sortable.js drag (auto spacing)
   initSortableTabs();
+  updateGameLogCheckmarks();
+  updateBankResitCheckmarks();
 }
 function initSortableTabs() {
   if (!window.Sortable || !tabBar) return;
@@ -1067,6 +1126,23 @@ function updateGameLogCheckmarks() {
     }
   });
 }
+function updateBankResitCheckmarks() {
+  const tabs = getTabs();
+  const labelsOpen = tabs.map(tab => tab.label);
+  const dropdownLinks = document.querySelectorAll('#bankResitDropdown a');
+
+  dropdownLinks.forEach(link => {
+    const label = link.getAttribute("data-label");
+    const icon = link.querySelector(".check-icon");
+    if (labelsOpen.includes(label)) {
+      link.classList.add("tab-open");
+      if (icon) icon.style.display = "inline";
+    } else {
+      link.classList.remove("tab-open");
+      if (icon) icon.style.display = "none";
+    }
+  });
+}
 
 window.onload = () => {
   renderTabs();
@@ -1078,15 +1154,18 @@ window.onload = () => {
   const liveBtn = document.getElementById("liveChatBtn");
   const linkBtn = document.getElementById("linkDownloadBtn");
   const gameLogBtn = document.getElementById("gameLogBtn");
+  const bankResitBtnEl = document.getElementById("bankResitBtn");
 
   if (liveBtn) liveBtn.classList.remove("active-livechat");
   if (linkBtn) linkBtn.classList.remove("active-linkdownload");
   if (gameLogBtn) gameLogBtn.classList.remove("active-gamelog");
+  if (bankResitBtnEl) bankResitBtnEl.classList.remove("active-gamelog");
 
   if (match) {
     loadPage(match.url);
     updateGameLogCheckmarks();
-
+    updateBankResitCheckmarks();
+    
     if (match.label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
     }
@@ -1094,7 +1173,10 @@ window.onload = () => {
     if (match.label === "LINK DOWNLOAD") {
       linkBtn.classList.add("active-linkdownload");
     }
-
+    const bankResitLabels = ["MAYBANK", "CIMB BANK"];
+if (bankResitBtnEl && match && bankResitLabels.includes(match.label)) {
+  bankResitBtnEl.classList.add("active-gamelog");
+}
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
     if (gameLogBtn && gameLogLabels.includes(match.label)) {
       gameLogBtn.classList.add("active-gamelog");
@@ -1384,6 +1466,7 @@ window.renderMobileUserBtn = function renderMobileUserBtn(){
 };
 (function setAriaLabels(){
   const pairs = [
+    ['bankResitBtn','Bank Resit'],
     ['liveChatBtn','LiveChat'],
     ['linkDownloadBtn','Link Download'],
     ['gameLogBtn','Game Log'],
