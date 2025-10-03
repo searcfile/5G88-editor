@@ -888,14 +888,14 @@ function sendLoginToIframe() {
 
   // Kirim segera + retry beberapa kali kalau listener di anak belum siap
   iframe.contentWindow.postMessage(payload, childOrigin);
-  setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 200);
-  setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 600);
+  setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 100);
+  setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 300);
 }
 
 // Panggil setiap kali iframe selesai load
 if (pageFrame && pageFrame.contentWindow) {
   pageFrame.addEventListener("load", () => {
-    setTimeout(sendLoginToIframe, 150);
+    setTimeout(sendLoginToIframe, 75);
   });
 }
 
@@ -905,7 +905,7 @@ if (liveChatBtn) {
   liveChatBtn.addEventListener("click", () => {
     setTimeout(() => {
       sendLoginToIframe();
-    }, 500); // beri waktu iframe sempat load
+    }, 250); // beri waktu iframe sempat load
   });
 }
 function closeTab(label) {
