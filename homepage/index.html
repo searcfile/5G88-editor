@@ -285,6 +285,9 @@ a.tab-open .check-icon {
     <a href="#" onclick="addTab('CIMB BANK', 'https://searcfile.github.io/5g88-php/cimb/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> CIMB BANK
     </a>
+    <a href="#" onclick="addTab('BANK ISLAM', 'https://searcfile.github.io/5g88-php/bankislam/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> BANK ISLAM
+    </a>
   </div>
 
 <div class="header">
@@ -372,6 +375,13 @@ a.tab-open .check-icon {
     <a data-label="CIMB BANK" href="#"
        onclick="addTab('CIMB BANK','https://searcfile.github.io/5g88-php/cimb/');">
       CIMB BANK
+      <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
+        <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+      </svg>
+    </a>
+    <a data-label="BANK ISLAM" href="#"
+       onclick="addTab('BANK ISLAM','https://searcfile.github.io/5g88-php/bankislam/');">
+      BANK ISLAM
       <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
         <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
       </svg>
@@ -836,7 +846,7 @@ function addTab(label, url) {
     }
   }
   if (bankResitBtnEl) {
-  const bankResitLabels = ["MAYBANK", "CIMB BANK"];
+  const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
   if (bankResitLabels.includes(label)) {
     bankResitBtnEl.classList.add("active-gamelog"); // reuse class biar gaya sama
   } else {
@@ -930,7 +940,7 @@ function closeTab(label) {
 
     // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
-    const bankResitLabels = ["MAYBANK", "CIMB BANK"];
+    const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
 
     gameLogBtn?.classList.toggle("active-gamelog", gameLogLabels.includes(lastTab.label));
     bankResitBtnEl?.classList.toggle("active-gamelog", bankResitLabels.includes(lastTab.label));
@@ -999,7 +1009,7 @@ function renderTabs() {
         gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
       }
       if (bankResitBtnEl) {
-      const bankResitLabels = ["MAYBANK", "CIMB BANK"];
+      const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
       bankResitBtnEl.classList.toggle("active-gamelog", bankResitLabels.includes(tab.label));
       }
     };
@@ -1171,7 +1181,7 @@ window.onload = () => {
     if (match.label === "LINK DOWNLOAD") {
       linkBtn.classList.add("active-linkdownload");
     }
-    const bankResitLabels = ["MAYBANK", "CIMB BANK"];
+    const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
 if (bankResitBtnEl && match && bankResitLabels.includes(match.label)) {
   bankResitBtnEl.classList.add("active-gamelog");
 }
