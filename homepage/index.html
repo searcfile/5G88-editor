@@ -731,7 +731,6 @@ bankResitBtn?.addEventListener("click", (e) => {
 // Klik di luar -> tutup semua dropdown
 document.addEventListener("click", () => closeAllDropdowns());
 
-// Klik pada dokumen di dalam iframe -> tutup juga
 const pageFrame = document.getElementById("pageFrame");
 if (pageFrame) {
   pageFrame.addEventListener("load", () => {
@@ -739,9 +738,11 @@ if (pageFrame) {
       pageFrame.contentWindow.document.addEventListener("click", closeAllDropdowns);
     } catch (_) {}
 
-    // kirim login dua gelombang
-    sendLoginToIframeReliable(pageFrame, 6, 200);
-    setTimeout(() => sendLoginToIframeReliable(pageFrame, 6, 250), 800);
+    const origin = getChildOriginFromSrc(pageFrame.src);
+    if (origin) {
+      sendLoginToIframeReliable(pageFrame, 6, 200, origin);
+      setTimeout(() => sendLoginToIframeReliable(pageFrame, 6, 250, origin), 800);
+    }
   });
 }
 // Blur/ESC -> tutup semuanya
@@ -868,10 +869,11 @@ function addTab(label, url) {
 
   loadPage(url);
   renderTabs();
-  setTimeout(() => {
+ setTimeout(() => {
   const frame = document.getElementById("pageFrame");
-  if (frame) sendLoginToIframeReliable(frame, 4, 250);
-  }, 120);
+  const origin = frame ? getChildOriginFromSrc(frame.src) : null;
+  if (frame && origin) sendLoginToIframeReliable(frame, 4, 250, origin);
+}, 120);
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateEmptyState();
@@ -886,18 +888,24 @@ function getLoginPayload() {
     user: { name: u.name || "", email: u.email, photo: u.photo || "" }
   };
 }
-function getChildOriginFromSrc(src) {
-  try { return new URL(src).origin; } catch { return "https://searcfile.github.io"; }
+function getChildOriginFromSrc(src){
+  try {
+    const u = new URL(src);
+    if (u.protocol === 'https:' || u.protocol === 'http:') return u.origin;
+  } catch(_) {}
+  return null; // << jangan fallback ke domain lain
 }
-function sendLoginToIframeReliable(iframe, tries = 10, gap = 250) {
+function sendLoginToIframeReliable(iframe, tries = 10, gap = 250, forceOrigin = null) {
   if (!iframe || !iframe.contentWindow) return;
   const payload = getLoginPayload();
   if (!payload) return;
 
-  const origin = getChildOriginFromSrc(iframe.src);
   let count = 0;
   const t = setInterval(() => {
     if (count++ >= tries) { clearInterval(t); return; }
+    // hitung origin setiap kali (halaman iframe bisa berubah)
+    const origin = forceOrigin || getChildOriginFromSrc(iframe.src);
+    if (!origin) return; // belum tahu origin → skip tick ini
     try { iframe.contentWindow.postMessage(payload, origin); } catch (_) {}
   }, gap);
 }
@@ -1086,9 +1094,10 @@ function loadPage(url) {
   };
 
   frame.src = url;
-  setTimeout(() => {
+setTimeout(() => {
   const frame = document.getElementById("pageFrame");
-  if (frame) sendLoginToIframeReliable(frame, 6, 220);
+  const origin = frame ? getChildOriginFromSrc(frame.src) : null;
+  if (frame && origin) sendLoginToIframeReliable(frame, 6, 220, origin);
 }, 150);
 
   localStorage.setItem("activeTabUrl", url);
@@ -1511,10 +1520,12 @@ window.addEventListener("message", async (e) => {
   const data = e.data || {};
 
   // 1) Handshake login
-  if (data.type === "child-ready" || data.type === "request-login") {
-    sendLoginToIframeReliable(frame, 8, 200);
-    return;
-  }
+if (data.type === "child-ready" || data.type === "request-login") {
+  const payload = getLoginPayload();
+  if (payload) e.source.postMessage(payload, e.origin);  // balas langsung ke origin pengirim
+  try { sendLoginToIframeReliable(frame, 4, 200, e.origin); } catch(_) {}
+  return;
+}
 
   // 2) Aksi lain
   const livechatDot = document.getElementById("livechatDot");
