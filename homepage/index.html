@@ -869,11 +869,6 @@ function addTab(label, url) {
 
   loadPage(url);
   renderTabs();
- setTimeout(() => {
-  const frame = document.getElementById("pageFrame");
-  const origin = frame ? getChildOriginFromSrc(frame.src) : null;
-  if (frame && origin) sendLoginToIframeReliable(frame, 4, 250, origin);
-}, 120);
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateEmptyState();
@@ -895,18 +890,19 @@ function getChildOriginFromSrc(src){
   } catch(_) {}
   return null; // << jangan fallback ke domain lain
 }
-function sendLoginToIframeReliable(iframe, tries = 10, gap = 250, forceOrigin = null) {
+function sendLoginToIframeReliable(iframe, tries=10, gap=250, forceOrigin=null){
   if (!iframe || !iframe.contentWindow) return;
   const payload = getLoginPayload();
   if (!payload) return;
 
+  if (iframe._loginTicker) clearInterval(iframe._loginTicker);
   let count = 0;
-  const t = setInterval(() => {
-    if (count++ >= tries) { clearInterval(t); return; }
-    // hitung origin setiap kali (halaman iframe bisa berubah)
+
+  iframe._loginTicker = setInterval(() => {
+    if (count++ >= tries) { clearInterval(iframe._loginTicker); iframe._loginTicker=null; return; }
     const origin = forceOrigin || getChildOriginFromSrc(iframe.src);
-    if (!origin) return; // belum tahu origin → skip tick ini
-    try { iframe.contentWindow.postMessage(payload, origin); } catch (_) {}
+    if (!origin) return;
+    try { iframe.contentWindow.postMessage(payload, origin); } catch(_) {}
   }, gap);
 }
 
@@ -1094,12 +1090,6 @@ function loadPage(url) {
   };
 
   frame.src = url;
-setTimeout(() => {
-  const frame = document.getElementById("pageFrame");
-  const origin = frame ? getChildOriginFromSrc(frame.src) : null;
-  if (frame && origin) sendLoginToIframeReliable(frame, 6, 220, origin);
-}, 150);
-
   localStorage.setItem("activeTabUrl", url);
   closeSidebar();
 
