@@ -733,12 +733,17 @@ document.addEventListener("click", () => closeAllDropdowns());
 
 // Klik pada dokumen di dalam iframe -> tutup juga
 const pageFrame = document.getElementById("pageFrame");
-pageFrame?.addEventListener("load", () => {
-  try {
-    pageFrame.contentWindow.document.addEventListener("click", closeAllDropdowns);
-  } catch (_) {}
-});
+if (pageFrame) {
+  pageFrame.addEventListener("load", () => {
+    try {
+      pageFrame.contentWindow.document.addEventListener("click", closeAllDropdowns);
+    } catch (_) {}
 
+    // kirim login dua gelombang
+    sendLoginToIframeReliable(pageFrame, 6, 200);
+    setTimeout(() => sendLoginToIframeReliable(pageFrame, 6, 250), 800);
+  });
+}
 // Blur/ESC -> tutup semuanya
 window.addEventListener("blur", closeAllDropdowns);
 window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAllDropdowns(); });
@@ -863,49 +868,48 @@ function addTab(label, url) {
 
   loadPage(url);
   renderTabs();
+  setTimeout(() => {
+  const frame = document.getElementById("pageFrame");
+  if (frame) sendLoginToIframeReliable(frame, 4, 250);
+  }, 120);
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateEmptyState();
 }
 
-function sendLoginToIframe() {
-  const iframe = document.getElementById("pageFrame");
-  if (!iframe || !iframe.contentWindow) return;
-
-  const user = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-  if (!user.email) return;
-
-  // Tentukan origin anak dari URL yang sedang dimuat di iframe
-  let childOrigin = "https://searcfile.github.io"; // fallback aman
-  try {
-    if (iframe.src) childOrigin = new URL(iframe.src).origin || childOrigin;
-  } catch (_) {}
-
-  const payload = {
+// === Kirim login ke iframe secara andal dgn retries + delay ===
+function getLoginPayload() {
+  const u = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  if (!u?.email) return null;
+  return {
     type: "user-login",
-    user: { name: user.name, email: user.email, photo: user.photo || "" }
+    user: { name: u.name || "", email: u.email, photo: u.photo || "" }
   };
+}
+function getChildOriginFromSrc(src) {
+  try { return new URL(src).origin; } catch { return "https://searcfile.github.io"; }
+}
+function sendLoginToIframeReliable(iframe, tries = 10, gap = 250) {
+  if (!iframe || !iframe.contentWindow) return;
+  const payload = getLoginPayload();
+  if (!payload) return;
 
-  // Kirim segera + retry beberapa kali kalau listener di anak belum siap
-  iframe.contentWindow.postMessage(payload, childOrigin);
-  setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 100);
-  setTimeout(() => iframe.contentWindow.postMessage(payload, childOrigin), 300);
+  const origin = getChildOriginFromSrc(iframe.src);
+  let count = 0;
+  const t = setInterval(() => {
+    if (count++ >= tries) { clearInterval(t); return; }
+    try { iframe.contentWindow.postMessage(payload, origin); } catch (_) {}
+  }, gap);
 }
 
-// Panggil setiap kali iframe selesai load
-if (pageFrame && pageFrame.contentWindow) {
-  pageFrame.addEventListener("load", () => {
-    setTimeout(sendLoginToIframe, 75);
-  });
-}
-
-// 🔁 Jalankan saat iframe load DAN saat tab LiveChat dibuka
+// 🔁 Jalankan saat tab LiveChat diklik — pakai fungsi RELIABLE
 const liveChatBtn = document.getElementById("liveChatBtn");
 if (liveChatBtn) {
   liveChatBtn.addEventListener("click", () => {
     setTimeout(() => {
-      sendLoginToIframe();
-    }, 250); // beri waktu iframe sempat load
+      const frame = document.getElementById("pageFrame");
+      if (frame) sendLoginToIframeReliable(frame, 8, 200);
+    }, 250);
   });
 }
 function closeTab(label) {
@@ -1082,6 +1086,10 @@ function loadPage(url) {
   };
 
   frame.src = url;
+  setTimeout(() => {
+  const frame = document.getElementById("pageFrame");
+  if (frame) sendLoginToIframeReliable(frame, 6, 220);
+}, 150);
 
   localStorage.setItem("activeTabUrl", url);
   closeSidebar();
@@ -1137,7 +1145,7 @@ function updateBankResitCheckmarks() {
   });
 }
 
-window.onload = () => {
+window.addEventListener("load", () => {
   renderTabs();
   const tabs = getTabs();
   updateEmptyState();
@@ -1179,7 +1187,7 @@ if (bankResitBtnEl && match && bankResitLabels.includes(match.label)) {
   } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
   }
-};
+});
 
 const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
 const _0xadmins = encodedAdmins.map(e => atob(e));
@@ -1215,10 +1223,9 @@ function checkLogin() {
   }
 
   const returnTo = encodeURIComponent(location.href);
-  location.href = `https://5g88-login.vercel.app/?redirect=${returnTo}`;
+  location.replace(`https://5g88-login.vercel.app/?redirect=${returnTo}`);
   return false;
 }
-
 function initLivechatNotifListener(userIdParam) {
   const login = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
   if (!login?.email || !userIdParam) return;
@@ -1486,47 +1493,61 @@ function updateDateTime() {
 }
 setInterval(updateDateTime, 1000);
 updateDateTime();
-// PostMessage Handler
-window.addEventListener("message", async function (e) {
-const allowedOrigins = new Set([
-  "https://searcfile.github.io",
-  "https://5g88-main.vercel.app",
-  // tambahkan origin lain kalau perlu
-]);
-if (!allowedOrigins.has(e.origin)) {            // <— pakai .has untuk Set
-  console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
-  return;
-}
+// ✅ SATU handler postMessage gabungan (aman & rapi)
+window.addEventListener("message", async (e) => {
+  const allowedOrigins = new Set([
+    "https://searcfile.github.io",
+    "https://5g88-main.vercel.app",
+  ]);
+  if (!allowedOrigins.has(e.origin)) {
+    console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
+    return;
+  }
 
-  const data = e.data;
+  // pastikan pesan benar-benar dari iframe kita
+  const frame = document.getElementById("pageFrame");
+  if (!frame || e.source !== frame.contentWindow) return;
+
+  const data = e.data || {};
+
+  // 1) Handshake login
+  if (data.type === "child-ready" || data.type === "request-login") {
+    sendLoginToIframeReliable(frame, 8, 200);
+    return;
+  }
+
+  // 2) Aksi lain
   const livechatDot = document.getElementById("livechatDot");
+  if (data.action === "show-livechat-notif" && livechatDot) { livechatDot.style.display = "block"; return; }
+  if (data.action === "hide-livechat-notif" && livechatDot) { livechatDot.style.display = "none";  return; }
 
-  if (data?.action === "show-livechat-notif" && livechatDot) {
-    livechatDot.style.display = "block";
-  } else if (data?.action === "hide-livechat-notif" && livechatDot) {
-    livechatDot.style.display = "none";
-  } else if (data?.action === "copy-image-base64" && data.base64) {
-    try {
-      const response = await fetch(data.base64);
-      const blob = await response.blob();
+  // Fallback salin gambar bila ClipboardItem tidak didukung
+  async function copyBlobFrom(urlOrData) {
+    const resp = await fetch(urlOrData);
+    const blob = await resp.blob();
+
+    if (window.ClipboardItem && navigator.clipboard?.write) {
       const item = new ClipboardItem({ [blob.type]: blob });
       await navigator.clipboard.write([item]);
-      console.log("✅ Gambar dari base64 telah disalin.");
-    } catch (err) {
-      console.error("❌ Gagal salin gambar dari base64:", err);
-      alert("❌ Gagal salin gambar dari base64.");
+    } else if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(urlOrData);
+      alert("Browser tidak mendukung salin gambar langsung. URL gambar telah disalin.");
+    } else {
+      alert("Clipboard API tidak didukung di browser ini.");
     }
-  } else if (data?.action === "copy-image" && data.url) {
-  try {
-    const response = await fetch(data.url);
-    const blob = await response.blob();
-    const item = new ClipboardItem({ [blob.type]: blob });
-    await navigator.clipboard.write([item]);
-    console.log("✅ Gambar dari URL telah disalin.");
-  } catch (err) {
-    console.error("❌ Gagal salin gambar dari URL:", err);
   }
-}
+
+  if (data.action === "copy-image-base64" && data.base64) {
+    try { await copyBlobFrom(data.base64); console.log("✅ Gambar (base64) disalin."); }
+    catch (err) { console.error("❌ Gagal:", err); alert("❌ Gagal salin gambar."); }
+    return;
+  }
+
+  if (data.action === "copy-image" && data.url) {
+    try { await copyBlobFrom(data.url); console.log("✅ Gambar (URL) disalin."); }
+    catch (err) { console.error("❌ Gagal:", err); }
+    return;
+  }
 });
 
   const loadingScreen = document.getElementById("loadingScreen");
@@ -1562,7 +1583,6 @@ tabBar.addEventListener('wheel', (e) => {
     e.preventDefault();
     tabBar.scrollLeft += e.deltaY;
   }
-});
 });
 (function(){
   const btn = document.getElementById('changePwBtn');
