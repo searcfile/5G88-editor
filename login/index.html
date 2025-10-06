@@ -351,6 +351,33 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
+
+// ====== HANYA EMAIL DOMAIN INI YANG DIIJINKAN ======
+const ALLOWED_GOOGLE_DOMAIN = 'b88gaming.page';
+
+function isAllowedGoogleEmail(email){
+  if (!email) return false;
+  const parts = String(email).toLowerCase().split('@');
+  const domain = parts[1] || '';
+  return domain === ALLOWED_GOOGLE_DOMAIN;
+}
+
+// Popup khusus jika domain tidak didukung (pakai blocked popup yang sudah ada)
+function showUnsupportedDomainPopup(email){
+  // set judul & subtext khusus
+  const t = document.getElementById('blockedTitle');
+  const s = document.getElementById('blockedSub');
+  if (t) t.textContent = 'Access Denied';
+  if (s) {
+    s.innerHTML = `
+      <b>${email}</b> not supported!<br>
+      Please use your @${ALLOWED_GOOGLE_DOMAIN} account.<br>
+      Please contact admin 5G88 at Livechat/Telegram.
+    `;
+  }
+  // tampilkan popup + set tombol Telegram (fungsi kamu yang sudah ada)
+  showBlockedPopup({ email, displayName: email.split('@')[0] });
+}
   
 let ANON_STATE = localStorage.getItem('anon.state') || 'unknown';
 const sanitizeKey = (s) => String(s || '').replace(/[.$#[\]/]/g, "_");
@@ -630,13 +657,27 @@ function setLoading(state, which='both'){
 function signInWithGoogle(){
   setLoading(true,'google');
   const provider = new firebase.auth.GoogleAuthProvider();
+
   auth.signInWithPopup(provider)
-    .then(res=>{
+    .then(res => {
       const user = res.user;
-      if (!user){ throw new Error("User not found"); }
+      if (!user || !user.email) throw new Error("User not found");
+
+      // ✅ CEK DOMAIN
+      if (!isAllowedGoogleEmail(user.email)) {
+        // tampilkan popup blocked + pesan khusus
+        showUnsupportedDomainPopup(user.email);
+
+        // pastikan tidak lanjut menulis ke RTDB / redirect
+        auth.signOut().catch(()=>{});
+        setLoading(false,'google');
+        return; // ⛔ stop flow di sini
+      }
+
+      // ✅ email domain diizinkan → lanjut flow normal
       finishLogin(user);
     })
-    .catch(err=>{
+    .catch(err => {
       console.error("❌ Login Google gagal:", err);
       alert("Login Google gagal. Coba lagi.");
       setLoading(false,'google');
