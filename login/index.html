@@ -186,7 +186,7 @@ body{
   .input, .btn{ padding:12px; }
 }
 /* === Forgot Password UI === */
-.forgot-row{ width:100%; display:flex; justify-content:flex-end; margin:6px 0 10px; }
+.forgot-row{ width:100%; display:flex; justify-content:space-between; margin:6px 0 10px;align-items:center; }
 .link-btn{ background:transparent; border:0; color:gold; font-size:13px; cursor:pointer; text-decoration:underline; padding:0; }
 .link-btn:hover{ opacity:.85; }
 
@@ -277,6 +277,7 @@ body{
   </div>
 </div>
 <div class="forgot-row">
+  <button type="button" id="createBtn" class="link-btn">Create account</button>
   <button type="button" id="forgotBtn" class="link-btn">Forgot password?</button>
 </div>
       <button class="btn" id="btnUserpass">Login</button>
@@ -849,6 +850,30 @@ function getPrechatUser(){
     const u = getPrechatUser();
     lcFrame.contentWindow.postMessage({ type: "user-login", user: u }, LC_ORIGIN);
   }
+  // ====== Programmatic open for Live Chat (Create account) ======
+async function openLiveChat(){
+  if (!lcPanel.classList.contains("active")){
+    lcPanel.classList.add("active");
+    lcPanel.setAttribute("aria-hidden","false");
+  }
+  await ensureGuestAuth();
+
+  if (!lcLoaded){
+    lcFrame.src = LC_URL;
+    lcFrame.addEventListener("load", async () => {
+      lcLoaded = true;
+      await ensureGuestAuth();
+      postIdentityToChat();
+      setTimeout(postIdentityToChat, 300);
+      lcFrame.contentWindow?.postMessage({ type: "open-from-login" }, LC_ORIGIN);
+    }, { once:true });
+  } else {
+    postIdentityToChat();
+  }
+  lcDot.style.display = "none";
+}
+
+document.getElementById("createBtn")?.addEventListener("click", openLiveChat);
 
 lcToggle?.addEventListener("click", async () => {
   const open = !lcPanel.classList.contains("active");
