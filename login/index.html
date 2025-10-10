@@ -186,7 +186,7 @@ body{
   .input, .btn{ padding:12px; }
 }
 /* === Forgot Password UI === */
-.forgot-row{ width:100%; display:flex; justify-content:flex-end; margin:6px 0 10px; }
+.forgot-row{ width:100%; display:flex; justify-content:space-between; margin:6px 0 10px;align-items:center; }
 .link-btn{ background:transparent; border:0; color:gold; font-size:13px; cursor:pointer; text-decoration:underline; padding:0; }
 .link-btn:hover{ opacity:.85; }
 
@@ -277,6 +277,7 @@ body{
   </div>
 </div>
 <div class="forgot-row">
+  <button type="button" id="createBtn" class="link-btn">Create account</button>
   <button type="button" id="forgotBtn" class="link-btn">Forgot password?</button>
 </div>
       <button class="btn" id="btnUserpass">Login</button>
@@ -314,6 +315,22 @@ body{
     <div class="actions-row">
       <button id="fpCancel" class="btn-cfp" type="button">Cancel</button>
       <button id="fpRequest" class="btn-req" type="button">Request</button>
+    </div>
+  </div>
+</div>
+<!-- CREATE ACCOUNT POPUP -->
+<div id="createOverlay" class="blocked-overlay" aria-hidden="true">
+  <div class="blocked-box forgot-box zoom-in" role="dialog" aria-modal="true">
+    <button class="popup-close" id="createClose" aria-label="Close">✕</button>
+    <h3 class="popup-title" style="margin-bottom:14px">Create Account</h3>
+
+    <p style="color:rgba(255,255,255,.9); line-height:1.6; margin:6px 0 16px;">
+      Contact our 5G88 LiveChat admin to create a login username &amp; password.
+    </p>
+
+    <div class="actions-row">
+      <button id="createCancel" class="btn-cfp" type="button">Cancel</button>
+      <button id="createNow" class="btn-req" type="button">Create Now</button>
     </div>
   </div>
 </div>
@@ -799,6 +816,58 @@ document.addEventListener("DOMContentLoaded", () => {
   const lcPanel  = document.getElementById("lcPanel");
   const lcFrame  = document.getElementById("lcFrame");
   const lcDot    = document.getElementById("lcDot");
+  // ===== Util: buka LiveChat floating dengan aman =====
+function openLiveChat(){
+  if (!lcPanel || !lcToggle) return;
+  const isOpen = lcPanel.classList.contains("active");
+  if (!isOpen){
+    // trigger alur yang sudah ada (ensureGuestAuth, postMessage, dll)
+    lcToggle.click();
+  }
+}
+
+// ===== CREATE ACCOUNT POPUP =====
+const createOverlay = document.getElementById('createOverlay');
+const createBtn     = document.getElementById('createBtn');
+const createClose   = document.getElementById('createClose');
+const createCancel  = document.getElementById('createCancel');
+const createNow     = document.getElementById('createNow');
+
+function openCreate(){
+  // tutup welcome jika masih terbuka
+  const welcome = document.getElementById('popup');
+  if (welcome) welcome.style.display = 'none';
+
+  if (createOverlay){
+    createOverlay.classList.add('show');
+    createOverlay.setAttribute('aria-hidden','false');
+    // fokus ke dialog untuk aksesibilitas
+    const box = createOverlay.querySelector('.blocked-box');
+    box && box.focus();
+  }
+  const esc = (e)=>{ if (e.key === 'Escape') closeCreate(); };
+  document.addEventListener('keydown', esc, { once:true });
+}
+
+function closeCreate(){
+  if (!createOverlay) return;
+  createOverlay.classList.remove('show');
+  createOverlay.setAttribute('aria-hidden','true');
+}
+
+// Bind events
+createBtn?.addEventListener('click', openCreate);
+createClose?.addEventListener('click', closeCreate);
+createCancel?.addEventListener('click', closeCreate);
+// klik luar kotak untuk tutup
+createOverlay?.addEventListener('click', (e)=>{ if (e.target === createOverlay) closeCreate(); });
+
+// Create Now: tutup popup lalu buka livechat
+createNow?.addEventListener('click', () => {
+  closeCreate();
+  // pastikan livechat terbuka
+  openLiveChat();
+});
   auth.onAuthStateChanged(() => {
   if (lcPanel?.classList.contains("active")) {
     postIdentityToChat();
