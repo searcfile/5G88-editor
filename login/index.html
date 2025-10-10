@@ -825,6 +825,12 @@ function openLiveChat(){
     lcToggle.click();
   }
 }
+function closeLiveChat(){
+  if (!lcPanel || !lcToggle) return;
+  if (lcPanel.classList.contains("active")){
+    lcToggle.click(); // gunakan toggle sedia ada untuk close
+  }
+}
 
 // ===== CREATE ACCOUNT POPUP =====
 const createOverlay = document.getElementById('createOverlay');
@@ -834,7 +840,7 @@ const createCancel  = document.getElementById('createCancel');
 const createNow     = document.getElementById('createNow');
 
 function openCreate(){
-  // tutup welcome jika masih terbuka
+  closeLiveChat();
   const welcome = document.getElementById('popup');
   if (welcome) welcome.style.display = 'none';
 
