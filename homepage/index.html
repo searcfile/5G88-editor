@@ -27,8 +27,8 @@
   @media (max-width: 600px) {
   .container.shrink {margin-left: 0;}}
   html, body {height: 100%;}
-  #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;}
-  .tab-bar {position: relative;transition: all 0.2s ease;width: 100%;height: 40px;background: black;display: flex;align-items: center;gap: 0;z-index: 1200;justify-content: flex-start;white-space: nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;-webkit-overflow-scrolling: touch;touch-action: pan-x;}
+  #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;z-index: 1;position: relative;}
+  .tab-bar {position: relative;transition: all 0.2s ease;width: 100%;height: 40px;background: black;display: flex;align-items: center;gap: 0;z-index: 3000;justify-content: flex-start;white-space: nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;-webkit-overflow-scrolling: touch;touch-action: pan-x;}
   .tab-bar::-webkit-scrollbar {display: none;}
   .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px; flex: 0 0 auto; 
       cursor: pointer;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;pointer-events: auto;} 
@@ -41,7 +41,7 @@
   #logoutBtn {display: flex;align-items: center;justify-content: center;height:32px;line-height: 1;gap: 2px;background-color: #141414;color: rgba(255,255,255,0.85);padding: 5px 10px;border-radius: 6px;cursor: pointer;width: 100%;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid #424242;font-size: 14px;}#logoutBtn:hover {color: #ffe34d;transition: all 0.3s ease;border: 1px solid #ffe34d;}#logoutBtn:active {color: #dbb900;transition: all 0.3s ease;border: 1px solid #dbb900;background-color: #141414;}
   #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
   #notifButton:hover #notifTooltip {display: block !important;opacity: 1;z-index: 10000;}
- .user-dropdown {position: relative;display: inline-block;}
+ .user-dropdown {position: relative;display: inline-block;z-index: 15000;}
  .user-button {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 5px;background-color: #141414;color: rgba(255,255,255,0.85);border:1px solid #424242;border-radius: 6px;padding: 0px 15px;font-size: 14px;cursor: pointer;white-space: nowrap;height: 32px;transition: all 0.3s ease;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);}
  .user-button:hover {border:1px solid #ffe34d;background-color: #141414;color: #ffe34d;}.user-button:active {border: 1px solid gold;background-color: #141414;color: gold;}
  #emptyState.hidden, #iframeLoader[style*="display: none"]{
@@ -56,7 +56,7 @@
   border-radius: 6px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
   padding: 10px;
-  z-index: 1;
+  z-index: 15000;
   color: rgba(255,255,255,0.85);
   top: 110%;
   right: 0;
@@ -95,7 +95,7 @@
   display: none;
   position: fixed;
   top: 60px;
-  z-index: 10000;
+  z-index: 12000;
   background-color: #1f1f1f;
   border: 1px solid #424242;
   border-radius: 6px;
@@ -768,7 +768,7 @@ if (tabBar) {
   tabBar.style.background = "#000";
 
   // siap mobile
-  tabBar.style.zIndex     = "1200";
+  tabBar.style.zIndex     = "3000";
   tabBar.style.overflowX  = "auto";
 
   // drag-scroll versi touch
