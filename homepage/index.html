@@ -27,12 +27,12 @@
   @media (max-width: 600px) {
   .container.shrink {margin-left: 0;}}
   html, body {height: 100%;}
-  #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;z-index: 1;position: relative;}
-  .tab-bar {position: relative;transition: all 0.2s ease;width: 100%;height: 40px;background: black;display: flex;align-items: center;gap: 0;z-index: 3000;justify-content: flex-start;white-space: nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;-webkit-overflow-scrolling: touch;touch-action: pan-x;}
+  #pageFrame {width: 100%;height: calc(100vh - 95px); border: none;}
+  .tab-bar {position: relative;transition: all 0.2s ease;width: 100%;height: 40px;background: black;display: flex;align-items: center;gap: 0;z-index: 1000;justify-content: flex-start;white-space: nowrap; margin-top: 55px;overflow-x: auto;overflow-y: hidden; white-space: nowrap;-ms-overflow-style: none;scrollbar-width: none;scroll-behavior: smooth;}
   .tab-bar::-webkit-scrollbar {display: none;}
-  .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px; flex: 0 0 auto; 
-      cursor: pointer;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;pointer-events: auto;} 
-  .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;font-size: 18px !important;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: transform .2s, color .2s !important;pointer-events: auto;}
+  .tab {background: gold;color: #111;padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px;
+      cursor: default;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;} 
+  .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;font-size: 18px !important;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: transform .2s, color .2s !important;}
   .tab:hover {color: #ffe34d !important;font-weight: bold !important;transition: all 0.3s ease;}
   .active-tab {background-color: #141414 !important;color: gold !important;font-weight: bold;transition: all 0.3s ease;}.tab:active {color: #dbb900!important;font-weight: bold !important;transition: all 0.3s ease;}
   .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
@@ -41,12 +41,10 @@
   #logoutBtn {display: flex;align-items: center;justify-content: center;height:32px;line-height: 1;gap: 2px;background-color: #141414;color: rgba(255,255,255,0.85);padding: 5px 10px;border-radius: 6px;cursor: pointer;width: 100%;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid #424242;font-size: 14px;}#logoutBtn:hover {color: #ffe34d;transition: all 0.3s ease;border: 1px solid #ffe34d;}#logoutBtn:active {color: #dbb900;transition: all 0.3s ease;border: 1px solid #dbb900;background-color: #141414;}
   #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
   #notifButton:hover #notifTooltip {display: block !important;opacity: 1;z-index: 10000;}
- .user-dropdown {position: relative;display: inline-block;z-index: 15000;}
+ .user-dropdown {position: relative;display: inline-block;}
  .user-button {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 5px;background-color: #141414;color: rgba(255,255,255,0.85);border:1px solid #424242;border-radius: 6px;padding: 0px 15px;font-size: 14px;cursor: pointer;white-space: nowrap;height: 32px;transition: all 0.3s ease;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);}
  .user-button:hover {border:1px solid #ffe34d;background-color: #141414;color: #ffe34d;}.user-button:active {border: 1px solid gold;background-color: #141414;color: gold;}
- #emptyState.hidden, #iframeLoader[style*="display: none"]{
-  pointer-events: none !important;
-}
+
  .dropdown-content {
   display: none;
   position: absolute;
@@ -56,7 +54,7 @@
   border-radius: 6px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
   padding: 10px;
-  z-index: 15000;
+  z-index: 1;
   color: rgba(255,255,255,0.85);
   top: 110%;
   right: 0;
@@ -95,7 +93,7 @@
   display: none;
   position: fixed;
   top: 60px;
-  z-index: 12000;
+  z-index: 10000;
   background-color: #1f1f1f;
   border: 1px solid #424242;
   border-radius: 6px;
@@ -754,59 +752,38 @@ function closeMessage() {
   const popup = document.getElementById("messagePopup");
   if (popup) popup.style.display = "none";
 }
-const tabBar   = document.getElementById("tabBar");
+const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
-const sidebar  = document.getElementById("sidebar");
-const overlay  = document.getElementById("overlay");
-const container= document.getElementById("mainContainer");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const container = document.getElementById("mainContainer");
 
 if (tabBar) {
-  // style dasar
-  tabBar.style.display    = "flex";
+  tabBar.style.display = "flex";
   tabBar.style.alignItems = "center";
-  tabBar.style.padding    = "10px 2px";
+  tabBar.style.padding = "10px 2px";
   tabBar.style.background = "#000";
-
-  // siap mobile
-  tabBar.style.zIndex     = "3000";
-  tabBar.style.overflowX  = "auto";
-
-  // drag-scroll versi touch
-  let tDown = false, tStartX = 0, tScroll = 0;
-  tabBar.addEventListener("touchstart", (e) => {
-    if (!e.touches || !e.touches[0]) return;
-    tDown = true;
-    tStartX = e.touches[0].pageX;
-    tScroll = tabBar.scrollLeft;
-  }, { passive: true });
-
-  tabBar.addEventListener("touchmove", (e) => {
-    if (!tDown || !e.touches || !e.touches[0]) return;
-    const dx = e.touches[0].pageX - tStartX;
-    tabBar.scrollLeft = tScroll - dx;
-  }, { passive: true });
-
-  tabBar.addEventListener("touchend", () => { tDown = false; }, { passive: true });
-} else {
-  console.warn("tabBar tidak ditemukan");
 }
 
-if (menuIcon) {
-  menuIcon.addEventListener("click", () => {
-    sidebar.classList.contains("active") ? closeSidebar() : openSidebar();
-  });
-}
-if (overlay) overlay.addEventListener("click", closeSidebar);
 
+menuIcon.addEventListener("click", () => {
+  if (sidebar.classList.contains("active")) {
+    closeSidebar();
+  } else {
+    openSidebar();
+  }
+});
+overlay.addEventListener("click", closeSidebar);
 function openSidebar() {
   sidebar.classList.add("active");
   overlay.classList.add("active");
   container.classList.add("shrink");
-  document.querySelector(".floating-logo")?.classList.add("shrink");
-  document.querySelector(".header")?.classList.add("shrink");
-  document.getElementById("tabBar")?.classList.add("shrink");
-  document.getElementById("menuIcon")?.classList.add("active-menu-icon");
+  document.querySelector(".floating-logo").classList.add("shrink");
+  document.querySelector('.header').classList.add('shrink');
+  document.getElementById("tabBar").classList.add('shrink');
+  document.getElementById("menuIcon").classList.add("active-menu-icon");
 }
+
 function closeSidebar() {
   sidebar.classList.remove("active");
   overlay.classList.remove("active");
