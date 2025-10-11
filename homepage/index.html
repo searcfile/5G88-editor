@@ -234,39 +234,69 @@ a.tab-open .check-icon {
 .empty-state.hidden{ display: none; }
 /* Util: ikon kiri + teks benar2 center + spacer kanan */
 .btn-with-icon-center{
+  /* Grid 3 kolom: [ikon] [label center] [spacer] */
   display: grid !important;
-  grid-template-columns: 20px 1fr 20px;  /* kiri ikon, tengah label, kanan spacer */
+  grid-template-columns: 18px 1fr 18px; /* sesuaikan 16/18/20px kalau mau */
   align-items: center;
   gap: 8px;
+  /* Reset bawaan tombol kamu supaya konsisten */
+  padding: 6px 10px;
+  min-height: 32px;
+  line-height: 1.1;
+  width: 100%;
+  border-radius: 6px;
+  background:#141414;
+  color: rgba(255,255,255,.85);
+  border: 1px solid #424242;
+  box-shadow: 0 2px 0 rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: border-color .2s,color .2s,background-color .2s;
 }
 
-/* pastikan ikon duduk di kolom kiri */
+/* Ikon selalu di kolom kiri */
 .btn-with-icon-center > svg{
   grid-column: 1;
   justify-self: start;
-  width: 16px; height: 16px;        /* samakan dengan ikon kamu */
-  margin: 0;                         /* buang margin inline lama */
+  width: 18px; height: 18px;  /* <- samakan dengan ukuran kolom di atas */
+  display: block;             /* hilangkan baseline-gap inline SVG */
+  margin: 0 !important;       /* hapus margin inline kalau ada */
+  fill: currentColor;
+  opacity: .95;
 }
 
-/* label center di kolom tengah */
+/* Label center di kolom tengah */
 .btn-with-icon-center > .label{
   grid-column: 2;
   justify-self: center;
   text-align: center;
   width: 100%;
-  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* spacer kanan biar center simetris walau ada ikon kiri */
+/* Spacer kanan agar center simetris (menyamai lebar ikon kiri) */
 .btn-with-icon-center::after{
   content:"";
   grid-column: 3;
-  width: 16px; height: 16px;         /* samakan ukuran ikon */
+  width: 18px; height: 18px; /* <- samakan dengan ikon */
 }
 
-/* Karena sebelumnya pakai flex, kita netralkan */
-#logoutBtn, .btn-cpw, #dropdownContent .menu-user-btn{
-  display: block;                    /* akan dioverride oleh .btn-with-icon-center */
+/* State interaksi */
+.btn-with-icon-center:hover{
+  border-color:#ffe34d; color:#ffe34d;
+}
+.btn-with-icon-center:active{
+  border-color:#dbb900; color:#dbb900; background:#141414;
+}
+.btn-with-icon-center[aria-disabled="true"],
+.btn-with-icon-center:disabled{
+  opacity:.55; cursor: default;
+}
+
+/* Khusus tombol bawaan kamu yang sebelumnya flex -> netralkan */
+#logoutBtn, .btn-cpw{
+  display: block; /* akan ditimpa oleh .btn-with-icon-center */
 }
   </style>
 </head>
