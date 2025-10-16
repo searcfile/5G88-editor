@@ -375,6 +375,39 @@ a.tab-open .check-icon {
     </a>
   </div>
 </div>
+    <!-- === GAME LINKS (baru) === -->
+<div class="dropdown-wrapper">
+  <button id="gameLinksBtn" class="live-chat-button" aria-label="Game Links" title="Game Links">
+    <svg width="1.2rem" height="1.2rem" fill="currentColor" viewBox="0 0 24 24" style="margin-right:1px">
+      <path d="M4 4h16v2H4V4zm0 6h16v2H4v-2zm0 6h10v2H4v-2z"/>
+    </svg>
+    <span class="btn-label">List Type</span>
+  </button>
+
+  <div id="gameLinksDropdown" class="dropdown-links">
+    <a data-label="FIND GAME" href="#"
+       onclick="addTab('FIND GAME','https://searcfile.github.io/5G88-editor/findgame/');">
+      FIND GAME
+      <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none">
+        <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+      </svg>
+    </a>
+    <a data-label="TIPS GAME" href="#"
+       onclick="addTab('TIPS GAME','https://searcfile.github.io/5G88-editor/tipsgenerate/');">
+      TIPS GAME
+      <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none">
+        <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+      </svg>
+    </a>
+    <a data-label="LOGO GAME" href="#"
+       onclick="addTab('LOGO GAME','https://searcfile.github.io/5G88-editor/logogame/');">
+      LOGO GAME
+      <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none">
+        <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+      </svg>
+    </a>
+  </div>
+</div>
   </div>
 
   <img src="https://i.imgur.com/voSG3KC.gif" class="floating-logo" alt="Logo 5G88" />
@@ -696,10 +729,13 @@ const gameLogBtn        = document.getElementById("gameLogBtn");
 const gameLogDropdown   = document.getElementById("gameLogDropdown");
 const bankResitBtn      = document.getElementById("bankResitBtn");
 const bankResitDropdown = document.getElementById("bankResitDropdown");
+const gameLinksBtn      = document.getElementById("gameLinksBtn");
+const gameLinksDropdown = document.getElementById("gameLinksDropdown");
 
 function closeAllDropdowns() {
   if (gameLogDropdown)   gameLogDropdown.style.display   = "none";
   if (bankResitDropdown) bankResitDropdown.style.display = "none";
+  if (gameLinksDropdown) gameLinksDropdown.style.display = "none";
 }
 
 function toggleDropdown(btnEl, ddEl) {
@@ -726,6 +762,11 @@ gameLogBtn?.addEventListener("click", (e) => {
 bankResitBtn?.addEventListener("click", (e) => {
   e.stopPropagation();
   toggleDropdown(bankResitBtn, bankResitDropdown);
+});
+  
+gameLinksBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  toggleDropdown(gameLinksBtn, gameLinksDropdown);
 });
 
 // Klik di luar -> tutup semua dropdown
@@ -829,6 +870,7 @@ function addTab(label, url) {
   const liveDot = document.getElementById("livechatDot");
   const gameLogBtn = document.getElementById("gameLogBtn");
   const bankResitBtnEl = document.getElementById("bankResitBtn");
+  const gameLinksBtnEl = document.getElementById("gameLinksBtn");
 
   if (gameLogBtn) {
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
@@ -847,6 +889,15 @@ function addTab(label, url) {
   }
 }
 
+if (gameLinksBtnEl) {
+  const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
+  if (gameLinksLabels.includes(label)) {
+    gameLinksBtnEl.classList.add("active-gamelog"); // reuse gaya emas
+  } else {
+    gameLinksBtnEl.classList.remove("active-gamelog");
+  }
+}
+  
   if (liveBtn) {
     if (label === "LIVE CHAT") {
       liveBtn.classList.add("active-livechat");
@@ -871,6 +922,7 @@ function addTab(label, url) {
   renderTabs();
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
+  updateGameLinksCheckmarks();
   updateEmptyState();
 }
 
@@ -922,12 +974,14 @@ function closeTab(label) {
   renderTabs();
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
+  updateGameLinksCheckmarks();
   updateEmptyState();
 
   const gameLogBtn = document.getElementById("gameLogBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const linkBtn = document.getElementById("linkDownloadBtn");
   const bankResitBtnEl = document.getElementById("bankResitBtn");
+  const gameLinksBtnEl = document.getElementById("gameLinksBtn");
 
   if (tabs.length > 0) {
     const lastTab = tabs[tabs.length - 1];
@@ -936,7 +990,9 @@ function closeTab(label) {
     // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
     const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
-
+    const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
+    
+    gameLinksBtnEl?.classList.toggle("active-gamelog", gameLinksLabels.includes(lastTab.label));
     gameLogBtn?.classList.toggle("active-gamelog", gameLogLabels.includes(lastTab.label));
     bankResitBtnEl?.classList.toggle("active-gamelog", bankResitLabels.includes(lastTab.label));
     liveBtn?.classList.toggle("active-livechat", lastTab.label === "LIVE CHAT");
@@ -948,6 +1004,7 @@ function closeTab(label) {
     bankResitBtnEl?.classList.remove("active-gamelog");
     liveBtn?.classList.remove("active-livechat");
     linkBtn?.classList.remove("active-linkdownload");
+    gameLinksBtnEl?.classList.remove("active-gamelog");
   }
 }
  
@@ -992,7 +1049,8 @@ function renderTabs() {
       const liveBtn = document.getElementById("liveChatBtn");
       const linkBtn = document.getElementById("linkDownloadBtn");
       const bankResitBtnEl = document.getElementById("bankResitBtn");
-
+      const gameLinksBtnEl = document.getElementById("gameLinksBtn");
+      
       if (liveBtn)
         liveBtn.classList.toggle("active-livechat", tab.label === "LIVE CHAT");
 
@@ -1000,12 +1058,16 @@ function renderTabs() {
         linkBtn.classList.toggle("active-linkdownload", tab.label === "LINK DOWNLOAD");
 
       if (gameLogBtn) {
-        const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
-        gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
+      const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+      gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
       }
       if (bankResitBtnEl) {
       const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
       bankResitBtnEl.classList.toggle("active-gamelog", bankResitLabels.includes(tab.label));
+      }
+      if (gameLinksBtnEl) {
+      const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
+      gameLinksBtnEl?.classList.toggle("active-gamelog", gameLinksLabels.includes(tab.label));
       }
     };
    
@@ -1054,6 +1116,7 @@ function renderTabs() {
   initSortableTabs();
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
+  updateGameLinksCheckmarks();
 }
 function initSortableTabs() {
   if (!window.Sortable || !tabBar) return;
@@ -1143,12 +1206,30 @@ function updateBankResitCheckmarks() {
     }
   });
 }
+function updateGameLinksCheckmarks() {
+  const tabs = getTabs();
+  const labelsOpen = tabs.map(tab => tab.label);
+  const dropdownLinks = document.querySelectorAll('#gameLinksDropdown a');
+
+  dropdownLinks.forEach(link => {
+    const label = link.getAttribute("data-label");
+    const icon = link.querySelector(".check-icon");
+    if (labelsOpen.includes(label)) {
+      link.classList.add("tab-open");
+      if (icon) icon.style.display = "inline";
+    } else {
+      link.classList.remove("tab-open");
+      if (icon) icon.style.display = "none";
+    }
+  });
+}
 
 window.addEventListener("load", () => {
   renderTabs();
   const tabs = getTabs();
   updateEmptyState();
   updateGameLogCheckmarks();
+  updateGameLinksCheckmarks();
   const activeUrl = localStorage.getItem("activeTabUrl");
   const match = tabs.find(tab => tab.url === activeUrl);
 
@@ -1156,16 +1237,19 @@ window.addEventListener("load", () => {
   const linkBtn = document.getElementById("linkDownloadBtn");
   const gameLogBtn = document.getElementById("gameLogBtn");
   const bankResitBtnEl = document.getElementById("bankResitBtn");
+  const gameLinksBtnEl = document.getElementById("gameLinksBtn");
 
   if (liveBtn) liveBtn.classList.remove("active-livechat");
   if (linkBtn) linkBtn.classList.remove("active-linkdownload");
   if (gameLogBtn) gameLogBtn.classList.remove("active-gamelog");
   if (bankResitBtnEl) bankResitBtnEl.classList.remove("active-gamelog");
+  if (gameLinksBtnEl) gameLinksBtnEl.classList.remove("active-gamelog");
 
   if (match) {
     loadPage(match.url);
     updateGameLogCheckmarks();
     updateBankResitCheckmarks();
+    updateGameLinksCheckmarks();
     updateEmptyState();
     
     if (match.label === "LIVE CHAT") {
@@ -1176,16 +1260,20 @@ window.addEventListener("load", () => {
       linkBtn.classList.add("active-linkdownload");
     }
     const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
-if (bankResitBtnEl && match && bankResitLabels.includes(match.label)) {
-  bankResitBtnEl.classList.add("active-gamelog");
-}
+    if (bankResitBtnEl && match && bankResitLabels.includes(match.label)) {
+    bankResitBtnEl.classList.add("active-gamelog");
+    }
+    const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
+    if (gameLinksBtnEl && match && gameLinksLabels.includes(match.label)) {
+    gameLinksBtnEl.classList.add("active-gamelog");
+    }
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
     if (gameLogBtn && gameLogLabels.includes(match.label)) {
       gameLogBtn.classList.add("active-gamelog");
     }
-  } else if (tabs.length > 0) {
+    } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
-  }
+   }
 });
 
 const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
@@ -1468,6 +1556,7 @@ window.renderMobileUserBtn = function renderMobileUserBtn(){
 (function setAriaLabels(){
   const pairs = [
     ['bankResitBtn','Bank Resit'],
+    ['gameLinksBtn','List Type'],
     ['liveChatBtn','LiveChat'],
     ['linkDownloadBtn','Link Download'],
     ['gameLogBtn','Game Log'],
