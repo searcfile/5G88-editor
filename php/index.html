@@ -186,12 +186,16 @@ body{
    DETAIL (RIGHT)
 ====================== */
 .detail{
-  position:relative; height:100%; overflow:auto;
-  border:1px solid rgba(255,215,0,.15); border-radius:var(--radius);
-  background:linear-gradient(180deg,#0c0c0c,#111); box-shadow:var(--shadow);
+  position:relative;
+  max-height:650px;
+  border:1px solid rgba(255,215,0,.15);
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,#0c0c0c,#111);
+  box-shadow:var(--shadow);
+  overflow:auto;
 
-  /* simpan ruang buat bar adjust line */
-  padding-bottom: calc(var(--line-h) + env(safe-area-inset-bottom,0px));
+  /* cukup kecil, tidak perlu 70px lagi karena .line tidak sticky */
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 .detail-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,215,0,.12)}
 .detail-title{font-weight:900;letter-spacing:.02em}
@@ -213,13 +217,23 @@ body{
 /* ======================
    LINE BAR (Adjust line)
 ====================== */
-/* Desktop/Tablet: nempel di bawah panel (sticky) */
+/* ----- Line controls: TIDAK sticky, ikut scroll dan muncul setelah bet values ----- */
 .line{
-  position:sticky; bottom:0; z-index:3;
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  height: var(--line-h);
-  padding:12px; border-top:1px solid rgba(255,215,0,.12);
-  background:linear-gradient(180deg,#0d0d0d,#111); box-shadow:0 -6px 20px rgba(0,0,0,.35);
+  position: static;          /* <— ini kunci: bukan sticky */
+  bottom: auto;
+  z-index: auto;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  margin-top: 10px;          /* jarak dari bet values */
+  padding: 12px 14px;
+
+  border-top:1px solid rgba(255,215,0,.12);
+  background: transparent;   /* biar menyatu dengan konten, bisa pakai gradient kalau mau */
+  box-shadow: none;          /* tidak perlu bayangan bar */
 }
 .btn{
   border:1px solid rgba(255,215,0,.45);
