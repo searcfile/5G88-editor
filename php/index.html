@@ -24,7 +24,66 @@ body{
   -webkit-font-smoothing:antialiased;
   overflow:hidden;      /* scroll global dimatikan -> hanya area dalam yang scroll */
 }
+/* ---------- Firefox (gecko) ---------- */
+.scroll,
+.detail {
+  /* tipiskan dan pakai warna emas untuk thumb */
+  scrollbar-width: thin; /* auto | thin | none */
+  scrollbar-color: var(--gold-3) #121212; /* thumb | track */
+}
 
+/* ---------- WebKit (Chrome/Edge/Safari) ---------- */
+/* ukuran bar */
+.scroll::-webkit-scrollbar,
+.detail::-webkit-scrollbar {
+  width: 12px;          /* lebar vertical bar */
+  height: 12px;         /* tinggi horizontal bar (kalau ada) */
+}
+
+/* track (jalur belakang) */
+.scroll::-webkit-scrollbar-track,
+.detail::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #0b0b0b, #151515);
+  border-radius: 10px;
+  /* garis tipis keemasan di tepi track biar “berbingkai” */
+  box-shadow: inset 0 0 0 1px rgba(255, 215, 0, .15);
+}
+
+/* thumb (yang digeser) */
+.scroll::-webkit-scrollbar-thumb,
+.detail::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6a5f2a, var(--gold)); /* emas */
+  border-radius: 10px;
+  border: 2px solid #0d0d0d;  /* bikin ada “gap” gelap di sekeliling */
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.45),          /* outline tipis */
+    inset 0 0 8px rgba(255,215,0,.25);  /* inner glow */
+}
+
+/* efek hover/active */
+.scroll::-webkit-scrollbar-thumb:hover,
+.detail::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #7a6e2e, var(--gold-2));
+}
+.scroll::-webkit-scrollbar-thumb:active,
+.detail::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #caa900, #ffd700);
+}
+
+/* pojokan (kalau ada bar hor + vert ketemu) */
+.scroll::-webkit-scrollbar-corner,
+.detail::-webkit-scrollbar-corner {
+  background: #0d0d0d;
+}
+
+/* ---------- Mobile: lebih ramping ---------- */
+@media (max-width: 640px) {
+  .scroll::-webkit-scrollbar,
+  .detail::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+}
 /* ===== Header (fixed) ===== */
 .header{
   position:fixed; inset:0 0 auto 0; height:var(--hdr-h);
