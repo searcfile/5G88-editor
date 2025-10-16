@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>5G88 • Find Game</title>
 
 <style>
@@ -22,6 +22,7 @@
 
   /* list scroll fallback (≈10 rows) – boleh dioverride via JS */
   --list-max: 520px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
 }
 
 *{box-sizing:border-box}
@@ -309,6 +310,21 @@ body{
   position:fixed; right:14px; bottom:14px; height:46px; width:46px; border-radius:50%;
   display:grid; place-items:center; background:linear-gradient(180deg,var(--gold),var(--gold-3));
   color:#000; font-weight:900; border:1px solid rgba(0,0,0,.35); box-shadow:var(--shadow); cursor:pointer;
+}
+/* Tinggi konten utama */
+@supports (height: 100dvh) {
+  .wrap{
+    height: calc(100dvh - var(--hdr-h) - var(--flt-h) - var(--offset));
+  }
+}
+
+/* Panel detail (mode mobile) */
+@media (max-width: 979px){
+  @supports (height: 100dvh) {
+    .detail{
+      height: calc(100dvh - var(--hdr-h) - var(--flt-h));
+    }
+  }
 }
 </style>
 
