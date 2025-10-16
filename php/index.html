@@ -257,33 +257,40 @@ body{
 }
 
 @media (max-width:979px){
-  .grid{ grid-template-columns:1fr }
+  .grid{ grid-template-columns: 1fr; }
 
-  /* panel detail tidak ketimpa filter */
+  /* Detail tetap jadi panel (sheet) supaya tidak ketimpa filter,
+     tapi padding bawah kecil saja karena .line tidak sticky */
   .detail{
-    position:fixed; left:0; right:0;
-    top:   calc(var(--hdr-h) + var(--flt-h));
-    bottom:0;
-    height:calc(100vh - var(--hdr-h) - var(--flt-h));
-    max-height:none;
-    padding-bottom: calc(var(--line-h) + 16px + env(safe-area-inset-bottom,0px));
-    border-top-left-radius:18px; border-top-right-radius:18px;
-    transform:translateY(100%); transition:transform .28s ease;
+    position: fixed;
+    left: 0; right: 0;
+    top:    calc(var(--hdr-h) + var(--flt-h));
+    bottom: 0;
+    height: calc(100vh - var(--hdr-h) - var(--flt-h));
+    max-height: none;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    transform: translateY(100%);
+    transition: transform .28s ease;
+    padding-bottom: 16px; /* <— hapus padding ekstra buat bar sticky */
   }
-  .detail.open{ transform:translateY(0) }
+  .detail.open{ transform: translateY(0); }
 
-  /* bar line selalu terlihat – fixed di bawah layar */
+  /* Line control ikut flow konten (bukan sticky) */
   .line{
-    position:fixed; left:0; right:0; bottom:0; z-index:1100;
-    height:var(--line-h);
-    padding:10px calc(12px + env(safe-area-inset-left,0px))
-             calc(10px + env(safe-area-inset-bottom,0px))
-             calc(12px + env(safe-area-inset-right,0px));
-    backdrop-filter:blur(6px);
+    position: static;       /* <— ini kunci */
+    height: auto;
+    padding: 12px 14px;
+    margin-top: 12px;
+    border-top: 1px solid rgba(255,215,0,.12);
+    background: transparent;
+    box-shadow: none;
+    flex-wrap: wrap;        /* biar rapi kalau sempit */
+    gap: 10px;
   }
 
-  .line #lineText{ font-size:14px }
-  .btn{ padding:6px 10px }
+  .line #lineText{ font-size: 14px; }
+  .btn{ padding: 6px 10px; }
 }
 
 @media (max-width:360px){
