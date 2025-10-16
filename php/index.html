@@ -158,13 +158,21 @@ body{
 
 /* ===== Game List (kolom kiri) ===== */
 .list{
-  min-height:0; height:100%;
+  min-height:0; height:100%;display:flex;
+  flex-direction:column;
   border:1px solid rgba(255,215,0,.15); border-radius:var(--radius);
-  background:linear-gradient(180deg,#0c0c0c,#111); box-shadow:var(--shadow); padding:10px;
+  background:linear-gradient(180deg,#0c0c0c,#111); box-shadow:var(--shadow); padding:10px;overflow:hidden;
 }
+.list-hdr{ flex:0 0 auto; }
 .list-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;color:var(--muted);font-size:.9rem;border-bottom:1px solid rgba(255,215,0,.12)}
 .count{font-variant-numeric:tabular-nums}
-.scroll{height:100%; overflow:auto; scrollbar-width:none}
+.scroll{
+  flex:1 1 auto;
+  min-height:0;                    /* penting di flex container */
+  overflow:auto;
+  /* max tinggi list — JS akan set variabel ini sesuai ~10 baris */
+  max-height: var(--list-max, 520px); /* fallback 520px kalau JS belum jalan */
+}
 .scroll::-webkit-scrollbar{display:none}
 
 .game{
@@ -2943,162 +2951,206 @@ body{
       }
     ];
 
-    // ---- State ----
-    let selectedPlatform = localStorage.getItem('fg.platform') || 'All';
-    let selectedLine = 1;
-    let selectedGame = null;
+// ---- State ----
+let selectedPlatform = localStorage.getItem('fg.platform') || 'All';
+let selectedLine = 1;
+let selectedGame = null;
 
-    // ---- Elements ----
-    const elQ = document.getElementById('q');
-    const elTags = document.getElementById('tags');
-    const elList = document.getElementById('list');
-    const elDetail = document.getElementById('detail');
-    const dTitle = document.getElementById('dTitle');
-    const dImg = document.getElementById('dImg');
-    const dName = document.getElementById('dName');
-    const dType = document.getElementById('dType');
-    const dPay  = document.getElementById('dPay');
-    const dAdj  = document.getElementById('dAdj');
-    const dTags = document.getElementById('dTags');
-    const dBets = document.getElementById('dBets');
-    const lineText = document.getElementById('lineText');
-    const count = document.getElementById('count');
-    const btnClear = document.getElementById('btnClear');
+// ---- Elements ----
+const elQ = document.getElementById('q');
+const elTags = document.getElementById('tags');
+const elList = document.getElementById('list');     // <-- scroller (.scroll)
+const elDetail = document.getElementById('detail');
+const dTitle = document.getElementById('dTitle');
+const dImg = document.getElementById('dImg');
+const dName = document.getElementById('dName');
+const dType = document.getElementById('dType');
+const dPay  = document.getElementById('dPay');
+const dAdj  = document.getElementById('dAdj');
+const dTags = document.getElementById('dTags');
+const dBets = document.getElementById('dBets');
+const lineText = document.getElementById('lineText');
+const count = document.getElementById('count');
+const btnClear = document.getElementById('btnClear');
 
-    // Utilities
-    const debounce=(fn,ms=200)=>{let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
+// Utilities
+const debounce=(fn,ms=200)=>{let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
 
-    // Restore search
-    elQ.value = sessionStorage.getItem('fg.q') || '';
+// Restore search
+elQ.value = sessionStorage.getItem('fg.q') || '';
 
-    // Activate saved platform tab
-    [...elTags.children].forEach(btn=>{
-      const on = (btn.dataset.platform||'All') === selectedPlatform;
-      btn.classList.toggle('active', on);
-      btn.setAttribute('aria-pressed', on? 'true':'false');
-    });
+// Activate saved platform tab
+[...elTags.children].forEach(btn=>{
+  const on = (btn.dataset.platform||'All') === selectedPlatform;
+  btn.classList.toggle('active', on);
+  btn.setAttribute('aria-pressed', on? 'true':'false');
+});
 
-    // Render list
-    function renderList(){
-      const q = (elQ.value||'').trim().toLowerCase();
-      sessionStorage.setItem('fg.q', elQ.value||'');
-      const filtered = games.filter(g=>{
-        const kw = g.name.toLowerCase().includes(q) || (g.alias||'').toLowerCase().includes(q);
-        const platOK = selectedPlatform==="All" || (g.tags||[]).some(t=>t.toLowerCase()===selectedPlatform.toLowerCase());
-        return kw && platOK;
-      });
-      elList.innerHTML = '';
-      count.textContent = filtered.length;
-      if(!filtered.length){ elList.innerHTML = '<div class="empty">No games found</div>'; return; }
-      filtered.forEach((g,i)=>{
-        const row = document.createElement('div');
-        row.className = 'game';
-        row.id = `g-${i}`;
-        row.setAttribute('role','button');
-        row.setAttribute('tabindex','0');
-        row.innerHTML = `<div class="g-name">${g.name}</div><div class="g-pill">${(g.tags||[]).map(t=>t.toUpperCase()).join(' • ')}</div>`;
-        row.addEventListener('click',()=>openDetail(g, row));
-        row.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openDetail(g, row); }});
-        if(selectedGame && selectedGame.name===g.name) row.classList.add('active');
-        elList.appendChild(row);
-      });
-    }
+/* ========== NEW: kunci tinggi list ke 10 baris ========== */
+function applyListMaxHeight(visibleRows = 10){
+  const scroller = elList;
+  if(!scroller) return;
 
-    // Open detail
-    function openDetail(game, rowEl){
-      selectedGame = game;
-      const lines = Object.keys(game.bets||{}).map(Number);
-      selectedLine = lines.length ? Math.max(...lines) : 1;
-      updateDetail();
-      if (matchMedia('(max-width: 979px)').matches){ elDetail.classList.add('open'); }
-      [...elList.children].forEach(c=>c.classList.remove('active'));
-      rowEl && rowEl.classList.add('active');
-      rowEl && rowEl.scrollIntoView({block:'nearest', behavior:'smooth'});
-    }
-
-    function updateDetail(){
-      if(!selectedGame){ dTitle.textContent = 'Select a game'; return; }
-      const g = selectedGame;
-      dTitle.textContent = g.name;
-      dImg.src = g.image || '';
-      dImg.alt = g.name + ' image';
-      dImg.onerror = ()=>{ dImg.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 120%22%3E%3Crect width=%22200%22 height=%22120%22 fill=%22%23111111%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23ffd700%22 font-size=%2214%22 font-family=%22Arial%22%3ENo image%3C/text%3E%3C/svg%3E'; };
-      dName.textContent = g.alias || g.name;
-      dType.textContent = g.type || '-';
-      dPay.textContent = g.payline ?? '-';
-      dAdj.innerHTML = g.adjustable ? '<span class="ok">Yes</span>' : '<span class="no">No</span>';
-      dTags.innerHTML = '';
-      (g.tags||[]).forEach(t=>{ const chip=document.createElement('span'); chip.className=`p tag-${t.toLowerCase()}`; chip.textContent=t; dTags.appendChild(chip); });
-      lineText.textContent = `Line: ${selectedLine}`;
-      dBets.innerHTML = '';
-      const arr = (g.bets && g.bets[selectedLine]) ? g.bets[selectedLine] : [];
-      arr.forEach(v=>{ const b=document.createElement('span'); b.className='bet'; b.textContent=Number(v).toFixed(2); dBets.appendChild(b); });
-    }
-
-    // Line controls
-    function changeLine(delta){
-      if(!selectedGame) return;
-      const lines = Object.keys(selectedGame.bets||{}).map(Number);
-      if(!lines.length) return;
-      const min = Math.min(...lines), max = Math.max(...lines);
-      selectedLine = Math.min(max, Math.max(min, selectedLine + delta));
-      lineText.textContent = `Line: ${selectedLine}`;
-      updateDetail();
-    }
-
-    // Events
-    elQ.addEventListener('input', debounce(renderList, 150));
-    document.getElementById('btnClear').addEventListener('click', ()=>{ elQ.value=''; renderList(); elQ.focus(); });
-
-    elTags.addEventListener('click', (e)=>{
-      const btn = e.target.closest('.tag'); if(!btn) return;
-      [...elTags.children].forEach(x=>{x.classList.remove('active'); x.setAttribute('aria-pressed','false');});
-      btn.classList.add('active');
-      btn.setAttribute('aria-pressed','true');
-      selectedPlatform = btn.dataset.platform || 'All';
-      localStorage.setItem('fg.platform', selectedPlatform);
-      renderList();
-    });
-
-    document.getElementById('btnMinus').addEventListener('click', ()=>changeLine(-1));
-    document.getElementById('btnPlus').addEventListener('click', ()=>changeLine(1));
-    document.getElementById('btnClose').addEventListener('click', ()=>{ if (matchMedia('(max-width: 979px)').matches){ elDetail.classList.remove('open'); } });
-
-    // Keyboard nav in list
-    elList.addEventListener('keydown', (e)=>{
-      const items = [...elList.querySelectorAll('.game')];
-      if(!items.length) return;
-      const idx = items.findIndex(x=>x.classList.contains('active'));
-      if(e.key==='ArrowDown'){ e.preventDefault(); const n=Math.min(items.length-1, (idx<0?0:idx+1)); items[n].focus(); items[n].scrollIntoView({block:'nearest'}); }
-      if(e.key==='ArrowUp'){ e.preventDefault(); const n=Math.max(0, (idx<0?0:idx-1)); items[n].focus(); items[n].scrollIntoView({block:'nearest'}); }
-    });
-
-    // Measure filters height to align content exactly under it
-    function setFilterHeight(){
-      const f = document.querySelector('.filters');
-      if(!f) return;
-      const h = Math.round(f.getBoundingClientRect().height);
-      document.documentElement.style.setProperty('--flt-h', h+'px');
-    }
-    window.addEventListener('load', ()=>{ setFilterHeight(); setTimeout(setFilterHeight, 100); setTimeout(setFilterHeight, 350); });
-    window.addEventListener('resize', setFilterHeight);
-    try{ const ro = new ResizeObserver(()=>setFilterHeight()); ro.observe(document.querySelector('.filters')); }catch(_){}
-    
-    function setFilterHeight(){
-    const f = document.querySelector('.filters');
-    if(!f) return;
-    const h = Math.round(f.getBoundingClientRect().height);
-    document.documentElement.style.setProperty('--flt-h', h + 'px');
+  const row = scroller.querySelector('.game');
+  if(!row){
+    scroller.style.removeProperty('max-height');
+    return;
   }
-  window.addEventListener('load', () => {
-    setFilterHeight();
-    setTimeout(setFilterHeight, 120);   // antisipasi reflow
-    setTimeout(setFilterHeight, 360);
+
+  // tinggi 1 baris termasuk margin
+  const cs = getComputedStyle(row);
+  const rowH = row.getBoundingClientRect().height +
+               parseFloat(cs.marginTop||0) +
+               parseFloat(cs.marginBottom||0);
+
+  const maxH = Math.max(0, Math.round(rowH * visibleRows));
+  scroller.style.maxHeight = maxH + 'px';             // langsung set
+  // atau kalau kamu pakai CSS var: document.documentElement.style.setProperty('--list-max', maxH+'px');
+}
+/* ======================================================== */
+
+// Render list
+function renderList(){
+  const q = (elQ.value||'').trim().toLowerCase();
+  sessionStorage.setItem('fg.q', elQ.value||'');
+  const filtered = games.filter(g=>{
+    const kw = g.name.toLowerCase().includes(q) || (g.alias||'').toLowerCase().includes(q);
+    const platOK = selectedPlatform==="All" || (g.tags||[]).some(t=>t.toLowerCase()===selectedPlatform.toLowerCase());
+    return kw && platOK;
   });
-  window.addEventListener('resize', setFilterHeight);
-  try { new ResizeObserver(setFilterHeight).observe(document.querySelector('.filters')); } catch(_) {}
-    // First paint
-    renderList();
+
+  elList.innerHTML = '';
+  count.textContent = filtered.length;
+
+  if(!filtered.length){
+    elList.innerHTML = '<div class="empty">No games found</div>';
+    // tetap set max-height supaya box-nya tidak melebar
+    requestAnimationFrame(()=>applyListMaxHeight());
+    return;
+  }
+
+  filtered.forEach((g,i)=>{
+    const row = document.createElement('div');
+    row.className = 'game';
+    row.id = `g-${i}`;
+    row.setAttribute('role','button');
+    row.setAttribute('tabindex','0');
+    row.innerHTML =
+      `<div class="g-name">${g.name}</div>
+       <div class="g-pill">${(g.tags||[]).map(t=>t.toUpperCase()).join(' • ')}</div>`;
+    row.addEventListener('click',()=>openDetail(g, row));
+    row.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openDetail(g, row); }});
+    if(selectedGame && selectedGame.name===g.name) row.classList.add('active');
+    elList.appendChild(row);
+  });
+
+  // hitung ulang tinggi setelah DOM jadi
+  requestAnimationFrame(()=>applyListMaxHeight());
+}
+
+// Open detail
+function openDetail(game, rowEl){
+  selectedGame = game;
+  const lines = Object.keys(game.bets||{}).map(Number);
+  selectedLine = lines.length ? Math.max(...lines) : 1;
+  updateDetail();
+  if (matchMedia('(max-width: 979px)').matches){ elDetail.classList.add('open'); }
+  [...elList.children].forEach(c=>c.classList.remove('active'));
+  rowEl && rowEl.classList.add('active');
+  rowEl && rowEl.scrollIntoView({block:'nearest', behavior:'smooth'});
+}
+
+function updateDetail(){
+  if(!selectedGame){ dTitle.textContent = 'Select a game'; return; }
+  const g = selectedGame;
+  dTitle.textContent = g.name;
+  dImg.src = g.image || '';
+  dImg.alt = g.name + ' image';
+  dImg.onerror = ()=>{ dImg.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 120%22%3E%3Crect width=%22200%22 height=%22120%22 fill=%22%23111111%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23ffd700%22 font-size=%2214%22 font-family=%22Arial%22%3ENo image%3C/text%3E%3C/svg%3E'; };
+  dName.textContent = g.alias || g.name;
+  dType.textContent = g.type || '-';
+  dPay.textContent = g.payline ?? '-';
+  dAdj.innerHTML = g.adjustable ? '<span class="ok">Yes</span>' : '<span class="no">No</span>';
+  dTags.innerHTML = '';
+  (g.tags||[]).forEach(t=>{
+    const chip=document.createElement('span');
+    chip.className=`p tag-${t.toLowerCase()}`;
+    chip.textContent=t;
+    dTags.appendChild(chip);
+  });
+  lineText.textContent = `Line: ${selectedLine}`;
+  dBets.innerHTML = '';
+  const arr = (g.bets && g.bets[selectedLine]) ? g.bets[selectedLine] : [];
+  arr.forEach(v=>{
+    const b=document.createElement('span');
+    b.className='bet';
+    b.textContent=Number(v).toFixed(2);
+    dBets.appendChild(b);
+  });
+}
+
+// Line controls
+function changeLine(delta){
+  if(!selectedGame) return;
+  const lines = Object.keys(selectedGame.bets||{}).map(Number);
+  if(!lines.length) return;
+  const min = Math.min(...lines), max = Math.max(...lines);
+  selectedLine = Math.min(max, Math.max(min, selectedLine + delta));
+  lineText.textContent = `Line: ${selectedLine}`;
+  updateDetail();
+}
+
+// Events
+elQ.addEventListener('input', debounce(renderList, 150));
+document.getElementById('btnClear').addEventListener('click', ()=>{ elQ.value=''; renderList(); elQ.focus(); });
+
+elTags.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.tag'); if(!btn) return;
+  [...elTags.children].forEach(x=>{x.classList.remove('active'); x.setAttribute('aria-pressed','false');});
+  btn.classList.add('active');
+  btn.setAttribute('aria-pressed','true');
+  selectedPlatform = btn.dataset.platform || 'All';
+  localStorage.setItem('fg.platform', selectedPlatform);
+  renderList();
+});
+
+document.getElementById('btnMinus').addEventListener('click', ()=>changeLine(-1));
+document.getElementById('btnPlus').addEventListener('click', ()=>changeLine(1));
+document.getElementById('btnClose').addEventListener('click', ()=>{
+  if (matchMedia('(max-width: 979px)').matches){ elDetail.classList.remove('open'); }
+});
+
+// Keyboard nav in list
+elList.addEventListener('keydown', (e)=>{
+  const items = [...elList.querySelectorAll('.game')];
+  if(!items.length) return;
+  const idx = items.findIndex(x=>x.classList.contains('active'));
+  if(e.key==='ArrowDown'){ e.preventDefault(); const n=Math.min(items.length-1, (idx<0?0:idx+1)); items[n].focus(); items[n].scrollIntoView({block:'nearest'}); }
+  if(e.key==='ArrowUp'){ e.preventDefault(); const n=Math.max(0, (idx<0?0:idx-1)); items[n].focus(); items[n].scrollIntoView({block:'nearest'}); }
+});
+
+/* —— Kunci konten tepat di bawah filter (satu versi saja, yang duplikat dihapus) —— */
+function setFilterHeight(){
+  const f = document.querySelector('.filters');
+  if(!f) return;
+  const h = Math.round(f.getBoundingClientRect().height);
+  document.documentElement.style.setProperty('--flt-h', h + 'px');
+}
+window.addEventListener('load', ()=>{
+  setFilterHeight();
+  setTimeout(setFilterHeight, 120);
+  setTimeout(setFilterHeight, 360);
+  // setelah layout stabil, kunci tinggi list 10 baris
+  requestAnimationFrame(()=>applyListMaxHeight());
+});
+window.addEventListener('resize', ()=>{
+  setFilterHeight();
+  requestAnimationFrame(()=>applyListMaxHeight());
+});
+try { new ResizeObserver(setFilterHeight).observe(document.querySelector('.filters')); } catch(_) {}
+
+/* First paint */
+renderList();
   </script>
 </body>
 </html>
