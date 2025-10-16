@@ -11,29 +11,20 @@
       --gold:#ffd700; --gold-2:#ffef9a; --gold-3:#e6b400;
       --ink:#0b0b0b; --card:#121212; --muted:#a29b77; --ring:rgba(255,215,0,.35);
       --shadow:0 8px 24px rgba(255,215,0,.12), 0 2px 8px rgba(0,0,0,.45);
-      --radius:14px; --hdr-h:86px; --gap:12px;
+      --radius:14px; --hdr-h:86px; --flt-h:120px; --gap:12px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;background:#000;color:var(--gold);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+    body{margin:0;background:#000;color:var(--gold);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
 
     /* ===== Header ===== */
-    .header{position:fixed;inset:0 0 auto 0;height:var(--hdr-h);display:flex;align-items:center;justify-content:center;gap:.75rem;background:linear-gradient(180deg,#1b1b1b 0%, #0a0a0a 100%);border-bottom:1px solid rgba(255,215,0,.2);box-shadow:0 8px 20px rgba(0,0,0,.35);z-index:1000;transition:height .2s ease}
-    .header.shrink{height:72px}
+    .header{position:fixed;inset:0 0 auto 0;height:var(--hdr-h);display:flex;align-items:center;justify-content:center;gap:.75rem;background:linear-gradient(180deg,#1b1b1b 0%, #0a0a0a 100%);border-bottom:1px solid rgba(255,215,0,.2);box-shadow:0 8px 20px rgba(0,0,0,.35);z-index:1000}
     .brand{display:flex;align-items:center;gap:.6rem}
     .brand img{width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(255,215,0,.45))}
     .title{font-weight:800;letter-spacing:.06em;background:linear-gradient(90deg,var(--gold),var(--gold-2));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:1.35rem}
 
-    /* ===== Filter Bar ===== */
-    .filters {
-  position: fixed;
-  top: var(--hdr-h);
-  width: 100%;
-  z-index: 950;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(255,215,0,.12);
-}
+    /* ===== Filter Bar (fixed under header) ===== */
+    .filters{position:fixed;top:var(--hdr-h);left:0;right:0;width:100%;z-index:960;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,215,0,.12);box-sizing:border-box}
     .filters-inner{max-width:1100px;margin:0 auto;padding:14px 16px;display:grid;grid-template-columns:1fr;gap:12px}
 
     .search{position:relative;display:flex;align-items:center}
@@ -49,15 +40,15 @@
     .tag[aria-pressed="true"], .tag.active{background:linear-gradient(180deg,var(--gold),var(--gold-3));color:#000;border-color:transparent;box-shadow:var(--shadow)}
 
     /* ===== Layout ===== */
-    .wrap{max-width:1100px;margin:0 auto;padding:18px 16px; margin-top: calc(var(--hdr-h) + 85px);}
-    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    .wrap{max-width:1100px;margin:0 auto;padding:18px 16px;margin-top:calc(var(--hdr-h) + var(--flt-h));height:calc(100vh - var(--hdr-h) - var(--flt-h))}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px;height:100%}
     @media (min-width: 980px){.grid{grid-template-columns: 1fr 400px}}
 
     /* ===== Game List ===== */
-    .list{min-height:50vh;border:1px solid rgba(255,215,0,.15);border-radius:var(--radius);background:linear-gradient(180deg,#0c0c0c,#111);box-shadow:var(--shadow);padding:10px}
+    .list{min-height:0;border:1px solid rgba(255,215,0,.15);border-radius:var(--radius);background:linear-gradient(180deg,#0c0c0c,#111);box-shadow:var(--shadow);padding:10px;height:100%}
     .list-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;color:var(--muted);font-size:.9rem;border-bottom:1px solid rgba(255,215,0,.12)}
     .count{font-variant-numeric:tabular-nums}
-    .scroll{max-height:calc(100vh - var(--hdr-h) - 200px);overflow:auto;scrollbar-width:none}
+    .scroll{height:100%;overflow:auto;scrollbar-width:none}
     .scroll::-webkit-scrollbar{display:none}
     .game{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:#0b0b0b;border:1px solid rgba(255,215,0,.14);margin:8px;cursor:pointer;transition:.18s}
     .game:hover{transform:translateY(-1px);border-color:rgba(255,215,0,.5);box-shadow:0 8px 20px rgba(255,215,0,.12)}
@@ -67,7 +58,7 @@
     .empty{padding:18px;color:var(--muted);text-align:center}
 
     /* ===== Detail ===== */
-    .detail{position:relative;border:1px solid rgba(255,215,0,.15);border-radius:var(--radius);background:linear-gradient(180deg,#0c0c0c,#111);box-shadow:var(--shadow);overflow:hidden}
+    .detail{position:relative;border:1px solid rgba(255,215,0,.15);border-radius:var(--radius);background:linear-gradient(180deg,#0c0c0c,#111);box-shadow:var(--shadow);overflow:auto;height:100%}
     .detail-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,215,0,.12)}
     .detail-title{font-weight:900;letter-spacing:.02em}
     .close{appearance:none;border:none;background:linear-gradient(180deg,var(--gold),var(--gold-3));color:#000;font-weight:800;border-radius:10px;padding:6px 10px;cursor:pointer;transition:.15s}
@@ -93,10 +84,10 @@
       .grid{grid-template-columns:1fr}
       .detail{position:fixed;left:0;right:0;bottom:-100%;top:auto;max-height:88vh;border-top-left-radius:18px;border-top-right-radius:18px;transition:bottom .28s ease}
       .detail.open{bottom:0}
-      .scroll{max-height:none}
+      .wrap{height:auto}
     }
 
-    /* Utility: back-to-top on mobile */
+    /* Utility: back-to-top */
     .fab{position:fixed;right:14px;bottom:14px;height:46px;width:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,var(--gold),var(--gold-3));color:#000;font-weight:900;border:1px solid rgba(0,0,0,.35);box-shadow:var(--shadow);cursor:pointer}
   </style>
 
@@ -111,7 +102,7 @@
     </div>
   </header>
 
-  <!-- ===== Filters ===== -->
+  <!-- ===== Filters (fixed) ===== -->
   <section class="filters" aria-label="Filters">
     <div class="filters-inner">
       <label class="search" for="q">
@@ -167,7 +158,6 @@
 
   <!-- ===== DATA + APP ===== -->
   <script>
-
     const games = [
       { name:"SILVER BULLET", alias:"Silver", type:"Slot", payline:9, adjustable:true, image:"https://i.imgur.com/3faMy9F.png", tags:['918kiss','mega888','pussy888'], bets:{ 1:[0.01,0.05,0.10,0.25,0.50,1.00,5.00,10.00,15.00,20.00], 2:[0.02,0.10,0.20,0.50,1.00,2.00,10.00,20.00,30.00,40.00], 3:[0.03,0.15,0.30,0.75,1.50,3.00,15.00,30.00,45.00,60.00], 4:[0.04,0.20,0.40,1.00,2.00,4.00,20.00,40.00,60.00,80.00], 5:[0.05,0.25,0.50,1.25,2.50,5.00,25.00,50.00,75.00,100.00], 6:[0.06,0.30,0.60,1.50,3.00,6.00,30.00,60.00,90.00,120.00], 7:[0.07,0.35,0.70,1.75,3.50,7.00,35.00,70.00,105.00,140.00], 8:[0.08,0.40,0.80,2.00,4.00,8.00,40.00,80.00,120.00,160.00], 9:[0.09,0.45,0.90,2.25,4.50,9.00,45.00,90.00,135.00,180.00] } },
       { name:"SILENT SAMURAI", alias:"Samurai", type:"Slot", payline:9, adjustable:true, image:"https://i.imgur.com/y9DsPK4.png", tags:['918kiss','mega888'], bets:{ 1:[0.01,0.05,0.10,0.25,0.50,1.00,5.00,10.00,15.00,20.00], 2:[0.02,0.10,0.20,0.50,1.00,2.00,10.00,20.00,30.00,40.00], 3:[0.03,0.15,0.30,0.75,1.50,3.00,15.00,30.00,45.00,60.00], 4:[0.04,0.20,0.40,1.00,2.00,4.00,20.00,40.00,60.00,80.00], 5:[0.05,0.25,0.50,1.25,2.50,5.00,25.00,50.00,75.00,100.00], 6:[0.06,0.30,0.60,1.50,3.00,6.00,30.00,60.00,90.00,120.00], 7:[0.07,0.35,0.70,1.75,3.50,7.00,35.00,70.00,105.00,140.00], 8:[0.08,0.40,0.80,2.00,4.00,8.00,40.00,80.00,120.00,160.00], 9:[0.09,0.45,0.90,2.25,4.50,9.00,45.00,90.00,135.00,180.00] } },
@@ -195,8 +185,6 @@
     const lineText = document.getElementById('lineText');
     const count = document.getElementById('count');
     const btnClear = document.getElementById('btnClear');
-    const fabTop = document.getElementById('fabTop');
-    const hdr = document.getElementById('hdr');
 
     // Utilities
     const debounce=(fn,ms=200)=>{let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
@@ -246,7 +234,6 @@
       if (matchMedia('(max-width: 979px)').matches){ elDetail.classList.add('open'); }
       [...elList.children].forEach(c=>c.classList.remove('active'));
       rowEl && rowEl.classList.add('active');
-      // ensure visible
       rowEl && rowEl.scrollIntoView({block:'nearest', behavior:'smooth'});
     }
 
@@ -307,15 +294,16 @@
       if(e.key==='ArrowUp'){ e.preventDefault(); const n=Math.max(0, (idx<0?0:idx-1)); items[n].focus(); items[n].scrollIntoView({block:'nearest'}); }
     });
 
-    // Header shrink + FAB show
-    let lastY = 0;
-    window.addEventListener('scroll', ()=>{
-      const y = window.scrollY || 0;
-      hdr.classList.toggle('shrink', y>16);
-      fabTop.style.display = y>280 ? 'grid' : 'none';
-      lastY = y;
-    }, {passive:true});
-    fabTop.addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+    // Measure filters height to align content exactly under it
+    function setFilterHeight(){
+      const f = document.querySelector('.filters');
+      if(!f) return;
+      const h = Math.round(f.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--flt-h', h+'px');
+    }
+    window.addEventListener('load', ()=>{ setFilterHeight(); setTimeout(setFilterHeight, 100); setTimeout(setFilterHeight, 350); });
+    window.addEventListener('resize', setFilterHeight);
+    try{ const ro = new ResizeObserver(()=>setFilterHeight()); ro.observe(document.querySelector('.filters')); }catch(_){}
 
     // First paint
     renderList();
