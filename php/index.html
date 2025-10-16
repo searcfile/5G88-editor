@@ -6,85 +6,71 @@
   <title>5G88 • Find Game</title>
 
 <style>
- :root{
+/* ======================
+   THEME & GLOBAL
+====================== */
+:root{
   --gold:#ffd700; --gold-2:#ffef9a; --gold-3:#e6b400;
   --ink:#0b0b0b; --card:#121212; --muted:#a29b77; --ring:rgba(255,215,0,.35);
   --shadow:0 8px 24px rgba(255,215,0,.12), 0 2px 8px rgba(0,0,0,.45);
   --radius:14px;
-  --hdr-h:86px;         /* tinggi header (fixed) */
-  --flt-h:120px;        /* tinggi filters (akan di-update via JS) */
+
+  /* layout heights */
+  --hdr-h:86px;                 /* header fixed */
+  --flt-h:120px;                /* tinggi filters (diupdate JS) */
+  --line-h:64px;                /* tinggi bar adjust line */
+
+  /* list scroll fallback (≈10 rows) – boleh dioverride via JS */
+  --list-max: 520px;
 }
 
-/* base */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;background:#000;color:var(--gold);
   font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Arial,sans-serif;
   -webkit-font-smoothing:antialiased;
-  overflow:hidden;      /* scroll global dimatikan -> hanya area dalam yang scroll */
-}
-/* ---------- Firefox (gecko) ---------- */
-.scroll,
-.detail {
-  /* tipiskan dan pakai warna emas untuk thumb */
-  scrollbar-width: thin; /* auto | thin | none */
-  scrollbar-color: var(--gold-3) #121212; /* thumb | track */
+  overflow:hidden;   /* hanya area dalam yang scroll */
 }
 
-/* ---------- WebKit (Chrome/Edge/Safari) ---------- */
-/* ukuran bar */
+/* ======================
+   CUSTOM SCROLLBAR (emas)
+====================== */
+.scroll, .detail{
+  scrollbar-width:thin;                 /* Firefox */
+  scrollbar-color:var(--gold-3) #121212;
+}
 .scroll::-webkit-scrollbar,
-.detail::-webkit-scrollbar {
-  width: 12px;          /* lebar vertical bar */
-  height: 12px;         /* tinggi horizontal bar (kalau ada) */
-}
-
-/* track (jalur belakang) */
+.detail::-webkit-scrollbar{ width:12px; height:12px }
 .scroll::-webkit-scrollbar-track,
-.detail::-webkit-scrollbar-track {
-  background: linear-gradient(180deg, #0b0b0b, #151515);
-  border-radius: 10px;
-  /* garis tipis keemasan di tepi track biar “berbingkai” */
-  box-shadow: inset 0 0 0 1px rgba(255, 215, 0, .15);
+.detail::-webkit-scrollbar-track{
+  background:linear-gradient(180deg,#0b0b0b,#151515);
+  border-radius:10px; box-shadow:inset 0 0 0 1px rgba(255,215,0,.15);
 }
-
-/* thumb (yang digeser) */
 .scroll::-webkit-scrollbar-thumb,
-.detail::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #6a5f2a, var(--gold)); /* emas */
-  border-radius: 10px;
-  border: 2px solid #0d0d0d;  /* bikin ada “gap” gelap di sekeliling */
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.45),          /* outline tipis */
-    inset 0 0 8px rgba(255,215,0,.25);  /* inner glow */
+.detail::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#6a5f2a,var(--gold));
+  border-radius:10px; border:2px solid #0d0d0d;
+  box-shadow:0 0 0 1px rgba(0,0,0,.45), inset 0 0 8px rgba(255,215,0,.25);
 }
-
-/* efek hover/active */
 .scroll::-webkit-scrollbar-thumb:hover,
-.detail::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #7a6e2e, var(--gold-2));
+.detail::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,#7a6e2e,var(--gold-2));
 }
 .scroll::-webkit-scrollbar-thumb:active,
-.detail::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(180deg, #caa900, #ffd700);
+.detail::-webkit-scrollbar-thumb:active{
+  background:linear-gradient(180deg,#caa900,#ffd700);
 }
-
-/* pojokan (kalau ada bar hor + vert ketemu) */
 .scroll::-webkit-scrollbar-corner,
-.detail::-webkit-scrollbar-corner {
-  background: #0d0d0d;
+.detail::-webkit-scrollbar-corner{ background:#0d0d0d }
+
+@media (max-width:640px){
+  .scroll::-webkit-scrollbar, .detail::-webkit-scrollbar{ width:8px; height:8px }
 }
 
-/* ---------- Mobile: lebih ramping ---------- */
-@media (max-width: 640px) {
-  .scroll::-webkit-scrollbar,
-  .detail::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-}
-/* ===== Header (fixed) ===== */
+/* ======================
+   HEADER
+====================== */
 .header{
   position:fixed; inset:0 0 auto 0; height:var(--hdr-h);
   display:flex; align-items:center; justify-content:center; gap:.75rem;
@@ -95,17 +81,18 @@ body{
 .brand{display:flex;align-items:center;gap:.6rem}
 .brand img{width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(255,215,0,.45))}
 .title{
-  font-weight:800; letter-spacing:.06em;
+  font-weight:800; letter-spacing:.06em; font-size:clamp(1.1rem,2vw,1.35rem);
   background:linear-gradient(90deg,var(--gold),var(--gold-2));
   -webkit-background-clip:text; background-clip:text; color:transparent;
-  font-size:1.35rem;
 }
 
-/* ===== Filters (fixed di bawah header) ===== */
+/* ======================
+   FILTER BAR (fixed)
+====================== */
 .filters{
-  position:fixed; top:var(--hdr-h); left:0; right:0; width:100%;
-  z-index:960; background:rgba(0,0,0,.85); backdrop-filter:blur(6px);
-  border-bottom:1px solid rgba(255,215,0,.12); box-sizing:border-box;
+  position:fixed; top:var(--hdr-h); left:0; right:0; z-index:960;
+  background:rgba(0,0,0,.85); backdrop-filter:blur(6px);
+  border-bottom:1px solid rgba(255,215,0,.12);
 }
 .filters-inner{
   max-width:1100px; margin:0 auto; padding:14px 16px 20px;
@@ -141,10 +128,11 @@ body{
   border-color:transparent; box-shadow:var(--shadow);
 }
 
-/* ===== Layout konten di bawah filters – full tinggi viewport ===== */
+/* ======================
+   CONTENT WRAP (di bawah filter)
+====================== */
 .wrap{
   max-width:1100px; margin:0 auto; padding:18px 16px;
-  /* sedikit offset 10–14px biar nggak mepet; sinkronkan ke height juga */
   --offset:12px;
   margin-top: calc(var(--hdr-h) + var(--flt-h) + var(--offset));
   height:     calc(100vh      - var(--hdr-h) - var(--flt-h) - var(--offset));
@@ -152,89 +140,99 @@ body{
 .grid{
   display:grid; grid-template-columns:1fr; gap:14px; height:100%;
 }
-@media (min-width: 980px){
-  .grid{ grid-template-columns: 1fr 400px; }
-}
+@media (min-width:980px){ .grid{ grid-template-columns:1fr 400px } }
 
-/* ===== Game List (kolom kiri) ===== */
+/* ======================
+   LIST (LEFT)
+====================== */
 .list{
-  min-height:0; max-height:650px;display:flex;
-  flex-direction:column;
+  min-height:0; display:flex; flex-direction:column;
   border:1px solid rgba(255,215,0,.15); border-radius:var(--radius);
-  background:linear-gradient(180deg,#0c0c0c,#111); box-shadow:var(--shadow); padding:10px;overflow:hidden;
+  background:linear-gradient(180deg,#0c0c0c,#111);
+  box-shadow:var(--shadow); padding:10px; overflow:hidden; /* penting: list tidak keluar box */
 }
-.list-hdr{ flex:0 0 auto; }
-.list-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;color:var(--muted);font-size:.9rem;border-bottom:1px solid rgba(255,215,0,.12)}
+.list-hdr{
+  flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;
+  padding:6px 10px; color:var(--muted); font-size:.9rem;
+  border-bottom:1px solid rgba(255,215,0,.12);
+}
 .count{font-variant-numeric:tabular-nums}
+
 .scroll{
-  flex:1 1 auto;
-  min-height:0;                    /* penting di flex container */
-  overflow:auto;
-  /* max tinggi list — JS akan set variabel ini sesuai ~10 baris */
-  max-height: var(--list-max, 520px); /* fallback 520px kalau JS belum jalan */
+  flex:1 1 auto; min-height:0; overflow:auto;
+  max-height: var(--list-max);             /* fallback ±10 items */
 }
-.scroll::-webkit-scrollbar{display:none}
 
 .game{
-  display:grid; grid-template-columns:1fr auto; align-items:center; gap:10px;
-  padding:12px 14px; border-radius:12px; background:#0b0b0b;
-  border:1px solid rgba(255,215,0,.14); margin:8px; cursor:pointer; transition:.18s;
+  display:grid; grid-template-columns:minmax(0,1fr) auto; /* minmax(0,1fr) supaya ellipsis jalan */
+  align-items:center; gap:10px;
+  padding:12px 14px; margin:8px; cursor:pointer; transition:.18s;
+  border-radius:12px; background:#0b0b0b; border:1px solid rgba(255,215,0,.14);
 }
-.game:hover{border-color:rgba(255,215,0,.5);box-shadow:0 8px 20px rgba(255,215,0,.12)}
-.game.active{background:linear-gradient(180deg,#111,#1a1a1a);border-color:var(--gold)}
-.g-name{font-weight:800;color:var(--gold);letter-spacing:.02em;white-space: nowrap;}
-.g-pill{font-size:.72rem;border:1px solid rgba(255,215,0,.45);white-space: nowrap;padding:4px 8px;border-radius:999px;background:#121212}
+.game:hover{border-color:rgba(255,215,0,.5); box-shadow:0 8px 20px rgba(255,215,0,.12)}
+.game.active{background:linear-gradient(180deg,#111,#1a1a1a); border-color:var(--gold)}
+
+.g-name{
+  font-weight:800; color:var(--gold); letter-spacing:.02em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; /* rapih di HP */
+}
+.g-pill{
+  font-size:.72rem; white-space:nowrap; padding:4px 8px; border-radius:999px;
+  border:1px solid rgba(255,215,0,.45); background:#121212
+}
 .empty{padding:18px;color:var(--muted);text-align:center}
 
-/* ===== Detail (kolom kanan) ===== */
+/* ======================
+   DETAIL (RIGHT)
+====================== */
 .detail{
-  position:relative; max-height:650px;
+  position:relative; height:100%; overflow:auto;
   border:1px solid rgba(255,215,0,.15); border-radius:var(--radius);
   background:linear-gradient(180deg,#0c0c0c,#111); box-shadow:var(--shadow);
-  overflow:auto;
 
-  /* ruang ekstra supaya bar Line tidak ketimpa/terpotong */
-  padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
-  /* untuk iOS lama (opsional): */
-  padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px) + constant(safe-area-inset-bottom, 0px));
+  /* simpan ruang buat bar adjust line */
+  padding-bottom: calc(var(--line-h) + env(safe-area-inset-bottom,0px));
 }
 .detail-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,215,0,.12)}
 .detail-title{font-weight:900;letter-spacing:.02em}
 .close{appearance:none;border:none;background:linear-gradient(180deg,var(--gold),var(--gold-3));color:#000;font-weight:800;border-radius:10px;padding:6px 10px;cursor:pointer;transition:.15s}
 .close:hover{filter:brightness(.95)}
 .art{padding:14px}
-.art img{width:100%;height:240px;object-fit:cover;border-radius:12px;border:2px solid gold;box-shadow:0 10px 30px rgba(255,215,0,.09)}
+.art img{width:100%;height:240px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,215,0,.35);box-shadow:0 10px 30px rgba(255,215,0,.09)}
 .info{display:grid;gap:8px;padding:0 14px 14px 14px}
 .info .row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#0b0b0b;border:1px solid rgba(255,215,0,.12);border-radius:10px}
-.k{color:#c7b047}.v{font-weight:400}.ok{color:#5cff7a}.no{color:#ff6b6b}
+.k{color:#c7b047}.v{font-weight:800}.ok{color:#5cff7a}.no{color:#ff6b6b}
 .platforms{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px}
-.p{font-size:14px;font-weight:700;padding:2px 10px;border-radius:999px;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.p{font-size:.78rem;font-weight:900;padding:6px 10px;border-radius:999px;color:#fff;border:1px solid rgba(255,255,255,.2)}
 .tag-918kiss{background:#605ca8}.tag-mega888{background:#ff851b}.tag-pussy888{background:#3c8dbc}
 .bets{padding:0 14px 16px}
 .bets-title{font-weight:900;margin:0 0 8px 0}
 .bet-grid{display:flex;flex-wrap:wrap;gap:8px}
 .bet{border:1px solid rgba(255,215,0,.35);background:#151515;padding:6px 10px;border-radius:10px;font-weight:700}
+
+/* ======================
+   LINE BAR (Adjust line)
+====================== */
+/* Desktop/Tablet: nempel di bawah panel (sticky) */
 .line{
-  position: sticky;          /* nempel di bawah area scroll */
-  bottom: 0;
-  z-index: 3;
-
+  position:sticky; bottom:0; z-index:3;
   display:flex; align-items:center; justify-content:center; gap:10px;
-  padding:12px;
-  /* tambah ruang ke bawah untuk gesture bar */
-  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  /* untuk iOS lama (opsional): */
-  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px) + constant(safe-area-inset-bottom, 0px));
-
-  border-top:1px solid rgba(255,215,0,.12);
-  background:linear-gradient(180deg,#0d0d0d,#111);
-  box-shadow: 0 -6px 20px rgba(0,0,0,.35);
+  height: var(--line-h);
+  padding:12px; border-top:1px solid rgba(255,215,0,.12);
+  background:linear-gradient(180deg,#0d0d0d,#111); box-shadow:0 -6px 20px rgba(0,0,0,.35);
 }
-.btn{border:1px solid rgba(255,215,0,.45);background:linear-gradient(180deg,var(--gold),var(--gold-3));color:#000;font-weight:900;border-radius:12px;cursor:pointer;padding:6px 12px;transition:.15s}
+.btn{
+  border:1px solid rgba(255,215,0,.45);
+  background:linear-gradient(180deg,var(--gold),var(--gold-3));
+  color:#000; font-weight:900; border-radius:12px; cursor:pointer;
+  padding:6px 12px; transition:.15s;
+}
 .btn:hover{filter:brightness(.96)}
 
-/* ===== Mobile tweaks ===== */
-@media (max-width: 640px){
+/* ======================
+   MOBILE BEHAVIOR
+====================== */
+@media (max-width:640px){
   .filters-inner{padding:10px 12px 14px; gap:8px}
   .wrap{
     padding:12px;
@@ -244,29 +242,44 @@ body{
   .art img{height:auto; max-height:42vh}
 }
 
-/* ===== Detail as sheet on mobile – tidak ketimpa filter ===== */
-@media (max-width: 979px){
-  .grid{ grid-template-columns: 1fr; }
+@media (max-width:979px){
+  .grid{ grid-template-columns:1fr }
 
+  /* panel detail tidak ketimpa filter */
   .detail{
-    position: fixed;
-    left: 0; right: 0;
-    top:    calc(var(--hdr-h) + var(--flt-h));  /* mulai tepat di bawah filters */
-    bottom: 0;
-    height: calc(100vh - var(--hdr-h) - var(--flt-h));
-    max-height: none;
-
-    border-top-left-radius: 18px;
-    border-top-right-radius: 18px;
-
-    /* animasi slide-up */
-    transform: translateY(100%);
-    transition: transform .28s ease;
+    position:fixed; left:0; right:0;
+    top:   calc(var(--hdr-h) + var(--flt-h));
+    bottom:0;
+    height:calc(100vh - var(--hdr-h) - var(--flt-h));
+    max-height:none;
+    padding-bottom: calc(var(--line-h) + 16px + env(safe-area-inset-bottom,0px));
+    border-top-left-radius:18px; border-top-right-radius:18px;
+    transform:translateY(100%); transition:transform .28s ease;
   }
-  .detail.open{ transform: translateY(0); }
+  .detail.open{ transform:translateY(0) }
+
+  /* bar line selalu terlihat – fixed di bawah layar */
+  .line{
+    position:fixed; left:0; right:0; bottom:0; z-index:1100;
+    height:var(--line-h);
+    padding:10px calc(12px + env(safe-area-inset-left,0px))
+             calc(10px + env(safe-area-inset-bottom,0px))
+             calc(12px + env(safe-area-inset-right,0px));
+    backdrop-filter:blur(6px);
+  }
+
+  .line #lineText{ font-size:14px }
+  .btn{ padding:6px 10px }
 }
 
-/* FAB (optional) */
+@media (max-width:360px){
+  .line{ gap:8px }
+  .btn{ padding:5px 9px }
+}
+
+/* ======================
+   FAB (optional)
+====================== */
 .fab{
   position:fixed; right:14px; bottom:14px; height:46px; width:46px; border-radius:50%;
   display:grid; place-items:center; background:linear-gradient(180deg,var(--gold),var(--gold-3));
