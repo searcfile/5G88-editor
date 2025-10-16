@@ -91,23 +91,6 @@
     /* Utility: back-to-top on mobile */
     .fab{position:fixed;right:14px;bottom:14px;height:46px;width:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,var(--gold),var(--gold-3));color:#000;font-weight:900;border:1px solid rgba(0,0,0,.35);box-shadow:var(--shadow);cursor:pointer}
   </style>
-
-  <!-- ===== VISIBILITY GATE (postMessage auth) ===== -->
-  <style>html{visibility:hidden}</style>
-  <script>
-    (function(){
-      const LOGIN_URL = "https://5g88-login.vercel.app/";
-      const ALLOWED_PARENTS = ["https://searcfile.github.io","https://5g88-main.vercel.app"];
-      const TIMEOUT_MS = 1600;
-      function goLogin(){ const rt = encodeURIComponent(location.href); location.replace(`${LOGIN_URL}?returnTo=${rt}`); }
-      if (window.top === window.self) { goLogin(); return; }
-      try{ const po = window.parent.location.origin; if(!ALLOWED_PARENTS.includes(po)){ goLogin(); return; } }catch(_){ /* cross-origin; wait for postMessage */ }
-      let authed = false;
-      function onMsg(ev){ if(!ALLOWED_PARENTS.includes(ev.origin)) return; const d = ev.data||{}; if(d && d.type==="user-login" && d.user && d.user.email){ authed=true; window.removeEventListener("message", onMsg); try{ sessionStorage.setItem("child_login_user", String(d.user.email||"").toLowerCase()); }catch(_){} document.documentElement.style.visibility = "visible"; } }
-      window.addEventListener("message", onMsg, false);
-      setTimeout(()=>{ if(!authed){ window.removeEventListener("message", onMsg); goLogin(); }}, TIMEOUT_MS);
-    })();
-  </script>
 </head>
 <body>
   <!-- ===== Header ===== -->
@@ -175,10 +158,6 @@
 
   <!-- ===== DATA + APP ===== -->
   <script>
-    // Gentle inspect block
-    document.addEventListener("contextmenu", e=>e.preventDefault());
-    document.addEventListener("keydown", e=>{ const k=e.key.toUpperCase(); if(k==="F12" || (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(k))) e.preventDefault();});
-
     const games = [
       { name:"SILVER BULLET", alias:"Silver", type:"Slot", payline:9, adjustable:true, image:"https://i.imgur.com/3faMy9F.png", tags:['918kiss','mega888','pussy888'], bets:{ 1:[0.01,0.05,0.10,0.25,0.50,1.00,5.00,10.00,15.00,20.00], 2:[0.02,0.10,0.20,0.50,1.00,2.00,10.00,20.00,30.00,40.00], 3:[0.03,0.15,0.30,0.75,1.50,3.00,15.00,30.00,45.00,60.00], 4:[0.04,0.20,0.40,1.00,2.00,4.00,20.00,40.00,60.00,80.00], 5:[0.05,0.25,0.50,1.25,2.50,5.00,25.00,50.00,75.00,100.00], 6:[0.06,0.30,0.60,1.50,3.00,6.00,30.00,60.00,90.00,120.00], 7:[0.07,0.35,0.70,1.75,3.50,7.00,35.00,70.00,105.00,140.00], 8:[0.08,0.40,0.80,2.00,4.00,8.00,40.00,80.00,120.00,160.00], 9:[0.09,0.45,0.90,2.25,4.50,9.00,45.00,90.00,135.00,180.00] } },
       { name:"SILENT SAMURAI", alias:"Samurai", type:"Slot", payline:9, adjustable:true, image:"https://i.imgur.com/y9DsPK4.png", tags:['918kiss','mega888'], bets:{ 1:[0.01,0.05,0.10,0.25,0.50,1.00,5.00,10.00,15.00,20.00], 2:[0.02,0.10,0.20,0.50,1.00,2.00,10.00,20.00,30.00,40.00], 3:[0.03,0.15,0.30,0.75,1.50,3.00,15.00,30.00,45.00,60.00], 4:[0.04,0.20,0.40,1.00,2.00,4.00,20.00,40.00,60.00,80.00], 5:[0.05,0.25,0.50,1.25,2.50,5.00,25.00,50.00,75.00,100.00], 6:[0.06,0.30,0.60,1.50,3.00,6.00,30.00,60.00,90.00,120.00], 7:[0.07,0.35,0.70,1.75,3.50,7.00,35.00,70.00,105.00,140.00], 8:[0.08,0.40,0.80,2.00,4.00,8.00,40.00,80.00,120.00,160.00], 9:[0.09,0.45,0.90,2.25,4.50,9.00,45.00,90.00,135.00,180.00] } },
