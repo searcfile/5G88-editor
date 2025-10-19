@@ -576,6 +576,44 @@ td:last-child {
   text-shadow: 0 0 #1668dc;
 }
 #clearSearch:hover {color: #3c89e8;}#clearSearch:active {color: #1554ad;}
+/* Ratakan isi kolom Action (kolom ke-5) */
+.tbl td:nth-child(5){
+  display: flex;              /* jadikan flex container */
+  align-items: center;        /* vertikal center */
+  gap: 8px;                   /* jarak ikon ↔ tombol */
+  padding-top: 8px;           /* optional: seragam dengan row lain */
+  padding-bottom: 8px;
+}
+
+/* Ikon status biar tidak ikut baseline */
+.status-dot,
+.status-x{
+  width: 12px;
+  height: 12px;
+  flex: 0 0 12px;
+  line-height: 0;             /* penting: hilangkan baseline */
+}
+
+.status-dot svg,
+.status-x svg{
+  display: block;             /* hilangkan celah bawah SVG */
+  width: 100%;
+  height: 100%;
+}
+
+/* Tombol seragam & center */
+.logout-btn,
+.block-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;               /* samain tinggi */
+  padding: 0 12px;            /* teks di tengah */
+  line-height: 1;             /* hilangkan extra space */
+}
+
+/* Cadangan: semua sel tabel middle align bila bukan flex */
+.tbl th, .tbl td{ vertical-align: middle; }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
