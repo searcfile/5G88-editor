@@ -551,6 +551,31 @@ td:last-child {
     margin-left: 0 !important;
   }
 }
+/* ====== CLEAR (X) di input search ====== */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#searchInput {
+  flex: 1;
+  padding-right: 30px; /* ruang untuk X */
+}
+
+#clearSearch {
+  position: absolute;
+  right: 42px; /* sejajar dengan tombol search */
+  color: #888;
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
+  display: none; /* sembunyikan dulu */
+  transition: color 0.2s;
+}
+#clearSearch:hover {
+  color: #fff;
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -560,12 +585,8 @@ td:last-child {
   
 <div class="search-container">
   <div class="search-box">
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Search"
-      autocomplete="off"
-    />
+    <input type="text"id="searchInput"placeholder="Search"autocomplete="off"/>
+    <span id="clearSearch" title="Clear">&times;</span>
     <button id="searchBtn" type="button">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path d="M21 21L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -889,7 +910,24 @@ blockedRef.on('value', (snap) => {
       renderLoginTable(filterByStatus(base, sv));
       });
      }
+    // ====== Tombol X di input search ======
+const searchInput = document.getElementById('searchInput');
+const clearBtn = document.getElementById('clearSearch');
 
+if (searchInput && clearBtn) {
+  searchInput.addEventListener('input', () => {
+    clearBtn.style.display = searchInput.value ? 'block' : 'none';
+  });
+
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    clearBtn.style.display = 'none';
+    // trigger filter ulang
+    const sv = document.getElementById('statusFilter').value;
+    const base = filterTable('', allLoginData);
+    renderLoginTable(filterByStatus(base, sv));
+  });
+}
   // ---------- Confirm popovers ----------
   function showConfirmAllBox(button) {
     const box = document.getElementById("confirmAllBox");
