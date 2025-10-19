@@ -577,26 +577,37 @@ td:last-child {
 }
 #clearSearch:hover {color: #3c89e8;}#clearSearch:active {color: #1554ad;}
 /* — Samakan tinggi kontrol bar search — */
-:root { --ctrl-h: 38px; }  /* ubah ke 36/40 kalau mau */
+/* Samakan tinggi kontrol & normalize <select> */
+:root { --ctrl-h: 38px; } /* ubah 36/40 kalau mau */
 
 .search-container input,
 .search-container button,
-#statusFilter{
+#statusFilter {
   height: var(--ctrl-h);
-  box-sizing: border-box;          /* <— penting untuk select */
+  box-sizing: border-box;
 }
 
-/* Biar tinggi ikut var, padding horizontal saja */
-.search-container input  { padding: 0 10px; }
+.search-container input  { padding: 0 10px; }  /* vertikal 0 biar ikut height */
 .search-container button { padding: 0 10px; }
 
-/* Netralisir UA style select supaya tingginya sama */
+/* <select> – jangan pakai line-height sama dengan height */
 #statusFilter{
-  padding: 0 12px;                 /* horizontal */
-  line-height: var(--ctrl-h);      /* teks center vertical */
-  -webkit-appearance: none;
+  padding: 0 12px;           /* horizontal saja */
+  line-height: normal;       /* <-- penting: biarkan normal */
+  font-size: 14px;           /* pastikan tidak 0 */
+  color: #fff;               /* visibel */
+  background: #141414;
+  min-width: 120px;          /* biar teks tidak kepotong */
+  display: inline-block;
+  -webkit-appearance: none;  /* hilangkan UA styling */
   -moz-appearance: none;
   appearance: none;
+}
+
+/* warna item saat dropdown dibuka */
+#statusFilter option{
+  color:#fff;
+  background:#141414;
 }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
