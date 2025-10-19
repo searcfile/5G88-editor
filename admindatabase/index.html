@@ -515,6 +515,41 @@ td:last-child {
     flex:0 0 auto; margin-left:auto;    /* dorong ke kanan saat mobile */
   }
 }
+/* === OVERRIDES: rapetin dropdown ke kanan search === */
+.search-container{
+  justify-content: flex-start !important; /* was space-between */
+  gap: 8px !important;                    /* jarak antar elemen */
+}
+
+/* search box tetap ukurannya sendiri */
+.search-box{ flex: 0 0 auto !important; }
+
+/* dropdown nempel ke search */
+#statusFilter{ margin-left: 8px !important; }
+
+/* tombol merah saja yang ke paling kanan */
+#forceLogoutAllBtn{ margin-left: auto !important; }
+
+/* ===== Mobile ===== */
+@media (max-width:640px){
+  /* biar stack rapi saat sempit */
+  .search-container{ flex-wrap: wrap; }
+  .search-box{ width: 100% !important; max-width: 100% !important; }
+  #statusFilter{
+    margin-left: 0 !important;  /* full width di bawah search */
+    width: 100%;
+  }
+  #forceLogoutAllBtn{ margin-left: 0 !important; } /* ikut flow normal */
+}
+
+/* Hapus efek dorong-kanan dropdown di mobile yang lama */
+@media (max-width:640px){
+  .search-container select#statusFilter{
+    flex: 0 0 auto !important;
+    /* override rule lama: margin-left:auto; */
+    margin-left: 0 !important;
+  }
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
