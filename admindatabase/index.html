@@ -462,7 +462,6 @@ td:last-child {
 .tbl th:nth-child(1),
 .tbl td:nth-child(1){
   width: 56px !important;
-  text-align: center;
 }
 
 /* Kolom "Action" pas muat 2 tombol */
@@ -491,7 +490,7 @@ td:last-child {
 }
 /* ===== Status icon di kanan Time ===== */
 .time-cell{
-  display:flex; align-items:center; justify-content:space-between; gap:10px; align-items: center;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
 }
 .status-dot, .status-x{
   display:inline-flex; align-items:center; justify-content:center;
@@ -506,7 +505,7 @@ td:last-child {
 /* ===== Dropdown filter status di kanan search ===== */
 .search-container select#statusFilter{
   background:#141414; color:#fff; border:1px solid #424242;
-  border-radius:6px; padding:10px 10px; font-size:14px; min-width:100px;cursor: pointer;transition: all 0.2s;
+  border-radius:6px; padding:10px 10px; font-size:14px; min-width:100px;cursor: pointer;transition: all 0.2s;height:38px;
 }
 .search-container select#statusFilter:focus{ outline:none; border-color:#1668dc; }
 .search-container select#statusFilter:active{ border:1px solid #1554ad; }
@@ -577,39 +576,6 @@ td:last-child {
   text-shadow: 0 0 #1668dc;
 }
 #clearSearch:hover {color: #3c89e8;}#clearSearch:active {color: #1554ad;}
-/* — Samakan tinggi kontrol bar search — */
-/* Samakan tinggi kontrol & normalize <select> */
-:root { --ctrl-h: 38px; } /* ubah 36/40 kalau mau */
-
-.search-container input,
-.search-container button,
-#statusFilter {
-  height: var(--ctrl-h);
-  box-sizing: border-box;
-}
-
-.search-container input  { padding: 0 10px; }  /* vertikal 0 biar ikut height */
-.search-container button { padding: 0 10px; }
-
-/* <select> – jangan pakai line-height sama dengan height */
-#statusFilter{
-  padding: 0 12px;           /* horizontal saja */
-  line-height: normal;       /* <-- penting: biarkan normal */
-  font-size: 14px;           /* pastikan tidak 0 */
-  color: #fff;               /* visibel */
-  background: #141414;
-  min-width: 120px;          /* biar teks tidak kepotong */
-  display: inline-block;
-  -webkit-appearance: none;  /* hilangkan UA styling */
-  -moz-appearance: none;
-  appearance: none;
-}
-
-/* warna item saat dropdown dibuka */
-#statusFilter option{
-  color:#fff;
-  background:#141414;
-}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
