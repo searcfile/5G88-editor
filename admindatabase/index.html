@@ -488,6 +488,33 @@ td:last-child {
   .tbl th:nth-child(5), .tbl td:nth-child(5){ width: 140px !important; }
   .logout-btn, .block-btn{ padding: 6px 10px; } /* tombol sedikit diperkecil */
 }
+/* ===== Status icon di kanan Time ===== */
+.time-cell{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+.status-dot, .status-x{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; flex:0 0 16px;
+}
+.status-dot svg{ width:100%; height:100%; }
+.status-x   svg{ width:100%; height:100%; }
+
+.status-dot svg circle{ fill:#22c55e; }   /* hijau = Active */
+.status-x   svg path{ stroke:#ef4444; stroke-width:2; fill:none; } /* merah = Unactive */
+
+/* ===== Dropdown filter status di kanan search ===== */
+.search-container select#statusFilter{
+  background:#141414; color:#fff; border:1px solid #424242;
+  border-radius:6px; padding:10px; font-size:14px; min-width:148px;
+}
+.search-container select#statusFilter:focus{ outline:none; border-color:#1668dc; }
+.search-container select#statusFilter:hover{ border-color:#3b8cff; }
+
+@media (max-width:640px){
+  .search-container select#statusFilter{
+    flex:0 0 auto; margin-left:auto;    /* dorong ke kanan saat mobile */
+  }
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -510,6 +537,11 @@ td:last-child {
       </svg>
     </button>
   </div>
+  <select id="statusFilter">
+   <option value="all">All</option>
+   <option value="active">Active</option>
+   <option value="inactive">Unactive</option>
+</select>
   <button id="forceLogoutAllBtn">Force Logout All</button>
 </div>
   
@@ -607,7 +639,14 @@ td:last-child {
       (it.email || '').toLowerCase().includes(q)
     );
   }
-
+  
+  function filterByStatus(arr, statusVal) {
+  if (statusVal === 'all') return arr;
+  return arr.filter(it => {
+    const active = !isEmailBlockedFast(it.email || '');
+    return statusVal === 'active' ? active : !active;
+  });
+}
   // ---------- Tinggi viewport = header + 15 baris ----------
   function fitViewportToRows(n = 15){
     const vp  = document.getElementById('tableViewport');
@@ -648,19 +687,26 @@ td:last-child {
 
   // ---------- Block cache (hemat query) ----------
   let blockedSet = new Set();
-  blockedRef.on('value', (snap) => {
-    const val = snap.val() || {};
-    blockedSet = new Set(
-      Object.entries(val).filter(([_,v]) => Boolean(v)).map(([k]) => k)
-    );
-    // sinkronkan tombol yang sudah ada
-    document.querySelectorAll('.block-btn').forEach(btn => {
-      const email = btn.dataset.email || '';
-      const isBlocked = blockedSet.has(sanitizeEmail(email));
-      btn.textContent = isBlocked ? 'Unblock' : 'Block';
-      btn.classList.toggle('blocked', isBlocked);
-    });
+blockedRef.on('value', (snap) => {
+  const val = snap.val() || {};
+  blockedSet = new Set(
+    Object.entries(val).filter(([_,v]) => Boolean(v)).map(([k]) => k)
+  );
+
+  // update tombol Block/Unblock
+  document.querySelectorAll('.block-btn').forEach(btn => {
+    const email = btn.dataset.email || '';
+    const isBlocked = blockedSet.has(sanitizeEmail(email));
+    btn.textContent = isBlocked ? 'Unblock' : 'Block';
+    btn.classList.toggle('blocked', isBlocked);
   });
+
+  // ⚡ re-render table supaya ikon & filter ikut update
+  const q = document.getElementById('searchInput')?.value || '';
+  const sv = document.getElementById('statusFilter')?.value || 'all';
+  const base = filterTable(q, allLoginData);
+  renderLoginTable(filterByStatus(base, sv));
+});
   function isEmailBlockedFast(email){
     return blockedSet.has(sanitizeEmail(email));
   }
@@ -699,36 +745,49 @@ td:last-child {
     let no = 0;
 
     dataArray.forEach(item => {
-      const email = item.email || '';
-      const name  = item.name  || '';
-      const tStr  = item.dateObj ? formatDateTime(item.dateObj) : (item.loginRaw || '');
+  const email = item.email || '';
+  const name  = item.name  || '';
+  const tStr  = item.dateObj ? formatDateTime(item.dateObj) : (item.loginRaw || '');
 
-      if (!email && !name && !tStr) return;
-      no++;
+  if (!email && !name && !tStr) return;
+  no++;
 
-      html += `
-        <tr data-email="${esc(email)}">
-          <td>${no}</td>
-          <td title="${esc(name)}">${esc(name || '-')}</td>
-          <td title="${esc(email)}">${esc(email)}</td>
-          <td title="${esc(tStr)}">${esc(tStr)}</td>
-          <td>
-            <div class="action-buttons">
-              <button class="logout-btn"
-                      data-email="${esc(email)}"
-                      data-name="${esc(name || '-')}"
-                      onclick="showConfirmBox(this, this.dataset.email, this.dataset.name)">
-                Logout
-              </button>
-              <button class="block-btn"
-                      data-email="${esc(email)}"
-                      onclick="toggleBlockUser(this)">
-                Block
-              </button>
-            </div>
-          </td>
-        </tr>`;
-    });
+  // ✅ hitung status DI LUAR template string
+  const isActive = !isEmailBlockedFast(email);
+  const statusHTML = isActive
+    ? `<span class="status-dot" title="Active">
+         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg>
+       </span>`
+    : `<span class="status-x" title="Unactive">
+         <svg viewBox="0 0 24 24"><path d="M6 6L18 18M6 18L18 6"/></svg>
+       </span>`;
+
+  html += `
+    <tr data-email="${esc(email)}">
+      <td>${no}</td>
+      <td title="${esc(name)}">${esc(name || '-')}</td>
+      <td title="${esc(email)}">${esc(email)}</td>
+      <td class="time-cell" title="${esc(tStr)}">
+        <span>${esc(tStr)}</span>
+        ${statusHTML}
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button class="logout-btn"
+                  data-email="${esc(email)}"
+                  data-name="${esc(name || '-')}"
+                  onclick="showConfirmBox(this, this.dataset.email, this.dataset.name)">
+            Logout
+          </button>
+          <button class="block-btn"
+                  data-email="${esc(email)}"
+                  onclick="toggleBlockUser(this)">
+            Block
+          </button>
+        </div>
+      </td>
+    </tr>`;
+});
 
     tbody.innerHTML = html;
 
@@ -766,7 +825,9 @@ td:last-child {
         });
 
       const q = document.getElementById('searchInput')?.value || '';
-      renderLoginTable(filterTable(q, allLoginData));
+      const sv = document.getElementById('statusFilter')?.value || 'all';
+      const base = filterTable(q, allLoginData);
+      renderLoginTable(filterByStatus(base, sv));
       searchBtn.classList.remove('loading');
     }, (error) => {
       document.getElementById('loginTableBody').innerHTML =
@@ -780,14 +841,18 @@ td:last-child {
     const input = document.getElementById('searchInput');
     if (input) {
       input.addEventListener('input', () => {
-        renderLoginTable(filterTable(input.value, allLoginData));
+      const sv = document.getElementById('statusFilter').value;
+      const base = filterTable(input.value, allLoginData);
+      renderLoginTable(filterByStatus(base, sv));
       });
     }
-    document.getElementById('searchBtn').addEventListener('click', () => {
+     document.getElementById('statusFilter').addEventListener('change', () => {
       const q = document.getElementById('searchInput').value;
-      renderLoginTable(filterTable(q, allLoginData));
-    });
-  }
+      const sv = document.getElementById('statusFilter').value;
+      const base = filterTable(q, allLoginData);
+      renderLoginTable(filterByStatus(base, sv));
+      });
+     }
 
   // ---------- Confirm popovers ----------
   function showConfirmAllBox(button) {
