@@ -576,43 +576,6 @@ td:last-child {
   text-shadow: 0 0 #1668dc;
 }
 #clearSearch:hover {color: #3c89e8;}#clearSearch:active {color: #1554ad;}
-/* Kolom "No" kecil & center (tetap) */
-.tbl th:nth-child(1),
-.tbl td:nth-child(1){
-  width: 56px !important;
-}
-
-/* ✅ Kolom status yang baru (kolom ke-5) */
-.tbl th:nth-child(5),
-.tbl td:nth-child(5){
-  width: 120px !important;
-  text-align: center !important;
-}
-
-/* ✅ Kolom Action geser jadi kolom ke-6 */
-.tbl th:nth-child(6),
-.tbl td:nth-child(6){
-  width: 170px !important;
-}
-
-/* Mobile tweak */
-@media (max-width: 640px){
-  .tbl th:nth-child(1), .tbl td:nth-child(1){ width: 46px !important; }
-  .tbl th:nth-child(6), .tbl td:nth-child(6){ width: 140px !important; }
-  .logout-btn, .block-btn{ padding: 6px 10px; }
-}
-
-/* ✅ Dot status kecil & sejajar tengah */
-.status-cell{ text-align:center; }
-.status-dot{
-  display:inline-block;
-  width:12px; height:12px;
-  border-radius:50%;
-  vertical-align: middle;
-  box-shadow: 0 0 6px currentColor;
-}
-.status-dot.active{  background:#00ff00; color:#00ff00; }  /* hijau */
-.status-dot.inactive{background:#ff2a2a; color:#ff2a2a; }  /* merah */
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -648,7 +611,6 @@ td:last-child {
           <th>Name</th>
           <th>Email</th>
           <th>Time Logged In</th>
-          <th>Active / Unactive</th>
           <th>Action</th>
         </tr>
       </thead>
