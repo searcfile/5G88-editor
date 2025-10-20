@@ -576,6 +576,38 @@ td:last-child {
   text-shadow: 0 0 #1668dc;
 }
 #clearSearch:hover {color: #3c89e8;}#clearSearch:active {color: #1554ad;}
+/* ==== Fix sejajarkan "Time Logged In" & samakan tinggi baris ==== */
+
+/* 1) Samakan tinggi & line-height semua sel */
+.tbl th, .tbl td{
+  vertical-align: middle !important;
+  line-height: 1.3 !important;
+}
+
+/* 2) Paksa tinggi baris konsisten */
+.tbl tbody tr{
+  height: 48px;                 /* boleh ubah 44–52 sesuai selera */
+}
+
+/* 3) Spesifik ke kolom Time (kolom ke-4) – pastikan benar-benar center */
+.tbl td:nth-child(4){
+  vertical-align: middle !important;
+  padding-top: 8px;             /* jaga proporsi padding */
+  padding-bottom: 8px;
+}
+
+/* 4) Kalau di dalam sel Time kamu pakai wrapper .time-cell (flex),
+      pastikan itemnya center & mengambil tinggi penuh  */
+.tbl td:nth-child(4) .time-cell{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+}
+
+/* 5) Tombol di kolom Action jangan ‘mengangkat’ baris */
+.action-buttons{ align-items: center; }
+.logout-btn, .block-btn{ line-height: 1; }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
