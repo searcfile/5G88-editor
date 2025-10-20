@@ -30,10 +30,10 @@
     max-width: 100%; padding: 0 20px; margin: 20px 0 10px;
     background: transparent; gap: 8px; box-sizing: border-box; flex-wrap: wrap;
   }
-  .search-box{ display:flex; min-width:260px; width:auto; flex:0 1 500px; }
+  .search-box{ display:flex; min-width:260px; width:auto; flex:0 1 500px;position: relative; }
   /* INPUT */
   .search-container input{
-    flex:1; padding:10px 10px; font-size:14px; color:#fff;
+    flex:1; padding:10px 34px 10px 10px; font-size:14px; color:#fff;
     background:#141414; border:1px solid #424242; border-radius:6px 0 0 6px; outline:none; transition:.2s;
   }
   .search-container input::placeholder{ color:rgba(255,255,255,.4); }
@@ -165,6 +165,30 @@
     .tbl th:nth-child(6), .tbl td:nth-child(6){ width:140px !important; }
     .logout-btn, .block-btn{ padding:6px 10px; }
   }
+  /* tombol X */
+.clear-btn{
+  position:absolute;
+  top:50%;
+  transform: translateY(-50%);
+  right: 42px;                  /* ✅ sebelum tombol search */
+  width: 24px;
+  height: 24px;
+  border: 1px solid #424242;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #1668dc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color .2s, border-color .2s, background-color .2s;
+}
+
+.clear-btn:hover{
+  border-color:#3b8cff;
+  color:#3b8cff;
+  background:#141414;
+}
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -176,6 +200,13 @@
   <div class="search-container">
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="Search" autocomplete="off" />
+       <!-- ✅ NEW: clear button -->
+      <button id="clearSearch" class="clear-btn" type="button" aria-label="Clear search" hidden>
+    <!-- ikon X -->
+     <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
       <button id="searchBtn" type="button">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M21 21L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -524,7 +555,37 @@
       rerenderWithCurrentFilters();
     });
   }
+  // ✅ TAMBAHKAN: setelah setupSearchListener()
+function setupClearButton(){
+  const input = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearSearch');
+  if (!input || !clearBtn) return;
 
+  function toggleClearBtn(){
+    clearBtn.hidden = !(input.value && input.value.trim() !== '');
+  }
+
+  // saat ketik: show/hide X + render ulang tabel
+  input.addEventListener('input', () => {
+    toggleClearBtn();
+    if (typeof rerenderWithCurrentFilters === 'function') {
+      rerenderWithCurrentFilters();
+    }
+  });
+
+  // klik X: kosongkan input + hide X + fokus balik + render ulang
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    toggleClearBtn();
+    input.focus();
+    if (typeof rerenderWithCurrentFilters === 'function') {
+      rerenderWithCurrentFilters();
+    }
+  });
+
+  // status awal
+  toggleClearBtn();
+}
   // ---------- Confirm popovers ----------
   function showConfirmAllBox(button){
     const box = document.getElementById("confirmAllBox");
@@ -639,6 +700,7 @@
   function init(){
     startRealtime();
     setupSearchListener();
+    setupClearButton();
 
     if (window.ResizeObserver){
       const ro = new ResizeObserver(() => fitViewportToRows(15));
