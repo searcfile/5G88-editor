@@ -41,14 +41,14 @@
   .search-container input:focus{ border-color:#1668dc; }
 
   /* BUTTON Search */
-  .search-container button{
-    padding:10px 10px; background:#141414; border:1px solid #424242; border-left:1px solid #424242;
-    border-radius:0 6px 6px 0; display:flex; align-items:center; justify-content:center;
-    cursor:pointer; color:#aaa; transition:.2s;
-  }
-  .search-container button:hover{ border-color:#3b8cff; color:#3b8cff; background:#1a1a1a; }
-  .search-container button:active{ border-color:#1668dc; color:#1668dc; background:#1a1a1a; }
-  .search-container button svg{ stroke:currentColor; transition:stroke .2s; }
+.search-container #searchBtn{
+  padding:10px 10px; background:#141414; border:1px solid #424242; border-left:1px solid #424242;
+  border-radius:0 6px 6px 0; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:#aaa; transition:.2s;
+}
+.search-container #searchBtn:hover{ border-color:#3b8cff; color:#3b8cff; background:#1a1a1a; }
+.search-container #searchBtn:active{ border-color:#1668dc; color:#1668dc; background:#1a1a1a; }
+.search-container #searchBtn svg{ stroke:currentColor; transition:stroke .2s; }
   #searchBtn.loading{
     border:1px solid #3b8cff; border-radius:0 6px 6px 0; box-shadow:0 0 10px #3b8cff; background:#1a1a1a;
   }
@@ -181,13 +181,16 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: color .2s, border-color .2s, background-color .2s;
+  transition: color .2s, border-color .2s, background-color .2s; z-index:2;
 }
 
 .clear-btn:hover{
   border-color:#3b8cff;
   color:#3b8cff;
   background:#141414;
+}
+[hidden]{
+  display: none !important;
 }
 </style>
 
