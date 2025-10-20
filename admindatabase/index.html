@@ -488,7 +488,19 @@ td:last-child {
   .tbl th:nth-child(5), .tbl td:nth-child(5){ width: 140px !important; }
   .logout-btn, .block-btn{ padding: 6px 10px; } /* tombol sedikit diperkecil */
 }
+/* ===== Status icon di kanan Time ===== */
+.time-cell{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+.status-dot, .status-x{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; flex:0 0 16px;
+}
+.status-dot svg{ width:100%; height:100%; }
+.status-x   svg{ width:100%; height:100%; }
 
+.status-dot svg circle{ fill:#00ff00; }   /* hijau = Active */
+.status-x   svg path{ stroke:red; stroke-width:2; fill:none; } /* merah = Unactive */
 
 /* ===== Dropdown filter status di kanan search ===== */
 .search-container select#statusFilter{
