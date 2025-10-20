@@ -107,7 +107,7 @@
   .toast-icon{ flex-shrink:0; display:inline-block; vertical-align:middle; width:20px; height:20px;}
 
   /* Buttons in table */
-  .action-buttons{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+  .action-buttons{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap;justify-content:center; }
   .logout-btn{
     background:#dc2626; color:#fff; padding:6px 12px; border:none; border-radius:4px; cursor:pointer; transition:background .2s; min-width:0 !important;
   }
@@ -139,20 +139,26 @@
 
   .tbl{ width:100%; border-collapse:collapse; table-layout:fixed; }
   .tbl th,.tbl td{ padding:8px 12px; border-bottom:1px solid #1f2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .tbl thead th{ position:sticky; top:0; z-index:2; background:#1668dc; color:#fff; text-align:left; }
+  .tbl thead th{ position:sticky; top:0; z-index:2; background:#1668dc; color:#fff; text-align:center; }
 
   /* OVERRIDES: single line, horizontal scroll */
   .table-viewport{ overflow-x:auto !important; }
   .tbl{ table-layout:auto !important; width:max-content !important; min-width:100% !important; }
-  .tbl th,.tbl td{ white-space:nowrap !important; overflow:visible !important; text-overflow:initial !important; }
+  .tbl th,.tbl td{ white-space:nowrap !important; overflow:visible !important; text-overflow:initial !important; text-align:center;vertical-align:middle;}
+  .tbl th:nth-child(2), .tbl td:nth-child(2),
+  .tbl th:nth-child(3), .tbl td:nth-child(3){
+  text-align:left;
+}
 
   /* Column widths (updated indices) */
   .tbl th:nth-child(1), .tbl td:nth-child(1){ width:56px !important; text-align:center; }       /* No */
   .tbl th:nth-child(6), .tbl td:nth-child(6){ width:170px !important; }                          /* Action (now col 6) */
   .tbl th:nth-child(5), .tbl td:nth-child(5){ width:140px !important; }                          /* Active/Unactive */
-
+  .tbl td:nth-child(6){
+  text-align:center;
+}
   /* Status badge layout */
-  .status-cell{ display:flex; align-items:center; gap:8px; }
+  .status-cell{ display:flex; align-items:center; gap:8px;justify-content:center; }
   .status-text{ color:#cbd5e1; font-size:13px; }
 
   /* Mobile tweaks */
