@@ -6,556 +6,239 @@
 <title>Admin</title>
 <style>
   body {
-  font-family: Arial, sans-serif;
-  background: #000;
-  color: #3b8cff;
-  padding: 0;
-  margin: 0;
-  overflow-y: scroll;         
-  overflow-x: hidden;        
-  -ms-overflow-style: none;  
-  scrollbar-width: none;     
-}
-html,body {
- overflow-y: scroll; 
- -ms-overflow-style: none;  
- scrollbar-width: none; 
-}
-html::-webkit-scrollbar {
-  display: none;    
-}
-body::-webkit-scrollbar {
-  display: none;            
-}
-html {
-  overflow-x: hidden;
-}
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-  .header {
-  background-color: #1668dc;
-  font-size: 30px;
-  height: 90px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-weight: bold;
-}
-  .table-container {
-  padding: 0 20px;
-}
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #3b8cff;
+    padding: 0; margin: 0;
+    overflow-y: scroll; overflow-x: hidden;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  html,body { overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none; }
+  html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+  html { overflow-x: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
 
- .search-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* ✅ */
-  max-width: 100%;
-  padding: 0 20px;
-  margin: 20px 0 10px;
-  background-color: transparent;
-  gap: 10px;
-  box-sizing: border-box;
-  flex-wrap: wrap;
-}
-@media (max-width: 640px){
+  .header{
+    background-color: #1668dc; font-size: 30px; height: 90px;
+    display: flex; justify-content: center; align-items: center;
+    color: #fff; font-weight: bold;
+  }
+  .table-container{ padding: 0 20px; }
+
   .search-container{
-    justify-content: flex-start;  /* jangan space-between saat wrap */
-    gap: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 100%; padding: 0 20px; margin: 20px 0 10px;
+    background: transparent; gap: 10px; box-sizing: border-box; flex-wrap: wrap;
   }
-  .search-box{
-    flex: 1 1 100%;
-    width: 100%;
-    min-width: 0;
+  .search-box{ display:flex; width:500px; }
+  /* INPUT */
+  .search-container input{
+    flex:1; padding:10px 10px; font-size:14px; color:#fff;
+    background:#141414; border:1px solid #424242; border-radius:6px 0 0 6px; outline:none; transition:.2s;
   }
+  .search-container input::placeholder{ color:rgba(255,255,255,.4); }
+  .search-container input:hover{ border-color:#3b8cff; }
+  .search-container input:focus{ border-color:#1668dc; }
+
+  /* BUTTON Search */
+  .search-container button{
+    padding:10px 10px; background:#141414; border:1px solid #424242; border-left:1px solid #424242;
+    border-radius:0 6px 6px 0; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:#aaa; transition:.2s;
+  }
+  .search-container button:hover{ border-color:#3b8cff; color:#3b8cff; background:#1a1a1a; }
+  .search-container button:active{ border-color:#1668dc; color:#1668dc; background:#1a1a1a; }
+  .search-container button svg{ stroke:currentColor; transition:stroke .2s; }
+  #searchBtn.loading{
+    border:1px solid #3b8cff; border-radius:0 6px 6px 0; box-shadow:0 0 10px #3b8cff; background:#1a1a1a;
+  }
+  #searchBtn.loading svg{ stroke:#3b8cff; filter:drop-shadow(0 0 5px #3b8cff); animation:pulseIcon 5s ease-in-out infinite; }
+  @keyframes pulseIcon{ 0%{filter:drop-shadow(0 0 0 #3b8cff)}50%{filter:drop-shadow(0 0 8px #3b8cff)}100%{filter:drop-shadow(0 0 0 #3b8cff)} }
+
+  /* DROPDOWN Status Filter */
+  .status-filter{
+    padding:10px; font-size:14px; color:#fff; background:#141414;
+    border:1px solid #424242; border-radius:6px; outline:none; transition:.2s;
+  }
+  .status-filter:hover{ border-color:#3b8cff; }
+  .status-filter:focus{ border-color:#1668dc; }
+
+  /* Force Logout All */
   #forceLogoutAllBtn{
-    flex: 0 0 auto;
-    margin-left: auto; /* dorong ke kanan */
-    margin-top: 4px;   /* jarak dari input */
+    background:#dc2626; color:#fff; padding:10px 16px; border:none; border-radius:6px; cursor:pointer; white-space:nowrap; transition:.2s;
   }
-}
-.search-box {
-  display: flex;
-  width: 500px;
-}
-/* INPUT */
-.search-container input {
-  flex: 1;
-  padding: 10px 10px;
-  font-size: 14px;
-  color: white;
-  background-color: #141414;
-  border: 1px solid #424242;
-  border-radius: 6px 0 0 6px;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-}
+  #forceLogoutAllBtn:hover{ background:#e75858; color:#fff; }
+  #forceLogoutAllBtn:active{ background:#b31616; color:#fff; }
 
-.search-container input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.search-container input:hover {
-  border-color: #3b8cff;
-}
-.search-container input:focus {
-  border-color: #1668dc;
-}
-
-/* BUTTON */
-.search-container button {
-  padding: 10px 10px;
-  background-color: #141414;
-  border: 1px solid #424242;
-  border-left: 1px solid #424242; /* penting agar tak dobel border */
-  border-radius: 0 6px 6px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #aaa;
-  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
-  box-sizing: border-box;
-}
-
-.search-container button:hover {
-  border-color: #3b8cff;
-  color: #3b8cff;
-  background-color: #1a1a1a;
-}
-.search-container button:active {
-  border-color: #1668dc;
-  color: #1668dc;
-  background-color: #1a1a1a;
-}
-
-/* SVG ikut warna */
-.search-container button svg {
-  stroke: currentColor;
-  transition: stroke 0.2s;
-}
-#searchBtn.loading {
-  border: 1px solid #3b8cff;
-  border-radius: 0 6px 6px 0;
-  box-shadow: 0 0 10px #3b8cff;
-  background-color: #1a1a1a;
-}
-
-#searchBtn.loading svg {
-  stroke: #3b8cff;
-  filter: drop-shadow(0 0 5px #3b8cff);
-  animation: pulseIcon 5s ease-in-out infinite;
-}
-
-@keyframes pulseIcon {
-  0% { filter: drop-shadow(0 0 0px #3b8cff); }
-  50% { filter: drop-shadow(0 0 8px #3b8cff); }
-  100% { filter: drop-shadow(0 0 0px #3b8cff); }
-}
-#forceLogoutAllBtn {
-  background: #dc2626;
-  color: white;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-#forceLogoutAllBtn:hover {
- background: #e75858;
- color: white;
-}
-#forceLogoutAllBtn:active {
- background: #b31616;
- color: white;
-}
-.confirm-box {
-  background-color: #1f1f1f;
-  border: 1px solid #3b8cff;
-  border-radius: 6px;
-  padding: 10px;
-  width: 180px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  color: white;
-  font-size: 12px;
-  line-height: 1.3;
-  word-wrap: break-word;
-  white-space: normal;
-  transition: all 0.2s;
-}
-
-.confirm-message {
-  margin-bottom: 8px;
-}
-
-.confirm-actions {
-  display: flex;
-  justify-content: flex-start; /* ✅ tombol di kiri */
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.btn-no,
-.btn-yes {
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  border: none;
-}
-
-.btn-no {
-  background-color: #3a3a3a;
-  color: white;
-}
-
-.btn-yes {
-  background-color: #dc2626;
-  color: white;
-}
-
-.btn-no:hover,
-.btn-yes:hover {
-  opacity: 0.9;
-}
-.confirm-user-info {
-  margin-bottom: 8px;
-  font-size: 11px;
-  line-height: 1.2;
-  color: #ccc;
-}
-.confirm-box {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.confirm-box.show {
-  opacity: 1;
-}
-.user-line {
-  background: #2c1618;
-  border: 1px solid #5b2526;
-  padding: 4px 6px;
-  border-radius: 4px;
-  margin-bottom: 3px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-  @media (max-width: 480px) {
-  .confirm-box {
-    width: 95vw !important;
-    max-width: 95vw;
-    left: 10px !important;
-    right: 10px !important;
+  /* Confirm popover */
+  .confirm-box{
+    background:#1f1f1f; border:1px solid #3b8cff; border-radius:6px; padding:10px; width:180px;
+    box-shadow:0 4px 10px rgba(0,0,0,.4); color:#fff; font-size:12px; line-height:1.3; word-wrap:break-word;
+    white-space:normal; opacity:0; transition:opacity .2s ease;
   }
-}
-.logout-btn {
-  background: #dc2626;
-  color: white;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s;
-  min-width: 75px;
-  transition: all 0.2s;
-}
-.logout-btn:hover {
-  background: #e75858;
-  color: white;
-}
+  .confirm-box.show{ opacity:1; }
+  .confirm-message{ margin-bottom:8px; }
+  .confirm-user-info{ margin-bottom:8px; font-size:11px; line-height:1.2; color:#ccc; }
+  .confirm-actions{ display:flex; justify-content:flex-start; gap:6px; flex-wrap:wrap; }
+  .user-line{ background:#2c1618; border:1px solid #5b2526; padding:4px 6px; border-radius:4px; margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .btn-no,.btn-yes{ padding:4px 10px; border-radius:4px; font-size:12px; cursor:pointer; border:none; }
+  .btn-no{ background:#3a3a3a; color:#fff; }
+  .btn-yes{ background:#dc2626; color:#fff; }
+  .btn-no:hover,.btn-yes:hover{ opacity:.9; }
+  @media (max-width:480px){
+    .confirm-box{ width:95vw!important; max-width:95vw; left:10px!important; right:10px!important; }
+  }
 
-.logout-btn:active {
-  background: #b31616;
-  color: white;
-}
-.toast {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: #1e293b;
-  color: #cbd5e1;
-  padding: 12px 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-  font-size: 14px;
-  z-index: 99999;
-  opacity: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 280px;
-  max-width: 90%;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-.toast .close-btn {
-  background: transparent;
-  border: none;
-  color: #888;
-  font-size: 18px;
-  cursor: pointer;
-  margin-left: auto;
-}
-.toast .close-btn:hover {
-  color: #fff;
-}
-.toast.success .toast-icon {
-  color: #22c55e; /* hijau */
-  font-size: 14px;
-}
-.toast.error .toast-icon {
-  color: #ef4444; /* merah */
-  font-size: 14px;
-}
-.toast-icon {
-  flex-shrink: 0;
-  display: inline-block;
-  vertical-align: middle;
-  width: 20px;
-  height: 20px;
-}
-.block-btn {
-  background: #facc15;
-  color: black;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 75px;
-  text-align: center;
-}
-.block-btn:hover {
-  background: #fcd34d;
-  transition: all 0.2s;
-}
-.block-btn:active {
-  background: #a5882b;
-  transition: all 0.2s;
-}
-.block-btn.blocked {
-  color: red;
-  background: #facc15;
-  transition: all 0.2s;
-}
-.block-btn.blocked:hover {
-  color: black;
-  background: #fcd34d;
-  transition: all 0.2s;
-}
-.block-btn.blocked:active {
-  background: #a5882b;
-  color: black;
-  transition: all 0.2s;
-}
-.action-buttons {
-  display: flex;
-  gap: 6px;
-  justify-content: flex-start;
-  transition: all 0.2s;
-}
-td:last-child {
-  width: 1%;
-  white-space: nowrap;
-}
-/* viewport scroll max 15 baris */
-.table-viewport{
-  --row-h: 48px;
-  --head-h: 52px;
-  max-height: calc(var(--head-h) + var(--row-h) * 15);
-  overflow: auto;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  border: 1px solid #3b8cff;
-  border-radius: 8px;
-  background: #0b0b0b;
-}
-/* === Custom scrollbar untuk table-viewport saja === */
-/* Firefox */
-.table-viewport{
-  scrollbar-width: thin;                 /* tipis */
-  scrollbar-color: #1668dc transparent;      /* thumb | track */
-}
+  /* Toast */
+  .toast{
+    position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:#1e293b; color:#cbd5e1; padding:12px 20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,.35);
+    font-size:14px; z-index:99999; opacity:0; display:flex; align-items:center; gap:10px; min-width:280px; max-width:90%;
+    transition:transform .4s ease, opacity .4s ease;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+  .toast .close-btn{ background:transparent; border:none; color:#888; font-size:18px; cursor:pointer; margin-left:auto; }
+  .toast .close-btn:hover{ color:#fff; }
+  .toast.success .toast-icon{ color:#22c55e; font-size:14px;}
+  .toast.error .toast-icon{ color:#ef4444; font-size:14px;}
+  .toast-icon{ flex-shrink:0; display:inline-block; vertical-align:middle; width:20px; height:20px;}
 
-/* Chrome/Edge/Safari (WebKit) */
-.table-viewport::-webkit-scrollbar{
-  width: 10px;      /* vertikal */
-  height: 10px;     /* horizontal */
-}
+  /* Buttons in table */
+  .action-buttons{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+  .logout-btn{
+    background:#dc2626; color:#fff; padding:6px 12px; border:none; border-radius:4px; cursor:pointer; transition:background .2s; min-width:0 !important;
+  }
+  .logout-btn:hover{ background:#e75858; color:#fff; }
+  .logout-btn:active{ background:#b31616; color:#fff; }
+  .block-btn{
+    background:#facc15; color:#000; padding:6px 12px; border:none; border-radius:4px; cursor:pointer; transition:all .2s; min-width:0 !important;
+  }
+  .block-btn:hover{ background:#fcd34d; }
+  .block-btn:active{ background:#a5882b; }
+  .block-btn.blocked{ color:red; background:#facc15; }
+  .block-btn.blocked:hover{ color:#000; background:#fcd34d; }
+  .block-btn.blocked:active{ background:#a5882b; color:#000; }
 
-.table-viewport::-webkit-scrollbar-track{
-  background: #0f172a;                   /* track gelap */
-  border-radius: 8px;
-  box-shadow: inset 0 0 0 1px #1f2937;   /* garis tepi tipis seperti contoh */
-}
+  /* Viewport & table */
+  .table-viewport{
+    --row-h:48px; --head-h:52px;
+    max-height: calc(var(--head-h) + var(--row-h) * 15);
+    overflow:auto; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    border:1px solid #3b8cff; border-radius:8px; background:#0b0b0b;
+    scrollbar-width:thin; scrollbar-color:#1668dc transparent;
+  }
+  .table-viewport::-webkit-scrollbar{ width:10px; height:10px; }
+  .table-viewport::-webkit-scrollbar-track{ background:#0f172a; border-radius:8px; box-shadow:inset 0 0 0 1px #1f2937; }
+  .table-viewport::-webkit-scrollbar-thumb{ background:#6b7280; border-radius:8px; border:2px solid #0f172a; }
+  .table-viewport::-webkit-scrollbar-thumb:hover{ background:#3c89e8; }
+  .table-viewport::-webkit-scrollbar-corner{ background:#0f172a; }
+  .table-viewport::-webkit-scrollbar-button{ height:10px; width:10px; background:#0f172a; }
 
-.table-viewport::-webkit-scrollbar-thumb{
-  background: #6b7280;                   /* thumb abu */
-  border-radius: 8px;
-  border: 2px solid #0f172a;             /* jarak di sekeliling thumb */
-}
+  .tbl{ width:100%; border-collapse:collapse; table-layout:fixed; }
+  .tbl th,.tbl td{ padding:8px 12px; border-bottom:1px solid #1f2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tbl thead th{ position:sticky; top:0; z-index:2; background:#1668dc; color:#fff; text-align:left; }
 
-.table-viewport::-webkit-scrollbar-thumb:hover{
-  background: #3c89e8;                   /* saat hover */
-}
+  /* OVERRIDES: single line, horizontal scroll */
+  .table-viewport{ overflow-x:auto !important; }
+  .tbl{ table-layout:auto !important; width:max-content !important; min-width:100% !important; }
+  .tbl th,.tbl td{ white-space:nowrap !important; overflow:visible !important; text-overflow:initial !important; }
 
-.table-viewport::-webkit-scrollbar-corner{
-  background: #0f172a;
-}
+  /* Column widths (updated indices) */
+  .tbl th:nth-child(1), .tbl td:nth-child(1){ width:56px !important; text-align:center; }       /* No */
+  .tbl th:nth-child(6), .tbl td:nth-child(6){ width:170px !important; }                          /* Action (now col 6) */
+  .tbl th:nth-child(5), .tbl td:nth-child(5){ width:140px !important; }                          /* Active/Unactive */
 
-/* (opsional) tombol panah bila browser mendukung */
-.table-viewport::-webkit-scrollbar-button{
-  height: 10px; width: 10px; background: #0f172a;
-}
-/* table rapi + ellipsis */
-.tbl{ width:100%; border-collapse: collapse; table-layout: fixed; }
-.tbl th, .tbl td{
-  padding: 8px 12px;
-  border-bottom: 1px solid #1f2937;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  /* Status badge layout */
+  .status-cell{ display:flex; align-items:center; gap:8px; }
+  .status-text{ color:#cbd5e1; font-size:13px; }
 
-/* header sticky saat di-scroll */
-.tbl thead th{
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: #1668dc; /* samakan dengan temamu */
-  color: #fff;
-  text-align: left;
-}
-@media (max-width: 640px){
-  .search-container{ gap:8px; }              /* rapatkan sedikit */
-  .search-box{ width:auto; flex:1 1 auto; min-width:0; } /* biar bisa mengecil */
-  #forceLogoutAllBtn{ flex:0 0 auto; }       /* jangan ikut mengecil/tersembunyi */
-}
-/* === OVERRIDE: satu baris + kolom ramping + scroll horizontal === */
-.table-viewport{ overflow-x: auto !important; }
-
-.tbl{
-  table-layout: auto !important;          /* jangan fixed, biar tabel boleh melebar */
-  width: max-content !important;           /* lebar ikut isi */
-  min-width: 100% !important;              /* min. selebar layar */
-}
-
-/* jangan potong jadi '...' dan jangan turun baris */
-.tbl th, .tbl td{
-  white-space: nowrap !important;
-  overflow: visible !important;
-  text-overflow: initial !important;
-}
-
-/* Kolom "No" kecil & center */
-.tbl th:nth-child(1),
-.tbl td:nth-child(1){
-  width: 56px !important;
-  text-align: center;
-}
-
-/* Kolom "Action" pas muat 2 tombol */
-.tbl th:nth-child(5),
-.tbl td:nth-child(5){
-  width: 170px !important;
-}
-
-/* Tombol tidak memaksa kolom melebar */
-.action-buttons{
-  display: inline-flex;         /* lebar ikut konten */
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-.logout-btn,
-.block-btn{
-  min-width: 0 !important;      /* override min-width:75px */
-}
-
-/* — HP — */
-@media (max-width: 640px){
-  .tbl th:nth-child(1), .tbl td:nth-child(1){ width: 46px !important; }
-  .tbl th:nth-child(5), .tbl td:nth-child(5){ width: 140px !important; }
-  .logout-btn, .block-btn{ padding: 6px 10px; } /* tombol sedikit diperkecil */
-}
+  /* Mobile tweaks */
+  @media (max-width:640px){
+    .search-container{ gap:8px; justify-content:flex-start; }
+    .search-box{ width:auto; flex:1 1 auto; min-width:0; }
+    .status-filter{ flex:0 0 auto; }
+    #forceLogoutAllBtn{ flex:0 0 auto; margin-left:auto; margin-top:4px; }
+    .tbl th:nth-child(1), .tbl td:nth-child(1){ width:46px !important; }
+    .tbl th:nth-child(6), .tbl td:nth-child(6){ width:140px !important; }
+    .logout-btn, .block-btn{ padding:6px 10px; }
+  }
 </style>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
-<div class="header">User List (Login)</div>
-  
-<div class="search-container">
-  <div class="search-box">
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Search"
-      autocomplete="off"
-    />
-    <button id="searchBtn" type="button">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <path d="M21 21L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="2"/>
-      </svg>
-    </button>
+  <div class="header">User List (Login)</div>
+
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search" autocomplete="off" />
+      <button id="searchBtn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M21 21L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- ✅ NEW: Status filter -->
+    <select id="statusFilter" class="status-filter">
+      <option value="All">All</option>
+      <option value="Active">Active</option>
+      <option value="Unactive">Unactive</option>
+    </select>
+
+    <button id="forceLogoutAllBtn">Force Logout All</button>
   </div>
-  <button id="forceLogoutAllBtn">Force Logout All</button>
-</div>
-  
-<div class="table-container">
-  <div class="table-viewport" id="tableViewport">
-    <table class="tbl" id="loginTable">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Time Logged In</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="loginTableBody">
-        <tr><td colspan="5">Loading data...</td></tr>
-      </tbody>
-    </table>
+
+  <div class="table-container">
+    <div class="table-viewport" id="tableViewport">
+      <table class="tbl" id="loginTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Time Logged In</th>
+            <!-- ✅ NEW: column -->
+            <th>Active/Unactive</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="loginTableBody">
+          <tr><td colspan="6">Loading data...</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-  
-<div id="confirmAllBox" class="confirm-box" style="display: none; position: absolute; z-index: 9999;">
-  <div class="confirm-message">Logout all users?</div>
-  <div class="confirm-actions">
-    <button id="confirmAllNo" class="btn-no">No</button>
-    <button id="confirmAllYes" class="btn-yes">Yes</button>
+
+  <!-- Confirm popovers -->
+  <div id="confirmAllBox" class="confirm-box" style="display:none; position:absolute; z-index:9999;">
+    <div class="confirm-message">Logout all users?</div>
+    <div class="confirm-actions">
+      <button id="confirmAllNo" class="btn-no">No</button>
+      <button id="confirmAllYes" class="btn-yes">Yes</button>
+    </div>
   </div>
-</div>
-  
-<div id="confirmBox" class="confirm-box" style="display: none; position: absolute; z-index: 9999;">
-  <div class="confirm-message">Logout this user?</div>
-  <div class="confirm-user-info">
-    <div id="confirmUserName" class="user-line"></div>
-    <div id="confirmUserEmail" class="user-line"></div>
+  <div id="confirmBox" class="confirm-box" style="display:none; position:absolute; z-index:9999;">
+    <div class="confirm-message">Logout this user?</div>
+    <div class="confirm-user-info">
+      <div id="confirmUserName" class="user-line"></div>
+      <div id="confirmUserEmail" class="user-line"></div>
+    </div>
+    <div class="confirm-actions">
+      <button id="confirmNo" class="btn-no">No</button>
+      <button id="confirmYes" class="btn-yes">Yes</button>
+    </div>
   </div>
-  <div class="confirm-actions">
-    <button id="confirmNo" class="btn-no">No</button>
-    <button id="confirmYes" class="btn-yes">Yes</button>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <span class="toast-icon"></span>
+    <span class="toast-message" id="toast-message"></span>
+    <button type="button" class="close-btn" onclick="hideToast()">✖</button>
   </div>
-</div>
-<div id="toast" class="toast">
-  <span class="toast-icon"></span>
-  <span class="toast-message" id="toast-message"></span>
-  <button type="button" class="close-btn" onclick="hideToast()">✖</button>
-</div>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
@@ -566,10 +249,10 @@ td:last-child {
     messagingSenderId: "580872784703",
     appId: "1:580872784703:web:07957551c3214f3d32618a"
   };
-
   firebase.initializeApp(firebaseConfig);
-  const dbRef = firebase.database().ref('logins');
-  const blockedRef = firebase.database().ref('logins/blocked_users');
+
+  const dbRef       = firebase.database().ref('logins');
+  const blockedRef  = firebase.database().ref('logins/blocked_users');
 
   // ---------- Utils ----------
   function esc(s){
@@ -577,11 +260,11 @@ td:last-child {
       {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]
     ));
   }
-  function sanitizeEmail(email) {
+  function sanitizeEmail(email){
     if (!email || typeof email !== 'string') return '';
     return email.replace(/\./g, "_").replace(/[#$\[\]]/g, '');
   }
-  function parseDateString(dateString) {
+  function parseDateString(dateString){
     if (!dateString) return null;
     const cleaned = dateString.replace(/\s*-\s*/g, '-').trim();
     const parts = cleaned.split(' ');
@@ -591,24 +274,35 @@ td:last-child {
     const dt = new Date(iso);
     return isNaN(dt) ? null : dt;
   }
-  function formatDateTime(date) {
-    const dd = String(date.getDate()).padStart(2, '0');
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
+  function formatDateTime(date){
+    const dd = String(date.getDate()).padStart(2,'0');
+    const mm = String(date.getMonth()+1).padStart(2,'0');
     const yy = date.getFullYear();
-    const hh = String(date.getHours()).padStart(2, '0');
-    const mi = String(date.getMinutes()).padStart(2, '0');
-    const ss = String(date.getSeconds()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2,'0');
+    const mi = String(date.getMinutes()).padStart(2,'0');
+    const ss = String(date.getSeconds()).padStart(2,'0');
     return `${dd}/${mm}/${yy}, ${hh}:${mi}:${ss}`;
   }
-  function filterTable(query, data) {
+
+  // Search + Status filter
+  function filterByQuery(query, data){
     const q = (query || '').toLowerCase();
     return data.filter(it =>
       (it.name  || '').toLowerCase().includes(q) ||
       (it.email || '').toLowerCase().includes(q)
     );
   }
+  function applyFilters(query, status, data){
+    let arr = filterByQuery(query, data);
+    if (status === 'Active'){
+      arr = arr.filter(it => !isEmailBlockedFast(it.email));
+    } else if (status === 'Unactive'){
+      arr = arr.filter(it => isEmailBlockedFast(it.email));
+    }
+    return arr;
+  }
 
-  // ---------- Tinggi viewport = header + 15 baris ----------
+  // Viewport
   function fitViewportToRows(n = 15){
     const vp  = document.getElementById('tableViewport');
     const tbl = document.getElementById('loginTable');
@@ -623,75 +317,101 @@ td:last-child {
   let allLoginData = [];
   let currentConfirmEmail = null;
   let isConfirmAllVisible = false;
+  let blockedSet = new Set();
 
   // ---------- Toast ----------
-  function showToast(message, type = "success", duration = 4000) {
+  function showToast(message, type="success", duration=4000){
     const toast = document.getElementById("toast");
     const msgSpan = toast.querySelector(".toast-message");
     const iconSvg = toast.querySelector(".toast-icon");
-    toast.classList.remove("success", "error");
+    toast.classList.remove("success","error");
     toast.classList.add(type);
     msgSpan.textContent = message;
     iconSvg.innerHTML = (type === "success")
       ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 17l-5-5.299 1.399-1.43 3.574 3.736 6.572-7.007 1.455 1.403-8 8.597z"/></svg>`
       : `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.5 15.1L15.1 17.5 12 14.4 8.9 17.5 6.5 15.1 9.6 12 6.5 8.9 8.9 6.5 12 9.6l3.1-3.1 2.4 2.4L14.4 12l3.1 3.1z"/></svg>`;
     toast.style.display = "flex";
-    requestAnimationFrame(() => toast.classList.add("show"));
+    requestAnimationFrame(()=> toast.classList.add("show"));
     clearTimeout(window.toastTimeout);
     window.toastTimeout = setTimeout(hideToast, duration);
   }
-  function hideToast() {
+  function hideToast(){
     const toast = document.getElementById("toast");
     toast.classList.remove("show");
-    setTimeout(() => { toast.style.display = "none"; }, 300);
+    setTimeout(()=> { toast.style.display = "none"; }, 300);
   }
 
-  // ---------- Block cache (hemat query) ----------
-  let blockedSet = new Set();
+  // ---------- Block cache ----------
   blockedRef.on('value', (snap) => {
     const val = snap.val() || {};
     blockedSet = new Set(
       Object.entries(val).filter(([_,v]) => Boolean(v)).map(([k]) => k)
     );
-    // sinkronkan tombol yang sudah ada
+
+    // Sinkronkan tombol block dan status cell
     document.querySelectorAll('.block-btn').forEach(btn => {
       const email = btn.dataset.email || '';
-      const isBlocked = blockedSet.has(sanitizeEmail(email));
+      const isBlocked = isEmailBlockedFast(email);
       btn.textContent = isBlocked ? 'Unblock' : 'Block';
       btn.classList.toggle('blocked', isBlocked);
     });
+
+    // Re-render supaya kolom status ikut update
+    rerenderWithCurrentFilters();
   });
+
   function isEmailBlockedFast(email){
     return blockedSet.has(sanitizeEmail(email));
   }
 
   // ---------- Actions ----------
-  function forceLogoutUser(email) {
+  function forceLogoutUser(email){
     const key = sanitizeEmail(email);
     const payload = { forceLogout: true, at: Date.now() };
     firebase.database()
       .ref('logins/admin_override/' + key)
       .set(payload)
-      .then(() => showToast(`Logout sent to ${email}`))
-      .catch(err => showToast(`Error logout: ${err.message}`, "error"));
+      .then(()=> showToast(`Logout sent to ${email}`))
+      .catch(err=> showToast(`Error logout: ${err.message}`, "error"));
   }
 
-  function toggleBlockUser(button) {
+  function toggleBlockUser(button){
     const email = button.getAttribute("data-email");
-    const key = sanitizeEmail(email);
+    const key   = sanitizeEmail(email);
     const newStatus = !isEmailBlockedFast(email);
     blockedRef.child(key).set(newStatus)
-      .then(() => showToast(`${newStatus ? "Blocked" : "Unblocked"}: ${email}`, "success"))
-      .catch(err => showToast(`Failed: ${err.message}`, "error"));
+      .then(()=> showToast(`${newStatus ? "Blocked" : "Unblocked"}: ${email}`, "success"))
+      .catch(err=> showToast(`Failed: ${err.message}`, "error"));
   }
 
-  // ---------- Render table ----------
-  function renderLoginTable(dataArray) {
+  // ---------- Render table (UPDATED) ----------
+  function statusCellHtml(isActive){
+    if (isActive){
+      return `
+        <div class="status-cell" title="Active">
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="#16a34a"></circle>
+          </svg>
+          <span class="status-text">Active</span>
+        </div>`;
+    } else {
+      return `
+        <div class="status-cell" title="Unactive">
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="#ef4444"></circle>
+            <path d="M8 8 L16 16 M16 8 L8 16" stroke="#111" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+          <span class="status-text">Unactive</span>
+        </div>`;
+    }
+  }
+
+  function renderLoginTable(dataArray){
     const tbody = document.getElementById('loginTableBody');
 
-    if (!dataArray.length) {
-      tbody.innerHTML = '<tr><td colspan="5">No matching login data found.</td></tr>';
-      requestAnimationFrame(() => fitViewportToRows(1));
+    if (!dataArray.length){
+      tbody.innerHTML = '<tr><td colspan="6">No matching login data found.</td></tr>';
+      requestAnimationFrame(()=> fitViewportToRows(1));
       return;
     }
 
@@ -702,9 +422,10 @@ td:last-child {
       const email = item.email || '';
       const name  = item.name  || '';
       const tStr  = item.dateObj ? formatDateTime(item.dateObj) : (item.loginRaw || '');
-
       if (!email && !name && !tStr) return;
+
       no++;
+      const active = !isEmailBlockedFast(email);
 
       html += `
         <tr data-email="${esc(email)}">
@@ -712,6 +433,7 @@ td:last-child {
           <td title="${esc(name)}">${esc(name || '-')}</td>
           <td title="${esc(email)}">${esc(email)}</td>
           <td title="${esc(tStr)}">${esc(tStr)}</td>
+          <td>${statusCellHtml(active)}</td>
           <td>
             <div class="action-buttons">
               <button class="logout-btn"
@@ -723,7 +445,7 @@ td:last-child {
               <button class="block-btn"
                       data-email="${esc(email)}"
                       onclick="toggleBlockUser(this)">
-                Block
+                ${active ? 'Block' : 'Unblock'}
               </button>
             </div>
           </td>
@@ -740,17 +462,16 @@ td:last-child {
       btn.classList.toggle("blocked", blocked);
     });
 
-    requestAnimationFrame(() => fitViewportToRows(15));
+    requestAnimationFrame(()=> fitViewportToRows(15));
   }
 
-  // ---------- Realtime data (ganti polling) ----------
-  function startRealtime() {
+  // ---------- Realtime data ----------
+  function startRealtime(){
     const searchBtn = document.getElementById('searchBtn');
     searchBtn.classList.add('loading');
 
     dbRef.on('value', (snapshot) => {
       const data = snapshot.val() || {};
-
       allLoginData = Object.entries(data)
         .filter(([k]) => k !== "blocked_users" && k !== "admin_override")
         .map(([_, item]) => {
@@ -758,41 +479,54 @@ td:last-child {
           return { ...item, dateObj, loginRaw: item.loginAt || '-' };
         })
         .filter(it => it.email || it.name || it.loginRaw)
-        .sort((a, b) => {
+        .sort((a,b) => {
           if (!a.dateObj && !b.dateObj) return 0;
           if (!a.dateObj) return 1;
           if (!b.dateObj) return -1;
           return b.dateObj - a.dateObj;
         });
 
-      const q = document.getElementById('searchInput')?.value || '';
-      renderLoginTable(filterTable(q, allLoginData));
+      rerenderWithCurrentFilters();
       searchBtn.classList.remove('loading');
     }, (error) => {
       document.getElementById('loginTableBody').innerHTML =
-        `<tr><td colspan="5">Error: ${error.message}</td></tr>`;
+        `<tr><td colspan="6">Error: ${error.message}</td></tr>`;
       searchBtn.classList.remove('loading');
     });
   }
 
-  // ---------- Search ----------
-  function setupSearchListener() {
+  // ---------- Search & Filter listeners ----------
+  function currentStatusValue(){
+    return document.getElementById('statusFilter')?.value || 'All';
+  }
+  function currentQueryValue(){
+    return document.getElementById('searchInput')?.value || '';
+  }
+  function rerenderWithCurrentFilters(){
+    const q = currentQueryValue();
+    const s = currentStatusValue();
+    renderLoginTable(applyFilters(q, s, allLoginData));
+  }
+
+  function setupSearchListener(){
     const input = document.getElementById('searchInput');
-    if (input) {
-      input.addEventListener('input', () => {
-        renderLoginTable(filterTable(input.value, allLoginData));
-      });
+    const select = document.getElementById('statusFilter');
+
+    if (input){
+      input.addEventListener('input', () => rerenderWithCurrentFilters());
+    }
+    if (select){
+      select.addEventListener('change', () => rerenderWithCurrentFilters());
     }
     document.getElementById('searchBtn').addEventListener('click', () => {
-      const q = document.getElementById('searchInput').value;
-      renderLoginTable(filterTable(q, allLoginData));
+      rerenderWithCurrentFilters();
     });
   }
 
   // ---------- Confirm popovers ----------
-  function showConfirmAllBox(button) {
+  function showConfirmAllBox(button){
     const box = document.getElementById("confirmAllBox");
-    if (isConfirmAllVisible) {
+    if (isConfirmAllVisible){
       box.style.display = "none";
       box.classList.remove("show");
       isConfirmAllVisible = false;
@@ -830,9 +564,10 @@ td:last-child {
       isConfirmAllVisible = false;
     };
   }
-  function showConfirmBox(button, email, name = '-') {
+
+  function showConfirmBox(button, email, name='-'){
     const box = document.getElementById("confirmBox");
-    if (box.style.display === "block" && currentConfirmEmail === email) {
+    if (box.style.display === "block" && currentConfirmEmail === email){
       box.style.display = "none";
       box.classList.remove("show");
       currentConfirmEmail = null;
@@ -876,7 +611,7 @@ td:last-child {
   document.getElementById('forceLogoutAllBtn')
     .addEventListener('click', function(){ showConfirmAllBox(this); });
 
-  function doForceLogoutAll() {
+  function doForceLogoutAll(){
     const ts = Date.now();
     const emails = allLoginData.filter(u => u.email).map(u => u.email);
     if (emails.length === 0) return showToast('Tidak ada user untuk di-logout.', 'error');
@@ -898,39 +633,20 @@ td:last-child {
       .catch(err => showToast(`Error force logout all: ${err.message}`, "error"));
   }
 
-  // Tutup popover jika klik luar
-  document.addEventListener('click', function (e) {
-    const confirmBox    = document.getElementById('confirmBox');
-    const confirmAllBox = document.getElementById('confirmAllBox');
-
-    if (confirmBox.style.display === 'block' &&
-        !confirmBox.contains(e.target) &&
-        !e.target.closest('.logout-btn')) {
-      confirmBox.style.display = 'none';
-      confirmBox.classList.remove('show');
-      currentConfirmEmail = null;
-    }
-    if (confirmAllBox.style.display === 'block' &&
-        !confirmAllBox.contains(e.target) &&
-        !e.target.closest('#forceLogoutAllBtn')) {
-      confirmAllBox.style.display = 'none';
-      confirmAllBox.classList.remove('show');
-      isConfirmAllVisible = false;
-    }
-  });
-
   // --------- Startup ----------
-  startRealtime();
-  setupSearchListener();
+  function init(){
+    startRealtime();
+    setupSearchListener();
 
-  // Tinggi viewport ikut berubah kalau isi tabel berubah
-  if (window.ResizeObserver) {
-    const ro = new ResizeObserver(() => fitViewportToRows(15));
-    const tbody = document.getElementById('loginTableBody');
-    if (tbody) ro.observe(tbody);
-  } else {
-    window.addEventListener('resize', () => fitViewportToRows(15));
+    if (window.ResizeObserver){
+      const ro = new ResizeObserver(() => fitViewportToRows(15));
+      const tbody = document.getElementById('loginTableBody');
+      if (tbody) ro.observe(tbody);
+    } else {
+      window.addEventListener('resize', () => fitViewportToRows(15));
+    }
   }
+  window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
