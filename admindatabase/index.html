@@ -26,11 +26,11 @@
   .table-container{ padding: 0 20px; }
 
   .search-container{
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; justify-content: flex-start;
     max-width: 100%; padding: 0 20px; margin: 20px 0 10px;
-    background: transparent; gap: 10px; box-sizing: border-box; flex-wrap: wrap;
+    background: transparent; gap: 8px; box-sizing: border-box; flex-wrap: wrap;
   }
-  .search-box{ display:flex; width:500px; }
+  .search-box{ display:flex; min-width:260px; width:auto; flex:0 1 500px; }
   /* INPUT */
   .search-container input{
     flex:1; padding:10px 10px; font-size:14px; color:#fff;
@@ -54,7 +54,10 @@
   }
   #searchBtn.loading svg{ stroke:#3b8cff; filter:drop-shadow(0 0 5px #3b8cff); animation:pulseIcon 5s ease-in-out infinite; }
   @keyframes pulseIcon{ 0%{filter:drop-shadow(0 0 0 #3b8cff)}50%{filter:drop-shadow(0 0 8px #3b8cff)}100%{filter:drop-shadow(0 0 0 #3b8cff)} }
-
+  
+  #forceLogoutAllBtn{
+  margin-left:auto;   /* ✅ tombol ini saja yang ke kanan */
+}
   /* DROPDOWN Status Filter */
   .status-filter{
     padding:10px; font-size:14px; color:#fff; background:#141414;
@@ -199,9 +202,8 @@
             <th>No</th>
             <th>Name</th>
             <th>Email</th>
-            <th>Time Logged In</th>
-            <!-- ✅ NEW: column -->
-            <th>Active/Unactive</th>
+            <th>Last login</th>
+            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
