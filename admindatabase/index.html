@@ -455,13 +455,13 @@ td:last-child {
   white-space: nowrap !important;
   overflow: visible !important;
   text-overflow: initial !important;
-  vertical-align: middle;
 }
 
 /* Kolom "No" kecil & center */
 .tbl th:nth-child(1),
 .tbl td:nth-child(1){
   width: 56px !important;
+  text-align: center;
 }
 
 /* Kolom "Action" pas muat 2 tombol */
@@ -488,94 +488,6 @@ td:last-child {
   .tbl th:nth-child(5), .tbl td:nth-child(5){ width: 140px !important; }
   .logout-btn, .block-btn{ padding: 6px 10px; } /* tombol sedikit diperkecil */
 }
-/* ===== Status icon di kanan Time ===== */
-.time-cell{
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-}
-.status-dot, .status-x{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:16px; height:16px; flex:0 0 16px;
-}
-.status-dot svg{ width:100%; height:100%; }
-.status-x   svg{ width:100%; height:100%; }
-
-.status-dot svg circle{ fill:#00ff00; }   /* hijau = Active */
-.status-x   svg path{ stroke:red; stroke-width:2; fill:none; } /* merah = Unactive */
-
-/* ===== Dropdown filter status di kanan search ===== */
-.search-container select#statusFilter{
-  background:#141414; color:#fff; border:1px solid #424242;
-  border-radius:6px; padding:10px 10px; font-size:14px; min-width:100px;cursor: pointer;transition: all 0.2s;height:38px;
-}
-.search-container select#statusFilter:focus{ outline:none; border-color:#1668dc; }
-.search-container select#statusFilter:active{ border:1px solid #1554ad; }
-.search-container select#statusFilter:hover{ border-color:#3c89e8; }
-
-@media (max-width:640px){
-  .search-container select#statusFilter{
-    flex:0 0 auto; margin-left:auto;    /* dorong ke kanan saat mobile */
-  }
-}
-/* === OVERRIDES: rapetin dropdown ke kanan search === */
-.search-container{
-  justify-content: flex-start !important; /* was space-between */
-  gap: 8px !important;                    /* jarak antar elemen */
-}
-
-/* search box tetap ukurannya sendiri */
-.search-box{ flex: 0 0 auto !important; }
-
-/* dropdown nempel ke search */
-#statusFilter{ margin-left: 1px !important; }
-
-/* tombol merah saja yang ke paling kanan */
-#forceLogoutAllBtn{ margin-left: auto !important; }
-
-/* ===== Mobile ===== */
-@media (max-width:640px){
-  /* biar stack rapi saat sempit */
-  .search-container{ flex-wrap: wrap; }
-  .search-box{ width: 100% !important; max-width: 100% !important; }
-  #statusFilter{
-    margin-left: 0 !important;  /* full width di bawah search */
-    width: 100%;
-  }
-  #forceLogoutAllBtn{ margin-left: 0 !important; } /* ikut flow normal */
-}
-
-/* Hapus efek dorong-kanan dropdown di mobile yang lama */
-@media (max-width:640px){
-  .search-container select#statusFilter{
-    flex: 0 0 auto !important;
-    /* override rule lama: margin-left:auto; */
-    margin-left: 0 !important;
-  }
-}
-/* ====== CLEAR (X) di input search ====== */
-.search-box {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-#searchInput {
-  flex: 1;
-  padding-right: 30px; /* ruang untuk X */
-}
-
-#clearSearch {
-  position: absolute;
-  right: 50px; /* sejajar dengan tombol search */
-  color: #1668dc;
-  cursor: pointer;
-  font-size: 20px;
-  user-select: none;
-  display: none; /* sembunyikan dulu */
-  transition: color 0.2s;
-  font-weight: 500;
-  text-shadow: 0 0 #1668dc;
-}
-#clearSearch:hover {color: #3c89e8;}#clearSearch:active {color: #1554ad;}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -585,8 +497,12 @@ td:last-child {
   
 <div class="search-container">
   <div class="search-box">
-    <input type="text"id="searchInput"placeholder="Search"autocomplete="off"/>
-    <span id="clearSearch" title="Clear">&times;</span>
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search"
+      autocomplete="off"
+    />
     <button id="searchBtn" type="button">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path d="M21 21L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -594,11 +510,6 @@ td:last-child {
       </svg>
     </button>
   </div>
-  <select id="statusFilter">
-   <option value="all">All</option>
-   <option value="active">Active</option>
-   <option value="inactive">Unactive</option>
-</select>
   <button id="forceLogoutAllBtn">Force Logout All</button>
 </div>
   
@@ -696,14 +607,7 @@ td:last-child {
       (it.email || '').toLowerCase().includes(q)
     );
   }
-  
-  function filterByStatus(arr, statusVal) {
-  if (statusVal === 'all') return arr;
-  return arr.filter(it => {
-    const active = !isEmailBlockedFast(it.email || '');
-    return statusVal === 'active' ? active : !active;
-  });
-}
+
   // ---------- Tinggi viewport = header + 15 baris ----------
   function fitViewportToRows(n = 15){
     const vp  = document.getElementById('tableViewport');
@@ -744,26 +648,19 @@ td:last-child {
 
   // ---------- Block cache (hemat query) ----------
   let blockedSet = new Set();
-blockedRef.on('value', (snap) => {
-  const val = snap.val() || {};
-  blockedSet = new Set(
-    Object.entries(val).filter(([_,v]) => Boolean(v)).map(([k]) => k)
-  );
-
-  // update tombol Block/Unblock
-  document.querySelectorAll('.block-btn').forEach(btn => {
-    const email = btn.dataset.email || '';
-    const isBlocked = blockedSet.has(sanitizeEmail(email));
-    btn.textContent = isBlocked ? 'Unblock' : 'Block';
-    btn.classList.toggle('blocked', isBlocked);
+  blockedRef.on('value', (snap) => {
+    const val = snap.val() || {};
+    blockedSet = new Set(
+      Object.entries(val).filter(([_,v]) => Boolean(v)).map(([k]) => k)
+    );
+    // sinkronkan tombol yang sudah ada
+    document.querySelectorAll('.block-btn').forEach(btn => {
+      const email = btn.dataset.email || '';
+      const isBlocked = blockedSet.has(sanitizeEmail(email));
+      btn.textContent = isBlocked ? 'Unblock' : 'Block';
+      btn.classList.toggle('blocked', isBlocked);
+    });
   });
-
-  // ⚡ re-render table supaya ikon & filter ikut update
-  const q = document.getElementById('searchInput')?.value || '';
-  const sv = document.getElementById('statusFilter')?.value || 'all';
-  const base = filterTable(q, allLoginData);
-  renderLoginTable(filterByStatus(base, sv));
-});
   function isEmailBlockedFast(email){
     return blockedSet.has(sanitizeEmail(email));
   }
@@ -802,49 +699,36 @@ blockedRef.on('value', (snap) => {
     let no = 0;
 
     dataArray.forEach(item => {
-  const email = item.email || '';
-  const name  = item.name  || '';
-  const tStr  = item.dateObj ? formatDateTime(item.dateObj) : (item.loginRaw || '');
+      const email = item.email || '';
+      const name  = item.name  || '';
+      const tStr  = item.dateObj ? formatDateTime(item.dateObj) : (item.loginRaw || '');
 
-  if (!email && !name && !tStr) return;
-  no++;
+      if (!email && !name && !tStr) return;
+      no++;
 
-  // ✅ hitung status DI LUAR template string
-  const isActive = !isEmailBlockedFast(email);
-  const statusHTML = isActive
-    ? `<span class="status-dot" title="Active">
-         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg>
-       </span>`
-    : `<span class="status-x" title="Unactive">
-         <svg viewBox="0 0 24 24"><path d="M6 6L18 18M6 18L18 6"/></svg>
-       </span>`;
-
-  html += `
-    <tr data-email="${esc(email)}">
-      <td>${no}</td>
-      <td title="${esc(name)}">${esc(name || '-')}</td>
-      <td title="${esc(email)}">${esc(email)}</td>
-      <td class="time-cell" title="${esc(tStr)}">
-        <span>${esc(tStr)}</span>
-        ${statusHTML}
-      </td>
-      <td>
-        <div class="action-buttons">
-          <button class="logout-btn"
-                  data-email="${esc(email)}"
-                  data-name="${esc(name || '-')}"
-                  onclick="showConfirmBox(this, this.dataset.email, this.dataset.name)">
-            Logout
-          </button>
-          <button class="block-btn"
-                  data-email="${esc(email)}"
-                  onclick="toggleBlockUser(this)">
-            Block
-          </button>
-        </div>
-      </td>
-    </tr>`;
-});
+      html += `
+        <tr data-email="${esc(email)}">
+          <td>${no}</td>
+          <td title="${esc(name)}">${esc(name || '-')}</td>
+          <td title="${esc(email)}">${esc(email)}</td>
+          <td title="${esc(tStr)}">${esc(tStr)}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="logout-btn"
+                      data-email="${esc(email)}"
+                      data-name="${esc(name || '-')}"
+                      onclick="showConfirmBox(this, this.dataset.email, this.dataset.name)">
+                Logout
+              </button>
+              <button class="block-btn"
+                      data-email="${esc(email)}"
+                      onclick="toggleBlockUser(this)">
+                Block
+              </button>
+            </div>
+          </td>
+        </tr>`;
+    });
 
     tbody.innerHTML = html;
 
@@ -882,9 +766,7 @@ blockedRef.on('value', (snap) => {
         });
 
       const q = document.getElementById('searchInput')?.value || '';
-      const sv = document.getElementById('statusFilter')?.value || 'all';
-      const base = filterTable(q, allLoginData);
-      renderLoginTable(filterByStatus(base, sv));
+      renderLoginTable(filterTable(q, allLoginData));
       searchBtn.classList.remove('loading');
     }, (error) => {
       document.getElementById('loginTableBody').innerHTML =
@@ -898,36 +780,15 @@ blockedRef.on('value', (snap) => {
     const input = document.getElementById('searchInput');
     if (input) {
       input.addEventListener('input', () => {
-      const sv = document.getElementById('statusFilter').value;
-      const base = filterTable(input.value, allLoginData);
-      renderLoginTable(filterByStatus(base, sv));
+        renderLoginTable(filterTable(input.value, allLoginData));
       });
     }
-     document.getElementById('statusFilter').addEventListener('change', () => {
+    document.getElementById('searchBtn').addEventListener('click', () => {
       const q = document.getElementById('searchInput').value;
-      const sv = document.getElementById('statusFilter').value;
-      const base = filterTable(q, allLoginData);
-      renderLoginTable(filterByStatus(base, sv));
-      });
-     }
-    // ====== Tombol X di input search ======
-const searchInput = document.getElementById('searchInput');
-const clearBtn = document.getElementById('clearSearch');
+      renderLoginTable(filterTable(q, allLoginData));
+    });
+  }
 
-if (searchInput && clearBtn) {
-  searchInput.addEventListener('input', () => {
-    clearBtn.style.display = searchInput.value ? 'block' : 'none';
-  });
-
-  clearBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    clearBtn.style.display = 'none';
-    // trigger filter ulang
-    const sv = document.getElementById('statusFilter').value;
-    const base = filterTable('', allLoginData);
-    renderLoginTable(filterByStatus(base, sv));
-  });
-}
   // ---------- Confirm popovers ----------
   function showConfirmAllBox(button) {
     const box = document.getElementById("confirmAllBox");
