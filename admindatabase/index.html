@@ -576,26 +576,35 @@ td:last-child {
   text-shadow: 0 0 #1668dc;
 }
 #clearSearch:hover {color: #3c89e8;}#clearSearch:active {color: #1554ad;}
-/* === PAKSA kolom Time Logged In benar-benar center === */
-.tbl tbody tr{ height: 48px; }                 /* tinggi baris konsisten */
+/* ===== HARD CENTER untuk isi baris tabel ===== */
 
-.tbl th, .tbl td{
+/* 1) Tinggi baris konsisten */
+.tbl tbody tr{
+  height: 48px !important;
+}
+
+/* 2) Semua sel: nolkan padding vertikal supaya line-height yang pegang posisi */
+.tbl tbody td{
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
   vertical-align: middle !important;
-  line-height: 1.3 !important;
+  height: 48px !important;
 }
 
-/* ← ini yang penting */
-.tbl td:nth-child(4){
-  display: flex;                 /* bikin isi sel center vertikal */
-  align-items: center;
-  gap: 10px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+/* 3) 4 kolom pertama (No, Name, Email, Time) pakai line-height = tinggi baris */
+.tbl tbody td:nth-child(-n+4){
+  line-height: 48px !important;   /* teks benar-benar center vertikal */
 }
 
-/* jaga tombol tidak “menarik” tinggi baris */
-.action-buttons{ align-items: center; }
-.logout-btn, .block-btn{ line-height: 1; margin: 0; }
+/* 4) Kolom Action jangan ikut line-height besar (agar tombol tidak ketarik) */
+.tbl tbody td:last-child{
+  line-height: normal !important;
+}
+
+/* 5) Pastikan link di sel ikut line-height baris (bukan baseline aneh) */
+.tbl tbody td a{
+  display: inline-block;
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
