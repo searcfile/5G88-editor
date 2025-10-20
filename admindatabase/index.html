@@ -576,6 +576,52 @@ td:last-child {
   text-shadow: 0 0 #1668dc;
 }
 #clearSearch:hover {color: #3c89e8;}#clearSearch:active {color: #1554ad;}
+/* === FIX SEJAJAR TINGGI & CENTER VERTIKAL === */
+
+/* 1) Samakan tinggi semua baris body */
+.tbl tbody tr { height: 56px; }          /* ubah 56 jika mau lebih tinggi */
+
+/* 2) Tengah vertikal untuk semua sel */
+.tbl th, .tbl td{
+  vertical-align: middle !important;
+  line-height: 1.2 !important;
+  padding-top: 10px; 
+  padding-bottom: 10px;
+}
+
+/* 3) Konten dalam sel duduk di tengah (bukan baseline) */
+.tbl td > * { 
+  display: inline-flex !important; 
+  align-items: center !important; 
+  gap: 8px;
+}
+
+/* 4) Link, teks span, dan grup aksi juga center */
+.tbl a,
+.tbl span,
+.action-buttons,
+.time-cell,
+.status-dot, 
+.status-x{ 
+  display: inline-flex !important; 
+  align-items: center !important; 
+}
+
+/* 5) SVG jangan tarik baseline */
+.tbl svg{ display: block; }
+
+/* 6) Netralisir offset vertikal tak sengaja (sering bikin satu baris “naik”) */
+.status-dot,
+.status-x,
+.tbl td [style*="top:"],
+.tbl td [style*="translateY"]{
+  position: static !important;
+  margin-top: 0 !important;
+  transform: none !important;
+}
+
+/* 7) Tombol di kolom Action rapi */
+.logout-btn, .block-btn{ line-height: 1; }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
