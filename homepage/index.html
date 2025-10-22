@@ -658,7 +658,42 @@ const loginDb = loginApp.database();
         setExpireFromNow();
       }
     },
-    stop: ()=> { try { clearInterval(checkTimer); } catch {} }
+    stop: ()=> { try { clearInterval(checkTimer); } catch {} },
+
+    // 🔍 DEBUG: lihat status timer
+    status: ()=> {
+      loadExpire();
+      const left = expireAt ? Math.max(0, expireAt - now()) : null;
+      return {
+        minutesConfigured: getMinutes(),
+        expireAt,
+        msLeft: left,
+        secLeft: left !== null ? Math.round(left/1000) : null,
+        absoluteExpireAt
+      };
+    },
+
+    // 🔍 DEBUG: paksa logout (cek kalau redirect jalan)
+    forceLogout: ()=> doLogout("manual"),
+
+    // 🔍 DEBUG: nyalakan log
+    debugOn: ()=> {
+      const log = (...a)=> console.log("[AutoLogout]", ...a);
+      const _setExpireFromNow = setExpireFromNow;
+      const _heartbeat = heartbeat;
+
+      setExpireFromNow = function(){
+        _setExpireFromNow();
+        log("reset → expireAt:", new Date(expireAt).toLocaleTimeString());
+      };
+      heartbeat = function(){
+        loadExpire();
+        const left = expireAt ? (expireAt - now()) : null;
+        log("tick → left(ms):", left);
+        _heartbeat();
+      };
+      log("debug ON");
+    }
   };
 })();
 
