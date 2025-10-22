@@ -569,6 +569,99 @@ const loginApp = firebase.initializeApp({
 }, "loginApp");
 const loginDb = loginApp.database();
 
+(function(){
+  // === SETTING MUDAH ===
+  const DEFAULT_MINUTES = 2; // ganti default di sini (contoh: 20)
+  const LOGIN_URL = "https://5g88-login.vercel.app";
+  const STORAGE_EXPIRE = "autoLogout.expireAt";
+  const STORAGE_MIN = "autoLogout.minutes"; // kalau di-set, override DEFAULT_MINUTES
+  const CHANNEL = "autoLogout-5g88";
+  const TICK = 5000; // cek tiap 5 detik
+  // (opsional) logout absolut walau aktif bergerak (null = mati)
+  const ABSOLUTE_MAX_MS = null; // contoh: 8*60*60*1000 (8 jam)
+
+  let bc = null, checkTimer = null, expireAt = null, absoluteExpireAt = null;
+
+  function getMinutes(){
+    const v = parseInt(localStorage.getItem(STORAGE_MIN) || "", 10);
+    return Number.isFinite(v) && v > 0 ? v : DEFAULT_MINUTES;
+  }
+  const minutesToMs = (m)=> m*60*1000;
+  const now = ()=> Date.now();
+
+  function setExpireFromNow(){
+    expireAt = now() + minutesToMs(getMinutes());
+    localStorage.setItem(STORAGE_EXPIRE, String(expireAt));
+    try { bc && bc.postMessage({t:"reset", expireAt}); } catch {}
+  }
+  function setAbsoluteExpireFromNow(){
+    absoluteExpireAt = ABSOLUTE_MAX_MS ? (now() + ABSOLUTE_MAX_MS) : null;
+  }
+  function loadExpire(){
+    const v = localStorage.getItem(STORAGE_EXPIRE);
+    expireAt = v ? Number(v) : null;
+  }
+  async function doLogout(reason="timeout"){
+    try { clearInterval(checkTimer); } catch {}
+    try { loginApp?.auth && (await loginApp.auth().signOut()); } catch(_) {}
+    try { localStorage.removeItem("gmailLogin"); } catch(_) {}
+    try { localStorage.removeItem(STORAGE_EXPIRE); } catch(_) {}
+    try { bc && bc.postMessage({t:"logout", reason}); } catch {}
+    try { window.google?.accounts?.id?.disableAutoSelect(); } catch(_){}
+    window.location.href = LOGIN_URL;
+  }
+  function shouldLogout(){
+    const t = now();
+    if (expireAt && t >= expireAt) return true;
+    if (absoluteExpireAt && t >= absoluteExpireAt) return true;
+    return false;
+  }
+  function heartbeat(){
+    loadExpire();
+    if (shouldLogout()) doLogout("timeout");
+  }
+  function bindActivityReset(){
+    const reset = ()=> setExpireFromNow();
+    ["mousemove","mousedown","keydown","scroll","touchstart","pointerdown","wheel","focus"]
+      .forEach(ev => window.addEventListener(ev, reset, {passive:true}));
+    document.addEventListener("visibilitychange", ()=> { if (!document.hidden) reset(); });
+    window.addEventListener("focus", reset);
+  }
+  function setupChannel(){
+    try {
+      bc = new BroadcastChannel(CHANNEL);
+      bc.onmessage = (msg)=>{
+        const d = msg?.data || {};
+        if (d.t === "reset") {
+          expireAt = Number(d.expireAt || 0) || expireAt;
+          localStorage.setItem(STORAGE_EXPIRE, String(expireAt));
+        } else if (d.t === "logout") {
+          doLogout("multi-tab");
+        }
+      };
+    } catch { bc = null; }
+  }
+  function start(){
+    setupChannel();
+    setExpireFromNow();
+    setAbsoluteExpireFromNow();
+    bindActivityReset();
+    checkTimer = setInterval(heartbeat, TICK);
+    heartbeat();
+  }
+  window.AutoLogout = {
+    start,
+    reset: setExpireFromNow,
+    setMinutes: (m)=> {
+      if (typeof m === "number" && m > 0) {
+        localStorage.setItem(STORAGE_MIN, String(m));
+        setExpireFromNow();
+      }
+    },
+    stop: ()=> { try { clearInterval(checkTimer); } catch {} }
+  };
+})();
+
 (() => {
   try {
     const qs = new URLSearchParams(location.search);
@@ -1369,6 +1462,8 @@ if (!sessionData || !sessionData.email) {
   window.location.href = "https://5g88-login.vercel.app/";
   return;
 }
+// === START auto logout inactivity ===
+window.AutoLogout && window.AutoLogout.start();
 
 userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
 let lastOverrideTs = 0;
