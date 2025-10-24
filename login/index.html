@@ -736,21 +736,23 @@ async function loginWithUsername(){
   setLoading(true,'userpass');
 
   try{
-    // 1) Ambil akun dari RTDB
+    // 1️⃣ Ambil akun dari RTDB
     const snap = await db.ref(`logins/user_accounts/${uname}`).get();
     if (!snap.exists()) throw new Error("Akun tidak ditemukan.");
     const acc = snap.val();
     if (acc.active === false) throw new Error("Akun dinonaktifkan.");
 
-    // 2) Cocokkan password (SHA-256)
+    // 2️⃣ Hash password input dan cocokkan
     const inputHash = await sha256Hex(pass);
     if (inputHash !== acc.passwordHash) throw new Error("Password salah.");
 
-    // 3) Pastikan anonymous auth aktif agar bisa nulis log (rules kamu butuh auth != null)
-    await ensureGuestAuth();   // fungsi ini SUDAH ada di file kamu
+    // 3️⃣ Wajib: sign-in anonymous supaya rules 'auth != null' lolos
+    await ensureGuestAuth();
 
-    // 4) Finish (cek block + tulis log + simpan localStorage + redirect)
+    // 4️⃣ Ambil pseudo-email untuk sistem login
     const pseudoEmail = `${uname}@5g88.local`;
+
+    // 5️⃣ Simpan log & redirect
     await finishLogin({ email: pseudoEmail, displayName: uname, photoURL: "" });
 
   }catch(err){
