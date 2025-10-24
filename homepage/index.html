@@ -1840,37 +1840,71 @@ tabBar.addEventListener('wheel', (e) => {
   closeX.addEventListener('click', closeCp);
   cancel.addEventListener('click', closeCp);
   window.addEventListener('click', (e)=>{ if(e.target === modal) closeCp(); });
+  
+async function sha256Hex(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+}
+async function doChange(){
+  const oldPw = inOld.value.trim();
+  const newPw = inNew.value.trim();
+  const newPw2= inNew2.value.trim();
 
-  async function doChange(){
-    const oldPw = inOld.value.trim();
-    const newPw = inNew.value.trim();
-    const newPw2= inNew2.value.trim();
+  if (!oldPw || !newPw || !newPw2) { showErr('All fields are required to be filled in.'); return; }
+  if (newPw.length < 6)            { showErr('New password must be at least 6 characters.'); return; }
+  if (newPw !== newPw2)            { showErr('Confirm password does not match.'); return; }
+  if (newPw === oldPw)             { showErr('New password cannot be the same as current.'); return; }
 
-    if (!oldPw || !newPw || !newPw2) { showErr('All fields are required to be filled in.'); return; }
-    if (newPw.length < 6)            { showErr('New password must be at least 6 characters.'); return; }
-    if (newPw !== newPw2)            { showErr('Confirm password does not match.'); return; }
-
-    try{
-      const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
-      const email = (login?.email || '').toLowerCase();
-
-      const auth = loginApp.auth();
-      await auth.signInWithEmailAndPassword(email, oldPw); // re-auth
-      const user = auth.currentUser;
-      if (!user) throw new Error('Unable to get active user.');
-
-      await user.updatePassword(newPw);
-
-      showOk('Password changed successfully ✅');
-      setTimeout(closeCp, 1200);
-    }catch(err){
-      const code = err?.code || '';
-      if (code === 'auth/wrong-password') showErr('Wrong current password.');
-      else if (code === 'auth/user-not-found') showErr('Username does not exist.');
-      else if (code === 'auth/too-many-requests') showErr('Too many attempts. Please try again later.');
-      else showErr('Gagal mengubah password. ' + (err?.message || ''));
+  try{
+    // ambil username dari sesi (email pseudo: <username>@5g88.local)
+    const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
+    const email = (login?.email || '').toLowerCase();
+    if (!email.endsWith('@5g88.local')) {
+      showErr('This account type cannot change password here.');
+      return;
     }
+    const uname = email.split('@')[0];
+
+    // 1) ambil akun dari RTDB
+    const ref  = loginDb.ref(`logins/user_accounts/${uname}`);
+    const snap = await ref.get();
+    if (!snap.exists()) { showErr('Username does not exist.'); return; }
+    const user = snap.val();
+    if (user.active === false) { showErr('This account is deactivated.'); return; }
+
+    // 2) verifikasi password lama
+    const oldHash = await sha256Hex(oldPw);
+    if (oldHash !== user.passwordHash) { showErr('Wrong current password.'); return; }
+
+    // 3) simpan password baru (hash) + metadata
+    const newHash = await sha256Hex(newPw);
+    await ref.update({
+      passwordHash: newHash,
+      updatedAt: Date.now(),
+      passwordVersion: (user.passwordVersion || 0) + 1   // opsional untuk invalidasi sesi lama
+    });
+
+    // 4) (opsional) catat audit
+    try {
+      await loginDb.ref(`logins/password_change_logs/${uname}`).push({
+        at: Date.now(),
+        ua: navigator.userAgent || '',
+        result: 'ok'
+      });
+    } catch(_) {}
+
+    // 5) selesai
+    showOk('Password changed successfully ✅');
+    setTimeout(() => {
+      // rekomendasi: paksa re-login
+      localStorage.removeItem('gmailLogin');
+      window.location.href = 'https://5g88-login.vercel.app/?pw_changed=1';
+    }, 1000);
+  }catch(err){
+    showErr('Failed to change password. ' + (err?.message || ''));
   }
+}
   submit.addEventListener('click', doChange);
   [inOld,inNew,inNew2].forEach(i=>i.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doChange(); }));
 })();
