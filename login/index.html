@@ -716,49 +716,30 @@ function signInWithGoogle(){
     });
 }
 
-// --- helper hash (taruh sekali saja, di luar fungsi kalau belum ada) ---
-async function sha256Hex(text){
-  const enc = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-// --- LOGIN VIA REALTIME DB ---
-async function loginWithUsername(){
-  const uname = String(document.getElementById('username').value || '').trim().toLowerCase();
+function loginWithUsername(){
+  const uname = String(document.getElementById('username').value || '').trim();
   const pass  = String(document.getElementById('password').value || '');
-
-  if (!uname || !pass){
-    alert("Masukkan username dan password.");
-    return;
-  }
+  if (!uname || !pass){ alert("Masukkan username dan password."); return; }
+  const email = toPseudoEmail(uname);
 
   setLoading(true,'userpass');
-
-  try{
-    // 1) Ambil akun dari RTDB
-    const snap = await db.ref(`logins/user_accounts/${uname}`).get();
-    if (!snap.exists()) throw new Error("Akun tidak ditemukan.");
-    const acc = snap.val();
-    if (acc.active === false) throw new Error("Akun dinonaktifkan.");
-
-    // 2) Cocokkan password (SHA-256)
-    const inputHash = await sha256Hex(pass);
-    if (inputHash !== acc.passwordHash) throw new Error("Password salah.");
-
-    // 3) Pastikan anonymous auth aktif agar bisa nulis log (rules kamu butuh auth != null)
-    await ensureGuestAuth();   // fungsi ini SUDAH ada di file kamu
-
-    // 4) Finish (cek block + tulis log + simpan localStorage + redirect)
-    const pseudoEmail = `${uname}@5g88.local`;
-    await finishLogin({ email: pseudoEmail, displayName: uname, photoURL: "" });
-
-  }catch(err){
-    alert(err.message || "Login gagal. Coba lagi.");
-  }finally{
-    setLoading(false,'userpass');
-  }
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(()=> finishLogin({ email, displayName: uname, photoURL: "" }))
+    .catch(async err=>{
+      console.warn("Sign-in gagal:", err?.code, err?.message);
+      if (err?.code === 'auth/user-not-found'){
+        alert("Akaun tidak wujud. Sila hubungi admin untuk buat akaun.");
+      } else if (err?.code === 'auth/wrong-password'){
+        alert("Password salah.");
+      } else if (err?.code === 'auth/too-many-requests'){
+        alert("Terlalu banyak cubaan. Cuba lagi kemudian.");
+      } else {
+        alert("Login gagal. Coba lagi.");
+      }
+      setLoading(false,'userpass');
+    });
 }
+
 // Optional createAccount (tetap sama)
 async function createAccount(){
   const uname = String(document.getElementById('username').value || '').trim();
