@@ -54,10 +54,6 @@
   }
   #searchBtn.loading svg{ stroke:#3b8cff; filter:drop-shadow(0 0 5px #3b8cff); animation:pulseIcon 5s ease-in-out infinite; }
   @keyframes pulseIcon{ 0%{filter:drop-shadow(0 0 0 #3b8cff)}50%{filter:drop-shadow(0 0 8px #3b8cff)}100%{filter:drop-shadow(0 0 0 #3b8cff)} }
-  
-  #forceLogoutAllBtn{
-  margin-left:auto;   /* ✅ tombol ini saja yang ke kanan */
-}
   /* DROPDOWN Status Filter */
   .status-filter{
     padding:10px; font-size:14px; color:#3b8cff; background:#141414;
@@ -242,6 +238,26 @@
 .btn.primary{ background:#1668dc; color:#fff; }
 .btn.primary:hover{ background:#3b8cff; }
 .btn[disabled]{ opacity:.6; cursor:not-allowed; }
+/* grup tombol kanan */
+.right-buttons{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-left:auto;      /* ✅ dorong seluruh grup ke kanan */
+}
+
+.reset-btn{
+  background:#0ea5e9;    /* biru muda */
+  color:#fff;
+  padding:10px 16px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.2s;
+}
+.reset-btn:hover{ background:#38bdf8; }
+.reset-btn:active{ background:#0284c7; }
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -274,10 +290,14 @@
       <option value="Active">Active</option>
       <option value="Unactive">Unactive</option>
     </select>
+    
+    <div class="right-buttons">
+    <button id="resetPwBtn" class="reset-btn">Reset Password</button>
     <button id="createUserBtn" class="create-btn">Create Username</button>
     <button id="forceLogoutAllBtn">Force Logout All</button>
   </div>
-
+</div>
+  
   <div class="table-container">
     <div class="table-viewport" id="tableViewport">
       <table class="tbl" id="loginTable">
@@ -349,6 +369,41 @@
     <div class="modal-foot">
       <button type="button" class="btn ghost" id="cu-cancel">Cancel</button>
       <button type="button" class="btn primary" id="cu-create">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div id="resetPwModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="rp-title">
+    <div class="modal-head">
+      <h3 id="rp-title">Reset Password</h3>
+      <button type="button" class="modal-close" id="rp-close" aria-label="Close">✖</button>
+    </div>
+
+    <div class="modal-body">
+      <label class="field">
+        <span>Username</span>
+        <input id="rp-username" type="text" inputmode="latin" autocomplete="off" placeholder="e.g. spm888" />
+        <small class="hint">Masukkan username yang akan di-reset.</small>
+      </label>
+
+      <label class="field">
+        <span>New Password</span>
+        <input id="rp-password" type="password" autocomplete="new-password" placeholder="Min 6 karakter" />
+      </label>
+
+      <label class="field">
+        <span>Confirm Password</span>
+        <input id="rp-password2" type="password" autocomplete="new-password" placeholder="Ulangi password" />
+      </label>
+
+      <div class="error-line" id="rp-error" hidden></div>
+    </div>
+
+    <div class="modal-foot">
+      <button type="button" class="btn ghost" id="rp-cancel">Cancel</button>
+      <button type="button" class="btn primary" id="rp-reset">Reset</button>
     </div>
   </div>
 </div>
@@ -917,6 +972,118 @@ function setupClearButton(){
       window.addEventListener('resize', () => fitViewportToRows(15));
     }
   }
+  // ============ RESET PASSWORD ============
+function openResetPwModal(){
+  const o = document.getElementById('resetPwModal');
+  const u = document.getElementById('rp-username');
+  const p1 = document.getElementById('rp-password');
+  const p2 = document.getElementById('rp-password2');
+  const err = document.getElementById('rp-error');
+  err.textContent = ''; err.hidden = true;
+  u.value = ''; p1.value = ''; p2.value = '';
+  o.style.display = 'flex';
+  setTimeout(()=> u.focus(), 60);
+  document.body.style.overflow = 'hidden';
+}
+
+function closeResetPwModal(){
+  const o = document.getElementById('resetPwModal');
+  o.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+async function handleResetPassword(){
+  const btn = document.getElementById('rp-reset');
+  const cancel = document.getElementById('rp-cancel');
+  const uEl = document.getElementById('rp-username');
+  const p1El = document.getElementById('rp-password');
+  const p2El = document.getElementById('rp-password2');
+  const err = document.getElementById('rp-error');
+
+  const rawU = (uEl.value || '').trim();
+  const username = sanitizeUsername(rawU);
+  const pw1 = String(p1El.value || '');
+  const pw2 = String(p2El.value || '');
+
+  if (!username){
+    err.textContent = 'Username tidak valid.'; err.hidden = false; uEl.focus(); return;
+  }
+  if (pw1.length < 6){
+    err.textContent = 'Password minimal 6 karakter.'; err.hidden = false; p1El.focus(); return;
+  }
+  if (pw1 !== pw2){
+    err.textContent = 'Konfirmasi password tidak sama.'; err.hidden = false; p2El.focus(); return;
+  }
+
+  btn.disabled = true; cancel.disabled = true;
+  try{
+    const snap = await userAcctRef.child(username).get();
+    if (!snap.exists()){
+      err.textContent = 'Username tidak ditemukan.'; err.hidden = false;
+      btn.disabled = false; cancel.disabled = false; return;
+    }
+    const cur = snap.val() || {};
+    const newHash = await sha256Hex(pw1);
+
+    // set lengkap sesuai rules (harus ada semua field wajib)
+    const payload = {
+      username: cur.username || username,
+      passwordHash: newHash,
+      createdAt: cur.createdAt || Date.now(),
+      createdBy: cur.createdBy || 'admin-ui',
+      active: (typeof cur.active === 'boolean') ? cur.active : true,
+      updatedAt: Date.now(),
+      updatedBy: 'admin-ui'
+    };
+
+    await userAcctRef.child(username).set(payload);
+    showToast(`Password "${username}" berhasil di-reset.`, 'success');
+    closeResetPwModal();
+  }catch(e){
+    err.textContent = `Gagal reset password: ${e.message}`;
+    err.hidden = false;
+  }finally{
+    btn.disabled = false; cancel.disabled = false;
+  }
+}
+
+// Pasang event untuk modal reset
+function setupResetPwModal(){
+  const openBtn = document.getElementById('resetPwBtn');
+  const overlay = document.getElementById('resetPwModal');
+  const closeBtn = document.getElementById('rp-close');
+  const cancelBtn = document.getElementById('rp-cancel');
+  const resetBtn = document.getElementById('rp-reset');
+  const uEl = document.getElementById('rp-username');
+  const p1El = document.getElementById('rp-password');
+  const p2El = document.getElementById('rp-password2');
+
+  openBtn?.addEventListener('click', openResetPwModal);
+  closeBtn?.addEventListener('click', closeResetPwModal);
+  cancelBtn?.addEventListener('click', closeResetPwModal);
+  resetBtn?.addEventListener('click', handleResetPassword);
+
+  // klik di luar box menutup
+  overlay.addEventListener('click', (e)=>{ if (e.target === overlay) closeResetPwModal(); });
+
+  // Esc = tutup, Enter = submit
+  overlay.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape') closeResetPwModal();
+    if (e.key === 'Enter') handleResetPassword();
+  });
+  [uEl,p1El,p2El].forEach(el=>{
+    el.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') handleResetPassword(); });
+  });
+}
+
+// panggil saat init
+(function hookInitReset(){
+  const oldInit = window.init;
+  window.init = function(){
+    if (typeof oldInit === 'function') oldInit();
+    setupResetPwModal();
+  };
+})();
   window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
