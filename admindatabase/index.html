@@ -588,7 +588,7 @@
     dataArray.forEach(item => {
       const email = item.email || '';
       const name  = item.name  || '';
-      const tStr  = item.dateObj ? formatDateTime(item.dateObj) : (item.loginRaw || '');
+      const tStr = item.dateObj? formatDateTime(item.dateObj): (item.loginRaw && item.loginRaw !== '-' ? item.loginRaw : '');
       if (!email && !name && !tStr) return;
 
       no++;
@@ -632,35 +632,45 @@
     requestAnimationFrame(()=> fitViewportToRows(15));
   }
 
-  // ---------- Realtime data ----------
-  function startRealtime(){
-    const searchBtn = document.getElementById('searchBtn');
-    searchBtn.classList.add('loading');
+function startRealtime(){
+  const searchBtn = document.getElementById('searchBtn');
+  searchBtn.classList.add('loading');
 
-    dbRef.on('value', (snapshot) => {
-      const data = snapshot.val() || {};
-      allLoginData = Object.entries(data)
-        .filter(([k]) => k !== "blocked_users" && k !== "admin_override")
-        .map(([_, item]) => {
-          const dateObj = parseDateString(item.loginAt);
-          return { ...item, dateObj, loginRaw: item.loginAt || '-' };
-        })
-        .filter(it => it.email || it.name || it.loginRaw)
-        .sort((a,b) => {
-          if (!a.dateObj && !b.dateObj) return 0;
-          if (!a.dateObj) return 1;
-          if (!b.dateObj) return -1;
-          return b.dateObj - a.dateObj;
-        });
+  dbRef.on('value', (snapshot) => {
+    const data = snapshot.val() || {};
 
-      rerenderWithCurrentFilters();
-      searchBtn.classList.remove('loading');
-    }, (error) => {
-      document.getElementById('loginTableBody').innerHTML =
-        `<tr><td colspan="6">Error: ${error.message}</td></tr>`;
-      searchBtn.classList.remove('loading');
-    });
-  }
+    allLoginData = Object.entries(data)
+      .filter(([k]) =>
+        k !== "blocked_users" &&
+        k !== "admin_override" &&
+        k !== "user_accounts"        // ✅ jangan ikut koleksi akun
+      )
+      .map(([_, item]) => {
+        const raw = typeof item?.loginAt === 'string' ? item.loginAt.trim() : '';
+        const dateObj = parseDateString(raw);
+        return { ...item, dateObj, loginRaw: raw };   // ❌ tanpa default '-'
+      })
+      // ✅ buang entry yatim (tak ada email, nama, dan waktu valid)
+      .filter(it =>
+        (it.email && it.email.trim()) ||
+        (it.name && it.name.trim()) ||
+        it.dateObj
+      )
+      .sort((a,b) => {
+        if (!a.dateObj && !b.dateObj) return 0;
+        if (!a.dateObj) return 1;
+        if (!b.dateObj) return -1;
+        return b.dateObj - a.dateObj;
+      });
+
+    rerenderWithCurrentFilters();
+    searchBtn.classList.remove('loading');
+  }, (error) => {
+    document.getElementById('loginTableBody').innerHTML =
+      `<tr><td colspan="6">Error: ${error.message}</td></tr>`;
+    searchBtn.classList.remove('loading');
+  });
+}
 
   // ---------- Search & Filter listeners ----------
   function currentStatusValue(){
