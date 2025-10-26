@@ -372,6 +372,20 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
 
+// === Bersihkan cache login lama saat halaman login dibuka ===
+document.addEventListener('DOMContentLoaded', () => {
+  auth.onAuthStateChanged(u => {
+    if (!u || u.isAnonymous) {
+      try { localStorage.removeItem('gmailLogin'); } catch(_) {}
+    }
+  });
+
+  // kalau halaman login dibuka dari redirect logout/duplikat
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('logout') === '1' || qs.get('dup') === '1') {
+    try { localStorage.removeItem('gmailLogin'); } catch(_) {}
+  }
+});
 // ====== HANYA EMAIL DOMAIN INI YANG DIIJINKAN ======
 const ALLOWED_GOOGLE_DOMAIN = 'b88gaming.page';
 
@@ -906,8 +920,9 @@ createNow?.addEventListener('click', () => {
   let lcLoaded = false;
 
 function getPrechatUser(){
-  // 1) Sudah login normal (bukan anonymous)
   const cu = auth.currentUser;
+
+  // ✅ 1) Sudah login normal DI HALAMAN INI (bukan anonymous)
   if (cu && !cu.isAnonymous) {
     return {
       name: cu.displayName || cu.email || 'User',
@@ -918,15 +933,10 @@ function getPrechatUser(){
     };
   }
 
-  // 2) Cache Google di localStorage
-  try {
-    const gl = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-    if (gl?.email) {
-      return { name: gl.name || gl.email, email: gl.email, photo: gl.photo || "", uid: null, isGuest: false };
-    }
-  } catch {}
+  // 🚫 Jangan baca localStorage("gmailLogin") di halaman login
+  // karena data itu milik domain utama, bisa salah user
 
-  // 3) Anonymous Auth (punya UID Firebase)
+  // ✅ 2) Anonymous Auth (guest login)
   if (cu && cu.isAnonymous){
     const code = (cu.uid || '').slice(-5).toUpperCase();
     return {
@@ -938,7 +948,7 @@ function getPrechatUser(){
     };
   }
 
-  // 4) **Fallback PASTI**: pakai UID lokal per-device
+  // ✅ 3) Fallback (guest lokal)
   const g = getOrCreateLocalGuest();
   return { name: g.name, email: "", photo: "", uid: g.uid, isGuest: true };
 }
