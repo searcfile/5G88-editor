@@ -1562,49 +1562,75 @@ function markLivechatAsRead() {
     });
   });
 }
-document.addEventListener("DOMContentLoaded", () => {
+// ⬇️ GANTI seluruh blok ini
+document.addEventListener("DOMContentLoaded", async () => {
   const forceLogout = sessionStorage.getItem("forceLogout");
   if (forceLogout === "1") {
     sessionStorage.removeItem("forceLogout");
     cleanUrl();
   }
+
   updateChangePwVisibility();
   if (!checkLogin()) return;
 
-const loginDataRaw = localStorage.getItem("gmailLogin");
-let sessionData = null;
+  const loginDataRaw = localStorage.getItem("gmailLogin");
+  let sessionData = null;
 
-try {
-  sessionData = JSON.parse(loginDataRaw);
-} catch (e) {
-  console.error("❌ Failed to parse login data:", e);
-  localStorage.removeItem("gmailLogin");
-  window.location.href = "https://5g88-login.vercel.app/";
-  return;
-}
-
-if (!sessionData || !sessionData.email) {
-  window.location.href = "https://5g88-login.vercel.app/";
-  return;
-}
-// === START auto logout inactivity ===
-window.AutoLogout && window.AutoLogout.start();
-// === SINGLE-SESSION: izinkan hanya SATU halaman per user ===
-(async ()=>{
   try {
-    const ownerId = window.getSessionOwnerFrom(sessionData);
-    await window.startSingleSession(ownerId, ()=>{
+    sessionData = JSON.parse(loginDataRaw);
+  } catch (e) {
+    console.error("❌ Failed to parse login data:", e);
+    localStorage.removeItem("gmailLogin");
+    window.location.href = "https://5g88-login.vercel.app/";
+    return;
+  }
+
+  if (!sessionData || !sessionData.email) {
+    window.location.href = "https://5g88-login.vercel.app/";
+    return;
+  }
+
+  // ✅ 1) Pastikan RTDB Rules `auth != null` lolos: login Anonymous dulu di project loginApp
+  async function ensureAnonAuth(maxRetries = 2) {
+    for (let i = 0; i <= maxRetries; i++) {
+      try {
+        const auth = loginApp.auth();
+        if (auth.currentUser) return true;
+        await auth.signInAnonymously();
+        return true;
+      } catch (err) {
+        console.warn(`[AnonAuth] Percobaan ${i+1} gagal:`, err?.message || err);
+        // jeda singkat sebelum retry
+        await new Promise(r => setTimeout(r, 400));
+      }
+    }
+    return false;
+  }
+
+  const authed = await ensureAnonAuth();
+  if (!authed) {
+    console.warn("⚠️ Anonymous auth gagal. Single-session tidak bisa menulis ke RTDB.");
+    // Lanjutkan UI agar tetap bisa dipakai, tapi tanpa enforcement
+  }
+
+  // ✅ 2) Mulai auto-logout inactivity (aman untuk jalan setelah auth)
+  window.AutoLogout && window.AutoLogout.start();
+
+  // ✅ 3) Mulai Single-Session: batasi hanya 1 halaman per user
+  try {
+    const ownerId = window.getSessionOwnerFrom(sessionData); // username utk @5g88.local, selain itu email penuh
+    await window.startSingleSession(ownerId, () => {
       // Paksa keluar di SEMUA tab kalau duplikat terdeteksi
-      try { localStorage.removeItem('gmailLogin'); } catch(_){}
-      try { sessionStorage.setItem('forceLogout','1'); } catch(_){}
-      try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch(_){}
+      try { localStorage.removeItem('gmailLogin'); } catch (_){}
+      try { sessionStorage.setItem('forceLogout', '1'); } catch (_){}
+      try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
       // Redirect balik ke login
       window.location.href = "https://5g88-login.vercel.app/?dup=1";
     });
-  } catch(e){
+  } catch (e) {
     console.warn('[single-session] gagal start:', e);
   }
-})();
+});
 
 userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
 let lastOverrideTs = 0;
