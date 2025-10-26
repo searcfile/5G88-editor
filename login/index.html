@@ -965,21 +965,28 @@ lcToggle?.addEventListener("click", async () => {
     lcPanel.classList.add("active");
     lcPanel.setAttribute("aria-hidden","false");
 
-    // PANGGIL DI SINI SAJA
+    // pastikan ada guest auth (kalau di-enable)
     await ensureGuestAuth();
 
     if (!lcLoaded){
-      lcFrame.src = LC_URL;
+      // ⬇️ penting: pakai reset=1 supaya iframe buang identitas lama saat load pertama
+      lcFrame.src = LC_URL + "?reset=1";
       lcFrame.addEventListener("load", async () => {
         lcLoaded = true;
-        await ensureGuestAuth();  
-        postIdentityToChat();            
+        try { await ensureGuestAuth(); } catch(_) {}
+
+        // kirim reset lagi (jaga-jaga) lalu kirim identitas
+        try { lcFrame.contentWindow.postMessage({ type: "reset-chat" }, LC_ORIGIN); } catch(_) {}
+        postIdentityToChat();
         setTimeout(postIdentityToChat, 300);
       }, { once:true });
     } else {
+      // buka lagi berikutnya: suruh iframe reset dulu, baru kirim identitas
+      try { lcFrame.contentWindow.postMessage({ type: "reset-chat" }, LC_ORIGIN); } catch(_) {}
       postIdentityToChat();
     }
-    lcDot.style.display = "none";
+
+    if (lcDot) lcDot.style.display = "none";
   } else {
     lcPanel.classList.remove("active");
     lcPanel.setAttribute("aria-hidden","true");
