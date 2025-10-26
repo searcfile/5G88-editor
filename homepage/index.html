@@ -1590,7 +1590,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // ✅ 1) Pastikan RTDB Rules `auth != null` lolos: login Anonymous dulu di project loginApp
+  // ✅ 1) RTDB rules `auth != null` → login anon di project loginApp
   async function ensureAnonAuth(maxRetries = 2) {
     for (let i = 0; i <= maxRetries; i++) {
       try {
@@ -1600,7 +1600,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return true;
       } catch (err) {
         console.warn(`[AnonAuth] Percobaan ${i+1} gagal:`, err?.message || err);
-        // jeda singkat sebelum retry
         await new Promise(r => setTimeout(r, 400));
       }
     }
@@ -1610,131 +1609,110 @@ document.addEventListener("DOMContentLoaded", async () => {
   const authed = await ensureAnonAuth();
   if (!authed) {
     console.warn("⚠️ Anonymous auth gagal. Single-session tidak bisa menulis ke RTDB.");
-    // Lanjutkan UI agar tetap bisa dipakai, tapi tanpa enforcement
+    // lanjutkan UI tanpa enforcement
   }
 
-  // ✅ 2) Mulai auto-logout inactivity (aman untuk jalan setelah auth)
+  // ✅ 2) Auto-logout inactivity
   window.AutoLogout && window.AutoLogout.start();
 
-  // ✅ 3) Mulai Single-Session: batasi hanya 1 halaman per user
+  // ✅ 3) Single-Session
   try {
-    const ownerId = window.getSessionOwnerFrom(sessionData); // username utk @5g88.local, selain itu email penuh
+    const ownerId = window.getSessionOwnerFrom(sessionData);
     await window.startSingleSession(ownerId, () => {
-      // Paksa keluar di SEMUA tab kalau duplikat terdeteksi
       try { localStorage.removeItem('gmailLogin'); } catch (_){}
-      try { sessionStorage.setItem('forceLogout', '1'); } catch (_){}
+      try { sessionStorage.setItem('forceLogout','1'); } catch (_){}
       try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
-      // Redirect balik ke login
       window.location.href = "https://5g88-login.vercel.app/?dup=1";
     });
   } catch (e) {
     console.warn('[single-session] gagal start:', e);
   }
-});
 
-userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
-let lastOverrideTs = 0;
-let loginAuth = null;
-try { loginAuth = loginApp.auth(); } catch (_) {}
-const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
-let lastAt = 0;
+  // ======= SEMUA YANG DI BAWAH INI BUTUH sessionData =======
+  let userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
+  let loginAuth = null;
+  try { loginAuth = loginApp.auth(); } catch (_) {}
 
-myOverrideRef.on('value', async (snap) => {
-  const v = snap.val();
-  console.log('[override:me]', v);
-  if (!v || v.forceLogout !== true) return;
-  if (v.at && v.at <= lastAt) return;
-  lastAt = v.at || Date.now();
+  // Admin override (paksa logout user tertentu)
+  const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
+  let lastAt = 0;
+  myOverrideRef.on('value', async (snap) => {
+    const v = snap.val();
+    if (!v || v.forceLogout !== true) return;
+    if (v.at && v.at <= lastAt) return;
+    lastAt = v.at || Date.now();
 
-  // (opsional) sign out auth kalau ada
-  try { loginApp.auth && (await loginApp.auth().signOut()); } catch (_) {}
+    try { loginApp.auth && (await loginApp.auth().signOut()); } catch (_){}
+    localStorage.removeItem('gmailLogin');
+    sessionStorage.setItem('forceLogout', '1');
+    try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
 
-  // bersihkan sesi lokal
-  localStorage.removeItem('gmailLogin');
-  sessionStorage.setItem('forceLogout', '1');
-  if (window.google?.accounts?.id) {
-    try { google.accounts.id.disableAutoSelect(); } catch (_) {}
-  }
+    myOverrideRef.remove().catch(()=>{});
+    window.location.href = 'https://5g88-login.vercel.app/';
+  });
 
-  // HAPUS HANYA node saya sendiri, JANGAN root admin_override
-  myOverrideRef.remove().catch(()=>{});
-
-  // redirect ke login
-  window.location.href = 'https://5g88-login.vercel.app/';
-});
-loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
-  if (s.val() === true) {
-    try { if (loginAuth) await loginAuth.signOut(); } catch(_) {}
-    localStorage.removeItem("gmailLogin");
-    if (window.google?.accounts?.id) {
-      try { google.accounts.id.disableAutoSelect(); } catch(_) {}
+  // User diblok
+  loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
+    if (s.val() === true) {
+      try { if (loginAuth) await loginAuth.signOut(); } catch(_) {}
+      localStorage.removeItem("gmailLogin");
+      try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch(_){}
+      window.location.href = "https://5g88-login.vercel.app/?blocked=1";
     }
-    window.location.href = "https://5g88-login.vercel.app/?blocked=1";
-  }
-});
-  //  Simpan data login ke Firebase -> untuk admin bisa lihat siapa yang sudah login
-const sanitizedEmail = sessionData.email.toLowerCase().replace(/\./g, '_');
-blurphpDb.ref('users/' + sanitizedEmail).update({
-  name: sessionData.name,
-  email: sessionData.email,
-  photoURL: sessionData.photo || '',
-  lastLoginTime: Date.now()
-});
+  });
 
-// Tambah status online user di Firebase
-const connectedRef = blurphpDb.ref(".info/connected");
-const onlineRef = blurphpDb.ref("users/" + sanitizedEmail + "/online");
+  // Simpan info user di blurphp + status online
+  const sanitizedEmail = sessionData.email.toLowerCase().replace(/\./g, '_');
+  blurphpDb.ref('users/' + sanitizedEmail).update({
+    name: sessionData.name,
+    email: sessionData.email,
+    photoURL: sessionData.photo || '',
+    lastLoginTime: Date.now()
+  });
 
-connectedRef.on("value", (snap) => {
-  if (snap.val() === true) {
-    onlineRef.set(true);
-    onlineRef.onDisconnect().set(false);
-  }
-});
-
-window.addEventListener("beforeunload", () => {
-  // set offline
-  try {
-    blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false);
-  } catch (_) {}
-
-  // matikan semua listener yang kita hidupkan
-  try {
-    blurphpDb.ref("chats/" + userId).off();
-  } catch (_) {}
-
-  try {
-    loginDb.ref("logins/admin_override/" + userId).off();
-  } catch (_) {}
-});
-let lastNotifTime = 0;
-let userHasInteracted = false;
-document.body.addEventListener("click", () => { userHasInteracted = true; });
-
-const chatsRef = blurphpDb.ref("chats/" + userId);
-chatsRef.off("child_added"); // pastikan gak dobel
-chatsRef.on("child_added", (snapshot) => {
-  const msg = snapshot.val();
-  const livechatDot = document.getElementById("livechatDot");
-  const notifSound  = document.getElementById("notifSound");
-  if (!msg || msg.from !== "admin") return;
-
-  const timestamp = msg.time || Date.now();
-  if (timestamp > lastNotifTime) {
-    lastNotifTime = timestamp;
-    if (livechatDot) livechatDot.style.display = "inline";
-
-    // guard aman buat audio:
-    if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
-      notifSound.currentTime = 0;
-      notifSound.play().catch(() => {});
+  const connectedRef = blurphpDb.ref(".info/connected");
+  const onlineRef = blurphpDb.ref("users/" + sanitizedEmail + "/online");
+  connectedRef.on("value", (snap) => {
+    if (snap.val() === true) {
+      onlineRef.set(true);
+      onlineRef.onDisconnect().set(false);
     }
-  }
-});
+  });
 
-// indikator unread (pakai fungsi yang sudah kamu buat)
-initLivechatNotifListener(userId);
- //Setelah login aman, baru lanjut
+  window.addEventListener("beforeunload", () => {
+    try { blurphpDb.ref("users/" + sanitizedEmail + "/online").set(false); } catch (_){}
+    try { blurphpDb.ref("chats/" + userId).off(); } catch (_){}
+    try { loginDb.ref("logins/admin_override/" + userId).off(); } catch (_){}
+  });
+
+  // Livechat: bunyi + dot notifikasi
+  let lastNotifTime = 0;
+  let userHasInteracted = false;
+  document.body.addEventListener("click", () => { userHasInteracted = true; });
+
+  const chatsRef = blurphpDb.ref("chats/" + userId);
+  chatsRef.off("child_added");
+  chatsRef.on("child_added", (snapshot) => {
+    const msg = snapshot.val();
+    if (!msg || msg.from !== "admin") return;
+
+    const livechatDot = document.getElementById("livechatDot");
+    const notifSound  = document.getElementById("notifSound");
+    const timestamp = msg.time || Date.now();
+    if (timestamp > lastNotifTime) {
+      lastNotifTime = timestamp;
+      if (livechatDot) livechatDot.style.display = "inline";
+      if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
+        notifSound.currentTime = 0;
+        notifSound.play().catch(() => {});
+      }
+    }
+  });
+
+  // indikator unread
+  initLivechatNotifListener(userId);
+
+  // UI header nama/email
   const userNameText = document.getElementById("userNameText");
   const dropdownContent = document.getElementById("dropdownContent");
   const userEmailElem = document.getElementById("userEmail");
@@ -1743,46 +1721,37 @@ initLivechatNotifListener(userId);
 
   if (userNameText && dropdownContent && dropdownWrapper && userButton) {
     const loginData = JSON.parse(localStorage.getItem("gmailLogin"));
-    const nameParts = loginData.name.trim().split(" ");
+    const nameParts = (loginData.name || '').trim().split(" ");
     const displayName = (nameParts.length >= 2 && nameParts[0].toLowerCase() === nameParts[1].toLowerCase())
-      ? nameParts[0]
-      : loginData.name;
+      ? nameParts[0] : (loginData.name || '');
     userNameText.textContent = displayName;
     if (userEmailElem) userEmailElem.textContent = loginData.email;
     window.renderMobileUserBtn && window.renderMobileUserBtn();
     updateChangePwVisibility();
-    // 1. Hover: tampilkan dropdown
+
     dropdownWrapper.addEventListener("mouseenter", () => {
       dropdownContent.style.display = "block";
     });
-
-    // 2. Hover keluar: sembunyikan jika belum diklik
-   dropdownWrapper.addEventListener("mouseleave", () => {
-  // Jika sedang force-open (hasil dari klik), biarkan tetap tampil
-  if (dropdownWrapper.classList.contains("force-open")) return;
-
-  // Kalau bukan dari klik, artinya hanya hover → tutup dropdown
-  dropdownContent.style.display = "none";
-  userButton.classList.remove("active-user-button");
-});
-
-    // 3. Klik user button = toggle tampil dan class
-   userButton.addEventListener("click", (e) => {
-  e.stopPropagation(); // 🛑 ini bantu cegah konflik click luar
-  const isOpen = dropdownWrapper.classList.toggle("force-open");
-  dropdownContent.style.display = isOpen ? "block" : "none";
-  userButton.classList.toggle("active-user-button", isOpen);
-});
-
-    // 4. Klik di luar dropdown → tutup semua
-   document.addEventListener("click", (e) => {
-  if (!dropdownWrapper.contains(e.target)) {
-    dropdownContent.style.display = "none";
-    dropdownWrapper.classList.remove("force-open");
-    userButton.classList.remove("active-user-button");
+    dropdownWrapper.addEventListener("mouseleave", () => {
+      if (dropdownWrapper.classList.contains("force-open")) return;
+      dropdownContent.style.display = "none";
+      userButton.classList.remove("active-user-button");
+    });
+    userButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = dropdownWrapper.classList.toggle("force-open");
+      dropdownContent.style.display = isOpen ? "block" : "none";
+      userButton.classList.toggle("active-user-button", isOpen);
+    });
+    document.addEventListener("click", (e) => {
+      if (!dropdownWrapper.contains(e.target)) {
+        dropdownContent.style.display = "none";
+        dropdownWrapper.classList.remove("force-open");
+        userButton.classList.remove("active-user-button");
+      }
+    });
   }
-});
-  }
+}); // ⬅️ tutup DOMContentLoaded
 
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
