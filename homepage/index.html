@@ -275,6 +275,9 @@ a.tab-open .check-icon {
     <a href="#" onclick="addTab('BANK ISLAM', 'https://searcfile.github.io/5g88-php/bankislam/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> BANK ISLAM
     </a>
+    <a href="#" onclick="addTab('RHB BANK', 'https://searcfile.github.io/5g88-php/rhb/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> RHB BANK
+    </a>
   </div>
 
 <div class="header">
@@ -369,6 +372,13 @@ a.tab-open .check-icon {
     <a data-label="BANK ISLAM" href="#"
        onclick="addTab('BANK ISLAM','https://searcfile.github.io/5g88-php/bankislam/');">
       BANK ISLAM
+      <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
+        <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+      </svg>
+    </a>
+    <a data-label="RHB BANK" href="#"
+       onclick="addTab('BANK ISLAM','https://searcfile.github.io/5g88-php/rhb/');">
+      RHB BANK
       <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
         <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
       </svg>
@@ -1099,7 +1109,7 @@ function addTab(label, url) {
     }
   }
   if (bankResitBtnEl) {
-  const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
+  const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK"];
   if (bankResitLabels.includes(label)) {
     bankResitBtnEl.classList.add("active-gamelog"); // reuse class biar gaya sama
   } else {
@@ -1207,7 +1217,7 @@ function closeTab(label) {
 
     // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
-    const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
+    const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK"];
     const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
     
     gameLinksBtnEl?.classList.toggle("active-gamelog", gameLinksLabels.includes(lastTab.label));
@@ -1280,7 +1290,7 @@ function renderTabs() {
       gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
       }
       if (bankResitBtnEl) {
-      const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
+      const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK"];
       bankResitBtnEl.classList.toggle("active-gamelog", bankResitLabels.includes(tab.label));
       }
       if (gameLinksBtnEl) {
@@ -1477,7 +1487,7 @@ window.addEventListener("load", () => {
     if (match.label === "LINK DOWNLOAD") {
       linkBtn.classList.add("active-linkdownload");
     }
-    const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM"];
+    const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK"];
     if (bankResitBtnEl && match && bankResitLabels.includes(match.label)) {
     bankResitBtnEl.classList.add("active-gamelog");
     }
