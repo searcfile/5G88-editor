@@ -797,26 +797,7 @@ const loginDb = loginApp.database();
   };
 })();
 
-(() => {
-  try {
-    const qs = new URLSearchParams(location.search);
-    const name  = qs.get("name");
-    const email = qs.get("email");
-    const photo = qs.get("photo");
-    const validEmail = (e)=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e||"");
 
-    if (email && validEmail(decodeURIComponent(email))) {
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name:  decodeURIComponent(name || ""),
-        email: decodeURIComponent(email).toLowerCase(),
-        photo: decodeURIComponent(photo || "")
-      }));
-      // tanda baru login supaya tidak ping-pong
-      sessionStorage.setItem("justLoggedIn", "1");
-      history.replaceState({}, document.title, location.origin + location.pathname);
-    }
-  } catch (_) {}
-})();
 // === Helper: cek tipe login & update tombol Change Password ===
 function isUsernameLoginNow() {
   try {
@@ -1528,14 +1509,18 @@ function isValidEmail(email) {
 }
 
 function checkLogin() {
-  if (localStorage.getItem("gmailLogin")) return true;
-  if (sessionStorage.getItem("justLoggedIn") === "1") {
-    setTimeout(() => {
-      sessionStorage.removeItem("justLoggedIn");
-      location.reload();
-    }, 30);
-    return false;
-  }
+  // cukup cek localStorage saja
+  try {
+    const raw = localStorage.getItem("gmailLogin");
+    const obj = raw ? JSON.parse(raw) : null;
+    if (obj && obj.email) return true;
+  } catch (_) {}
+
+  // kalau tidak ada, redirect ke halaman login
+  const returnTo = encodeURIComponent(location.href);
+  location.replace(`https://5g88-login.vercel.app/?redirect=${returnTo}`);
+  return false;
+}
 
   const returnTo = encodeURIComponent(location.href);
   location.replace(`https://5g88-login.vercel.app/?redirect=${returnTo}`);
@@ -2018,6 +2003,19 @@ async function doChange(){
   submit.addEventListener('click', doChange);
   [inOld,inNew,inNew2].forEach(i=>i.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doChange(); }));
 })();
+/* ==== Sinkronisasi login/logout antar tab ==== */
+window.addEventListener('storage', (e) => {
+  if (e.key === 'gmailLogin') {
+    try {
+      const u = JSON.parse(e.newValue || '{}');
+      if (u && u.email) {
+        location.reload(); // tab lain login → refresh
+      } else {
+        location.href = 'https://5g88-login.vercel.app/'; // tab lain logout → keluar
+      }
+    } catch(_) {}
+  }
+});
 </script>
 </body>
 </html>
