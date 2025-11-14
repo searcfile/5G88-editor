@@ -238,36 +238,60 @@ button {padding: 5px 10px;font-size: 14px;background: gold;color: black;border: 
   <button onclick="resetLog()" class="reset-button">Reset Log</button>
   <span style="color: rgba(255, 255, 255, 0.65); font-size: 16px;">Key (CTRL + C) Copy Image</span>
 </div>
+
+<!-- BARIS ATAS (Game, Bet, Pecahan, Click Now, Set Time, Free Game) -->
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;margin-left:10px;">
   <label for="gameSelect" style="color: white;padding-left:5px;">Game:</label>
   <select id="gameSelect" class="select2" style="height: 38px; font-size: 16px; color: white;">
-    <option value="DragonStrike">DragonStrike</option><option value="ClashOfTheBeasts">ClashOfTheBeasts</option><option value="SteamTower">SteamTower</option>
+    <option value="DragonStrike">DragonStrike</option>
+    <option value="ClashOfTheBeasts">ClashOfTheBeasts</option>
+    <option value="SteamTower">SteamTower</option>
   </select>
-  <label for="betSelect" style="color: white;">Bet:</label><select id="betSelect" style="height: 38px; font-size: 16px; color: white;"></select>
+
+  <label for="betSelect" style="color: white;">Bet:</label>
+  <select id="betSelect" style="height: 38px; font-size: 16px; color: white;"></select>
+
   <label for="pecahanSelect" style="color: white;">Pecahan:</label>
-  <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;"></select><button onclick="setNow()" style="height: 38px; padding: 0 12px; font-size: 16px;">Click Now</button>
+  <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;"></select>
+
+  <button onclick="setNow()" style="height: 38px; padding: 0 12px; font-size: 16px;">Click Now</button>
+
   <label for="manualTime" style="color: white;">Set Time:</label>
-  <input type="text" id="manualTime" placeholder="Add Date & Time" style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" /></div>
+  <input type="text" id="manualTime" placeholder="Add Date & Time" style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" />
 
-  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
+  <!-- 🔥 Free Game input + button di kanan Set Time -->
+  <label for="freeGameInput" style="color:white; margin-left:10px;">Free Game:</label>
+  <input type="number" id="freeGameInput" min="0" max="10" value="0"
+         style="width:70px; height:32px; font-size:16px; padding:0 6px; color:white;">
+  <button id="setFreeGameBtn" style="height: 38px;">Set</button>
+</div>
+
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
   <button onclick="generateLog()" style="height: 38px;">Change</button>
-  <div style="display: flex; align-items: center;">
-  <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;">Add Score (optional):</label>
-  <input type="number" id="manualScore" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
 
   <div style="display: flex; align-items: center;">
-  <label for="manualJackpot" style="color: white; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
-  <input type="number" id="manualJackpot" value="0" style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
+    <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;">Add Score (optional):</label>
+    <input type="number" id="manualScore" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  </div>
+
+  <div style="display: flex; align-items: center;">
+    <label for="manualJackpot" style="color: white; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
+    <input type="number" id="manualJackpot" value="0" style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  </div>
 
   <button onclick="addJackpot()" style="height: 38px;">Set Jackpot</button>
+
   <div style="display: flex; align-items: center;">
-  <label for="manualScoreInput" style="color: white; height: 38px; display: flex; align-items: center;">Support Amount:</label>
-  <input type="number" id="manualScoreInput" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
+    <label for="manualScoreInput" style="color: white; height: 38px; display: flex; align-items: center;">Support Amount:</label>
+    <input type="number" id="manualScoreInput" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+  </div>
 
   <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
   <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
-  <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button></div>
-  <table id="gameLog">
+  <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button>
+</div>
+
+<table id="gameLog">
   <thead>
     <tr>
       <th>GameName</th>
@@ -279,13 +303,16 @@ button {padding: 5px 10px;font-size: 14px;background: gold;color: black;border: 
       <th>DateTime</th>
     </tr>
   </thead>
-  <tbody>
-  </tbody>
+  <tbody></tbody>
 </table>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
+
 let hiddenRow = null;
+const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
+
 const gameData = {
 "ClashOfTheBeasts": 
 { bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],pecahan: {1.00: [30.00, 50.00, 100.00, 130.00],1.25: [50.00, 80.00, 100.00, 150.00],1.75: [80.00, 100.00, 130.00, 180.00],2.50: [100.00, 130.00, 150.00, 200.00],3.00: [130.00, 150.00, 180.00, 220.00],3.75: [150.00, 180.00, 200.00, 240.00],5.00: [180.00, 200.00, 220.00, 260.00],7.50: [200.00, 240.00, 280.00, 320.00],12.50: [350.00, 400.00, 450.00, 500.00],15.00: [500.00, 550.00, 600.00, 650.00],25.00: [650.00, 700.00, 750.00, 800.00]}},
@@ -294,16 +321,19 @@ const gameData = {
 "SteamTower": 
 { bets: [1.00, 2.00, 5.00, 10.00, 20.00],pecahan: {1.00: [30.00, 60.00, 100.00, 130.00],2.00: [60.00, 90.00, 110.00, 150.00],5.00: [90.00, 120.00, 150.00, 180.00],10.00: [120.00, 150.00, 180.00, 210.00],20.00: [100.00, 150.00, 200.00, 500.00]}}
 };
-  let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
-  (function initCustomGameSelect(){
+
+let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
+
+/* =====================
+   CUSTOM SELECT GAME
+===================== */
+(function initCustomGameSelect(){
   const native = document.getElementById('gameSelect');
   if(!native) return;
 
-  // Sembunyikan select asli (tetap dipakai untuk value & event)
   native.style.position='absolute';
   native.style.left='-9999px';
 
-  // Bungkus baru
   const wrap = document.createElement('div');
   wrap.className = 'cs-wrap';
 
@@ -314,19 +344,15 @@ const gameData = {
   const arrow = document.createElement('i'); arrow.className='cs-arrow';
   display.appendChild(label); display.appendChild(arrow);
 
-  // Panel list
   const list = document.createElement('div'); list.className='cs-list';
 
-  // 🔎 Search bar
   const searchBox = document.createElement('div'); searchBox.className = 'cs-search';
   const searchInput = document.createElement('input');
   searchInput.type = 'text'; searchInput.placeholder = 'Search game…'; searchInput.autocomplete = 'off';
   searchBox.appendChild(searchInput);
 
-  // Container item
   const itemsBox = document.createElement('div'); itemsBox.className = 'cs-items';
 
-  // Render item dari option native
   const makeItem = (opt) => {
     const item = document.createElement('div');
     item.className='cs-item';
@@ -334,11 +360,9 @@ const gameData = {
     item.dataset.value = opt.value;
     if(opt.selected) item.classList.add('active');
     item.addEventListener('click', () => {
-      // Sinkron ke select asli + trigger change (biar JS lain jalan)
       native.value = opt.value;
       native.dispatchEvent(new Event('change', {bubbles:true}));
 
-      // Update UI custom
       label.textContent = opt.text || '-- Choose --';
       itemsBox.querySelectorAll('.cs-item').forEach(i=>i.classList.remove('active'));
       item.classList.add('active');
@@ -350,7 +374,6 @@ const gameData = {
   const allItems = Array.from(native.options).map(opt => makeItem(opt));
   allItems.forEach(i => itemsBox.appendChild(i));
 
-  // Filter realtime
   function applyFilter(q){
     const query = q.trim().toLowerCase();
     let firstVisible = null;
@@ -359,13 +382,11 @@ const gameData = {
       i.style.display = show ? '' : 'none';
       if (show && !firstVisible) firstVisible = i;
     });
-    // auto-highlight item pertama yang kelihatan
     itemsBox.querySelectorAll('.cs-item').forEach(i=>i.classList.remove('hover'));
     if(firstVisible) firstVisible.classList.add('hover');
   }
   searchInput.addEventListener('input', e => applyFilter(e.target.value));
 
-  // Navigasi keyboard dalam list
   function moveHover(dir){
     const visible = allItems.filter(i => i.style.display !== 'none');
     if(visible.length===0) return;
@@ -375,7 +396,6 @@ const gameData = {
     visible.forEach(i=>i.classList.remove('hover'));
     const target = visible[idx];
     target.classList.add('hover');
-    // pastikan terlihat
     const r = target.getBoundingClientRect();
     const rb = itemsBox.getBoundingClientRect();
     if(r.top < rb.top) itemsBox.scrollTop += r.top - rb.top;
@@ -394,26 +414,22 @@ const gameData = {
     }
   });
 
-  // Toggle open/close
   display.addEventListener('click', () => {
     wrap.classList.toggle('open');
     if(wrap.classList.contains('open')){
       searchInput.value = '';
       applyFilter('');
-      // fokus ke search
       setTimeout(()=>searchInput.focus(), 0);
     }
   });
   document.addEventListener('click', (e)=>{ if(!wrap.contains(e.target)) wrap.classList.remove('open'); });
 
-  // Sisipkan setelah select asli
   native.parentNode.insertBefore(wrap, native.nextSibling);
   wrap.appendChild(display);
   wrap.appendChild(list);
   list.appendChild(searchBox);
   list.appendChild(itemsBox);
 
-  // Sinkron jika value select berubah via JS
   native.addEventListener('change', () => {
     const txt = native.options[native.selectedIndex]?.text || '-- Choose --';
     label.textContent = txt;
@@ -422,14 +438,19 @@ const gameData = {
     });
   });
 })();
-  document.getElementById("gameSelect").addEventListener("change", function () {
+
+/* =====================
+   GAME / BET / PECAHAN
+===================== */
+
+document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
   const pecahanSelect = document.getElementById("pecahanSelect");
   betSelect.innerHTML = "";
   pecahanSelect.innerHTML = "";
     
-    jackpotInsertedMap[game] = false;
+  jackpotInsertedMap[game] = false;
 
   if (game && gameData[game]) {
     gameData[game].bets.forEach(bet => {
@@ -438,12 +459,9 @@ const gameData = {
       option.textContent = bet.toFixed(2);
       betSelect.appendChild(option);
     });
-
-  
     betSelect.dispatchEvent(new Event("change"));
   }
 });
-
 
 document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
@@ -451,10 +469,8 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const pecahanSelect = document.getElementById("pecahanSelect");
   pecahanSelect.innerHTML = "";
 
-  
-    if (gameData[game] && gameData[game].pecahan[bet]) {
+  if (gameData[game] && gameData[game].pecahan[bet]) {
     const pecahanList = gameData[game].pecahan[bet];
-
     pecahanList.forEach(p => {
       const option = document.createElement("option");
       option.value = p;
@@ -464,7 +480,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
   }
 });
 
- function setNow() {
+function setNow() {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -476,16 +492,14 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const globalTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   document.getElementById("manualTime").value = globalTime;
 }
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
 
-  let globalTime = null;
+function rnd(min, max, dec = 2){
+  return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
+}
 
-  function rnd(min, max, dec = 2){
-    return parseFloat((Math.random() * (max - min) + min).toFixed(dec));
-  }
-  function formatDateTimeLocal(date) {
+let globalTime = null;
+
+function formatDateTimeLocal(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
@@ -493,18 +507,19 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const min = String(date.getMinutes()).padStart(2, '0');
   const s = String(date.getSeconds()).padStart(2, '0');
   return `${y}-${m}-${d} ${h}:${min}:${s}`;
- }
- function deleteCents() {
-  const tables = document.querySelectorAll("table");
+}
 
+/* =====================
+   DELETE CENTS (SET SCORE)
+===================== */
+function deleteCents() {
+  const tables = document.querySelectorAll("table");
   tables.forEach(table => {
     const cells = table.querySelectorAll("td");
-
     cells.forEach(cell => {
       if (cell.textContent.includes("Set score：")) {
         const parts = cell.textContent.split("Set score：");
         const number = parseFloat(parts[1]);
-
         if (!isNaN(number)) {
           const intPart = Math.floor(Math.abs(number));
           const finalValue = `Set score：${number < 0 ? "-" : ""}${intPart}.00`;
@@ -514,7 +529,60 @@ document.getElementById("betSelect").addEventListener("change", function () {
     });
   });
 }
-  function generateLog() {
+
+/* =====================
+   FREE GAME HELPERS
+===================== */
+
+// reset semua tanda Free game balik ke bet asal
+function resetAllFreeGameMarks() {
+  const betCells = document.querySelectorAll('#gameLog tbody tr.log-row td.bet-cell');
+  betCells.forEach(cell => {
+    const originalBet = cell.dataset.bet;
+    if (originalBet !== undefined) {
+      cell.textContent = originalBet;
+    }
+    cell.style.fontWeight = '';
+    cell.style.color = '';
+  });
+}
+
+// apply free game berdasarkan input
+function applyFreeGame() {
+  const input = document.getElementById('freeGameInput');
+  if (!input) return;
+
+  let count = parseInt(input.value, 10);
+  if (isNaN(count) || count < 0) count = 0;
+  if (count > MAX_FREE_GAME_ROWS) count = MAX_FREE_GAME_ROWS;
+
+  resetAllFreeGameMarks();
+  if (count === 0) return;
+
+  const rows = Array.from(document.querySelectorAll('#gameLog tbody tr.log-row'));
+  const fromBottom = rows.slice().reverse();
+
+  let marked = 0;
+  for (const row of fromBottom) {
+    const betCell = row.querySelector('td.bet-cell');
+    if (!betCell) continue;
+    betCell.textContent = 'Free game';
+    betCell.style.fontWeight = '700';
+    betCell.style.color = '#dd4b39';
+    marked++;
+    if (marked >= count) break;
+  }
+}
+
+// tombol Set Free Game
+document.getElementById('setFreeGameBtn').addEventListener('click', function(){
+  applyFreeGame();
+});
+
+/* =====================
+   GENERATE LOG
+===================== */
+function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
   const selectedPecahan = parseFloat(document.getElementById("pecahanSelect").value);
@@ -566,18 +634,6 @@ document.getElementById("betSelect").addEventListener("change", function () {
     baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
 
-  setTimeout(() => {
-    const savedData = {
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore: manualScore,
-      logs: tbody.innerHTML
-    };
-    localStorage.setItem("gameLogDataMega888", JSON.stringify(savedData));
-  }, 50);
-
   const setScoreMoney = logs[0].endMoney;
   const setScoreTime = new Date(logs[0].dateTime);
   const randomOffset = [2, 3, 4, 6, 8, 9, 10, 13, 15, 18, 20, 21, 23, 24][Math.floor(Math.random() * 14)];
@@ -600,7 +656,7 @@ document.getElementById("betSelect").addEventListener("change", function () {
       <tr class="log-row">
         <td>${log.game}</td>
         <td>${log.tableID}</td>
-        <td>${log.bet}</td>
+        <td class="bet-cell" data-bet="${log.bet}">${log.bet}</td>
         <td>${log.win}</td>
         <td>${log.beginMoney}</td>
         <td>${log.endMoney}</td>
@@ -610,8 +666,29 @@ document.getElementById("betSelect").addEventListener("change", function () {
   });
 
   tbody.innerHTML = rows;
+
+  // apply free game ikut input sekarang
+  applyFreeGame();
+
+  // simpan ke localStorage (termasuk set Free Game)
+  const freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
+  setTimeout(() => {
+    const savedData = {
+      game,
+      bet,
+      pecahan: selectedPecahan,
+      manualTime: manualTimeInput,
+      manualScore: manualScore,
+      freeGame: freeGameCount,
+      logs: tbody.innerHTML
+    };
+    localStorage.setItem("gameLogDataMega888", JSON.stringify(savedData));
+  }, 50);
 }
 
+/* =====================
+   JACKPOT
+===================== */
 function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
   const jackpotAmount = parseFloat(document.getElementById("manualJackpot").value);
@@ -637,9 +714,10 @@ function addJackpot() {
       const newWin = oldWin - oldJackpotValue;
 
       prevRow.children[3].textContent = newWin.toFixed(2);
-      const bet = parseFloat(prevRow.children[2].textContent);
+      const betCellPrev = prevRow.children[2];
+      const betPrev = parseFloat(betCellPrev.dataset.bet || betCellPrev.textContent);
       const beginMoney = parseFloat(prevRow.children[4].textContent);
-      const newEnd = beginMoney - bet + newWin;
+      const newEnd = beginMoney - betPrev + newWin;
       prevRow.children[5].textContent = newEnd.toFixed(2);
     }
 
@@ -647,9 +725,9 @@ function addJackpot() {
   }
   
   if (hiddenRow) {
-  tbody.appendChild(hiddenRow);
-  hiddenRow = null;
-} 
+    tbody.appendChild(hiddenRow);
+    hiddenRow = null;
+  } 
 
   rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length < 2) {
@@ -666,7 +744,8 @@ function addJackpot() {
   prevRow.children[3].textContent = newWin.toFixed(2);
 
   const beginMoney = parseFloat(prevRow.children[4].textContent);
-  const bet = parseFloat(prevRow.children[2].textContent);
+  const betCell = prevRow.children[2];
+  const bet = parseFloat(betCell.dataset.bet || betCell.textContent);
   const newEnd = beginMoney - bet + newWin;
   prevRow.children[5].textContent = newEnd.toFixed(2);
 
@@ -686,26 +765,27 @@ function addJackpot() {
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
-   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-const specialRows = tbody.querySelectorAll("tr.set-score-row");
+  const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  const specialRows = tbody.querySelectorAll("tr.set-score-row");
 
-while (allRows.length + specialRows.length > 11) {
-  const lastRow = allRows.pop(); 
-  lastRow.remove();
-}
+  while (allRows.length + specialRows.length > 11) {
+    const lastRow = allRows.pop(); 
+    lastRow.remove();
+  }
 
-const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-for (let i = updatedRows.length - 1; i > 0; i--) {
-  const current = updatedRows[i];
-  const prev = updatedRows[i - 1];
+  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  for (let i = updatedRows.length - 1; i > 0; i--) {
+    const current = updatedRows[i];
+    const prev = updatedRows[i - 1];
 
-  const curEnd = parseFloat(current.children[5].textContent);
-  const prevBet = parseFloat(prev.children[2].textContent);
-  const prevWin = parseFloat(prev.children[3].textContent);
+    const curEnd = parseFloat(current.children[5].textContent);
+    const prevBetCell = prev.children[2];
+    const prevBet = parseFloat(prevBetCell.dataset.bet || prevBetCell.textContent);
+    const prevWin = parseFloat(prev.children[3].textContent);
 
-  prev.children[4].textContent = curEnd.toFixed(2);
-  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
-}
+    prev.children[4].textContent = curEnd.toFixed(2);
+    prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
+  }
 
   if (updatedRows.length > 0) {
     const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
@@ -718,14 +798,20 @@ for (let i = updatedRows.length - 1; i > 0; i--) {
 
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
+
+  // re-apply free game selepas struktur row berubah
+  applyFreeGame();
 }
+
+/* =====================
+   SUPPORT BACK (MANUAL SCORE POSITIF)
+===================== */
 function addManualSetScore() {
   const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
   if (isNaN(inputScore)) return alert("❌ Nilai tidak sah");
 
   const tbody = document.querySelector("#gameLog tbody");
 
-  // Cek sudah ada manual score row atau belum
   let existingManualRow = Array.from(tbody.querySelectorAll("tr.set-score-row"))
     .find(row => !row.classList.contains("jackpot") && !row.children[1].textContent.includes("-"));
 
@@ -744,7 +830,6 @@ function addManualSetScore() {
     existingManualRow.children[1].textContent = `Set score：${inputScore.toFixed(2)}`;
     existingManualRow.children[6].textContent = formatted;
   } else {
-
     const newRow = document.createElement("tr");
     newRow.classList.add("set-score-row");
     newRow.innerHTML = `
@@ -766,7 +851,11 @@ function addManualSetScore() {
   }
 
   document.getElementById("manualScoreInput").value = "0";
-  }
+}
+
+/* =====================
+   RESET LOG
+===================== */
 function resetLog() {
   localStorage.removeItem("gameLogDataMega888");
   localStorage.removeItem("jackpotInsertedMap");
@@ -778,9 +867,14 @@ function resetLog() {
   document.getElementById("manualTime").value = "";
   document.getElementById("manualScore").value = "0";
   document.getElementById("manualJackpot").value = "";
+  document.getElementById("manualScoreInput").value = "0";
+  document.getElementById("freeGameInput").value = "0";
   document.querySelector("#gameLog tbody").innerHTML = "";
 }
 
+/* =====================
+   RESTORE DARI LOCALSTORAGE
+===================== */
 window.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("gameLogDataMega888");
   if (!saved) return;
@@ -789,6 +883,10 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("gameSelect").value = data.game;
   document.getElementById("manualTime").value = data.manualTime;
   document.getElementById("manualScore").value = data.manualScore;
+  if (typeof data.freeGame !== "undefined") {
+    document.getElementById("freeGameInput").value = data.freeGame;
+  }
+
   document.getElementById("gameSelect").dispatchEvent(new Event("change"));
 
   setTimeout(() => {
@@ -801,7 +899,14 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 50);
 
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
+
+  // kalau ada value freeGame tersimpan, apply balik
+  applyFreeGame();
 });
+
+/* =====================
+   TOAST + COPY IMAGE
+===================== */
 function showToast(message, type = "success") {
   const icons = {
     success: `
@@ -822,7 +927,7 @@ function showToast(message, type = "success") {
   };
 
   const el = document.createElement("div");
-  el.className = `toast ${type}`;            // << Kelas tentukan warna ikon
+  el.className = `toast ${type}`;
   el.setAttribute("role", "status");
   el.setAttribute("aria-live", "polite");
 
@@ -845,6 +950,7 @@ function showToast(message, type = "success") {
     setTimeout(() => el.remove(), 350);
   }, 3500);
 }
+
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
   if (!gameLogTable) {
@@ -858,7 +964,6 @@ function copyGameLogImage() {
     gameLogTable.classList.remove("screenshot-mode");
 
     try {
-      // Cuba copy PNG terus ke clipboard
       if (!navigator.clipboard || !window.ClipboardItem) throw new Error("Clipboard API tidak tersedia");
 
       await new Promise((resolve, reject) => {
@@ -875,30 +980,30 @@ function copyGameLogImage() {
       return;
 
     } catch (err) {
-      // Fallback: hantar base64 ke parent
       const dataURL = canvas.toDataURL("image/png");
       window.parent.postMessage(
         { action: "copy-image-base64", base64: dataURL },
         "https://5g88-main.vercel.app/"
       );
       showToast("Image sent to parent (fallback)", "info");
-      // (Opsional) console.error(err);
     }
   });
 }
+
 document.addEventListener("keydown", function(e) {
   if (e.ctrlKey && e.key.toLowerCase() === "c") {
     e.preventDefault();
     copyGameLogImage();
   }
 });
+
 document.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      btn.classList.remove("clicked");   // reset animasi
-      void btn.offsetWidth;              // trick restart animasi
-      btn.classList.add("clicked");
-    });
+  btn.addEventListener("click", () => {
+    btn.classList.remove("clicked");
+    void btn.offsetWidth;
+    btn.classList.add("clicked");
   });
+});
 </script>
 </body>
 </html>
