@@ -737,13 +737,10 @@ function signInWithGoogle(){
 
       // ✅ CEK DOMAIN
       if (!isAllowedGoogleEmail(user.email)) {
-        // tampilkan popup blocked + pesan khusus
         showUnsupportedDomainPopup(user.email);
-
-        // pastikan tidak lanjut menulis ke RTDB / redirect
         auth.signOut().catch(()=>{});
         setLoading(false,'google');
-        return; // ⛔ stop flow di sini
+        return;
       }
 
       // ✅ email domain diizinkan → lanjut flow normal
@@ -751,7 +748,11 @@ function signInWithGoogle(){
     })
     .catch(err => {
       console.error("❌ Login Google gagal:", err);
-      alert("Login Google gagal. Coba lagi.");
+      alert(
+        "Login Google gagal:\n"
+        + (err.code || "no-code") + "\n"
+        + (err.message || "Unknown error")
+      );
       setLoading(false,'google');
     });
 }
