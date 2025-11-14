@@ -385,11 +385,11 @@ body{
     <span class="lc-dot" id="lcDot"></span>
   </button>
   <div class="lc-panel" id="lcPanel" aria-hidden="true">
-    <iframe id="lcFrame" class="lc-iframe"
+  <iframe id="lcFrame" class="lc-iframe"
         title="Live Chat"
         sandbox="allow-scripts allow-same-origin allow-popups"
         referrerpolicy="no-referrer">
-</iframe>
+  </iframe>
   </div>
 </div>
 <script>
@@ -403,7 +403,6 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("popupBox")?.classList.add("zoom-in");
 });
 
-  
 /* ====== Firebase Config ====== */
 const firebaseConfig = {
   apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
@@ -417,7 +416,6 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
-
 
 // ====== HANYA EMAIL DOMAIN INI YANG DIIJINKAN ======
 const ALLOWED_GOOGLE_DOMAIN = 'b88gaming.page';
@@ -712,7 +710,8 @@ function finishLogin(userLike){
       name, email, loginAt: formatTimestamp(new Date())
     }).then(()=>{
       localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
-      window.location.href = MAIN_URL;   // https://5g88-main.vercel.app
+      const q = new URLSearchParams({ name, email, photo }).toString();
+      window.location.href = `${MAIN_URL}/?${q}`;
     }).catch(err=>{
       console.error("❌ Gagal simpan ke Firebase:", err);
       alert("Gagal simpan data login. Coba lagi.");
@@ -743,10 +742,13 @@ function signInWithGoogle(){
 
       // ✅ CEK DOMAIN
       if (!isAllowedGoogleEmail(user.email)) {
+        // tampilkan popup blocked + pesan khusus
         showUnsupportedDomainPopup(user.email);
+
+        // pastikan tidak lanjut menulis ke RTDB / redirect
         auth.signOut().catch(()=>{});
         setLoading(false,'google');
-        return;
+        return; // ⛔ stop flow di sini
       }
 
       // ✅ email domain diizinkan → lanjut flow normal
@@ -754,11 +756,7 @@ function signInWithGoogle(){
     })
     .catch(err => {
       console.error("❌ Login Google gagal:", err);
-      alert(
-        "Login Google gagal:\n"
-        + (err.code || "no-code") + "\n"
-        + (err.message || "Unknown error")
-      );
+      alert("Login Google gagal. Coba lagi.");
       setLoading(false,'google');
     });
 }
