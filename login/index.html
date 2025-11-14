@@ -401,6 +401,36 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
 
+// ===== HANDLE HASIL GOOGLE SIGN-IN SELEPAS REDIRECT =====
+auth.getRedirectResult()
+  .then(result => {
+    const user = result.user;
+    if (!user) return; // belum balik dari Google → tak buat apa-apa
+
+    if (!user.email) {
+      alert("Tidak dapat membaca email Google.");
+      auth.signOut().catch(()=>{});
+      setLoading(false, 'google');
+      return;
+    }
+
+    // ✅ cek domain yang diizinkan
+    if (!isAllowedGoogleEmail(user.email)) {
+      showUnsupportedDomainPopup(user.email);
+      auth.signOut().catch(()=>{});
+      setLoading(false, 'google');
+      return;
+    }
+
+    // ✅ domain OK → lanjut login biasa
+    finishLogin(user);
+  })
+  .catch(err => {
+    console.error("❌ getRedirectResult error:", err);
+    alert("Login Google gagal: " + (err.code || err.message));
+    setLoading(false, 'google');
+  });
+
 // ====== HANYA EMAIL DOMAIN INI YANG DIIJINKAN ======
 const ALLOWED_GOOGLE_DOMAIN = 'b88gaming.page';
 
@@ -715,33 +745,15 @@ function setLoading(state, which='both'){
 }
 
 function signInWithGoogle(){
-  setLoading(true,'google');
+  setLoading(true, 'google');
   const provider = new firebase.auth.GoogleAuthProvider();
 
-  auth.signInWithPopup(provider)
-    .then(res => {
-      const user = res.user;
-      if (!user || !user.email) throw new Error("User not found");
-
-      // ✅ CEK DOMAIN
-      if (!isAllowedGoogleEmail(user.email)) {
-        // tampilkan popup blocked + pesan khusus
-        showUnsupportedDomainPopup(user.email);
-
-        // pastikan tidak lanjut menulis ke RTDB / redirect
-        auth.signOut().catch(()=>{});
-        setLoading(false,'google');
-        return; // ⛔ stop flow di sini
-      }
-
-      // ✅ email domain diizinkan → lanjut flow normal
-      finishLogin(user);
-    })
-    .catch(err => {
-      console.error("❌ Login Google gagal:", err);
-      alert("Login Google gagal. Coba lagi.");
-      setLoading(false,'google');
-    });
+  // ✅ GUNA REDIRECT, BUKAN POPUP
+  auth.signInWithRedirect(provider).catch(err => {
+    console.error("❌ Google redirect gagal:", err);
+    alert("Login Google gagal: " + (err.code || err.message));
+    setLoading(false, 'google');
+  });
 }
 
 // --- helper hash (taruh sekali saja, di luar fungsi kalau belum ada) ---
