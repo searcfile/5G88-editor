@@ -1522,10 +1522,6 @@ function checkLogin() {
   return false;
 }
 
-  const returnTo = encodeURIComponent(location.href);
-  location.replace(`https://5g88-login.vercel.app/?redirect=${returnTo}`);
-  return false;
-}
 function initLivechatNotifListener(userIdParam) {
   const login = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
   if (!login?.email || !userIdParam) return;
