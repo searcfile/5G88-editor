@@ -1363,19 +1363,32 @@ function loadPage(url) {
   if (emptyState) emptyState.classList.add('hidden');
   const iframeLoader = document.getElementById("iframeLoader");
   const frame = document.getElementById("pageFrame");
-
   if (!frame) return;
 
+  // Tunjuk loader
   iframeLoader.style.display = "flex";
 
-  frame.onload = () => {
+  // Fungsi helper: pastikan hide hanya sekali
+  let loaderDone = false;
+  function hideLoader() {
+    if (loaderDone) return;
+    loaderDone = true;
     iframeLoader.style.display = "none";
-  };
+    frame.onload = null;
+  }
 
+  // 1) Bila iframe betul-betul siap → hide
+  frame.onload = hideLoader;
+
+  // 2) Fallback: maksimum tunggu 1.5s saja
+  setTimeout(hideLoader, 1500);  // boleh ubah jadi 1000 / 2000 ms ikut rasa
+
+  // Load URL
   frame.src = url;
   localStorage.setItem("activeTabUrl", url);
   closeSidebar();
 
+  // Update tab aktif
   document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.remove("active-tab");
   });
@@ -1383,10 +1396,8 @@ function loadPage(url) {
   const tabs = getTabs();
   const tabElements = document.querySelectorAll(".tab");
   tabs.forEach((tab, index) => {
-    if (tab.url === url) {
-      if (tabElements[index]) {
-        tabElements[index].classList.add("active-tab");
-      }
+    if (tab.url === url && tabElements[index]) {
+      tabElements[index].classList.add("active-tab");
     }
   });
 }
