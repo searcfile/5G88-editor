@@ -695,9 +695,12 @@ function addJackpot() {
 
   if (isNaN(jackpotAmount) || jackpotAmount < 0) {
     return;
- }
+  }
 
   const tbody = document.querySelector("#gameLog tbody");
+  if (!tbody) return;
+
+  // ---- 1. Buang jackpot lama kalau ada (macam dulu) ----
   let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   let jackpotRow = tbody.querySelector("tr.set-score-row.jackpot");
 
@@ -710,35 +713,65 @@ function addJackpot() {
       const index = Array.from(tbody.children).indexOf(jackpotRow);
       const prevRow = tbody.children[index - 1];
       const oldWin = parseFloat(prevRow.children[3].textContent);
-      const oldEnd = parseFloat(prevRow.children[5].textContent);
-      const newWin = oldWin - oldJackpotValue;
 
+      const newWin = oldWin - oldJackpotValue;
       prevRow.children[3].textContent = newWin.toFixed(2);
+
       const betCellPrev = prevRow.children[2];
       const betPrev = parseFloat(betCellPrev.dataset.bet || betCellPrev.textContent);
-      const beginMoney = parseFloat(prevRow.children[4].textContent);
-      const newEnd = beginMoney - betPrev + newWin;
-      prevRow.children[5].textContent = newEnd.toFixed(2);
+      const beginMoneyPrev = parseFloat(prevRow.children[4].textContent);
+      const newEndPrev = beginMoneyPrev - betPrev + newWin;
+      prevRow.children[5].textContent = newEndPrev.toFixed(2);
     }
 
     jackpotRow.remove();
   }
-  
+
   if (hiddenRow) {
     tbody.appendChild(hiddenRow);
     hiddenRow = null;
-  } 
+  }
 
+  // ---- 2. Cari pasangan 2 baris NORMAL (bukan Free game) ----
   rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+
+  // Kalau betul-betul tak cukup 2 baris log
   if (rows.length < 2) {
-    alert("Log belum cukup baris.");
+    showToast("Jackpot minimal perlukan 2 baris log.", "error");
     return;
   }
 
-  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
+  // Senarai index yang valid untuk jackpot:
+  // index i akan guna rows[i-1] (prev) & rows[i] (target)
+  const candidateIndices = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const prevRow = rows[i - 1];
+
+    const betCell = row.querySelector(".bet-cell");
+    const prevBetCell = prevRow.querySelector(".bet-cell");
+
+    const isFree = betCell && betCell.textContent.trim().toLowerCase() === "free game";
+    const isPrevFree = prevBetCell && prevBetCell.textContent.trim().toLowerCase() === "free game";
+
+    // Hanya ambil kalau DUA-DUA bukan free game
+    if (!isFree && !isPrevFree) {
+      candidateIndices.push(i);
+    }
+  }
+
+  // Kalau tak ada sepasang baris normal → tak boleh buat jackpot
+  if (candidateIndices.length === 0) {
+    showToast("Jackpot hanya boleh dibuat di luar Free game.\nSila pastikan ada sekurang-kurangnya 2 baris normal untuk jackpot.", "info");
+    return;
+  }
+
+  // Pilih salah satu index dari calon di atas
+  const randomIndex = candidateIndices[Math.floor(Math.random() * candidateIndices.length)];
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
+  // ---- 3. Update win & endMoney untuk prevRow (jackpot kena di sini) ----
   const oldWin = parseFloat(prevRow.children[3].textContent);
   const newWin = oldWin + jackpotAmount;
   prevRow.children[3].textContent = newWin.toFixed(2);
@@ -752,6 +785,7 @@ function addJackpot() {
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
 
+  // ---- 4. Sisipkan baris Jackpot di antara prevRow & targetRow ----
   const newJackpotRow = document.createElement("tr");
   newJackpotRow.classList.add("set-score-row", "jackpot");
   newJackpotRow.innerHTML = `
@@ -765,12 +799,13 @@ function addJackpot() {
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
+  // ---- 5. Trim maksimum 11 baris (1 setscore + 10 log) macam biasa ----
   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   const specialRows = tbody.querySelectorAll("tr.set-score-row");
 
   while (allRows.length + specialRows.length > 11) {
-    const lastRow = allRows.pop(); 
-    lastRow.remove();
+    const lastRow = allRows.pop();
+    if (lastRow) lastRow.remove();
   }
 
   const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
@@ -799,7 +834,7 @@ function addJackpot() {
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
 
-  // re-apply free game selepas struktur row berubah
+  // Re-apply Free game selepas struktur row berubah
   applyFreeGame();
 }
 
