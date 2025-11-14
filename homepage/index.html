@@ -430,7 +430,6 @@ a.tab-open .check-icon {
         <div id="notifButton" style="background: #111; border: 1px solid gold; border-radius: 50%; width: 26px; height: 26px; color: gold; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 6px rgba(255, 215, 0, 0.4); position: relative; font-size: 14px;">
           🔔
           <span id="notifDot" style="position: absolute; top: 2px; right: 2px; background: red; width: 10px; height: 10px; border-radius: 50%; display: none; border: 1px solid white;"></span>
-          <div id="notifTooltip" style="display: none; position: absolute;border: 1px solid #424242; top: 2%; left: calc(100% + 8px); transform: translateX(1%); background: #141414; color: gold; padding: 4px 8px; font-size: 11px; border-radius: 6px; white-space: nowrap; z-index: 10000;">Notice</div>
         </div>
 
         <div id="dateTime" class="date-time"></div>
@@ -931,13 +930,6 @@ if (notifButton) {
     const curEmail = (cur.email || "guest").toLowerCase();
     const seenKey = `seenNotif_${timestamp}_${curEmail}`;
     localStorage.setItem(seenKey, "1");
-  });
-
-  notifButton.addEventListener("mouseenter", () => {
-    if (notifTooltip) notifTooltip.style.display = "block";
-  });
-  notifButton.addEventListener("mouseleave", () => {
-    if (notifTooltip) notifTooltip.style.display = "none";
   });
 }
 
@@ -1802,6 +1794,7 @@ window.renderMobileUserBtn = function renderMobileUserBtn(){
     ['linkDownloadBtn','Link Download'],
     ['gameLogBtn','Game Log'],
     ['userName','Account'],
+    ['notifButton','Notice'],
   ];
   pairs.forEach(([id,label])=>{
     const el = document.getElementById(id);
