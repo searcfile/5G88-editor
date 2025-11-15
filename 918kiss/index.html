@@ -752,6 +752,12 @@ let rows = `
 });
 
   tbody.innerHTML = rows;
+      // ✅ kalau AUTO ON, random-kan jumlah Free game dulu
+  if (autoFreeGameOn) {
+    // contoh: 1 s/d MAX_FREE_GAME_ROWS (kalau mau boleh ubah ke 0..MAX)
+    const randomCount = Math.floor(Math.random() * MAX_FREE_GAME_ROWS) + 1;
+    document.getElementById('freeGameInput').value = randomCount;
+  }
     // ✅ apply Free Game selepas table siap
   applyFreeGame();
 }
