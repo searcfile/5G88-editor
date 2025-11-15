@@ -636,104 +636,93 @@ function generateLog() {
   const manualTimeInput = document.getElementById('manualTime').value;
 
   let logs = [];
-  const manualInput = document.getElementById("manualTime").value.trim();
+
+  // --- urus masa base ---
+  const manualInput = manualTimeInput.trim();
   let baseTime;
-if (manualInput) {
-  const parts = manualInput.includes("T")
-  ? manualInput.split("T")
-  : manualInput.split(" ");
 
-if (parts.length === 2) {
-  const [datePart, timePartRaw] = parts;
-  const [year, month, day] = datePart.split("-").map(Number);
-  const timePart = timePartRaw.trim();
-  const timeParts = timePart.split(":").map(Number);
-  const hour = timeParts[0] || 0;
-  const minute = timeParts[1] || 0;
-  const second = timeParts[2] || 0;
-  baseTime = new Date(year, month - 1, day, hour, minute, second);
-  } else {
-    baseTime = new Date();
-  }
+  if (manualInput) {
+    const parts = manualInput.includes("T")
+      ? manualInput.split("T")
+      : manualInput.split(" ");
+
+    if (parts.length === 2) {
+      const [datePart, timePartRaw] = parts;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const timePart = timePartRaw.trim();
+      const timeParts = timePart.split(":").map(Number);
+      const hour = timeParts[0] || 0;
+      const minute = timeParts[1] || 0;
+      const second = timeParts[2] || 0;
+      baseTime = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      baseTime = new Date();
+    }
   } else if (globalTime) {
-  const parts = globalTime.split(" ");
-if (parts.length === 2) {
-  const [datePart, timePart] = parts;
-  const [year, month, day] = datePart.split("-").map(Number);
-  const [hour, minute, second] = timePart.split(":").map(Number);
-    baseTime = new Date(year, month - 1, day, hour, minute, second);
+    const parts = globalTime.split(" ");
+    if (parts.length === 2) {
+      const [datePart, timePart] = parts;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute, second] = timePart.split(":").map(Number);
+      baseTime = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      baseTime = new Date();
+    }
   } else {
     baseTime = new Date();
   }
-  } else {
-  baseTime = new Date();
-  }
 
+  // mundurkan masa supaya row pertama tak sama dengan manualTime
   baseTime.setSeconds(baseTime.getSeconds() - (11 * 4));
+
   const manualScore = parseFloat(document.getElementById("manualScore").value) || 0;
   let balance = rnd(500, 1000) + manualScore;
 
   let totalSeconds = 0;
   for (let i = 0; i < 10; i++) {
-  const gap = Math.floor(Math.random() * 3) + 3;
-  totalSeconds += gap;
-  const logTime = new Date();
-  logTime.setSeconds(logTime.getSeconds() - totalSeconds);
+    const gap = Math.floor(Math.random() * 3) + 3;
+    totalSeconds += gap;
 
-  const beginMoney = balance;
-  const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
-  const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
-  const formattedTime = formatDateTimeLocal(baseTime);
+    const beginMoney = balance;
+    const win = Math.random() > 0.7 ? rnd(0, selectedPecahan) : 0.00;
+    const endMoney = parseFloat((beginMoney - bet + win).toFixed(2));
+    const formattedTime = formatDateTimeLocal(baseTime);
 
-  logs.unshift({ 
-  game,
-  tableID: `<span class="table-id-highlight">0</span>`,
-  bet: bet.toFixed(2),
-  win: win.toFixed(2),
-  beginMoney: beginMoney.toFixed(2),
-  endMoney: endMoney.toFixed(2),
-  dateTime: formattedTime
-  });
-  balance = endMoney;
-  baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
+    logs.unshift({
+      game,
+      tableID: `<span class="table-id-highlight">0</span>`,
+      bet: bet.toFixed(2),
+      win: win.toFixed(2),
+      beginMoney: beginMoney.toFixed(2),
+      endMoney: endMoney.toFixed(2),
+      dateTime: formattedTime
+    });
+
+    balance = endMoney;
+    baseTime.setSeconds(baseTime.getSeconds() + Math.floor(Math.random() * 3 + 3));
   }
-    
-setTimeout(() => {
-  const freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
-  const savedData = {
-    game,
-    bet,
-    pecahan: selectedPecahan,
-    manualTime: manualTimeInput,
-    manualScore: manualScore,
-    freeGame: freeGameCount,
-    logs: tbody.innerHTML
-  };
-  localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
-}, 50);
- 
- const setScoreMoney = logs[0].endMoney;
 
+  // ========== SET SCORE (baris atas) ==========
+  const setScoreMoney = logs[0].endMoney;
+  let setScoreTime = new Date(logs[0].dateTime);
+  const extraSeconds = [2, 3, 4, 6, 8, 9, 10, 13, 15, 18, 20, 21, 23, 24];
+  const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
+  setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
 
-let setScoreTime = new Date(logs[0].dateTime);
-const extraSeconds = [2, 3, 4, 6, 8, 9, 10, 13, 15, 18, 20, 21, 23, 24];
-const randomOffset = extraSeconds[Math.floor(Math.random() * extraSeconds.length)];
-setScoreTime.setSeconds(setScoreTime.getSeconds() + randomOffset);
-
-let rows = `
-  <tr class="set-score-row">
-    <td>-</td>
-    <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td class="negatif">-</td>
-    <td class="negatif">-</td>
-    <td>${(Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
-    <td>0.00</td>
-    <td>${formatDateTimeLocal(setScoreTime)}</td>
-  </tr>
-`;
+  let rows = `
+    <tr class="set-score-row">
+      <td>-</td>
+      <td class="setscore">Set score：${(-Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+      <td class="negatif">-</td>
+      <td class="negatif">-</td>
+      <td>${(Math.abs(parseFloat(setScoreMoney))).toFixed(2)}</td>
+      <td>0.00</td>
+      <td>${formatDateTimeLocal(setScoreTime)}</td>
+    </tr>
+  `;
 
   logs.forEach(log => {
-  rows += `
+    rows += `
       <tr class="log-row">
         <td>${log.game}</td>
         <td>${log.tableID}</td>
@@ -744,17 +733,41 @@ let rows = `
         <td>${log.dateTime}</td>
       </tr>
     `;
-});
+  });
 
+  // masukkan semua row ke table
   tbody.innerHTML = rows;
-      // ✅ kalau AUTO ON, random-kan jumlah Free game dulu
+
+  // ==========================
+  //  FREE GAME + AUTO LOGIC
+  // ==========================
+  const fgInputEl = document.getElementById('freeGameInput');
+
   if (autoFreeGameOn) {
-    // contoh: 1 s/d MAX_FREE_GAME_ROWS (kalau mau boleh ubah ke 0..MAX)
+    // AUTO ON → random 1..MAX_FREE_GAME_ROWS
     const randomCount = Math.floor(Math.random() * MAX_FREE_GAME_ROWS) + 1;
-    document.getElementById('freeGameInput').value = randomCount;
+    fgInputEl.value = randomCount;
   }
-    // ✅ apply Free Game selepas table siap
+
+  // apply ke table (tukar bet jadi "Free game" di baris bawah)
   applyFreeGame();
+
+  // ==========================
+  //  SAVE KE LOCALSTORAGE
+  // ==========================
+  setTimeout(() => {
+    const freeGameCount = parseInt((document.getElementById('freeGameInput').value || '0'), 10) || 0;
+    const savedData = {
+      game,
+      bet,
+      pecahan: selectedPecahan,
+      manualTime: manualTimeInput,
+      manualScore: manualScore,
+      freeGame: freeGameCount,
+      logs: tbody.innerHTML
+    };
+    localStorage.setItem("gameLogData918kiss", JSON.stringify(savedData));
+  }, 50);
 }
 function addJackpot() {
   const currentGame = document.getElementById("gameSelect").value;
@@ -977,6 +990,7 @@ function resetLog() {
   if (fgInput) fgInput.value = "0";
 
   // reset AUTO
+  localStorage.removeItem('autoFreeGameOn918kiss');
   autoFreeGameOn = false;
   updateAutoFreeGameButtonUI();
 }
