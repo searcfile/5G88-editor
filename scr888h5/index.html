@@ -296,11 +296,15 @@ button.clicked::after{
 <label for="manualTime" style="color: white;">Set Time:</label>
 <input type="text" id="manualTime" placeholder="Add Date & Time" style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" />
 
-<!-- ✅ Free Game baru -->
-<label for="freeGameInput" style="color:white; margin-left:10px;">Set rows:</label>
+<label for="freeGameInput" style="color:white; margin-left:10px;">Set Rows:</label>
 <input type="number" id="freeGameInput" min="0" max="10" value="0"
        style="width:70px; height:32px; font-size:16px; padding:0 6px; color:white;">
-<button id="setFreeGameBtn" style="height: 38px;">Set Free Game</button>
+<button id="setFreeGameBtn" style="height: 38px;">Set Free game</button>
+<!-- 🔥 tombol AUTO -->
+<button id="autoFreeGameBtn"
+        style="height:38px; padding:0 10px; font-size:14px; background:#555; color:#fff; border-color:#555;">
+  AUTO OFF
+</button>
 </div>
 
   <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
@@ -343,6 +347,7 @@ console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered
 let skipAutoLoad = false;
 let hiddenRow = null;
 const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
+let autoFreeGameOn = false;   // ✅ status AUTO (off default)
 const gameData = {
 "TripleTwister": 
 { bets: [1.00, 2.50, 5.00, 12.50, 25.00],pecahan: {1.00: [20.00, 40.00, 60.00, 80.00],2.50: [40.00, 60.00, 80.00, 100.00],5.00: [60.00, 80.00, 100.00, 120.00],12.50: [50.00, 100.00, 200.00, 500.00],25.00: [50.00, 100.00, 200.00, 500.00]}},
@@ -683,17 +688,35 @@ function applyFreeGame() {
   for (const row of fromBottom) {
     const betCell = row.querySelector('td.bet-cell');
     if (!betCell) continue;
+
     betCell.textContent = 'Free game';
     betCell.style.fontWeight = '700';
     betCell.style.color = '#dd4b39';
+
     marked++;
     if (marked >= count) break;
   }
 }
 
-// tombol Set Free Game
-document.getElementById('setFreeGameBtn').addEventListener('click', function(){
+// tombol SET Free Game
+document.getElementById('setFreeGameBtn').addEventListener('click', function () {
   applyFreeGame();
+});
+
+// tombol AUTO Free Game (DILUAR tombol SET)
+const autoBtn = document.getElementById('autoFreeGameBtn');
+autoBtn.addEventListener('click', () => {
+  autoFreeGameOn = !autoFreeGameOn;
+
+  if (autoFreeGameOn) {
+    autoBtn.textContent = 'AUTO ON';
+    autoBtn.style.background = '#1e7e34';
+    autoBtn.style.borderColor = '#1e7e34';
+  } else {
+    autoBtn.textContent = 'AUTO OFF';
+    autoBtn.style.background = '#555';
+    autoBtn.style.borderColor = '#555';
+  }
 });
   
  function generateLog() {
@@ -802,24 +825,30 @@ logs.forEach(log => {
 });
 
   tbody.innerHTML = rows;
+    // ✅ kalau AUTO ON, random-kan jumlah Free game dulu
+  if (autoFreeGameOn) {
+    // contoh: 1 s/d MAX_FREE_GAME_ROWS (kalau mau boleh ubah ke 0..MAX)
+    const randomCount = Math.floor(Math.random() * MAX_FREE_GAME_ROWS) + 1;
+    document.getElementById('freeGameInput').value = randomCount;
+  }
     // ✅ apply Free Game selepas table siap
   applyFreeGame();
 
   // ✅ Simpan ke localStorage setelah update tbody
   skipAutoLoad = true;
-setTimeout(() => {
-  const freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
-  const savedData = {
-    game,
-    bet,
-    pecahan: selectedPecahan,
-    manualTime: manualTimeInput,
-    manualScore: manualScore,
-    freeGame: freeGameCount,
-    logs: tbody.innerHTML
-  };
-  localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
-}, 50);
+  setTimeout(() => {
+    const freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
+    const savedData = {
+      game,
+      bet,
+      pecahan: selectedPecahan,
+      manualTime: manualTimeInput,
+      manualScore: manualScore,
+      freeGame: freeGameCount,
+      logs: tbody.innerHTML
+    };
+    localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
+  }, 50);
 }
 
 function addJackpot() {
