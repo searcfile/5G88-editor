@@ -291,9 +291,17 @@ button.clicked::after{
   </select>
   <label for="betSelect" style="color: white;">Bet:</label><select id="betSelect" style="height: 38px; font-size: 16px; color: white;"></select>
   <label for="pecahanSelect" style="color: white;">Pecahan:</label>
-  <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;"></select><button onclick="setNow()" style="height: 38px; padding: 0 12px; font-size: 16px;">Click Now</button>
-  <label for="manualTime" style="color: white;">Set Time:</label>
-  <input type="text" id="manualTime" placeholder="Add Date & Time" style="width: 240px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" /></div>
+  <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;"></select>
+  <button onclick="setNow()" style="height: 38px; padding: 0 12px; font-size: 16px;">Click Now</button>
+<label for="manualTime" style="color: white;">Set Time:</label>
+<input type="text" id="manualTime" placeholder="Add Date & Time" style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" />
+
+<!-- ✅ Free Game baru -->
+<label for="freeGameInput" style="color:white; margin-left:10px;">Set rows:</label>
+<input type="number" id="freeGameInput" min="0" max="10" value="0"
+       style="width:70px; height:32px; font-size:16px; padding:0 6px; color:white;">
+<button id="setFreeGameBtn" style="height: 38px;">Set Free Game</button>
+</div>
 
   <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
   <button onclick="generateLog()" style="height: 38px;">Change</button>
@@ -334,6 +342,7 @@ document.addEventListener("contextmenu", e => e.preventDefault());document.onkey
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let skipAutoLoad = false;
 let hiddenRow = null;
+const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
 const gameData = {
 "TripleTwister": 
 { bets: [1.00, 2.50, 5.00, 12.50, 25.00],pecahan: {1.00: [20.00, 40.00, 60.00, 80.00],2.50: [40.00, 60.00, 80.00, 100.00],5.00: [60.00, 80.00, 100.00, 120.00],12.50: [50.00, 100.00, 200.00, 500.00],25.00: [50.00, 100.00, 200.00, 500.00]}},
@@ -639,6 +648,54 @@ function deleteCents() {
     }
   });
 }
+//  FREE GAME HELPERS
+// =====================
+
+// reset semua tanda Free game balik ke bet asal
+function resetAllFreeGameMarks() {
+  const betCells = document.querySelectorAll('#gameLog tbody tr.log-row td.bet-cell');
+  betCells.forEach(cell => {
+    const originalBet = cell.dataset.bet;
+    if (originalBet !== undefined) {
+      cell.textContent = originalBet;
+    }
+    cell.style.fontWeight = '';
+    cell.style.color = '';
+  });
+}
+
+// apply free game berdasarkan input
+function applyFreeGame() {
+  const input = document.getElementById('freeGameInput');
+  if (!input) return;
+
+  let count = parseInt(input.value, 10);
+  if (isNaN(count) || count < 0) count = 0;
+  if (count > MAX_FREE_GAME_ROWS) count = MAX_FREE_GAME_ROWS;
+
+  resetAllFreeGameMarks();
+  if (count === 0) return;
+
+  const rows = Array.from(document.querySelectorAll('#gameLog tbody tr.log-row'));
+  const fromBottom = rows.slice().reverse();
+
+  let marked = 0;
+  for (const row of fromBottom) {
+    const betCell = row.querySelector('td.bet-cell');
+    if (!betCell) continue;
+    betCell.textContent = 'Free game';
+    betCell.style.fontWeight = '700';
+    betCell.style.color = '#dd4b39';
+    marked++;
+    if (marked >= count) break;
+  }
+}
+
+// tombol Set Free Game
+document.getElementById('setFreeGameBtn').addEventListener('click', function(){
+  applyFreeGame();
+});
+  
  function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
@@ -730,35 +787,39 @@ if (manualInput) {
     </tr>
   `;
 
-  logs.forEach(log => {
-    rows += `
+logs.forEach(log => {
+  rows += `
       <tr class="log-row">
         <td>${log.game}</td>
         <td>${log.tableID}</td>
-        <td>${log.bet}</td>
+        <td class="bet-cell" data-bet="${log.bet}">${log.bet}</td>
         <td>${log.win}</td>
         <td>${log.beginMoney}</td>
         <td>${log.endMoney}</td>
         <td>${log.dateTime}</td>
       </tr>
     `;
-  });
+});
 
   tbody.innerHTML = rows;
+    // ✅ apply Free Game selepas table siap
+  applyFreeGame();
 
   // ✅ Simpan ke localStorage setelah update tbody
   skipAutoLoad = true;
-  setTimeout(() => {
-    const savedData = {
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore: manualScore,
-      logs: tbody.innerHTML
-    };
-    localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
-  }, 50);
+setTimeout(() => {
+  const freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
+  const savedData = {
+    game,
+    bet,
+    pecahan: selectedPecahan,
+    manualTime: manualTimeInput,
+    manualScore: manualScore,
+    freeGame: freeGameCount,
+    logs: tbody.innerHTML
+  };
+  localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
+}, 50);
 }
 
 function addJackpot() {
@@ -767,9 +828,12 @@ function addJackpot() {
 
   if (isNaN(jackpotAmount) || jackpotAmount < 0) {
     return;
- }
+  }
 
   const tbody = document.querySelector("#gameLog tbody");
+  if (!tbody) return;
+
+  // ---- 1. Buang jackpot lama kalau ada (macam dulu) ----
   let rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   let jackpotRow = tbody.querySelector("tr.set-score-row.jackpot");
 
@@ -782,51 +846,84 @@ function addJackpot() {
       const index = Array.from(tbody.children).indexOf(jackpotRow);
       const prevRow = tbody.children[index - 1];
       const oldWin = parseFloat(prevRow.children[3].textContent);
-      const oldEnd = parseFloat(prevRow.children[5].textContent);
-      const newWin = oldWin - oldJackpotValue;
 
+      const newWin = oldWin - oldJackpotValue;
       prevRow.children[3].textContent = newWin.toFixed(2);
-      const bet = parseFloat(prevRow.children[2].textContent);
-      const beginMoney = parseFloat(prevRow.children[4].textContent);
-      const newEnd = beginMoney - bet + newWin;
-      prevRow.children[5].textContent = newEnd.toFixed(2);
+
+      const betCellPrev = prevRow.children[2];
+      const betPrev = parseFloat(betCellPrev.dataset.bet || betCellPrev.textContent);
+      const beginMoneyPrev = parseFloat(prevRow.children[4].textContent);
+      const newEndPrev = beginMoneyPrev - betPrev + newWin;
+      prevRow.children[5].textContent = newEndPrev.toFixed(2);
     }
 
     jackpotRow.remove();
   }
-  
-  if (hiddenRow) {
-  tbody.appendChild(hiddenRow);
-  hiddenRow = null;
-} 
 
+  if (hiddenRow) {
+    tbody.appendChild(hiddenRow);
+    hiddenRow = null;
+  }
+
+  // ---- 2. Cari pasangan 2 baris NORMAL (bukan Free game) ----
   rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+
+  // Kalau betul-betul tak cukup 2 baris log
   if (rows.length < 2) {
-    alert("Log belum cukup baris.");
+    showToast("Jackpot minimal perlukan 2 baris log.", "error");
     return;
   }
 
-  const randomIndex = Math.floor(Math.random() * (rows.length - 1)) + 1;
+  // Senarai index yang valid untuk jackpot:
+  // index i akan guna rows[i-1] (prev) & rows[i] (target)
+  const candidateIndices = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const prevRow = rows[i - 1];
+
+    const betCell = row.querySelector(".bet-cell");
+    const prevBetCell = prevRow.querySelector(".bet-cell");
+
+    const isFree = betCell && betCell.textContent.trim().toLowerCase() === "free game";
+    const isPrevFree = prevBetCell && prevBetCell.textContent.trim().toLowerCase() === "free game";
+
+    // Hanya ambil kalau DUA-DUA bukan free game
+    if (!isFree && !isPrevFree) {
+      candidateIndices.push(i);
+    }
+  }
+
+  // Kalau tak ada sepasang baris normal → tak boleh buat jackpot
+  if (candidateIndices.length === 0) {
+    showToast("Jackpot hanya boleh dibuat di luar Free game.\nSila pastikan ada sekurang-kurangnya 2 baris normal untuk jackpot.", "info");
+    return;
+  }
+
+  // Pilih salah satu index dari calon di atas
+  const randomIndex = candidateIndices[Math.floor(Math.random() * candidateIndices.length)];
   const targetRow = rows[randomIndex];
   const prevRow = rows[randomIndex - 1];
 
+  // ---- 3. Update win & endMoney untuk prevRow (jackpot kena di sini) ----
   const oldWin = parseFloat(prevRow.children[3].textContent);
   const newWin = oldWin + jackpotAmount;
   prevRow.children[3].textContent = newWin.toFixed(2);
 
   const beginMoney = parseFloat(prevRow.children[4].textContent);
-  const bet = parseFloat(prevRow.children[2].textContent);
+  const betCell = prevRow.children[2];
+  const bet = parseFloat(betCell.dataset.bet || betCell.textContent);
   const newEnd = beginMoney - bet + newWin;
   prevRow.children[5].textContent = newEnd.toFixed(2);
 
   const dateTime = prevRow.children[6].textContent;
   const gameName = prevRow.children[0].textContent;
 
+  // ---- 4. Sisipkan baris Jackpot di antara prevRow & targetRow ----
   const newJackpotRow = document.createElement("tr");
   newJackpotRow.classList.add("set-score-row", "jackpot");
   newJackpotRow.innerHTML = `
     <td>${gameName}</td>
-    <td class="setscore"><span class="badge">JackPot: ${jackpotAmount.toFixed(2)}</span></td>
+    <td class="setscore">JackPot：${jackpotAmount.toFixed(2)}</td>
     <td class="negatif">-</td>
     <td class="negatif">-</td>
     <td class="negatif">-</td>
@@ -835,26 +932,28 @@ function addJackpot() {
   `;
   targetRow.insertAdjacentElement("beforebegin", newJackpotRow);
 
-   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-const specialRows = tbody.querySelectorAll("tr.set-score-row");
+  // ---- 5. Trim maksimum 11 baris (1 setscore + 10 log) macam biasa ----
+  const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  const specialRows = tbody.querySelectorAll("tr.set-score-row");
 
-while (allRows.length + specialRows.length > 11) {
-  const lastRow = allRows.pop(); 
-  lastRow.remove();
-}
+  while (allRows.length + specialRows.length > 11) {
+    const lastRow = allRows.pop();
+    if (lastRow) lastRow.remove();
+  }
 
-const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
-for (let i = updatedRows.length - 1; i > 0; i--) {
-  const current = updatedRows[i];
-  const prev = updatedRows[i - 1];
+  const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  for (let i = updatedRows.length - 1; i > 0; i--) {
+    const current = updatedRows[i];
+    const prev = updatedRows[i - 1];
 
-  const curEnd = parseFloat(current.children[5].textContent);
-  const prevBet = parseFloat(prev.children[2].textContent);
-  const prevWin = parseFloat(prev.children[3].textContent);
+    const curEnd = parseFloat(current.children[5].textContent);
+    const prevBetCell = prev.children[2];
+    const prevBet = parseFloat(prevBetCell.dataset.bet || prevBetCell.textContent);
+    const prevWin = parseFloat(prev.children[3].textContent);
 
-  prev.children[4].textContent = curEnd.toFixed(2);
-  prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
-}
+    prev.children[4].textContent = curEnd.toFixed(2);
+    prev.children[5].textContent = (curEnd - prevBet + prevWin).toFixed(2);
+  }
 
   if (updatedRows.length > 0) {
     const topEndMoney = parseFloat(updatedRows[0].children[5].textContent);
@@ -867,6 +966,9 @@ for (let i = updatedRows.length - 1; i > 0; i--) {
 
   jackpotInsertedMap[currentGame] = true;
   localStorage.setItem("jackpotInsertedMap", JSON.stringify(jackpotInsertedMap));
+
+  // Re-apply Free game selepas struktur row berubah
+  applyFreeGame();
 }
 function addManualSetScore() {
   const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
@@ -952,11 +1054,17 @@ window.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("gameLogDataScr888h5");
   if (!saved) return;
 
-  const data = JSON.parse(saved);
-  document.getElementById("gameSelect").value = data.game;
-  document.getElementById("manualTime").value = data.manualTime;
-  document.getElementById("manualScore").value = data.manualScore;
-  document.getElementById("gameSelect").dispatchEvent(new Event("change"));
+const data = JSON.parse(saved);
+document.getElementById("gameSelect").value = data.game;
+document.getElementById("manualTime").value = data.manualTime;
+document.getElementById("manualScore").value = data.manualScore;
+
+// kalau ada freeGame tersimpan, isi balik input
+if (typeof data.freeGame !== "undefined") {
+  document.getElementById("freeGameInput").value = data.freeGame;
+}
+
+document.getElementById("gameSelect").dispatchEvent(new Event("change"));
 
   setTimeout(() => {
     document.getElementById("betSelect").value = data.bet;
@@ -968,6 +1076,8 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 50);
 
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
+    // apply Free Game balik bila reload
+  applyFreeGame();
 });
 function showToast(message, type = "success") {
   const icons = {
