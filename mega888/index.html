@@ -281,10 +281,15 @@ button {padding: 5px 10px;font-size: 14px;background: gold;color: black;border: 
 <input type="text" id="manualTime" placeholder="Add Date & Time" style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" />
 
 <!-- ✅ Free Game baru -->
-<label for="freeGameInput" style="color:white; margin-left:10px;">Set rows:</label>
+<label for="freeGameInput" style="color:white; margin-left:10px;">Set Rows:</label>
 <input type="number" id="freeGameInput" min="0" max="10" value="0"
        style="width:70px; height:32px; font-size:16px; padding:0 6px; color:white;">
 <button id="setFreeGameBtn" style="height: 38px;">Set Free Game</button>
+<!-- 🔥 tombol AUTO -->
+<button id="autoFreeGameBtn"
+        style="height:38px; padding:0 10px; font-size:14px; background:#555; color:#fff; border-color:#555;">
+  AUTO OFF
+</button>
 </div>
 
   <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
@@ -326,6 +331,7 @@ document.addEventListener("contextmenu", e => e.preventDefault());document.onkey
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let hiddenRow = null;
 const MAX_FREE_GAME_ROWS = 10;
+let autoFreeGameOn = false;   // ✅ status AUTO (off default)
 const gameData = {
 "IrishLuck": 
 { bets: [1.20, 1.50, 1.80, 2.10, 2.40, 2.70, 3.00, 6.00, 7.50, 15.00],pecahan: {1.20: [50.00, 80.00, 100.00, 150.00],1.50: [80.00, 100.00, 130.00, 180.00],1.80: [50.00, 100.00, 200.00, 300.00],2.10: [50.00, 100.00, 200.00, 300.00],2.40: [50.00, 100.00, 200.00, 300.00],2.70: [50.00, 100.00, 200.00, 300.00],3.00: [50.00, 100.00, 200.00, 300.00],6.00: [50.00, 100.00, 200.00, 300.00],7.50: [80.00, 100.00, 200.00, 400.00],15.00: [100.00, 300.00, 500.00, 750.00]}},
@@ -764,7 +770,21 @@ document.getElementById("betSelect").addEventListener("change", function () {
     });
   });
 }
+// update rupa button AUTO ikut status autoFreeGameOn
+function updateAutoFreeGameButtonUI() {
+  const autoBtn = document.getElementById('autoFreeGameBtn');
+  if (!autoBtn) return;
 
+  if (autoFreeGameOn) {
+    autoBtn.textContent = 'AUTO ON';
+    autoBtn.style.background = '#1e7e34';   // hijau
+    autoBtn.style.borderColor = '#1e7e34';
+  } else {
+    autoBtn.textContent = 'AUTO OFF';
+    autoBtn.style.background = '#555';
+    autoBtn.style.borderColor = '#555';
+  }
+}
   //  FREE GAME HELPERS
 // =====================
 
@@ -812,7 +832,19 @@ function applyFreeGame() {
 document.getElementById('setFreeGameBtn').addEventListener('click', function(){
   applyFreeGame();
 });
-  
+
+// tombol AUTO Free Game
+const autoBtn = document.getElementById('autoFreeGameBtn');
+autoBtn.addEventListener('click', () => {
+  autoFreeGameOn = !autoFreeGameOn;   // toggle ON/OFF
+
+  // 🔐 simpan status ke localStorage
+  localStorage.setItem('autoFreeGameOnMega888', autoFreeGameOn ? '1' : '0');
+
+  // 🔄 update rupa button ikut status
+  updateAutoFreeGameButtonUI();
+});
+
   function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
@@ -911,6 +943,12 @@ logs.forEach(log => {
 });
 
   tbody.innerHTML = rows;
+    // ✅ kalau AUTO ON, random-kan jumlah Free game dulu
+  if (autoFreeGameOn) {
+    // contoh: 1 s/d MAX_FREE_GAME_ROWS (kalau mau boleh ubah ke 0..MAX)
+    const randomCount = Math.floor(Math.random() * MAX_FREE_GAME_ROWS) + 1;
+    document.getElementById('freeGameInput').value = randomCount;
+  }
     // ✅ apply Free Game selepas table siap
   applyFreeGame();
 }
@@ -1123,9 +1161,21 @@ function resetLog() {
   document.getElementById("manualScore").value = "0";
   document.getElementById("manualJackpot").value = "";
   document.querySelector("#gameLog tbody").innerHTML = "";
+    // 🔁 reset free game input
+  const fgInput = document.getElementById("freeGameInput");
+  if (fgInput) fgInput.value = "0";
+
+  // 🔁 reset AUTO Free Game
+  localStorage.removeItem('autoFreeGameOnMega888');
+  autoFreeGameOn = false;
+  updateAutoFreeGameButtonUI();
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  const savedAuto = localStorage.getItem('autoFreeGameOnMega888');
+  autoFreeGameOn = (savedAuto === '1');
+  updateAutoFreeGameButtonUI();
+
   const saved = localStorage.getItem("gameLogDataMega888");
   if (!saved) return;
 
