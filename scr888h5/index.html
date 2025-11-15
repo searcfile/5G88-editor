@@ -653,6 +653,21 @@ function deleteCents() {
     }
   });
 }
+// update rupa button AUTO ikut status autoFreeGameOn
+function updateAutoFreeGameButtonUI() {
+  const autoBtn = document.getElementById('autoFreeGameBtn');
+  if (!autoBtn) return;
+
+  if (autoFreeGameOn) {
+    autoBtn.textContent = 'AUTO ON';
+    autoBtn.style.background = '#1e7e34';   // hijau
+    autoBtn.style.borderColor = '#1e7e34';
+  } else {
+    autoBtn.textContent = 'AUTO OFF';
+    autoBtn.style.background = '#555';
+    autoBtn.style.borderColor = '#555';
+  }
+}
 //  FREE GAME HELPERS
 // =====================
 
@@ -703,20 +718,16 @@ document.getElementById('setFreeGameBtn').addEventListener('click', function () 
   applyFreeGame();
 });
 
-// tombol AUTO Free Game (DILUAR tombol SET)
+// tombol AUTO Free Game
 const autoBtn = document.getElementById('autoFreeGameBtn');
 autoBtn.addEventListener('click', () => {
-  autoFreeGameOn = !autoFreeGameOn;
+  autoFreeGameOn = !autoFreeGameOn;   // toggle ON/OFF
 
-  if (autoFreeGameOn) {
-    autoBtn.textContent = 'AUTO ON';
-    autoBtn.style.background = '#1e7e34';
-    autoBtn.style.borderColor = '#1e7e34';
-  } else {
-    autoBtn.textContent = 'AUTO OFF';
-    autoBtn.style.background = '#555';
-    autoBtn.style.borderColor = '#555';
-  }
+  // 🔐 simpan status ke localStorage
+  localStorage.setItem('autoFreeGameOnScr888h5', autoFreeGameOn ? '1' : '0');
+
+  // 🔄 update rupa button ikut status
+  updateAutoFreeGameButtonUI();
 });
   
  function generateLog() {
@@ -825,13 +836,14 @@ logs.forEach(log => {
 });
 
   tbody.innerHTML = rows;
-    // ✅ kalau AUTO ON, random-kan jumlah Free game dulu
+
+  // ✅ kalau AUTO ON, random-kan jumlah Free game dulu
   if (autoFreeGameOn) {
-    // contoh: 1 s/d MAX_FREE_GAME_ROWS (kalau mau boleh ubah ke 0..MAX)
     const randomCount = Math.floor(Math.random() * MAX_FREE_GAME_ROWS) + 1;
     document.getElementById('freeGameInput').value = randomCount;
   }
-    // ✅ apply Free Game selepas table siap
+
+  // ✅ apply Free Game selepas table siap
   applyFreeGame();
 
   // ✅ Simpan ke localStorage setelah update tbody
@@ -1076,9 +1088,22 @@ function resetLog() {
   document.getElementById("manualScore").value = "0";
   document.getElementById("manualJackpot").value = "";
   document.querySelector("#gameLog tbody").innerHTML = "";
+      // 🔁 reset free game input
+  const fgInput = document.getElementById("freeGameInput");
+  if (fgInput) fgInput.value = "0";
+
+  // 🔁 reset AUTO Free Game
+  localStorage.removeItem('autoFreeGameOnScr888h5');
+  autoFreeGameOn = false;
+  updateAutoFreeGameButtonUI();
 }
 
+
 window.addEventListener("DOMContentLoaded", () => {
+  const savedAuto = localStorage.getItem('autoFreeGameOnScr888h5');
+  autoFreeGameOn = (savedAuto === '1');
+  updateAutoFreeGameButtonUI();
+  
   if (skipAutoLoad) return;
   const saved = localStorage.getItem("gameLogDataScr888h5");
   if (!saved) return;
