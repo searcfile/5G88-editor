@@ -699,12 +699,7 @@ if (parts.length === 2) {
   }
     
 setTimeout(() => {
-  let freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
-  // jika AUTO Free Game ON → random antara 1..MAX
-  if (autoFreeGameOn) {
-    freeGameCount = Math.floor(Math.random() * MAX_FREE_GAME_ROWS) + 1;
-    document.getElementById('freeGameInput').value = freeGameCount;
-  }
+  const freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
   const savedData = {
     game,
     bet,
