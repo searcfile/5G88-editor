@@ -655,6 +655,8 @@ function resetAllFreeGameMarks() {
     cell.style.color = '';
   });
 }
+
+// kira semula BeginMoney & EndMoney lepas set Free game
 function recalcBalancesAfterFreeGame() {
   const tbody = document.querySelector("#gameLog tbody");
   if (!tbody) return;
@@ -696,18 +698,20 @@ function recalcBalancesAfterFreeGame() {
     row.children[5].textContent = end.toFixed(2);
   }
 
-  // Update Set score ikut EndMoney paling atas
+  // update Set score ikut EndMoney paling atas
   const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
   if (setScoreRowTop && rows.length > 0) {
     const topEndMoney = parseFloat(rows[0].children[5].textContent) || 0;
     const scoreCell = setScoreRowTop.children[1];
 
-    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-    // kalau bro mahu, BeginMoney & EndMoney di setscore boleh diisi begini:
-    setScoreRowTop.children[4].textContent = '-';  // BeginMoney
-    setScoreRowTop.children[5].textContent = '-';  // EndMoney
+    scoreCell.innerHTML = `<span class="badge">Set Score: ${(-Math.abs(topEndMoney)).toFixed(2)}</span>`;
+
+    // kalau mahu, boleh juga isi BeginMoney & EndMoney di baris setscore:
+    // setScoreRowTop.children[4].textContent = Math.abs(topEndMoney).toFixed(2);
+    // setScoreRowTop.children[5].textContent = "0.00";
   }
 }
+
 // apply free game berdasarkan input
 function applyFreeGame() {
   const input = document.getElementById('freeGameInput');
@@ -719,6 +723,10 @@ function applyFreeGame() {
 
   // pulihkan semua dulu
   resetAllFreeGameMarks();
+  if (count === 0) {
+    recalcBalancesAfterFreeGame(); // tetap recalc supaya rapi
+    return;
+  }
 
   const rows = Array.from(document.querySelectorAll('#gameLog tbody tr.log-row'));
   const fromBottom = rows.slice().reverse(); // mula dari bawah
