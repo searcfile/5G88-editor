@@ -792,69 +792,15 @@ function updateAutoFreeGameButtonUI() {
 function resetAllFreeGameMarks() {
   const betCells = document.querySelectorAll('#gameLog tbody tr.log-row td.bet-cell');
   betCells.forEach(cell => {
-    const originalBet = cell.dataset.baseBet || cell.dataset.bet;
+    const originalBet = cell.dataset.bet;
     if (originalBet !== undefined) {
-      cell.textContent = originalBet;   // tulisan balik ke angka asal
-      cell.dataset.bet = originalBet;   // nilai bet untuk kira-kira pun balik asal
+      cell.textContent = originalBet;
     }
     cell.style.fontWeight = '';
     cell.style.color = '';
   });
 }
-// 👉 TAMBAHKAN FUNGSI BARU INI
-function recalcBalancesAfterFreeGame() {
-  const tbody = document.querySelector("#gameLog tbody");
-  if (!tbody) return;
 
-  const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-  if (!rows.length) return;
-
-  // jalan dari bawah (row paling bawah) ke atas (row paling atas)
-  for (let i = rows.length - 1; i >= 0; i--) {
-    const row = rows[i];
-
-    const win = parseFloat(row.children[3].textContent) || 0;
-    const betCell = row.querySelector(".bet-cell");
-
-    let bet = 0;
-    if (betCell) {
-      // kalau tulisan "Free game" → bet = 0
-      if (betCell.textContent.trim().toLowerCase() === "free game") {
-        bet = 0;
-      } else {
-        bet = parseFloat(betCell.dataset.bet || betCell.textContent) || 0;
-      }
-    }
-
-    let begin;
-    if (i === rows.length - 1) {
-      // row paling bawah: BeginMoney pakai nilai sedia ada
-      begin = parseFloat(row.children[4].textContent) || 0;
-    } else {
-      // row atas: BeginMoney = EndMoney row di bawahnya
-      const below = rows[i + 1];
-      begin = parseFloat(below.children[5].textContent) || 0;
-      row.children[4].textContent = begin.toFixed(2);
-    }
-
-    // Formula umum:
-    // - normal     : End = Begin - bet + win
-    // - Free game  : bet = 0 → End = Begin + win
-    const end = begin - bet + win;
-    row.children[5].textContent = end.toFixed(2);
-  }
-
-  // Update Set score ikut EndMoney paling atas
-  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-  if (setScoreRowTop && rows.length > 0) {
-    const topEndMoney = parseFloat(rows[0].children[5].textContent) || 0;
-    const scoreCell = setScoreRowTop.children[1];
-
-    scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-    setScoreRowTop.children[4].textContent = Math.abs(topEndMoney).toFixed(2);
-    setScoreRowTop.children[5].textContent = "0.00";
-  }
-}
 // apply free game berdasarkan input
 function applyFreeGame() {
   const input = document.getElementById('freeGameInput');
@@ -864,32 +810,22 @@ function applyFreeGame() {
   if (isNaN(count) || count < 0) count = 0;
   if (count > MAX_FREE_GAME_ROWS) count = MAX_FREE_GAME_ROWS;
 
-  // Pulihkan dulu semua bet ke asal
   resetAllFreeGameMarks();
+  if (count === 0) return;
 
   const rows = Array.from(document.querySelectorAll('#gameLog tbody tr.log-row'));
-  const fromBottom = rows.slice().reverse(); // mula dari baris paling bawah
+  const fromBottom = rows.slice().reverse();
 
   let marked = 0;
   for (const row of fromBottom) {
-    if (marked >= count) break;
-
     const betCell = row.querySelector('td.bet-cell');
     if (!betCell) continue;
-
-    // UI Free game
     betCell.textContent = 'Free game';
     betCell.style.fontWeight = '700';
     betCell.style.color = '#dd4b39';
-
-    // nilai bet untuk kira-kira = 0
-    betCell.dataset.bet = '0';
-
     marked++;
+    if (marked >= count) break;
   }
-
-  // Selepas tanda Free game → hitung ulang BeginMoney & EndMoney
-  recalcBalancesAfterFreeGame();
 }
 
 // tombol Set Free Game
@@ -997,7 +933,7 @@ logs.forEach(log => {
       <tr class="log-row">
         <td>${log.game}</td>
         <td>${log.tableID}</td>
-        <td class="bet-cell" data-base-bet="${log.bet}" data-bet="${log.bet}">${log.bet}</td>
+        <td class="bet-cell" data-bet="${log.bet}">${log.bet}</td>
         <td>${log.win}</td>
         <td>${log.beginMoney}</td>
         <td>${log.endMoney}</td>
