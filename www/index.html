@@ -819,7 +819,10 @@ function recalcBalancesAfterFreeGame() {
     const scoreCell = setScoreRowTop.children[1];
 
     scoreCell.textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-}
+    // kalau bro mahu, BeginMoney & EndMoney di setscore boleh diisi begini:
+    setScoreRowTop.children[4].textContent = '-';  // BeginMoney
+    setScoreRowTop.children[5].textContent = '-';  // EndMoney
+  }
 // apply free game berdasarkan input
 function applyFreeGame() {
   const input = document.getElementById('freeGameInput');
