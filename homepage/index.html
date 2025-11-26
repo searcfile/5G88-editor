@@ -278,6 +278,9 @@ a.tab-open .check-icon {
     <a href="#" onclick="addTab('RHB BANK', 'https://searcfile.github.io/5g88-php/rhb/')">
       <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> RHB BANK
     </a>
+    <a href="#" onclick="addTab('ITEM', 'https://searcfile.github.io/5g88-php/item918kiss/')">
+      <img src="https://i.imgur.com/WDjH3BZ.png" alt="icon" class="menu-img"> ITEM 
+    </a>
   </div>
 
 <div class="header">
@@ -418,6 +421,16 @@ a.tab-open .check-icon {
     </a>
   </div>
 </div>
+        <!-- LinkDownload -->
+    <button id="ItemBtn" class="live-chat-button"
+            onclick="addTab('ITEM','https://searcfile.github.io/5g88-php/item918kiss/')"
+            aria-label="Item" title="Item">
+      <svg width="1.2rem" height="1.2rem" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 1px;">
+        <path d="M11.5 23l-8.5-4.535v-3.953l5.4 3.122 3.1-3.406v8.772zm1-.001v-8.806l3.162 3.343 5.338-2.958v3.887l-8.5 4.534zm-10.339-10.125l-2.161-1.244 3-3.302-3-2.823 8.718-4.505 3.215 2.385 3.325-2.385 8.742 4.561-2.995 2.771 2.995 3.443-2.242 1.241v-.001l-5.903 3.27-3.348-3.541 7.416-3.962-7.922-4.372-7.923 4.372 7.422 3.937v.024l-3.297 3.622-5.203-3.008-.16-.092-.679-.393v.002z"/>
+      </svg>
+      <span class="btn-label">Item</span>
+    </button>
+    
   </div>
 
   <img src="https://i.imgur.com/voSG3KC.gif" class="floating-logo" alt="Logo 5G88" />
@@ -1084,7 +1097,7 @@ function addTab(label, url) {
     existingTabs.push({ label, url });
     saveTabs(existingTabs);
   }
-  
+  const ItemBtn = document.getElementById("ItemBtn");
   const linkBtn = document.getElementById("linkDownloadBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
@@ -1135,6 +1148,13 @@ if (gameLinksBtnEl) {
       linkBtn.classList.add("active-linkdownload");
     } else {
       linkBtn.classList.remove("active-linkdownload");
+    }
+  }
+    if (ItemBtn) {
+    if (label === "ITEM") {
+      ItemBtn.classList.add("active-ItemBtn");
+    } else {
+      ItemBtn.classList.remove("active-ItemBtn");
     }
   }
 
@@ -1202,6 +1222,7 @@ function closeTab(label) {
   const linkBtn = document.getElementById("linkDownloadBtn");
   const bankResitBtnEl = document.getElementById("bankResitBtn");
   const gameLinksBtnEl = document.getElementById("gameLinksBtn");
+  const ItemBtn = document.getElementById("ItemBtn");
 
   if (tabs.length > 0) {
     const lastTab = tabs[tabs.length - 1];
@@ -1217,6 +1238,7 @@ function closeTab(label) {
     bankResitBtnEl?.classList.toggle("active-gamelog", bankResitLabels.includes(lastTab.label));
     liveBtn?.classList.toggle("active-livechat", lastTab.label === "LIVE CHAT");
     linkBtn?.classList.toggle("active-linkdownload", lastTab.label === "LINK DOWNLOAD");
+    ItemBtn?.classList.toggle("active-ItemBtn", lastTab.label === "ITEM");
   } else {
     // Tidak ada tab tersisa → matikan semua status aktif
     pageFrame.src = "";
@@ -1224,6 +1246,7 @@ function closeTab(label) {
     bankResitBtnEl?.classList.remove("active-gamelog");
     liveBtn?.classList.remove("active-livechat");
     linkBtn?.classList.remove("active-linkdownload");
+    ItemBtn?.classList.remove("active-ItemBtn");
     gameLinksBtnEl?.classList.remove("active-gamelog");
   }
 }
@@ -1270,12 +1293,16 @@ function renderTabs() {
       const linkBtn = document.getElementById("linkDownloadBtn");
       const bankResitBtnEl = document.getElementById("bankResitBtn");
       const gameLinksBtnEl = document.getElementById("gameLinksBtn");
+      const ItemBtn = document.getElementById("ItemBtn");
       
       if (liveBtn)
         liveBtn.classList.toggle("active-livechat", tab.label === "LIVE CHAT");
 
       if (linkBtn)
         linkBtn.classList.toggle("active-linkdownload", tab.label === "LINK DOWNLOAD");
+      
+      if (ItemBtn)
+        linkBtn.classList.toggle("active-ItemBtn", tab.label === "ITEM");
 
       if (gameLogBtn) {
       const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
@@ -1469,7 +1496,9 @@ window.addEventListener("load", () => {
   const gameLogBtn = document.getElementById("gameLogBtn");
   const bankResitBtnEl = document.getElementById("bankResitBtn");
   const gameLinksBtnEl = document.getElementById("gameLinksBtn");
+  const ItemBtn = document.getElementById("ItemBtn");
 
+  if (ItemBtn) linkBtn.classList.remove("active-ItemBtn");
   if (liveBtn) liveBtn.classList.remove("active-livechat");
   if (linkBtn) linkBtn.classList.remove("active-linkdownload");
   if (gameLogBtn) gameLogBtn.classList.remove("active-gamelog");
@@ -1489,6 +1518,9 @@ window.addEventListener("load", () => {
 
     if (match.label === "LINK DOWNLOAD") {
       linkBtn.classList.add("active-linkdownload");
+    }
+    if (match.label === "ITEM") {
+      ItemBtn.classList.add("active-ItemBtn");
     }
     const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK"];
     if (bankResitBtnEl && match && bankResitLabels.includes(match.label)) {
