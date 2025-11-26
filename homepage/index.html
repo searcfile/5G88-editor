@@ -1097,7 +1097,7 @@ function addTab(label, url) {
     existingTabs.push({ label, url });
     saveTabs(existingTabs);
   }
-  const ItemBtn = document.getElementById("ItemBtn");
+  const itemBtn = document.getElementById("itemBtn");
   const linkBtn = document.getElementById("linkDownloadBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const liveDot = document.getElementById("livechatDot");
@@ -1150,11 +1150,11 @@ if (gameLinksBtnEl) {
       linkBtn.classList.remove("active-linkdownload");
     }
   }
-    if (ItemBtn) {
-    if (label === "ITEM") {
-      ItemBtn.classList.add("active-ItemBtn");
+    if (itemBtn) {
+    if (label === "ITEM COLLECTION") {
+      itemBtn.classList.add("active-itemBtn");
     } else {
-      ItemBtn.classList.remove("active-ItemBtn");
+      itemBtn.classList.remove("active-itemBtn");
     }
   }
 
@@ -1222,7 +1222,7 @@ function closeTab(label) {
   const linkBtn = document.getElementById("linkDownloadBtn");
   const bankResitBtnEl = document.getElementById("bankResitBtn");
   const gameLinksBtnEl = document.getElementById("gameLinksBtn");
-  const ItemBtn = document.getElementById("ItemBtn");
+  const itemBtn = document.getElementById("itemBtn");
 
   if (tabs.length > 0) {
     const lastTab = tabs[tabs.length - 1];
@@ -1238,7 +1238,7 @@ function closeTab(label) {
     bankResitBtnEl?.classList.toggle("active-gamelog", bankResitLabels.includes(lastTab.label));
     liveBtn?.classList.toggle("active-livechat", lastTab.label === "LIVE CHAT");
     linkBtn?.classList.toggle("active-linkdownload", lastTab.label === "LINK DOWNLOAD");
-    ItemBtn?.classList.toggle("active-ItemBtn", lastTab.label === "ITEM");
+    itemBtn?.classList.toggle("active-itemBtn", lastTab.label === "ITEM COLLECTION");
   } else {
     // Tidak ada tab tersisa → matikan semua status aktif
     pageFrame.src = "";
@@ -1246,7 +1246,7 @@ function closeTab(label) {
     bankResitBtnEl?.classList.remove("active-gamelog");
     liveBtn?.classList.remove("active-livechat");
     linkBtn?.classList.remove("active-linkdownload");
-    ItemBtn?.classList.remove("active-ItemBtn");
+    itemBtn?.classList.remove("active-itemBtn");
     gameLinksBtnEl?.classList.remove("active-gamelog");
   }
 }
@@ -1293,7 +1293,7 @@ function renderTabs() {
       const linkBtn = document.getElementById("linkDownloadBtn");
       const bankResitBtnEl = document.getElementById("bankResitBtn");
       const gameLinksBtnEl = document.getElementById("gameLinksBtn");
-      const ItemBtn = document.getElementById("ItemBtn");
+      const itemBtn = document.getElementById("itemBtn");
       
       if (liveBtn)
         liveBtn.classList.toggle("active-livechat", tab.label === "LIVE CHAT");
@@ -1301,8 +1301,8 @@ function renderTabs() {
       if (linkBtn)
         linkBtn.classList.toggle("active-linkdownload", tab.label === "LINK DOWNLOAD");
       
-      if (ItemBtn)
-        linkBtn.classList.toggle("active-ItemBtn", tab.label === "ITEM");
+      if (itemBtn)
+        itemBtn.classList.toggle("active-ItemBtn", tab.label === "ITEM COLLECTION");
 
       if (gameLogBtn) {
       const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
@@ -1496,9 +1496,9 @@ window.addEventListener("load", () => {
   const gameLogBtn = document.getElementById("gameLogBtn");
   const bankResitBtnEl = document.getElementById("bankResitBtn");
   const gameLinksBtnEl = document.getElementById("gameLinksBtn");
-  const ItemBtn = document.getElementById("ItemBtn");
+  const itemBtn = document.getElementById("itemBtn");
 
-  if (ItemBtn) linkBtn.classList.remove("active-ItemBtn");
+  if (itemBtn) itemBtn.classList.remove("active-itemBtn");
   if (liveBtn) liveBtn.classList.remove("active-livechat");
   if (linkBtn) linkBtn.classList.remove("active-linkdownload");
   if (gameLogBtn) gameLogBtn.classList.remove("active-gamelog");
@@ -1519,8 +1519,8 @@ window.addEventListener("load", () => {
     if (match.label === "LINK DOWNLOAD") {
       linkBtn.classList.add("active-linkdownload");
     }
-    if (match.label === "ITEM") {
-      ItemBtn.classList.add("active-ItemBtn");
+    if (match.label === "ITEM COLLECTION") {
+      itemBtn.classList.add("active-itemBtn");
     }
     const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK"];
     if (bankResitBtnEl && match && bankResitLabels.includes(match.label)) {
@@ -1838,6 +1838,7 @@ window.renderMobileUserBtn = function renderMobileUserBtn(){
     ['gameLogBtn','Game Log'],
     ['userName','Account'],
     ['notifButton','Notice'],
+    ['itemBtn','Item ColLection'],
   ];
   pairs.forEach(([id,label])=>{
     const el = document.getElementById(id);
