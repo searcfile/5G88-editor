@@ -35,11 +35,12 @@
     min-height:100vh;
   }
 
-  .container{
+.container{
     max-width:980px;
-    margin:0 auto;
-    padding:22px 16px 40px;
-  }
+    /* top 24px, right 0, bottom 40px, left 32px */
+    margin:24px 0 40px 32px;
+    padding:0 16px 0 0;
+}
 
   header{
     display:flex;
@@ -290,6 +291,40 @@
   .toast span.icon{
     font-size:16px;
   }
+  /* === Scroll max 12 baris untuk tbody === */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:4px;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+/* jadikan thead & baris tbody table-block supaya lebar kolom tetap sama */
+thead, tbody tr{
+  display:table;
+  width:100%;
+  table-layout:fixed;
+}
+
+/* 🔽 di sini tinggi maksimum list (sesuaikan kalau mau) */
+tbody{
+  display:block;
+  max-height:480px;   /* kira-kira 11–13 baris, boleh ubah 450 / 500 */
+  overflow-y:auto;
+}
+
+/* scrollbar halus dalam tbody */
+tbody::-webkit-scrollbar{
+  width:6px;
+}
+tbody::-webkit-scrollbar-track{
+  background:transparent;
+}
+tbody::-webkit-scrollbar-thumb{
+  background:#1f2937;
+  border-radius:999px;
+}
 </style>
 </head>
 <body>
