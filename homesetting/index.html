@@ -192,6 +192,7 @@
 <!-- ====== FIREBASE ====== -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
 <script>
 // ==== Firebase blurphp ====
@@ -206,8 +207,13 @@ const blurphpConfig = {
 };
 
 const blurphpApp = firebase.initializeApp(blurphpConfig, "blurphp-settings");
-const db = blurphpApp.database();
+const db        = blurphpApp.database();
+const auth      = blurphpApp.auth();
 
+// login anon, supaya rules `auth != null` tak block
+auth.signInAnonymously().catch(err => {
+  console.error("Anon auth blurphp gagal:", err);
+});
 
 // ===== LIST TABBAR =====
 const TABS = [
@@ -235,70 +241,104 @@ const HEADER_BTNS = [
   "ITEM"
 ];
 
-
-// Render function (general)
+/**
+ * Build table sekali saja.
+ * - Selalu buat row (tak tunggu Firebase)
+ * - Simpan ref checkbox & pill di map
+ * - Listener Firebase hanya untuk sync status on/off
+ */
 function buildTable(list, tbody, dbNode){
+  if (!tbody) return;
+
   tbody.innerHTML = "";
-  db.ref(dbNode).on("value", snap=>{
-    const hidden = snap.val() || {};
 
-    tbody.innerHTML = "";
-    list.forEach(label=>{
-      const tr = document.createElement("tr");
+  // simpan ref UI per label
+  const rowMap = {}; // { label: { chk, pill } }
 
-      const td1 = document.createElement("td");
-      td1.textContent = label;
+  list.forEach(label => {
+    const tr = document.createElement("tr");
 
-      const td2 = document.createElement("td");
-      const wrap = document.createElement("div");
-      wrap.className = "switch-wrap";
+    const td1 = document.createElement("td");
+    td1.textContent = label;
 
-      const sw = document.createElement("label");
-      sw.className = "switch";
+    const td2 = document.createElement("td");
+    const wrap = document.createElement("div");
+    wrap.className = "switch-wrap";
 
-      const chk = document.createElement("input");
-      chk.type = "checkbox";
-      chk.checked = !!hidden[label];
+    const sw = document.createElement("label");
+    sw.className = "switch";
 
-      const slider = document.createElement("span");
-      slider.className = "slider";
+    const chk = document.createElement("input");
+    chk.type = "checkbox";
 
-      sw.appendChild(chk);
-      sw.appendChild(slider);
-      wrap.appendChild(sw);
-      td2.appendChild(wrap);
+    const slider = document.createElement("span");
+    slider.className = "slider";
 
-      const td3 = document.createElement("td");
-      const pill = document.createElement("span");
-      pill.className = chk.checked ? "status-pill hide-pill" : "status-pill show-pill";
-      pill.textContent = chk.checked ? "Hidden" : "Shown";
-      td3.appendChild(pill);
+    sw.appendChild(chk);
+    sw.appendChild(slider);
+    wrap.appendChild(sw);
+    td2.appendChild(wrap);
 
-      chk.addEventListener("change", async ()=>{
-        const hide = chk.checked;
+    const td3 = document.createElement("td");
+    const pill = document.createElement("span");
+    pill.className = "status-pill show-pill";
+    pill.textContent = "Shown";
+    td3.appendChild(pill);
 
-        if (hide) {
-          await db.ref(dbNode + "/" + label).set(true);
-        } else {
-          await db.ref(dbNode + "/" + label).remove();
-        }
+    // simpan ref
+    rowMap[label] = { chk, pill };
 
+    // klik switch → update Firebase
+    chk.addEventListener("change", () => {
+      const hide = chk.checked;
+      const ref  = db.ref(dbNode + "/" + label);
+
+      // kalau hide = true → set(true)
+      // kalau hide = false → remove saja (biar default di homepage = shown)
+      const op = hide ? ref.set(true) : ref.remove();
+
+      op.then(() => {
         pill.className = hide ? "status-pill hide-pill" : "status-pill show-pill";
         pill.textContent = hide ? "Hidden" : "Shown";
+      }).catch(err => {
+        console.error("Gagal simpan setting", dbNode, label, err);
+        // balikkan checkbox lagi kalau gagal
+        chk.checked = !hide;
+        alert("Gagal simpan ke server (cek Firebase rules / internet).");
       });
-
-      tr.appendChild(td1);
-      tr.appendChild(td2);
-      tr.appendChild(td3);
-      tbody.appendChild(tr);
     });
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tbody.appendChild(tr);
   });
+
+  // listener realtime → sync status (kalau ada perubahan dari tempat lain)
+  db.ref(dbNode).on("value",
+    snap => {
+      const hidden = snap.val() || {};
+      list.forEach(label => {
+        const ui = rowMap[label];
+        if (!ui) return;
+        const hide = !!hidden[label];
+        ui.chk.checked    = hide;
+        ui.pill.className = hide ? "status-pill hide-pill" : "status-pill show-pill";
+        ui.pill.textContent = hide ? "Hidden" : "Shown";
+      });
+    },
+    err => {
+      console.error("Gagal baca node", dbNode, err);
+    }
+  );
 }
 
-// Build all 3 tables
-buildTable(TABS, document.getElementById("tabBarBody"), "settings/tabVisibility");
-buildTable(SIDEBAR, document.getElementById("sideBarBody"), "settings/sidebarVisibility");
-buildTable(HEADER_BTNS, document.getElementById("headerBody"), "settings/headerVisibility");
+// Build all 3 tables setelah DOM siap
+document.addEventListener("DOMContentLoaded", () => {
+  buildTable(TABS,     document.getElementById("tabBarBody"), "settings/tabVisibility");
+  buildTable(SIDEBAR,  document.getElementById("sideBarBody"), "settings/sidebarVisibility");
+  buildTable(HEADER_BTNS, document.getElementById("headerBody"), "settings/headerVisibility");
+});
 </script>
 
 </body>
