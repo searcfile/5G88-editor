@@ -585,12 +585,6 @@ const blurphpApp = firebase.initializeApp({
   measurementId: "G-R494S2DPZ5"
 }, "blurphpApp");
 const blurphpDb = blurphpApp.database();
-let TAB_HIDE = {};
-blurphpDb.ref("settings/tabVisibility").on("value", (snap) => {
-  TAB_HIDE = snap.val() || {};
-  // kalau tab sudah dirender, langsung apply
-  applyTabVisibility();
-});
 const loginApp = firebase.initializeApp({
   apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
   authDomain: "logins-d615f.firebaseapp.com",
@@ -2157,44 +2151,6 @@ async function doChange(){
   submit.addEventListener('click', doChange);
   [inOld,inNew,inNew2].forEach(i=>i.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doChange(); }));
 })();
-// ==== GLOBAL UI VISIBILITY (dibaca dari blurphp) ====
-let sidebarVisibility = {};
-let headerVisibility  = {};
-
-// Sembunyikan / tampilkan item sidebar
-function applySidebarVisibility() {
-  // semua link di dalam #sidebar
-  const links = document.querySelectorAll('#sidebar a');
-  if (!links.length) return;
-
-  links.forEach(a => {
-    // text di sidebar: "LIVE CHAT", "MEGA888", "ITEM COLLECTION", dll
-    const label = a.textContent.trim().toUpperCase();
-    const hide  = !!sidebarVisibility[label];    // true = hidden
-
-    a.style.display = hide ? 'none' : '';        // kosong = pakai default CSS
-  });
-}
-
-// Sembunyikan / tampilkan header button
-function applyHeaderVisibility() {
-  // mapping nama di settings -> id tombol di header
-  const map = {
-    "LIVE CHAT"   : document.getElementById('liveChatBtn'),
-    "LINK DOWNLOAD": document.getElementById('linkDownloadBtn'),
-    "GAMELOG"     : document.getElementById('gameLogBtn'),
-    "BANK RECEIPT": document.getElementById('bankResitBtn'),
-    "LIST TYPE"   : document.getElementById('gameLinksBtn'),
-    "ITEM"        : document.getElementById('itemBtn')
-  };
-
-  Object.keys(map).forEach(label => {
-    const el   = map[label];
-    if (!el) return;
-    const hide = !!headerVisibility[label];   // true = hidden
-    el.style.display = hide ? 'none' : '';
-  });
-}
 </script>
 </body>
 </html>
