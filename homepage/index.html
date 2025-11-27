@@ -585,6 +585,12 @@ const blurphpApp = firebase.initializeApp({
   measurementId: "G-R494S2DPZ5"
 }, "blurphpApp");
 const blurphpDb = blurphpApp.database();
+let TAB_HIDE = {};
+blurphpDb.ref("settings/tabVisibility").on("value", (snap) => {
+  TAB_HIDE = snap.val() || {};
+  // kalau tab sudah dirender, langsung apply
+  applyTabVisibility();
+});
 const loginApp = firebase.initializeApp({
   apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
   authDomain: "logins-d615f.firebaseapp.com",
@@ -1096,6 +1102,12 @@ function updateEmptyState(){
 }
 
 function addTab(label, url) {
+    // ⛔ jika admin HIDE tab ini di Firebase, jangan buka
+  if (TAB_HIDE && TAB_HIDE[label]) {
+    console.log("Tab disembunyikan admin:", label);
+    return; // langsung stop
+  }
+
   const existingTabs = getTabs();
   const exists = existingTabs.some(tab => tab.label === label);
   if (!exists) {
@@ -1264,6 +1276,7 @@ function renderTabs() {
     const tabElement = document.createElement("div");
     tabElement.className = "tab";
     tabElement.dataset.index = index;
+    tabElement.dataset.label = tab.label;  // <-- TAMBAH INI
 
     // Style
     tabElement.style.background = "rgba(255, 255, 255, 0.04)";
@@ -1369,6 +1382,23 @@ function renderTabs() {
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
+  applyTabVisibility();   // <-- TAMBAH INI
+}
+// === APPLY VISIBILITY KE SEMUA TAB YANG SEDANG DIRENDER ===
+function applyTabVisibility() {
+  const tabsDom = document.querySelectorAll(".tab");
+  tabsDom.forEach(tabEl => {
+    const label = tabEl.dataset.label;
+    if (!label) return;
+
+    if (TAB_HIDE && TAB_HIDE[label]) {
+      // TRUE = HIDE
+      tabEl.style.display = "none";
+    } else {
+      // SHOW (flex, ikut gaya asal)
+      tabEl.style.display = "inline-flex";
+    }
+  });
 }
 function initSortableTabs() {
   if (!window.Sortable || !tabBar) return;
@@ -1489,6 +1519,7 @@ function updateGameLinksCheckmarks() {
 
 window.addEventListener("load", () => {
   renderTabs();
+  applyTabVisibility();  // <-- opsional, double check awal
   const tabs = getTabs();
   updateEmptyState();
   updateGameLogCheckmarks();
