@@ -1102,10 +1102,9 @@ function updateEmptyState(){
 }
 
 function addTab(label, url) {
-    // ⛔ jika admin HIDE tab ini di Firebase, jangan buka
-  if (TAB_HIDE && TAB_HIDE[label]) {
-    console.log("Tab disembunyikan admin:", label);
-    return; // langsung stop
+  // 🔒 kalau feature di-hide global → jangan buka tab
+  if (typeof isTabAllowed === "function" && !isTabAllowed(label)) {
+    return; // atau boleh kasih alert kalau mau
   }
 
   const existingTabs = getTabs();
@@ -1643,6 +1642,66 @@ function markLivechatAsRead() {
     });
   });
 }
+// === GLOBAL UI VISIBILITY (BLURPHP) ==========================
+let uiVisibility = {};  // diisi dari settings/uiVisibility
+
+// Helper: cek apakah feature di-hide di server
+function isFeatureHidden(label){
+  return !!(uiVisibility && uiVisibility[label]);
+}
+
+// Map nama feature → ID tombol header di homepage
+const HEADER_FEATURE_MAP = {
+  "LIVE CHAT":      "liveChatBtn",
+  "LINK DOWNLOAD":  "linkDownloadBtn",
+  "GAMELOG":        "gameLogBtn",
+  "BANK RECEIPT":   "bankResitBtn",
+  "LIST TYPE":      "gameLinksBtn",
+  "ITEM COLLECTION":"itemBtn",
+  // contoh tambahan:
+  // "CHANGE PASSWORD": "changePwBtn",
+};
+
+// Map untuk item sidebar (pakai data-feature di HTML)
+const SIDEBAR_FEATURE_SELECTOR = '[data-feature]';
+
+// Sembunyikan / tampilkan tombol header
+function applyHeaderVisibility(){
+  Object.entries(HEADER_FEATURE_MAP).forEach(([label, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.display = isFeatureHidden(label) ? "none" : "";
+  });
+}
+
+// Sembunyikan / tampilkan item sidebar
+function applySidebarVisibility(){
+  const links = document.querySelectorAll(SIDEBAR_FEATURE_SELECTOR);
+  links.forEach(link => {
+    const label = link.getAttribute("data-feature") || "";
+    link.style.display = isFeatureHidden(label) ? "none" : "";
+  });
+}
+
+// Filter tab yang sudah terbuka di tabBar
+function applyTabVisibility(){
+  const tabs = getTabs();         // fungsi ini sudah ada di script kamu
+  const filtered = tabs.filter(t => !isFeatureHidden(t.label));
+  if (filtered.length !== tabs.length){
+    saveTabs(filtered);           // sudah ada juga
+    renderTabs();                 // sudah ada
+    updateGameLogCheckmarks();   // sudah ada
+    updateBankResitCheckmarks(); // sudah ada
+    updateGameLinksCheckmarks(); // sudah ada
+    updateEmptyState();          // sudah ada
+  }
+}
+
+// Optional: blokir buka tab untuk feature yang di-hide
+// PANGGIL ini di awal fungsi addTab()
+function isTabAllowed(label){
+  return !isFeatureHidden(label);
+}
 // ⬇️ GANTI seluruh blok ini
 document.addEventListener("DOMContentLoaded", async () => {
   const forceLogout = sessionStorage.getItem("forceLogout");
@@ -1832,15 +1891,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
-    // === BACA VISIBILITY SIDEBAR & HEADER DARI BLURPHP ===
-  blurphpDb.ref('settings/sidebarVisibility').on('value', (snap) => {
-    sidebarVisibility = snap.val() || {};
-    applySidebarVisibility();
-  });
-
-  blurphpDb.ref('settings/headerVisibility').on('value', (snap) => {
-    headerVisibility = snap.val() || {};
+  // === BACA GLOBAL UI VISIBILITY DARI BLURPHP (SATU NODE SAJA) ===
+  blurphpDb.ref('settings/uiVisibility').on('value', (snap) => {
+    uiVisibility = snap.val() || {};
     applyHeaderVisibility();
+    applySidebarVisibility();
+    applyTabVisibility();
   });
 }); // ⬅️ tutup DOMContentLoaded
 
