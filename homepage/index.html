@@ -1669,11 +1669,16 @@ function applyHeaderVisibility(){
 }
 
 // Sembunyikan / tampilkan item sidebar
-function applySidebarVisibility(){
-  const links = document.querySelectorAll(SIDEBAR_FEATURE_SELECTOR);
+function applySidebarVisibility() {
+  const links = document.querySelectorAll('#sidebar a');
+  if (!links.length) return;
+
   links.forEach(link => {
-    const label = link.getAttribute("data-feature") || "";
-    link.style.display = isFeatureHidden(label) ? "none" : "";
+    const attrLabel = (link.getAttribute('data-feature') || '').trim();
+    const textLabel = (link.textContent || '').trim().toUpperCase();
+    const label = attrLabel || textLabel;
+    const hide = isFeatureHidden(label);
+    link.style.display = hide ? 'none' : '';
   });
 }
 
