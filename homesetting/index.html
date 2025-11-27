@@ -2,192 +2,347 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>5G88 • Admin Tab Control</title>
+<title>5G88 • Admin UI Control</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ===== STYLE ===== -->
 <style>
-    body{
-        margin:0; padding:0;
-        background:#000;
-        font-family:system-ui,Arial;
-        color:#f0f0f0;
-    }
+  :root{
+    --bg: #020617;
+    --bg-soft:#020817;
+    --card:#050816;
+    --border:#1f2937;
+    --accent:#facc15;
+    --accent-soft:#fbbf24;
+    --danger:#fb7185;
+    --success:#22c55e;
+    --text-main:#e5e7eb;
+    --text-muted:#9ca3af;
+  }
 
-    .container{
-        max-width:900px;
-        margin:0 auto;
-        padding:25px;
-    }
+  *{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+  }
 
-    h1{
-        text-align:left;
-        color:gold;
-        font-size:28px;
-        font-weight:700;
-        margin-bottom:10px;
-    }
+  body{
+    background:
+      radial-gradient(circle at top, #1f2937 0, transparent 55%),
+      radial-gradient(circle at bottom, #020617 0, #000 65%);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color:var(--text-main);
+    min-height:100vh;
+  }
 
-    .section{
-        margin-top:25px;
-        background:#0f0f0f;
-        border:1px solid #333;
-        border-radius:12px;
-        padding:18px 20px;
-        box-shadow:0 0 16px rgba(255,215,0,0.08);
-    }
+  .container{
+    max-width:980px;
+    margin:0 auto;
+    padding:22px 16px 40px;
+  }
 
-    .section-title{
-        font-size:18px;
-        margin-bottom:10px;
-        color:#ffe680;
-        font-weight:bold;
-    }
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:18px;
+  }
 
-    table{
-        width:100%;
-        border-collapse:collapse;
-        margin-top:10px;
-    }
+  .title-wrap{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
 
-    th,td{
-        padding:10px 6px;
-        font-size:15px;
-        border-bottom:1px solid #222;
-    }
-    th{
-        text-align:left;
-        color:#bfbfbf;
-        font-weight:600;
-    }
+  h1{
+    font-size:24px;
+    font-weight:700;
+    color:var(--accent);
+    letter-spacing:.03em;
+  }
+  .subtitle{
+    font-size:13px;
+    color:var(--text-muted);
+  }
 
-    .switch-wrap{
-        display:flex;
-        align-items:center;
-        gap:8px;
-    }
+  .badge{
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    border:1px solid rgba(148,163,184,.45);
+    color:rgba(226,232,240,.9);
+    background:linear-gradient(to right, rgba(15,23,42,.9), rgba(30,64,175,.35));
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .badge-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#22c55e;
+    box-shadow:0 0 8px rgba(34,197,94,.9);
+  }
 
-    /* fancy switch */
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 46px;
-        height: 22px;
-    }
-    .switch input{
-        opacity:0;
-        width:0;
-        height:0;
-    }
-    .slider{
-        position:absolute;
-        cursor:pointer;
-        top:0; left:0; right:0; bottom:0;
-        background:#555;
-        transition:.3s;
-        border-radius:34px;
-    }
-    .slider:before{
-        position:absolute;
-        content:"";
-        height:18px;
-        width:18px;
-        left:3px;
-        bottom:2px;
-        background:white;
-        border-radius:50%;
-        transition:.3s;
-    }
+  .section{
+    margin-top:18px;
+    background:radial-gradient(circle at top left, rgba(250,204,21,.08), transparent 55%),
+               linear-gradient(to bottom right, rgba(15,23,42,.96), #020617);
+    border:1px solid rgba(148,163,184,.32);
+    border-radius:14px;
+    padding:16px 16px 10px;
+    box-shadow:
+      0 0 0 1px rgba(15,23,42,.9),
+      0 18px 40px rgba(0,0,0,0.65);
+  }
 
-    input:checked + .slider{
-        background:gold;
-    }
-    input:checked + .slider:before{
-        transform:translateX(24px);
-    }
+  .section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .section-title{
+    font-size:17px;
+    font-weight:600;
+    color:#fef9c3;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .section-title span.icon{
+    width:22px;
+    height:22px;
+    border-radius:999px;
+    background:radial-gradient(circle at 30% 0, #facc15, #854d0e);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    box-shadow:0 0 10px rgba(234,179,8,.75);
+  }
+  .section-note{
+    font-size:12px;
+    color:var(--text-muted);
+    text-align:right;
+  }
 
-    .status-pill{
-        display:inline-block;
-        padding:3px 10px;
-        border-radius:50px;
-        font-size:12px;
-        font-weight:600;
-    }
-    .hide-pill{
-        background:#ff3d3d33;
-        color:#ff6969;
-        border:1px solid #ff4d4d;
-    }
-    .show-pill{
-        background:#3dff3d22;
-        border:1px solid #4dff4d;
-        color:#8bff8b;
-    }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:4px;
+    border-radius:10px;
+    overflow:hidden;
+  }
 
-    .footer-msg{
-        margin-top:15px;
-        font-size:13px;
-        color:#aaa;
-        text-align:center;
-    }
+  thead{
+    background:linear-gradient(to right, rgba(15,23,42,.9), rgba(30,64,175,.55));
+  }
 
+  th,td{
+    padding:10px 8px;
+    font-size:13px;
+    border-bottom:1px solid rgba(15,23,42,.9);
+  }
+  th{
+    text-align:left;
+    color:#cbd5f5;
+    font-weight:600;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    font-size:11px;
+  }
+  tbody tr{
+    background:rgba(15,23,42,.82);
+    transition:background .18s, transform .12s, box-shadow .18s;
+  }
+  tbody tr:nth-child(odd){
+    background:rgba(15,23,42,.9);
+  }
+  tbody tr:hover{
+    background:rgba(30,64,175,.45);
+    transform:translateY(-1px);
+    box-shadow:0 4px 10px rgba(15,23,42,.8);
+  }
+
+  .feature-name{
+    font-weight:500;
+    font-size:13px;
+  }
+  .feature-sub{
+    font-size:11px;
+    color:var(--text-muted);
+    margin-top:2px;
+  }
+
+  .switch-wrap{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    justify-content:center;
+  }
+
+  /* fancy switch */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 22px;
+  }
+  .switch input{
+    opacity:0;
+    width:0;
+    height:0;
+  }
+  .slider{
+    position:absolute;
+    cursor:pointer;
+    top:0; left:0; right:0; bottom:0;
+    background:#4b5563;
+    transition:.3s;
+    border-radius:999px;
+    box-shadow:inset 0 0 0 1px rgba(15,23,42,.9);
+  }
+  .slider:before{
+    position:absolute;
+    content:"";
+    height:18px;
+    width:18px;
+    left:3px;
+    bottom:2px;
+    background:linear-gradient(to bottom, #f9fafb, #e5e7eb);
+    border-radius:50%;
+    transition:.3s;
+    box-shadow:0 1px 3px rgba(15,23,42,.7);
+  }
+
+  input:checked + .slider{
+    background:linear-gradient(120deg, #facc15, #f97316);
+    box-shadow:0 0 10px rgba(250,204,21,.7);
+  }
+  input:checked + .slider:before{
+    transform:translateX(24px);
+  }
+
+  .status-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:3px 10px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+  }
+  .hide-pill{
+    background:rgba(239,68,68,.18);
+    color:#fecaca;
+    border:1px solid rgba(248,113,113,.85);
+  }
+  .show-pill{
+    background:rgba(22,163,74,.16);
+    border:1px solid rgba(34,197,94,.8);
+    color:#bbf7d0;
+  }
+
+  .pill-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+  }
+  .pill-dot.hide{ background:#fb7185; box-shadow:0 0 8px rgba(248,113,113,.8); }
+  .pill-dot.show{ background:#22c55e; box-shadow:0 0 8px rgba(34,197,94,.8); }
+
+  .footer-msg{
+    margin-top:14px;
+    font-size:12px;
+    color:var(--text-muted);
+    text-align:center;
+  }
+
+  .footer-msg span.key{
+    color:#facc15;
+    font-weight:500;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:16px;
+    right:16px;
+    background:#020617;
+    color:#e5e7eb;
+    border-radius:10px;
+    border:1px solid rgba(148,163,184,.5);
+    box-shadow:0 18px 40px rgba(0,0,0,.8);
+    padding:10px 12px;
+    font-size:12px;
+    display:none;
+    align-items:center;
+    gap:8px;
+    z-index:40;
+  }
+  .toast.show{ display:flex; }
+  .toast span.icon{
+    font-size:16px;
+  }
 </style>
 </head>
 <body>
 
 <div class="container">
 
-    <h1>⚙️ Control Panel — 5G88 UI Settings</h1>
+  <header>
+    <div class="title-wrap">
+      <h1>⚙️ 5G88 • Admin UI Control</h1>
+      <div class="subtitle">
+        Satu switch untuk hide / show LIVE CHAT, GAME, dan menu lain di <b>semua user</b>.
+      </div>
+    </div>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      BLURPHP SETTINGS
+    </div>
+  </header>
 
-    <div class="footer-msg">Hide / Show elements untuk SEMUA user (global realtime)</div>
-
-    <!-- ===== TAB CONTROL ===== -->
-    <div class="section">
-        <div class="section-title">🟡 TabBar Control</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nama Tab</th>
-                    <th>Hide?</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="tabBarBody"></tbody>
-        </table>
+  <!-- ===== GLOBAL UI CONTROL ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <span class="icon">🎛</span>
+        <span>Global UI Visibility</span>
+      </div>
+      <div class="section-note">
+        Toggle di sini akan mempengaruhi <b>Header + Sidebar + Tab</b> di homepage.
+      </div>
     </div>
 
-    <!-- ===== SIDEBAR CONTROL ===== -->
-    <div class="section">
-        <div class="section-title">🔵 Sidebar Menu Control</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Sidebar Item</th>
-                    <th>Hide?</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="sideBarBody"></tbody>
-        </table>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:50%;">Nama Feature</th>
+          <th style="width:25%; text-align:center;">Hide?</th>
+          <th style="width:25%;">Status</th>
+        </tr>
+      </thead>
+      <tbody id="uiGlobalBody"></tbody>
+    </table>
+  </div>
 
-    <!-- ===== HEADER BUTTON CONTROL ===== -->
-    <div class="section">
-        <div class="section-title">🟣 Header Buttons Control</div>
-        <table>
-            <thead>
-            <tr>
-                <th>Button</th>
-                <th>Hide?</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-            <tbody id="headerBody"></tbody>
-        </table>
-    </div>
-
+  <div class="footer-msg">
+    Nilai disimpan di <span class="key">settings/uiVisibility</span> (Firebase BlurPHP).
+  </div>
 </div>
 
+<!-- Toast mini -->
+<div id="toast" class="toast">
+  <span class="icon">✅</span>
+  <span id="toastMsg">Saved</span>
+</div>
 
 <!-- ====== FIREBASE ====== -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -210,57 +365,64 @@ const blurphpApp = firebase.initializeApp(blurphpConfig, "blurphp-settings");
 const db        = blurphpApp.database();
 const auth      = blurphpApp.auth();
 
-// login anon, supaya rules `auth != null` tak block
+// login anon supaya rules `auth != null` aman
 auth.signInAnonymously().catch(err => {
   console.error("Anon auth blurphp gagal:", err);
 });
 
-// ===== LIST TABBAR =====
-const TABS = [
-  "LIVE CHAT","MEGA888","PUSSY888","918KISS",
-  "SCR888H5","LOGO GAME","TIPS GAME","FIND GAME",
-  "LINK DOWNLOAD","MAYBANK","CIMB BANK","BANK ISLAM",
-  "RHB BANK","ITEM COLLECTION"
-];
-
-// ===== LIST SIDEBAR MENU =====
-const SIDEBAR = [
-  "LIVE CHAT","MEGA888","PUSSY888","918KISS",
-  "SCR888H5","LOGO GAME","TIPS GAME","FIND GAME",
-  "LINK DOWNLOAD","MAYBANK","CIMB BANK","BANK ISLAM",
-  "RHB BANK","ITEM COLLECTION"
-];
-
-// ===== LIST HEADER BUTTONS =====
-const HEADER_BTNS = [
+// ===== GLOBAL FEATURE LIST (SATU CONTROL UNTUK SEMUA TEMPAT) =====
+// Pastikan nama2 di sini sama dengan mapping di homepage (TAB_MAP / SIDEBAR_MAP / HEADER_MAP)
+const UI_FEATURES = [
   "LIVE CHAT",
+  "MEGA888",
+  "PUSSY888",
+  "918KISS",
+  "SCR888H5",
+  "LOGO GAME",
+  "TIPS GAME",
+  "FIND GAME",
   "LINK DOWNLOAD",
-  "GAMELOG",
-  "BANK RECEIPT",
-  "LIST TYPE",
-  "ITEM"
+  "MAYBANK",
+  "CIMB BANK",
+  "BANK ISLAM",
+  "RHB BANK",
+  "ITEM COLLECTION"
 ];
 
-/**
- * Build table sekali saja.
- * - Selalu buat row (tak tunggu Firebase)
- * - Simpan ref checkbox & pill di map
- * - Listener Firebase hanya untuk sync status on/off
- */
-function buildTable(list, tbody, dbNode){
-  if (!tbody) return;
+// Toast helper
+function showToast(msg){
+  const toast = document.getElementById("toast");
+  const msgEl = document.getElementById("toastMsg");
+  if (!toast || !msgEl) return;
+  msgEl.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(()=> toast.classList.remove("show"), 1300);
+}
 
+// Build tabel untuk settings/uiVisibility
+function buildGlobalUiTable(list, tbody, dbNode){
+  if (!tbody) return;
   tbody.innerHTML = "";
 
-  // simpan ref UI per label
   const rowMap = {}; // { label: { chk, pill } }
 
   list.forEach(label => {
     const tr = document.createElement("tr");
 
+    // Nama + sub
     const td1 = document.createElement("td");
-    td1.textContent = label;
+    const name = document.createElement("div");
+    name.className = "feature-name";
+    name.textContent = label;
 
+    const sub = document.createElement("div");
+    sub.className = "feature-sub";
+    sub.textContent = "Terapkan untuk semua user di homepage";
+
+    td1.appendChild(name);
+    td1.appendChild(sub);
+
+    // Switch
     const td2 = document.createElement("td");
     const wrap = document.createElement("div");
     wrap.className = "switch-wrap";
@@ -279,30 +441,36 @@ function buildTable(list, tbody, dbNode){
     wrap.appendChild(sw);
     td2.appendChild(wrap);
 
+    // Status pill
     const td3 = document.createElement("td");
     const pill = document.createElement("span");
     pill.className = "status-pill show-pill";
-    pill.textContent = "Shown";
+
+    const pillDot = document.createElement("span");
+    pillDot.className = "pill-dot show";
+    const pillText = document.createElement("span");
+    pillText.textContent = "Shown";
+
+    pill.appendChild(pillDot);
+    pill.appendChild(pillText);
     td3.appendChild(pill);
 
-    // simpan ref
-    rowMap[label] = { chk, pill };
+    rowMap[label] = { chk, pill, pillDot, pillText };
 
-    // klik switch → update Firebase
+    // Handler klik -> update Firebase
     chk.addEventListener("change", () => {
       const hide = chk.checked;
       const ref  = db.ref(dbNode + "/" + label);
 
-      // kalau hide = true → set(true)
-      // kalau hide = false → remove saja (biar default di homepage = shown)
       const op = hide ? ref.set(true) : ref.remove();
 
       op.then(() => {
         pill.className = hide ? "status-pill hide-pill" : "status-pill show-pill";
-        pill.textContent = hide ? "Hidden" : "Shown";
+        pillDot.className = "pill-dot " + (hide ? "hide" : "show");
+        pillText.textContent = hide ? "Hidden" : "Shown";
+        showToast("Saved: " + label + " → " + (hide ? "Hidden" : "Shown"));
       }).catch(err => {
         console.error("Gagal simpan setting", dbNode, label, err);
-        // balikkan checkbox lagi kalau gagal
         chk.checked = !hide;
         alert("Gagal simpan ke server (cek Firebase rules / internet).");
       });
@@ -314,7 +482,7 @@ function buildTable(list, tbody, dbNode){
     tbody.appendChild(tr);
   });
 
-  // listener realtime → sync status (kalau ada perubahan dari tempat lain)
+  // Listener realtime untuk sync jika ada perubahan dari tempat lain
   db.ref(dbNode).on("value",
     snap => {
       const hidden = snap.val() || {};
@@ -322,9 +490,11 @@ function buildTable(list, tbody, dbNode){
         const ui = rowMap[label];
         if (!ui) return;
         const hide = !!hidden[label];
-        ui.chk.checked    = hide;
-        ui.pill.className = hide ? "status-pill hide-pill" : "status-pill show-pill";
-        ui.pill.textContent = hide ? "Hidden" : "Shown";
+
+        ui.chk.checked          = hide;
+        ui.pill.className       = hide ? "status-pill hide-pill" : "status-pill show-pill";
+        ui.pillDot.className    = "pill-dot " + (hide ? "hide" : "show");
+        ui.pillText.textContent = hide ? "Hidden" : "Shown";
       });
     },
     err => {
@@ -333,11 +503,12 @@ function buildTable(list, tbody, dbNode){
   );
 }
 
-// Build all 3 tables setelah DOM siap
 document.addEventListener("DOMContentLoaded", () => {
-  buildTable(TABS,     document.getElementById("tabBarBody"), "settings/tabVisibility");
-  buildTable(SIDEBAR,  document.getElementById("sideBarBody"), "settings/sidebarVisibility");
-  buildTable(HEADER_BTNS, document.getElementById("headerBody"), "settings/headerVisibility");
+  buildGlobalUiTable(
+    UI_FEATURES,
+    document.getElementById("uiGlobalBody"),
+    "settings/uiVisibility"
+  );
 });
 </script>
 
