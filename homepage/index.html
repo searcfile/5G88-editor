@@ -75,14 +75,14 @@
  .user-button:hover {border:1px solid #ffe34d;background-color: #141414;color: #ffe34d;}.user-button:active {border: 1px solid gold;background-color: #141414;color: gold;}
 /* ✅ Pastikan tombol & tab bisa dipasangi salju */
 .live-chat-button,
-.tab {
+.tab,.user-button,#notifButton,.menu-icon {
   position: relative;
   overflow: visible;
 }
 
 /* ❄️ SALJU KECIL DI ATAS – POSISI KANAN */
 .live-chat-button::before,
-.tab::before {
+.tab::before,.user-button::before,#notifButton::before,.menu-icon::before {
   content: "";
   position: absolute;
   top: -4px;            /* lebih dekat ke tombol */
@@ -102,7 +102,7 @@
 
 /* ❄️ Lelehan kecil (drip mini) di kanan */
 .live-chat-button::after,
-.tab::after {
+.tab::after,.user-button::after,#notifButton::after,.menu-icon::after {
   content: "";
   position: absolute;
   top: -1px;
@@ -2291,13 +2291,12 @@ async function doChange(){
   music.volume = 0.3; // volume lembut
 
   let isPlaying = false;
-  const savedState = localStorage.getItem("christmasMusic");
+  const savedState = localStorage.getItem("christmasMusic"); // "on" / "off" / null
 
-  if (savedState === "on") {
-    startMusic();
-  }
-
+  // --- helper: play hanya kalau tab AKTIF ---
   function startMusic(){
+    if (document.hidden) return; // kalau tab lagi tidak aktif, jangan paksa play
+
     music.play().then(() => {
       isPlaying = true;
       btn.textContent = "🔊 MUSIC ON";
@@ -2312,6 +2311,13 @@ async function doChange(){
     localStorage.setItem("christmasMusic", "off");
   }
 
+  // restore state dari localStorage
+  if (savedState === "on") {
+    startMusic();
+  } else {
+    btn.textContent = "🎵 MUSIC OFF";
+  }
+
   // Toggle manual
   btn.addEventListener("click", (e)=>{
     e.stopPropagation();
@@ -2324,6 +2330,19 @@ async function doChange(){
       startMusic();
     }
     document.removeEventListener("click", autoPlayOnce);
+  });
+
+  // =====💡 KUNCI: PAUSE kalau tab pindah, LANJUT kalau balik =====
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      // tab 5G88 tidak aktif → pause
+      if (isPlaying) music.pause();
+    } else {
+      // tab 5G88 aktif lagi → lanjut kalau user ON
+      if (!isPlaying && localStorage.getItem("christmasMusic") === "on") {
+        startMusic();
+      }
+    }
   });
 
 })();
