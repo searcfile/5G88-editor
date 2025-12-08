@@ -18,22 +18,21 @@
 .snowflake {
   position: absolute;
   top: -10vh;
-  color: #fff;
+  color: #ffffff;               /* full putih */
   font-size: 10px;
-  opacity: 0.8;
-  text-shadow: 0 0 8px rgba(255,255,255,0.9);
-  animation-name: snowFall;
+  opacity: 0.9;
+  text-shadow: 0 0 6px rgba(255,255,255,0.9); /* glow putih */
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
 
-/* Animasi jatuh ke bawah */
+/* Jatuh + berputar */
 @keyframes snowFall {
   0% {
-    transform: translate3d(0, -10vh, 0);
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
   }
   100% {
-    transform: translate3d(0, 110vh, 0);
+    transform: translate3d(0, 110vh, 0) rotate(360deg);
   }
 }
   * {margin: 0;padding: 0;box-sizing: border-box;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';}
@@ -2195,7 +2194,7 @@ async function doChange(){
     for (let i = 0; i < flakesCount; i++) {
       const flake = document.createElement('span');
       flake.className = 'snowflake';
-      flake.textContent = '❄';
+      flake.textContent = '✻'; // bintang salju putih (bukan emoji)
 
       // Posisi horizontal random
       flake.style.left = Math.random() * 100 + 'vw';
