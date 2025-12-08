@@ -73,36 +73,52 @@
  .user-dropdown {position: relative;display: inline-block;}
  .user-button {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 5px;background-color: transparent;color: rgba(255,255,255,0.85);border:1px solid #424242;border-radius: 6px;padding: 0px 15px;font-size: 14px;cursor: pointer;white-space: nowrap;height: 32px;transition: all 0.3s ease;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);}
  .user-button:hover {border:1px solid #ffe34d;background-color: #141414;color: #ffe34d;}.user-button:active {border: 1px solid gold;background-color: #141414;color: gold;}
-/* ❄ Tumpukan salju di atas tombol header (LiveChat, GameLog, dll) */
-.live-chat-button::before {
-  content: "";
-  position: absolute;
-  top: -4px;          /* naik sedikit di atas border tombol */
-  left: 6px;
-  right: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 10% 0%, #ffffff 0, #ffffff 45%, transparent 60%) repeat-x;
-  background-size: 10px 6px;   /* jarak tonjolan salju */
-  opacity: 0.95;
-  pointer-events: none;
+/* ✅ Pastikan ini ada (sudah ada di CSS kamu, tapi kita paksa lagi biar konsisten) */
+.live-chat-button,
+.tab {
+  position: relative;
+  overflow: visible;
 }
 
-/* ❄ Tumpukan salju di atas setiap tab bawah */
+/* ❄️ SALJU TEBAL MELELEH DI ATAS SETIAP TOMBOL */
+.live-chat-button::before,
 .tab::before {
   content: "";
   position: absolute;
-  top: -4px;
+  top: -10px;              /* posisi tumpukan salju */
   left: 4px;
   right: 4px;
-  height: 6px;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 10% 0%, #ffffff 0, #ffffff 45%, transparent 60%) repeat-x;
-  background-size: 10px 6px;
-  opacity: 0.95;
+  height: 12px;            /* ketebalan salju */
+  background: linear-gradient(
+    to bottom,
+    #ffffff 0%,
+    #f5f9ff 40%,
+    #dfefff 100%
+  );
+  border-radius: 12px 12px 10px 10px;
+  box-shadow: 0 2px 4px rgba(255,255,255,0.6);
   pointer-events: none;
+  z-index: 5;
+}
+
+/* ❄️ Lelehan salju (dripping) */
+.live-chat-button::after,
+.tab::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 12px;
+  width: 6px;
+  height: 14px;
+  background: linear-gradient(to bottom, #ffffff, rgba(255,255,255,0));
+  border-radius: 50%;
+  box-shadow:
+    18px 3px 0 0 #ffffff,
+    34px 6px 0 0 #ffffff,
+    52px 4px 0 0 #ffffff;
+  pointer-events: none;
+  opacity: 0.9;
+  z-index: 4;
 }
  .dropdown-content {
   display: none;
