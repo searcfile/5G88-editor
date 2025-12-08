@@ -6,6 +6,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Home | 5G88</title>
   <style>
+/* ❄️ SNOW EFFECT – MERRY CHRISTMAS ❄️ */
+.snow-layer {
+  position: fixed;
+  inset: 0;               /* top/right/bottom/left = 0 */
+  pointer-events: none;   /* jangan ganggu klik tombol/menu */
+  z-index: 99999;         /* di atas semua elemen */
+  overflow: hidden;
+}
+
+.snowflake {
+  position: absolute;
+  top: -10vh;
+  color: #fff;
+  font-size: 10px;
+  opacity: 0.8;
+  text-shadow: 0 0 8px rgba(255,255,255,0.9);
+  animation-name: snowFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Animasi jatuh ke bawah */
+@keyframes snowFall {
+  0% {
+    transform: translate3d(0, -10vh, 0);
+  }
+  100% {
+    transform: translate3d(0, 110vh, 0);
+  }
+}
   * {margin: 0;padding: 0;box-sizing: border-box;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';}
   body {background-color: #000;color: #fff;overflow-x: hidden;display: flex;flex-direction: column;height: 100vh;-ms-overflow-style: none;scrollbar-width: none;}body::-webkit-scrollbar{display: none;} html{-ms-overflow-style: none;scrollbar-width: none;}html::-webkit-scrollbar{display: none;} 
   .sidebar-overlay {position: fixed;top: 0;left: 0;width: 100vw;height: 100vh;background: rgba(0,0,0,0.5);display: none;z-index: 999;}
@@ -2148,6 +2178,46 @@ async function doChange(){
 }
   submit.addEventListener('click', doChange);
   [inOld,inNew,inNew2].forEach(i=>i.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doChange(); }));
+})();
+// ====== ❄️ SNOW EFFECT – MERRY CHRISTMAS ❄️ ======
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    // Hanya aktif di bulan Desember (0 = Jan, 11 = Des)
+    const now = new Date();
+    if (now.getMonth() !== 11) return;  // kalau mau selalu ON, hapus 2 baris ini
+
+    const flakesCount = 80; // jumlah kepingan salju (atur sesuka hati)
+
+    const snowLayer = document.createElement('div');
+    snowLayer.className = 'snow-layer';
+    document.body.appendChild(snowLayer);
+
+    for (let i = 0; i < flakesCount; i++) {
+      const flake = document.createElement('span');
+      flake.className = 'snowflake';
+      flake.textContent = '❄';
+
+      // Posisi horizontal random
+      flake.style.left = Math.random() * 100 + 'vw';
+
+      // Ukuran random
+      const size = 8 + Math.random() * 12;   // 8px – 20px
+      flake.style.fontSize = size + 'px';
+
+      // Durasi jatuh random
+      const duration = 6 + Math.random() * 10;  // 6s – 16s
+      flake.style.animationDuration = duration + 's';
+
+      // Delay random biar nggak bareng-bareng
+      const delay = Math.random() * 10;
+      flake.style.animationDelay = delay + 's';
+
+      // Opacity sedikit beda-beda
+      flake.style.opacity = (0.5 + Math.random() * 0.5).toFixed(2);
+
+      snowLayer.appendChild(flake);
+    }
+  });
 })();
 </script>
 </body>
