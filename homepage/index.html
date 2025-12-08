@@ -464,6 +464,23 @@ a.tab-open .check-icon {
   </div>
 
   <img src="https://i.imgur.com/voSG3KC.gif" class="floating-logo" alt="Logo 5G88" />
+  
+  <!-- 🎵 BUTTON MUSIC TOGGLE -->
+  <button id="musicToggle" style="
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    z-index:999999;
+    background:rgba(0,0,0,0.6);
+    color:white;
+    border:1px solid white;
+    border-radius:50px;
+    padding:8px 14px;
+    cursor:pointer;
+    font-size:13px;
+  ">
+  🎵 MUSIC OFF
+  </button>
 
   <div class="user-info">
     <div class="user-text">
@@ -582,6 +599,9 @@ a.tab-open .check-icon {
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script>window.renderMobileUserBtn = window.renderMobileUserBtn || function(){};</script>
+<audio id="christmasMusic" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/12/20/audio_186e4b9161.mp3" type="audio/mpeg">
+</audio>
 <script>
 
 /*Mcng 112 updated 232131*/
@@ -2217,6 +2237,51 @@ async function doChange(){
       snowLayer.appendChild(flake);
     }
   });
+})();
+// ===== 🎄 CHRISTMAS MUSIC AUTO PLAY SYSTEM =====
+(function(){
+  const music = document.getElementById("christmasMusic");
+  const btn   = document.getElementById("musicToggle");
+  if (!music || !btn) return;
+
+  music.volume = 0.3; // volume lembut
+
+  let isPlaying = false;
+  const savedState = localStorage.getItem("christmasMusic");
+
+  if (savedState === "on") {
+    startMusic();
+  }
+
+  function startMusic(){
+    music.play().then(() => {
+      isPlaying = true;
+      btn.textContent = "🔊 MUSIC ON";
+      localStorage.setItem("christmasMusic", "on");
+    }).catch(()=>{});
+  }
+
+  function stopMusic(){
+    music.pause();
+    isPlaying = false;
+    btn.textContent = "🎵 MUSIC OFF";
+    localStorage.setItem("christmasMusic", "off");
+  }
+
+  // Toggle manual
+  btn.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    isPlaying ? stopMusic() : startMusic();
+  });
+
+  // Autoplay setelah user interaksi pertama
+  document.addEventListener("click", function autoPlayOnce(){
+    if (!isPlaying && localStorage.getItem("christmasMusic") !== "off") {
+      startMusic();
+    }
+    document.removeEventListener("click", autoPlayOnce);
+  });
+
 })();
 </script>
 </body>
