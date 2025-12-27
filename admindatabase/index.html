@@ -674,6 +674,8 @@ function clearSameDeviceFilter(){
       const active = !isEmailBlockedFast(email);
 
 const deviceId = getDeviceIdFromItem(item);
+const browser  = (item.browser || '').toString().trim() || 'Unknown';
+const deviceLabel = deviceId ? `${browser}_${deviceId}` : '-';
 
 html += `
   <tr data-email="${esc(email)}" data-device="${esc(deviceId || '')}">
@@ -681,11 +683,10 @@ html += `
     <td title="${esc(name)}">${esc(name || '-')}</td>
     <td title="${esc(email)}">${esc(email)}</td>
 
-    <!-- ✅ NEW: Device ID -->
 <td class="deviceCell"
-    title="Device ID"
+    title="Click to select this Device ID"
     style="cursor:pointer; color:#7dd3fc; font-weight:700;">
-  ${esc(deviceId || '-')}
+  ${esc(deviceLabel)}
 </td>
 
     <td title="${esc(tStr)}">${esc(tStr)}</td>
@@ -1121,24 +1122,25 @@ if (sameBtn){
     }
   }
 
-  document.addEventListener("click", (e) => {
+document.addEventListener("click", (e) => {
   const cell = e.target.closest(".deviceCell");
   if (!cell) return;
 
-  const id = (cell.textContent || "").trim();
-  if (!id || id === "-") {
+  const tr = cell.closest("tr");
+  const rawId = (tr?.dataset?.device || "").trim(); // ✅ ID asal dari data-device
+
+  if (!rawId || rawId === "-") {
     showToast("Device ID belum ada untuk user ini.", "error");
     return;
   }
 
-  selectedDeviceId = id;
-  sameDeviceMode = false; // belum filter sampai tekan button
+  selectedDeviceId = rawId;
+  sameDeviceMode = false;
 
-  // underline yang dipilih
   document.querySelectorAll(".deviceCell").forEach(x => x.style.textDecoration = "none");
   cell.style.textDecoration = "underline";
 
-  showToast(`Selected Device ID: ${id}`, "success", 2000);
+  showToast(`Selected Device ID: ${rawId}`, "success", 2000);
 });
   // ============ RESET PASSWORD ============
 function openResetPwModal(){
