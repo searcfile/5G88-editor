@@ -392,6 +392,7 @@ body{
   </iframe>
   </div>
 </div>
+<script src="https://openfpcdn.io/fingerprintjs/v4"></script>
 <script>
 /* ====== Popup welcome ====== */
 function closePopup(){ document.getElementById("popup").style.display="none"; }
@@ -690,14 +691,36 @@ function hideBlockedPopup(){
   overlay.setAttribute('aria-hidden','true');
 }
 
-/* ===== Login flows ===== */
-function finishLogin(userLike){
+async function getVisitorId(){
+  try{
+    const fp = await FingerprintJS.load();
+    const res = await fp.get();
+    return res?.visitorId || "unknown";
+  }catch(e){
+    console.warn("Fingerprint error:", e);
+    return "unknown";
+  }
+}
+
+function getBrowserName(){
+  const ua = navigator.userAgent || "";
+  if (/Edg\//i.test(ua)) return "Edge";
+  if (/Firefox\//i.test(ua)) return "Firefox";
+  if (/Chrome\//i.test(ua)) return "Chrome";
+  if (/Safari\//i.test(ua)) return "Safari";
+  return "Unknown";
+}
+async function finishLogin(userLike){
   const email = userLike.email;
   const name  = userLike.displayName || email.split('@')[0];
   const photo = userLike.photoURL || "";
   const emailKey = sanitizeKey(email.toLowerCase());
 
-  db.ref("logins/blocked_users/" + emailKey).once("value").then(snap=>{
+  // ✅ ambil device fingerprint + browser
+  const deviceId = await getVisitorId();
+  const browser  = getBrowserName();
+
+  db.ref("logins/blocked_users/" + emailKey).once("value").then(async snap=>{
     const isBlocked = snap.val();
     if (isBlocked === true){
       showBlockedPopup(userLike);
@@ -706,10 +729,23 @@ function finishLogin(userLike){
       return;
     }
 
+    // ✅ simpan sekali deviceId
     db.ref("logins/" + emailKey).set({
-      name, email, loginAt: formatTimestamp(new Date())
+      name,
+      email,
+      loginAt: formatTimestamp(new Date()),
+
+      // ✅ NEW
+      deviceId,
+      browser,
+      ua: navigator.userAgent || "",
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone || ""
     }).then(()=>{
       localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
+
+      // Optional: simpan deviceId juga dalam localStorage kalau kau nak guna di tempat lain
+      localStorage.setItem("deviceId", deviceId);
+
       const q = new URLSearchParams({ name, email, photo }).toString();
       window.location.href = `${MAIN_URL}/?${q}`;
     }).catch(err=>{
