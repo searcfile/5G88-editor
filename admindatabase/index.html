@@ -298,7 +298,7 @@
       <option value="Active">Active</option>
       <option value="Unactive">Unactive</option>
     </select>
-    
+    <button id="sameDeviceBtn" class="reset-btn" title="Show users with same Device ID">Same IP</button>
     <div class="right-buttons">
     <button id="resetPwBtn" class="reset-btn">Reset Password</button>
     <button id="createUserBtn" class="create-btn">Create Username</button>
@@ -314,6 +314,7 @@
             <th>No</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Device ID</th>
             <th>Last login</th>
             <th>Status</th>
             <th>Action</th>
@@ -494,6 +495,39 @@
   let isConfirmAllVisible = false;
   let blockedSet = new Set();
 
+  // ---------- Same Device filter ----------
+let selectedDeviceId = null;
+let sameDeviceMode = false;
+
+function getDeviceIdFromItem(it){
+  const v = (it.deviceId || it.visitorId || '').trim();
+  return v;
+}
+
+function applySameDeviceFilter(){
+  if (!selectedDeviceId){
+    showToast("Klik dulu Device ID pada table, baru tekan Same IP.", "error");
+    return;
+  }
+  sameDeviceMode = true;
+  const q = currentQueryValue();
+  const s = currentStatusValue();
+
+  // filter status + search dulu
+  let arr = applyFilters(q, s, allLoginData);
+
+  // filter ikut device
+  arr = arr.filter(it => getDeviceIdFromItem(it) === selectedDeviceId);
+
+  renderLoginTable(arr);
+}
+
+function clearSameDeviceFilter(){
+  sameDeviceMode = false;
+  selectedDeviceId = null;
+  // render balik normal ikut filter semasa
+  rerenderWithCurrentFilters();
+}
   // ---------- Toast ----------
   function showToast(message, type="success", duration=4000){
     const toast = document.getElementById("toast");
@@ -585,7 +619,7 @@
     const tbody = document.getElementById('loginTableBody');
 
     if (!dataArray.length){
-      tbody.innerHTML = '<tr><td colspan="6">No matching login data found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7">No matching login data found.</td></tr>';
       requestAnimationFrame(()=> fitViewportToRows(1));
       return;
     }
@@ -602,29 +636,39 @@
       no++;
       const active = !isEmailBlockedFast(email);
 
-      html += `
-        <tr data-email="${esc(email)}">
-          <td>${no}</td>
-          <td title="${esc(name)}">${esc(name || '-')}</td>
-          <td title="${esc(email)}">${esc(email)}</td>
-          <td title="${esc(tStr)}">${esc(tStr)}</td>
-          <td>${statusCellHtml(active)}</td>
-          <td>
-            <div class="action-buttons">
-              <button class="logout-btn"
-                      data-email="${esc(email)}"
-                      data-name="${esc(name || '-')}"
-                      onclick="showConfirmBox(this, this.dataset.email, this.dataset.name)">
-                Logout
-              </button>
-              <button class="block-btn"
-                      data-email="${esc(email)}"
-                      onclick="toggleBlockUser(this)">
-                ${active ? 'Block' : 'Unblock'}
-              </button>
-            </div>
-          </td>
-        </tr>`;
+const deviceId = (item.deviceId || item.visitorId || '').trim();
+
+html += `
+  <tr data-email="${esc(email)}" data-device="${esc(deviceId || '')}">
+    <td>${no}</td>
+    <td title="${esc(name)}">${esc(name || '-')}</td>
+    <td title="${esc(email)}">${esc(email)}</td>
+
+    <!-- ✅ NEW: Device ID -->
+    <td class="deviceCell"
+        title="Click to select this Device ID"
+        style="cursor:pointer; color:#7dd3fc; font-weight:700;">
+      ${esc(deviceId || '-')}
+    </td>
+
+    <td title="${esc(tStr)}">${esc(tStr)}</td>
+    <td>${statusCellHtml(active)}</td>
+    <td>
+      <div class="action-buttons">
+        <button class="logout-btn"
+                data-email="${esc(email)}"
+                data-name="${esc(name || '-')}"
+                onclick="showConfirmBox(this, this.dataset.email, this.dataset.name)">
+          Logout
+        </button>
+        <button class="block-btn"
+                data-email="${esc(email)}"
+                onclick="toggleBlockUser(this)">
+          ${active ? 'Block' : 'Unblock'}
+        </button>
+      </div>
+    </td>
+  </tr>`;
     });
 
     tbody.innerHTML = html;
@@ -675,7 +719,7 @@ function startRealtime(){
     searchBtn.classList.remove('loading');
   }, (error) => {
     document.getElementById('loginTableBody').innerHTML =
-      `<tr><td colspan="6">Error: ${error.message}</td></tr>`;
+      `<tr><td colspan="7">Error: ${error.message}</td></tr>`;
     searchBtn.classList.remove('loading');
   });
 }
@@ -981,6 +1025,19 @@ function setupClearButton(){
     setupSearchListener();
     setupClearButton();
 
+      // Same IP button
+  const sameBtn = document.getElementById('sameDeviceBtn');
+  if (sameBtn){
+    sameBtn.addEventListener('click', () => {
+      // kalau sedang same mode -> klik lagi jadi reset
+      if (sameDeviceMode){
+        clearSameDeviceFilter();
+        showToast("Same IP filter cleared.", "success");
+      } else {
+        applySameDeviceFilter();
+      }
+    });
+  }
     if (window.ResizeObserver){
       const ro = new ResizeObserver(() => fitViewportToRows(15));
       const tbody = document.getElementById('loginTableBody');
@@ -989,6 +1046,26 @@ function setupClearButton(){
       window.addEventListener('resize', () => fitViewportToRows(15));
     }
   }
+
+  document.addEventListener("click", (e) => {
+  const cell = e.target.closest(".deviceCell");
+  if (!cell) return;
+
+  const id = (cell.textContent || "").trim();
+  if (!id || id === "-") {
+    showToast("Device ID belum ada untuk user ini.", "error");
+    return;
+  }
+
+  selectedDeviceId = id;
+  sameDeviceMode = false; // belum filter sampai tekan button
+
+  // underline yang dipilih
+  document.querySelectorAll(".deviceCell").forEach(x => x.style.textDecoration = "none");
+  cell.style.textDecoration = "underline";
+
+  showToast(`Selected Device ID: ${id}`, "success", 2000);
+});
   // ============ RESET PASSWORD ============
 function openResetPwModal(){
   const o = document.getElementById('resetPwModal');
