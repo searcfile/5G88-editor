@@ -461,13 +461,17 @@
   }
 
   // Search + Status filter
-  function filterByQuery(query, data){
-    const q = (query || '').toLowerCase();
-    return data.filter(it =>
+function filterByQuery(query, data){
+  const q = (query || '').toLowerCase();
+  return data.filter(it => {
+    const device = (getDeviceIdFromItem(it) || '').toLowerCase();
+    return (
       (it.name  || '').toLowerCase().includes(q) ||
-      (it.email || '').toLowerCase().includes(q)
+      (it.email || '').toLowerCase().includes(q) ||
+      device.includes(q) // ✅ boleh cari Device ID
     );
-  }
+  });
+}
   function applyFilters(query, status, data){
     let arr = filterByQuery(query, data);
     if (status === 'Active'){
@@ -509,7 +513,34 @@ function getDeviceIdFromItem(it){
      '').toString().trim();
   return v;
 }
+function normalizeDeviceId(v){
+  v = (v || '').toString().trim();
+  if (!v || v === '-' || v.toLowerCase() === 'unknown') return '';
+  return v;
+}
 
+function getRowsWithDeviceOnly(arr){
+  return arr.filter(it => normalizeDeviceId(getDeviceIdFromItem(it)));
+}
+
+function getDuplicateDeviceRows(arr){
+  const counts = new Map();
+
+  arr.forEach(it => {
+    const id = normalizeDeviceId(getDeviceIdFromItem(it));
+    if (!id) return;
+    counts.set(id, (counts.get(id) || 0) + 1);
+  });
+
+  const dupSet = new Set([...counts.entries()]
+    .filter(([,c]) => c >= 2)
+    .map(([id]) => id)
+  );
+
+  const dupRows = arr.filter(it => dupSet.has(normalizeDeviceId(getDeviceIdFromItem(it))));
+
+  return { dupRows, dupSet, counts };
+}
 function applySameDeviceFilter(){
   if (!selectedDeviceId){
     showToast("Klik dulu Device ID pada table, baru tekan Same Device.", "error");
@@ -652,7 +683,7 @@ html += `
 
     <!-- ✅ NEW: Device ID -->
 <td class="deviceCell"
-    title="Click to select this Device ID${deviceSource ? ' ('+deviceSource+')' : ''}"
+    title="Device ID"
     style="cursor:pointer; color:#7dd3fc; font-weight:700;">
   ${esc(deviceId || '-')}
 </td>
@@ -1033,17 +1064,54 @@ function setupClearButton(){
 
       // Same IP button
   const sameBtn = document.getElementById('sameDeviceBtn');
-  if (sameBtn){
-    sameBtn.addEventListener('click', () => {
-      // kalau sedang same mode -> klik lagi jadi reset
-      if (sameDeviceMode){
-        clearSameDeviceFilter();
-        showToast("Same IP filter cleared.", "success");
-      } else {
-        applySameDeviceFilter();
-      }
-    });
-  }
+if (sameBtn){
+  sameBtn.addEventListener('click', () => {
+
+    // OFF mode -> balik normal ikut search + status
+    if (sameDeviceMode){
+      sameDeviceMode = false;
+      selectedDeviceId = null; // optional reset
+      rerenderWithCurrentFilters();
+      showToast("Same IP filter cleared.", "success");
+      return;
+    }
+
+    // ON mode
+    sameDeviceMode = true;
+
+    const q = currentQueryValue();
+    const s = currentStatusValue();
+
+    // ikut search + status dulu
+    let arr = applyFilters(q, s, allLoginData);
+
+    // 1) buang semua yang tiada deviceId
+    const withDevice = getRowsWithDeviceOnly(arr);
+
+    if (withDevice.length === 0){
+      renderLoginTable([]);
+      showToast("Tiada user yang mempunyai Device ID.", "error");
+      return;
+    }
+
+    // 2) cari duplicates
+    const { dupRows, dupSet } = getDuplicateDeviceRows(withDevice);
+
+    // jika tiada same device: still show device-only list
+    if (dupRows.length === 0){
+      renderLoginTable(withDevice);
+      showToast("Tiada same IP/device yang sama ditemui.", "error");
+      return;
+    }
+
+    // jika ada: show only duplicates
+    renderLoginTable(dupRows);
+
+    const groups = dupSet.size;      // berapa device yang duplicate
+    const users  = dupRows.length;   // berapa row/akaun terlibat
+    showToast(`Jumpa ${groups} same device. Total ${users} account.`, "success");
+  });
+}
     if (window.ResizeObserver){
       const ro = new ResizeObserver(() => fitViewportToRows(15));
       const tbody = document.getElementById('loginTableBody');
