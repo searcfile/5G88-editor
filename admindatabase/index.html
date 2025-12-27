@@ -500,13 +500,19 @@ let selectedDeviceId = null;
 let sameDeviceMode = false;
 
 function getDeviceIdFromItem(it){
-  const v = (it.deviceId || it.visitorId || '').trim();
+  const v =
+    (it.deviceId ||
+     it.visitorId ||
+     it.fingerprint ||
+     it.fp ||
+     it.device ||
+     '').toString().trim();
   return v;
 }
 
 function applySameDeviceFilter(){
   if (!selectedDeviceId){
-    showToast("Klik dulu Device ID pada table, baru tekan Same IP.", "error");
+    showToast("Klik dulu Device ID pada table, baru tekan Same Device.", "error");
     return;
   }
   sameDeviceMode = true;
@@ -636,7 +642,7 @@ function clearSameDeviceFilter(){
       no++;
       const active = !isEmailBlockedFast(email);
 
-const deviceId = (item.deviceId || item.visitorId || '').trim();
+const deviceId = getDeviceIdFromItem(item);
 
 html += `
   <tr data-email="${esc(email)}" data-device="${esc(deviceId || '')}">
@@ -645,11 +651,11 @@ html += `
     <td title="${esc(email)}">${esc(email)}</td>
 
     <!-- ✅ NEW: Device ID -->
-    <td class="deviceCell"
-        title="Click to select this Device ID"
-        style="cursor:pointer; color:#7dd3fc; font-weight:700;">
-      ${esc(deviceId || '-')}
-    </td>
+<td class="deviceCell"
+    title="Click to select this Device ID${deviceSource ? ' ('+deviceSource+')' : ''}"
+    style="cursor:pointer; color:#7dd3fc; font-weight:700;">
+  ${esc(deviceId || '-')}
+</td>
 
     <td title="${esc(tStr)}">${esc(tStr)}</td>
     <td>${statusCellHtml(active)}</td>
