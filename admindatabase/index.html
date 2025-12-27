@@ -148,9 +148,10 @@
 
   /* Column widths (updated indices) */
   .tbl th:nth-child(1), .tbl td:nth-child(1){ width:56px !important; text-align:center; }       /* No */
-  .tbl th:nth-child(6), .tbl td:nth-child(6){ width:170px !important; }                          /* Action (now col 6) */
-  .tbl th:nth-child(5), .tbl td:nth-child(5){ width:140px !important; }                          /* Active/Unactive */
-  .tbl td:nth-child(6){
+  .tbl th:nth-child(8), .tbl td:nth-child(8){ width:170px !important; } /* Action */
+  .tbl th:nth-child(7), .tbl td:nth-child(7){ width:140px !important; } /* Status */
+  .tbl th:nth-child(6), .tbl td:nth-child(6){ width:160px !important; } /* Last login */
+  .tbl th:nth-child(5), .tbl td:nth-child(5){ width:120px !important; } /* Source */
   text-align:left;
 }
   /* Status badge layout */
@@ -315,13 +316,14 @@
             <th>Name</th>
             <th>Email</th>
             <th>Device ID</th>
+            <th>Source</th> 
             <th>Last login</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody id="loginTableBody">
-          <tr><td colspan="6">Loading data...</td></tr>
+          <tr><td colspan="8">Loading data...</td></tr>
         </tbody>
       </table>
     </div>
@@ -656,7 +658,7 @@ function clearSameDeviceFilter(){
     const tbody = document.getElementById('loginTableBody');
 
     if (!dataArray.length){
-      tbody.innerHTML = '<tr><td colspan="7">No matching login data found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8">No matching login data found.</td></tr>';
       requestAnimationFrame(()=> fitViewportToRows(1));
       return;
     }
@@ -676,7 +678,7 @@ function clearSameDeviceFilter(){
 const deviceId = getDeviceIdFromItem(item);
 const browser  = (item.browser || '').toString().trim() || 'Unknown';
 const deviceLabel = deviceId ? `${browser}_${deviceId}` : '-';
-
+const deviceSource = (item.deviceSource || item.fpSource || item.source || '').toString().trim() || '-';
 html += `
   <tr data-email="${esc(email)}" data-device="${esc(deviceId || '')}">
     <td>${no}</td>
@@ -689,7 +691,11 @@ html += `
   ${esc(deviceLabel)}
 </td>
 
-    <td title="${esc(tStr)}">${esc(tStr)}</td>
+<td title="${esc(deviceSource)}" style="font-weight:700; color:#facc15;">
+  ${esc(deviceSource)}
+</td>
+
+<td title="${esc(tStr)}">${esc(tStr)}</td>
     <td>${statusCellHtml(active)}</td>
     <td>
       <div class="action-buttons">
@@ -757,7 +763,7 @@ function startRealtime(){
     searchBtn.classList.remove('loading');
   }, (error) => {
     document.getElementById('loginTableBody').innerHTML =
-      `<tr><td colspan="7">Error: ${error.message}</td></tr>`;
+      `<tr><td colspan="8">Error: ${error.message}</td></tr>`;
     searchBtn.classList.remove('loading');
   });
 }
