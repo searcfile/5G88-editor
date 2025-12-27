@@ -394,6 +394,32 @@ body{
 </div>
 <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
 <script>
+// ==============================
+// ✅ Fingerprint PRELOAD (anti-unknown)
+// ==============================
+let FP_PROMISE = null;
+
+function initFingerprint(){
+  if (FP_PROMISE) return FP_PROMISE;
+
+  FP_PROMISE = (async () => {
+    try{
+      if (!window.FingerprintJS) return null;  // CDN tak load / blocked
+      const fp  = await FingerprintJS.load();
+      const res = await fp.get();
+      return res?.visitorId || null;
+    }catch(e){
+      return null;
+    }
+  })();
+
+  return FP_PROMISE;
+}
+
+// warm-up awal supaya masa klik login dah siap
+document.addEventListener("DOMContentLoaded", () => {
+  initFingerprint();
+});
 /* ====== Popup welcome ====== */
 function closePopup(){ document.getElementById("popup").style.display="none"; }
 window.addEventListener("click", (e) => {
@@ -691,15 +717,22 @@ function hideBlockedPopup(){
   overlay.setAttribute('aria-hidden','true');
 }
 
-async function getVisitorId(){
-  try{
-    const fp = await FingerprintJS.load();
-    const res = await fp.get();
-    return res?.visitorId || "unknown";
-  }catch(e){
-    console.warn("Fingerprint error:", e);
-    return "unknown";
+function getFallbackDeviceId(){
+  // fallback paling stabil: simpan localStorage per device
+  let id = localStorage.getItem("fallbackDeviceId");
+  if (!id){
+    id = "fb_" + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
+    localStorage.setItem("fallbackDeviceId", id);
   }
+  return id;
+}
+
+async function getVisitorId(){
+  const fpId = await initFingerprint(); // dari preload
+  if (fpId) return fpId;
+
+  // kalau FingerprintJS blocked → jangan bagi "unknown"
+  return getFallbackDeviceId();
 }
 
 function getBrowserName(){
@@ -717,8 +750,10 @@ async function finishLogin(userLike){
   const emailKey = sanitizeKey(email.toLowerCase());
 
   // ✅ ambil device fingerprint + browser
-  const deviceId = await getVisitorId();
-  const browser  = getBrowserName();
+const fpId = await initFingerprint();
+const deviceId = fpId || getFallbackDeviceId();
+const deviceSource = fpId ? "fingerprintjs" : "fallback";
+const browser  = getBrowserName();
 
   db.ref("logins/blocked_users/" + emailKey).once("value").then(async snap=>{
     const isBlocked = snap.val();
