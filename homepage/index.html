@@ -2291,9 +2291,28 @@ async function doChange(){
 })();
 // ===== 🎄 CHRISTMAS MUSIC SYSTEM =====
 (function () {
+
+  // ✅ 1) SWITCH UTAMA (tukar true/false)
+  const CHRISTMAS_MUSIC_ENABLED = false; // ❌ OFF (dah lepas Christmas)
+  // const CHRISTMAS_MUSIC_ENABLED = true; // ✅ ON (bila nak hidupkan semula)
+
   const music = document.getElementById("christmasMusic");
   const btn   = document.getElementById("musicToggle");
   if (!music || !btn) return;
+
+  // ✅ 2) Kalau OFF → terus matikan semuanya, hide button, clear storage
+  if (!CHRISTMAS_MUSIC_ENABLED) {
+    try { music.pause(); } catch(e){}
+    music.currentTime = 0;
+    music.remove();                 // buang audio element dari DOM
+    btn.style.display = "none";     // sembunyi button
+    localStorage.removeItem("christmasMusic"); // buang state lama
+    return;                         // STOP script
+  }
+
+  // =========================
+  // (bawah ini kekalkan code kau)
+  // =========================
 
   music.volume = 0.3;
   let isPlaying = false;
@@ -2310,7 +2329,6 @@ async function doChange(){
       setLabel(true);
       localStorage.setItem("christmasMusic", "on");
     }).catch(err => {
-      // autoplay boleh diblock; tunggu klik user
       console.log("Autoplay blocked:", err);
     });
   }
@@ -2323,23 +2341,19 @@ async function doChange(){
     localStorage.setItem("christmasMusic", "off");
   }
 
-  // ==== INIT DARI LOCALSTORAGE ====
-  const savedState = localStorage.getItem("christmasMusic"); // "on" / "off" / null
+  const savedState = localStorage.getItem("christmasMusic");
   setLabel(savedState === "on");
 
-  // ==== TOGGLE TOMBOL ====
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
     if (isPlaying) {
       stopMusic();
     } else {
-      // klik tombol = izin jelas dari user
       localStorage.setItem("christmasMusic", "on");
       startMusic();
     }
   });
 
-  // ==== AUTOPLAY SETELAH INTERAKSI PERTAMA DI HALAMAN UTAMA ====
   function resumeIfWanted() {
     if (!isPlaying && localStorage.getItem("christmasMusic") === "on") {
       startMusic();
@@ -2354,7 +2368,6 @@ async function doChange(){
     document.addEventListener(ev, handler);
   });
 
-  // ==== PAUSE JIKA TAB TAK AKTIF, SAMBUNG BILA BALIK ====
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       if (!music.paused) {
