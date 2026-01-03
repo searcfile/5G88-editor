@@ -1353,14 +1353,18 @@ function recalcBalancesForLogRowsOnly() {
     row.children[5].textContent = end.toFixed(2);
   }
 
-  // update Set score negatif ikut EndMoney baris log paling atas
-  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-  if (setScoreRowTop && rows.length > 0) {
-    const topEndMoney = parseFloat(rows[0].children[5].textContent) || 0;
-    setScoreRowTop.children[1].textContent = `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-    setScoreRowTop.children[4].textContent = Math.abs(topEndMoney).toFixed(2);
-    setScoreRowTop.children[5].textContent = "0.00";
-  }
+const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+if (setScoreRowTop && rows.length > 0) {
+  const topEndMoney = parseFloat(rows[0].children[5].textContent) || 0;
+
+  // ✅ Set score amount ikut EndMoney row log paling atas (negatif)
+  setScoreRowTop.children[1].textContent =
+    `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+
+  // ✅ BeginMoney & EndMoney pada row set score sentiasa '-'
+  setScoreRowTop.children[4].textContent = "-";
+  setScoreRowTop.children[5].textContent = "-";
+}
 }
 
 function setRandomWin() {
