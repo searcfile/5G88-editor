@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <title>MEGA888 Generator</title>
   <style>html{visibility:hidden}</style>
-<script>
-(function(){
+  <script>
+  (function(){
   // ====== KONFIG ======
   const LOGIN_URL = "https://5g88-login.vercel.app/";
   const ALLOWED_PARENTS = new Set([
@@ -335,6 +335,13 @@ button {padding: 5px 10px;font-size: 14px;background: gold;color: black;border: 
   <input type="number" id="manualScoreInput" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
 
   <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
+  <!-- ✅ Set Win baru -->
+  <div style="display:flex; align-items:center;">
+  <label for="manualWinInput" style="color:white; height:38px; display:flex; align-items:center;">Win Amount:</label>
+  <input type="number" id="manualWinInput" value="0"
+         style="width:120px; height:20px; font-size:16px; padding:4px 6px; color:white;">
+  </div>
+  <button onclick="setRandomWin()" style="height:38px;">Set Win</button>
   <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
   <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button></div>
   <table id="gameLog">
@@ -357,6 +364,7 @@ button {padding: 5px 10px;font-size: 14px;background: gold;color: black;border: 
 document.addEventListener("contextmenu", e => e.preventDefault());document.onkeydown = function (e) {if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {return false;}};
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let hiddenRow = null;
+let lastWinRowIndex = -1; 
 const MAX_FREE_GAME_ROWS = 10;
 let autoFreeGameOn = false;   // ✅ status AUTO (off default)
 const gameData = {
@@ -925,7 +933,7 @@ function applyFreeGame() {
   }
 
   // lepas tanda Free game → kira semula BeginMoney & EndMoney
-  recalcBalancesAfterFreeGame();
+  recalcBalancesForLogRowsOnly();
 }
 // tombol Set Free Game
 document.getElementById('setFreeGameBtn').addEventListener('click', function(){
@@ -1060,6 +1068,7 @@ function generateLog() {
       manualTime: manualTimeInput,
       manualScore: manualScore,
       freeGame: freeGameCount,
+      lastWinRowIndex, manualWinAmount: parseFloat(document.getElementById("manualWinInput")?.value || "0") || 0,
       logs: tbody.innerHTML
     };
     localStorage.setItem("gameLogDataMega888", JSON.stringify(savedData));
@@ -1282,6 +1291,12 @@ function resetLog() {
   localStorage.removeItem('autoFreeGameOnMega888');
   autoFreeGameOn = false;
   updateAutoFreeGameButtonUI();
+  // ✅ reset win state
+lastWinRowIndex = null;
+manualWinAmount = 0;
+
+const winInput = document.getElementById("manualWinInput");
+if (winInput) winInput.value = 0;
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -1293,6 +1308,12 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!saved) return;
 
 const data = JSON.parse(saved);
+  // restore last set win info (kalau ada)
+  if (typeof data.lastWinRowIndex === "number") lastWinRowIndex = data.lastWinRowIndex;
+  if (typeof data.manualWinAmount === "number") {
+    const winInput = document.getElementById("manualWinInput");
+    if (winInput) winInput.value = data.manualWinAmount;
+  }
 document.getElementById("gameSelect").value = data.game;
 document.getElementById("manualTime").value = data.manualTime;
 document.getElementById("manualScore").value = data.manualScore;
@@ -1359,6 +1380,112 @@ function showToast(message, type = "success") {
     el.classList.remove("show");
     setTimeout(() => el.remove(), 350);
   }, 3500);
+}
+function recalcBalancesForLogRowsOnly() {
+  const tbody = document.querySelector("#gameLog tbody");
+  if (!tbody) return;
+
+  const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (!rows.length) return;
+
+  // dari bawah ke atas: Begin row atas ikut End row bawah
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const row = rows[i];
+
+    const betCell = row.querySelector(".bet-cell");
+    const isFree = betCell && betCell.textContent.trim().toLowerCase() === "free game";
+
+    const bet = isFree ? 0 : (parseFloat(betCell?.dataset.bet || betCell?.textContent) || 0);
+    const win = parseFloat(row.children[3].textContent) || 0;
+
+    let begin;
+    if (i === rows.length - 1) {
+      begin = parseFloat(row.children[4].textContent) || 0;
+    } else {
+      begin = parseFloat(rows[i + 1].children[5].textContent) || 0;
+      row.children[4].textContent = begin.toFixed(2);
+    }
+
+    const end = begin - bet + win;
+    row.children[5].textContent = end.toFixed(2);
+  }
+
+const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+if (setScoreRowTop && rows.length > 0) {
+  const topEndMoney = parseFloat(rows[0].children[5].textContent) || 0;
+
+  // ✅ Set score amount ikut EndMoney row log paling atas (negatif)
+  setScoreRowTop.children[1].textContent =
+    `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
+
+  // ✅ BeginMoney & EndMoney pada row set score sentiasa '-'
+  setScoreRowTop.children[4].textContent = "-";
+  setScoreRowTop.children[5].textContent = "-";
+}
+}
+
+function setRandomWin() {
+  const amount = parseFloat(document.getElementById("manualWinInput").value);
+  if (isNaN(amount) || amount < 0) {
+    showToast("❌ Win Amount tidak sah", "error");
+    return;
+  }
+
+  const tbody = document.querySelector("#gameLog tbody");
+  if (!tbody) return;
+
+  const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (rows.length !== 10) {
+    showToast("❌ Sila tekan Change dulu supaya ada 10 baris log.", "info");
+    return;
+  }
+
+  // ✅ cari candidate: log-row sahaja + bukan free game
+  const candidates = [];
+  rows.forEach((r, idx) => {
+    const betCell = r.querySelector(".bet-cell");
+    const isFree = betCell && betCell.textContent.trim().toLowerCase() === "free game";
+    if (!isFree) candidates.push(idx);
+  });
+
+  if (!candidates.length) {
+    showToast("❌ Semua baris jadi Free game. Tak boleh Set Win.", "info");
+    return;
+  }
+
+  // ✅ kalau sebelum ni dah pernah set, reset win lama dulu (jadi 0.00)
+  if (lastWinRowIndex >= 0 && rows[lastWinRowIndex]) {
+    rows[lastWinRowIndex].children[3].textContent = "0.00";
+  }
+
+  // ✅ pilih index random yang lain dari last (kalau boleh)
+  let pick = candidates[Math.floor(Math.random() * candidates.length)];
+  if (candidates.length > 1 && pick === lastWinRowIndex) {
+    pick = candidates[(candidates.indexOf(pick) + 1) % candidates.length];
+  }
+
+  // ✅ set win amount
+  rows[pick].children[3].textContent = amount.toFixed(2);
+  lastWinRowIndex = pick;
+
+  // ✅ recalc semua Begin/End supaya amount tu “tetap kira win”
+  recalcBalancesForLogRowsOnly();
+
+  // ✅ simpan ke localStorage (supaya refresh pun kekal)
+  setTimeout(() => {
+    const saved = localStorage.getItem("gameLogData918kiss");
+    if (!saved) return;
+
+    try {
+      const data = JSON.parse(saved);
+      data.logs = tbody.innerHTML;
+      data.lastWinRowIndex = lastWinRowIndex;
+      data.manualWinAmount = amount;
+      localStorage.setItem("gameLogData918kiss", JSON.stringify(data));
+    } catch (e) {}
+  }, 50);
+
+  showToast(`✅ Win ${amount.toFixed(2)} set win`, "success");
 }
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
