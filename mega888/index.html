@@ -1454,7 +1454,7 @@ function setRandomWin() {
     return;
   }
 
-  // 🔁 restore win lama balik ke asal
+  // ✅ restore win lama balik ke asal (200.00)
   if (lastWinRowIndex >= 0 && rows[lastWinRowIndex]) {
     const oldCell = rows[lastWinRowIndex].querySelector(".win-cell");
     if (oldCell && oldCell.dataset.originalWin !== undefined) {
@@ -1462,7 +1462,7 @@ function setRandomWin() {
     }
   }
 
-  // 🎯 pick row baru (elak pick sama)
+  // ✅ pick row baru (elak pick sama)
   let pick;
   do {
     pick = Math.floor(Math.random() * rows.length);
@@ -1471,14 +1471,32 @@ function setRandomWin() {
   const winCell = rows[pick].querySelector(".win-cell");
   if (!winCell) return;
 
-  // 💾 simpan win asal sebelum overwrite
-  winCell.dataset.originalWin = winCell.textContent.trim();
+  // ✅ simpan originalWin SEKALI sahaja (jangan overwrite!)
+  if (winCell.dataset.originalWin === undefined) {
+    winCell.dataset.originalWin = winCell.textContent.trim();
+  }
 
-  // ✨ set win baru
+  // ✅ set win baru
   winCell.textContent = amount.toFixed(2);
   lastWinRowIndex = pick;
 
+  // ✅ recalc balance
   recalcBalancesForLogRowsOnly();
+
+  // ✅ SAVE supaya refresh tak hilang (KEY MEGA888!)
+  setTimeout(() => {
+    const saved = localStorage.getItem("gameLogDataMega888");
+    if (!saved) return;
+
+    try {
+      const data = JSON.parse(saved);
+      data.logs = tbody.innerHTML;
+      data.lastWinRowIndex = lastWinRowIndex;
+      data.manualWinAmount = amount;
+      localStorage.setItem("gameLogDataMega888", JSON.stringify(data));
+    } catch (e) {}
+  }, 50);
+
   showToast(`✅ Win ${amount.toFixed(2)} pindah ke baris lain`, "success");
 }
 function copyGameLogImage() {
