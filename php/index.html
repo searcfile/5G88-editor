@@ -1005,16 +1005,21 @@ function generateLog() {
   // ✅ SIMPAN KE LOCALSTORAGE SELEPAS SEMUA SIAP
   setTimeout(() => {
     const freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
-    const savedData = {
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore: manualScore,
-      freeGame: freeGameCount,
-      lastWinRowIndex, manualWinAmount: parseFloat(document.getElementById("manualWinInput")?.value || "0") || 0,
-      logs: tbody.innerHTML
-    };
+const winBackup = Array.from(tbody.querySelectorAll("tr.log-row .win-cell"))
+  .map(td => td.dataset.originalWin || td.textContent.trim());
+
+const savedData = {
+  game,
+  bet,
+  pecahan: selectedPecahan,
+  manualTime: manualTimeInput,
+  manualScore: manualScore,
+  freeGame: freeGameCount,
+  lastWinRowIndex,
+  manualWinAmount: parseFloat(document.getElementById("manualWinInput")?.value || "0") || 0,
+  winBackup,        // ⬅️ simpan win asal setiap row
+  logs: tbody.innerHTML
+};
     localStorage.setItem("gameLogDataMega888", JSON.stringify(savedData));
   }, 50);
 }
@@ -1280,6 +1285,14 @@ document.getElementById("gameSelect").dispatchEvent(new Event("change"));
 
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
     // apply Free Game balik bila reload
+  if (Array.isArray(data.winBackup)) {
+  const winCells = document.querySelectorAll("tr.log-row .win-cell");
+  winCells.forEach((cell, i) => {
+    if (data.winBackup[i] !== undefined) {
+      cell.dataset.originalWin = data.winBackup[i];
+    }
+  });
+}
   applyFreeGame();
 });
 function showToast(message, type = "success") {
