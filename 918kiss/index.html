@@ -831,7 +831,7 @@ function generateLog() {
         <td>${log.game}</td>
         <td>${log.tableID}</td>
         <td class="bet-cell" data-base-bet="${log.bet}" data-bet="${log.bet}">${log.bet}</td>
-        <td>${log.win}</td>
+        <td class="win-cell" data-original-win="${log.win}">${log.win}</td>
         <td>${log.beginMoney}</td>
         <td>${log.endMoney}</td>
         <td>${log.dateTime}</td>
@@ -1244,36 +1244,49 @@ function setRandomWin() {
     return;
   }
 
-  const candidates = rows.map((_, idx) => idx);;
-
+  // ✅ candidates: semua row (kalau kau nak exclude free game, boleh tambah check kat sini)
+  const candidates = rows.map((_, idx) => idx);
   if (!candidates.length) {
-    showToast("❌ Semua baris jadi Free game. Tak boleh Set Win.", "info");
+    showToast("❌ Tak ada row untuk set win.", "info");
     return;
   }
 
-  // ✅ kalau sebelum ni dah pernah set, reset win lama dulu (jadi 0.00)
+  // ✅ 1) Restore win row lama balik ke asal (contoh 200.00)
   if (lastWinRowIndex >= 0 && rows[lastWinRowIndex]) {
-    rows[lastWinRowIndex].children[3].textContent = "0.00";
+    const prevRow = rows[lastWinRowIndex];
+    const prevWinCell = prevRow.querySelector(".win-cell");
+    if (prevWinCell) {
+      const original = parseFloat(prevWinCell.dataset.originalWin || "0") || 0;
+      prevWinCell.textContent = original.toFixed(2);
+    } else {
+      // fallback kalau win-cell tak jumpa
+      prevRow.children[3].textContent = "0.00";
+    }
   }
 
-  // ✅ pilih index random yang lain dari last (kalau boleh)
+  // ✅ 2) Pick row baru (elak pick sama kalau boleh)
   let pick = candidates[Math.floor(Math.random() * candidates.length)];
   if (candidates.length > 1 && pick === lastWinRowIndex) {
     pick = candidates[(candidates.indexOf(pick) + 1) % candidates.length];
   }
 
-  // ✅ set win amount
-  rows[pick].children[3].textContent = amount.toFixed(2);
+  // ✅ 3) Set win amount di row baru (contoh 1000.00)
+  const winCell = rows[pick].querySelector(".win-cell");
+  if (winCell) {
+    winCell.textContent = amount.toFixed(2);
+  } else {
+    rows[pick].children[3].textContent = amount.toFixed(2);
+  }
+
   lastWinRowIndex = pick;
 
-  // ✅ recalc semua Begin/End supaya amount tu “tetap kira win”
+  // ✅ 4) Recalc balance
   recalcBalancesForLogRowsOnly();
 
-  // ✅ simpan ke localStorage (supaya refresh pun kekal)
+  // ✅ 5) Save ke localStorage
   setTimeout(() => {
     const saved = localStorage.getItem("gameLogData918kiss");
     if (!saved) return;
-
     try {
       const data = JSON.parse(saved);
       data.logs = tbody.innerHTML;
@@ -1283,7 +1296,7 @@ function setRandomWin() {
     } catch (e) {}
   }, 50);
 
-  showToast(`✅ Win ${amount.toFixed(2)} set di baris random`, "success");
+  showToast(`✅ Win ${amount.toFixed(2)} pindah ke baris lain`, "success");
 }
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
