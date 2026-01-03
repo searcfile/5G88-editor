@@ -1037,7 +1037,7 @@ function generateLog() {
         <td>${log.game}</td>
         <td>${log.tableID}</td>
         <td class="bet-cell" data-base-bet="${log.bet}" data-bet="${log.bet}">${log.bet}</td>
-        <td>${log.win}</td>
+        <td class="win-cell" data-original-win="${log.win}">${log.win}</td>
         <td>${log.beginMoney}</td>
         <td>${log.endMoney}</td>
         <td>${log.dateTime}</td>
@@ -1062,16 +1062,21 @@ function generateLog() {
   // ✅ SIMPAN KE LOCALSTORAGE SELEPAS SEMUA SIAP
   setTimeout(() => {
     const freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
-    const savedData = {
-      game,
-      bet,
-      pecahan: selectedPecahan,
-      manualTime: manualTimeInput,
-      manualScore: manualScore,
-      freeGame: freeGameCount,
-      lastWinRowIndex, manualWinAmount: parseFloat(document.getElementById("manualWinInput")?.value || "0") || 0,
-      logs: tbody.innerHTML
-    };
+const winBackup = Array.from(tbody.querySelectorAll("tr.log-row .win-cell"))
+  .map(td => td.dataset.originalWin || td.textContent.trim());
+
+const savedData = {
+  game,
+  bet,
+  pecahan: selectedPecahan,
+  manualTime: manualTimeInput,
+  manualScore: manualScore,
+  freeGame: freeGameCount,
+  lastWinRowIndex,
+  manualWinAmount: parseFloat(document.getElementById("manualWinInput")?.value || "0") || 0,
+  winBackup,        // ⬅️ simpan win asal setiap row
+  logs: tbody.innerHTML
+};
     localStorage.setItem("gameLogDataMega888", JSON.stringify(savedData));
   }, 50);
 }
@@ -1337,6 +1342,14 @@ document.getElementById("gameSelect").dispatchEvent(new Event("change"));
 
   document.querySelector("#gameLog tbody").innerHTML = data.logs;
     // apply Free Game balik bila reload
+  if (Array.isArray(data.winBackup)) {
+  const winCells = document.querySelectorAll("tr.log-row .win-cell");
+  winCells.forEach((cell, i) => {
+    if (data.winBackup[i] !== undefined) {
+      cell.dataset.originalWin = data.winBackup[i];
+    }
+  });
+}
   applyFreeGame();
 });
 function showToast(message, type = "success") {
@@ -1427,8 +1440,8 @@ if (setScoreRowTop && rows.length > 0) {
 
 function setRandomWin() {
   const amount = parseFloat(document.getElementById("manualWinInput").value);
-  if (isNaN(amount) || amount < 0) {
-    showToast("❌ Win Amount tidak sah", "error");
+  if (isNaN(amount) || amount <= 0) {
+    showToast("❌ Masukkan Win Amount dulu", "info");
     return;
   }
 
@@ -1437,50 +1450,36 @@ function setRandomWin() {
 
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length !== 10) {
-    showToast("❌ Sila tekan Change dulu supaya ada 10 baris log.", "info");
+    showToast("❌ Sila tekan Change dahulu", "info");
     return;
   }
 
-  const candidates = rows.map((_, idx) => idx);
-
-  if (!candidates.length) {
-    showToast("❌ Semua baris jadi Free game. Tak boleh Set Win.", "info");
-    return;
-  }
-
-  // ✅ kalau sebelum ni dah pernah set, reset win lama dulu (jadi 0.00)
+  // 🔁 restore win lama balik ke asal
   if (lastWinRowIndex >= 0 && rows[lastWinRowIndex]) {
-    rows[lastWinRowIndex].children[3].textContent = "0.00";
+    const oldCell = rows[lastWinRowIndex].querySelector(".win-cell");
+    if (oldCell && oldCell.dataset.originalWin !== undefined) {
+      oldCell.textContent = parseFloat(oldCell.dataset.originalWin).toFixed(2);
+    }
   }
 
-  // ✅ pilih index random yang lain dari last (kalau boleh)
-  let pick = candidates[Math.floor(Math.random() * candidates.length)];
-  if (candidates.length > 1 && pick === lastWinRowIndex) {
-    pick = candidates[(candidates.indexOf(pick) + 1) % candidates.length];
-  }
+  // 🎯 pick row baru (elak pick sama)
+  let pick;
+  do {
+    pick = Math.floor(Math.random() * rows.length);
+  } while (pick === lastWinRowIndex && rows.length > 1);
 
-  // ✅ set win amount
-  rows[pick].children[3].textContent = amount.toFixed(2);
+  const winCell = rows[pick].querySelector(".win-cell");
+  if (!winCell) return;
+
+  // 💾 simpan win asal sebelum overwrite
+  winCell.dataset.originalWin = winCell.textContent.trim();
+
+  // ✨ set win baru
+  winCell.textContent = amount.toFixed(2);
   lastWinRowIndex = pick;
 
-  // ✅ recalc semua Begin/End supaya amount tu “tetap kira win”
   recalcBalancesForLogRowsOnly();
-
-  // ✅ simpan ke localStorage (supaya refresh pun kekal)
-  setTimeout(() => {
-    const saved = localStorage.getItem("gameLogData918kiss");
-    if (!saved) return;
-
-    try {
-      const data = JSON.parse(saved);
-      data.logs = tbody.innerHTML;
-      data.lastWinRowIndex = lastWinRowIndex;
-      data.manualWinAmount = amount;
-      localStorage.setItem("gameLogData918kiss", JSON.stringify(data));
-    } catch (e) {}
-  }, 50);
-
-  showToast(`✅ Win ${amount.toFixed(2)} set win`, "success");
+  showToast(`✅ Win ${amount.toFixed(2)} pindah ke baris lain`, "success");
 }
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
