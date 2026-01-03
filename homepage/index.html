@@ -73,51 +73,7 @@
  .user-dropdown {position: relative;display: inline-block;}
  .user-button {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 5px;background-color: transparent;color: rgba(255,255,255,0.85);border:1px solid #424242;border-radius: 6px;padding: 0px 15px;font-size: 14px;cursor: pointer;white-space: nowrap;height: 32px;transition: all 0.3s ease;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);}
  .user-button:hover {border:1px solid #ffe34d;background-color: #141414;color: #ffe34d;}.user-button:active {border: 1px solid gold;background-color: #141414;color: gold;}
-/* ✅ Pastikan tombol & tab bisa dipasangi salju */
-.live-chat-button,
-.tab,.user-button,#notifButton,.sidebar a {
-  position: relative;
-  overflow: visible;
-}
 
-/* ❄️ SALJU KECIL DI ATAS – POSISI KANAN */
-.live-chat-button::before,
-.tab::before,.user-button::before,#notifButton::before,.sidebar a::before {
-  content: "";
-  position: absolute;
-  top: -4px;            /* lebih dekat ke tombol */
-  right: 6px;           /* ✅ pindah ke KANAN */
-  width: 40%;           /* ✅ hanya sebagian, tidak full */
-  height: 6px;          /* ✅ SALJU KECIL */
-  background: linear-gradient(
-    to bottom,
-    #ffffff 0%,
-    #eef6ff 100%
-  );
-  border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(255,255,255,0.5);
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* ❄️ Lelehan kecil (drip mini) di kanan */
-.live-chat-button::after,
-.tab::after,.user-button::after,#notifButton::after,.sidebar a::after {
-  content: "";
-  position: absolute;
-  top: -1px;
-  right: 16px;        /* ✅ ikut kanan */
-  width: 3px;
-  height: 8px;        /* ✅ drip pendek */
-  background: linear-gradient(to bottom, #ffffff, rgba(255,255,255,0));
-  border-radius: 50%;
-  box-shadow:
-    8px 2px 0 0 #ffffff,
-    16px 4px 0 0 #ffffff;
-  pointer-events: none;
-  opacity: 0.8;
-  z-index: 4;
-}
  .dropdown-content {
   display: none;
   position: absolute;
