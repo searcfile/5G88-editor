@@ -1243,13 +1243,7 @@ function setRandomWin() {
     return;
   }
 
-  // ✅ cari candidate: log-row sahaja + bukan free game
-  const candidates = [];
-  rows.forEach((r, idx) => {
-    const betCell = r.querySelector(".bet-cell");
-    const isFree = betCell && betCell.textContent.trim().toLowerCase() === "free game";
-    if (!isFree) candidates.push(idx);
-  });
+  const candidates = rows.map((_, idx) => idx);;
 
   if (!candidates.length) {
     showToast("❌ Semua baris jadi Free game. Tak boleh Set Win.", "info");
