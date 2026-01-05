@@ -3,11 +3,19 @@
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "Permissions-Policy",
-          "value": "clipboard-write=(self)"
-        }
+        { "key": "Permissions-Policy", "value": "clipboard-write=(self)" },
+        { "key": "Cross-Origin-Embedder-Policy", "value": "unsafe-none" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" }
       ]
     }
+  ],
+  "routes": [
+    { "src": "^/google7a6c9bd744ed11d8\\.html$", "dest": "/google7a6c9bd744ed11d8.html" },
+
+    { "src": "^/$", "dest": "/homepage/index.html" },
+    { "src": "^/robots\\.txt$", "dest": "/homepage/robots.txt" },
+    { "src": "^/sitemap\\.xml$", "dest": "/homepage/sitemap.xml" },
+
+    { "src": "^/(.*)$", "dest": "/homepage/$1" }
   ]
 }
