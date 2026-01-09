@@ -15,8 +15,29 @@
     };
 
     const autoIntervals = {};
+function formatLastUpdatedNow(){
+  const d = new Date();
+  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const date = d.toLocaleDateString('en-GB');
+  return `${time} ${date}`;
+}
 
-    function createPlatform(name, tips, rowId) {
+function setLastUpdatedFromCopy(name){
+  const stamp = formatLastUpdatedNow();
+
+  const el = document.getElementById('time-' + name);
+  if (el) el.innerText = `Last Updated on ${stamp}`;
+
+  // ✅ simpan supaya refresh kekal
+  localStorage.setItem(`lastUpdated-${name}`, stamp);
+}
+
+function restoreLastUpdated(name){
+  const saved = localStorage.getItem(`lastUpdated-${name}`);
+  const el = document.getElementById('time-' + name);
+  if (saved && el) el.innerText = `Last Updated on ${saved}`;
+}
+function createPlatform(name, tips, rowId) {
   const container = document.createElement('div');
   container.className = 'platform-box';
   container.setAttribute('data-platform', name.toLowerCase());
@@ -62,7 +83,7 @@
   `;
 
   document.getElementById(rowId).appendChild(container);
-
+  restoreLastUpdated(name);
   // ✅ Restore tombol NUMBER jika sebelumnya aktif
   const numberStatus = localStorage.getItem(`number-${name}`);
   if (numberStatus === 'on') {
@@ -92,7 +113,6 @@ function renderTips(name, tips) {
   });
 
   el.innerHTML = content;
-  updateTime(name);
 }
 
     function refreshList(name) {
@@ -110,6 +130,7 @@ function renderTips(name, tips) {
   
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(text).then(() => {
+    setLastUpdatedFromCopy(name);
       showCopyNotice(button);
     }).catch(() => {
       fallbackCopy();
@@ -131,6 +152,7 @@ function renderTips(name, tips) {
     } catch (err) {}
     document.body.removeChild(tempInput);
     showCopyNotice(button);
+    setLastUpdatedFromCopy(name);
   }
 
   function showCopyNotice(button) {
@@ -180,12 +202,6 @@ function renderTips(name, tips) {
   }
 }
 
-    function updateTime(name) {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const dateString = now.toLocaleDateString('en-GB');
-      document.getElementById('time-' + name).innerText = `Last Updated on ${timeString} ${dateString}`;
-    }
 
     function filterPlatforms(query) {
       const allBoxes = document.querySelectorAll('.platform-box');
