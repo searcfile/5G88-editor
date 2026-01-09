@@ -3,63 +3,6 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Maybank Editor</title>
-  <style>html{visibility:hidden}</style>
-  <script>
-  (function(){
-  // ====== KONFIG ======
-  const LOGIN_URL = "https://5g88-login.vercel.app/";
-  const ALLOWED_PARENTS = new Set([
-    "https://searcfile.github.io",
-    "https://5g88-main.vercel.app",
-  ]);
-  const TIMEOUT_MS = 3500; // lebih longgar
-
-  // redirect helper (samakan param dengan parent: ?redirect=)
-  function goLogin(){
-    const rt = encodeURIComponent(location.href);
-    location.replace(`${LOGIN_URL}?redirect=${rt}`);
-  }
-
-  // Jika dibuka langsung (bukan di iframe) → paksa login page
-  if (window.top === window.self) { goLogin(); return; }
-
-  let authed = false;
-  let timeoutId = null;
-
-  // Minta parent kirim data login (handshake)
-  function requestLoginFromParent(){
-    try {
-      window.parent.postMessage({ type: "request-login" }, "*");
-      window.parent.postMessage({ type: "child-ready" }, "*");
-    } catch(_) {}
-  }
-
-  function onMsg(ev){
-    // Validasi origin dulu
-    if (!ALLOWED_PARENTS.has(ev.origin)) return;
-
-    const d = ev.data || {};
-    if (d.type === "user-login" && d.user && typeof d.user.email === "string") {
-      authed = true;
-      try { sessionStorage.setItem("child_login_user", d.user.email.toLowerCase()); } catch(_){}
-      document.documentElement.style.visibility = "visible";
-      window.removeEventListener("message", onMsg);
-      if (timeoutId) clearTimeout(timeoutId);
-    }
-  }
-
-  window.addEventListener("message", onMsg, false);
-  requestLoginFromParent();
-
-  // fallback: kalau parent tidak kirim-kirim, redirect ke login
-  timeoutId = setTimeout(() => {
-    if (!authed) {
-      window.removeEventListener("message", onMsg);
-      goLogin();
-    }
-  }, TIMEOUT_MS);
-})();
-</script>
 <style type="text/css">
   span.cls_002{font-family:Arial,serif;font-size:18.1px;color:#000;font-weight:bold}
   div.cls_002{font-family:Arial,serif;font-size:18.1px;color:#000;font-weight:bold}
@@ -158,15 +101,29 @@ function loadState(){
 
 // panggil selepas DOM tersedia
 document.addEventListener('DOMContentLoaded', () => {
-  // pulihkan kalau ada
   loadState();
 
-  // simpan bila input berubah (supaya refresh tetap kekal walau belum tekan Create)
+  // ✅ LIVE sekali bila page load
+  liveUpdateDate();
+  liveUpdateAmount();
+
   ["inRef","inDate","dd","mm","yyyy","hh","ii","ss","inAmount"].forEach(id=>{
     const el = document.getElementById(id);
-    if (el){
-      el.addEventListener('input', saveState);
-      el.addEventListener('change', saveState);
+    if (!el) return;
+
+    // simpan state
+    el.addEventListener('input', saveState);
+    el.addEventListener('change', saveState);
+
+    // ✅ LIVE update preview
+    if (id === "inAmount") {
+      el.addEventListener('input', liveUpdateAmount);
+      el.addEventListener('change', liveUpdateAmount);
+    }
+
+    if (id === "inDate" || ["dd","mm","yyyy","hh","ii","ss"].includes(id)) {
+      el.addEventListener('input', liveUpdateDate);
+      el.addEventListener('change', liveUpdateDate);
     }
   });
 });
@@ -224,6 +181,21 @@ function create() {
   document.getElementById("amount").textContent = inAmount;
 
   saveState(); // simpan setiap kali create
+}
+function liveUpdateAmount(){
+  const v = document.getElementById("inAmount")?.value || "";
+  document.getElementById("amount").textContent = v;
+}
+
+function liveUpdateDate(){
+  // kalau mode 0: guna input inDate
+  if (counter == 0) {
+    const v = document.getElementById("inDate")?.value || "";
+    document.getElementById("date").textContent = v;
+  } else {
+    // mode 1: guna dd/mm/yyyy/hh/ii/ss
+    change2();
+  }
 }
 
 function reset() {
@@ -284,6 +256,7 @@ function now() {
   document.getElementById("inDate").value = `${nDay} ${nMonth} ${nYear} ${nHour}:${nMin}:${nSec}`;
 
   saveState(); // simpan tarikh semasa
+  liveUpdateDate();
 }
 </script>
 </head>
