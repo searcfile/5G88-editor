@@ -59,12 +59,7 @@
 /* ==========================
    LOCK DEVTOOLS SHORTCUTS
    ========================== */
-document.addEventListener("contextmenu", (e) => e.preventDefault());
-document.onkeydown = function (e) {
-  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase()))) {
-    return false;
-  }
-};
+
 
 console.log(
   "Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' "
