@@ -3,6 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <title>SCR888H5 Generator</title>
+  <style>html{visibility:hidden}</style>
+  <script>
+  (function(){
+  // ====== KONFIG ======
+  const LOGIN_URL = "https://5g88-login.vercel.app/";
+  const ALLOWED_PARENTS = new Set([
+    "https://searcfile.github.io",
+    "https://5g88-main.vercel.app",
+  ]);
+  const TIMEOUT_MS = 3500; // lebih longgar
+
+  // redirect helper (samakan param dengan parent: ?redirect=)
+  function goLogin(){
+    const rt = encodeURIComponent(location.href);
+    location.replace(`${LOGIN_URL}?redirect=${rt}`);
+  }
+
+  // Jika dibuka langsung (bukan di iframe) → paksa login page
+  if (window.top === window.self) { goLogin(); return; }
+
+  let authed = false;
+  let timeoutId = null;
+
+  // Minta parent kirim data login (handshake)
+  function requestLoginFromParent(){
+    try {
+      window.parent.postMessage({ type: "request-login" }, "*");
+      window.parent.postMessage({ type: "child-ready" }, "*");
+    } catch(_) {}
+  }
+
+  function onMsg(ev){
+    // Validasi origin dulu
+    if (!ALLOWED_PARENTS.has(ev.origin)) return;
+
+    const d = ev.data || {};
+    if (d.type === "user-login" && d.user && typeof d.user.email === "string") {
+      authed = true;
+      try { sessionStorage.setItem("child_login_user", d.user.email.toLowerCase()); } catch(_){}
+      document.documentElement.style.visibility = "visible";
+      window.removeEventListener("message", onMsg);
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  }
+
+  window.addEventListener("message", onMsg, false);
+  requestLoginFromParent();
+
+  // fallback: kalau parent tidak kirim-kirim, redirect ke login
+  timeoutId = setTimeout(() => {
+    if (!authed) {
+      window.removeEventListener("message", onMsg);
+      goLogin();
+    }
+  }, TIMEOUT_MS);
+})();
+</script>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
   <style>
   body {-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;font-family: 'Source Sans 3', 'Source Sans Pro', Arial, sans-serif;font-size: 14px;line-height: 1.42857;font-weight: 400;background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%) !important;margin:0 0 20px;overflow-x: hidden;scrollbar-width: none;-ms-overflow-style: none;}
@@ -13,6 +70,7 @@
   th {padding: 22px 26px;border: 2.5px solid #ddd;background: #3c8dbc;color: white;text-align: center;}td {padding: 22px 26px; border: 1px solid #ddd;border: 1px solid rgba(0, 0, 0, 0.05);text-align: center;}
   #gameLog tbody td {padding-top: 10px;padding-bottom: 10px;line-height: 1.1;}
   .log-row {color: rgb(51, 51, 51);font-size: 26px; white-space: nowrap;background-color: #fff;}
+  .header {background-color: gold;height: 90px;width: 100%;display: flex;align-items: center;justify-content: center;margin-bottom: 10px;font-size: 30px;color: black;font-weight: bold;}
      th:nth-child(2),
      td:nth-child(2) {
      width: 0px; 
@@ -21,6 +79,18 @@
      td:nth-child(7) {
      width: 5px; 
      }
+  /* Hanya warna JackPot jadi merah */
+#gameLog tr.set-score-row.jackpot td.setscore,
+#gameLog tr.set-score-row.jackpot td.setscore * {
+  color: #dd4b39 !important;
+  font-weight: 750;
+}
+
+#gameLog tr.set-score-row:not(.jackpot) td.setscore,
+#gameLog tr.set-score-row:not(.jackpot) td.setscore * {
+  color: #000 !important;
+  font-weight: 750;
+}
   #gameLog td:nth-child(5),
   #gameLog th:nth-child(5) {
     width: 5px; 
@@ -247,9 +317,28 @@ button.clicked::after{
 .cs-items::-webkit-scrollbar {width: 8px;}
 .cs-items::-webkit-scrollbar-thumb {background: gold;border-radius: 6px;}
 .cs-items::-webkit-scrollbar-track {background: transparent;}
+  .set-win-box{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+#setWinBtn{
+  padding:6px 12px;
+  background:#1e90ff;
+  border:1px solid #1e90ff;
+  color:#fff;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+#setWinBtn:hover{
+  background:#0f6fdc;
+}
   </style>
 </head>
 <body>
+<div class="header">SCR888H5 GENERATE</div>
 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;margin-left:10px;">
   <button onclick="resetLog()" class="reset-button">Reset Log</button>
   <span style="color: rgba(255, 255, 255, 0.65); font-size: 16px;">Key (CTRL + C) Copy Image</span>
@@ -278,7 +367,6 @@ button.clicked::after{
 </div>
 
   <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
-  <button onclick="generateLog()" style="height: 38px;">Change</button>
   <div style="display: flex; align-items: center;">
   <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;">Add Score (optional):</label>
   <input type="number" id="manualScore" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
@@ -286,14 +374,24 @@ button.clicked::after{
   <div style="display: flex; align-items: center;">
   <label for="manualJackpot" style="color: white; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
   <input type="number" id="manualJackpot" value="0" style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
-
+    
+  <button onclick="addJackpot()" style="height: 38px;">Set Jackpot</button>
   <div style="display: flex; align-items: center;">
   <label for="manualScoreInput" style="color: white; height: 38px; display: flex; align-items: center;">Support Amount:</label>
   <input type="number" id="manualScoreInput" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
 
   <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
+  <!-- ✅ Set Win baru -->
+  <div style="display:flex; align-items:center;">
+  <label for="manualWinInput" style="color:white; height:38px; display:flex; align-items:center;">Win Amount:</label>
+  <input type="number" id="manualWinInput" value="0"
+         style="width:120px; height:20px; font-size:16px; padding:4px 6px; color:white;">
+  </div>
+  <button onclick="setRandomWin()" style="height:38px;">Set Winner</button></div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
+  <button onclick="generateLog()" style="height: 38px;">Change</button>
   <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
-  <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button>
+  <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button></div>
   </div>
   <table id="gameLog">
   <thead>
@@ -312,12 +410,13 @@ button.clicked::after{
 </table>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-document.addEventListener("contextmenu", e => e.preventDefault());document.onkeydown = function (e) {if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase()))) {return false;}};
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let skipAutoLoad = false;
 let hiddenRow = null;
 const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
 let autoFreeGameOn = false;   // ✅ status AUTO (off default)
+let lastWinRowIndex = -1;
+let manualWinAmount = 0;
 const gameData = {
 "TripleTwister": 
 { bets: [1.00, 2.50, 5.00, 12.50, 25.00],pecahan: {1.00: [20.00, 40.00, 60.00, 80.00],2.50: [40.00, 60.00, 80.00, 100.00],5.00: [60.00, 80.00, 100.00, 120.00],12.50: [50.00, 100.00, 200.00, 500.00],25.00: [50.00, 100.00, 200.00, 500.00]}},
@@ -866,7 +965,7 @@ logs.forEach(log => {
         <td>${log.game}</td>
         <td>${log.tableID}</td>
         <td class="bet-cell" data-base-bet="${log.bet}" data-bet="${log.bet}">${log.bet}</td>
-        <td>${log.win}</td>
+        <td class="win-cell" data-original-win="${log.win}">${log.win}</td>
         <td>${log.beginMoney}</td>
         <td>${log.endMoney}</td>
         <td>${log.dateTime}</td>
@@ -896,7 +995,9 @@ logs.forEach(log => {
       manualTime: manualTimeInput,
       manualScore: manualScore,
       freeGame: freeGameCount,
-      logs: tbody.innerHTML
+      logs: tbody.innerHTML,
+      lastWinRowIndex,
+      manualWinAmount,
     };
     localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
   }, 50);
@@ -940,10 +1041,10 @@ function addJackpot() {
     jackpotRow.remove();
   }
 
-  if (hiddenRow) {
-    tbody.appendChild(hiddenRow);
-    hiddenRow = null;
-  }
+if (typeof hiddenRow !== "undefined" && hiddenRow) {
+  tbody.appendChild(hiddenRow);
+  hiddenRow = null;
+}
 
   // ---- 2. Cari pasangan 2 baris NORMAL (bukan Free game) ----
   rows = Array.from(tbody.querySelectorAll("tr.log-row"));
@@ -1151,7 +1252,13 @@ const data = JSON.parse(saved);
 document.getElementById("gameSelect").value = data.game;
 document.getElementById("manualTime").value = data.manualTime;
 document.getElementById("manualScore").value = data.manualScore;
-
+  
+if (typeof data.lastWinRowIndex === "number") lastWinRowIndex = data.lastWinRowIndex;
+if (typeof data.manualWinAmount === "number") {
+  manualWinAmount = data.manualWinAmount;
+  const winInput = document.getElementById("manualWinInput");
+  if (winInput) winInput.value = manualWinAmount;
+}
 // kalau ada freeGame tersimpan, isi balik input
 if (typeof data.freeGame !== "undefined") {
   document.getElementById("freeGameInput").value = data.freeGame;
@@ -1214,6 +1321,115 @@ function showToast(message, type = "success") {
     el.classList.remove("show");
     setTimeout(() => el.remove(), 350);
   }, 3500);
+}
+function recalcBalancesForLogRowsOnly(){
+  const tbody = document.querySelector("#gameLog tbody");
+  if (!tbody) return;
+
+  const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (!rows.length) return;
+
+  // jalan dari bawah -> atas
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const row = rows[i];
+
+    const winCell = row.querySelector(".win-cell");
+    const betCell = row.querySelector(".bet-cell");
+
+    const win = parseFloat(winCell?.textContent || "0") || 0;
+
+    // bet ambil dari dataset.bet, kalau Free game bet=0
+    let bet = 0;
+    if (betCell) {
+      if (betCell.textContent.trim().toLowerCase() === "free game") bet = 0;
+      else bet = parseFloat(betCell.dataset.bet || betCell.textContent || "0") || 0;
+    }
+
+    // BeginMoney
+    let begin = 0;
+    if (i === rows.length - 1) {
+      // row paling bawah: guna begin sedia ada
+      begin = parseFloat(row.children[4].textContent || "0") || 0;
+    } else {
+      // row atas: begin = end row bawah
+      const belowEnd = parseFloat(rows[i + 1].children[5].textContent || "0") || 0;
+      begin = belowEnd;
+      row.children[4].textContent = begin.toFixed(2);
+    }
+
+    // EndMoney
+    const end = begin - bet + win;
+    row.children[5].textContent = end.toFixed(2);
+  }
+
+  // update Set Score ikut EndMoney paling atas
+  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+  if (setScoreRowTop && rows.length) {
+    const topEndMoney = parseFloat(rows[0].children[5].textContent || "0") || 0;
+    setScoreRowTop.children[1].innerHTML =
+      `<span class="badge">Set Score: ${(-Math.abs(topEndMoney)).toFixed(2)}</span>`;
+  }
+}
+function setRandomWin() {
+  const amount = parseFloat(document.getElementById("manualWinInput").value);
+  if (isNaN(amount) || amount <= 0) {
+    showToast("❌ Masukkan Win Amount dulu", "info");
+    return;
+  }
+
+  const tbody = document.querySelector("#gameLog tbody");
+  if (!tbody) return;
+
+  const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (rows.length !== 10) {
+    showToast("❌ Sila tekan Change dahulu", "info");
+    return;
+  }
+
+  // ✅ restore win lama balik ke asal (200.00)
+  if (lastWinRowIndex >= 0 && rows[lastWinRowIndex]) {
+    const oldCell = rows[lastWinRowIndex].querySelector(".win-cell");
+    if (oldCell && oldCell.dataset.originalWin !== undefined) {
+      oldCell.textContent = parseFloat(oldCell.dataset.originalWin).toFixed(2);
+    }
+  }
+
+  // ✅ pick row baru (elak pick sama)
+  let pick;
+  do {
+    pick = Math.floor(Math.random() * rows.length);
+  } while (pick === lastWinRowIndex && rows.length > 1);
+
+  const winCell = rows[pick].querySelector(".win-cell");
+  if (!winCell) return;
+
+  // ✅ simpan originalWin SEKALI sahaja (jangan overwrite!)
+  if (winCell.dataset.originalWin === undefined) {
+    winCell.dataset.originalWin = winCell.textContent.trim();
+  }
+
+  // ✅ set win baru
+  winCell.textContent = amount.toFixed(2);
+  lastWinRowIndex = pick;
+
+  // ✅ recalc balance
+  recalcBalancesForLogRowsOnly();
+
+  // ✅ SAVE supaya refresh tak hilang (KEY MEGA888!)
+  setTimeout(() => {
+    const saved = localStorage.getItem("gameLogDataScr888h5");
+    if (!saved) return;
+
+    try {
+      const data = JSON.parse(saved);
+      data.logs = tbody.innerHTML;
+      data.lastWinRowIndex = lastWinRowIndex;
+      data.manualWinAmount = amount;
+      localStorage.setItem("gameLogDataScr888h5", JSON.stringify(data));
+    } catch (e) {}
+  }, 50);
+
+  showToast(`✅ Win ${amount.toFixed(2)} pindah ke baris lain`, "success");
 }
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
