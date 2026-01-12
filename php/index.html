@@ -1250,49 +1250,54 @@ function showToast(message, type = "success") {
     setTimeout(() => el.remove(), 350);
   }, 3500);
 }
-function recalcBalancesForLogRowsOnly() {
+function recalcBalancesForLogRowsOnly(){
   const tbody = document.querySelector("#gameLog tbody");
   if (!tbody) return;
 
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (!rows.length) return;
 
-  // dari bawah ke atas: Begin row atas ikut End row bawah
+  // jalan dari bawah -> atas
   for (let i = rows.length - 1; i >= 0; i--) {
     const row = rows[i];
 
+    const winCell = row.querySelector(".win-cell");
     const betCell = row.querySelector(".bet-cell");
-    const isFree = betCell && betCell.textContent.trim().toLowerCase() === "free game";
 
-    const bet = isFree ? 0 : (parseFloat(betCell?.dataset.bet || betCell?.textContent) || 0);
-    const win = parseFloat(row.children[3].textContent) || 0;
+    const win = parseFloat(winCell?.textContent || "0") || 0;
 
-    let begin;
+    // bet ambil dari dataset.bet, kalau Free game bet=0
+    let bet = 0;
+    if (betCell) {
+      if (betCell.textContent.trim().toLowerCase() === "free game") bet = 0;
+      else bet = parseFloat(betCell.dataset.bet || betCell.textContent || "0") || 0;
+    }
+
+    // BeginMoney
+    let begin = 0;
     if (i === rows.length - 1) {
-      begin = parseFloat(row.children[4].textContent) || 0;
+      // row paling bawah: guna begin sedia ada
+      begin = parseFloat(row.children[4].textContent || "0") || 0;
     } else {
-      begin = parseFloat(rows[i + 1].children[5].textContent) || 0;
+      // row atas: begin = end row bawah
+      const belowEnd = parseFloat(rows[i + 1].children[5].textContent || "0") || 0;
+      begin = belowEnd;
       row.children[4].textContent = begin.toFixed(2);
     }
 
+    // EndMoney
     const end = begin - bet + win;
     row.children[5].textContent = end.toFixed(2);
   }
 
-const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-if (setScoreRowTop && rows.length > 0) {
-  const topEndMoney = parseFloat(rows[0].children[5].textContent) || 0;
-
-  // ✅ Set score amount ikut EndMoney row log paling atas (negatif)
-  setScoreRowTop.children[1].textContent =
-    `Set score：${(-Math.abs(topEndMoney)).toFixed(2)}`;
-
-  // ✅ BeginMoney & EndMoney pada row set score sentiasa '-'
-  setScoreRowTop.children[4].textContent = "-";
-  setScoreRowTop.children[5].textContent = "-";
+  // update Set Score ikut EndMoney paling atas
+  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+  if (setScoreRowTop && rows.length) {
+    const topEndMoney = parseFloat(rows[0].children[5].textContent || "0") || 0;
+    setScoreRowTop.children[1].innerHTML =
+      `<span class="badge">Set Score: ${(-Math.abs(topEndMoney)).toFixed(2)}</span>`;
+  }
 }
-}
-
 function setRandomWin() {
   const amount = parseFloat(document.getElementById("manualWinInput").value);
   if (isNaN(amount) || amount <= 0) {
