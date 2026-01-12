@@ -343,7 +343,7 @@ let skipAutoLoad = false;
 let hiddenRow = null;
 const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
 let autoFreeGameOn = false;   // ✅ status AUTO (off default)
-let lastWinRowIndex = null;
+let lastWinRowIndex = 1;
 let manualWinAmount = 0;
 const gameData = {
 "TripleTwister": 
@@ -1251,7 +1251,6 @@ function showToast(message, type = "success") {
   }, 3500);
 }
 function setRandomWin() {
-  document.getElementById("setWinBtn").addEventListener("click", setRandomWin);
   const amount = parseFloat(document.getElementById("manualWinInput").value);
   if (isNaN(amount) || amount <= 0) {
     showToast("❌ Masukkan Win Amount dulu", "info");
