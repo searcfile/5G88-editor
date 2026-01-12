@@ -247,6 +247,24 @@ button.clicked::after{
 .cs-items::-webkit-scrollbar {width: 8px;}
 .cs-items::-webkit-scrollbar-thumb {background: gold;border-radius: 6px;}
 .cs-items::-webkit-scrollbar-track {background: transparent;}
+  .set-win-box{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+#setWinBtn{
+  padding:6px 12px;
+  background:#1e90ff;
+  border:1px solid #1e90ff;
+  color:#fff;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+#setWinBtn:hover{
+  background:#0f6fdc;
+}
   </style>
 </head>
 <body>
@@ -292,6 +310,10 @@ button.clicked::after{
   <input type="number" id="manualScoreInput" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
 
   <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
+  <div class="set-win-box">
+  <input type="number" id="manualWinInput" placeholder="Win" step="0.01" value="0">
+  <button id="setWinBtn" type="button">SET WIN</button>
+  </div>
   <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
   <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button>
   </div>
@@ -318,6 +340,8 @@ let skipAutoLoad = false;
 let hiddenRow = null;
 const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
 let autoFreeGameOn = false;   // ✅ status AUTO (off default)
+let lastWinRowIndex = null;
+let manualWinAmount = 0;
 const gameData = {
 "TripleTwister": 
 { bets: [1.00, 2.50, 5.00, 12.50, 25.00],pecahan: {1.00: [20.00, 40.00, 60.00, 80.00],2.50: [40.00, 60.00, 80.00, 100.00],5.00: [60.00, 80.00, 100.00, 120.00],12.50: [50.00, 100.00, 200.00, 500.00],25.00: [50.00, 100.00, 200.00, 500.00]}},
@@ -866,7 +890,7 @@ logs.forEach(log => {
         <td>${log.game}</td>
         <td>${log.tableID}</td>
         <td class="bet-cell" data-base-bet="${log.bet}" data-bet="${log.bet}">${log.bet}</td>
-        <td>${log.win}</td>
+        <td class="win-cell" data-original-win="${log.win}">${log.win}</td>
         <td>${log.beginMoney}</td>
         <td>${log.endMoney}</td>
         <td>${log.dateTime}</td>
@@ -896,7 +920,9 @@ logs.forEach(log => {
       manualTime: manualTimeInput,
       manualScore: manualScore,
       freeGame: freeGameCount,
-      logs: tbody.innerHTML
+      logs: tbody.innerHTML,
+      lastWinRowIndex,
+      manualWinAmount,
     };
     localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
   }, 50);
@@ -1151,7 +1177,13 @@ const data = JSON.parse(saved);
 document.getElementById("gameSelect").value = data.game;
 document.getElementById("manualTime").value = data.manualTime;
 document.getElementById("manualScore").value = data.manualScore;
-
+  
+if (typeof data.lastWinRowIndex === "number") lastWinRowIndex = data.lastWinRowIndex;
+if (typeof data.manualWinAmount === "number") {
+  manualWinAmount = data.manualWinAmount;
+  const winInput = document.getElementById("manualWinInput");
+  if (winInput) winInput.value = manualWinAmount;
+}
 // kalau ada freeGame tersimpan, isi balik input
 if (typeof data.freeGame !== "undefined") {
   document.getElementById("freeGameInput").value = data.freeGame;
@@ -1214,6 +1246,67 @@ function showToast(message, type = "success") {
     el.classList.remove("show");
     setTimeout(() => el.remove(), 350);
   }, 3500);
+}
+function setRandomWin() {
+  document.getElementById("setWinBtn").addEventListener("click", setRandomWin);
+  const amount = parseFloat(document.getElementById("manualWinInput").value);
+  if (isNaN(amount) || amount <= 0) {
+    showToast("❌ Masukkan Win Amount dulu", "info");
+    return;
+  }
+
+  const tbody = document.querySelector("#gameLog tbody");
+  if (!tbody) return;
+
+  const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (rows.length !== 10) {
+    showToast("❌ Sila tekan Change dahulu", "info");
+    return;
+  }
+
+  // ✅ restore win lama balik
+  if (typeof lastWinRowIndex === "number" && rows[lastWinRowIndex]) {
+    const prevWinCell = rows[lastWinRowIndex].querySelector(".win-cell");
+    if (prevWinCell) {
+      const original = parseFloat(prevWinCell.dataset.originalWin || "0") || 0;
+      prevWinCell.textContent = original.toFixed(2);
+    }
+  }
+
+  // ✅ pick row baru (elak sama kalau boleh)
+  let pick = Math.floor(Math.random() * rows.length);
+  if (rows.length > 1 && pick === lastWinRowIndex) {
+    pick = (pick + 1) % rows.length;
+  }
+
+  // ✅ set win baru
+  const winCell = rows[pick].querySelector(".win-cell");
+  if (!winCell) {
+    showToast("❌ Win cell tak jumpa (pastikan ada class win-cell)", "error");
+    return;
+  }
+
+  winCell.textContent = amount.toFixed(2);
+  lastWinRowIndex = pick;
+  manualWinAmount = amount;
+
+  // ✅ recalc balance ikut win baru
+  recalcBalancesAfterFreeGame(); // atau recalcBalancesForLogRowsOnly() kalau kau ada function itu
+
+  // ✅ save balik ke localStorage supaya refresh kekal
+  setTimeout(() => {
+    const saved = localStorage.getItem("gameLogDataScr888h5");
+    if (!saved) return;
+    try {
+      const data = JSON.parse(saved);
+      data.logs = tbody.innerHTML;
+      data.lastWinRowIndex = lastWinRowIndex;
+      data.manualWinAmount = manualWinAmount;
+      localStorage.setItem("gameLogDataScr888h5", JSON.stringify(data));
+    } catch(e){}
+  }, 50);
+
+  showToast(`✅ Win ${amount.toFixed(2)} set pada row #${pick+1}`, "success");
 }
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
