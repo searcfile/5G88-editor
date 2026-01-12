@@ -310,12 +310,17 @@ button.clicked::after{
   <input type="number" id="manualScoreInput" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
 
   <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
-  <div class="set-win-box">
-  <input type="number" id="manualWinInput" placeholder="Win" step="0.01" value="0">
-  <button id="setWinBtn" type="button">SET WIN</button>
+  <!-- ✅ Set Win baru -->
+  <div style="display:flex; align-items:center;">
+  <label for="manualWinInput" style="color:white; height:38px; display:flex; align-items:center;">Win Amount:</label>
+  <input type="number" id="manualWinInput" value="0"
+         style="width:120px; height:20px; font-size:16px; padding:4px 6px; color:white;">
   </div>
+  <button onclick="setRandomWin()" style="height:38px;">Set Winner</button></div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
+  <button onclick="generateLog()" style="height: 38px;">Change</button>
   <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
-  <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button>
+  <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button></div>
   </div>
   <table id="gameLog">
   <thead>
