@@ -3,6 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <title>EVO888 Generator</title>
+    <style>html{visibility:hidden}</style>
+  <script>
+  (function(){
+  // ====== KONFIG ======
+  const LOGIN_URL = "https://5g88-login.vercel.app/";
+  const ALLOWED_PARENTS = new Set([
+    "https://searcfile.github.io",
+    "https://5g88-main.vercel.app",
+  ]);
+  const TIMEOUT_MS = 3500; // lebih longgar
+
+  // redirect helper (samakan param dengan parent: ?redirect=)
+  function goLogin(){
+    const rt = encodeURIComponent(location.href);
+    location.replace(`${LOGIN_URL}?redirect=${rt}`);
+  }
+
+  // Jika dibuka langsung (bukan di iframe) → paksa login page
+  if (window.top === window.self) { goLogin(); return; }
+
+  let authed = false;
+  let timeoutId = null;
+
+  // Minta parent kirim data login (handshake)
+  function requestLoginFromParent(){
+    try {
+      window.parent.postMessage({ type: "request-login" }, "*");
+      window.parent.postMessage({ type: "child-ready" }, "*");
+    } catch(_) {}
+  }
+
+  function onMsg(ev){
+    // Validasi origin dulu
+    if (!ALLOWED_PARENTS.has(ev.origin)) return;
+
+    const d = ev.data || {};
+    if (d.type === "user-login" && d.user && typeof d.user.email === "string") {
+      authed = true;
+      try { sessionStorage.setItem("child_login_user", d.user.email.toLowerCase()); } catch(_){}
+      document.documentElement.style.visibility = "visible";
+      window.removeEventListener("message", onMsg);
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  }
+
+  window.addEventListener("message", onMsg, false);
+  requestLoginFromParent();
+
+  // fallback: kalau parent tidak kirim-kirim, redirect ke login
+  timeoutId = setTimeout(() => {
+    if (!authed) {
+      window.removeEventListener("message", onMsg);
+      goLogin();
+    }
+  }, TIMEOUT_MS);
+})();
+</script>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
   <style>
   body {-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;font-family: 'Source Sans 3', 'Source Sans Pro', Arial, sans-serif;font-size: 14px;line-height: 1.42857;font-weight: 400;background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%) !important;margin:0 0 20px;overflow-x: hidden;scrollbar-width: none;-ms-overflow-style: none;}
@@ -288,7 +345,7 @@ button.clicked::after{
 </div>
 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;margin-left:10px;">
  <label for="gameSelect" style="color: white;padding-left:5px;">Game:</label><select id="gameSelect" class="select2" style="height: 38px; font-size: 16px; color: white;">
-    <option value="GreatChina">GreatChina</option><option value="AmazingThailand">AmazingThailand</option><option value="FairyGarden">FairyGarden</option><option value="TripleTwister">TripleTwister</option><option value="DolphinReef">DolphinReef</option><option value="GreatBlue">GreatBlue</option><option value="WaterMargin">WaterMargin</option><option value="PantherMoon">PantherMoon</option><option value="Laura">Laura</option><option value="HighWay">HighWay</option><option value="HalloweenFortune">HalloweenFortune</option><option value="SilverBullets">SilverBullets</option><option value="BigProsperity">BigProsperity</option><option value="GreatBlue">GreatBlue</option><option value="SafariHeat">SafariHeat</option><option value="Samurai">Samurai</option><option value="ZhaoCaiJinBao">ZhaoCaiJinBao</option><option value="FootBall">FootBall</option><option value="Iceland">Iceland</option><option value="GodOfWealth">GodOfWealth</option><option value="GoldenTour">GoldenTour</option><option value="Boyking">Boyking</option><option value="Victory">Victory</option><option value="GoldRush">GoldRush</option><option value="Amazon">Amazon</option>
+    <option value="BonusBears">BonusBears</option><option value="GreatChina">GreatChina</option><option value="AmazingThailand">AmazingThailand</option><option value="FairyGarden">FairyGarden</option><option value="TripleTwister">TripleTwister</option><option value="DolphinReef">DolphinReef</option><option value="GreatBlue">GreatBlue</option><option value="WaterMargin">WaterMargin</option><option value="PantherMoon">PantherMoon</option><option value="Laura">Laura</option><option value="HighWay">HighWay</option><option value="HalloweenFortune">HalloweenFortune</option><option value="SilverBullets">SilverBullets</option><option value="BigProsperity">BigProsperity</option><option value="GreatBlue">GreatBlue</option><option value="SafariHeat">SafariHeat</option><option value="Samurai">Samurai</option><option value="ZhaoCaiJinBao">ZhaoCaiJinBao</option><option value="FootBall">FootBall</option><option value="Iceland">Iceland</option><option value="GodOfWealth">GodOfWealth</option><option value="GoldenTour">GoldenTour</option><option value="Boyking">Boyking</option><option value="Victory">Victory</option><option value="GoldRush">GoldRush</option><option value="Amazon">Amazon</option>
   </select>
   <label for="betSelect" style="color: white;">Bet:</label><select id="betSelect" style="height: 38px; font-size: 16px; color: white;"></select>
   <label for="pecahanSelect" style="color: white;">Pecahan:</label>
@@ -409,6 +466,8 @@ const gameData = {
 { bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],pecahan: {1.00: [20.00, 40.00, 60.00, 80.00],1.25: [40.00, 60.00, 80.00, 100.00],1.50: [60.00, 80.00, 100.00, 120.00],1.75: [80.00, 100.00, 120.00, 140.00],2.00: [100.00, 120.00, 140.00, 160.00],2.25: [120.00, 140.00, 160.00, 180.00],2.50: [140.00, 160.00, 180.00, 200.00],6.25: [220.00, 240.00, 260.00, 280.00],12.50: [240.00, 260.00, 280.00, 300.00],25.00: [260.00, 280.00, 300.00, 500.00]}},
 "DolphinReef": 
 { bets: [1.00, 2.00, 5.00, 10.00, 20.00],pecahan: {1.00: [30.00, 60.00, 100.00, 130.00],2.00: [60.00, 90.00, 110.00, 150.00],5.00: [90.00, 120.00, 150.00, 180.00],10.00: [120.00, 150.00, 180.00, 210.00],20.00: [100.00, 150.00, 200.00, 500.00]}},
+"BonusBears": 
+{ bets: [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 6.25, 12.50, 25.00],pecahan: {1.00: [20.00, 40.00, 60.00, 80.00],1.25: [40.00, 60.00, 80.00, 100.00],1.50: [60.00, 80.00, 100.00, 120.00],1.75: [80.00, 100.00, 120.00, 140.00],2.00: [100.00, 120.00, 140.00, 160.00],2.25: [120.00, 140.00, 160.00, 180.00],2.50: [140.00, 160.00, 180.00, 200.00],6.25: [220.00, 240.00, 260.00, 280.00],12.50: [240.00, 260.00, 280.00, 300.00],25.00: [260.00, 280.00, 300.00, 500.00]}},
 "FairyGarden": 
 { bets: [1.00, 1.25, 1.75, 2.50, 3.00, 3.75, 5.00, 7.50, 12.50, 15.00, 25.00],pecahan: {1.00: [30.00, 50.00, 100.00, 130.00],1.25: [50.00, 80.00, 100.00, 150.00],1.75: [80.00, 100.00, 130.00, 180.00],2.50: [100.00, 130.00, 150.00, 200.00],3.00: [130.00, 150.00, 180.00, 220.00],3.75: [150.00, 180.00, 200.00, 240.00],5.00: [180.00, 200.00, 220.00, 260.00],7.50: [200.00, 240.00, 280.00, 320.00],12.50: [350.00, 400.00, 450.00, 500.00],15.00: [500.00, 550.00, 600.00, 650.00],25.00: [650.00, 700.00, 750.00, 800.00]}}
 };
