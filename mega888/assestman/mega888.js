@@ -1,3 +1,57 @@
+  (function(){
+  // ====== KONFIG ======
+  const LOGIN_URL = "https://5g88-login.vercel.app/";
+  const ALLOWED_PARENTS = new Set([
+    "https://searcfile.github.io",
+    "https://5g88-main.vercel.app",
+  ]);
+  const TIMEOUT_MS = 3500; // lebih longgar
+
+  // redirect helper (samakan param dengan parent: ?redirect=)
+  function goLogin(){
+    const rt = encodeURIComponent(location.href);
+    location.replace(`${LOGIN_URL}?redirect=${rt}`);
+  }
+
+  // Jika dibuka langsung (bukan di iframe) → paksa login page
+  if (window.top === window.self) { goLogin(); return; }
+
+  let authed = false;
+  let timeoutId = null;
+
+  // Minta parent kirim data login (handshake)
+  function requestLoginFromParent(){
+    try {
+      window.parent.postMessage({ type: "request-login" }, "*");
+      window.parent.postMessage({ type: "child-ready" }, "*");
+    } catch(_) {}
+  }
+
+  function onMsg(ev){
+    // Validasi origin dulu
+    if (!ALLOWED_PARENTS.has(ev.origin)) return;
+
+    const d = ev.data || {};
+    if (d.type === "user-login" && d.user && typeof d.user.email === "string") {
+      authed = true;
+      try { sessionStorage.setItem("child_login_user", d.user.email.toLowerCase()); } catch(_){}
+      document.documentElement.style.visibility = "visible";
+      window.removeEventListener("message", onMsg);
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  }
+
+  window.addEventListener("message", onMsg, false);
+  requestLoginFromParent();
+
+  // fallback: kalau parent tidak kirim-kirim, redirect ke login
+  timeoutId = setTimeout(() => {
+    if (!authed) {
+      window.removeEventListener("message", onMsg);
+      goLogin();
+    }
+  }, TIMEOUT_MS);
+})();
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let hiddenRow = null;
 let lastWinRowIndex = -1; 
