@@ -3,63 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>SCR888H5 Generator</title>
-   <style>html{visibility:hidden}</style>
-<script>
-(function(){
-  // ====== KONFIG ======
-  const LOGIN_URL = "https://5g88-login.vercel.app/";
-  const ALLOWED_PARENTS = new Set([
-    "https://searcfile.github.io",
-    "https://5g88-main.vercel.app",
-  ]);
-  const TIMEOUT_MS = 3500; // lebih longgar
-
-  // redirect helper (samakan param dengan parent: ?redirect=)
-  function goLogin(){
-    const rt = encodeURIComponent(location.href);
-    location.replace(`${LOGIN_URL}?redirect=${rt}`);
-  }
-
-  // Jika dibuka langsung (bukan di iframe) → paksa login page
-  if (window.top === window.self) { goLogin(); return; }
-
-  let authed = false;
-  let timeoutId = null;
-
-  // Minta parent kirim data login (handshake)
-  function requestLoginFromParent(){
-    try {
-      window.parent.postMessage({ type: "request-login" }, "*");
-      window.parent.postMessage({ type: "child-ready" }, "*");
-    } catch(_) {}
-  }
-
-  function onMsg(ev){
-    // Validasi origin dulu
-    if (!ALLOWED_PARENTS.has(ev.origin)) return;
-
-    const d = ev.data || {};
-    if (d.type === "user-login" && d.user && typeof d.user.email === "string") {
-      authed = true;
-      try { sessionStorage.setItem("child_login_user", d.user.email.toLowerCase()); } catch(_){}
-      document.documentElement.style.visibility = "visible";
-      window.removeEventListener("message", onMsg);
-      if (timeoutId) clearTimeout(timeoutId);
-    }
-  }
-
-  window.addEventListener("message", onMsg, false);
-  requestLoginFromParent();
-
-  // fallback: kalau parent tidak kirim-kirim, redirect ke login
-  timeoutId = setTimeout(() => {
-    if (!authed) {
-      window.removeEventListener("message", onMsg);
-      goLogin();
-    }
-  }, TIMEOUT_MS);
-})();
-</script>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
   <style>
   body {-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;font-family: 'Source Sans 3', 'Source Sans Pro', Arial, sans-serif;font-size: 14px;line-height: 1.42857;font-weight: 400;background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%) !important;margin:0 0 20px;overflow-x: hidden;scrollbar-width: none;-ms-overflow-style: none;}
