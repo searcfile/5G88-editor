@@ -1130,7 +1130,7 @@ function setRandomWin() {
     } catch (e) {}
   }, 50);
 
-  showToast(`✅ Win ${amount.toFixed(2)} pindah ke baris lain`, "success");
+  showToast(`Win ${amount.toFixed(2)} Has change other rows`, "success");
 }
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
