@@ -940,13 +940,11 @@ function addJackpot() {
   const allRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   const specialRows = tbody.querySelectorAll("tr.set-score-row");
 
-// ✅ kekalkan 10 log-row + special rows (setscore + jackpot + dll)
-const limit = 10 + specialRows.length;
+  while (allRows.length + specialRows.length > 11) {
+    const lastRow = allRows.pop();
+    if (lastRow) lastRow.remove();
+  }
 
-while (allRows.length + specialRows.length > limit) {
-  const lastRow = allRows.pop();
-  if (lastRow) lastRow.remove();
-}
   const updatedRows = Array.from(tbody.querySelectorAll("tr.log-row"));
   for (let i = updatedRows.length - 1; i > 0; i--) {
     const current = updatedRows[i];
@@ -1235,36 +1233,13 @@ function setRandomWin() {
   const tbody = document.querySelector("#gameLog tbody");
   if (!tbody) return;
 
-  // ✅ ambil log-row sahaja (jackpot / setscore tak termasuk pun, sebab class berbeza)
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
-
-  // ✅ kalau terlalu sikit baris, memang tak boleh pindah
-  if (rows.length < 2) {
+  if (rows.length !== 10) {
     showToast("❌ Sila tekan Change dahulu", "info");
     return;
   }
 
-  // ✅ index yang tak boleh dipilih (baris log yang ada JackPot row DI BAWAH dia)
-  // sebab jackpot row disisipkan: prevRow + [JackPot row] + targetRow
-  // prevRow adalah row sebelum jackpot row, jadi kita lock prevRow (jangan letak Winner situ)
-  const blocked = new Set();
-  const jackpotRows = Array.from(tbody.querySelectorAll("tr.set-score-row.jackpot"));
-  jackpotRows.forEach(jp => {
-    // cari log-row sebelum jackpot row
-    let prev = jp.previousElementSibling;
-    while (prev && !prev.classList.contains("log-row")) prev = prev.previousElementSibling;
-    if (prev) blocked.add(prev);
-  });
-
-  // ✅ calon row untuk letak winner (bukan row yang blocked)
-  let candidates = rows.filter(r => !blocked.has(r));
-
-  if (candidates.length === 0) {
-    showToast("❌ Semua baris terkunci sebab Jackpot", "info");
-    return;
-  }
-
-  // ✅ restore win lama (kalau ada)
+  // ✅ restore win lama balik ke asal (200.00)
   if (lastWinRowIndex >= 0 && rows[lastWinRowIndex]) {
     const oldCell = rows[lastWinRowIndex].querySelector(".win-cell");
     if (oldCell && oldCell.dataset.originalWin !== undefined) {
@@ -1272,37 +1247,27 @@ function setRandomWin() {
     }
   }
 
-  // ✅ pilih row baru (elak pilih row yang sama)
-  let pickRow;
-  let tries = 0;
+  // ✅ pick row baru (elak pick sama)
+  let pick;
   do {
-    pickRow = candidates[Math.floor(Math.random() * candidates.length)];
-    tries++;
-  } while (
-    pickRow === rows[lastWinRowIndex] &&
-    candidates.length > 1 &&
-    tries < 30
-  );
+    pick = Math.floor(Math.random() * rows.length);
+  } while (pick === lastWinRowIndex && rows.length > 1);
 
-  const winCell = pickRow.querySelector(".win-cell");
+  const winCell = rows[pick].querySelector(".win-cell");
   if (!winCell) return;
 
-  // ✅ simpan originalWin sekali sahaja
+  // ✅ simpan originalWin SEKALI sahaja (jangan overwrite!)
   if (winCell.dataset.originalWin === undefined) {
     winCell.dataset.originalWin = winCell.textContent.trim();
   }
 
   // ✅ set win baru
   winCell.textContent = amount.toFixed(2);
-
-  // ✅ update lastWinRowIndex ikut index sebenar dalam rows[]
-  lastWinRowIndex = rows.indexOf(pickRow);
+  lastWinRowIndex = pick;
 
   // ✅ recalc balance
   recalcBalancesForLogRowsOnly();
-  applyManualScoreAsTopEndMoneyIfOff();
-
-  // ✅ SAVE supaya refresh tak hilang
+  // ✅ SAVE supaya refresh tak hilang (KEY MEGA888!)
   setTimeout(() => {
     const saved = localStorage.getItem("gameLogDataMega888");
     if (!saved) return;
