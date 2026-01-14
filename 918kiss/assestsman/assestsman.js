@@ -1091,7 +1091,7 @@ function applyManualScoreAsTopEndMoneyIfOff() {
 function setRandomWin() {
   const amount = parseFloat(document.getElementById("manualWinInput").value);
   if (isNaN(amount) || amount < 0) {
-    showToast("❌ Win Amount tidak sah", "error");
+    showToast("This amount not valid!", "error");
     return;
   }
 
@@ -1100,14 +1100,14 @@ function setRandomWin() {
 
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length !== 10) {
-    showToast("❌ Sila tekan Change dulu supaya ada 10 baris log.", "info");
+    showToast("Please click change make new!", "info");
     return;
   }
 
   // ✅ candidates: semua row (kalau kau nak exclude free game, boleh tambah check kat sini)
   const candidates = rows.map((_, idx) => idx);
   if (!candidates.length) {
-    showToast("❌ Tak ada row untuk set win.", "info");
+    showToast("Rows not availabe!", "info");
     return;
   }
 
