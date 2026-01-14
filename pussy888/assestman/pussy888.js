@@ -1,8 +1,64 @@
+  (function(){
+  // ====== KONFIG ======
+  const LOGIN_URL = "https://5g88-login.vercel.app/";
+  const ALLOWED_PARENTS = new Set([
+    "https://searcfile.github.io",
+    "https://5g88-main.vercel.app",
+  ]);
+  const TIMEOUT_MS = 3500; // lebih longgar
+
+  // redirect helper (samakan param dengan parent: ?redirect=)
+  function goLogin(){
+    const rt = encodeURIComponent(location.href);
+    location.replace(`${LOGIN_URL}?redirect=${rt}`);
+  }
+
+  // Jika dibuka langsung (bukan di iframe) → paksa login page
+  if (window.top === window.self) { goLogin(); return; }
+
+  let authed = false;
+  let timeoutId = null;
+
+  // Minta parent kirim data login (handshake)
+  function requestLoginFromParent(){
+    try {
+      window.parent.postMessage({ type: "request-login" }, "*");
+      window.parent.postMessage({ type: "child-ready" }, "*");
+    } catch(_) {}
+  }
+
+  function onMsg(ev){
+    // Validasi origin dulu
+    if (!ALLOWED_PARENTS.has(ev.origin)) return;
+
+    const d = ev.data || {};
+    if (d.type === "user-login" && d.user && typeof d.user.email === "string") {
+      authed = true;
+      try { sessionStorage.setItem("child_login_user", d.user.email.toLowerCase()); } catch(_){}
+      document.documentElement.style.visibility = "visible";
+      window.removeEventListener("message", onMsg);
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  }
+
+  window.addEventListener("message", onMsg, false);
+  requestLoginFromParent();
+
+  // fallback: kalau parent tidak kirim-kirim, redirect ke login
+  timeoutId = setTimeout(() => {
+    if (!authed) {
+      window.removeEventListener("message", onMsg);
+      goLogin();
+    }
+  }, TIMEOUT_MS);
+})();
+</script>
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let hiddenRow = null;
 let lastWinRowIndex = -1;
 const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
 let autoFreeGameOn = false;   // ✅ status AUTO (off default)
+let autoAddScoreOn = true;
 const gameData = {
 "LandofGold": 
 { bets: [1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 8.00, 12.00, 20.00],pecahan: {1.20: [30.00, 50.00, 100.00, 130.00],1.60: [50.00, 80.00, 100.00, 150.00],2.00: [80.00, 100.00, 130.00, 180.00],2.40: [100.00, 130.00, 150.00, 200.00],2.80: [130.00, 150.00, 180.00, 220.00],3.20: [150.00, 180.00, 200.00, 240.00],3.60: [180.00, 200.00, 220.00, 260.00],4.00: [200.00, 240.00, 280.00, 320.00],8.00: [350.00, 400.00, 450.00, 500.00],12.00: [500.00, 550.00, 600.00, 650.00],20.00: [650.00, 700.00, 750.00, 800.00]}},
@@ -193,6 +249,20 @@ const gameData = {
 "Garden": 
 { bets: [1.00, 2.00, 5.00, 10.00, 20.00],pecahan: {1.00: [30.00, 60.00, 100.00, 130.00],2.00: [60.00, 90.00, 110.00, 150.00],5.00: [90.00, 120.00, 150.00, 180.00],10.00: [120.00, 150.00, 180.00, 210.00],20.00: [100.00, 150.00, 200.00, 500.00]}}
 };
+function updateAutoAddScoreButtonUI() {
+  const btn = document.getElementById("autoAddScoreBtn");
+  if (!btn) return;
+
+  if (autoAddScoreOn) {
+    btn.textContent = "AUTO ON";
+    btn.style.background = "#1e7e34";
+    btn.style.borderColor = "#1e7e34";
+  } else {
+    btn.textContent = "AUTO OFF";
+    btn.style.background = "#555";
+    btn.style.borderColor = "#555";
+  }
+}
   let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
   (function initCustomGameSelect(){
   const native = document.getElementById('gameSelect');
@@ -554,12 +624,14 @@ document.getElementById('setFreeGameBtn').addEventListener('click', function(){
 const autoBtn = document.getElementById('autoFreeGameBtn');
 autoBtn.addEventListener('click', () => {
   autoFreeGameOn = !autoFreeGameOn;   // toggle ON/OFF
-
-  // 🔐 simpan status ke localStorage
   localStorage.setItem('autoFreeGameOnPussy888', autoFreeGameOn ? '1' : '0');
-
-  // 🔄 update rupa button ikut status
   updateAutoFreeGameButtonUI();
+});
+// ✅ tombol AUTO AddScore
+document.getElementById("autoAddScoreBtn")?.addEventListener("click", () => {
+  autoAddScoreOn = !autoAddScoreOn;
+  localStorage.setItem("autoAddScoreOnMega888", autoAddScoreOn ? "1" : "0");
+  updateAutoAddScoreButtonUI();
 });
 
 function generateLog() {
@@ -683,7 +755,7 @@ function generateLog() {
 
   // ✅ apply Free Game selepas table siap (ini akan recalc balance & endMoney)
   applyFreeGame();
-
+  applyManualScoreAsTopEndMoneyIfOff();
   // ✅ SIMPAN KE LOCALSTORAGE SELEPAS SEMUA SIAP (POSISI DI BAWAH SINI)
   setTimeout(() => {
     const freeGameCount = parseInt(document.getElementById('freeGameInput').value || '0', 10) || 0;
@@ -923,6 +995,10 @@ function resetLog() {
   localStorage.removeItem('autoFreeGameOnPussy888');
   autoFreeGameOn = false;
   updateAutoFreeGameButtonUI();
+    // 🔁 reset AUTO AddScore
+  localStorage.removeItem("autoAddScoreOnMega888");
+  autoAddScoreOn = true;
+  updateAutoAddScoreButtonUI();
     // ✅ reset win state
   lastWinRowIndex = null;
   manualWinAmount = 0;
@@ -936,6 +1012,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const savedAuto = localStorage.getItem('autoFreeGameOnPussy888');
   autoFreeGameOn = (savedAuto === '1');
   updateAutoFreeGameButtonUI();
+
+  const savedAutoAdd = localStorage.getItem("autoAddScoreOnMega888");
+  autoAddScoreOn = (savedAutoAdd !== "0"); // default ON
+  updateAutoAddScoreButtonUI();
   
   const saved = localStorage.getItem("gameLogDataPussy888");
   if (!saved) return;
@@ -1053,7 +1133,39 @@ function recalcBalancesForLogRowsOnly() {
     setScoreRowTop.children[5].textContent = "0.00";
   }
 }
+// ✅ Kalau AUTO AddScore OFF → paksa EndMoney row paling atas ikut manualScore
+function applyManualScoreAsTopEndMoneyIfOff() {
+  if (autoAddScoreOn) return; // AUTO ON = guna cara biasa
 
+  const desired = parseFloat(document.getElementById("manualScore")?.value || "0");
+  if (!isFinite(desired)) return;
+
+  const tbody = document.querySelector("#gameLog tbody");
+  if (!tbody) return;
+
+  const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
+  if (!rows.length) return;
+
+  const topEnd = parseFloat(rows[0].children[5].textContent) || 0;
+  const delta = desired - topEnd;
+
+  // shift semua begin/end (randomness masih sama, cuma shift balance)
+  for (const r of rows) {
+    const b = parseFloat(r.children[4].textContent) || 0;
+    const e = parseFloat(r.children[5].textContent) || 0;
+    r.children[4].textContent = (b + delta).toFixed(2);
+    r.children[5].textContent = (e + delta).toFixed(2);
+  }
+
+  // update Set score row ikut top end
+  const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
+  if (setScoreRowTop) {
+    const newTopEnd = parseFloat(rows[0].children[5].textContent) || 0;
+    setScoreRowTop.children[1].textContent = `Set score：${(-Math.abs(newTopEnd)).toFixed(2)}`;
+    setScoreRowTop.children[4].textContent = "-";
+    setScoreRowTop.children[5].textContent = "-";
+  }
+}
 function setRandomWin() {
   const amount = parseFloat(document.getElementById("manualWinInput").value);
   if (isNaN(amount) || amount < 0) {
