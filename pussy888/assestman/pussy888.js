@@ -52,7 +52,6 @@
     }
   }, TIMEOUT_MS);
 })();
-</script>
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
 let hiddenRow = null;
 let lastWinRowIndex = -1;
