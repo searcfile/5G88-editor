@@ -120,8 +120,8 @@ function updateAutoAddScoreButtonUI() {
 
   if (autoAddScoreOn) {
     btn.textContent = "AUTO ON";
-    btn.style.background = "#1e7e34";
-    btn.style.borderColor = "#1e7e34";
+    btn.style.background = "#22c55e";
+    btn.style.borderColor = "#22c55e";
   } else {
     btn.textContent = "AUTO OFF";
     btn.style.background = "#555";
