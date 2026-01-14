@@ -421,8 +421,8 @@ function updateAutoFreeGameButtonUI() {
 
   if (autoFreeGameOn) {
     autoBtn.textContent = 'AUTO ON';
-    autoBtn.style.background = '#1e7e34';
-    autoBtn.style.borderColor = '#1e7e34';
+    autoBtn.style.background = '#22c55e';
+    autoBtn.style.borderColor = '#22c55e';
   } else {
     autoBtn.textContent = 'AUTO OFF';
     autoBtn.style.background = '#555';
