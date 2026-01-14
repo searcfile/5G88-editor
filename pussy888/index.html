@@ -5,62 +5,6 @@
   <title>PUSSY888 Generator</title>
   <link rel="stylesheet" href="assest/pussy888.css">
   <style>html{visibility:hidden}</style>
-  <script>
-  (function(){
-  // ====== KONFIG ======
-  const LOGIN_URL = "https://5g88-login.vercel.app/";
-  const ALLOWED_PARENTS = new Set([
-    "https://searcfile.github.io",
-    "https://5g88-main.vercel.app",
-  ]);
-  const TIMEOUT_MS = 3500; // lebih longgar
-
-  // redirect helper (samakan param dengan parent: ?redirect=)
-  function goLogin(){
-    const rt = encodeURIComponent(location.href);
-    location.replace(`${LOGIN_URL}?redirect=${rt}`);
-  }
-
-  // Jika dibuka langsung (bukan di iframe) → paksa login page
-  if (window.top === window.self) { goLogin(); return; }
-
-  let authed = false;
-  let timeoutId = null;
-
-  // Minta parent kirim data login (handshake)
-  function requestLoginFromParent(){
-    try {
-      window.parent.postMessage({ type: "request-login" }, "*");
-      window.parent.postMessage({ type: "child-ready" }, "*");
-    } catch(_) {}
-  }
-
-  function onMsg(ev){
-    // Validasi origin dulu
-    if (!ALLOWED_PARENTS.has(ev.origin)) return;
-
-    const d = ev.data || {};
-    if (d.type === "user-login" && d.user && typeof d.user.email === "string") {
-      authed = true;
-      try { sessionStorage.setItem("child_login_user", d.user.email.toLowerCase()); } catch(_){}
-      document.documentElement.style.visibility = "visible";
-      window.removeEventListener("message", onMsg);
-      if (timeoutId) clearTimeout(timeoutId);
-    }
-  }
-
-  window.addEventListener("message", onMsg, false);
-  requestLoginFromParent();
-
-  // fallback: kalau parent tidak kirim-kirim, redirect ke login
-  timeoutId = setTimeout(() => {
-    if (!authed) {
-      window.removeEventListener("message", onMsg);
-      goLogin();
-    }
-  }, TIMEOUT_MS);
-})();
-</script>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -95,8 +39,14 @@
 
   <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
   <div style="display: flex; align-items: center;">
-  <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;padding-left:5px;">Add Score (optional):</label>
-  <input type="number" id="manualScore" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
+  <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;padding-left:5px;">Add Score :</label>
+  <input type="number" id="manualScore" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+    <!-- ✅ AUTO AddScore (baru) -->
+  <button id="autoAddScoreBtn" type="button"
+    style="height:38px; margin-left:8px; padding:0 10px; font-size:14px; background:#1e7e34; color:#fff; border-color:#1e7e34;">
+    AUTO ON
+  </button>
+  </div>
 
   <div style="display: flex; align-items: center;">
   <label for="manualJackpot" style="color: white; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
