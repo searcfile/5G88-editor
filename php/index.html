@@ -973,7 +973,6 @@ function addJackpot() {
 
   // Re-apply Free game selepas struktur row berubah
   applyFreeGame();
-  applyManualScoreAsTopEndMoneyIfOff();
 }
 function addManualSetScore() {
   const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
@@ -1268,7 +1267,6 @@ function setRandomWin() {
 
   // ✅ recalc balance
   recalcBalancesForLogRowsOnly();
-  applyManualScoreAsTopEndMoneyIfOff();
   // ✅ SAVE supaya refresh tak hilang (KEY MEGA888!)
   setTimeout(() => {
     const saved = localStorage.getItem("gameLogDataMega888");
