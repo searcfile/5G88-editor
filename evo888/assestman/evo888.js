@@ -1074,7 +1074,7 @@ function applyManualScoreAsTopEndMoneyIfOff() {
 function setRandomWin() {
   const amount = parseFloat(document.getElementById("manualWinInput").value);
   if (isNaN(amount) || amount <= 0) {
-    showToast("❌ Masukkan Win Amount dulu", "info");
+    showToast("Please input amount!", "info");
     return;
   }
 
@@ -1083,7 +1083,7 @@ function setRandomWin() {
 
   const rows = Array.from(tbody.querySelectorAll("tr.log-row"));
   if (rows.length !== 10) {
-    showToast("❌ Sila tekan Change dahulu", "info");
+    showToast("Pleass remove the Jackpot!", "info");
     return;
   }
 
