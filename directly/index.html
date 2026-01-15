@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Redirecting...</title>
+
+  <!-- ✅ AUTO REDIRECT -->
+  <script>
+    (function () {
+      // ✅ Tukar link halaman 2 kat sini
+      const PAGE_2_URL = "https://5g88-home.vercel.app/"; // <-- contoh
+
+      // Kalau nak bawa sekali parameter lama (?redirect=... dsb), guna ini:
+      const qs = location.search || "";
+      const hash = location.hash || "";
+
+      // Redirect (replace supaya user tak boleh back ke login)
+      location.replace(PAGE_2_URL + qs + hash);
+    })();
+  </script>
+
+  <style>
+    body{margin:0;font-family:Arial,system-ui;background:#000;color:#fff;display:flex;min-height:100vh;align-items:center;justify-content:center}
+    .box{padding:18px 20px;border:1px solid rgba(255,255,255,.15);border-radius:12px;background:rgba(255,255,255,.06)}
+    a{color:#ffd166}
+  </style>
+</head>
+<body>
+  <div class="box">
+    Redirecting to page 2...
+    <div style="margin-top:10px;font-size:13px;opacity:.8">
+      If not redirected, <a id="link" href="#">click here</a>.
+    </div>
+  </div>
+
+  <script>
+    // fallback link
+    const PAGE_2_URL = "https://5g88-home.vercel.app/";
+    document.getElementById("link").href = PAGE_2_URL + (location.search||"") + (location.hash||"");
+  </script>
+</body>
+</html>
