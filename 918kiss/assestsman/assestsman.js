@@ -550,7 +550,7 @@ autoBtn.addEventListener('click', () => {
 // ✅ tombol AUTO AddScore
 document.getElementById("autoAddScoreBtn")?.addEventListener("click", () => {
   autoAddScoreOn = !autoAddScoreOn;
-  localStorage.setItem("autoAddScoreOnMega888", autoAddScoreOn ? "1" : "0");
+  localStorage.setItem("autoAddScoreOn918kiss", autoAddScoreOn ? "1" : "0");
   updateAutoAddScoreButtonUI();
 });
 function generateLog() {
@@ -919,7 +919,7 @@ function resetLog() {
   autoFreeGameOn = false;
   updateAutoFreeGameButtonUI();
    // 🔁 reset AUTO AddScore
-  localStorage.removeItem("autoAddScoreOnMega888");
+  localStorage.removeItem("autoAddScoreOn918kiss");
   autoAddScoreOn = true;
   updateAutoAddScoreButtonUI();
     // ✅ reset win state
@@ -935,7 +935,7 @@ window.addEventListener("DOMContentLoaded", () => {
   autoFreeGameOn = (savedAuto === '1');
   updateAutoFreeGameButtonUI();
  
-  const savedAutoAdd = localStorage.getItem("autoAddScoreOnMega888");
+  const savedAutoAdd = localStorage.getItem("autoAddScoreOn918kiss");
   autoAddScoreOn = (savedAutoAdd !== "0"); // default ON
   updateAutoAddScoreButtonUI();
  
@@ -1055,7 +1055,7 @@ function recalcBalancesForLogRowsOnly() {
     setScoreRowTop.children[5].textContent = "0.00";
   }
 }
-// ✅ Kalau AUTO AddScore OFF → paksa EndMoney row paling atas ikut manualScore
+
 function applyManualScoreAsTopEndMoneyIfOff() {
   if (autoAddScoreOn) return; // AUTO ON = guna cara biasa
 
@@ -1081,12 +1081,14 @@ function applyManualScoreAsTopEndMoneyIfOff() {
 
   // update Set score row ikut top end
   const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
-  if (setScoreRowTop) {
-    const newTopEnd = parseFloat(rows[0].children[5].textContent) || 0;
-    setScoreRowTop.children[1].textContent = `Set score：${(-Math.abs(newTopEnd)).toFixed(2)}`;
-    setScoreRowTop.children[4].textContent = "-";
-    setScoreRowTop.children[5].textContent = "-";
-  }
+if (setScoreRowTop) {
+  const newTopEnd = parseFloat(rows[0].children[5].textContent) || 0;
+  setScoreRowTop.children[1].textContent =
+    `Set score：${(-Math.abs(newTopEnd)).toFixed(2)}`;
+  const desired2 = parseFloat(document.getElementById("manualScore")?.value || "0");
+  setScoreRowTop.children[4].textContent = (isFinite(desired2) ? desired2 : 0).toFixed(2);
+  setScoreRowTop.children[5].textContent = "0.00";
+ }
 }
 function setRandomWin() {
   const amount = parseFloat(document.getElementById("manualWinInput").value);
