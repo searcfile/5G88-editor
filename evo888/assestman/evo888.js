@@ -519,13 +519,13 @@ document.getElementById('setFreeGameBtn').addEventListener('click', function () 
 const autoBtn = document.getElementById('autoFreeGameBtn');
 autoBtn.addEventListener('click', () => {
   autoFreeGameOn = !autoFreeGameOn;   // toggle ON/OFF
-  localStorage.setItem('autoFreeGameOnScr888h5', autoFreeGameOn ? '1' : '0');
+  localStorage.setItem('autoFreeGameOnEvo888', autoFreeGameOn ? '1' : '0');
   updateAutoFreeGameButtonUI();
 });
 // ✅ tombol AUTO AddScore
 document.getElementById("autoAddScoreBtn")?.addEventListener("click", () => {
   autoAddScoreOn = !autoAddScoreOn;
-  localStorage.setItem("autoAddScoreOnMega888", autoAddScoreOn ? "1" : "0");
+  localStorage.setItem("autoAddScoreOnEvo888", autoAddScoreOn ? "1" : "0");
   updateAutoAddScoreButtonUI();
 });
  function generateLog() {
@@ -659,7 +659,7 @@ logs.forEach(log => {
       lastWinRowIndex,
       manualWinAmount,
     };
-    localStorage.setItem("gameLogDataScr888h5", JSON.stringify(savedData));
+    localStorage.setItem("gameLogDataEvo888", JSON.stringify(savedData));
   }, 50);
 }
 
@@ -877,7 +877,7 @@ function addManualSetScore() {
   document.getElementById("manualScoreInput").value = "0";
 }
 function resetLog() {
-  localStorage.removeItem("gameLogDataScr888h5");
+  localStorage.removeItem("gameLogDataEvo888");
   localStorage.removeItem("jackpotInsertedMap");
   jackpotInsertedMap = {};
 
@@ -893,27 +893,27 @@ function resetLog() {
   if (fgInput) fgInput.value = "0";
 
   // 🔁 reset AUTO Free Game
-  localStorage.removeItem('autoFreeGameOnScr888h5');
+  localStorage.removeItem('autoFreeGameOnEvo888');
   autoFreeGameOn = false;
   updateAutoFreeGameButtonUI();
     // 🔁 reset AUTO AddScore
-  localStorage.removeItem("autoAddScoreOnMega888");
+  localStorage.removeItem("autoAddScoreOnEvo888");
   autoAddScoreOn = true;
   updateAutoAddScoreButtonUI();
 }
 
 
 window.addEventListener("DOMContentLoaded", () => {
-  const savedAuto = localStorage.getItem('autoFreeGameOnScr888h5');
+  const savedAuto = localStorage.getItem('autoFreeGameOnEvo888');
   autoFreeGameOn = (savedAuto === '1');
   updateAutoFreeGameButtonUI();
 
-  const savedAutoAdd = localStorage.getItem("autoAddScoreOnMega888");
+  const savedAutoAdd = localStorage.getItem("autoAddScoreOnEvo888");
   autoAddScoreOn = (savedAutoAdd !== "0"); // default ON
   updateAutoAddScoreButtonUI();
   
   if (skipAutoLoad) return;
-  const saved = localStorage.getItem("gameLogDataScr888h5");
+  const saved = localStorage.getItem("gameLogDataEvo888");
   if (!saved) return;
 
 const data = JSON.parse(saved);
@@ -1119,7 +1119,7 @@ function setRandomWin() {
 
   // ✅ SAVE supaya refresh tak hilang (KEY MEGA888!)
   setTimeout(() => {
-    const saved = localStorage.getItem("gameLogDataScr888h5");
+    const saved = localStorage.getItem("gameLogDataEvo888");
     if (!saved) return;
 
     try {
@@ -1127,7 +1127,7 @@ function setRandomWin() {
       data.logs = tbody.innerHTML;
       data.lastWinRowIndex = lastWinRowIndex;
       data.manualWinAmount = amount;
-      localStorage.setItem("gameLogDataScr888h5", JSON.stringify(data));
+      localStorage.setItem("gameLogDataEvo888", JSON.stringify(data));
     } catch (e) {}
   }, 50);
 
