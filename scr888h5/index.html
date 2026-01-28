@@ -888,7 +888,7 @@ autoBtn.addEventListener('click', () => {
 // ✅ tombol AUTO AddScore
 document.getElementById("autoAddScoreBtn")?.addEventListener("click", () => {
   autoAddScoreOn = !autoAddScoreOn;
-  localStorage.setItem("autoAddScoreOnMega888", autoAddScoreOn ? "1" : "0");
+  localStorage.setItem("autoAddScoreOnScr888h5", autoAddScoreOn ? "1" : "0");
   updateAutoAddScoreButtonUI();
 });
  function generateLog() {
@@ -1260,7 +1260,7 @@ function resetLog() {
   autoFreeGameOn = false;
   updateAutoFreeGameButtonUI();
     // 🔁 reset AUTO AddScore
-  localStorage.removeItem("autoAddScoreOnMega888");
+  localStorage.removeItem("autoAddScoreOnScr888h5");
   autoAddScoreOn = true;
   updateAutoAddScoreButtonUI();
 }
@@ -1271,7 +1271,7 @@ window.addEventListener("DOMContentLoaded", () => {
   autoFreeGameOn = (savedAuto === '1');
   updateAutoFreeGameButtonUI();
 
-  const savedAutoAdd = localStorage.getItem("autoAddScoreOnMega888");
+  const savedAutoAdd = localStorage.getItem("autoAddScoreOnScr888h5");
   autoAddScoreOn = (savedAutoAdd !== "0"); // default ON
   updateAutoAddScoreButtonUI();
   
@@ -1480,7 +1480,6 @@ function setRandomWin() {
   // ✅ recalc balance
   recalcBalancesForLogRowsOnly();
 
-  // ✅ SAVE supaya refresh tak hilang (KEY MEGA888!)
   setTimeout(() => {
     const saved = localStorage.getItem("gameLogDataScr888h5");
     if (!saved) return;
