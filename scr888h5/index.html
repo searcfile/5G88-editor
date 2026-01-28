@@ -1429,7 +1429,8 @@ function applyManualScoreAsTopEndMoneyIfOff() {
   const setScoreRowTop = tbody.querySelector("tr.set-score-row:not(.jackpot)");
   if (setScoreRowTop) {
     const newTopEnd = parseFloat(rows[0].children[5].textContent) || 0;
-    setScoreRowTop.children[1].textContent = `Set score：${(-Math.abs(newTopEnd)).toFixed(2)}`;
+    setScoreRowTop.children[1].innerHTML =
+     `<span class="badge">Set Score: ${(-Math.abs(newTopEnd)).toFixed(2)}</span>`;
     setScoreRowTop.children[4].textContent = "-";
     setScoreRowTop.children[5].textContent = "-";
   }
