@@ -1029,7 +1029,6 @@ function isValidEmail(email) {
 
 function checkLogin() {
   if (localStorage.getItem("gmailLogin")) return true;
-
   if (sessionStorage.getItem("justLoggedIn") === "1") {
     setTimeout(() => {
       sessionStorage.removeItem("justLoggedIn");
@@ -1037,15 +1036,11 @@ function checkLogin() {
     }, 30);
     return false;
   }
-
-  location.replace("/login");
-  return false;
-}
-
   const returnTo = encodeURIComponent(location.href);
-  location.replace(`https://5g88-home.vercel.app/?redirect=${returnTo}`);
+  location.replace(`/login?redirect=${returnTo}`);
   return false;
 }
+
 function initLivechatNotifListener(userIdParam) {
   const login = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
   if (!login?.email || !userIdParam) return;
