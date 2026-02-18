@@ -128,7 +128,7 @@ const loginDb = loginApp.database();
 (function(){
   // === SETTING MUDAH ===
   const DEFAULT_MINUTES = 10080; // ganti default di sini (contoh: 20)
-  const LOGIN_URL = "https://5g88-home.vercel.app";
+  const LOGIN_URL = "/login";
   const STORAGE_EXPIRE = "autoLogout.expireAt";
   const STORAGE_MIN = "autoLogout.minutes"; // kalau di-set, override DEFAULT_MINUTES
   const CHANNEL = "autoLogout-5g88";
@@ -1029,6 +1029,7 @@ function isValidEmail(email) {
 
 function checkLogin() {
   if (localStorage.getItem("gmailLogin")) return true;
+
   if (sessionStorage.getItem("justLoggedIn") === "1") {
     setTimeout(() => {
       sessionStorage.removeItem("justLoggedIn");
@@ -1036,6 +1037,10 @@ function checkLogin() {
     }, 30);
     return false;
   }
+
+  location.replace("/login");
+  return false;
+}
 
   const returnTo = encodeURIComponent(location.href);
   location.replace(`https://5g88-home.vercel.app/?redirect=${returnTo}`);
@@ -1197,7 +1202,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       try { localStorage.removeItem('gmailLogin'); } catch (_){}
       try { sessionStorage.setItem('forceLogout','1'); } catch (_){}
       try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
-      window.location.href = "https://5g88-home.vercel.app/?dup=1";
+      window.location.href = "/login?dup=1";
     });
   } catch (e) {
     console.warn('[single-session] gagal start:', e);
@@ -1223,7 +1228,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
 
     myOverrideRef.remove().catch(()=>{});
-    window.location.href = 'https://5g88-home.vercel.app/';
+    window.location.href = "/login?blocked=1";
   });
 
   // User diblok
@@ -1232,7 +1237,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       try { if (loginAuth) await loginAuth.signOut(); } catch(_) {}
       localStorage.removeItem("gmailLogin");
       try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch(_){}
-      window.location.href = "https://5g88-home.vercel.app/?blocked=1";
+      window.location.href = "/login?blocked=1";
     }
   });
 
@@ -1343,7 +1348,7 @@ if (logoutBtn) {
     if (window.google?.accounts?.id) {
       google.accounts.id.disableAutoSelect();
     }
-    window.location.href = "https://5g88-home.vercel.app/";
+    window.location.href = "/login";
   });
 }
 window.renderMobileUserBtn = function renderMobileUserBtn(){ 
@@ -1583,7 +1588,7 @@ async function doChange(){
     setTimeout(() => {
       // rekomendasi: paksa re-login
       localStorage.removeItem('gmailLogin');
-      window.location.href = 'https://5g88-home.vercel.app/?pw_changed=1';
+      window.location.href = '/login?pw_changed=1';
     }, 1000);
   }catch(err){
     showErr('Failed to change password. ' + (err?.message || ''));
@@ -1652,10 +1657,6 @@ async function doChange(){
     localStorage.removeItem("christmasMusic"); // buang state lama
     return;                         // STOP script
   }
-
-  // =========================
-  // (bawah ini kekalkan code kau)
-  // =========================
 
   music.volume = 0.3;
   let isPlaying = false;
