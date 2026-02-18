@@ -109,7 +109,8 @@ async function ensureGuestAuth(){
   return getOrCreateLocalGuest();
 }
 /* ===== Helpers (dipakai lintas fitur, diletak di awal agar siap pakai) ===== */
-const MAIN_URL = "https://5g88-main.vercel.app";
+const MAIN_PATH = "/main";
+const LOGIN_PATH = "/login"; 
 const toPseudoEmail = (uname) =>`${String(uname || '').trim().toLowerCase()}@5g88.local`;
 function formatTimestamp(date){
   const y=date.getFullYear(), m=String(date.getMonth()+1).padStart(2,'0'), d=String(date.getDate()).padStart(2,'0');
@@ -384,7 +385,7 @@ const browser  = getBrowserName();
       localStorage.setItem("deviceId", deviceId);
 
       const q = new URLSearchParams({ name, email, photo }).toString();
-      window.location.href = `${MAIN_URL}/?${q}`;
+      window.location.href = `${MAIN_PATH}?${q}`;
     }).catch(err=>{
       console.error("❌ Gagal simpan ke Firebase:", err);
       alert("Gagal simpan data login. Coba lagi.");
@@ -709,3 +710,21 @@ document.getElementById("username")?.addEventListener("blur", () => {
       lcDot.style.display = "none";
     }
   });
+(function captureLoginQuery(){
+  const sp = new URLSearchParams(location.search);
+  const name  = sp.get("name");
+  const email = sp.get("email");
+  const photo = sp.get("photo") || "";
+
+  if (email){
+    localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
+    history.replaceState(null, "", "/main"); // ✅ buang ?name=... dari URL
+  }
+})();
+(function guardMain(){
+  let gl = null;
+  try{ gl = JSON.parse(localStorage.getItem("gmailLogin") || "null"); }catch{}
+  if (!gl?.email){
+    location.replace("/login");
+  }
+})();
