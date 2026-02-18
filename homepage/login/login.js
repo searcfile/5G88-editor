@@ -710,21 +710,13 @@ document.getElementById("username")?.addEventListener("blur", () => {
       lcDot.style.display = "none";
     }
   });
-(function captureLoginQuery(){
-  const sp = new URLSearchParams(location.search);
-  const name  = sp.get("name");
-  const email = sp.get("email");
-  const photo = sp.get("photo") || "";
-
-  if (email){
-    localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
-    history.replaceState(null, "", "/main"); // ✅ buang ?name=... dari URL
-  }
-})();
-(function guardMain(){
+// ✅ LOGIN PAGE GUARD (letak paling bawah sekali)
+(function loginPageGuard(){
+  const path = location.pathname;
+  if (!path.startsWith("/login")) return;
   let gl = null;
-  try{ gl = JSON.parse(localStorage.getItem("gmailLogin") || "null"); }catch{}
-  if (!gl?.email){
-    location.replace("/login");
+  try { gl = JSON.parse(localStorage.getItem("gmailLogin") || "null"); } catch {}
+  if (gl?.email){
+    location.replace("/main");
   }
 })();
