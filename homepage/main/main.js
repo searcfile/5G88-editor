@@ -34,6 +34,26 @@ const loginApp = firebase.initializeApp({
   appId: "1:648022690285:web:aefad61a2f46e6cf39f05b"
 }, "loginApp");
 const loginDb = loginApp.database();
+(function captureMainQuery(){
+  if (!location.pathname.startsWith("/main")) return;
+
+  try{
+    const qs = new URLSearchParams(location.search);
+    const name  = qs.get("name");
+    const email = qs.get("email");
+    const photo = qs.get("photo") || "";
+
+    if (email){
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        name:  decodeURIComponent(name || ""),
+        email: decodeURIComponent(email).toLowerCase(),
+        photo: decodeURIComponent(photo || "")
+      }));
+      sessionStorage.setItem("justLoggedIn","1");
+      history.replaceState({}, document.title, "/main"); // buang query
+    }
+  }catch(_){}
+})();
 (function(){
   const SESS_ROOT = 'singleSessions';
   const HB_MS = 15000;
@@ -1028,14 +1048,15 @@ function isValidEmail(email) {
 }
 
 function checkLogin() {
-  if (localStorage.getItem("gmailLogin")) return true;
+  try{
+    const gl = JSON.parse(localStorage.getItem("gmailLogin") || "null");
+    if (gl?.email) return true;
+  }catch(_){}
   if (sessionStorage.getItem("justLoggedIn") === "1") {
-    setTimeout(() => {
-      sessionStorage.removeItem("justLoggedIn");
-      location.reload();
-    }, 30);
-    return false;
+    sessionStorage.removeItem("justLoggedIn");
+    return true;
   }
+
   const returnTo = encodeURIComponent(location.href);
   location.replace(`/login?redirect=${returnTo}`);
   return false;
