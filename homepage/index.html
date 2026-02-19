@@ -2,26 +2,23 @@
 <html>
 <head>
   <meta charset="utf-8" />
-
-  <!-- 🔁 Redirect semua path ke main domain -->
   <script>
     (function () {
-      const targetBase = "https://5g88-main.vercel.app";
-      const newUrl =
-        targetBase +
-        window.location.pathname +
-        window.location.search +
-        window.location.hash;
+      const targetHost = "5g88-main.vercel.app";
 
-      window.location.replace(newUrl);
+      // ✅ kalau dah berada di main, jangan redirect lagi
+      if (location.hostname === targetHost) return;
+
+      const targetBase = "https://" + targetHost;
+      const newUrl = targetBase + location.pathname + location.search + location.hash;
+
+      location.replace(newUrl);
     })();
   </script>
 
-  <!-- Fallback kalau JS disabled -->
   <noscript>
     <meta http-equiv="refresh" content="0; url=https://5g88-main.vercel.app">
   </noscript>
-
 </head>
 <body></body>
 </html>
