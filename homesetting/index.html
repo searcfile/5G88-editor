@@ -416,7 +416,14 @@
   }
   .toast.show{ display:flex; }
   .toast span.icon{ font-size:16px; }
+.rpListWrap{ max-height:360px; overflow-y:auto; padding-right:6px; border-radius:14px; border:1px solid rgba(148,163,184,.14); background: rgba(0,0,0,.10); }
+.rpListWrap::-webkit-scrollbar{ width:6px; }
+.rpListWrap::-webkit-scrollbar-track{ background:transparent; }
+.rpListWrap::-webkit-scrollbar-thumb{ background: rgba(148,163,184,.22); border-radius:999px; }
 
+.rpSavedHead{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.rpSearch{ width:52%; min-width:160px; padding:9px 10px; border-radius:12px; background: rgba(0,0,0,.30); border:1px solid rgba(148,163,184,.22); color: var(--text); outline:none; }
+.rpSearch:focus{ border-color: rgba(60,137,232,.65); box-shadow: 0 0 0 3px rgba(22,104,220,.18); }
 </style>
 </head>
 <body>
@@ -473,8 +480,14 @@
 
         <div class="rpDivider"></div>
 
-        <div class="rpTitleSmall">Saved Custom Tabs</div>
-        <div class="rpList" id="customTabList"></div>
+<div class="rpSavedHead">
+  <div class="rpTitleSmall">Saved Custom Tabs</div>
+  <input class="rpSearch" id="tabSearch" placeholder="Search tab name or URL..." />
+</div>
+
+<div class="rpListWrap" id="customTabWrap">
+  <div class="rpList" id="customTabList"></div>
+</div>
       </div>
     </div>
 
@@ -719,6 +732,11 @@ function renderCustomTabList(dataObj){
 
     const item = document.createElement("div");
     item.className = "rpItem";
+
+    // ✅ NEW: dataset untuk search
+    item.dataset.name = String(label || "").toLowerCase();
+    item.dataset.url  = String(url   || "").toLowerCase();
+
     item.innerHTML = `
       <div class="rpMeta">
         <div class="t">${label}</div>
@@ -732,8 +750,18 @@ function renderCustomTabList(dataObj){
     `;
     box.appendChild(item);
   });
+  applyTabSearchFilter();
 }
+function applyTabSearchFilter(){
+  const input = document.getElementById("tabSearch");
+  const q = (input?.value || "").trim().toLowerCase();
 
+  document.querySelectorAll("#customTabList .rpItem").forEach(el=>{
+    const n = el.dataset.name || "";
+    const u = el.dataset.url  || "";
+    el.style.display = (!q || n.includes(q) || u.includes(q)) ? "" : "none";
+  });
+}
 function bindCustomTabsPanel(){
   const nameEl  = document.getElementById("newTabName");
   const urlEl   = document.getElementById("newTabUrl");
@@ -742,7 +770,10 @@ function bindCustomTabsPanel(){
   const addBtn  = document.getElementById("btnAddTab");
   const clrBtn  = document.getElementById("btnClearTab");
   const listBox = document.getElementById("customTabList");
-
+  const searchEl = document.getElementById("tabSearch");
+  if(searchEl){
+    searchEl.addEventListener("input", applyTabSearchFilter);
+  }
   if(!nameEl || !urlEl || !placeEl || !grpEl || !addBtn || !clrBtn || !listBox) return;
 
   placeEl.addEventListener("change", setGroupEnabled);
