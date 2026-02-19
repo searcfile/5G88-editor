@@ -2,8 +2,26 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="refresh" content="0;url=/login" />
-  <script>location.replace("/login");</script>
+
+  <!-- 🔁 Redirect semua path ke main domain -->
+  <script>
+    (function () {
+      const targetBase = "https://5g88-main.vercel.app";
+      const newUrl =
+        targetBase +
+        window.location.pathname +
+        window.location.search +
+        window.location.hash;
+
+      window.location.replace(newUrl);
+    })();
+  </script>
+
+  <!-- Fallback kalau JS disabled -->
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=https://5g88-main.vercel.app">
+  </noscript>
+
 </head>
 <body></body>
 </html>
