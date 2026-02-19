@@ -831,22 +831,15 @@ function renderTabs() {
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
-  applyTabVisibility();   // <-- TAMBAH INI
+  applyRenderedTabVisibility();  // <-- TAMBAH INI
 }
 // === APPLY VISIBILITY KE SEMUA TAB YANG SEDANG DIRENDER ===
-function applyTabVisibility() {
+function applyRenderedTabVisibility() {
   const tabsDom = document.querySelectorAll(".tab");
   tabsDom.forEach(tabEl => {
-    const label = tabEl.dataset.label;
+    const label = (tabEl.dataset.label || "").trim().toUpperCase();
     if (!label) return;
-
-    if (TAB_HIDE && TAB_HIDE[label]) {
-      // TRUE = HIDE
-      tabEl.style.display = "none";
-    } else {
-      // SHOW (flex, ikut gaya asal)
-      tabEl.style.display = "inline-flex";
-    }
+    tabEl.style.display = isFeatureHidden(label) ? "none" : "inline-flex";
   });
 }
 function initSortableTabs() {
@@ -1275,11 +1268,30 @@ function applySidebarVisibility() {
     link.style.display = hide ? 'none' : '';
   });
 }
+function applyDropdownVisibility(){
+  const sels = [
+    "#gameLogDropdown a",
+    "#bankResitDropdown a",
+    "#gameLinksDropdown a"
+  ];
 
+  sels.forEach(sel=>{
+    document.querySelectorAll(sel).forEach(a=>{
+      const attr = (a.getAttribute("data-feature") || a.getAttribute("data-label") || "").trim();
+      const txt  = (a.textContent || "").trim().toUpperCase();
+      const label = (attr || txt).toUpperCase();
+      a.style.display = isFeatureHidden(label) ? "none" : "";
+    });
+  });
+
+  // kalau tengah open dropdown, tutup supaya nampak effect terus
+  closeAllDropdowns();
+}
 // Filter tab yang sudah terbuka di tabBar
 function applyTabVisibility(){
   const tabs = getTabs();         // fungsi ini sudah ada di script kamu
-  const filtered = tabs.filter(t => !isFeatureHidden(t.label));
+  const filtered = tabs.filter(t => 
+  !isFeatureHidden(String(t.label || "").trim().toUpperCase()));
   if (filtered.length !== tabs.length){
     saveTabs(filtered);           // sudah ada juga
     renderTabs();                 // sudah ada
@@ -1493,12 +1505,22 @@ chatsRef.on("child_added", (snapshot) => {
     });
   }
   // === BACA GLOBAL UI VISIBILITY DARI BLURPHP (SATU NODE SAJA) ===
-  blurphpDb.ref('settings/uiVisibility').on('value', (snap) => {
-    uiVisibility = snap.val() || {};
-    applyHeaderVisibility();
-    applySidebarVisibility();
-    applyTabVisibility();
-  });
+blurphpDb.ref('settings/uiVisibility').on('value', (snap) => {
+  uiVisibility = snap.val() || {};
+  applyHeaderVisibility();
+  applySidebarVisibility();
+  applyDropdownVisibility();        // ✅ NEW
+  applyTabVisibility();             // ✅ filter openTabs (yang existing)
+  applyRenderedTabVisibility();     // ✅ NEW (hide tab DOM yang sedang nampak)
+
+  // ✅ refresh checkmarks terus (kalau dropdown tengah buka)
+  updateGameLogCheckmarks();
+  updateBankResitCheckmarks();
+  updateGameLinksCheckmarks();
+
+  // ✅ kalau custom tabs render ikut hide/show, re-render sekali
+  renderCustomTabs();
+});
   blurphpDb.ref('settings/uiCustomTabs').on('value', (snap) => {
   uiCustomTabs = snap.val() || {};
   renderCustomTabs();
