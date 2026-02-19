@@ -408,6 +408,28 @@
 .rpSavedHead{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .rpSearch{ width:52%; min-width:160px; padding:9px 10px; border-radius:12px; background: rgba(0,0,0,.30); border:1px solid rgba(148,163,184,.22); color: var(--text); outline:none; }
 .rpSearch:focus{ border-color: rgba(60,137,232,.65); box-shadow: 0 0 0 3px rgba(22,104,220,.18); }
+  /* ===== Feature Search (Tab Setting) ===== */
+.secSearch{
+  width: 260px;
+  max-width: 45%;
+  padding:9px 10px;
+  border-radius:12px;
+  background: rgba(0,0,0,.30);
+  border:1px solid rgba(148,163,184,.22);
+  color: var(--text);
+  outline:none;
+  transition:.15s ease;
+}
+.secSearch:focus{
+  border-color: rgba(60,137,232,.65);
+  box-shadow: 0 0 0 3px rgba(22,104,220,.18);
+}
+
+/* responsive: bila kecil, turun bawah */
+@media (max-width: 520px){
+  .section-header{ flex-wrap:wrap; }
+  .secSearch{ width:100%; max-width:100%; }
+}
 </style>
 </head>
 <body>
@@ -482,6 +504,7 @@
           <span class="icon">🎛</span>
           <span>Tab Setting</span>
         </div>
+          <input class="secSearch" id="featureSearch" placeholder="Search feature..." />
       </div>
 
       <div class="table-scroll">
@@ -543,7 +566,19 @@ function showToast(msg){
   toast.classList.add("show");
   setTimeout(()=> toast.classList.remove("show"), 1300);
 }
+function applyFeatureFilter(){
+  const input = document.getElementById("featureSearch");
+  const q = (input?.value || "").trim().toUpperCase();
 
+  const tbody = document.getElementById("uiGlobalBody");
+  if(!tbody) return;
+
+  Array.from(tbody.querySelectorAll("tr")).forEach(tr=>{
+    const nameEl = tr.querySelector(".feature-name");
+    const label = (nameEl?.textContent || "").trim().toUpperCase();
+    tr.style.display = (!q || label.includes(q)) ? "" : "none";
+  });
+}
 function buildGlobalUiTable(list, tbody, dbNode){
   if (!tbody) return;
 
@@ -855,6 +890,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // init panel kanan
   bindCustomTabsPanel();
   setGroupEnabled();
+  const featureSearch = document.getElementById("featureSearch");
+if(featureSearch){
+  featureSearch.addEventListener("input", applyFeatureFilter);
+}
+applyFeatureFilter();
 });
 </script>
 
