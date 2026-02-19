@@ -2,10 +2,10 @@
    LOGIN GUARD (iframe only)
    ========================== */
 (function () {
-  const LOGIN_URL = "https://5g88-home.vercel.app/";
+  const LOGIN_URL = "https://5g88-main.vercel.app/";
   const ALLOWED_PARENTS = new Set([
     "https://searcfile.github.io",
-    "https://5g88-home.vercel.app",
+    "https://5g88-main.vercel.app",
   ]);
   const TIMEOUT_MS = 3500;
 
