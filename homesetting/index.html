@@ -631,8 +631,8 @@ function buildGlobalUiTable(list, tbody, dbNode){
       op.then(() => {
         pill.className = hide ? "status-pill hide-pill" : "status-pill show-pill";
         pillDot.className = "pill-dot " + (hide ? "hide" : "show");
-        pillText.textContent = hide ? "Hidden" : "Shown";
-        showToast("Saved: " + label + " → " + (hide ? "Hidden" : "Shown"));
+        pillText.textContent = hide ? "Inactive" : "Active";
+        showToast("Saved: " + label + " → " + (hide ? "Inactive" : "Active"));
       }).catch(err => {
         console.error("Gagal simpan setting", dbNode, label, err);
         chk.checked = !hide;
@@ -857,8 +857,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const hide = !!latestHidden[label];
       ui.chk.checked          = hide;
       ui.pill.className       = hide ? "status-pill hide-pill" : "status-pill show-pill";
-      ui.pillDot.className    = "pill-dot " + (hide ? "hide" : "show");
-      ui.pillText.textContent = hide ? "Hidden" : "Shown";
+      ui.pillDot.className    = "pill-dot " + (hide ? "hide" : "shown");
+      ui.pillText.textContent = hide ? "Inactive" : "Active";
     });
   }
 
