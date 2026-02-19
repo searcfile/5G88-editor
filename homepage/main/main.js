@@ -1107,11 +1107,14 @@ let uiCustomTabs = {}; // node: settings/uiCustomTabs
 
 function normPlace(p){
   p = String(p||"").toLowerCase().trim();
-  if (p === "header") return "header";
-  if (p === "sidebar") return "sidebar";
-  if (p === "gamelog") return "gamelog";
-  if (p === "bank") return "bank";
-  if (p === "list") return "list";
+
+  if (p.includes("head")) return "header";
+  if (p.includes("side")) return "sidebar";
+
+  if (p.includes("gamelog")) return "gamelog";
+  if (p.includes("bank")) return "bank";
+  if (p.includes("list")) return "list";
+
   return "sidebar";
 }
 
@@ -1151,34 +1154,77 @@ function renderCustomTabs(){
 
   clearCustomRendered();
 
-  const list = Object.values(uiCustomTabs || {})
-    .filter(x => x && x.enabled !== false && x.label && x.url);
+  const list = Object.values(uiCustomTabs || {}).filter(x => x && x.enabled !== false);
 
   list.forEach(item => {
-    const label = String(item.label).trim().toUpperCase();
-    const url   = String(item.url).trim();
-    const place = normPlace(item.place);
+    // ✅ support banyak field name (admin form kau pakai "name")
+    const rawLabel =
+      item.label || item.name || item.tabName || item.title || item.text;
+
+    const rawUrl =
+      item.url || item.href || item.tabUrl || item.link;
+
+    // ✅ admin form kau pakai "group" untuk dropdown (GameLog/Bank Receipt/List Type)
+    const rawGroup =
+      item.group || item.headerGroup || item.header || item.category || "";
+
+    // ✅ tempat (sidebar/header) kalau ada
+    const rawPlace =
+      item.place || item.location || item.pos || "";
+
+    const label = String(rawLabel || "").trim().toUpperCase();
+    const url   = String(rawUrl || "").trim();
+
+    if (!label || !url) return;
 
     // kalau feature hide → jangan render
     if (typeof isFeatureHidden === "function" && isFeatureHidden(label)) return;
 
     const link = buildLink(label, url);
 
-    if (place === "gamelog" && c.gameLogDropdown) {
+    // ✅ tentukan destinasi
+    const group = String(rawGroup || "").toLowerCase();
+    const place = String(rawPlace || "").toLowerCase();
+
+    // 1) kalau place memang guna style lama: gamelog/bank/list
+    const p = normPlace(place);
+
+    if (p === "gamelog" && c.gameLogDropdown) {
       c.gameLogDropdown.appendChild(link);
-    } else if (place === "bank" && c.bankResitDropdown) {
-      c.bankResitDropdown.appendChild(link);
-    } else if (place === "list" && c.gameLinksDropdown) {
-      c.gameLinksDropdown.appendChild(link);
-    } else {
-      // default masuk sidebar
-      const h2 = c.sidebar.querySelector("h2");
-      if (h2 && h2.nextSibling) c.sidebar.insertBefore(link, h2.nextSibling);
-      else c.sidebar.appendChild(link);
+      return;
     }
+    if (p === "bank" && c.bankResitDropdown) {
+      c.bankResitDropdown.appendChild(link);
+      return;
+    }
+    if (p === "list" && c.gameLinksDropdown) {
+      c.gameLinksDropdown.appendChild(link);
+      return;
+    }
+
+    // 2) kalau admin pakai place="header" + group="List Type"
+    if (place.includes("head") || place === "header") {
+      if (group.includes("gamelog") && c.gameLogDropdown) {
+        c.gameLogDropdown.appendChild(link);
+        return;
+      }
+      if (group.includes("bank") && c.bankResitDropdown) {
+        c.bankResitDropdown.appendChild(link);
+        return;
+      }
+      if (group.includes("list") && c.gameLinksDropdown) {
+        c.gameLinksDropdown.appendChild(link);
+        return;
+      }
+      // header tapi group tak match → jatuh ke sidebar
+    }
+
+    // 3) default: sidebar
+    const h2 = c.sidebar.querySelector("h2");
+    if (h2 && h2.nextSibling) c.sidebar.insertBefore(link, h2.nextSibling);
+    else c.sidebar.appendChild(link);
   });
 
-  // refresh checkmarks + hide/show
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
