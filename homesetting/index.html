@@ -590,28 +590,6 @@ auth.signInAnonymously().catch(err => {
   console.error("Anon auth blurphp gagal:", err);
 });
 
-// ===== GLOBAL FEATURE LIST (SATU CONTROL UNTUK SEMUA TEMPAT) =====
-// Pastikan nama2 di sini sama dengan mapping di homepage (TAB_MAP / SIDEBAR_MAP / HEADER_MAP)
-const UI_FEATURES = [
-  "LIVE CHAT","EVO888","MAYBANK2U",
-  "MEGA888",
-  "PUSSY888",
-  "918KISS",
-  "SCR888H5",
-  "LOGO GAME",
-  "TIPS GAME",
-  "FIND GAME",
-  "LINK DOWNLOAD",
-  "MAYBANK",
-  "CIMB BANK",
-  "BANK ISLAM",
-  "RHB BANK",
-  "ITEM COLLECTION",
-  "LIST TYPE",
-  "BANK RECEIPT",
-  "GAMELOG"
-];
-
 // Toast helper
 function showToast(msg){
   const toast = document.getElementById("toast");
@@ -622,17 +600,15 @@ function showToast(msg){
   setTimeout(()=> toast.classList.remove("show"), 1300);
 }
 
-// Build tabel untuk settings/uiVisibility
 function buildGlobalUiTable(list, tbody, dbNode){
   if (!tbody) return;
-  tbody.innerHTML = "";
 
-  const rowMap = {}; // { label: { chk, pill } }
+  tbody.innerHTML = "";
+  const rowMap = {}; // reset
 
   list.forEach(label => {
     const tr = document.createElement("tr");
 
-    // Nama + sub
     const td1 = document.createElement("td");
     const name = document.createElement("div");
     name.className = "feature-name";
@@ -645,7 +621,6 @@ function buildGlobalUiTable(list, tbody, dbNode){
     td1.appendChild(name);
     td1.appendChild(sub);
 
-    // Switch
     const td2 = document.createElement("td");
     const wrap = document.createElement("div");
     wrap.className = "switch-wrap";
@@ -664,7 +639,6 @@ function buildGlobalUiTable(list, tbody, dbNode){
     wrap.appendChild(sw);
     td2.appendChild(wrap);
 
-    // Status pill
     const td3 = document.createElement("td");
     const pill = document.createElement("span");
     pill.className = "status-pill show-pill";
@@ -680,9 +654,9 @@ function buildGlobalUiTable(list, tbody, dbNode){
 
     rowMap[label] = { chk, pill, pillDot, pillText };
 
-    // Handler klik -> update Firebase
+    // ✅ handler toggle
     chk.addEventListener("change", () => {
-      const hide = chk.checked;
+      const hide = chk.checked;        // checked = hide
       const ref  = db.ref(dbNode + "/" + label);
 
       const op = hide ? ref.set(true) : ref.remove();
@@ -705,31 +679,37 @@ function buildGlobalUiTable(list, tbody, dbNode){
     tbody.appendChild(tr);
   });
 
-  // Listener realtime untuk sync jika ada perubahan dari tempat lain
-  db.ref(dbNode).on("value",
-    snap => {
-      const hidden = snap.val() || {};
-      list.forEach(label => {
-        const ui = rowMap[label];
-        if (!ui) return;
-        const hide = !!hidden[label];
-
-        ui.chk.checked          = hide;
-        ui.pill.className       = hide ? "status-pill hide-pill" : "status-pill show-pill";
-        ui.pillDot.className    = "pill-dot " + (hide ? "hide" : "show");
-        ui.pillText.textContent = hide ? "Hidden" : "Shown";
-      });
-    },
-    err => {
-      console.error("Gagal baca node", dbNode, err);
-    }
-  );
+  return rowMap; // ✅ pulangkan mapping
 }
 /* ===============================
    CUSTOM TABS (Firebase)
    path: settings/uiCustomTabs/{id}
    =============================== */
 const CUSTOM_TABS_NODE = "settings/uiCustomTabs";
+// ===== DEFAULT FEATURES (yang memang ada dalam homepage) =====
+const DEFAULT_FEATURES = [
+  "LIVE CHAT","EVO888","MAYBANK2U",
+  "MEGA888","PUSSY888","918KISS","SCR888H5",
+  "LOGO GAME","TIPS GAME","FIND GAME",
+  "LINK DOWNLOAD","MAYBANK","CIMB BANK","BANK ISLAM","RHB BANK",
+  "ITEM COLLECTION","LIST TYPE","BANK RECEIPT","GAMELOG"
+];
+
+function toLabel(s){
+  return String(s||"").trim().toUpperCase();
+}
+
+// gabung default + custom (auto)
+function buildFeatureListFromCustomTabs(customObj){
+  const set = new Set(DEFAULT_FEATURES.map(toLabel));
+
+  Object.values(customObj || {}).forEach(t=>{
+    const label = toLabel(t?.label);
+    if(label) set.add(label);
+  });
+
+  return Array.from(set).filter(Boolean).sort((a,b)=>a.localeCompare(b));
+}
 
 function safeId(s){
   return String(s||"")
@@ -870,21 +850,49 @@ function bindCustomTabsPanel(){
   });
 }
 
-function listenCustomTabsRealtime(){
-  db.ref(CUSTOM_TABS_NODE).on("value", snap=>{
-    renderCustomTabList(snap.val() || {});
-  }, err=>{
-    console.error("listenCustomTabsRealtime error:", err);
-  });
-}
 document.addEventListener("DOMContentLoaded", () => {
-  buildGlobalUiTable(
-    UI_FEATURES,
-    document.getElementById("uiGlobalBody"),
-    "settings/uiVisibility"
-  );
+  const tbody = document.getElementById("uiGlobalBody");
+  const node  = "settings/uiVisibility";
+
+  let latestCustomTabs = {};
+  let latestHidden = {};
+
+  let currentRowMap = {};
+
+  function render(){
+    const features = buildFeatureListFromCustomTabs(latestCustomTabs);
+
+    // build semula table
+    currentRowMap = buildGlobalUiTable(features, tbody, node) || {};
+
+    // apply hidden state yang current
+    features.forEach(label=>{
+      const ui = currentRowMap[label];
+      if(!ui) return;
+      const hide = !!latestHidden[label];
+      ui.chk.checked          = hide;
+      ui.pill.className       = hide ? "status-pill hide-pill" : "status-pill show-pill";
+      ui.pillDot.className    = "pill-dot " + (hide ? "hide" : "show");
+      ui.pillText.textContent = hide ? "Hidden" : "Shown";
+    });
+  }
+
+  // ✅ listen uiVisibility (hidden map)
+  db.ref(node).on("value", snap=>{
+    latestHidden = snap.val() || {};
+    render();
+  });
+
+  // ✅ listen custom tabs (auto add/remove)
+  db.ref(CUSTOM_TABS_NODE).on("value", snap=>{
+    latestCustomTabs = snap.val() || {};
+    render();                 // table kiri auto update
+    renderCustomTabList(latestCustomTabs); // panel kanan pun update
+  });
+
+  // init panel kanan
   bindCustomTabsPanel();
-  listenCustomTabsRealtime();
+  setGroupEnabled();
 });
 </script>
 
