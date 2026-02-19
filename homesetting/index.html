@@ -91,11 +91,10 @@
   /* ===== Main Grid: left 1fr, right 2fr ===== */
   .pageGrid{
     display:grid;
-    grid-template-columns: 1fr 2fr; /* ✅ 1 grid, 2fr layout */
+    grid-template-columns: 1fr 1fr; /* ✅ 1 grid, 2fr layout */
     gap:16px;
-    align-items:start;
-  }
-
+    align-items:stretch;
+  } 
   /* responsive stack */
   @media (max-width: 980px){
     .container{ margin:16px auto 28px; }
@@ -113,7 +112,7 @@
       linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
     box-shadow: var(--shadow2);
     backdrop-filter: blur(10px);
-    overflow:hidden;
+    overflow:hidden;height:100%;
   }
 
   /* ===== LEFT: Add Tab Panel (upgrade) ===== */
