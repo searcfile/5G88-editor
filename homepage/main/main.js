@@ -1084,13 +1084,22 @@ function markLivechatAsRead() {
   if (!cur?.email || !userId) return;
 
   const chatRef = blurphpDb.ref("chats/" + userId);
+
   chatRef.once("value", (snapshot) => {
+    if (!snapshot.exists()) return;
+
+    const updates = {};
     snapshot.forEach((child) => {
       const v = child.val();
       if (v?.from === "admin" && v?.seenByUser !== true) {
-        child.ref.update({ seenByUser: true });
+        updates[child.key + "/seenByUser"] = true;
+        updates[child.key + "/readAt"] = Date.now(); // optional
       }
     });
+
+    if (Object.keys(updates).length) {
+      chatRef.update(updates).catch(()=>{});
+    }
   });
 }
 // === GLOBAL UI VISIBILITY (BLURPHP) ==========================
@@ -1286,24 +1295,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   let userHasInteracted = false;
   document.body.addEventListener("click", () => { userHasInteracted = true; });
 
-  const chatsRef = blurphpDb.ref("chats/" + userId);
-  chatsRef.off("child_added");
-  chatsRef.on("child_added", (snapshot) => {
-    const msg = snapshot.val();
-    if (!msg || msg.from !== "admin") return;
+const chatsRef = blurphpDb.ref("chats/" + userId);
+chatsRef.off("child_added");
 
-    const livechatDot = document.getElementById("livechatDot");
-    const notifSound  = document.getElementById("notifSound");
-    const timestamp = msg.time || Date.now();
-    if (timestamp > lastNotifTime) {
-      lastNotifTime = timestamp;
-      if (livechatDot) livechatDot.style.display = "inline";
-      if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
-        notifSound.currentTime = 0;
-        notifSound.play().catch(() => {});
-      }
+chatsRef.on("child_added", (snapshot) => {
+  const msg = snapshot.val();
+  if (!msg || msg.from !== "admin") return;
+
+  // ✅ kalau dah dibaca, jangan nyalakan dot
+  if (msg.seenByUser === true) return;
+
+  const livechatDot = document.getElementById("livechatDot");
+  const notifSound  = document.getElementById("notifSound");
+
+  const timestamp = msg.time || msg.atMs || Date.now();
+
+  if (timestamp > lastNotifTime) {
+    lastNotifTime = timestamp;
+
+    if (livechatDot) livechatDot.style.display = "inline";
+
+    if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
+      notifSound.currentTime = 0;
+      notifSound.play().catch(() => {});
     }
-  });
+  }
+});
 
   // indikator unread
   initLivechatNotifListener(userId);
