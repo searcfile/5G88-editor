@@ -365,6 +365,97 @@ td:nth-child(3), th:nth-child(3){
 .col-name { width: 50%; }
 .col-switch { width: 25%; text-align:center; }
 .col-status { width: 25%; text-align:center; }
+/* ===== 2 column layout ===== */
+.pageGrid{
+  display:grid;
+  grid-template-columns: 1fr 360px; /* kiri flexible, kanan fixed */
+  gap:16px;
+  align-items:start;
+}
+@media (max-width: 980px){
+  .container{ margin:16px; max-width:unset; padding:0; }
+  .pageGrid{ grid-template-columns: 1fr; }
+}
+
+/* ===== Right panel ===== */
+.rightPanel{
+  background: radial-gradient(circle at top left, rgba(250,204,21,.10), transparent 55%),
+              linear-gradient(to bottom right, rgba(15,23,42,.96), #020617);
+  border:1px solid rgba(148,163,184,.32);
+  border-radius:14px;
+  padding:14px;
+  box-shadow: 0 0 0 1px rgba(15,23,42,.9), 0 18px 40px rgba(0,0,0,.65);
+}
+
+.rpHead{ margin-bottom:10px; }
+.rpTitle{ color:var(--accent); font-weight:800; letter-spacing:.03em; }
+.rpSub{ color:var(--text-muted); font-size:12px; margin-top:3px; }
+
+.rpBody{ display:flex; flex-direction:column; gap:10px; }
+.rpLabel{ font-size:12px; color:rgba(255,255,255,.75); }
+
+.rpInput{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  background: rgba(0,0,0,.30);
+  border:1px solid rgba(148,163,184,.28);
+  color:var(--text-main);
+  outline:none;
+}
+.rpInput:focus{
+  border-color: rgba(250,204,21,.55);
+  box-shadow: 0 0 0 2px rgba(250,204,21,.18);
+}
+
+.rpRow{ display:flex; gap:10px; }
+.rpCol{ flex:1; display:flex; flex-direction:column; gap:6px; }
+
+.rpBtns{ display:flex; gap:10px; }
+.rpBtn{
+  flex:1;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(148,163,184,.28);
+  background: linear-gradient(120deg, rgba(250,204,21,.22), rgba(249,115,22,.10));
+  color: #fde68a;
+  font-weight:800;
+  cursor:pointer;
+}
+.rpBtn.ghost{
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.85);
+}
+.rpDivider{ height:1px; background: rgba(148,163,184,.22); margin: 6px 0; }
+.rpTitleSmall{ font-size:13px; font-weight:800; color:#fef9c3; }
+
+.rpList{ display:flex; flex-direction:column; gap:8px; }
+.rpItem{
+  display:flex; gap:10px; align-items:center; justify-content:space-between;
+  padding:10px 10px;
+  border-radius:12px;
+  border:1px solid rgba(148,163,184,.22);
+  background: rgba(0,0,0,.22);
+}
+.rpMeta{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.rpMeta .t{ color:#fff; font-weight:800; }
+.rpMeta .s{ color: rgba(255,255,255,.60); font-size:12px; }
+.rpMeta .u{
+  color: rgba(255,255,255,.55);
+  font-size:12px;
+  max-width:220px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.rpActions{ display:flex; gap:8px; }
+.rpMini{
+  padding:8px 10px; border-radius:10px;
+  border:1px solid rgba(148,163,184,.22);
+  background: rgba(255,255,255,.06);
+  color:#fff; cursor:pointer;
+}
+.rpMini.danger{ color:#ff6b6b; }
 </style>
 </head>
 <body>
@@ -380,36 +471,91 @@ td:nth-child(3), th:nth-child(3){
     </div>
   </header>
 
-  <!-- ===== GLOBAL UI CONTROL ===== -->
-<div class="section">
-  <div class="section-header">
-    <div class="section-title">
-      <span class="icon">🎛</span>
-      <span>Tab Setting</span>
-    </div>
-    <div class="section-note">
-      Toggle di sini akan mempengaruhi <b>Header + Sidebar + Tab</b> di homepage.
-    </div>
-  </div>
+  <!-- ✅ GRID: kiri table, kanan upload link -->
+  <div class="pageGrid">
 
-  <!-- 🔽 wrapper scroll -->
-  <div class="table-scroll">
-    <table>
-      <thead>
-        <tr>
-          <th class="col-name">Nama Feature</th>
-          <th class="col-switch">On/Hide</th>
-          <th class="col-status">Status</th>
-        </tr>
-      </thead>
-      <tbody id="uiGlobalBody"></tbody>
-    </table>
-  </div>
-</div>
-  
-  <div class="footer-msg">
-    Nilai disimpan di <span class="key">settings/uiVisibility</span> (On Site 5G88).
-  </div>
+    <!-- ===== LEFT: GLOBAL UI CONTROL ===== -->
+    <div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="icon">🎛</span>
+            <span>Tab Setting</span>
+          </div>
+          <div class="section-note">
+            Toggle di sini akan mempengaruhi <b>Header + Sidebar + Tab</b> di homepage.
+          </div>
+        </div>
+
+        <!-- 🔽 wrapper scroll -->
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-name">Nama Feature</th>
+                <th class="col-switch">On/Hide</th>
+                <th class="col-status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="uiGlobalBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-msg">
+        Nilai disimpan di <span class="key">settings/uiVisibility</span> (On Site 5G88).
+      </div>
+    </div>
+
+    <!-- ===== RIGHT: ADD TAB LINK (NEW) ===== -->
+    <div class="rightPanel" id="tabLinkPanel">
+      <div class="rpHead">
+        <div class="rpTitle">➕ Add Tab Link</div>
+        <div class="rpSub">
+          Tambah tab baru untuk Sidebar / Header (GameLog, Bank Receipt, List Type).
+        </div>
+      </div>
+
+      <div class="rpBody">
+        <label class="rpLabel">Tab Name</label>
+        <input class="rpInput" id="newTabName" placeholder="Contoh: VAULT" />
+
+        <label class="rpLabel">Tab URL</label>
+        <input class="rpInput" id="newTabUrl" placeholder="https://searcfile.github.io/5g88-php/vault/" />
+
+        <div class="rpRow">
+          <div class="rpCol">
+            <label class="rpLabel">Place</label>
+            <select class="rpInput" id="newTabPlace">
+              <option value="sidebar">Sidebar</option>
+              <option value="header">Header</option>
+            </select>
+          </div>
+
+          <div class="rpCol">
+            <label class="rpLabel">Header Group</label>
+            <select class="rpInput" id="newTabGroup" disabled>
+              <option value="gamelog">GameLog</option>
+              <option value="bank">Bank Receipt</option>
+              <option value="list">List Type</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rpBtns">
+          <button class="rpBtn ghost" id="btnClearTab" type="button">Clear</button>
+          <button class="rpBtn" id="btnAddTab" type="button">Save / Add</button>
+        </div>
+
+        <div class="rpDivider"></div>
+
+        <div class="rpTitleSmall">Saved Custom Tabs</div>
+        <div class="rpList" id="customTabList"></div>
+      </div>
+    </div>
+
+  </div><!-- /pageGrid -->
+
 </div>
 
 <!-- Toast mini -->
@@ -579,13 +725,166 @@ function buildGlobalUiTable(list, tbody, dbNode){
     }
   );
 }
+/* ===============================
+   CUSTOM TABS (Firebase)
+   path: settings/uiCustomTabs/{id}
+   =============================== */
+const CUSTOM_TABS_NODE = "settings/uiCustomTabs";
 
+function safeId(s){
+  return String(s||"")
+    .trim().toLowerCase()
+    .replace(/\s+/g,"_")
+    .replace(/[^a-z0-9_]/g,"");
+}
+function isValidUrl(url){
+  try{
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:";
+  }catch{ return false; }
+}
+
+function setGroupEnabled(){
+  const placeEl = document.getElementById("newTabPlace");
+  const grpEl   = document.getElementById("newTabGroup");
+  if(!placeEl || !grpEl) return;
+  grpEl.disabled = (placeEl.value !== "header");
+}
+
+function clearTabForm(){
+  const nameEl  = document.getElementById("newTabName");
+  const urlEl   = document.getElementById("newTabUrl");
+  const placeEl = document.getElementById("newTabPlace");
+  const grpEl   = document.getElementById("newTabGroup");
+  if(nameEl) nameEl.value = "";
+  if(urlEl)  urlEl.value  = "";
+  if(placeEl) placeEl.value = "sidebar";
+  if(grpEl) grpEl.value = "gamelog";
+  setGroupEnabled();
+}
+
+function renderCustomTabList(dataObj){
+  const box = document.getElementById("customTabList");
+  if(!box) return;
+
+  const entries = Object.entries(dataObj || {});
+  if(!entries.length){
+    box.innerHTML = `<div style="color:rgba(255,255,255,.55);font-size:12px;">No custom tabs yet.</div>`;
+    return;
+  }
+
+  // sort terbaru atas
+  entries.sort((a,b)=> (b[1]?.updatedAt||0) - (a[1]?.updatedAt||0));
+
+  box.innerHTML = "";
+  entries.forEach(([id, t])=>{
+    const label = t?.label || id;
+    const url   = t?.url || "";
+    const place = t?.place || "sidebar";
+    const group = t?.group || "gamelog";
+
+    const item = document.createElement("div");
+    item.className = "rpItem";
+    item.innerHTML = `
+      <div class="rpMeta">
+        <div class="t">${label}</div>
+        <div class="s">${place.toUpperCase()}${place==="header" ? " • "+group.toUpperCase() : ""}</div>
+        <div class="u">${url}</div>
+      </div>
+      <div class="rpActions">
+        <button class="rpMini" type="button" data-act="copy" data-id="${id}">Copy</button>
+        <button class="rpMini danger" type="button" data-act="del" data-id="${id}">Delete</button>
+      </div>
+    `;
+    box.appendChild(item);
+  });
+}
+
+function bindCustomTabsPanel(){
+  const nameEl  = document.getElementById("newTabName");
+  const urlEl   = document.getElementById("newTabUrl");
+  const placeEl = document.getElementById("newTabPlace");
+  const grpEl   = document.getElementById("newTabGroup");
+  const addBtn  = document.getElementById("btnAddTab");
+  const clrBtn  = document.getElementById("btnClearTab");
+  const listBox = document.getElementById("customTabList");
+
+  if(!nameEl || !urlEl || !placeEl || !grpEl || !addBtn || !clrBtn || !listBox) return;
+
+  placeEl.addEventListener("change", setGroupEnabled);
+  setGroupEnabled();
+
+  clrBtn.addEventListener("click", clearTabForm);
+
+  addBtn.addEventListener("click", async ()=>{
+    const label = (nameEl.value || "").trim();
+    const url   = (urlEl.value  || "").trim();
+    const place = placeEl.value; // sidebar/header
+    const group = grpEl.value;   // gamelog/bank/list
+
+    if(!label) return alert("Isi Tab Name dulu bro.");
+    if(!isValidUrl(url)) return alert("URL tak valid bro. Pastikan https://...");
+
+    const id = safeId(label) || ("tab_"+Date.now());
+    const payload = {
+      label, url, place,
+      group: (place==="header" ? group : "none"),
+      updatedAt: Date.now()
+    };
+
+    try{
+      await db.ref(`${CUSTOM_TABS_NODE}/${id}`).set(payload);
+      showToast("Saved tab: " + label);
+      clearTabForm();
+    }catch(err){
+      console.error("Save custom tab error:", err);
+      alert("Gagal save tab (cek rules Firebase).");
+    }
+  });
+
+  listBox.addEventListener("click", async (e)=>{
+    const btn = e.target.closest("button[data-act]");
+    if(!btn) return;
+
+    const act = btn.getAttribute("data-act");
+    const id  = btn.getAttribute("data-id");
+    if(!id) return;
+
+    if(act === "copy"){
+      const snap = await db.ref(`${CUSTOM_TABS_NODE}/${id}`).get().catch(()=>null);
+      const url = snap?.val()?.url || "";
+      if(!url) return;
+      navigator.clipboard.writeText(url).then(()=> showToast("Copied"));
+    }
+
+    if(act === "del"){
+      if(!confirm("Delete tab ni bro?")) return;
+      try{
+        await db.ref(`${CUSTOM_TABS_NODE}/${id}`).remove();
+        showToast("Deleted");
+      }catch(err){
+        console.error("Delete custom tab error:", err);
+        alert("Gagal delete tab.");
+      }
+    }
+  });
+}
+
+function listenCustomTabsRealtime(){
+  db.ref(CUSTOM_TABS_NODE).on("value", snap=>{
+    renderCustomTabList(snap.val() || {});
+  }, err=>{
+    console.error("listenCustomTabsRealtime error:", err);
+  });
+}
 document.addEventListener("DOMContentLoaded", () => {
   buildGlobalUiTable(
     UI_FEATURES,
     document.getElementById("uiGlobalBody"),
     "settings/uiVisibility"
   );
+  bindCustomTabsPanel();
+  listenCustomTabsRealtime();
 });
 </script>
 
