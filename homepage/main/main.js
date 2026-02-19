@@ -1102,6 +1102,88 @@ function markLivechatAsRead() {
     }
   });
 }
+// === GLOBAL CUSTOM TABS (BLURPHP) ==========================
+let uiCustomTabs = {}; // node: settings/uiCustomTabs
+
+function normPlace(p){
+  p = String(p||"").toLowerCase().trim();
+  if (p === "header") return "header";
+  if (p === "sidebar") return "sidebar";
+  if (p === "gamelog") return "gamelog";
+  if (p === "bank") return "bank";
+  if (p === "list") return "list";
+  return "sidebar";
+}
+
+function getContainers(){
+  return {
+    sidebar: document.getElementById("sidebar"),
+    gameLogDropdown: document.getElementById("gameLogDropdown"),
+    bankResitDropdown: document.getElementById("bankResitDropdown"),
+    gameLinksDropdown: document.getElementById("gameLinksDropdown")
+  };
+}
+
+function clearCustomRendered(){
+  document.querySelectorAll("[data-customtab='1']").forEach(el => el.remove());
+}
+
+function buildLink(label, url){
+  const a = document.createElement("a");
+  a.href = "#";
+  a.setAttribute("data-customtab","1");
+  a.setAttribute("data-feature", label); // untuk hide/show ikut uiVisibility
+  a.setAttribute("data-label", label);   // untuk checkmark dropdown
+  a.onclick = (e)=>{ e.preventDefault(); addTab(label, url); };
+
+  a.innerHTML = `
+    ${label}
+    <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
+      <path fill="currentColor" d="M9 22l-10-10.598 2.798-2.859 7.149 7.473 13.144-14.016 2.909 2.806z"/>
+    </svg>
+  `;
+  return a;
+}
+
+function renderCustomTabs(){
+  const c = getContainers();
+  if (!c.sidebar) return;
+
+  clearCustomRendered();
+
+  const list = Object.values(uiCustomTabs || {})
+    .filter(x => x && x.enabled !== false && x.label && x.url);
+
+  list.forEach(item => {
+    const label = String(item.label).trim().toUpperCase();
+    const url   = String(item.url).trim();
+    const place = normPlace(item.place);
+
+    // kalau feature hide → jangan render
+    if (typeof isFeatureHidden === "function" && isFeatureHidden(label)) return;
+
+    const link = buildLink(label, url);
+
+    if (place === "gamelog" && c.gameLogDropdown) {
+      c.gameLogDropdown.appendChild(link);
+    } else if (place === "bank" && c.bankResitDropdown) {
+      c.bankResitDropdown.appendChild(link);
+    } else if (place === "list" && c.gameLinksDropdown) {
+      c.gameLinksDropdown.appendChild(link);
+    } else {
+      // default masuk sidebar
+      const h2 = c.sidebar.querySelector("h2");
+      if (h2 && h2.nextSibling) c.sidebar.insertBefore(link, h2.nextSibling);
+      else c.sidebar.appendChild(link);
+    }
+  });
+
+  // refresh checkmarks + hide/show
+  updateGameLogCheckmarks();
+  updateBankResitCheckmarks();
+  updateGameLinksCheckmarks();
+  applySidebarVisibility();
+}
 // === GLOBAL UI VISIBILITY (BLURPHP) ==========================
 let uiVisibility = {};  // diisi dari settings/uiVisibility
 
@@ -1371,6 +1453,10 @@ chatsRef.on("child_added", (snapshot) => {
     applySidebarVisibility();
     applyTabVisibility();
   });
+  blurphpDb.ref('settings/uiCustomTabs').on('value', (snap) => {
+  uiCustomTabs = snap.val() || {};
+  renderCustomTabs();
+});
 }); // ⬅️ tutup DOMContentLoaded
 
 const logoutBtn = document.getElementById("logoutBtn");
