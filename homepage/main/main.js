@@ -698,7 +698,7 @@ function closeTab(label) {
     loadPage(lastTab.url);
 
     // Set status aktif tombol sesuai tab terakhir
-    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5", "EVO888"];
     const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK","MAYBANK2U"];
     const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
     
@@ -775,7 +775,7 @@ function renderTabs() {
         itemBtn.classList.toggle("active-itemBtn", tab.label === "ITEM COLLECTION");
 
       if (gameLogBtn) {
-      const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+      const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5", "EVO888"];
       gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
       }
       if (bankResitBtnEl) {
@@ -905,7 +905,29 @@ function loadPage(url) {
     }
   });
 }
+function updateDropdownCheckmarks(dropdownId){
+  const dd = document.getElementById(dropdownId);
+  if(!dd) return;
 
+  // clear
+  dd.querySelectorAll("a").forEach(a=>a.classList.remove("tab-open"));
+
+  // mark open tabs
+  const openTabs = Object.values(uiTabs||{}).map(t => String(t.label||"").toUpperCase());
+  dd.querySelectorAll("a[data-label]").forEach(a=>{
+    const L = String(a.getAttribute("data-label")||"").trim().toUpperCase();
+    if(openTabs.includes(L)) a.classList.add("tab-open");
+  });
+}
+
+function updateAllHeaderCheckmarks(){
+  updateDropdownCheckmarks("gameLogDropdown");
+  updateDropdownCheckmarks("bankResitDropdown");
+  updateDropdownCheckmarks("gameLinksDropdown");
+  updateDropdownCheckmarks("liveChatDropdown");
+  updateDropdownCheckmarks("linkDownloadDropdown");
+  updateDropdownCheckmarks("itemDropdown");
+}
   // Ceklis GameLog Dropdown
 function updateGameLogCheckmarks() {
   const tabs = getTabs();
@@ -1008,7 +1030,7 @@ window.addEventListener("load", () => {
     if (gameLinksBtnEl && match && gameLinksLabels.includes(match.label)) {
     gameLinksBtnEl.classList.add("active-gamelog");
     }
-    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5", "EVO888"];
     if (gameLogBtn && gameLogLabels.includes(match.label)) {
       gameLogBtn.classList.add("active-gamelog");
     }
@@ -1101,23 +1123,33 @@ let uiCustomTabs = {}; // node: settings/uiCustomTabs
 function normPlace(p){
   p = String(p||"").toLowerCase().trim();
 
-  if (p.includes("head")) return "header";
   if (p.includes("side")) return "sidebar";
 
   if (p.includes("gamelog")) return "gamelog";
   if (p.includes("bank")) return "bank";
   if (p.includes("list")) return "list";
 
+  if (p.includes("live")) return "livechat";
+  if (p.includes("download") || p.includes("link")) return "linkdownload";
+  if (p.includes("item")) return "item";
+
+  if (p.includes("head") || p === "header") return "header";
+
   return "sidebar";
 }
 
 function getContainers(){
   return {
-    sidebar: document.getElementById("sidebar"),
-    sidebarCustomWrap: document.getElementById("customSidebarTabs"), // ✅ tambah
+    sidebar: document.getElementById("customSidebarTabs") || document.getElementById("sidebar"),
+    customSidebarTabs: document.getElementById("customSidebarTabs"),
+
     gameLogDropdown: document.getElementById("gameLogDropdown"),
     bankResitDropdown: document.getElementById("bankResitDropdown"),
-    gameLinksDropdown: document.getElementById("gameLinksDropdown")
+    gameLinksDropdown: document.getElementById("gameLinksDropdown"),
+
+    liveChatDropdown: document.getElementById("liveChatDropdown"),
+    linkDownloadDropdown: document.getElementById("linkDownloadDropdown"),
+    itemDropdown: document.getElementById("itemDropdown"),
   };
 }
 
@@ -1161,6 +1193,17 @@ function buildLink(label, url, kind="dropdown"){
   return a;
 }
 
+function cloneLink(a){
+  const b = a.cloneNode(true);
+  b.onclick = a.onclick;
+  return b;
+}
+function insertToSidebar(c, link){
+  const box = c.customSidebarTabs || c.sidebar;
+  if(!box) return;
+  box.appendChild(link);
+}
+
 function renderCustomTabs(){
   const c = getContainers();
   if (!c.sidebar) return;
@@ -1170,89 +1213,59 @@ function renderCustomTabs(){
   const list = Object.values(uiCustomTabs || {}).filter(x => x && x.enabled !== false);
 
   list.forEach(item => {
-    // ✅ support banyak field name
-    // (admin form kau pakai "name")
-    const rawLabel =
-      item.label || item.name || item.tabName || item.title || item.text;
-
-    const rawUrl =
-      item.url || item.href || item.tabUrl || item.link;
-
-    // ✅ admin form kau pakai "group" untuk dropdown (GameLog/Bank Receipt/List Type)
-    const rawGroup =
-      item.group || item.headerGroup || item.header || item.category || "";
-
-    // ✅ tempat (sidebar/header) kalau ada
-    const rawPlace =
-      item.place || item.location || item.pos || "";
+    const rawLabel = item.label || item.name || item.tabName || item.title || item.text;
+    const rawUrl   = item.url || item.href || item.tabUrl || item.link;
+    const rawGroup = item.group || item.headerGroup || item.header || item.category || "";
+    const rawPlace = item.place || item.location || item.pos || "";
 
     const label = String(rawLabel || "").trim().toUpperCase();
     const url   = String(rawUrl || "").trim();
-
     if (!label || !url) return;
 
-    // kalau feature hide → jangan render
     if (typeof isFeatureHidden === "function" && isFeatureHidden(label)) return;
 
-    // ✅ tentukan destinasi
+    const link = buildLink(label, url);
+
     const group = String(rawGroup || "").toLowerCase();
     const place = String(rawPlace || "").toLowerCase();
     const p = normPlace(place);
 
-    // ✅ kalau masuk dropdown, guna style dropdown (ada check-icon)
+    let insertedHeader = false;
+
+    // ====== HEADER DROPDOWNS ======
     if (p === "gamelog" && c.gameLogDropdown) {
-      const link = buildLink(label, url, "dropdown");
-      c.gameLogDropdown.appendChild(link);
-      return;
-    }
-    if (p === "bank" && c.bankResitDropdown) {
-      const link = buildLink(label, url, "dropdown");
-      c.bankResitDropdown.appendChild(link);
-      return;
-    }
-    if (p === "list" && c.gameLinksDropdown) {
-      const link = buildLink(label, url, "dropdown");
-      c.gameLinksDropdown.appendChild(link);
-      return;
-    }
-
-    // ✅ place="header" (ikut group)
-    if (place.includes("head") || place === "header") {
-      if (group.includes("gamelog") && c.gameLogDropdown) {
-        const link = buildLink(label, url, "dropdown");
-        c.gameLogDropdown.appendChild(link);
-        return;
-      }
-      if (group.includes("bank") && c.bankResitDropdown) {
-        const link = buildLink(label, url, "dropdown");
-        c.bankResitDropdown.appendChild(link);
-        return;
-      }
-      if (group.includes("list") && c.gameLinksDropdown) {
-        const link = buildLink(label, url, "dropdown");
-        c.gameLinksDropdown.appendChild(link);
-        return;
-      }
-      // header tapi group tak match → jatuh ke sidebar
+      c.gameLogDropdown.appendChild(link); insertedHeader = true;
+    } else if (p === "bank" && c.bankResitDropdown) {
+      c.bankResitDropdown.appendChild(link); insertedHeader = true;
+    } else if (p === "list" && c.gameLinksDropdown) {
+      c.gameLinksDropdown.appendChild(link); insertedHeader = true;
+    } else if (p === "livechat" && c.liveChatDropdown) {
+      c.liveChatDropdown.appendChild(link); insertedHeader = true;
+    } else if (p === "linkdownload" && c.linkDownloadDropdown) {
+      c.linkDownloadDropdown.appendChild(link); insertedHeader = true;
+    } else if (p === "item" && c.itemDropdown) {
+      c.itemDropdown.appendChild(link); insertedHeader = true;
+    } else if (place.includes("head") || place === "header") {
+      // kalau admin isi place="header" + group="xxx"
+      if (group.includes("gamelog") && c.gameLogDropdown) { c.gameLogDropdown.appendChild(link); insertedHeader=true; }
+      else if (group.includes("bank") && c.bankResitDropdown) { c.bankResitDropdown.appendChild(link); insertedHeader=true; }
+      else if (group.includes("list") && c.gameLinksDropdown) { c.gameLinksDropdown.appendChild(link); insertedHeader=true; }
+      else if (group.includes("live") && c.liveChatDropdown) { c.liveChatDropdown.appendChild(link); insertedHeader=true; }
+      else if ((group.includes("download")||group.includes("link")) && c.linkDownloadDropdown) { c.linkDownloadDropdown.appendChild(link); insertedHeader=true; }
+      else if (group.includes("item") && c.itemDropdown) { c.itemDropdown.appendChild(link); insertedHeader=true; }
     }
 
-    // ✅ default: sidebar → guna style sidebar (ada icon merah menu-img)
-    const linkSidebar = buildLink(label, url, "sidebar");
-
-    // kalau ada container khas custom tabs → masuk sini
-    if (c.sidebarCustomWrap) {
-      c.sidebarCustomWrap.appendChild(linkSidebar);
-    } else {
-      // fallback lama: selit lepas h2
-      const h2 = c.sidebar.querySelector("h2");
-      if (h2 && h2.nextSibling) c.sidebar.insertBefore(linkSidebar, h2.nextSibling);
-      else c.sidebar.appendChild(linkSidebar);
+    // ====== SIDEBAR ALWAYS (kalau item.alsoSidebar true) ======
+    // default: kalau dia bukan header dropdown, dia masuk sidebar.
+    // kalau dia masuk header dropdown, dia STILL boleh masuk sidebar bila alsoSidebar=true
+    const wantSidebar = (!insertedHeader) || item.alsoSidebar === true || p === "sidebar";
+    if (wantSidebar) {
+      const sideLink = insertedHeader ? cloneLink(link) : link;
+      insertToSidebar(c, sideLink);
     }
   });
 
-  updateGameLogCheckmarks();
-  updateBankResitCheckmarks();
-  updateGameLinksCheckmarks();
+  updateAllHeaderCheckmarks();   // ✅ kita unify
   applySidebarVisibility();
 }
 // === GLOBAL UI VISIBILITY (BLURPHP) ==========================
