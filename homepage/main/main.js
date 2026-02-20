@@ -554,77 +554,17 @@ function updateEmptyState(){
   else emptyState.classList.add('hidden');
 }
 
-function addTab(label, url) {
-  // 🔒 kalau feature di-hide global → jangan buka tab
-  if (typeof isTabAllowed === "function" && !isTabAllowed(label)) {
-    return; // atau boleh kasih alert kalau mau
-  }
+function addTab(label, url, opt={}) {
+  const L = String(label || "").trim().toUpperCase();
+  const group = String(opt?.group || "none").toLowerCase();
+
+  if (typeof isTabAllowed === "function" && !isTabAllowed(L)) return;
 
   const existingTabs = getTabs();
-  const exists = existingTabs.some(tab => tab.label === label);
+  const exists = existingTabs.some(tab => String(tab.label||"").trim().toUpperCase() === L);
   if (!exists) {
-    existingTabs.push({ label, url });
+    existingTabs.push({ label: L, url, group });
     saveTabs(existingTabs);
-  }
-  const itemBtn = document.getElementById("itemBtn");
-  const linkBtn = document.getElementById("linkDownloadBtn");
-  const liveBtn = document.getElementById("liveChatBtn");
-  const liveDot = document.getElementById("livechatDot");
-  const gameLogBtn = document.getElementById("gameLogBtn");
-  const bankResitBtnEl = document.getElementById("bankResitBtn");
-  const gameLinksBtnEl = document.getElementById("gameLinksBtn");
-
-  if (gameLogBtn) {
-    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
-    if (gameLogLabels.includes(label)) {
-      gameLogBtn.classList.add("active-gamelog");
-    } else {
-      gameLogBtn.classList.remove("active-gamelog");
-    }
-  }
-  if (bankResitBtnEl) {
-  const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK","MAYBANK2U"];
-  if (bankResitLabels.includes(label)) {
-    bankResitBtnEl.classList.add("active-gamelog"); // reuse class biar gaya sama
-  } else {
-    bankResitBtnEl.classList.remove("active-gamelog");
-  }
-}
-
-if (gameLinksBtnEl) {
-  const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
-  if (gameLinksLabels.includes(label)) {
-    gameLinksBtnEl.classList.add("active-gamelog"); // reuse gaya emas
-  } else {
-    gameLinksBtnEl.classList.remove("active-gamelog");
-  }
-}
-  
-  if (liveBtn) {
-    if (label === "LIVE CHAT") {
-      liveBtn.classList.add("active-livechat");
-      if (liveDot) liveDot.style.display = "none";
-
-      // Tandai semua pesan admin sebagai sudah dibaca
-      markLivechatAsRead();
-    } else {
-      liveBtn.classList.remove("active-livechat");
-    }
-  }
-
-  if (linkBtn) {
-    if (label === "LINK DOWNLOAD") {
-      linkBtn.classList.add("active-linkdownload");
-    } else {
-      linkBtn.classList.remove("active-linkdownload");
-    }
-  }
-    if (itemBtn) {
-    if (label === "ITEM COLLECTION") {
-      itemBtn.classList.add("active-itemBtn");
-    } else {
-      itemBtn.classList.remove("active-itemBtn");
-    }
   }
 
   loadPage(url);
@@ -633,8 +573,49 @@ if (gameLinksBtnEl) {
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
   updateEmptyState();
-}
 
+  setHeaderActiveByGroup(group, L);
+
+  // LiveChat / Link Download / Item Collection kekal label
+  const liveBtn = document.getElementById("liveChatBtn");
+  const linkBtn = document.getElementById("linkDownloadBtn");
+  const itemBtn = document.getElementById("itemBtn");
+  const liveDot = document.getElementById("livechatDot");
+
+  if (liveBtn) {
+    if (L === "LIVE CHAT") {
+      liveBtn.classList.add("active-livechat");
+      if (liveDot) liveDot.style.display = "none";
+      markLivechatAsRead();
+    } else liveBtn.classList.remove("active-livechat");
+  }
+
+  linkBtn?.classList.toggle("active-linkdownload", L === "LINK DOWNLOAD");
+  itemBtn?.classList.toggle("active-itemBtn", L === "ITEM COLLECTION");
+}
+function setHeaderActiveByGroup(group, labelUpper){
+  const gameLogBtnEl = document.getElementById("gameLogBtn");
+  const bankBtnEl    = document.getElementById("bankResitBtn");
+  const listBtnEl    = document.getElementById("gameLinksBtn");
+
+  gameLogBtnEl?.classList.remove("active-gamelog");
+  bankBtnEl?.classList.remove("active-gamelog");
+  listBtnEl?.classList.remove("active-gamelog");
+
+  if(group === "gamelog") gameLogBtnEl?.classList.add("active-gamelog");
+  if(group === "bank")    bankBtnEl?.classList.add("active-gamelog");
+  if(group === "list")    listBtnEl?.classList.add("active-gamelog");
+
+  // fallback lama utk tab lama yang tak ada group
+  if(group === "none"){
+    const gameLogLabels   = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5","EVO888"];
+    const bankResitLabels = ["MAYBANK","CIMB BANK","BANK ISLAM","RHB BANK","MAYBANK2U"];
+    const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
+    if (gameLogLabels.includes(labelUpper))   gameLogBtnEl?.classList.add("active-gamelog");
+    if (bankResitLabels.includes(labelUpper)) bankBtnEl?.classList.add("active-gamelog");
+    if (gameLinksLabels.includes(labelUpper)) listBtnEl?.classList.add("active-gamelog");
+  }
+}
 // === Kirim login ke iframe secara andal dgn retries + delay ===
 function getLoginPayload() {
   const u = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
@@ -698,7 +679,7 @@ function closeTab(label) {
     loadPage(lastTab.url);
 
     // Set status aktif tombol sesuai tab terakhir
-    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+    const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5","EVO888"];
     const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK","MAYBANK2U"];
     const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
     
@@ -775,7 +756,7 @@ function renderTabs() {
         itemBtn.classList.toggle("active-itemBtn", tab.label === "ITEM COLLECTION");
 
       if (gameLogBtn) {
-      const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5"];
+      const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5","EVO888"];
       gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
       }
       if (bankResitBtnEl) {
@@ -1098,17 +1079,16 @@ function markLivechatAsRead() {
 // === GLOBAL CUSTOM TABS (BLURPHP) ==========================
 let uiCustomTabs = {}; // node: settings/uiCustomTabs
 
-function normPlace(p){
+function normPlaceStrict(p){
   p = String(p||"").toLowerCase().trim();
-
-  if (p.includes("head")) return "header";
-  if (p.includes("side")) return "sidebar";
-
-  if (p.includes("gamelog")) return "gamelog";
-  if (p.includes("bank")) return "bank";
-  if (p.includes("list")) return "list";
-
-  return "sidebar";
+  return (p === "header") ? "header" : "sidebar";
+}
+function normGroupStrict(g){
+  g = String(g||"").toLowerCase().trim();
+  if (g.includes("gamelog")) return "gamelog";
+  if (g.includes("bank"))    return "bank";
+  if (g.includes("list"))    return "list";
+  return "none";
 }
 
 function getContainers(){
@@ -1129,29 +1109,25 @@ function clearCustomRendered(){
 
 const SIDEBAR_ICON = "https://i.imgur.com/WDjH3BZ.png"; // sama macam menu lain
 
-function buildLink(label, url, kind="dropdown"){ 
+function buildLink(label, url, kind="dropdown", meta={}){ 
   const a = document.createElement("a");
   a.href = "#";
   a.setAttribute("data-customtab","1");
   a.setAttribute("data-feature", label);
   a.setAttribute("data-label", label);
+  if(meta?.group) a.setAttribute("data-group", meta.group);
 
   a.addEventListener("click", (e)=>{
     e.preventDefault();
-    addTab(label, url);
-    // kalau klik dari sidebar, auto tutup sidebar
+    addTab(label, url, { group: meta?.group || "none" });
     try { closeSidebar(); } catch(_){}
   });
 
-  // ✅ sidebar: ada icon merah menu-img
   if(kind === "sidebar"){
-    a.innerHTML = `
-      <img src="${SIDEBAR_ICON}" alt="icon" class="menu-img"> ${label}
-    `;
+    a.innerHTML = `<img src="${SIDEBAR_ICON}" alt="icon" class="menu-img"> ${label}`;
     return a;
   }
 
-  // ✅ dropdown: kekal check icon
   a.innerHTML = `
     ${label}
     <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
@@ -1167,87 +1143,43 @@ function renderCustomTabs(){
 
   clearCustomRendered();
 
-  const list = Object.values(uiCustomTabs || {}).filter(x => x && x.enabled !== false);
+  // ✅ simpan id sekali
+  const list = Object.entries(uiCustomTabs || {})
+    .map(([id, item]) => ({ id, ...(item||{}) }))
+    .filter(x => x && x.enabled !== false);
 
   list.forEach(item => {
-    // ✅ support banyak field name
-    // (admin form kau pakai "name")
-    const rawLabel =
-      item.label || item.name || item.tabName || item.title || item.text;
-
-    const rawUrl =
-      item.url || item.href || item.tabUrl || item.link;
-
-    // ✅ admin form kau pakai "group" untuk dropdown (GameLog/Bank Receipt/List Type)
-    const rawGroup =
-      item.group || item.headerGroup || item.header || item.category || "";
-
-    // ✅ tempat (sidebar/header) kalau ada
-    const rawPlace =
-      item.place || item.location || item.pos || "";
+    const rawLabel = item.label || item.name || item.tabName || item.title || item.text;
+    const rawUrl   = item.url || item.href || item.tabUrl || item.link;
 
     const label = String(rawLabel || "").trim().toUpperCase();
     const url   = String(rawUrl || "").trim();
-
     if (!label || !url) return;
 
-    // kalau feature hide → jangan render
     if (typeof isFeatureHidden === "function" && isFeatureHidden(label)) return;
 
-    // ✅ tentukan destinasi
-    const group = String(rawGroup || "").toLowerCase();
-    const place = String(rawPlace || "").toLowerCase();
-    const p = normPlace(place);
+    const place = normPlaceStrict(item.place);
+    const group = normGroupStrict(item.group);
 
-    // ✅ kalau masuk dropdown, guna style dropdown (ada check-icon)
-    if (p === "gamelog" && c.gameLogDropdown) {
-      const link = buildLink(label, url, "dropdown");
-      c.gameLogDropdown.appendChild(link);
-      return;
-    }
-    if (p === "bank" && c.bankResitDropdown) {
-      const link = buildLink(label, url, "dropdown");
-      c.bankResitDropdown.appendChild(link);
-      return;
-    }
-    if (p === "list" && c.gameLinksDropdown) {
-      const link = buildLink(label, url, "dropdown");
-      c.gameLinksDropdown.appendChild(link);
-      return;
-    }
-
-    // ✅ place="header" (ikut group)
-    if (place.includes("head") || place === "header") {
-      if (group.includes("gamelog") && c.gameLogDropdown) {
-        const link = buildLink(label, url, "dropdown");
-        c.gameLogDropdown.appendChild(link);
+    if (place === "header") {
+      if (group === "gamelog" && c.gameLogDropdown) {
+        c.gameLogDropdown.appendChild(buildLink(label, url, "dropdown", { group:"gamelog" }));
         return;
       }
-      if (group.includes("bank") && c.bankResitDropdown) {
-        const link = buildLink(label, url, "dropdown");
-        c.bankResitDropdown.appendChild(link);
+      if (group === "bank" && c.bankResitDropdown) {
+        c.bankResitDropdown.appendChild(buildLink(label, url, "dropdown", { group:"bank" }));
         return;
       }
-      if (group.includes("list") && c.gameLinksDropdown) {
-        const link = buildLink(label, url, "dropdown");
-        c.gameLinksDropdown.appendChild(link);
+      if (group === "list" && c.gameLinksDropdown) {
+        c.gameLinksDropdown.appendChild(buildLink(label, url, "dropdown", { group:"list" }));
         return;
       }
-      // header tapi group tak match → jatuh ke sidebar
     }
 
-    // ✅ default: sidebar → guna style sidebar (ada icon merah menu-img)
-    const linkSidebar = buildLink(label, url, "sidebar");
-
-    // kalau ada container khas custom tabs → masuk sini
-    if (c.sidebarCustomWrap) {
-      c.sidebarCustomWrap.appendChild(linkSidebar);
-    } else {
-      // fallback lama: selit lepas h2
-      const h2 = c.sidebar.querySelector("h2");
-      if (h2 && h2.nextSibling) c.sidebar.insertBefore(linkSidebar, h2.nextSibling);
-      else c.sidebar.appendChild(linkSidebar);
-    }
+    // default sidebar
+    const linkSidebar = buildLink(label, url, "sidebar", { group:"none" });
+    if (c.sidebarCustomWrap) c.sidebarCustomWrap.appendChild(linkSidebar);
+    else c.sidebar.appendChild(linkSidebar);
   });
 
   updateGameLogCheckmarks();
