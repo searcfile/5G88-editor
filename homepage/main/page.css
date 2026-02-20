@@ -122,6 +122,30 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.4);
   padding: 6px 0;
   transition: color 0.3s;
+    /* ✅ auto scroll bila item banyak */
+  max-height: calc(5 * 38px + 12px); /* 5 baris (38px satu baris) */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #ffd24a rgba(255,255,255,.08);
+}
+/* ✅ Scrollbar GOLD (Chrome/Edge/Safari) */
+.dropdown-links::-webkit-scrollbar{
+  width: 10px;
+}
+.dropdown-links::-webkit-scrollbar-track{
+  background: rgba(255,255,255,.06);
+  border-radius: 999px;
+}
+.dropdown-links::-webkit-scrollbar-thumb{
+  background: linear-gradient(180deg, #ffd24a, #c99b12);
+  border-radius: 999px;
+  border: 2px solid rgba(0,0,0,.65);
+}
+.dropdown-links::-webkit-scrollbar-thumb:hover{
+  background: linear-gradient(180deg, #ffe07a, #d6a61a);
 }
 .check-icon {
   flex-shrink: 0;
@@ -145,6 +169,7 @@ a.tab-open .check-icon {
   font-size: 14px;
   transition: color 0.3s;
   gap: 10px; /* opsional jarak label dengan icon */
+  height: 38px;
 }
 
 .dropdown-links a:hover {
