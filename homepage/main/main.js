@@ -1114,6 +1114,7 @@ function normPlace(p){
 function getContainers(){
   return {
     sidebar: document.getElementById("sidebar"),
+    sidebarCustomWrap: document.getElementById("customSidebarTabs"), // ✅ tambah
     gameLogDropdown: document.getElementById("gameLogDropdown"),
     bankResitDropdown: document.getElementById("bankResitDropdown"),
     gameLinksDropdown: document.getElementById("gameLinksDropdown")
@@ -1122,16 +1123,35 @@ function getContainers(){
 
 function clearCustomRendered(){
   document.querySelectorAll("[data-customtab='1']").forEach(el => el.remove());
+  const wrap = document.getElementById("customSidebarTabs");
+  if (wrap) wrap.innerHTML = "";
 }
 
-function buildLink(label, url){
+const SIDEBAR_ICON = "https://i.imgur.com/WDjH3BZ.png"; // sama macam menu lain
+
+function buildLink(label, url, kind="dropdown"){ 
   const a = document.createElement("a");
   a.href = "#";
   a.setAttribute("data-customtab","1");
-  a.setAttribute("data-feature", label); // untuk hide/show ikut uiVisibility
-  a.setAttribute("data-label", label);   // untuk checkmark dropdown
-  a.onclick = (e)=>{ e.preventDefault(); addTab(label, url); };
+  a.setAttribute("data-feature", label);
+  a.setAttribute("data-label", label);
 
+  a.addEventListener("click", (e)=>{
+    e.preventDefault();
+    addTab(label, url);
+    // kalau klik dari sidebar, auto tutup sidebar
+    try { closeSidebar(); } catch(_){}
+  });
+
+  // ✅ sidebar: ada icon merah menu-img
+  if(kind === "sidebar"){
+    a.innerHTML = `
+      <img src="${SIDEBAR_ICON}" alt="icon" class="menu-img"> ${label}
+    `;
+    return a;
+  }
+
+  // ✅ dropdown: kekal check icon
   a.innerHTML = `
     ${label}
     <svg class="check-icon" viewBox="0 0 24 24" width="16" height="16" style="display:none;">
@@ -1150,7 +1170,8 @@ function renderCustomTabs(){
   const list = Object.values(uiCustomTabs || {}).filter(x => x && x.enabled !== false);
 
   list.forEach(item => {
-    // ✅ support banyak field name (admin form kau pakai "name")
+    // ✅ support banyak field name
+    // (admin form kau pakai "name")
     const rawLabel =
       item.label || item.name || item.tabName || item.title || item.text;
 
@@ -1173,49 +1194,60 @@ function renderCustomTabs(){
     // kalau feature hide → jangan render
     if (typeof isFeatureHidden === "function" && isFeatureHidden(label)) return;
 
-    const link = buildLink(label, url);
-
     // ✅ tentukan destinasi
     const group = String(rawGroup || "").toLowerCase();
     const place = String(rawPlace || "").toLowerCase();
-
-    // 1) kalau place memang guna style lama: gamelog/bank/list
     const p = normPlace(place);
 
+    // ✅ kalau masuk dropdown, guna style dropdown (ada check-icon)
     if (p === "gamelog" && c.gameLogDropdown) {
+      const link = buildLink(label, url, "dropdown");
       c.gameLogDropdown.appendChild(link);
       return;
     }
     if (p === "bank" && c.bankResitDropdown) {
+      const link = buildLink(label, url, "dropdown");
       c.bankResitDropdown.appendChild(link);
       return;
     }
     if (p === "list" && c.gameLinksDropdown) {
+      const link = buildLink(label, url, "dropdown");
       c.gameLinksDropdown.appendChild(link);
       return;
     }
 
-    // 2) kalau admin pakai place="header" + group="List Type"
+    // ✅ place="header" (ikut group)
     if (place.includes("head") || place === "header") {
       if (group.includes("gamelog") && c.gameLogDropdown) {
+        const link = buildLink(label, url, "dropdown");
         c.gameLogDropdown.appendChild(link);
         return;
       }
       if (group.includes("bank") && c.bankResitDropdown) {
+        const link = buildLink(label, url, "dropdown");
         c.bankResitDropdown.appendChild(link);
         return;
       }
       if (group.includes("list") && c.gameLinksDropdown) {
+        const link = buildLink(label, url, "dropdown");
         c.gameLinksDropdown.appendChild(link);
         return;
       }
       // header tapi group tak match → jatuh ke sidebar
     }
 
-    // 3) default: sidebar
-    const h2 = c.sidebar.querySelector("h2");
-    if (h2 && h2.nextSibling) c.sidebar.insertBefore(link, h2.nextSibling);
-    else c.sidebar.appendChild(link);
+    // ✅ default: sidebar → guna style sidebar (ada icon merah menu-img)
+    const linkSidebar = buildLink(label, url, "sidebar");
+
+    // kalau ada container khas custom tabs → masuk sini
+    if (c.sidebarCustomWrap) {
+      c.sidebarCustomWrap.appendChild(linkSidebar);
+    } else {
+      // fallback lama: selit lepas h2
+      const h2 = c.sidebar.querySelector("h2");
+      if (h2 && h2.nextSibling) c.sidebar.insertBefore(linkSidebar, h2.nextSibling);
+      else c.sidebar.appendChild(linkSidebar);
+    }
   });
 
   updateGameLogCheckmarks();
