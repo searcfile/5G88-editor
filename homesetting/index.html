@@ -760,31 +760,39 @@ function bindCustomTabsPanel(){
 
   clrBtn.addEventListener("click", clearTabForm);
 
-  addBtn.addEventListener("click", async ()=>{
-    const label = (nameEl.value || "").trim();
-    const url   = (urlEl.value  || "").trim();
-    const place = placeEl.value; // sidebar/header
-    const group = grpEl.value;   // gamelog/bank/list
+addBtn.addEventListener("click", async ()=>{
+  const label = (nameEl.value || "").trim();
+  const url   = (urlEl.value  || "").trim();
+  const place = placeEl.value; // sidebar/header
+  const group = grpEl.value;   // gamelog/bank/list
 
-    if(!label) return alert("Isi Tab Name dulu bro.");
-    if(!isValidUrl(url)) return alert("URL tak valid bro. Pastikan https://...");
+  if(!label) return alert("Isi Tab Name dulu bro.");
+  if(!isValidUrl(url)) return alert("URL tak valid bro. Pastikan https://...");
 
-    const id = safeId(label) || ("tab_"+Date.now());
-    const payload = {
-      label, url, place,
-      group: (place==="header" ? group : "none"),
-      updatedAt: Date.now()
-    };
+  // ✅ ID unik ikut place+group
+  let id = makeTabId(label, place, group);
 
-    try{
-      await db.ref(`${CUSTOM_TABS_NODE}/${id}`).set(payload);
-      showToast("Saved tab: " + label);
-      clearTabForm();
-    }catch(err){
-      console.error("Save custom tab error:", err);
-      alert("Gagal save tab (cek rules Firebase).");
+  const payload = {
+    label, url, place,
+    group: (place==="header" ? group : "none"),
+    updatedAt: Date.now()
+  };
+
+  try{
+    // ✅ elak overwrite kalau id dah ada
+    const exist = await db.ref(`${CUSTOM_TABS_NODE}/${id}`).get();
+    if(exist.exists()){
+      id = id + "__" + Date.now();
     }
-  });
+
+    await db.ref(`${CUSTOM_TABS_NODE}/${id}`).set(payload);
+    showToast("Saved tab: " + label);
+    clearTabForm();
+  }catch(err){
+    console.error("Save custom tab error:", err);
+    alert("Gagal save tab (cek rules Firebase).");
+  }
+});
 
   listBox.addEventListener("click", async (e)=>{
     const btn = e.target.closest("button[data-act]");
