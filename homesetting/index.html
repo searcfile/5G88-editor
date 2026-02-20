@@ -156,6 +156,7 @@
     color:var(--text);
     outline:none;
     transition: .15s ease;
+    height:32px;
   }
   .rpInput:focus{border-color: #1668dc;}
   .rpInput:hover{border-color: #3c89e8;}
@@ -178,6 +179,7 @@
     letter-spacing:.03em;
     cursor:pointer;
     transition:.15s ease;
+    height:32px;
   }
   .rpBtn:hover{ background: linear-gradient(180deg, rgba(60,137,232,.98), rgba(22,104,220,.95)); }
   .rpBtn:active{ transform: translateY(1px); background: linear-gradient(180deg, rgba(21,84,173,.98), rgba(21,84,173,.98)); }
@@ -395,25 +397,22 @@
 .rpListWrap::-webkit-scrollbar-thumb{ background: rgba(148,163,184,.22); border-radius:999px; }
 
 .rpSavedHead{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-.rpSearch{ width:52%; min-width:160px; padding:9px 10px; border-radius:12px; background: rgba(0,0,0,.30); border:1px solid rgba(148,163,184,.22); color: var(--text); outline:none; }
-.rpSearch:focus{ border-color: rgba(60,137,232,.65); box-shadow: 0 0 0 3px rgba(22,104,220,.18); }
+.rpSearch{ width:52%; min-width:160px; padding:0px 15px; border-radius:6px; background:#141414; border:1px solid #303030; color: var(--text); outline:none;height:32px;transition:.15s ease; }
+.rpSearch:focus{ border-color: #1668dc;}.rpSearch:hover{ border-color: #3c89e8;}
   /* ===== Feature Search (Tab Setting) ===== */
 .secSearch{
   width: 260px;
   max-width: 45%;
-  padding:9px 10px;
-  border-radius:12px;
-  background: rgba(0,0,0,.30);
-  border:1px solid rgba(148,163,184,.22);
+  padding:0px 15px;
+  border-radius:6px;
+  background: #141414;
+  border:1px solid #303030;
   color: var(--text);
   outline:none;
   transition:.15s ease;
 }
-.secSearch:focus{
-  border-color: rgba(60,137,232,.65);
-  box-shadow: 0 0 0 3px rgba(22,104,220,.18);
-}
-
+.secSearch:focus{border-color: #1668dc;}
+.secSearch:hover{border-color: #3c89e8;}
 /* responsive: bila kecil, turun bawah */
 @media (max-width: 520px){
   .section-header{ flex-wrap:wrap; }
