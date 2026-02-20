@@ -663,6 +663,12 @@ function safeId(s){
     .replace(/\s+/g,"_")
     .replace(/[^a-z0-9_]/g,"");
 }
+function makeTabId(label, place, group){
+  const base = safeId(label) || ("tab_" + Date.now());
+  const p = (place || "sidebar").toLowerCase();
+  const g = (group || "none").toLowerCase();
+  return (p === "header") ? `${base}__header__${g}` : `${base}__sidebar`;
+}
 function isValidUrl(url){
   try{
     const u = new URL(url);
