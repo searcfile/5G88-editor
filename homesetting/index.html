@@ -450,7 +450,41 @@
             </select>
           </div>
         </div>
+        <!-- ===== LEFT: HEADER BUTTONS (NEW) ===== -->
+<div class="cardShell rightPanel" id="headerBtnPanel">
+  <div class="rpHead">
+    <div class="rpTitle">🧩 Header Buttons</div>
+    <div class="rpSub">Tambah button header (LiveChat, LinkDownload, Item, dll). Disusun ikut Order.</div>
+  </div>
 
+  <div class="rpBody">
+    <label class="rpLabel">Header Name</label>
+    <input class="rpInput" id="newHeaderName" placeholder="Contoh: LiveChat" />
+
+    <label class="rpLabel">Header URL</label>
+    <input class="rpInput" id="newHeaderUrl" placeholder="https://..." />
+
+    <label class="rpLabel">Feature Key (untuk On/Hide)</label>
+    <input class="rpInput" id="newHeaderFeature" placeholder="Contoh: LIVE CHAT" />
+
+    <label class="rpLabel">Order (1,2,3... kecil = depan)</label>
+    <input class="rpInput" id="newHeaderOrder" placeholder="Contoh: 1" />
+
+    <div class="rpBtns">
+      <button class="rpBtn" id="btnAddHeader" type="button">Save Header Button</button>
+    </div>
+
+    <div class="rpDivider"></div>
+
+    <div class="rpSavedHead">
+      <div class="rpTitleSmall">Saved Header Buttons</div>
+    </div>
+
+    <div class="rpListWrap">
+      <div class="rpList" id="headerBtnList"></div>
+    </div>
+  </div>
+</div>
         <div class="rpBtns">
           <button class="rpBtn ghost" id="btnClearTab" type="button">Clear</button>
           <button class="rpBtn" id="btnAddTab" type="button">Save / Add</button>
@@ -636,6 +670,7 @@ function buildGlobalUiTable(list, tbody, dbNode){
    path: settings/uiCustomTabs/{id}
    =============================== */
 const CUSTOM_TABS_NODE = "settings/uiCustomTabs";
+const HEADER_BTNS_NODE = "settings/uiHeaderButtons";
 // ===== DEFAULT FEATURES (yang memang ada dalam homepage) =====
 const DEFAULT_FEATURES = [
   "LINK DOWNLOAD","ITEM COLLECTION","LIST TYPE","BANK RECEIPT","GAMELOG"
@@ -827,7 +862,96 @@ addBtn.addEventListener("click", async ()=>{
     }
   });
 }
+function renderHeaderBtnList(dataObj){
+  const box = document.getElementById("headerBtnList");
+  if(!box) return;
 
+  const entries = Object.entries(dataObj || {});
+  if(!entries.length){
+    box.innerHTML = `<div style="color:rgba(255,255,255,.55);font-size:12px;">No header buttons yet.</div>`;
+    return;
+  }
+
+  entries.sort((a,b)=> (a[1]?.order||999) - (b[1]?.order||999));
+
+  box.innerHTML = "";
+  entries.forEach(([id, t])=>{
+    const label = t?.label || id;
+    const url   = t?.url || "";
+    const feat  = t?.feature || toLabel(label);
+    const order = t?.order ?? 99;
+
+    const item = document.createElement("div");
+    item.className = "rpItem";
+    item.innerHTML = `
+      <div class="rpMeta">
+        <div class="t">${label} <span style="opacity:.6;font-size:12px">(#${order})</span></div>
+        <div class="s">FEATURE: ${feat}</div>
+        <div class="u">${url}</div>
+      </div>
+      <div class="rpActions">
+        <button class="rpMini danger" type="button" data-hdel="${id}">Delete</button>
+      </div>
+    `;
+    box.appendChild(item);
+  });
+}
+
+function bindHeaderButtonsPanel(){
+  const nameEl  = document.getElementById("newHeaderName");
+  const urlEl   = document.getElementById("newHeaderUrl");
+  const featEl  = document.getElementById("newHeaderFeature");
+  const orderEl = document.getElementById("newHeaderOrder");
+  const addBtn  = document.getElementById("btnAddHeader");
+  const listBox = document.getElementById("headerBtnList");
+
+  if(!nameEl || !urlEl || !featEl || !orderEl || !addBtn || !listBox) return;
+
+  addBtn.addEventListener("click", async ()=>{
+    const label = (nameEl.value || "").trim();
+    const url   = (urlEl.value  || "").trim();
+    const feature = toLabel(featEl.value || label);
+    const order = parseInt(orderEl.value || "99", 10);
+
+    if(!label) return alert("Isi Header Name dulu bro.");
+    if(!isValidUrl(url)) return alert("URL tak valid bro. Pastikan https://...");
+
+    const key = safeId(label) || ("btn_" + Date.now());
+
+    const payload = {
+      enabled: true,
+      label,
+      feature,
+      url,
+      order: Number.isFinite(order) ? order : 99,
+      updatedAt: Date.now()
+    };
+
+    try{
+      const exist = await db.ref(`${HEADER_BTNS_NODE}/${key}`).get();
+      const finalKey = exist.exists() ? (key + "_" + Date.now()) : key;
+
+      await db.ref(`${HEADER_BTNS_NODE}/${finalKey}`).set(payload);
+      showToast("Saved header: " + label);
+
+      nameEl.value=""; urlEl.value=""; featEl.value=""; orderEl.value="";
+    }catch(err){
+      console.error("Save header button error:", err);
+      alert("Gagal save header button (cek rules).");
+    }
+  });
+
+  listBox.addEventListener("click", async (e)=>{
+    const btn = e.target.closest("button[data-hdel]");
+    if(!btn) return;
+    const id = btn.getAttribute("data-hdel");
+    if(!id) return;
+
+    if(!confirm("Delete header button ni bro?")) return;
+    await db.ref(`${HEADER_BTNS_NODE}/${id}`).remove();
+    showToast("Deleted");
+  });
+}
 document.addEventListener("DOMContentLoaded", () => {
   const tbody = document.getElementById("uiGlobalBody");
   const node  = "settings/uiVisibility";
@@ -867,8 +991,11 @@ document.addEventListener("DOMContentLoaded", () => {
     render();                 // table kiri auto update
     renderCustomTabList(latestCustomTabs); // panel kanan pun update
   });
-
+ db.ref(HEADER_BTNS_NODE).on("value", snap=>{
+  renderHeaderBtnList(snap.val() || {});
+});
   // init panel kanan
+  bindHeaderButtonsPanel();
   bindCustomTabsPanel();
   setGroupEnabled();
   const featureSearch = document.getElementById("featureSearch");
