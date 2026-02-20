@@ -714,25 +714,22 @@ function setGroupEnabled(){
   if(!placeEl) return;
 
   const isHeader = placeEl.value === "header";
+  const isBtn    = isHeader && (typeEl?.value === "button");
 
-  // Header Group enable only for header dropdown/item
-   const isBtn = isHeader && (typeEl?.value === "button");
+  // Header Group hanya untuk dropdown item
+  if(grpEl){
+    grpEl.disabled = (!isHeader || isBtn);
+  }
 
-  // Header Group hanya untuk dropdown item, bukan untuk button
-  if(grpEl) grpEl.disabled = (!isHeader || isBtn);
+  // Show Header Type bila pilih Header
+  if(typeRow){
+    typeRow.style.display = isHeader ? "" : "none";
+  }
 
-  // show Header Type only when header
-  if(typeRow) typeRow.style.display = isHeader ? "" : "none";
-
-  // show extra only when header + type=button
-  if(extra) extra.style.display = isBtn ? "" : "none";
-
-  // show Header Type only when header
-  if(typeRow) typeRow.style.display = isHeader ? "" : "none";
-
-  // show extra only when header + type=button
-  const isBtn = isHeader && (typeEl?.value === "button");
-  if(extra) extra.style.display = isBtn ? "" : "none";
+  // Show extra input bila Header + Button
+  if(extra){
+    extra.style.display = isBtn ? "" : "none";
+  }
 }
 
 function renderCustomTabList(dataObj){
