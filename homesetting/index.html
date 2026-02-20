@@ -441,26 +441,6 @@
             </select>
           </div>
 
-        <!-- ✅ NEW: Header Type (only when Place=Header) -->
-<div class="rpRow" id="headerTypeRow" style="display:none;">
-  <div class="rpCol">
-    <label class="rpLabel">Header Type</label>
-    <select class="rpInput" id="newHeaderType">
-      <option value="dropdown">Dropdown Item</option>
-      <option value="button">Header Button</option>
-    </select>
-  </div>
-</div>
-
-<!-- ✅ NEW: only for Header Button -->
-<div id="headerBtnExtra" style="display:none;">
-  <label class="rpLabel">Feature Key (untuk On/Hide)</label>
-  <input class="rpInput" id="newHeaderFeature" placeholder="Contoh: LIVE CHAT" />
-
-  <label class="rpLabel">Order (1,2,3... kecil=depan)</label>
-  <input class="rpInput" id="newHeaderOrder" placeholder="Contoh: 1" inputmode="numeric" />
-</div>
-          
           <div class="rpCol">
             <label class="rpLabel">Header Group</label>
             <select class="rpInput" id="newTabGroup" disabled>
@@ -656,7 +636,6 @@ function buildGlobalUiTable(list, tbody, dbNode){
    path: settings/uiCustomTabs/{id}
    =============================== */
 const CUSTOM_TABS_NODE = "settings/uiCustomTabs";
-const HEADER_BTNS_NODE = "settings/uiHeaderButtons";
 // ===== DEFAULT FEATURES (yang memang ada dalam homepage) =====
 const DEFAULT_FEATURES = [
   "LINK DOWNLOAD","ITEM COLLECTION","LIST TYPE","BANK RECEIPT","GAMELOG"
@@ -667,17 +646,12 @@ function toLabel(s){
 }
 
 // gabung default + custom (auto)
-function buildFeatureList(customObj, headerObj){
+function buildFeatureListFromCustomTabs(customObj){
   const set = new Set(DEFAULT_FEATURES.map(toLabel));
 
   Object.values(customObj || {}).forEach(t=>{
     const label = toLabel(t?.label);
     if(label) set.add(label);
-  });
-
-  Object.values(headerObj || {}).forEach(b=>{
-    const feat = toLabel(b?.feature || b?.label);
-    if(feat) set.add(feat);
   });
 
   return Array.from(set).filter(Boolean).sort((a,b)=>a.localeCompare(b));
@@ -702,34 +676,23 @@ function isValidUrl(url){
   }catch{ return false; }
 }
 
-
-
 function setGroupEnabled(){
   const placeEl = document.getElementById("newTabPlace");
   const grpEl   = document.getElementById("newTabGroup");
-  const typeRow = document.getElementById("headerTypeRow");
-  const typeEl  = document.getElementById("newHeaderType");
-  const extra   = document.getElementById("headerBtnExtra");
+  if(!placeEl || !grpEl) return;
+  grpEl.disabled = (placeEl.value !== "header");
+}
 
-  if(!placeEl) return;
-
-  const isHeader = placeEl.value === "header";
-  const isBtn    = isHeader && (typeEl?.value === "button");
-
-  // Header Group hanya untuk dropdown item
-  if(grpEl){
-    grpEl.disabled = (!isHeader || isBtn);
-  }
-
-  // Show Header Type bila pilih Header
-  if(typeRow){
-    typeRow.style.display = isHeader ? "" : "none";
-  }
-
-  // Show extra input bila Header + Button
-  if(extra){
-    extra.style.display = isBtn ? "" : "none";
-  }
+function clearTabForm(){
+  const nameEl  = document.getElementById("newTabName");
+  const urlEl   = document.getElementById("newTabUrl");
+  const placeEl = document.getElementById("newTabPlace");
+  const grpEl   = document.getElementById("newTabGroup");
+  if(nameEl) nameEl.value = "";
+  if(urlEl)  urlEl.value  = "";
+  if(placeEl) placeEl.value = "sidebar";
+  if(grpEl) grpEl.value = "gamelog";
+  setGroupEnabled();
 }
 
 function renderCustomTabList(dataObj){
@@ -784,27 +747,6 @@ function applyTabSearchFilter(){
     el.style.display = (!q || n.includes(q) || u.includes(q)) ? "" : "none";
   });
 }
-function clearTabForm(){
-  const nameEl  = document.getElementById("newTabName");
-  const urlEl   = document.getElementById("newTabUrl");
-  const placeEl = document.getElementById("newTabPlace");
-  const grpEl   = document.getElementById("newTabGroup");
-
-  const typeEl  = document.getElementById("newHeaderType");
-  const featEl  = document.getElementById("newHeaderFeature");
-  const orderEl = document.getElementById("newHeaderOrder");
-
-  if(nameEl) nameEl.value = "";
-  if(urlEl)  urlEl.value  = "";
-  if(placeEl) placeEl.value = "sidebar";
-  if(grpEl) grpEl.value = "gamelog";
-
-  if(typeEl) typeEl.value = "dropdown";
-  if(featEl) featEl.value = "";
-  if(orderEl) orderEl.value = "";
-
-  setGroupEnabled();
-}
 function bindCustomTabsPanel(){
   const nameEl  = document.getElementById("newTabName");
   const urlEl   = document.getElementById("newTabUrl");
@@ -821,10 +763,7 @@ function bindCustomTabsPanel(){
 
   placeEl.addEventListener("change", setGroupEnabled);
   setGroupEnabled();
-  const typeEl = document.getElementById("newHeaderType");
-if(typeEl){
-  typeEl.addEventListener("change", setGroupEnabled);
-}
+
   clrBtn.addEventListener("click", clearTabForm);
 
 addBtn.addEventListener("click", async ()=>{
@@ -833,50 +772,10 @@ addBtn.addEventListener("click", async ()=>{
   const place = placeEl.value; // sidebar/header
   const group = grpEl.value;   // gamelog/bank/list
 
-  const typeEl  = document.getElementById("newHeaderType");
-  const featEl  = document.getElementById("newHeaderFeature");
-  const orderEl = document.getElementById("newHeaderOrder");
-
-  const headerType = (typeEl?.value || "dropdown"); // dropdown | button
-
   if(!label) return alert("Isi Tab Name dulu bro.");
   if(!isValidUrl(url)) return alert("URL tak valid bro. Pastikan https://...");
 
-  // ==========================
-  // HEADER BUTTON → save to uiHeaderButtons
-  // ==========================
-  if(place === "header" && headerType === "button"){
-    const feature = toLabel((featEl?.value || "").trim() || label);
-    const order = parseInt((orderEl?.value || "99").trim(), 10);
-
-    const key = safeId(label) || ("btn_" + Date.now());
-
-    const payload = {
-      enabled: true,
-      label,
-      feature,
-      url,
-      order: Number.isFinite(order) ? order : 99,
-      updatedAt: Date.now()
-    };
-
-    try{
-      const exist = await db.ref(`${HEADER_BTNS_NODE}/${key}`).get();
-      const finalKey = exist.exists() ? (key + "_" + Date.now()) : key;
-      await db.ref(`${HEADER_BTNS_NODE}/${finalKey}`).set(payload);
-
-      showToast("Saved header button: " + label);
-      clearTabForm();
-    }catch(err){
-      console.error("Save header button error:", err);
-      alert("Gagal save header button (cek rules).");
-    }
-    return;
-  }
-
-  // ==========================
-  // NORMAL TAB / HEADER DROPDOWN ITEM → save to uiCustomTabs
-  // ==========================
+  // ✅ ID unik ikut place+group
   let id = makeTabId(label, place, group);
 
   const payload = {
@@ -886,6 +785,7 @@ addBtn.addEventListener("click", async ()=>{
   };
 
   try{
+    // ✅ elak overwrite kalau id dah ada
     const exist = await db.ref(`${CUSTOM_TABS_NODE}/${id}`).get();
     if(exist.exists()){
       id = id + "__" + Date.now();
@@ -928,18 +828,17 @@ addBtn.addEventListener("click", async ()=>{
   });
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const tbody = document.getElementById("uiGlobalBody");
   const node  = "settings/uiVisibility";
 
   let latestCustomTabs = {};
   let latestHidden = {};
-  let latestHeaderBtns = {};
+
   let currentRowMap = {};
 
   function render(){
-    const features = buildFeatureList(latestCustomTabs, latestHeaderBtns);
+    const features = buildFeatureListFromCustomTabs(latestCustomTabs);
 
     // build semula table
     currentRowMap = buildGlobalUiTable(features, tbody, node) || {};
@@ -968,10 +867,7 @@ document.addEventListener("DOMContentLoaded", () => {
     render();                 // table kiri auto update
     renderCustomTabList(latestCustomTabs); // panel kanan pun update
   });
-db.ref(HEADER_BTNS_NODE).on("value", snap=>{
-  latestHeaderBtns = snap.val() || {};
-  render();
-});
+
   // init panel kanan
   bindCustomTabsPanel();
   setGroupEnabled();
