@@ -1489,6 +1489,43 @@ blurphpDb.ref('settings/uiVisibility').on('value', (snap) => {
   uiCustomTabs = snap.val() || {};
   renderCustomTabs();
 });
+function renderHeaderButtons(btnsObj){
+  const wrap = document.getElementById("headerAutoLinks");
+  if(!wrap) return;
+  wrap.innerHTML = "";
+
+  const list = Object.entries(btnsObj || {})
+    .map(([id,v])=> ({id, ...(v||{})}))
+    .filter(x => x.enabled !== false)
+    .sort((a,b)=> (a.order||999) - (b.order||999));
+
+  list.forEach(item=>{
+    const labelUp = String(item.feature || item.label || "").trim().toUpperCase();
+    if(!labelUp) return;
+    if(typeof isFeatureHidden === "function" && isFeatureHidden(labelUp)) return;
+
+    const btn = document.createElement("button");
+    btn.className = "live-chat-button";
+    btn.type = "button";
+    btn.title = item.label || labelUp;
+    btn.setAttribute("aria-label", item.label || labelUp);
+
+    btn.innerHTML = `
+      <span class="btn-label">${item.label || labelUp}</span>
+    `;
+
+    btn.addEventListener("click", ()=>{
+      addTab(labelUp, item.url);
+    });
+
+    wrap.appendChild(btn);
+  });
+}
+
+// listener firebase
+blurphpDb.ref("settings/uiHeaderButtons").on("value", (snap)=>{
+  renderHeaderButtons(snap.val() || {});
+});
 }); // ⬅️ tutup DOMContentLoaded
 
 const logoutBtn = document.getElementById("logoutBtn");
