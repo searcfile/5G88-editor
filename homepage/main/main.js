@@ -553,7 +553,18 @@ function updateEmptyState(){
   if (tabs.length === 0) emptyState.classList.remove('hidden');
   else emptyState.classList.add('hidden');
 }
+function setActiveTabUrl(url){
+  if(!url) return;
+  localStorage.setItem("activeTabUrl", url);
+}
 
+function applyActiveTabFromStorage(){
+  const activeUrl = localStorage.getItem("activeTabUrl") || "";
+  document.querySelectorAll(".tab").forEach(el=>{
+    const u = el.dataset.url || "";
+    el.classList.toggle("active-tab", u === activeUrl);
+  });
+}
 function addTab(label, url, opt={}) {
   const L = String(label || "").trim().toUpperCase();
   const group = String(opt?.group || "none").toLowerCase();
@@ -709,7 +720,8 @@ function renderTabs() {
     const tabElement = document.createElement("div");
     tabElement.className = "tab";
     tabElement.dataset.index = index;
-    tabElement.dataset.label = tab.label;  // <-- TAMBAH INI
+    tabElement.dataset.label = tab.label;
+    tabElement.dataset.url = tab.url; // ✅ penting utk active highlight
 
     // Style
     tabElement.style.padding = "6.5px 16px";
@@ -734,6 +746,7 @@ function renderTabs() {
 
     // Klik tab → buka page
     tabElement.onclick = () => {
+      setActiveTabUrl(tab.url);     // ✅ set active dulu
       loadPage(tab.url);
 
       const gameLogBtn = document.getElementById("gameLogBtn");
@@ -742,35 +755,26 @@ function renderTabs() {
       const bankResitBtnEl = document.getElementById("bankResitBtn");
       const gameLinksBtnEl = document.getElementById("gameLinksBtn");
       const itemBtn = document.getElementById("itemBtn");
-      
-      if (liveBtn)
-        liveBtn.classList.toggle("active-livechat", tab.label === "LIVE CHAT");
 
-      if (linkBtn)
-        linkBtn.classList.toggle("active-linkdownload", tab.label === "LINK DOWNLOAD");
-      
-      if (itemBtn)
-        itemBtn.classList.toggle("active-itemBtn", tab.label === "ITEM COLLECTION");
+      liveBtn?.classList.toggle("active-livechat", tab.label === "LIVE CHAT");
+      linkBtn?.classList.toggle("active-linkdownload", tab.label === "LINK DOWNLOAD");
+      itemBtn?.classList.toggle("active-itemBtn", tab.label === "ITEM COLLECTION");
 
       if (gameLogBtn) {
-      const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5","EVO888"];
-      gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
+        const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5", "EVO888"];
+        gameLogBtn.classList.toggle("active-gamelog", gameLogLabels.includes(tab.label));
       }
       if (bankResitBtnEl) {
-      const bankResitLabels = ["MAYBANK", "CIMB BANK","BANK ISLAM","RHB BANK","MAYBANK2U"];
-      bankResitBtnEl.classList.toggle("active-gamelog", bankResitLabels.includes(tab.label));
+        const bankResitLabels = ["MAYBANK", "CIMB BANK", "BANK ISLAM", "RHB BANK", "MAYBANK2U"];
+        bankResitBtnEl.classList.toggle("active-gamelog", bankResitLabels.includes(tab.label));
       }
       if (gameLinksBtnEl) {
-      const gameLinksLabels = ["FIND GAME","TIPS GAME","LOGO GAME"];
-      gameLinksBtnEl?.classList.toggle("active-gamelog", gameLinksLabels.includes(tab.label));
+        const gameLinksLabels = ["FIND GAME", "TIPS GAME", "LOGO GAME"];
+        gameLinksBtnEl.classList.toggle("active-gamelog", gameLinksLabels.includes(tab.label));
       }
+
+      applyActiveTabFromStorage(); // ✅ update highlight
     };
-   
-    // Tab aktif highlight
-    const currentFrame = document.getElementById("pageFrame");
-    if (currentFrame && tab.url === currentFrame.src) {
-      tabElement.classList.add("active-tab");
-    }
 
     const title = document.createElement("span");
     title.textContent = tab.label;
@@ -788,15 +792,13 @@ function renderTabs() {
     closeBtn.style.padding = "0";
     closeBtn.style.pointerEvents = "auto";
 
-    closeBtn.onmouseover = () => {
-      closeBtn.style.color = "#ff1a1a";
-    };
-    closeBtn.onmouseout = () => {
-      closeBtn.style.color = "red";
-    };
+    closeBtn.onmouseover = () => closeBtn.style.color = "#ff1a1a";
+    closeBtn.onmouseout  = () => closeBtn.style.color = "red";
+
     closeBtn.onclick = (e) => {
       e.stopPropagation();
       closeTab(tab.label);
+      applyActiveTabFromStorage(); // ✅ bila close tab, refresh highlight
     };
 
     tabElement.appendChild(title);
@@ -804,12 +806,14 @@ function renderTabs() {
     tabBar.appendChild(tabElement);
   });
 
-  // Inisialisasi Sortable.js drag (auto spacing)
+  // ✅ apply active tab lepas render siap
+  applyActiveTabFromStorage();
+
   initSortableTabs();
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
-  applyRenderedTabVisibility();  // <-- TAMBAH INI
+  applyRenderedTabVisibility();
 }
 // === APPLY VISIBILITY KE SEMUA TAB YANG SEDANG DIRENDER ===
 function applyRenderedTabVisibility() {
@@ -866,22 +870,10 @@ function loadPage(url) {
   setTimeout(hideLoader, 1500);  // boleh ubah jadi 1000 / 2000 ms ikut rasa
 
   // Load URL
-  frame.src = url;
-  localStorage.setItem("activeTabUrl", url);
-  closeSidebar();
-
-  // Update tab aktif
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.classList.remove("active-tab");
-  });
-
-  const tabs = getTabs();
-  const tabElements = document.querySelectorAll(".tab");
-  tabs.forEach((tab, index) => {
-    if (tab.url === url && tabElements[index]) {
-      tabElements[index].classList.add("active-tab");
-    }
-  });
+frame.src = url;
+setActiveTabUrl(url);          // ✅ simpan active url
+closeSidebar();
+applyActiveTabFromStorage(); 
 }
 
   // Ceklis GameLog Dropdown
