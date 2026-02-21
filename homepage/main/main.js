@@ -712,12 +712,9 @@ function renderTabs() {
     tabElement.dataset.label = tab.label;  // <-- TAMBAH INI
 
     // Style
-    tabElement.style.background = "rgba(255, 255, 255, 0.04)";
-    tabElement.style.color = "rgba(255, 255, 255, 0.85)";
     tabElement.style.padding = "6.5px 16px";
     tabElement.style.marginRight = "0px";
     tabElement.style.borderRadius = "8px 8px 0 0";
-    tabElement.style.border = "1px solid #303030";
     tabElement.style.display = "inline-flex";
     tabElement.style.alignItems = "center";
     tabElement.style.fontSize = "14px";
