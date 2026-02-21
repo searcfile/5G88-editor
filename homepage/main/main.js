@@ -553,15 +553,24 @@ function updateEmptyState(){
   if (tabs.length === 0) emptyState.classList.remove('hidden');
   else emptyState.classList.add('hidden');
 }
+function normUrl(u){
+  try{
+    const x = new URL(String(u||""), location.href);
+    x.hash = ""; // buang hash supaya sama
+    return x.href.replace(/\/+$/, ""); // buang trailing slash
+  }catch(e){
+    return String(u||"").trim().replace(/\/+$/, "");
+  }
+}
 function setActiveTabUrl(url){
   if(!url) return;
-  localStorage.setItem("activeTabUrl", url);
+  localStorage.setItem("activeTabUrl", normUrl(url));
 }
 
 function applyActiveTabFromStorage(){
-  const activeUrl = localStorage.getItem("activeTabUrl") || "";
+  const activeUrl = normUrl(localStorage.getItem("activeTabUrl") || "");
   document.querySelectorAll(".tab").forEach(el=>{
-    const u = el.dataset.url || "";
+    const u = normUrl(el.dataset.url || "");
     el.classList.toggle("active-tab", u === activeUrl);
   });
 }
@@ -571,15 +580,25 @@ function addTab(label, url, opt={}) {
 
   if (typeof isTabAllowed === "function" && !isTabAllowed(L)) return;
 
-  const existingTabs = getTabs();
-  const exists = existingTabs.some(tab => String(tab.label||"").trim().toUpperCase() === L);
-  if (!exists) {
-    existingTabs.push({ label: L, url, group });
-    saveTabs(existingTabs);
-  }
+const existingTabs = getTabs();
+const newUrl = normUrl(url);
 
-  loadPage(url);
-  renderTabs();
+// cari ikut label
+const idx = existingTabs.findIndex(tab =>
+  String(tab.label||"").trim().toUpperCase() === L
+);
+
+if (idx === -1) {
+  existingTabs.push({ label: L, url: newUrl, group });
+} else {
+  // ✅ kalau tab dah ada, update url supaya konsisten
+  existingTabs[idx].url = newUrl;
+  existingTabs[idx].group = group;
+}
+saveTabs(existingTabs);
+
+loadPage(newUrl);
+renderTabs();
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
@@ -721,7 +740,7 @@ function renderTabs() {
     tabElement.className = "tab";
     tabElement.dataset.index = index;
     tabElement.dataset.label = tab.label;
-    tabElement.dataset.url = tab.url; // ✅ penting utk active highlight
+    tabElement.dataset.url = normUrl(tab.url);
 
     // Style
     tabElement.style.padding = "6.5px 16px";
@@ -746,8 +765,9 @@ function renderTabs() {
 
     // Klik tab → buka page
     tabElement.onclick = () => {
-      setActiveTabUrl(tab.url);     // ✅ set active dulu
-      loadPage(tab.url);
+    const u = normUrl(tab.url);
+    setActiveTabUrl(u);
+    loadPage(u);
 
       const gameLogBtn = document.getElementById("gameLogBtn");
       const liveBtn = document.getElementById("liveChatBtn");
