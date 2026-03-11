@@ -865,37 +865,37 @@ function initSortableTabs() {
     }
   });
 }
-function loadPage(url) {
+async function loadPage(url) {
   if (emptyState) emptyState.classList.add('hidden');
+
   const iframeLoader = document.getElementById("iframeLoader");
   const frame = document.getElementById("pageFrame");
   if (!frame) return;
 
-  // Tunjuk loader
   iframeLoader.style.display = "flex";
 
-  // Fungsi helper: pastikan hide hanya sekali
-  let loaderDone = false;
-  function hideLoader() {
-    if (loaderDone) return;
-    loaderDone = true;
+  try {
+    const res = await fetch(url + "?t=" + Date.now());
+    if (!res.ok) throw new Error("Fail load page: " + url);
+
+    const html = await res.text();
+    frame.innerHTML = html;
+
+    setActiveTabUrl(url);
+    closeSidebar();
+    applyActiveTabFromStorage();
+  } catch (err) {
+    console.error("Load page error:", err);
+    frame.innerHTML = `
+      <div class="loaded-page" style="padding:20px; color:white;">
+        <h2 style="color:red;">Load Failed</h2>
+        <p>${err.message}</p>
+      </div>
+    `;
+  } finally {
     iframeLoader.style.display = "none";
-    frame.onload = null;
   }
-
-  // 1) Bila iframe betul-betul siap → hide
-  frame.onload = hideLoader;
-
-  // 2) Fallback: maksimum tunggu 1.5s saja
-  setTimeout(hideLoader, 1500);  // boleh ubah jadi 1000 / 2000 ms ikut rasa
-
-  // Load URL
-frame.src = url;
-setActiveTabUrl(url);          // ✅ simpan active url
-closeSidebar();
-applyActiveTabFromStorage(); 
 }
-
   // Ceklis GameLog Dropdown
 function updateGameLogCheckmarks() {
   const tabs = getTabs();
