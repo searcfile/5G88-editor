@@ -577,7 +577,7 @@ function applyActiveTabFromStorage(){
 function addTab(label, url, opt={}) {
   const L = String(label || "").trim().toUpperCase();
   const group = String(opt?.group || "none").toLowerCase();
-
+  const mode = String(opt?.mode || "iframe").toLowerCase(); // iframe | page
   if (typeof isTabAllowed === "function" && !isTabAllowed(L)) return;
 
 const existingTabs = getTabs();
@@ -589,14 +589,20 @@ const idx = existingTabs.findIndex(tab =>
 );
 
 if (idx === -1) {
-  existingTabs.push({ label: L, url: newUrl, group });
+  existingTabs.push({ label: L, url: newUrl, group, mode });
 } else {
-  // ✅ kalau tab dah ada, update url supaya konsisten
   existingTabs[idx].url = newUrl;
   existingTabs[idx].group = group;
+  existingTabs[idx].mode = mode;
 }
 saveTabs(existingTabs);
-
+  
+if (mode === "page") {
+  setActiveTabUrl(newUrl);
+  renderTabs();
+  window.location.href = newUrl;
+  return;
+}
 loadPage(newUrl);
 renderTabs();
   updateGameLogCheckmarks();
@@ -706,6 +712,13 @@ function closeTab(label) {
 
   if (tabs.length > 0) {
     const lastTab = tabs[tabs.length - 1];
+
+    if (String(lastTab.mode || "iframe").toLowerCase() === "page") {
+      setActiveTabUrl(lastTab.url);
+      window.location.href = lastTab.url;
+      return;
+    }
+
     loadPage(lastTab.url);
 
     // Set status aktif tombol sesuai tab terakhir
@@ -764,10 +777,16 @@ function renderTabs() {
     });
 
     // Klik tab → buka page
-    tabElement.onclick = () => {
-    const u = normUrl(tab.url);
-    setActiveTabUrl(u);
-    loadPage(u);
+tabElement.onclick = () => {
+  const u = normUrl(tab.url);
+  setActiveTabUrl(u);
+
+  if (String(tab.mode || "iframe").toLowerCase() === "page") {
+    window.location.href = u;
+    return;
+  }
+
+  loadPage(u);
 
       const gameLogBtn = document.getElementById("gameLogBtn");
       const liveBtn = document.getElementById("liveChatBtn");
@@ -974,7 +993,9 @@ window.addEventListener("load", () => {
   if (gameLinksBtnEl) gameLinksBtnEl.classList.remove("active-gamelog");
 
   if (match) {
-    loadPage(match.url);
+    if (String(match.mode || "iframe").toLowerCase() !== "page") {
+      loadPage(match.url);
+    }
     updateGameLogCheckmarks();
     updateBankResitCheckmarks();
     updateGameLinksCheckmarks();
