@@ -469,20 +469,7 @@ gameLinksBtn?.addEventListener("click", (e) => {
 // Klik di luar -> tutup semua dropdown
 document.addEventListener("click", () => closeAllDropdowns());
 
-const pageFrame = document.getElementById("pageFrame");
-if (pageFrame) {
-  pageFrame.addEventListener("load", () => {
-    try {
-      pageFrame.contentWindow.document.addEventListener("click", closeAllDropdowns);
-    } catch (_) {}
 
-    const origin = getChildOriginFromSrc(pageFrame.src);
-    if (origin) {
-      sendLoginToIframeReliable(pageFrame, 6, 200, origin);
-      setTimeout(() => sendLoginToIframeReliable(pageFrame, 6, 250, origin), 800);
-    }
-  });
-}
 // Blur/ESC -> tutup semuanya
 window.addEventListener("blur", closeAllDropdowns);
 window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAllDropdowns(); });
@@ -865,35 +852,52 @@ function initSortableTabs() {
     }
   });
 }
-function loadPage(url) {
-  if (emptyState) emptyState.classList.add('hidden');
-  const iframeLoader = document.getElementById("iframeLoader");
-  const frame = document.getElementById("pageFrame");
-  if (!frame) return;
+async function loadPage(url) {
+  if (emptyState) emptyState.classList.add("hidden");
 
-  // Tunjuk loader
+  const iframeLoader = document.getElementById("iframeLoader");
+  const pageContent = document.getElementById("pageContent");
+  if (!pageContent) return;
+
   iframeLoader.style.display = "flex";
 
-  // Fungsi helper: pastikan hide hanya sekali
-  let loaderDone = false;
-  function hideLoader() {
-    if (loaderDone) return;
-    loaderDone = true;
+  try {
+    const res = await fetch(url, { cache: "no-cache" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const html = await res.text();
+    pageContent.innerHTML = html;
+
+    setActiveTabUrl(url);
+    closeSidebar();
+    applyActiveTabFromStorage();
+
+    // jalankan script kalau page ada <script>
+    const scripts = pageContent.querySelectorAll("script");
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement("script");
+
+      if (oldScript.src) {
+        newScript.src = oldScript.src;
+      } else {
+        newScript.textContent = oldScript.textContent;
+      }
+
+      document.body.appendChild(newScript);
+      oldScript.remove();
+    });
+
+  } catch (err) {
+    pageContent.innerHTML = `
+      <div style="padding:20px;color:white;">
+        <h3 style="color:red;">Failed to load page</h3>
+        <p>${url}</p>
+        <small>${err.message}</small>
+      </div>
+    `;
+  } finally {
     iframeLoader.style.display = "none";
-    frame.onload = null;
   }
-
-  // 1) Bila iframe betul-betul siap → hide
-  frame.onload = hideLoader;
-
-  // 2) Fallback: maksimum tunggu 1.5s saja
-  setTimeout(hideLoader, 1500);  // boleh ubah jadi 1000 / 2000 ms ikut rasa
-
-  // Load URL
-frame.src = url;
-setActiveTabUrl(url);          // ✅ simpan active url
-closeSidebar();
-applyActiveTabFromStorage(); 
 }
 
   // Ceklis GameLog Dropdown
@@ -1573,8 +1577,7 @@ window.addEventListener("message", async (e) => {
   }
 
   // pastikan pesan benar-benar dari iframe kita
-  const frame = document.getElementById("pageFrame");
-  if (!frame || e.source !== frame.contentWindow) return;
+
 
   const data = e.data || {};
 
