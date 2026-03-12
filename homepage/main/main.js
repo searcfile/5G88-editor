@@ -574,6 +574,123 @@ function applyActiveTabFromStorage(){
     el.classList.toggle("active-tab", u === activeUrl);
   });
 }
+// ===============================
+// ROUTE VIEW SYSTEM (HYBRID)
+// ===============================
+const ROUTES = {
+  "/livechat": {
+    file: "/homepage/views/livechat.html",
+    label: "LIVE CHAT"
+  },
+  "/page": {
+    file: "/homepage/views/page.html",
+    label: "PAGE"
+  }
+};
+
+function isRoutePath(path){
+  return !!ROUTES[path];
+}
+
+function showRouteContainer(){
+  const appView = document.getElementById("appView");
+  const frame = document.getElementById("pageFrame");
+  if (appView) appView.style.display = "block";
+  if (frame) frame.style.display = "none";
+}
+
+function showIframeContainer(){
+  const appView = document.getElementById("appView");
+  const frame = document.getElementById("pageFrame");
+  if (appView) appView.style.display = "none";
+  if (frame) frame.style.display = "block";
+}
+
+async function loadRouteView(path){
+  const appView = document.getElementById("appView");
+  const loader = document.getElementById("iframeLoader");
+  const route = ROUTES[path];
+  if (!appView || !route) return;
+
+  try {
+    if (emptyState) emptyState.classList.add('hidden');
+    if (loader) loader.style.display = "flex";
+
+    showRouteContainer();
+
+    const res = await fetch(route.file, { cache: "no-store" });
+    const html = await res.text();
+    appView.innerHTML = html;
+
+    setActiveTabUrl(path);
+    closeSidebar();
+    applyActiveTabFromStorage();
+
+    const liveBtn = document.getElementById("liveChatBtn");
+    const pageBtn = document.getElementById("pageBtn");
+
+    if (liveBtn) liveBtn.classList.toggle("active-livechat", route.label === "LIVE CHAT");
+    if (pageBtn) pageBtn.classList.toggle("active-itemBtn", route.label === "PAGE");
+
+    if (route.label === "LIVE CHAT") {
+      const liveDot = document.getElementById("livechatDot");
+      if (liveDot) liveDot.style.display = "none";
+      markLivechatAsRead();
+    }
+
+  } catch (err) {
+    console.error("❌ loadRouteView error:", err);
+    appView.innerHTML = `
+      <div style="padding:20px;color:white;">
+        Failed to load route view.
+      </div>
+    `;
+  } finally {
+    if (loader) loader.style.display = "none";
+  }
+}
+
+function ensureRouteTab(label, path){
+  const L = String(label || "").trim().toUpperCase();
+  const tabs = getTabs();
+  const idx = tabs.findIndex(tab => String(tab.label || "").trim().toUpperCase() === L);
+
+  if (idx === -1) {
+    tabs.push({ label: L, url: path, group: "none", mode: "route" });
+  } else {
+    tabs[idx].url = path;
+    tabs[idx].mode = "route";
+  }
+
+  saveTabs(tabs);
+}
+
+async function navigateTo(path, label){
+  if (!ROUTES[path]) return;
+
+  history.pushState({}, "", path);
+  ensureRouteTab(label, path);
+  setActiveTabUrl(path);
+
+  renderTabs();
+  updateEmptyState();
+  updateGameLogCheckmarks();
+  updateBankResitCheckmarks();
+  updateGameLinksCheckmarks();
+
+  await loadRouteView(path);
+}
+
+async function handleCurrentRouteOnLoad(){
+  const path = location.pathname;
+
+  if (ROUTES[path]) {
+    await navigateTo(path, ROUTES[path].label);
+    return true;
+  }
+
+  return false;
+}
 function addTab(label, url, opt={}) {
   const L = String(label || "").trim().toUpperCase();
   const group = String(opt?.group || "none").toLowerCase();
@@ -710,16 +827,22 @@ function closeTab(label) {
   const gameLinksBtnEl = document.getElementById("gameLinksBtn");
   const itemBtn = document.getElementById("itemBtn");
 
-  if (tabs.length > 0) {
-    const lastTab = tabs[tabs.length - 1];
+if (tabs.length > 0) {
+  const lastTab = tabs[tabs.length - 1];
+  const lastMode = String(lastTab.mode || "iframe").toLowerCase();
 
-    if (String(lastTab.mode || "iframe").toLowerCase() === "page") {
-      setActiveTabUrl(lastTab.url);
-      window.location.href = lastTab.url;
-      return;
-    }
+  if (lastMode === "page") {
+    setActiveTabUrl(lastTab.url);
+    window.location.href = lastTab.url;
+    return;
+  }
 
-    loadPage(lastTab.url);
+  if (lastMode === "route") {
+    navigateTo(lastTab.url, lastTab.label);
+    return;
+  }
+
+  loadPage(lastTab.url);
 
     // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5","EVO888"];
@@ -734,8 +857,12 @@ function closeTab(label) {
     itemBtn?.classList.toggle("active-itemBtn", lastTab.label === "ITEM COLLECTION");
   } else {
     // Tidak ada tab tersisa → matikan semua status aktif
-    const frame = document.getElementById("pageFrame");
-    if (frame) frame.src = "";
+const frame = document.getElementById("pageFrame");
+const appView = document.getElementById("appView");
+if (frame) frame.src = "";
+if (appView) appView.innerHTML = "";
+showIframeContainer();
+history.pushState({}, "", "/main");
     gameLogBtn?.classList.remove("active-gamelog");
     bankResitBtnEl?.classList.remove("active-gamelog");
     liveBtn?.classList.remove("active-livechat");
@@ -782,8 +909,15 @@ tabElement.onclick = () => {
   const u = normUrl(tab.url);
   setActiveTabUrl(u);
 
-  if (String(tab.mode || "iframe").toLowerCase() === "page") {
+  const tabMode = String(tab.mode || "iframe").toLowerCase();
+
+  if (tabMode === "page") {
     window.location.href = u;
+    return;
+  }
+
+  if (tabMode === "route") {
+    navigateTo(tab.url, tab.label);
     return;
   }
 
@@ -891,10 +1025,14 @@ function loadPage(url) {
   const frame = document.getElementById("pageFrame");
   if (!frame) return;
 
-  // Tunjuk loader
+  showIframeContainer();
+
+  if (location.pathname !== "/main") {
+    history.pushState({}, "", "/main");
+  }
+
   iframeLoader.style.display = "flex";
 
-  // Fungsi helper: pastikan hide hanya sekali
   let loaderDone = false;
   function hideLoader() {
     if (loaderDone) return;
@@ -903,17 +1041,13 @@ function loadPage(url) {
     frame.onload = null;
   }
 
-  // 1) Bila iframe betul-betul siap → hide
   frame.onload = hideLoader;
+  setTimeout(hideLoader, 1500);
 
-  // 2) Fallback: maksimum tunggu 1.5s saja
-  setTimeout(hideLoader, 1500);  // boleh ubah jadi 1000 / 2000 ms ikut rasa
-
-  // Load URL
-frame.src = url;
-setActiveTabUrl(url);          // ✅ simpan active url
-closeSidebar();
-applyActiveTabFromStorage(); 
+  frame.src = url;
+  setActiveTabUrl(url);
+  closeSidebar();
+  applyActiveTabFromStorage();
 }
 
   // Ceklis GameLog Dropdown
@@ -969,13 +1103,15 @@ function updateGameLinksCheckmarks() {
   });
 }
 
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
   renderTabs();
   applyTabVisibility();  // <-- opsional, double check awal
   const tabs = getTabs();
   updateEmptyState();
   updateGameLogCheckmarks();
   updateGameLinksCheckmarks();
+  const usedRoute = await handleCurrentRouteOnLoad();
+if (usedRoute) return;
   const activeUrl = localStorage.getItem("activeTabUrl");
   const match = tabs.find(tab => tab.url === activeUrl);
 
@@ -1033,7 +1169,17 @@ window.addEventListener("load", () => {
   }
 }
 });
+window.addEventListener("popstate", async () => {
+  const path = location.pathname;
 
+  if (ROUTES[path]) {
+    await loadRouteView(path);
+    renderTabs();
+    return;
+  }
+
+  showIframeContainer();
+});
 const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
 const _0xadmins = encodedAdmins.map(e => atob(e));
 const allowedAdmins = [..._0xadmins, "admin@example.com"];
