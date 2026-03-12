@@ -734,7 +734,8 @@ function closeTab(label) {
     itemBtn?.classList.toggle("active-itemBtn", lastTab.label === "ITEM COLLECTION");
   } else {
     // Tidak ada tab tersisa → matikan semua status aktif
-    pageFrame.src = "";
+    const frame = document.getElementById("pageFrame");
+    if (frame) frame.src = "";
     gameLogBtn?.classList.remove("active-gamelog");
     bankResitBtnEl?.classList.remove("active-gamelog");
     liveBtn?.classList.remove("active-livechat");
@@ -1023,9 +1024,14 @@ window.addEventListener("load", () => {
     if (gameLogBtn && gameLogLabels.includes(match.label)) {
       gameLogBtn.classList.add("active-gamelog");
     }
-    } else if (tabs.length > 0) {
-    loadPage(tabs[tabs.length - 1].url);
-   }
+} else if (tabs.length > 0) {
+  const lastTab = tabs[tabs.length - 1];
+  if (String(lastTab.mode || "iframe").toLowerCase() === "page") {
+    setActiveTabUrl(lastTab.url);
+  } else {
+    loadPage(lastTab.url);
+  }
+}
 });
 
 const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
@@ -1149,7 +1155,10 @@ function buildLink(label, url, kind="dropdown", meta={}){
 
   a.addEventListener("click", (e)=>{
     e.preventDefault();
-    addTab(label, url, { group: meta?.group || "none" });
+    addTab(label, url, { 
+  group: meta?.group || "none",
+  mode: meta?.mode || "iframe"
+});
     try { closeSidebar(); } catch(_){}
   });
 
@@ -1190,24 +1199,25 @@ function renderCustomTabs(){
 
     const place = normPlaceStrict(item.place);
     const group = normGroupStrict(item.group);
+    const mode = String(item.mode || item.openMode || "iframe").toLowerCase();
 
     if (place === "header") {
       if (group === "gamelog" && c.gameLogDropdown) {
-        c.gameLogDropdown.appendChild(buildLink(label, url, "dropdown", { group:"gamelog" }));
+        c.gameLogDropdown.appendChild(buildLink(label, url, "dropdown", { group:"gamelog", mode }));
         return;
       }
       if (group === "bank" && c.bankResitDropdown) {
-        c.bankResitDropdown.appendChild(buildLink(label, url, "dropdown", { group:"bank" }));
+        c.bankResitDropdown.appendChild(buildLink(label, url, "dropdown", { group:"bank", mode }));
         return;
       }
       if (group === "list" && c.gameLinksDropdown) {
-        c.gameLinksDropdown.appendChild(buildLink(label, url, "dropdown", { group:"list" }));
+        c.gameLinksDropdown.appendChild(buildLink(label, url, "dropdown", { group:"list", mode }));
         return;
       }
     }
 
     // default sidebar
-    const linkSidebar = buildLink(label, url, "sidebar", { group:"none" });
+    const linkSidebar = buildLink(label, url, "sidebar", { group:"none", mode });
     if (c.sidebarCustomWrap) c.sidebarCustomWrap.appendChild(linkSidebar);
     else c.sidebar.appendChild(linkSidebar);
   });
