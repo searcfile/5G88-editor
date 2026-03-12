@@ -579,11 +579,11 @@ function applyActiveTabFromStorage(){
 // ===============================
 const ROUTES = {
   "/livechat": {
-    file: "/homepage/livechat.html",
+    file: "/homepage/livechat/index.html",
     label: "LIVE CHAT"
   },
   "/page": {
-    file: "/homepage/page.html",
+    file: "/homepage/page/index.html",
     label: "PAGE"
   }
 };
