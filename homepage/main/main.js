@@ -696,6 +696,17 @@ function addTab(label, url, opt={}) {
   const group = String(opt?.group || "none").toLowerCase();
   const mode = String(opt?.mode || "iframe").toLowerCase(); // iframe | page
   if (typeof isTabAllowed === "function" && !isTabAllowed(L)) return;
+  let routePath = "";
+  try {
+    routePath = new URL(String(url || ""), location.origin).pathname.replace(/\/+$/, "") || "/";
+  } catch (_) {
+    routePath = String(url || "").trim().replace(/\/+$/, "");
+  }
+
+  if (ROUTES[routePath]) {
+    navigateTo(routePath, L);
+    return;
+  }
 
 const existingTabs = getTabs();
 const newUrl = normUrl(url);
@@ -1020,6 +1031,17 @@ function initSortableTabs() {
   });
 }
 function loadPage(url) {
+    let routePath = "";
+  try {
+    routePath = new URL(String(url || ""), location.origin).pathname.replace(/\/+$/, "") || "/";
+  } catch (_) {
+    routePath = String(url || "").trim().replace(/\/+$/, "");
+  }
+
+  if (ROUTES[routePath]) {
+    navigateTo(routePath, ROUTES[routePath].label);
+    return;
+  }
   if (emptyState) emptyState.classList.add('hidden');
   const iframeLoader = document.getElementById("iframeLoader");
   const frame = document.getElementById("pageFrame");
