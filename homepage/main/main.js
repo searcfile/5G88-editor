@@ -574,139 +574,11 @@ function applyActiveTabFromStorage(){
     el.classList.toggle("active-tab", u === activeUrl);
   });
 }
-// ===============================
-// ROUTE VIEW SYSTEM (HYBRID)
-// ===============================
-const ROUTES = {
-  "/livechat": {
-    file: "/views/livechat.html",
-    label: "LIVE CHAT"
-  },
-  "/page": {
-    file: "/views/page.html",
-    label: "PAGE"
-  }
-};
-
-function isRoutePath(path){
-  return !!ROUTES[path];
-}
-
-function showRouteContainer(){
-  const appView = document.getElementById("appView");
-  const frame = document.getElementById("pageFrame");
-  if (appView) appView.style.display = "block";
-  if (frame) frame.style.display = "none";
-}
-
-function showIframeContainer(){
-  const appView = document.getElementById("appView");
-  const frame = document.getElementById("pageFrame");
-  if (appView) appView.style.display = "none";
-  if (frame) frame.style.display = "block";
-}
-
-async function loadRouteView(path){
-  const appView = document.getElementById("appView");
-  const loader = document.getElementById("iframeLoader");
-  const route = ROUTES[path];
-  if (!appView || !route) return;
-
-  try {
-    if (emptyState) emptyState.classList.add('hidden');
-    if (loader) loader.style.display = "flex";
-
-    showRouteContainer();
-
-    const res = await fetch(route.file, { cache: "no-store" });
-    const html = await res.text();
-    appView.innerHTML = html;
-
-    setActiveTabUrl(path);
-    closeSidebar();
-    applyActiveTabFromStorage();
-
-    const liveBtn = document.getElementById("liveChatBtn");
-    const pageBtn = document.getElementById("pageBtn");
-
-    if (liveBtn) liveBtn.classList.toggle("active-livechat", route.label === "LIVE CHAT");
-    if (pageBtn) pageBtn.classList.toggle("active-itemBtn", route.label === "PAGE");
-
-    if (route.label === "LIVE CHAT") {
-      const liveDot = document.getElementById("livechatDot");
-      if (liveDot) liveDot.style.display = "none";
-      markLivechatAsRead();
-    }
-
-  } catch (err) {
-    console.error("❌ loadRouteView error:", err);
-    appView.innerHTML = `
-      <div style="padding:20px;color:white;">
-        Failed to load route view.
-      </div>
-    `;
-  } finally {
-    if (loader) loader.style.display = "none";
-  }
-}
-
-function ensureRouteTab(label, path){
-  const L = String(label || "").trim().toUpperCase();
-  const tabs = getTabs();
-  const idx = tabs.findIndex(tab => String(tab.label || "").trim().toUpperCase() === L);
-
-  if (idx === -1) {
-    tabs.push({ label: L, url: path, group: "none", mode: "route" });
-  } else {
-    tabs[idx].url = path;
-    tabs[idx].mode = "route";
-  }
-
-  saveTabs(tabs);
-}
-
-async function navigateTo(path, label){
-  if (!ROUTES[path]) return;
-
-  history.pushState({}, "", path);
-  ensureRouteTab(label, path);
-  setActiveTabUrl(path);
-
-  renderTabs();
-  updateEmptyState();
-  updateGameLogCheckmarks();
-  updateBankResitCheckmarks();
-  updateGameLinksCheckmarks();
-
-  await loadRouteView(path);
-}
-
-async function handleCurrentRouteOnLoad(){
-  const path = location.pathname;
-
-  if (ROUTES[path]) {
-    await navigateTo(path, ROUTES[path].label);
-    return true;
-  }
-
-  return false;
-}
 function addTab(label, url, opt={}) {
   const L = String(label || "").trim().toUpperCase();
   const group = String(opt?.group || "none").toLowerCase();
-  const mode = String(opt?.mode || "iframe").toLowerCase(); // iframe | page
-  if (typeof isTabAllowed === "function" && !isTabAllowed(L)) return;
-  let routePath = "";
-  try {
-    routePath = new URL(String(url || ""), location.origin).pathname.replace(/\/+$/, "") || "/";
-  } catch (_) {
-    routePath = String(url || "").trim().replace(/\/+$/, "");
-  }
 
-  if (ROUTES[routePath]) {
-    navigateTo(routePath, L);
-    return;
-  }
+  if (typeof isTabAllowed === "function" && !isTabAllowed(L)) return;
 
 const existingTabs = getTabs();
 const newUrl = normUrl(url);
@@ -717,20 +589,14 @@ const idx = existingTabs.findIndex(tab =>
 );
 
 if (idx === -1) {
-  existingTabs.push({ label: L, url: newUrl, group, mode });
+  existingTabs.push({ label: L, url: newUrl, group });
 } else {
+  // ✅ kalau tab dah ada, update url supaya konsisten
   existingTabs[idx].url = newUrl;
   existingTabs[idx].group = group;
-  existingTabs[idx].mode = mode;
 }
 saveTabs(existingTabs);
-  
-if (mode === "page") {
-  setActiveTabUrl(newUrl);
-  renderTabs();
-  window.location.href = newUrl;
-  return;
-}
+
 loadPage(newUrl);
 renderTabs();
   updateGameLogCheckmarks();
@@ -838,22 +704,9 @@ function closeTab(label) {
   const gameLinksBtnEl = document.getElementById("gameLinksBtn");
   const itemBtn = document.getElementById("itemBtn");
 
-if (tabs.length > 0) {
-  const lastTab = tabs[tabs.length - 1];
-  const lastMode = String(lastTab.mode || "iframe").toLowerCase();
-
-  if (lastMode === "page") {
-    setActiveTabUrl(lastTab.url);
-    window.location.href = lastTab.url;
-    return;
-  }
-
-  if (lastMode === "route") {
-    navigateTo(lastTab.url, lastTab.label);
-    return;
-  }
-
-  loadPage(lastTab.url);
+  if (tabs.length > 0) {
+    const lastTab = tabs[tabs.length - 1];
+    loadPage(lastTab.url);
 
     // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5","EVO888"];
@@ -868,12 +721,7 @@ if (tabs.length > 0) {
     itemBtn?.classList.toggle("active-itemBtn", lastTab.label === "ITEM COLLECTION");
   } else {
     // Tidak ada tab tersisa → matikan semua status aktif
-const frame = document.getElementById("pageFrame");
-const appView = document.getElementById("appView");
-if (frame) frame.src = "";
-if (appView) appView.innerHTML = "";
-showIframeContainer();
-history.pushState({}, "", "/main");
+    pageFrame.src = "";
     gameLogBtn?.classList.remove("active-gamelog");
     bankResitBtnEl?.classList.remove("active-gamelog");
     liveBtn?.classList.remove("active-livechat");
@@ -916,23 +764,10 @@ function renderTabs() {
     });
 
     // Klik tab → buka page
-tabElement.onclick = () => {
-  const u = normUrl(tab.url);
-  setActiveTabUrl(u);
-
-  const tabMode = String(tab.mode || "iframe").toLowerCase();
-
-  if (tabMode === "page") {
-    window.location.href = u;
-    return;
-  }
-
-  if (tabMode === "route") {
-    navigateTo(tab.url, tab.label);
-    return;
-  }
-
-  loadPage(u);
+    tabElement.onclick = () => {
+    const u = normUrl(tab.url);
+    setActiveTabUrl(u);
+    loadPage(u);
 
       const gameLogBtn = document.getElementById("gameLogBtn");
       const liveBtn = document.getElementById("liveChatBtn");
@@ -1031,30 +866,15 @@ function initSortableTabs() {
   });
 }
 function loadPage(url) {
-    let routePath = "";
-  try {
-    routePath = new URL(String(url || ""), location.origin).pathname.replace(/\/+$/, "") || "/";
-  } catch (_) {
-    routePath = String(url || "").trim().replace(/\/+$/, "");
-  }
-
-  if (ROUTES[routePath]) {
-    navigateTo(routePath, ROUTES[routePath].label);
-    return;
-  }
   if (emptyState) emptyState.classList.add('hidden');
   const iframeLoader = document.getElementById("iframeLoader");
   const frame = document.getElementById("pageFrame");
   if (!frame) return;
 
-  showIframeContainer();
-
-  if (location.pathname !== "/main") {
-    history.pushState({}, "", "/main");
-  }
-
+  // Tunjuk loader
   iframeLoader.style.display = "flex";
 
+  // Fungsi helper: pastikan hide hanya sekali
   let loaderDone = false;
   function hideLoader() {
     if (loaderDone) return;
@@ -1063,13 +883,17 @@ function loadPage(url) {
     frame.onload = null;
   }
 
+  // 1) Bila iframe betul-betul siap → hide
   frame.onload = hideLoader;
-  setTimeout(hideLoader, 1500);
 
-  frame.src = url;
-  setActiveTabUrl(url);
-  closeSidebar();
-  applyActiveTabFromStorage();
+  // 2) Fallback: maksimum tunggu 1.5s saja
+  setTimeout(hideLoader, 1500);  // boleh ubah jadi 1000 / 2000 ms ikut rasa
+
+  // Load URL
+frame.src = url;
+setActiveTabUrl(url);          // ✅ simpan active url
+closeSidebar();
+applyActiveTabFromStorage(); 
 }
 
   // Ceklis GameLog Dropdown
@@ -1125,15 +949,13 @@ function updateGameLinksCheckmarks() {
   });
 }
 
-window.addEventListener("load", async () => {
+window.addEventListener("load", () => {
   renderTabs();
   applyTabVisibility();  // <-- opsional, double check awal
   const tabs = getTabs();
   updateEmptyState();
   updateGameLogCheckmarks();
   updateGameLinksCheckmarks();
-  const usedRoute = await handleCurrentRouteOnLoad();
-if (usedRoute) return;
   const activeUrl = localStorage.getItem("activeTabUrl");
   const match = tabs.find(tab => tab.url === activeUrl);
 
@@ -1152,9 +974,7 @@ if (usedRoute) return;
   if (gameLinksBtnEl) gameLinksBtnEl.classList.remove("active-gamelog");
 
   if (match) {
-    if (String(match.mode || "iframe").toLowerCase() !== "page") {
-      loadPage(match.url);
-    }
+    loadPage(match.url);
     updateGameLogCheckmarks();
     updateBankResitCheckmarks();
     updateGameLinksCheckmarks();
@@ -1182,26 +1002,11 @@ if (usedRoute) return;
     if (gameLogBtn && gameLogLabels.includes(match.label)) {
       gameLogBtn.classList.add("active-gamelog");
     }
-} else if (tabs.length > 0) {
-  const lastTab = tabs[tabs.length - 1];
-  if (String(lastTab.mode || "iframe").toLowerCase() === "page") {
-    setActiveTabUrl(lastTab.url);
-  } else {
-    loadPage(lastTab.url);
-  }
-}
+    } else if (tabs.length > 0) {
+    loadPage(tabs[tabs.length - 1].url);
+   }
 });
-window.addEventListener("popstate", async () => {
-  const path = location.pathname;
 
-  if (ROUTES[path]) {
-    await loadRouteView(path);
-    renderTabs();
-    return;
-  }
-
-  showIframeContainer();
-});
 const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
 const _0xadmins = encodedAdmins.map(e => atob(e));
 const allowedAdmins = [..._0xadmins, "admin@example.com"];
@@ -1323,10 +1128,7 @@ function buildLink(label, url, kind="dropdown", meta={}){
 
   a.addEventListener("click", (e)=>{
     e.preventDefault();
-    addTab(label, url, { 
-  group: meta?.group || "none",
-  mode: meta?.mode || "iframe"
-});
+    addTab(label, url, { group: meta?.group || "none" });
     try { closeSidebar(); } catch(_){}
   });
 
@@ -1367,25 +1169,24 @@ function renderCustomTabs(){
 
     const place = normPlaceStrict(item.place);
     const group = normGroupStrict(item.group);
-    const mode = String(item.mode || item.openMode || "iframe").toLowerCase();
 
     if (place === "header") {
       if (group === "gamelog" && c.gameLogDropdown) {
-        c.gameLogDropdown.appendChild(buildLink(label, url, "dropdown", { group:"gamelog", mode }));
+        c.gameLogDropdown.appendChild(buildLink(label, url, "dropdown", { group:"gamelog" }));
         return;
       }
       if (group === "bank" && c.bankResitDropdown) {
-        c.bankResitDropdown.appendChild(buildLink(label, url, "dropdown", { group:"bank", mode }));
+        c.bankResitDropdown.appendChild(buildLink(label, url, "dropdown", { group:"bank" }));
         return;
       }
       if (group === "list" && c.gameLinksDropdown) {
-        c.gameLinksDropdown.appendChild(buildLink(label, url, "dropdown", { group:"list", mode }));
+        c.gameLinksDropdown.appendChild(buildLink(label, url, "dropdown", { group:"list" }));
         return;
       }
     }
 
     // default sidebar
-    const linkSidebar = buildLink(label, url, "sidebar", { group:"none", mode });
+    const linkSidebar = buildLink(label, url, "sidebar", { group:"none" });
     if (c.sidebarCustomWrap) c.sidebarCustomWrap.appendChild(linkSidebar);
     else c.sidebar.appendChild(linkSidebar);
   });
@@ -1546,7 +1347,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ======= SEMUA YANG DI BAWAH INI BUTUH sessionData =======
-  userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
+  let userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
   let loginAuth = null;
   try { loginAuth = loginApp.auth(); } catch (_) {}
 
@@ -1762,11 +1563,10 @@ setInterval(updateDateTime, 1000);
 updateDateTime();
 // ✅ SATU handler postMessage gabungan (aman & rapi)
 window.addEventListener("message", async (e) => {
-const allowedOrigins = new Set([
-  "https://searcfile.github.io",
-  "https://5g88-main.vercel.app",
-  window.location.origin
-]);
+  const allowedOrigins = new Set([
+    "https://searcfile.github.io",
+    "https://5g88-home.vercel.app",
+  ]);
   if (!allowedOrigins.has(e.origin)) {
     console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
     return;
