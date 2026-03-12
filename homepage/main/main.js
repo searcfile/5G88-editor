@@ -1378,7 +1378,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ======= SEMUA YANG DI BAWAH INI BUTUH sessionData =======
-  let userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
+  userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
   let loginAuth = null;
   try { loginAuth = loginApp.auth(); } catch (_) {}
 
@@ -1594,10 +1594,11 @@ setInterval(updateDateTime, 1000);
 updateDateTime();
 // ✅ SATU handler postMessage gabungan (aman & rapi)
 window.addEventListener("message", async (e) => {
-  const allowedOrigins = new Set([
-    "https://searcfile.github.io",
-    "https://5g88-home.vercel.app",
-  ]);
+const allowedOrigins = new Set([
+  "https://searcfile.github.io",
+  "https://5g88-main.vercel.app",
+  window.location.origin
+]);
   if (!allowedOrigins.has(e.origin)) {
     console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
     return;
