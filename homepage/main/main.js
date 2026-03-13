@@ -273,26 +273,6 @@ const loginDb = loginApp.database();
   };
 })();
 
-(() => {
-  try {
-    const qs = new URLSearchParams(location.search);
-    const name  = qs.get("name");
-    const email = qs.get("email");
-    const photo = qs.get("photo");
-    const validEmail = (e)=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e||"");
-
-    if (email && validEmail(decodeURIComponent(email))) {
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name:  decodeURIComponent(name || ""),
-        email: decodeURIComponent(email).toLowerCase(),
-        photo: decodeURIComponent(photo || "")
-      }));
-      // tanda baru login supaya tidak ping-pong
-      sessionStorage.setItem("justLoggedIn", "1");
-      history.replaceState({}, document.title, location.origin + location.pathname);
-    }
-  } catch (_) {}
-})();
 // === Helper: cek tipe login & update tombol Change Password ===
 function isUsernameLoginNow() {
   try {
@@ -1031,17 +1011,19 @@ function isValidEmail(email) {
 }
 
 function checkLogin() {
-  try{
+  try {
     const gl = JSON.parse(localStorage.getItem("gmailLogin") || "null");
-    if (gl?.email) return true;
-  }catch(_){}
+    if (gl && gl.email) return true;
+  } catch (_) {}
+
   if (sessionStorage.getItem("justLoggedIn") === "1") {
-    sessionStorage.removeItem("justLoggedIn");
     return true;
   }
 
-  const returnTo = encodeURIComponent(location.href);
-  location.replace(`/login?redirect=${returnTo}`);
+  if (!location.pathname.startsWith("/login")) {
+    const returnTo = encodeURIComponent(location.href);
+    location.replace(`/login?redirect=${returnTo}`);
+  }
   return false;
 }
 
@@ -1347,7 +1329,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ======= SEMUA YANG DI BAWAH INI BUTUH sessionData =======
-  let userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
+  userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
   let loginAuth = null;
   try { loginAuth = loginApp.auth(); } catch (_) {}
 
