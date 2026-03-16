@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BANK ISLAM</title>
+<script>if (window.top === window.self) {window.location.replace("/main");}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#d84862;               /* top bar & primary (disetel agar mirip) */
+    --pink-press:#c83853;
+    --ink:#161616;
+    --muted:#8d8d8d;
+    --muted-2:#666;
+    --card:#fff;
+    --success:#32c9a9;
+    --success-bg: rgba(50,201,169,.10);
+    --shadow: 0 14px 32px rgba(0,0,0,.06);
+    --shadow-btn: 0 10px 24px rgba(216,72,98,.18);
+    --border: rgba(0,0,0,.06);
+    --radius-xl: 22px;            /* header outer */
+    --radius-card: 14px;          /* kartu putih */
+    --radius-pill: 999px;
+    --font: "Montserrat", Arial, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:#000;font-family:var(--font);color:white;font-size:12px;}
+  .page{
+    /* contoh gambar lebar ~630px; kita kunci ke 640 agar proporsional */
+    max-width:510px; margin:24px auto 56px; padding:0 18px;
+  }
+  .hdr .title{
+    font-size:14px; font-weight:700; letter-spacing:.1px;
+  }
+  .hdr .fav{display:flex; gap:10px; align-items:center; font-weight:700; color:#111;font-size: 14px;}
+  .hdr .star{
+    width:24px;height:24px;border-radius:50%;
+    display:grid;place-items:center;font-size:16px;color:#111;
+  }
+/* Chrome/Edge/Safari: properti zoom ikut mengubah layout */
+.card { zoom: 1.098; }
+
+/* Fallback Firefox: transform (tidak mengubah layout, hanya visual) */
+@supports not (zoom: 1) {
+  .card {
+    transform: scale(1.098);
+    transform-origin: top left;
+  }
+}
+  /* KARTU PUTIH */
+  .card{
+    margin-top:10px !important; background:var(--card);
+    padding:18px 20px; box-shadow: var(--shadow),inset 0 -60px 20px -20px rgb(218 218 218 / 46%); border:1px solid var(--border);
+  }
+  .edit{
+    position:absolute; right:18px; margin-top:-6px;
+    background:transparent; border:0; cursor:pointer; color:#9a9a9a; font-size:18px;
+  }
+
+  .row-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
+  .left{ flex:1; }
+  .type{ font-weight:700; font-size:14px; color:#111; display:inline-block; }
+  .badge{
+    display:inline-flex; align-items:center; gap:6px; margin-left:13px;
+    font-size:10px; color:#32c9a9;
+    background:#fff; border:1px solid #32c9a9;
+    padding:2px 12px; border-radius:8px;font-weight:500;
+  }
+
+  .amount{ min-width:140px; text-align:right; }
+  .amount .rm{ color:#000; font-weight:700; font-size:14px; letter-spacing:.1px; }
+
+  .refwrap{
+    margin-top:10px; display:flex; justify-content:space-between; gap:10px;
+  }
+  .refleft{ color:var(--muted); font-size:13px; line-height:1.5; }
+  .view{ color:#c13650; font-weight:600; font-size:13px; cursor:pointer; white-space:nowrap; }
+
+  hr{ border:0;margin:14px 0 12px; }
+
+  .sect{ font-weight:700; font-size:14px; color:#111; margin-bottom:8px; }
+  .detail{ font-size:12px; color:#6b6b6b; line-height:1.5; }
+  .detail .sub{ color:#6b6b6b; font-weight:400; }
+
+  .more{ margin-top:10px; color:#8d8d8d; font-size:10px; cursor:pointer; display:inline-flex; gap:8px; align-items:center;font-weight: 600; }
+
+  .btn{
+    flex:1; padding:12px 22px; border-radius:var(--radius-pill);
+    border:1px solid #fff; cursor:pointer; font-weight:700; font-size:14px;
+    background:transparent; color:#fff;
+    box-shadow: 0 2px 0 rgba(0,0,0,.02), 0 6px 14px rgba(0,0,0,.06) inset;transition: all 0.2s;
+  }
+  .btn:hover{background:#fff;color:#c83853;}.btn:active{background:#cccccc;color:#c83853;}
+  .btn.primary{
+    flex:1; background:#fff;
+    color:#c83853; border:1px solid #fff;transition: all 0.2s;
+  }
+ .btn.primary:hover{background:#c83853;color:#fff;border:1px solid white;}.btn.primary:active{background:transparent;color:#cccccc;}
+  /* MODAL EDITOR */
+
+  .modal{ width:min(520px,92vw); background:#c83853; border-radius:14px; border:1px solid var(--border);
+          padding:16px 16px 14px; box-shadow:0 18px 40px rgba(0,0,0,.18); }
+  .modal h3{ margin:0 0 12px 0; font-size:16px; }
+  .fld{ display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+  .row{ display:flex; gap:10px; }
+  .col{ flex:1; }
+  .fld input, .fld select{
+    border:1px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px;
+  }
+  .ctl{ display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
+
+  /* BLUR MASKING */
+  .blurred{ filter:blur(3px); transition:filter .25s ease; }
+  .initial{ font-weight:400;  }
+
+  @media (max-width:640px){
+    .amount{ text-align:left; min-width:auto; }
+    .actions{ flex-direction:column; }
+  }
+/* reference row exactly like screenshot */
+.refblock{ margin-top:20px; }
+.ref-line{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;    /* sejajar secara vertikal */
+  gap:12px;
+}
+.ref-left{
+  color:#6b6b6b;         /* muted */
+  font-size:12px;
+  line-height:1.5;
+}
+.view-receipt{
+  color:#792635;         /* merah muda seperti contoh */
+  font-size:13px;
+  white-space:nowrap;    /* biar tidak turun baris */
+  cursor:pointer;
+  text-decoration: none;
+}
+.ref-date{
+  color:#6b6b6b;
+  font-size:12px;        /* tanggal di baris kedua */
+  margin-bottom: -8px;
+}
+.right-col{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end; /* rata kanan */
+  gap:6px;              /* jarak antara amount & link */
+  min-width:140px;      /* konsisten dengan lebar amount */
+}
+.right-col{ position: relative; }
+.right-col .view-receipt{
+  position: relative;
+  top: 18px;      /* ↓ turun dikit */
+  right: 7px;   /* → geser lebih ke kanan (nilai + untuk makin ke kanan) */
+}
+.left > div:first-child{
+  display: flex;
+  align-items: center;   /* sejajar tengah */
+}
+
+/* (opsional pixel-perfect) */
+.badge{ transform: translateY(1px); } 
+.card{ position: relative; overflow: visible; }
+.edit{
+  position: absolute;
+  top: -12px;            /* nilai negatif = keluar ke atas */
+  right: -12px;          /* keluar ke kanan */
+  margin: 0;
+  z-index: 5;
+}
+
+/* Sembunyikan tombol gear kalau masih ada di HTML */
+.edit{ display:none !important; }
+
+
+
+/* Sejajarkan "Fund Transfer" dan badge Success */
+.left > div:first-child{
+  display:flex;
+  align-items:center;
+}
+/* 1) Halaman tetap sempit & center untuk resit */
+.page{
+  max-width: 510px;     /* biarkan seperti awal */
+  margin: 24px auto 56px;
+}
+
+/* 5) Sembunyikan tombol gear (kalau masih ada) */
+.edit{ display: none !important; }
+/* biar kolom2 di baris editor bisa menyusut tanpa overflow */
+#back .modal .row .col{ 
+  flex: 1 1 0; 
+  min-width: 0;        /* penting: izinkan shrink */
+}
+#back .modal{ width: 100% !important; }
+/* kalau masih agak mepet, kecilkan gap sedikit */
+#back .modal .row .col{ flex: 1 1 0; min-width: 0; }
+#back .modal .row .col input,
+#back .modal .row .col select{ width:100%; }
+#inc{ flex: 0 0 auto !important; padding:10px 12px; }
+#back .modal .row{ gap:8px; }
+@media (max-width: 900px){
+  #back{ position: static; width:auto; }
+  .layout{ display:block; }
+  .card{ max-width:100%; }
+}
+.page{
+  max-width: 1160px;            /* boleh 920–1000, sesuaikan layar */
+  margin: 24px auto 56px;
+  padding: 0 18px;
+}
+
+/* Dua kolom yang dicenter */
+.layout{
+  display: grid !important;
+  grid-template-columns: 540px 510px; /* kiri=editor, kanan=resit */
+  gap: 12px;                           /* kecilkan kalau mau lebih “nempel” */
+  justify-content: center;             /* pasangan dicenter */
+  align-items: start;
+}
+
+/* Editor jadi kolom kiri (bukan overlay/fixed) */
+#back{
+  position: static !important;
+  inset: auto !important;              /* netralisir inset:0 lama */
+  display: block !important;
+  background: transparent !important;
+  width: auto !important;
+  z-index: 1;
+}
+
+/* Panel editor isi penuh kolom kiri, boleh sticky di atas */
+#back .modal{
+  width: 100% !important;
+  position: sticky;
+  top: 12px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.08);
+  border-radius: 14px;
+  max-height: none;
+  overflow: visible;
+}
+
+/* Resit di kolom kanan, lebar tetap */
+.card{
+  width: 510px;
+  max-width: 510px;
+  margin: 0 !important;      /* jangan auto-center sendiri; mengikuti grid */
+  flex: initial !important;
+}
+
+/* Pastikan field editor tidak meluber */
+#back .modal .row .col input,
+#back .modal .row .col select{ width:100%; }
+#inc{ flex: 0 0 auto !important; padding:10px 12px; }
+#back .modal .row{ gap:8px; }
+
+/* Responsif: tumpuk saat layar kecil */
+@media (max-width: 900px){
+  .layout{ grid-template-columns: 1fr; }
+  #back .modal{ position: static; }
+  .card{ width: 100%; max-width: 100%; }
+}
+.btn-now{border-radius: var(--radius-pill);
+    border: 1px solid #fff;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    background: transparent;
+    color: #fff;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, .02), 0 6px 14px rgba(0, 0, 0, .06) inset;padding: 10px 12px;
+    min-width: 30px;transition: all 0.2s;
+}
+.btn-now:hover{background:#fff;color:#c83853;}.btn-now:active{background:#cccccc;color:#c83853;}
+  
+.dt-wrap .dt-input{ flex:1; }  /* biar input melar penuh */
+.dt-wrap{ display:flex; gap:8px; align-items:center; width:100%; }
+.dt-wrap .dt-input{
+  width:auto;          /* override rule global 100% */
+  flex:1;              /* isi sisa ruang */
+  min-width:0;         /* boleh menyusut */
+}
+/* Pastikan kolom editor bisa menyusut */
+#back .modal .row .col{ flex:1 1 0; min-width:0; }
+.more .chev{
+  display:inline-block;
+  width:19px;               /* ubah ukuran di sini */
+  height:19px;
+  vertical-align: -2px;
+  background: currentColor; /* ikut warna teks .more */
+  /* material-like chevron-down */
+  -webkit-mask: url('data:image/svg+xml;utf8,\
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">\
+    <path d="M7.41 8.59 12 13.17l4.59-4.58 1.41 1.41L12 16 6 10l1.41-1.41Z"/>\
+  </svg>') no-repeat center/contain;
+          mask: url('data:image/svg+xml;utf8,\
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">\
+    <path d="M7.41 8.59 12 13.17l4.59-4.58 1.41 1.41L12 16 6 10l1.41-1.41Z"/>\
+  </svg>') no-repeat center/contain;
+  vertical-align: -1px;     /* kecilkan kalau perlu */
+}
+
+/* kalau sebelumnya pakai karakter ▾, sembunyikan */
+.more span:not(.chev){ display:none; }
+/* Ref Number: sisakan 4 digit depan, blur sisanya */
+.ref-keep{ letter-spacing:.2px; }
+.ref-blur{
+  filter: blur(3px);
+  user-select: none;
+  margin-left: -6px;
+}
+.ref-blur::selection{ background: transparent; }
+
+/* Controls Auto Name (opsional) */
+.name-wrap{ display:flex; gap:8px; align-items:center; width:100%; }
+.btn-mini{border-radius: var(--radius-pill);
+    border: 1px solid #fff;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    background: transparent;
+    color: #fff;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, .02), 0 6px 14px rgba(0, 0, 0, .06) inset;padding: 10px 12px;
+    min-width: 30px;transition: all 0.2s;
+}
+.btn-mini:hover{background:#fff;color:#c83853;}.btn-mini:active{background:#cccccc;color:#c83853;}
+.nm-alpha{ height:36px; border-radius:8px; padding:0 8px; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <!-- ===== NEW: layout 2 kolom ===== -->
+    <div class="layout">
+      <!-- KIRI: Editor selalu tampil -->
+      <div class="back" id="back">
+        <div class="modal" role="document" aria-label="Editor">
+          <h3>Edit Transaction</h3>
+
+          <div class="fld">
+            <label>Amount (RM)</label>
+            <input id="inAmount" type="text" inputmode="decimal" autocomplete="off" value="1,000.00">
+          </div>
+
+          <div class="row">
+<div class="col fld">
+  <label>Date &amp; Time</label>
+  <div class="dt-wrap">
+    <button type="button" class="btn-now" id="btnNow">Now</button>
+    <input id="inDate" class="dt-input" type="text" placeholder="Date & time">
+  </div>
+</div>
+            <div class="col fld">
+              <label>Reference Number</label>
+                <input id="inPrefix" type="text" placeholder="Auto" class="col">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col fld">
+              <label>Total ref length</label>
+              <select id="inLen">
+                <option>20</option><option selected>24</option>
+              </select>
+            </div>
+            <div class="col fld">
+              <label>Force Bank (optional)</label>
+              <select id="inBank">
+                <option value="">Random Bank</option>
+                <option>Maybank</option>
+                <option>CIMB Bank</option>
+                <option>Bank Simpanan Nasional</option>
+                <option>Touch n Go</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="fld">
+  <label>Recipient Full Name</label>
+  <div class="name-wrap">
+    <button type="button" class="btn-mini" id="btnGenName">Auto</button>
+    <select id="nmAlpha" class="nm-alpha" aria-label="First letter">
+      <option value="">A–Z</option>
+    </select>
+    <input id="inName" type="text" value="BAHARUDEEN BIN ABDUL" class="col">
+  </div>
+  <div style="color:rgb(255,255,255,0.65);font-size:13px">Saat Update, data sensitif akan otomatis di-blur; hanya huruf awal nama yang tampak.</div>
+</div>
+
+          <div class="ctl">
+            <button type="button" class="btn" onclick="resetLocal()">Reset</button>
+            <button class="btn primary" id="apply">Update &amp; Blur</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KANAN: Card -->
+      <div class="card" id="card">
+        <!-- HAPUS tombol gear -->
+        <div class="row-top">
+          <div class="left">
+            <div><span class="type">Fund Transfer</span><span class="badge"><span>Success</span></span></div>
+
+            <!-- Kiri: ref & tanggal saja -->
+            <div class="refblock">
+              <div class="ref-left">Reference Number: <span id="refNum">251002170720267593224</span></div>
+              <div class="ref-date" id="dateText">02 Oct 2025 05:07:21 PM</div>
+            </div>
+          </div>
+
+          <!-- Kanan: amount + View Receipt di bawahnya -->
+          <div class="right-col">
+            <div class="amount"><span class="rm" id="amt">RM 50.00</span></div>
+            <a href="#" class="view-receipt">View Receipt</a>
+          </div>
+        </div>
+
+        <hr>
+
+        <div>
+          <div class="sect">Recipient Details</div>
+          <div class="detail">
+            <div><span class="initial" id="nmIni">B</span><span id="nmRest">AHARUDEEN BIN ABDUL</span></div>
+            <div id="bankName">Maybank</div>
+            <div class="sub" id="accNum">164548072822</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="sect">Transfer Mode</div>
+          <div class="detail sub">DuitNow</div>
+        </div>
+
+       <div class="more">View More <span class="chev" aria-hidden="true"></span></div>
+      </div>
+    </div>
+    <!-- ===== end layout ===== -->
+
+  </div>
+<script>
+  /* ======== DATA BANK (panjang no. akun) ======== */
+  const BANKS = [
+    {name:'Maybank', len:12},
+    {name:'CIMB Bank',len:10},
+    {name:'Touch n Go', len:12},
+    {name:'Bank Simpanan Nasional', len:16},
+  ];
+
+  /* ======== EL ======== */
+  const apply   = document.getElementById('apply');
+  const btnNow  = document.getElementById('btnNow');
+ 
+  const refNum  = document.getElementById('refNum');
+  const dateText= document.getElementById('dateText');
+  const amt     = document.getElementById('amt');
+  const nmIni   = document.getElementById('nmIni');
+  const nmRest  = document.getElementById('nmRest');
+  const bankName= document.getElementById('bankName');
+  const accNum  = document.getElementById('accNum');
+
+  const inAmount= document.getElementById('inAmount');
+  const inDate  = document.getElementById('inDate');       // <-- type="text"
+  const inPrefix= document.getElementById('inPrefix');
+  const inLen   = document.getElementById('inLen');
+  const inBank  = document.getElementById('inBank');
+  const inName  = document.getElementById('inName');
+
+  /* ======== HELPERS ======== */
+  const pad2   = n => String(n).padStart(2,'0');
+  const randi  = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  const digits = n => Array.from({length:n},()=>String(randi(0,9))).join('');
+  const pickBank = forced => forced ? BANKS.find(b=>b.name===forced) : BANKS[randi(0,BANKS.length-1)];
+  const splitName = name => {
+    const s=(name||'').trim().toUpperCase();
+    if(!s) return {i:'—', r:''};
+    return {i:s[0], r:s.slice(1)};
+  };
+  const DEFAULT_REF_TOTAL = 23;
+  const KEEP_VISIBLE = 12;
+  
+  function buildFullRefForDisplay(dt, totalLen = DEFAULT_REF_TOTAL, keepVisible = KEEP_VISIBLE){
+  const base = prefixFromDate(dt);             // 12 digit timestamp
+  const extraVisibleCount = Math.max(0, keepVisible - base.length);
+  const extraVisible      = extraVisibleCount ? digits(extraVisibleCount) : '';
+  const tailLen           = Math.max(0, totalLen - base.length - extraVisible.length);
+  const tail              = tailLen ? digits(tailLen) : '';
+  return {
+    fullRef: base + extraVisible + tail,       // ref 23 digit
+    keep:    base.length + extraVisible.length // banyaknya digit non-blur
+  };
+}
+  // Format NOW ke "DD/MM/YYYY hh:mm:ss AM/PM"
+  function formatNowDDMMYYYY_12(d = new Date()){
+    let hh = d.getHours();
+    const ap = hh>=12 ? 'PM' : 'AM';
+    hh = hh%12 || 12;
+    return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()} ${pad2(hh)}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())} ${ap}`;
+  }
+  function parseManualDate(str){
+    const s = String(str||'').trim();
+    if(!s) return null;
+
+    // 12h + AM/PM
+    let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp][Mm])$/);
+    if (m){
+      let [, dd, mm, yyyy, hh, mi, ss='0', ap] = m;
+      hh = Number(hh);
+      if (/pm/i.test(ap) && hh !== 12) hh += 12;
+      if (/am/i.test(ap) && hh === 12) hh = 0;
+      const d = new Date(+yyyy, +mm-1, +dd, hh, +mi, +ss);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+
+    // 24h
+    m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})(?::(\d{2}))?$/);
+    if (m){
+      const [, dd, mm, yyyy, HH, MI, SS='0'] = m;
+      const d = new Date(+yyyy, +mm-1, +dd, +HH, +MI, +SS);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+
+    // ISO fallback
+    const iso = new Date(s);
+    return Number.isNaN(iso.getTime()) ? null : iso;
+  }
+  // === Buat prefix dari tanggal (YYMMDDHHMMSS, 24h) ===
+function prefixFromDate(dt){
+  const yy = String(dt.getFullYear()).slice(-2);
+  const MM = pad2(dt.getMonth()+1);
+  const dd = pad2(dt.getDate());
+  const HH = pad2(dt.getHours());
+  const mi = pad2(dt.getMinutes());
+  const ss = pad2(dt.getSeconds());
+  return `${yy}${MM}${dd}${HH}${mi}${ss}`;
+}
+
+// === Sinkronkan input inPrefix dari inDate ===
+function updatePrefixFromDate(){
+  const dt = parseManualDate(inDate.value);
+  if(!dt) return;
+  const stamp = prefixFromDate(dt);
+  inPrefix.value = stamp;
+
+  // pastikan tetap 23 (bukan 12)
+  if (+inLen.value !== DEFAULT_REF_TOTAL) {
+    inLen.value = String(DEFAULT_REF_TOTAL);
+  }
+
+  saveDraft?.();
+}
+  // ======== PERSISTENCE (LocalStorage) ========
+const LS_DRAFT = 'txn_editor_draft_v1';   // nilai form (sementara)
+const LS_CARD  = 'txn_card_snapshot_v1';  // tampilan kartu (sesudah Apply)
+
+function saveDraft(){
+  const data = {
+    amount: inAmount.value,
+    date:   inDate.value,
+    prefix: inPrefix.value,
+    len:    inLen.value,
+    bank:   inBank.value,
+    name:   inName.value,
+  };
+  localStorage.setItem(LS_DRAFT, JSON.stringify(data));
+}
+
+function loadDraft(){
+  try { return JSON.parse(localStorage.getItem(LS_DRAFT) || 'null'); }
+  catch { return null; }
+}
+
+function saveCardSnapshot(extra={}){
+  const snap = {
+    // simpan REF full (tanpa mask), kirim via argumen dari Apply
+    ref: extra.ref || (refNum.textContent || '').replace(/\s+/g,''),
+    amountText: amt.textContent,
+    dateText:   dateText.textContent,
+    bank:       bankName.textContent,
+    acc:        accNum.textContent,
+    name:       (inName.value || '').toUpperCase(),
+  };
+  localStorage.setItem(LS_CARD, JSON.stringify(snap));
+}
+
+function loadCardSnapshot(){
+  try { return JSON.parse(localStorage.getItem(LS_CARD) || 'null'); }
+  catch { return null; }
+}
+
+function restoreFromStorage(){
+  // 1) Balikkan draft -> isi form editor
+  const d = loadDraft();
+  if (d){
+    if (d.amount != null) inAmount.value = formatAmountInput(d.amount);
+    if (d.date   != null) inDate.value   = d.date;
+    if (d.prefix != null) inPrefix.value = d.prefix;
+    if (d.len    != null) inLen.value    = d.len;
+    if (d.bank   != null) inBank.value   = d.bank;
+    if (d.name   != null) inName.value   = d.name;
+  }
+
+  // 2) Balikkan snapshot -> tampilan kartu
+  const s = loadCardSnapshot();
+  if (s){
+    amt.textContent      = s.amountText;
+    dateText.textContent = s.dateText;
+    showRefMasked(s.ref, KEEP_VISIBLE);    // 4 depan terlihat, sisanya blur
+    bankName.textContent = s.bank;
+    accNum.textContent   = s.acc;
+
+    const {i,r} = splitName(s.name || inName.value);
+    nmIni.textContent  = i;
+    nmRest.textContent = r;
+
+    // apply blur seperti setelah Apply
+    [nmRest, accNum].forEach(el => el.classList.add('blurred'));
+    amt.classList.remove('blurred');
+    dateText.classList.remove('blurred');
+  }else{
+    // belum ada snapshot: minimal mask ref default
+    showRefMasked(refNum.textContent, KEEP_VISIBLE);
+  }
+}
+
+// Simpan draft otomatis saat user mengetik/ubah
+[inAmount, inDate, inPrefix, inLen, inBank, inName].forEach(el=>{
+  el?.addEventListener('input',  saveDraft);
+  el?.addEventListener('change', saveDraft);
+});
+  inDate.addEventListener('input',  updatePrefixFromDate);
+  inDate.addEventListener('change', updatePrefixFromDate);
+  // Teks kartu "DD Mon YYYY HH:MM:SS AM/PM"
+  function toCardDate(userVal){
+    if(!userVal) return '02 Oct 2025 05:07:21 PM';
+    let dt = parseManualDate(userVal);
+    if(!dt) dt = new Date(); // fallback
+    const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let hh = dt.getHours(); const ap = hh>=12 ? 'PM':'AM'; hh = hh%12 || 12;
+    return `${pad2(dt.getDate())} ${MON[dt.getMonth()]} ${dt.getFullYear()} ${pad2(hh)}:${pad2(dt.getMinutes())}:${pad2(dt.getSeconds())} ${ap}`;
+  }
+    (function(){
+    const sel=document.getElementById('nmAlpha');
+    if(sel && !sel.dataset.filled){
+      sel.dataset.filled='1';
+      sel.insertAdjacentHTML('beforeend',
+        Array.from({length:26},(_,i)=>`<option>${String.fromCharCode(65+i)}</option>`).join('')
+      );
+    }
+  })();
+function showRefMasked(fullRef, keep = KEEP_VISIBLE){
+  const s = String(fullRef || '');
+  const head = s.slice(0, keep);   // 12 digit pertama tampil
+  const tail = s.slice(keep);      // sisanya blur
+  refNum.innerHTML =
+    `<span class="ref-keep">${head}</span><span class="ref-blur">${tail}</span>`;
+}
+// ===== Amount format helpers =====
+const cleanNum   = s => String(s||'').replace(/[^0-9.]/g,''); // buang koma/karakter lain
+const toNumber   = s => Number(cleanNum(s) || 0);
+function formatAmountInput(s){
+  if(!s) return '';
+  let [int, dec] = cleanNum(s).split('.');
+  int = (int||'').replace(/\B(?=(\d{3})+(?!\d))/g, ','); // ribuan
+  if(dec !== undefined) dec = dec.slice(0, 2);           // batasi 2 desimal saat ketik
+  return dec !== undefined ? `${int}.${dec}` : int;
+}
+
+// Format saat halaman dibuka (value awal)
+inAmount.value = formatAmountInput(inAmount.value);
+
+// Format live ketika mengetik
+inAmount.addEventListener('input', () => {
+  const wasEnd = inAmount.selectionStart === inAmount.value.length; // simple caret keep-end
+  inAmount.value = formatAmountInput(inAmount.value);
+  if (wasEnd) inAmount.setSelectionRange(inAmount.value.length, inAmount.value.length);
+  saveDraft();
+});
+
+// Saat blur: pastikan 2 desimal rapih
+inAmount.addEventListener('blur', () => {
+  const n = toNumber(inAmount.value);
+  inAmount.value = n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  saveDraft();
+});
+// Random huruf
+function randLetters(n){
+  const A='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let out=''; for(let i=0;i<n;i++) out += A[Math.floor(Math.random()*26)];
+  return out;
+}
+// Generate nama dengan huruf awal tertentu
+function genNameByLetter(letter){
+  let L = (letter||'').toUpperCase();
+  if(!/^[A-Z]$/.test(L)) L = randLetters(1);
+  const first  = L + randLetters( Math.floor(Math.random()*4)+4 ); // 5–8 huruf total
+  const joiner = [' BIN ',' BINTI ',' '][Math.floor(Math.random()*3)];
+  const second = randLetters( Math.floor(Math.random()*6)+3 );     // 3–8 huruf
+  let full = `${first}${joiner}${second}`;
+  if(Math.random() < 0.35) full += ' ' + randLetters( Math.floor(Math.random()*5)+3 );
+  return full;
+}
+
+  function resetLocal(){
+  localStorage.removeItem(LS_DRAFT);
+  localStorage.removeItem(LS_CARD);
+  location.reload();
+}
+  function setNowToInput(){
+    inDate.value = formatNowDDMMYYYY_12(new Date());
+    inDate.focus();
+    const len = inDate.value.length;
+    inDate.setSelectionRange?.(len, len);
+    saveDraft();
+    updatePrefixFromDate();
+  }
+  if (btnNow) btnNow.addEventListener('click', setNowToInput);
+
+  // Shortcut Alt+N
+  document.addEventListener('keydown', (e)=>{
+    if(e.altKey && e.key.toLowerCase()==='n'){ e.preventDefault(); setNowToInput(); }
+  });
+
+  // Initial state: biarkan kosong (lebih jelas user bisa ketik/klik Now)
+window.addEventListener('load', ()=>{
+  restoreFromStorage();   // pulihkan form & kartu dari localStorage
+  updatePrefixFromDate();
+  inLen.value = DEFAULT_REF_TOTAL;
+  inLen.closest('.fld')?.style && (inLen.closest('.fld').style.display = 'none');
+});
+
+apply.addEventListener('click', e=>{
+  e.preventDefault();
+
+  // amount
+  const amountNum = toNumber(inAmount.value);
+amt.textContent = `RM ${amountNum.toLocaleString('en-MY', {
+  minimumFractionDigits: 2, maximumFractionDigits: 2
+})}`;
+
+  // datetime -> kartu + validasi ringan
+const isValid = !!parseManualDate(inDate.value);
+if (!isValid) {
+  inDate.classList.add('is-invalid');
+  return; // hentikan Apply di sini
+}
+inDate.classList.remove('is-invalid');
+dateText.textContent = toCardDate(inDate.value);
+
+// reference: bangun 23 digit (12 timestamp + acak), blur sisanya
+const dt = parseManualDate(inDate.value);                  // valid sudah dicek di atas
+const { fullRef, keep } = buildFullRefForDisplay(dt, DEFAULT_REF_TOTAL, KEEP_VISIBLE);
+
+inPrefix.value = prefixFromDate(dt);                       // field prefix tetap 12 digit
+showRefMasked(fullRef, KEEP_VISIBLE);                              // tampilkan keep depan, tail blur
+inLen.value = String(fullRef.length);                      // harusnya 23
+
+saveCardSnapshot({ ref: fullRef });// sync panjang (opsional)
+
+  // bank & account
+  const bank = pickBank(inBank.value || '');
+  bankName.textContent = bank.name;
+  accNum.textContent = digits(bank.len);
+
+  // name
+  const {i,r} = splitName(inName.value || 'BAHARUDEEN BIN ABDUL');
+  nmIni.textContent = i;
+  nmRest.textContent = r;
+
+  // BLUR SENSITIF
+  [nmRest, accNum].forEach(el=> el.classList.add('blurred'));
+  amt.classList.remove('blurred');
+  dateText.classList.remove('blurred');
+
+  // ===== simpan ke localStorage (HARUS di akhir, setelah newRef ada) =====
+  saveDraft();
+});
+  const btnGenName = document.getElementById('btnGenName');
+const nmAlphaSel = document.getElementById('nmAlpha');
+
+btnGenName?.addEventListener('click', ()=>{
+  inName.value = genNameByLetter(nmAlphaSel?.value || '');
+  inName.focus();
+  saveDraft();
+});
+
+// Shortcut Alt+R untuk generate nama cepat
+document.addEventListener('keydown', (e)=>{
+  if(e.altKey && e.key.toLowerCase()==='r'){
+    e.preventDefault();
+    inName.value = genNameByLetter(nmAlphaSel?.value || '');
+    inName.focus();
+    saveDraft(); 
+  }
+});
+</script>
+</body>
+</html>
