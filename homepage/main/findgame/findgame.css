@@ -1,0 +1,318 @@
+/* ======================
+   THEME & GLOBAL
+====================== */
+:root{
+  --gold:#ffd700; --gold-2:#ffef9a; --gold-3:#e6b400;
+  --ink:#0b0b0b; --card:#121212; --muted:#a29b77; --ring:rgba(255,215,0,.35);
+  --shadow:0 8px 24px rgba(255,215,0,.12), 0 2px 8px rgba(0,0,0,.45);
+  --radius:14px;
+
+  /* layout heights */
+  --hdr-h:86px;                 /* header fixed */
+  --flt-h:120px;                /* tinggi filters (diupdate JS) */
+  --line-h:64px;                /* tinggi bar adjust line */
+
+  /* list scroll fallback (≈10 rows) – boleh dioverride via JS */
+  --list-max: 520px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:#000;color:var(--gold);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;   /* hanya area dalam yang scroll */
+}
+
+/* ======================
+   CUSTOM SCROLLBAR (emas)
+====================== */
+.scroll, .detail{
+  scrollbar-width:thin;                 /* Firefox */
+  scrollbar-color:var(--gold-3) #121212;
+}
+.scroll::-webkit-scrollbar,
+.detail::-webkit-scrollbar{ width:12px; height:12px }
+.scroll::-webkit-scrollbar-track,
+.detail::-webkit-scrollbar-track{
+  background:linear-gradient(180deg,#0b0b0b,#151515);
+  border-radius:10px; box-shadow:inset 0 0 0 1px rgba(255,215,0,.15);
+}
+.scroll::-webkit-scrollbar-thumb,
+.detail::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#6a5f2a,var(--gold));
+  border-radius:10px; border:2px solid #0d0d0d;
+  box-shadow:0 0 0 1px rgba(0,0,0,.45), inset 0 0 8px rgba(255,215,0,.25);
+}
+.scroll::-webkit-scrollbar-thumb:hover,
+.detail::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,#7a6e2e,var(--gold-2));
+}
+.scroll::-webkit-scrollbar-thumb:active,
+.detail::-webkit-scrollbar-thumb:active{
+  background:linear-gradient(180deg,#caa900,#ffd700);
+}
+.scroll::-webkit-scrollbar-corner,
+.detail::-webkit-scrollbar-corner{ background:#0d0d0d }
+
+@media (max-width:640px){
+  .scroll::-webkit-scrollbar, .detail::-webkit-scrollbar{ width:8px; height:8px }
+}
+
+/* ======================
+   HEADER
+====================== */
+.header{
+  position:fixed; inset:0 0 auto 0; height:var(--hdr-h);
+  display:flex; align-items:center; justify-content:center; gap:.75rem;
+  background:linear-gradient(180deg,#1b1b1b 0%, #0a0a0a 100%);
+  border-bottom:1px solid rgba(255,215,0,.2); box-shadow:0 8px 20px rgba(0,0,0,.35);
+  z-index:1000;
+}
+.brand{display:flex;align-items:center;gap:.6rem}
+.brand img{width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(255,215,0,.45))}
+.title{
+  font-weight:800; letter-spacing:.06em; font-size:clamp(1.1rem,2vw,1.35rem);
+  background:linear-gradient(90deg,var(--gold),var(--gold-2));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+
+/* ======================
+   FILTER BAR (fixed)
+====================== */
+.filters{
+  position:fixed; top:var(--hdr-h); left:0; right:0; z-index:960;
+  background:rgba(0,0,0,.85); backdrop-filter:blur(6px);
+  border-bottom:1px solid rgba(255,215,0,.12);
+}
+.filters-inner{
+  max-width:1100px; margin:0 auto; padding:14px 16px 10px;
+  display:grid; grid-template-columns:1fr; gap:12px;
+}
+
+.search{position:relative;display:flex;align-items:center}
+.search input{
+  flex:1; min-width:0; padding:12px 44px 12px 14px; border-radius:10px;
+  border:1.5px solid gold; background:#000; color:var(--gold);
+  outline:none; font-size:16px; transition: all 0.2s;
+}
+.search input::placeholder{color:#b8a44a}
+.search input:focus{border-color:var(--gold); box-shadow:0 0 0 4px var(--ring)}
+.btn-clear{
+  position:absolute; right:8px; top:9px;font-size:20px;border:none;
+  background:transparent ; color:gold;
+  font-weight:500; cursor:pointer;transition: all 0.2s;
+}
+.btn-clear:hover{color:rgba(255,215,0,.45);}.btn-clear:active{color:#dbb900;}
+.tags{display:flex;gap:10px;overflow:auto;padding-bottom:4px;scrollbar-width:none}
+.tags::-webkit-scrollbar{display:none}
+.tag{
+  user-select:none; white-space:nowrap; border:1px solid rgba(255,215,0,.5);
+  background:linear-gradient(180deg,#0b0b0b,#111); color:var(--gold);
+  padding:8px 14px; border-radius:999px; cursor:pointer; font-weight:700;
+  letter-spacing:.02em; transition:.2s; box-shadow:0 1px 0 rgba(255,215,0,.35) inset;margin-top: 5px;transition: all 0.2s;
+}
+.tag[aria-pressed="true"], .tag.active{
+  background:linear-gradient(180deg,var(--gold),var(--gold-3)); color:#000;
+  border-color:transparent; box-shadow:var(--shadow);
+}
+
+/* ======================
+   CONTENT WRAP (di bawah filter)
+====================== */
+.wrap{
+  max-width:1100px; margin:0 auto; padding:2px 16px;
+  --offset:12px;
+  margin-top: calc(var(--hdr-h) + var(--flt-h) + var(--offset));
+  height:     calc(100vh      - var(--hdr-h) - var(--flt-h) - var(--offset));
+}
+.grid{
+  display:grid; grid-template-columns:1fr; gap:14px; height:100%;
+}
+@media (min-width:980px){ .grid{ grid-template-columns:1fr 400px } }
+
+/* ======================
+   LIST (LEFT)
+====================== */
+.list{
+  min-height:0; height:100%;display:flex; flex-direction:column;
+  border:1px solid rgba(255,215,0,.15); border-radius:var(--radius);
+  background:linear-gradient(180deg,#0c0c0c,#111);
+  box-shadow:var(--shadow); padding:10px; overflow:hidden; /* penting: list tidak keluar box */
+}
+.list-hdr{
+  flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;
+  padding:6px 10px; color:var(--muted); font-size:.9rem;
+  border-bottom:1px solid rgba(255,215,0,.12);
+}
+.count{font-variant-numeric:tabular-nums}
+
+.scroll{
+  flex:1 1 auto; min-height:0; overflow:auto;
+  max-height: var(--list-max);             /* fallback ±10 items */
+}
+
+.game{
+  display:grid; grid-template-columns:minmax(0,1fr) auto; /* minmax(0,1fr) supaya ellipsis jalan */
+  align-items:center; gap:10px;
+  padding:12px 14px; margin:8px; cursor:pointer; transition:.18s;
+  border-radius:12px; background:#0b0b0b; border:1px solid rgba(255,215,0,.14);
+}
+.game:hover{border-color:rgba(255,215,0,.5); box-shadow:0 8px 20px rgba(255,215,0,.12)}
+.game.active{background:linear-gradient(180deg,#111,#1a1a1a); border-color:var(--gold)}
+
+.g-name{
+  font-weight:800; color:var(--gold); letter-spacing:.02em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; /* rapih di HP */
+}
+.g-pill{
+  font-size:.72rem; white-space:nowrap; padding:4px 8px; border-radius:999px;
+  border:1px solid rgba(255,215,0,.45); background:#121212
+}
+.empty{padding:18px;color:var(--muted);text-align:center}
+
+/* ======================
+   DETAIL (RIGHT)
+====================== */
+.detail{
+  position:relative;
+  height:100%;
+  border:1px solid rgba(255,215,0,.15);
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,#0c0c0c,#111);
+  box-shadow:var(--shadow);
+  overflow:auto;
+
+  /* cukup kecil, tidak perlu 70px lagi karena .line tidak sticky */
+  padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px));
+}
+.detail-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,215,0,.12)}
+.detail-title{font-weight:900;letter-spacing:.02em}
+.close{appearance:none;border:none;background:gold;color:#000;font-weight:800;border-radius:10px;padding:6px 10px;cursor:pointer;transition:all.2s}
+.close:hover{background:#ffe34d;}.close:active{background:#dbb900;}
+.art{padding:14px}
+.art img{width:100%;height:240px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,215,0,.35);box-shadow:0 10px 30px rgba(255,215,0,.09)}
+.info{display:grid;gap:8px;padding:0 14px 14px 14px}
+.info .row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#0b0b0b;border:1px solid rgba(255,215,0,.12);border-radius:10px}
+.k{color:#c7b047}.v{font-weight:500}.ok{color:#5cff7a}.no{color:#ff6b6b}
+.platforms{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px}
+.p{font-size:14px;font-weight:700;padding:2px 10px;border-radius:999px;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.tag-918kiss{background:#605ca8}.tag-mega888{background:#ff851b}.tag-pussy888{background:#3c8dbc}
+.bets{padding:0 14px 0}
+.bets-title{font-weight:900;margin:0 0 8px 0}
+.bet-grid{display:flex;flex-wrap:wrap;gap:8px}
+.bet{border:1px solid rgba(255,215,0,.35);background:#151515;padding:6px 10px;border-radius:10px;font-weight:700}
+
+/* ======================
+   LINE BAR (Adjust line)
+====================== */
+/* ----- Line controls: TIDAK sticky, ikut scroll dan muncul setelah bet values ----- */
+.line{
+  position: static;          /* <— ini kunci: bukan sticky */
+  bottom: auto;
+  z-index: auto;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  margin-top: 10px;          /* jarak dari bet values */
+  padding: 12px 14px;
+
+  border-top:1px solid rgba(255,215,0,.12);
+  background: transparent;   /* biar menyatu dengan konten, bisa pakai gradient kalau mau */
+  box-shadow: none;          /* tidak perlu bayangan bar */
+}
+.btn{
+  border:1px solid rgba(255,215,0,.45);
+  background:linear-gradient(180deg,var(--gold),var(--gold-3));
+  color:#000; font-weight:900; border-radius:12px; cursor:pointer;
+  padding:6px 12px; transition:.15s;
+}
+.btn:hover{filter:brightness(.96)}
+
+/* ======================
+   MOBILE BEHAVIOR
+====================== */
+@media (max-width:640px){
+  .filters-inner{padding:10px 12px 14px; gap:8px}
+  .wrap{
+    padding:12px;
+    margin-top:calc(var(--hdr-h) + var(--flt-h) + 4px);
+    height:calc(100vh - var(--hdr-h) - var(--flt-h) - 4px);
+  }
+  .art img{height:auto; max-height:42vh}
+}
+
+/* ==== MOBILE (≤979px) ==== */
+@media (max-width:979px){
+  .grid{ grid-template-columns: 1fr; }
+
+  .detail{
+    position: fixed;
+    left: 0; right: 0;
+    top:    calc(var(--hdr-h) + var(--flt-h));
+    bottom: 0;
+    height: calc(100vh - var(--hdr-h) - var(--flt-h));
+    max-height: none;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    transform: translateY(100%);
+    transition: transform .28s ease;
+
+    /* PENTING: beri ruang cukup supaya konten terakhir (tombol +/-) tidak kepotong */
+    padding-bottom: calc(30px + max(env(safe-area-inset-bottom, 0px), 10px));
+    /* 80px = ruang ekstra aman; bisa kecilkan ke 64px kalau mau */
+  }
+  .detail.open{ transform: translateY(0); }
+
+  .line{
+    position: static;          /* tetap non-sticky */
+    height: auto;
+    padding: 12px 14px;
+    margin-top: 12px;
+
+    /* Tambah jarak di paling bawah juga */
+    margin-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
+
+    border-top: 1px solid rgba(255,215,0,.12);
+    background: transparent;
+    box-shadow: none;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .line #lineText{ font-size: 14px; }
+  .btn{ padding: 6px 12px; min-height: 40px; } /* tap target nyaman */
+}
+@media (max-width:360px){
+  .line{ gap:8px }
+  .btn{ padding:5px 9px }
+}
+
+/* ======================
+   FAB (optional)
+====================== */
+.fab{
+  position:fixed; right:14px; bottom:14px; height:46px; width:46px; border-radius:50%;
+  display:grid; place-items:center; background:linear-gradient(180deg,var(--gold),var(--gold-3));
+  color:#000; font-weight:900; border:1px solid rgba(0,0,0,.35); box-shadow:var(--shadow); cursor:pointer;
+}
+/* Tinggi konten utama */
+@supports (height: 100dvh) {
+  .wrap{
+    height: calc(100dvh - var(--hdr-h) - var(--flt-h) - var(--offset));
+  }
+}
+
+/* Panel detail (mode mobile) */
+@media (max-width: 979px){
+  @supports (height: 100dvh) {
+    .detail{
+      height: calc(100dvh - var(--hdr-h) - var(--flt-h));
+    }
+  }
+}
