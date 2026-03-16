@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Maybank Editor</title>
+  <script>if (window.top === window.self) {window.location.replace("/main");}</script>
+  <link rel="stylesheet" href="maybank/maybank.css" />
+</head>
+<body>
+  <div class="paper">
+    <div class="paper-bg">
+      <img
+        src="https://raw.githubusercontent.com/paradisefb/main/main/resources/Images/universal/background1.jpg"
+        width="595"
+        height="842"
+        alt=""
+      />
+    </div>
+
+    <div class="cls_002 pos-title"><span class="cls_002">Favourite 3rd Party Transfer</span></div>
+
+    <div class="cls_003 pos-status-l"><span class="cls_003">Status:</span></div>
+    <div class="cls_004 pos-status-r"><span class="cls_004">Successful</span></div>
+
+    <div class="cls_003 pos-ref-l"><span class="cls_003">Reference number:</span></div>
+    <div class="cls_005 pos-ref-r"><span id="ref" class="cls_005">0123080820</span></div>
+
+    <div class="cls_003 pos-date-l"><span class="cls_003">Transaction date:</span></div>
+    <div class="cls_005 pos-date-r"><span id="date" class="cls_005">01 Jun 2024 00:00:00</span></div>
+
+    <div class="cls_003 pos-amt-l"><span class="cls_003">Amount:</span></div>
+    <div class="cls_005 pos-amt-r"><span id="amount" class="cls_005">RM1,000.00</span></div>
+
+    <div class="cls_003 pos-to-l"><span class="cls_003">To Favourite 3rd Party Account :</span></div>
+    <div class="cls_005 pos-to-r"><span class="cls_005">553340180612</span></div>
+
+    <div class="cls_003 pos-name-l"><span class="cls_003">Account Holder Name :</span></div>
+    <div class="cls_005 pos-name-r"><span class="cls_005">PAPI PAPI PUMM..</span></div>
+
+    <div class="cls_003 pos-rec-l"><span class="cls_003">Recipient Reference :</span></div>
+    <div class="cls_005 pos-rec-r"><span class="cls_005">Improved</span></div>
+
+    <div class="cls_003 pos-other-l"><span class="cls_003">Other Transfer Details :</span></div>
+
+    <div class="cls_003 pos-note">
+      <span class="cls_003">Note: </span>
+      <span class="cls_005">This receipt is computer generated and no signature is required.</span>
+    </div>
+
+    <div class="cls_006 pos-foot">
+      <span class="cls_006">Malayan Banking Berhad (Co. Reg. : 196001000142)  |  Maybank Islamic Berhad (Co. Reg. : 200701029411)</span>
+    </div>
+
+    <!-- ===== EDITOR ===== -->
+    <div id="editor" class="editor">
+      <button class="btn btn-green pos-now" id="btnNow" type="button">Now</button>
+
+      <div class="col pos-ref">
+        <label for="inRef">Reference Number</label>
+        <input type="text" id="inRef" placeholder="Must 10 digits" minlength="10" maxlength="10" style="width:140px;" />
+      </div>
+
+      <div class="col pos-date">
+        <label for="inDate">Date Time</label>
+
+        <input
+          type="text"
+          id="inDate"
+          placeholder="01 Jun 2024 00:00:00"
+          value="01 Jun 2024 00:00:00"
+          class="date-mode-1"
+        />
+
+        <div id="inDate2" class="date-mode-2">
+          <input id="dd" type="tel" placeholder="dd" value="01" minlength="2" maxlength="2" class="d-dd" />
+          <select id="mm" class="d-mm">
+            <option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option>
+            <option value="Apr">Apr</option><option value="May">May</option><option value="Jun" selected>Jun</option>
+            <option value="Jul">Jul</option><option value="Aug">Aug</option><option value="Sep">Sep</option>
+            <option value="Oct">Oct</option><option value="Nov">Nov</option><option value="Dec">Dec</option>
+          </select>
+          <input id="yyyy" type="tel" placeholder="yyyy" value="2024" minlength="4" maxlength="4" class="d-yyyy" />
+          <input id="hh" type="tel" placeholder="hh" value="00" minlength="2" maxlength="2" class="d-hh" />
+          <span class="d-colon d-colon1">:</span>
+          <input id="ii" type="tel" placeholder="mm" value="00" minlength="2" maxlength="2" class="d-ii" />
+          <span class="d-colon d-colon2">:</span>
+          <input id="ss" type="tel" placeholder="ss" value="00" minlength="2" maxlength="2" class="d-ss" />
+        </div>
+      </div>
+
+      <div class="col pos-amt">
+        <label for="inAmount">Amount</label>
+        <input type="text" id="inAmount" placeholder="RM1,000.00" value="RM1,000.00" class="amt-input" />
+      </div>
+
+      <button class="btn btn-green pos-create" id="btnCreate" type="button">Create</button>
+      <button class="btn btn-green pos-hide" id="btnHide" type="button">Hide 8s</button>
+      <button class="btn btn-red   pos-reset" id="btnReset" type="button">Reset</button>
+      <button class="btn btn-green pos-change" id="btnChangeMode" type="button">Change</button>
+    </div>
+  </div>
+  <script src="maybank/maybank.js" defer></script>
+</body>
+</html>
