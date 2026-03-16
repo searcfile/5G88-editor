@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="maybank2u/maybank2u.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <title>Maybank2u Transfer</title>
+  <script>if (window.top === window.self) {window.location.replace("/main");}</script>
+</head>
+<body>
+<div class="zoom-wrap">
+ <div class="wrap">
+    <!-- LEFT BUILDER -->
+    <div class="panel">
+      <div class="ph">
+        <h3>Receipt Builder</h3>
+      </div>
+      <div class="pb">
+<div class="field">
+  <label>Recipient’s bank</label>
+
+  <!-- hidden select untuk simpan value + guna event change yg kau sudah ada -->
+  <select id="bankSelect" class="nativeSelectHidden" aria-hidden="true" tabindex="-1"></select>
+
+  <!-- custom dropdown -->
+  <div class="cselect" id="bankCSelect">
+    <button type="button" class="cselect-btn" id="bankCBtn" aria-haspopup="listbox" aria-expanded="false">
+      <span id="bankCLabel">Select bank</span>
+      <span class="cselect-caret">▾</span>
+    </button>
+    <div class="cselect-menu" id="bankCMenu" role="listbox"></div>
+  </div>
+</div>
+        
+<div class="field">
+<label>Holder name : Allowed Manually.</label>
+  <div class="nameRow">
+    <input id="holderInput" type="text" placeholder="MAMAMMAMAAMA" />
+    <button type="button" class="autoBtn" id="autoNameBtn" aria-pressed="false">
+      Auto: OFF
+    </button>
+  </div>
+</div>
+
+<div class="field">
+  <label>Effective date & Completed date & time</label>
+  <div class="dateRow">
+    <input id="dateInput" type="text" placeholder="Today 06 Jan 2026" />
+  </div>
+</div>
+      <div class="field">
+<div class="dateRow">
+  <input id="completedInput" type="text" placeholder="Tuesday 06 January 2026 at 16:16:36" />
+  <button type="button" class="dateBtn" id="nowBtn">Now</button>
+</div>
+</div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Reference ID prefix (4 digits)</label>
+            <input id="refPrefix" type="text" inputmode="numeric" maxlength="4" placeholder="8292" />
+          </div>
+
+          <div class="field">
+            <label>Amount (RM)</label>
+            <input id="amountInput" type="text" inputmode="decimal" placeholder="100.00" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="btns">
+          <button class="btn-reset" id="resetBtn">Reset</button>
+          <button class="btn-create" id="createBtn">Create</button>
+        </div>
+
+        <div class="mini">
+          <div><b>Info:</b></div>
+          <div>• Sistem Live,Auto,Manually.</div>
+          <div>• Auto Change <b>Holder Name / Account Number.</b></div>
+          <div>• Click Create Auto Blur And Change Reference.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT RECEIPT -->
+    <div class="receipt" id="receiptCard">
+      <div class="topbar">
+        <div class="topgrid">
+          <div>
+            <div class="leftTitle">
+              <div class="check">
+  <svg class="check-icon" viewBox="128 346 18 16" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M135.311038,356.608328 L132.870751,354.010733
+      C132.441066,353.553349 131.751949,353.553349 131.322264,354.010733
+      C130.892579,354.468117 130.892579,355.201657 131.322264,355.659041
+      L134.540848,359.085104
+      C134.751637,359.309481 135.035391,359.430299 135.311038,359.430299
+      C135.586685,359.430299 135.87044,359.318111 136.081229,359.085104
+      L143.677736,350.998904
+      C144.107421,350.54152 144.107421,349.80798 143.677736,349.350597
+      C143.256158,348.884583 142.558934,348.884583 142.129249,349.341967
+      L135.311038,356.608328 Z"
+      fill="#ffffff"
+    />
+  </svg>
+</div>
+              <div>
+                <p class="t1">Transfer To <span id="holderNameTitle">BABABABABA</span></p>
+                <div class="sub">
+                  <span class="acc mono" id="accountNumber">12345678910</span>
+                  <span class="amtTop" id="topAmount">RM 1000.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+<div class="fav">
+  <svg class="fav-star" viewBox="470 340 30 25" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M491.4446,348.998603 L485.870003,348.220873 L483.361434,343.270045
+      C483.277081,343.104417 483.104709,343 482.917666,343
+      C482.730624,343 482.558252,343.104417 482.473899,343.273646
+      L479.998338,348.238876 L474.42374,349.052612
+      C474.236698,349.081417 474.082663,349.207438 474.023983,349.383867
+      C473.965303,349.560297 474.016648,349.754729 474.152346,349.88075
+      L478.197596,353.729794 L477.262384,359.181105
+      C477.229377,359.364736 477.306394,359.548366 477.460429,359.656384
+      C477.544781,359.717595 477.647471,359.75 477.750161,359.75
+      C477.830846,359.75 477.907864,359.731997 477.981214,359.69239
+      L482.958009,357.103558 L487.949474,359.663586
+      C488.022824,359.699592 488.099842,359.717595 488.176859,359.717595
+      C488.448254,359.717595 488.671971,359.497958 488.671971,359.231513
+      C488.671971,359.191907 488.668304,359.155901 488.657301,359.119895
+      L487.692749,353.700989 L491.712327,349.830342
+      C491.85536,349.70072 491.903037,349.506288 491.844357,349.329858
+      C491.785677,349.153429 491.631642,349.027408 491.4446,348.998603 Z"
+      fill="none"
+      stroke="#F5A623"
+      stroke-width="1"
+      stroke-linejoin="round"
+    />
+  </svg>
+  <span>Add to Favourite</span>
+</div>
+        </div>
+      </div>
+
+      <div class="body">
+
+        <div class="rows">
+          <div class="r">
+            <div class="l">Recipient's bank</div>
+            <div class="v strong" id="bankValue">Please Select</div>
+          </div>
+<div class="r" id="rowTxnType">
+  <div class="l">Transaction Type</div>
+  <div class="v">Funds Transfer</div>
+</div>
+
+<div class="r" id="rowTransferMode">
+  <div class="l">Transfer Mode</div>
+  <div class="v">DuitNow Transfer</div>
+</div>
+          <div class="r">
+            <div class="l">Effective date</div>
+            <div class="v" id="dateValue">Today 06 Jan 2026</div>
+          </div>
+          <div class="r">
+            <div class="l">Recipient Reference</div>
+            <div class="v">Payment</div>
+          </div>
+          <div class="r">
+            <div class="l">Status</div>
+            <div class="v">Successful</div>
+          </div>
+          <div class="r">
+            <div class="l">Reference ID</div>
+            <div class="v" id="refValue">8292256805</div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="totalLabel">Total Amount</div>
+          <div class="totalVal" id="bottomAmount">RM 100.00</div>
+        </div>
+        <div class="completedBar">
+        <div></div>
+       <div class="completedText" id="completedText">
+      Completed on Tuesday 06 January 2026 at 16:16:36
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+<script src="maybank2u/maybank2u.js"></script>
+</body>
+</html>
