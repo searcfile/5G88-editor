@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>918KISS Generator</title>
+  <script>if (window.top === window.self) {window.location.replace("/main/918kiss");}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main/assests.css">
+</head>
+<body>
+<div class="header">918KISS GENERATE</div>
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;margin-left:10px;">
+  <button onclick="resetLog()" class="reset-button">Reset Log</button>
+  <span style="color: rgba(255, 255, 255, 0.65); font-size: 16px;">Key (CTRL + C) Copy Image</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;margin-left:10px;">
+  <label for="gameSelect" style="color: white;padding-left:5px;">Game:</label>
+  <select id="gameSelect" class="select2" style="height: 38px; font-size: 16px; color: white;">
+  <option value="FORTUNE">FORTUNE</option><option value="WolfHunters">WolfHunters</option><option value="DragonMaiden">DragonMaiden</option><option value="MoneyFever">MoneyFever</option><<option value="T-REX">T-REX</option><option value="GoldenSlut">GoldenSlut</option><option value="Dolphin">Dolphin</option><option value="FortunePanda">FortunePanda</option><option value="StoneAge">StoneAge</option><option value="India">India</option><option value="IreLand">IreLand</option><option value="Victory">Victory</option><option value="Panda">Panda</option><option value="Twister">Twister</option><option value="PayDirt">PayDirt</option><option value="WildFox">WildFox</option><option value="PirateShip">PirateShip</option><option value="JinQianWa">JinQianWa</option><option value="Cleopatra">Cleopatra</option><option value="Garden">Garden</option><option value="FiveDragons">FiveDragons</option><option value="SteamTower">SteamTower</option><option value="Alice">Alice</option><option value="GreatStars">GreatStars</option><option value="SAFARI Heat">SAFARI Heat</option><option value="PatherMoon">PatherMoon</option><option value="Rally">Rally</option><option value="BigShot">BigShot</option><option value="Thai">Thai</option><option value="SeaCaptain">SeaCaptain</option><option value="TreasureIsland">TreasureIsland</option><option value="GoldenTree">GoldenTree</option><option value="Magician">Magician</option><option value="SeaWorld">SeaWorld</option><option value="Samurai">Samurai</option><option value="circus">circus</option><option value="TopGun">TopGun</option><option value="Boxing">Boxing</option><option value="BonusBears">BonusBears</option><option value="JAPAN">JAPAN</option><option value="Boyking">Boyking</option><option value="ShiningStars">ShiningStars</option><option value="DolphinReef">DolphinReef</option><option value="EmperorGate">EmperorGate</option><option value="IrishLuck">IrishLuck</option><option value="CookiePop">CookiePop</option><option value="Wealth">Wealth</option><option value="Celebration">Celebration</option><option value="Prosperity">Prosperity</option><option value="CoyoteCash">CoyoteCash</option><option value="FairyGarden">FairyGarden</option><option value="GoldenLotus">GoldenLotus</option><option value="Tally Ho">Tally Ho</option><option value="Girls">Girls</option><option value="Dragon Gold">Dragon Gold</option><option value="Fame">Fame</option><option value="Motorcycle">Motorcycle</option><option value="ICELAND">ICELAND</option><option value="GreatBlue">GreatBlue</option><option value="Easter">Easter</option><option value="RobinHood">RobinHood</option><option value="ShuiHu">ShuiHu</option><option value="Laura">Laura</option><option value="HighWay">HighWay</option><option value="Silver">Silver</option><option value="ZhaoCaiJinBao">ZhaoCaiJinBao</option><option value="FootBall">FootBall</option><option value="Halloween">Halloween</option><option value="GodofWealth">GodofWealth</option><option value="GoldenTour">GoldenTour</option><option value="Amazon">Amazon</option>
+  </select>
+  <label for="betSelect" style="color: white;">Bet:</label><select id="betSelect" style="height: 38px; font-size: 16px; color: white; cursor:pointer;transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);"></select>
+  <label for="pecahanSelect" style="color: white;">Pecahan:</label>
+  <select id="pecahanSelect" style="height: 38px; font-size: 16px; color: white;cursor:pointer;transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);"></select>
+ <button onclick="setNow()" style="height: 38px; padding: 0 12px; font-size: 16px;">Click Now</button>
+<label for="manualTime" style="color: white;">Set Time:</label>
+<input type="text" id="manualTime" placeholder="Add Date & Time" style="width: 200px; font-size: 21px; padding: 0px 5px; height: 38px; color: white;" />
+
+<!-- ✅ Free Game baru -->
+<label for="freeGameInput" style="color:white; margin-left:10px;">Set Rows:</label>
+<input type="number" id="freeGameInput" min="0" max="10" value="0"
+       style="width:70px; height:32px; font-size:16px; padding:0 6px; color:white;">
+<button id="setFreeGameBtn" style="height: 38px;">Set Free Game</button>
+<!-- 🔥 tombol AUTO -->
+<button id="autoFreeGameBtn"
+        style="height:38px; padding:0 10px; font-size:14px; background:#555; color:#fff; border-color:#555;">
+  AUTO OFF
+</button>
+</div>
+
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
+  <div style="display: flex; align-items: center;">
+  <label for="manualScore" style="color: white; height: 38px; display: flex; align-items: center;padding-left:5px;">Add Score :</label>
+  <input type="number" id="manualScore" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;">
+    <!-- ✅ AUTO AddScore (baru) -->
+  <button id="autoAddScoreBtn" type="button"
+    style="height:38px; margin-left:8px; padding:0 10px; font-size:14px; background:#1e7e34; color:#fff; border-color:#1e7e34;">
+    AUTO ON
+  </button>
+  </div>
+
+  <div style="display: flex; align-items: center;">
+  <label for="manualJackpot" style="color: white; height: 38px; display: flex; align-items: center;">Jackpot Amount:</label>
+  <input type="number" id="manualJackpot" value="0" style="width: 120px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
+
+  <button onclick="addJackpot()" style="height: 38px;">Set Jackpot</button>
+  <div style="display: flex; align-items: center;">
+  <label for="manualScoreInput" style="color: white; height: 38px; display: flex; align-items: center;">Support Amount:</label>
+  <input type="number" id="manualScoreInput" value="0" style="width: 100px; height: 20px; font-size: 16px; padding: 4px 6px; color: white;"></div>
+
+  <button onclick="addManualSetScore()" style="height: 38px;">Support Back</button>
+  <!-- ✅ Set Win baru -->
+<div style="display:flex; align-items:center;">
+  <label for="manualWinInput" style="color:white; height:38px; display:flex; align-items:center;">Win Amount:</label>
+  <input type="number" id="manualWinInput" value="0"
+         style="width:120px; height:20px; font-size:16px; padding:4px 6px; color:white;">
+</div>
+  <button onclick="setRandomWin()" style="height:38px;">Set Winner</button></div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;margin-left:10px;">
+  <button onclick="generateLog()" style="height: 38px;">Change</button>
+  <button onclick="deleteCents()" style="height: 38px;">Delete Cents</button>
+  <button onclick="copyGameLogImage()" style="height: 38px;">COPY IMAGE</button></div>
+  <table id="gameLog">
+  <thead>
+    <tr>
+      <th>GameName</th>
+      <th>TableID</th>
+      <th>Bet</th>
+      <th>Win</th>
+      <th>BeginMoney</th>
+      <th>EndMoney</th>
+      <th>DateTime</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="main/assestsman.js"></script>
+</body>
+</html>
