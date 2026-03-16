@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>5G88 • Find Game</title>
+  <link rel="stylesheet" href="findgame/findgame.css">
+  <script>if (window.top === window.self) {window.location.replace("/main");}</script>
+</head>
+<body>
+  <!-- ===== Header ===== -->
+  <header class="header" role="banner" id="hdr">
+    <div class="brand" aria-label="5G88 brand">
+      <img src="https://i.imgur.com/q8PUjo7.png" alt="Gold left"/>
+      <div class="title">FIND GAME</div>
+      <img src="https://i.imgur.com/6wNsmOl.png" alt="Gold right"/>
+    </div>
+  </header>
+
+  <!-- ===== Filters (fixed) ===== -->
+  <section class="filters" aria-label="Filters">
+    <div class="filters-inner">
+      <label class="search" for="q">
+        <input id="q" type="text" placeholder="Search game by name or alias…" autocomplete="off" aria-label="Search" />
+        <button class="btn-clear" id="btnClear" title="Clear search" aria-label="Clear search">×</button>
+      </label>
+      <div class="tags" id="tags" role="tablist" aria-label="Platforms">
+        <button class="tag" data-platform="All" role="tab" aria-pressed="true">All</button>
+        <button class="tag" data-platform="918KISS" role="tab" aria-pressed="false">918KISS</button>
+        <button class="tag" data-platform="MEGA888" role="tab" aria-pressed="false">MEGA888</button>
+        <button class="tag" data-platform="PUSSY888" role="tab" aria-pressed="false">PUSSY888</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Content ===== -->
+  <main class="wrap">
+    <div class="grid">
+      <!-- List -->
+      <section class="list" aria-label="Game list">
+        <div class="list-hdr"><span id="listTitle">Results</span><span class="count" id="count">0</span></div>
+        <div id="list" class="scroll" tabindex="0" aria-activedescendant=""></div>
+      </section>
+
+      <!-- Detail -->
+      <aside class="detail" id="detail" aria-live="polite" aria-label="Game details">
+        <div class="detail-hdr">
+          <div class="detail-title" id="dTitle">Select a game</div>
+          <button class="close" id="btnClose" title="Close">Close</button>
+        </div>
+        <div class="art"><img id="dImg" src="" alt="Game visual" loading="lazy"/></div>
+        <div class="info">
+          <div class="row"><span class="k">Game name</span><span class="v" id="dName">—</span></div>
+          <div class="row"><span class="k">Type</span><span class="v" id="dType">—</span></div>
+          <div class="row"><span class="k">Paylines</span><span class="v" id="dPay">—</span></div>
+          <div class="row"><span class="k">Adjustable Lines</span><span class="v" id="dAdj">—</span></div>
+        </div>
+        <div class="platforms" id="dTags"></div>
+        <div class="bets">
+          <p class="bets-title">Bet values (per selected line)</p>
+          <div class="bet-grid" id="dBets"></div>
+        </div>
+        <div class="line">
+          <button class="btn" id="btnMinus" aria-label="Decrease lines">−</button>
+          <div id="lineText" aria-live="polite">Line: 1</div>
+          <button class="btn" id="btnPlus" aria-label="Increase lines">+</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <button class="fab" id="fabTop" title="Back to top" aria-label="Back to top" style="display:none">↑</button>
+<script src="findgame/findgame.js"></script>
+</body>
+</html>
