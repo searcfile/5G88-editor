@@ -1036,46 +1036,55 @@ function setPlatform(platform) {
   renderGames();
 
 async function copyImageToClipboard(imageUrl, parentElement) {
-  if (window.parent !== window) {
-    window.parent.postMessage(
-      { action: "copy-image", url: imageUrl },
-      "https://5g88-main.vercel.app"
-    );
-
+  function showNotice(text, ok = true) {
     const existing = parentElement.querySelector('.copy-notice');
     if (existing) existing.remove();
 
     const notice = document.createElement('div');
-    notice.textContent = "📨 Sending copy request...";
+    notice.textContent = text;
     notice.className = 'copy-notice';
+    notice.style.background = ok ? '#ffd400' : '#ff4d4f';
+    notice.style.color = ok ? '#000' : '#fff';
     parentElement.appendChild(notice);
 
     setTimeout(() => {
       if (notice && notice.parentNode) notice.remove();
-    }, 2000);
-
-    return;
+    }, 2200);
   }
 
+  // ✅ cuba copy terus dalam child dulu
   try {
-    const response = await fetch(imageUrl);
+    const response = await fetch(imageUrl, { mode: "cors" });
+    if (!response.ok) throw new Error("Fetch image failed: " + response.status);
+
     const blob = await response.blob();
+
+    if (!window.ClipboardItem || !navigator.clipboard?.write) {
+      throw new Error("Clipboard API not supported in child");
+    }
+
     const item = new ClipboardItem({ [blob.type]: blob });
     await navigator.clipboard.write([item]);
 
-    const existing = parentElement.querySelector('.copy-notice');
-    if (existing) existing.remove();
-
-    const notice = document.createElement('div');
-    notice.textContent = "✅ Image Copied!";
-    notice.className = 'copy-notice';
-    parentElement.appendChild(notice);
-
-    setTimeout(() => {
-      if (notice && notice.parentNode) notice.remove();
-    }, 2000);
+    showNotice("✅ Image Copied!", true);
+    return;
   } catch (err) {
-    alert("❌ Gagal salin gambar.");
-    console.error(err);
+    console.warn("Direct child copy failed:", err);
   }
+
+  // ✅ fallback ke parent
+  if (window.parent !== window) {
+    try {
+      window.parent.postMessage(
+        { action: "copy-image", url: imageUrl },
+        "https://5g88-main.vercel.app"
+      );
+      showNotice("📨 Sending copy request...", true);
+      return;
+    } catch (err) {
+      console.error("PostMessage fallback failed:", err);
+    }
+  }
+
+  showNotice("❌ Failed to copy image", false);
 }
