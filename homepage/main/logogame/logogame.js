@@ -1036,15 +1036,25 @@ function setPlatform(platform) {
   renderGames();
 
 async function copyImageToClipboard(imageUrl, parentElement) {
-  function showNotice(text, ok = true) {
+  function showNotice(text, type = "info") {
     const existing = parentElement.querySelector('.copy-notice');
     if (existing) existing.remove();
 
     const notice = document.createElement('div');
     notice.textContent = text;
     notice.className = 'copy-notice';
-    notice.style.background = ok ? '#ffd400' : '#ff4d4f';
-    notice.style.color = ok ? '#000' : '#fff';
+
+    if (type === "success") {
+      notice.style.background = '#ffd400';
+      notice.style.color = '#000';
+    } else if (type === "error") {
+      notice.style.background = '#ff4d4f';
+      notice.style.color = '#fff';
+    } else {
+      notice.style.background = '#ffd400';
+      notice.style.color = '#000';
+    }
+
     parentElement.appendChild(notice);
 
     setTimeout(() => {
@@ -1052,39 +1062,102 @@ async function copyImageToClipboard(imageUrl, parentElement) {
     }, 2200);
   }
 
-  // ✅ cuba copy terus dalam child dulu
+  // 1) Cuba copy terus dalam child
   try {
-    const response = await fetch(imageUrl, { mode: "cors" });
-    if (!response.ok) throw new Error("Fetch image failed: " + response.status);
+    const response = await fetch(imageUrl);
+    if (!response.ok) throw new Error("Fetch failed: " + response.status);
 
     const blob = await response.blob();
 
     if (!window.ClipboardItem || !navigator.clipboard?.write) {
-      throw new Error("Clipboard API not supported in child");
+      throw new Error("Clipboard API not supported");
     }
 
     const item = new ClipboardItem({ [blob.type]: blob });
     await navigator.clipboard.write([item]);
 
-    showNotice("✅ Image Copied!", true);
+    showNotice("✅ Image Copied!", "success");
     return;
   } catch (err) {
     console.warn("Direct child copy failed:", err);
   }
 
-  // ✅ fallback ke parent
+  // 2) Fallback ke parent
   if (window.parent !== window) {
     try {
       window.parent.postMessage(
         { action: "copy-image", url: imageUrl },
         "https://5g88-main.vercel.app"
       );
-      showNotice("📨 Sending copy request...", true);
+      showNotice("📨 Sending copy request...", "info");
       return;
     } catch (err) {
       console.error("PostMessage fallback failed:", err);
     }
   }
 
-  showNotice("❌ Failed to copy image", false);
+  showNotice("❌ Failed to copy image", "error");
+}
+async function copyImageToClipboard(imageUrl, parentElement) {
+  function showNotice(text, type = "info") {
+    const existing = parentElement.querySelector('.copy-notice');
+    if (existing) existing.remove();
+
+    const notice = document.createElement('div');
+    notice.textContent = text;
+    notice.className = 'copy-notice';
+
+    if (type === "success") {
+      notice.style.background = '#ffd400';
+      notice.style.color = '#000';
+    } else if (type === "error") {
+      notice.style.background = '#ff4d4f';
+      notice.style.color = '#fff';
+    } else {
+      notice.style.background = '#ffd400';
+      notice.style.color = '#000';
+    }
+
+    parentElement.appendChild(notice);
+
+    setTimeout(() => {
+      if (notice && notice.parentNode) notice.remove();
+    }, 2200);
+  }
+
+  // 1) Cuba copy terus dalam child
+  try {
+    const response = await fetch(imageUrl);
+    if (!response.ok) throw new Error("Fetch failed: " + response.status);
+
+    const blob = await response.blob();
+
+    if (!window.ClipboardItem || !navigator.clipboard?.write) {
+      throw new Error("Clipboard API not supported");
+    }
+
+    const item = new ClipboardItem({ [blob.type]: blob });
+    await navigator.clipboard.write([item]);
+
+    showNotice("✅ Image Copied!", "success");
+    return;
+  } catch (err) {
+    console.warn("Direct child copy failed:", err);
+  }
+
+  // 2) Fallback ke parent
+  if (window.parent !== window) {
+    try {
+      window.parent.postMessage(
+        { action: "copy-image", url: imageUrl },
+        "https://5g88-main.vercel.app"
+      );
+      showNotice("📨 Sending copy request...", "info");
+      return;
+    } catch (err) {
+      console.error("PostMessage fallback failed:", err);
+    }
+  }
+
+  showNotice("❌ Failed to copy image", "error");
 }
