@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="cimbclick/cimbclick.css">
+  <title>CIMB Clicks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <script>if (window.top === window.self) {window.location.replace("/main");}</script>
+</head>
+<body>
+  <div class="zoom-wrap">
+  <div class="app-layout">
+    <!-- ✅ PANEL KIRI: input + buttons -->
+    <aside class="builder-panel">
+      <div class="top-inputs">
+        <div class="builder-row">
+          <!-- ===== Custom Bank Dropdown ===== -->
+<div class="builder-field">
+  <label>Bank List</label>
+  <div class="bank-select" id="bankSelect">
+    <button type="button" class="bank-btn" id="bankBtn" aria-expanded="false">
+      <span id="bankBtnText">CIMB BANK BERHAD</span>
+      <span class="bank-caret">▾</span>
+    </button>
+    <div class="bank-menu" id="bankMenu" role="listbox" aria-hidden="true"></div>
+  </div>
+</div>
+<div class="builder-field">
+  <label>Recipient Name</label>
+  <div class="input-row">
+    <input type="text" id="input-recipient" placeholder="e.g. PAPA MINTA SAYANG" />
+    <button class="btn-now" id="btn-auto-name" type="button" aria-pressed="true">AUTO: ON</button>
+  </div>
+</div>
+          
+<div class="builder-field">
+  <label>Date & Time</label>
+  <div class="input-row">
+    <input type="text" id="input-date" placeholder="Date & Time" />
+    <button class="btn-now" id="btn-date" type="button">Now</button>
+  </div>
+</div>
+
+<div class="builder-row-2">
+  <div class="builder-field">
+    <label>Reference (4 digit)</label>
+    <input type="text" id="input-ref4" placeholder="1234" maxlength="4" inputmode="numeric" />
+  </div>
+
+  <div class="builder-field">
+    <label>Amount (RM)</label>
+    <input type="text" id="input-amount" placeholder="Fill Amount" />
+  </div>
+</div>
+<div class="btn-row">
+  <button class="btn-reset" onclick="resetDisplay()">Reset</button>
+  <button class="btn-update" id="btn-create" type="button">Create</button>
+</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ✅ PANEL KANAN: receipt preview -->
+    <main class="preview-panel">
+      <div class="container">
+        <div class="header">DuitNow / Transfer Money Acknowledgement</div>
+
+        <div class="status-bar">
+          <div class="left">
+<div class="check-icon">
+  <img src="https://i.imgur.com/apQZB22.png" class="check-img" alt="success" />
+</div>
+            <span><strong class="success-text">Successful</strong> Ref <span id="ref-number">000000000</span></span>
+          </div>
+          <div id="transfer-date">01 May 2025, 00:00:00 am</div>
+        </div>
+
+        <div class="details">
+          <div class="left">
+            <div class="value">To</div>
+            <div class="label">Account Number</div>
+            <div class="value" id="account-number">
+  <span class="keep" id="acc-first">70</span><span class="blur" id="acc-mid">0279597</span><span class="keep" id="acc-last">9</span>
+</div>
+
+<div id="accountNameRow">
+  <div class="label">Account Name</div>
+  <div class="value" id="accountNameValue">SA PASSBOOK</div>
+</div>
+
+            <div class="label">Recipient Name</div>
+            <div class="value" id="recipient-name">
+  <span class="keep" id="name-first">PA</span><span class="blur" id="name-mid">PA MINTA SAYANG</span>
+</div>
+          </div>
+
+          <div class="right" style="text-align: right;">
+            <div class="label amount-label">Amount</div>
+            <div class="amount">
+              <span class="currency">MYR</span>
+              <span id="main-amount">1,000.</span><span class="sen">00</span>
+            </div>
+            <div class="charges">
+              Bank charges
+              <span class="currency">MYR</span>
+              <span class="charge-amount">0.</span><span class="charge-sen">00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">More transfer details →</div>
+      </div>
+    </main>
+ </div>
+  </div>
+<script src="cimbclick/cimbclick.js"></script>
+</body>
+</html>
