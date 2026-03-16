@@ -1660,11 +1660,17 @@ if (data.type === "child-ready" || data.type === "request-login") {
     return;
   }
 
-  if (data.action === "copy-image" && data.url) {
-    try { await copyBlobFrom(data.url); console.log("✅ Gambar (URL) disalin."); }
-    catch (err) { console.error("❌ Gagal:", err); }
-    return;
+if (data.action === "copy-image" && data.url) {
+  try {
+    await copyBlobFrom(data.url);
+    e.source.postMessage({ action: "copy-image-success" }, e.origin);
+    console.log("✅ Gambar (URL) disalin.");
+  } catch (err) {
+    e.source.postMessage({ action: "copy-image-failed", message: String(err?.message || err) }, e.origin);
+    console.error("❌ Gagal:", err);
   }
+  return;
+}
 });
 
   const loadingScreen = document.getElementById("loadingScreen");
