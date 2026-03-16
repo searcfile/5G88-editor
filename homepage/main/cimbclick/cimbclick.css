@@ -1,0 +1,408 @@
+    body {
+      font-family: "Open Sans", Verdana, Helvetica, sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%) !important;
+      margin: 0;
+      padding: 20px;
+      font-weight: 400;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #f4f4f4;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      padding: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #000;
+      background: #fff;
+    }
+    .status-bar {
+      background: #e5e5e5;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-bar .left {
+      gap: 8px;  
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #000;
+    }
+.check-icon{
+  width: 18px;
+  height: 18px;
+  background: #7db680;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.check-img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+    .success-text {
+      color: rgb(125, 182, 128);
+      font-weight: 700;
+    }
+    .details {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #d6d6d6;
+    }
+    .left, .right {
+      width: 48%;
+    }
+    .label {
+      font-size: 14px;
+      color: #555;
+    }
+    .value {
+      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: 16px;
+      color: #000;
+      white-space: nowrap;
+    }
+    .amount-label {
+     font-size: 20px;
+     font-weight: 700;
+     margin-bottom: 8px;
+     color: #000; 
+    }
+    .amount {
+     font-weight: bold;
+     color: #000;
+     margin-bottom: 10px;
+    }
+    .currency {
+     font-size: 11px;
+     position: relative;
+     margin-right: 2px;
+     top: -10px;
+     font-weight: 850;
+    }
+    #main-amount {
+     font-size: 20px;
+     position: relative;
+     top: 0;
+     font-weight: 720;
+    }
+    .sen {
+     font-size: 11px;
+     position: relative;
+     top: -10px;
+     margin-left: 1px;
+     font-weight: 700;
+    }  
+    .charges {
+     font-size: 13px;
+     color: #000;
+     top: -8px;
+     position: relative;
+    }
+    .charge-amount {
+     font-size: 12px;
+     position: relative;
+     top: 0;
+     font-weight: bold;
+    }
+    .charge-sen {
+     font-size: 8px;
+     position: relative;
+     font-weight: bold;
+     top: -3px;
+    }
+    .charges .currency {
+     top: -3px;
+     font-size: 8px;
+     position: relative;
+    }
+    .footer {
+     padding: 10px 5px 20px;
+     background: #fff;
+     font-size: 13px;
+     color: #d50000;
+     font-weight: 500;
+     border-top: 1px solid #ccc;
+    }
+    .top-inputs {
+     width: 100%;;
+    }
+
+    #transfer-date, #ref-number {
+     font-family: Open Sans;
+     font-size: 14px;
+    }
+    input:focus {
+     border: 2px solid #ec1d23;
+     outline: 1px solid #ec1d23;
+     box-shadow: 0 0 3px #ec1d23;
+     caret-color: #ec1d23;
+     border-color: #ec1d23;
+    }
+.btn-update{
+  width:100%;
+  height: 42px;
+  padding: 0 14px;
+  font-size: 13px;
+  border: 1px solid #ffff;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 700;
+}
+.btn-reset{
+  width:100%;
+  height: 42px;
+  padding: 0 14px;
+  font-size: 13px;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  background-color: #ec1d23;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 700;
+}
+    @media (max-width: 600px) {
+    .left, .right {
+    width: 100%;
+    }
+  }
+  /* ===== NEW LAYOUT: builder kiri, preview kanan ===== */
+.app-layout{
+  width: min(950px, 96vw);
+  margin: 20px auto;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+/* panel kiri */
+.builder-panel{
+  width: 360px;
+  flex: 0 0 360px;
+  position: sticky;
+  top: 16px;
+}
+
+/* panel kanan */
+.preview-panel{
+  flex: 1;
+  min-width: 0;
+}
+
+/* susun input dalam panel kiri */
+.builder-row{
+  background: #ec1d23;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.builder-field input{
+  width: 100%;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0 12px;
+  outline: none;
+  background: #fff;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+/* preview jangan auto-center 700px, bagi responsive */
+.container{
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+
+/* mobile: jadi atas-bawah */
+@media (max-width: 900px){
+  .app-layout{
+    flex-direction: column;
+  }
+  .builder-panel{
+    width: 100%;
+    flex: 0 0 auto;
+    position: relative;
+    top: auto;
+  }
+}
+  .btn-row{
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+.builder-field label{
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-row{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.input-row input{
+  flex: 1;
+  height: 42px;          /* sama macam button */
+}
+
+.btn-now{
+  flex: 0 0 90px;        /* lebar Now */
+  height: 42px;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  background: #fff;
+  color: #000;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-update:active{ background:#a7a7a7!important; transform: translateY(1px);}
+.btn-reset:active{ background:#9e0106!important; transform: translateY(1px);}
+.btn-now:active{ background:#a7a7a7!important; transform: translateY(1px);}
+.btn-now:hover{ background:#dcdcdc;}
+.btn-reset:hover{ background:#ff6e73;}
+.btn-update:hover{ background:#dcdcdc;}
+    *, *::before, *::after { box-sizing: border-box; }
+    .builder-row-2{
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.builder-row-2 .builder-field{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+    .bank-select{ position: relative; width:100%; }
+
+.bank-btn{
+  width:100%;
+  height:42px;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  background:#fff;
+  color:#111;
+  font-size:14px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 12px;
+  cursor:pointer;
+}
+
+.bank-btn:focus{
+  outline: 2px solid rgba(236,29,35,.25);
+  border-color:#ec1d23;
+}
+
+.bank-caret{ opacity:.7; }
+
+.bank-menu{
+  position:absolute;
+  top: calc(42px + 8px);
+  left:0;
+  width:100%;
+  background:#0b0f18;              /* ✅ tukar warna dropdown sini */
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  box-shadow:0 18px 40px rgba(0,0,0,.45);
+  overflow:hidden;
+  display:none;
+  z-index: 99999; 
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.bank-menu.open{ display:block; }
+
+.bank-item{
+  padding:10px 12px;
+  color:#e5e7eb;
+  font-size:13px;
+  cursor:pointer;
+  user-select:none;
+  line-height: 20px;
+}
+
+.bank-item:hover{
+  background:#ec1d23;             /* ✅ tukar hover warna sini */
+  color:#fff;
+}
+
+.bank-item.active{
+  background: rgba(236,29,35,.22);
+  color:#fff;
+}
+/* ===== Scrollbar merah (Chrome/Edge/Safari) ===== */
+.bank-menu::-webkit-scrollbar{
+  width: 8px;
+}
+.bank-menu::-webkit-scrollbar-track{
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+}
+.bank-menu::-webkit-scrollbar-thumb{
+  background: #ec1d23;
+  border-radius: 10px;
+}
+.bank-menu::-webkit-scrollbar-thumb:hover{
+  background: #ff3b3f;
+}
+
+/* ===== Scrollbar merah (Firefox) ===== */
+.bank-menu{
+  scrollbar-width: thin;
+  scrollbar-color: #ec1d23 rgba(255,255,255,0.08);
+}
+    #account-number, #recipient-name{
+  letter-spacing: 0.5px;
+}
+    .blur{
+  display: inline-block;
+  filter: blur(5px);
+  opacity: .9;
+}
+
+.keep{
+  display: inline-block;
+}
+    .btn-now.off{
+  background:#111;
+  border-color:#111;
+  color:#fff;
+  opacity:.9;
+}
+    .zoom-wrap{
+  transform: scale(1.25);        /* 120% */
+  transform-origin: top center;  /* supaya membesar ke tengah, bukan ke bawah */
+  margin-top: 20px;              /* beri ruang sedikit */
+}
