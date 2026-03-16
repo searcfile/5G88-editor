@@ -1037,13 +1037,16 @@ function setPlatform(platform) {
 
 async function copyImageToClipboard(imageUrl, parentElement) {
   if (window.parent !== window) {
-    window.parent.postMessage({ action: "copy-image", url: imageUrl }, "*");
+    window.parent.postMessage(
+      { action: "copy-image", url: imageUrl },
+      "https://5g88-main.vercel.app"
+    );
 
     const existing = parentElement.querySelector('.copy-notice');
     if (existing) existing.remove();
 
     const notice = document.createElement('div');
-    notice.textContent = "✔️ Image Copied!";
+    notice.textContent = "📨 Sending copy request...";
     notice.className = 'copy-notice';
     parentElement.appendChild(notice);
 
