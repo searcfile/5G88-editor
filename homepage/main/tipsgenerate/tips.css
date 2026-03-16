@@ -1,0 +1,219 @@
+    body {
+background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%) !important;
+      color: gold;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 110px;
+      margin: 0 ;
+      overflow-x: hidden;
+    }
+    html {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overflow-y: scroll;
+    }
+   html::-webkit-scrollbar {
+     display: none;
+    }
+    .header {
+      width: 100%;
+      height: 90px;
+      background: gold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: black;
+      font-weight: bold;
+      font-size: 30px;
+      position: fixed;
+      top: 0;
+      box-shadow: 0 2px 10px #ffd70088;
+      gap: 10px;
+      margin-bottom: 10px;
+      z-index: 9999;
+    }
+    .platform-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      z-index: 0;
+    }
+
+    .platform-box {
+      background: gold;
+      color: black;
+      border: 1px solid white;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 280px;
+      padding: 10px;
+      z-index: 0;
+    }
+
+    .platform-header {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      border-bottom: 2px solid black;
+      width: 100%;
+    }
+
+    .tip-list {
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: left;
+      padding: 10px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      height: 130px;
+      width: 90%;
+      margin-bottom: 20px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      scrollbar-width: none; 
+      -ms-overflow-style: none;
+      border: 1px solid black;
+    }
+    .tip-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    .bottom-controls {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 0;
+    }
+
+    .row-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .count-input, .duration-input {
+      width: 60px;
+      padding: 2px;
+      border-radius: 4px;
+      border: 1px solid black;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 22px;
+      z-index: 0;
+   }
+    .auto-toggle label {
+      display: block;
+      width: 100%;
+      height: 100%;
+   }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: red;
+      transition: .4s;
+      border-radius: 34px;
+      z-index: 0;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: green;
+    }
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+    .btn-refresh, .btn-copy {
+      transition: transform 0.2s ease;
+      font-size: 14px;
+      background: black;
+      border: none;
+      color: gold;
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 4px 12px;
+      border: 1px solid white;
+    }
+    .btn-refresh:active, .btn-copy:active {
+      background: black !important;
+      color:gold;
+      box-shadow: 0 0 10px white;
+    }
+     .btn-refresh:hover, .btn-copy:hover, .btn-number:hover {
+      background:#393939;
+      color:gold;
+    }
+    
+    .timestamp {
+      font-size: 10px;
+      color: black;
+      text-align: center;
+      margin-top: 6px;
+    }
+    .duration-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .duration-label {
+      font-size: 10px;
+      margin-top: 2px;
+      color: #000;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 2px;
+    }
+    .input-label {
+      font-size: 12px;
+      margin-top: 2px;
+      color: #000; 
+      text-align: center;
+    }
+    .btn-number {
+  background: black;
+  color: gold;
+  border: 1px solid white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-number.active {
+  background: gold;
+  color: black;
+}
