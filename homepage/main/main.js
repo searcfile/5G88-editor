@@ -1346,12 +1346,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (e) {
     console.error("❌ Failed to parse login data:", e);
     localStorage.removeItem("gmailLogin");
-    window.location.href = "https://5g88-home.vercel.app/";
+    window.location.href = "https://5g88-main.vercel.app/";
     return;
   }
 
   if (!sessionData || !sessionData.email) {
-    window.location.href = "https://5g88-home.vercel.app/";
+    window.location.href = "https://5g88-main.vercel.app/";
     return;
   }
 
@@ -1612,7 +1612,7 @@ updateDateTime();
 window.addEventListener("message", async (e) => {
   const allowedOrigins = new Set([
     "https://searcfile.github.io",
-    "https://5g88-home.vercel.app",
+    "https://5g88-main.vercel.app",
   ]);
   if (!allowedOrigins.has(e.origin)) {
     console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
