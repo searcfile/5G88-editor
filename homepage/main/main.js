@@ -34,25 +34,73 @@ const loginApp = firebase.initializeApp({
   appId: "1:648022690285:web:aefad61a2f46e6cf39f05b"
 }, "loginApp");
 const loginDb = loginApp.database();
+function getMainSlugFromPath() {
+  const parts = location.pathname.split("/").filter(Boolean);
+  if (parts[0] !== "main") return null;
+  return parts[1] ? parts[1].toLowerCase() : null;
+}
+
+function setBrowserRoute(tab) {
+  if (tab && tab.route) {
+    history.replaceState({}, "", tab.route);
+  } else {
+    history.replaceState({}, "", "/main");
+  }
+}
+const TAB_ROUTE_MAP = {
+  "918kiss": {
+    label: "918KISS",
+    url: "/main//918kiss/index.html",
+    group: "gamelog",
+    route: "/main/918kiss"
+  },
+  "mega888": {
+    label: "MEGA888",
+    url: "/main//mega888/index.html",
+    group: "gamelog",
+    route: "/main/mega888"
+  },
+  "pussy888": {
+    label: "PUSSY888",
+    url: "/main//pussy888/index.html",
+    group: "gamelog",
+    route: "/main/pussy888"
+  },
+  "evo888": {
+    label: "EVO888",
+    url: "/main//evo888/index.html",
+    group: "gamelog",
+    route: "/main/evo888"
+  },
+  "scr888h5": {
+    label: "SCR888H5",
+    url: "/main//scr888h5/index.html",
+    group: "gamelog",
+    route: "/main/scr888h5"
+  }
+};
 (function captureMainQuery(){
   if (!location.pathname.startsWith("/main")) return;
 
-  try{
+  try {
     const qs = new URLSearchParams(location.search);
     const name  = qs.get("name");
     const email = qs.get("email");
     const photo = qs.get("photo") || "";
 
-    if (email){
+    if (email) {
       localStorage.setItem("gmailLogin", JSON.stringify({
-        name:  decodeURIComponent(name || ""),
+        name: decodeURIComponent(name || ""),
         email: decodeURIComponent(email).toLowerCase(),
         photo: decodeURIComponent(photo || "")
       }));
-      sessionStorage.setItem("justLoggedIn","1");
-      history.replaceState({}, document.title, "/main"); // buang query
+
+      sessionStorage.setItem("justLoggedIn", "1");
+
+      // ✅ buang query tapi kekalkan path semasa, contoh /main/918kiss
+      history.replaceState({}, document.title, location.pathname);
     }
-  }catch(_){}
+  } catch (_) {}
 })();
 (function(){
   const SESS_ROOT = 'singleSessions';
@@ -554,31 +602,32 @@ function applyActiveTabFromStorage(){
     el.classList.toggle("active-tab", u === activeUrl);
   });
 }
-function addTab(label, url, opt={}) {
+function addTab(label, url, opt = {}) {
   const L = String(label || "").trim().toUpperCase();
   const group = String(opt?.group || "none").toLowerCase();
+  const route = String(opt?.route || "").trim();
 
   if (typeof isTabAllowed === "function" && !isTabAllowed(L)) return;
 
-const existingTabs = getTabs();
-const newUrl = normUrl(url);
+  const existingTabs = getTabs();
+  const newUrl = normUrl(url);
 
-// cari ikut label
-const idx = existingTabs.findIndex(tab =>
-  String(tab.label||"").trim().toUpperCase() === L
-);
+  const idx = existingTabs.findIndex(tab =>
+    String(tab.label || "").trim().toUpperCase() === L
+  );
 
-if (idx === -1) {
-  existingTabs.push({ label: L, url: newUrl, group });
-} else {
-  // ✅ kalau tab dah ada, update url supaya konsisten
-  existingTabs[idx].url = newUrl;
-  existingTabs[idx].group = group;
-}
-saveTabs(existingTabs);
+  if (idx === -1) {
+    existingTabs.push({ label: L, url: newUrl, group, route });
+  } else {
+    existingTabs[idx].url = newUrl;
+    existingTabs[idx].group = group;
+    existingTabs[idx].route = route;
+  }
 
-loadPage(newUrl);
-renderTabs();
+  saveTabs(existingTabs);
+
+  loadPage(newUrl);
+  renderTabs();
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
@@ -586,7 +635,6 @@ renderTabs();
 
   setHeaderActiveByGroup(group, L);
 
-  // LiveChat / Link Download / Item Collection kekal label
   const liveBtn = document.getElementById("liveChatBtn");
   const linkBtn = document.getElementById("linkDownloadBtn");
   const itemBtn = document.getElementById("itemBtn");
@@ -597,11 +645,15 @@ renderTabs();
       liveBtn.classList.add("active-livechat");
       if (liveDot) liveDot.style.display = "none";
       markLivechatAsRead();
-    } else liveBtn.classList.remove("active-livechat");
+    } else {
+      liveBtn.classList.remove("active-livechat");
+    }
   }
 
   linkBtn?.classList.toggle("active-linkdownload", L === "LINK DOWNLOAD");
   itemBtn?.classList.toggle("active-itemBtn", L === "ITEM COLLECTION");
+
+  setBrowserRoute({ route });
 }
 function setHeaderActiveByGroup(group, labelUpper){
   const gameLogBtnEl = document.getElementById("gameLogBtn");
@@ -684,9 +736,10 @@ function closeTab(label) {
   const gameLinksBtnEl = document.getElementById("gameLinksBtn");
   const itemBtn = document.getElementById("itemBtn");
 
-  if (tabs.length > 0) {
-    const lastTab = tabs[tabs.length - 1];
-    loadPage(lastTab.url);
+if (tabs.length > 0) {
+  const lastTab = tabs[tabs.length - 1];
+  loadPage(lastTab.url);
+  setBrowserRoute(lastTab);
 
     // Set status aktif tombol sesuai tab terakhir
     const gameLogLabels = ["MEGA888", "PUSSY888", "918KISS", "SCR888H5","EVO888"];
@@ -708,6 +761,7 @@ function closeTab(label) {
     linkBtn?.classList.remove("active-linkdownload");
     itemBtn?.classList.remove("active-itemBtn");
     gameLinksBtnEl?.classList.remove("active-gamelog");
+    setBrowserRoute(null);
   }
 }
  
@@ -744,10 +798,11 @@ function renderTabs() {
     });
 
     // Klik tab → buka page
-    tabElement.onclick = () => {
-    const u = normUrl(tab.url);
-    setActiveTabUrl(u);
-    loadPage(u);
+tabElement.onclick = () => {
+  const u = normUrl(tab.url);
+  setActiveTabUrl(u);
+  loadPage(u);
+  setBrowserRoute(tab);
 
       const gameLogBtn = document.getElementById("gameLogBtn");
       const liveBtn = document.getElementById("liveChatBtn");
@@ -930,6 +985,16 @@ function updateGameLinksCheckmarks() {
 }
 
 window.addEventListener("load", () => {
+  const slug = getMainSlugFromPath();
+
+  if (slug && TAB_ROUTE_MAP[slug]) {
+    const cfg = TAB_ROUTE_MAP[slug];
+    addTab(cfg.label, cfg.url, {
+      group: cfg.group,
+      route: cfg.route
+    });
+    return;
+  }
   renderTabs();
   applyTabVisibility();  // <-- opsional, double check awal
   const tabs = getTabs();
