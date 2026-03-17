@@ -117,85 +117,60 @@
   🎵 MUSIC OFF
   </button>
 
-<div class="user-info">
-  <div class="user-text">
-    <div style="display: flex; align-items: center; gap: 12px;">
+  <div class="user-info">
+    <div class="user-text">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div id="notificationBell" style="width: 18px; height: 18px; background-color: red; border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 12px; color: white; font-weight: bold; cursor: pointer;" title="You have a new message">!</div>
 
-      <!-- 🔴 Notification Alert (SVG version) -->
-      <div id="notificationBell"
-        style="
-          width: 22px;
-          height: 22px;
-          background: red;
-          border-radius: 50%;
-          display: none;
-          justify-content: center;
-          align-items: center;
-          cursor: pointer;
-          box-shadow: 0 0 6px rgba(255,0,0,0.6);
-        "
-        title="You have a new message">
+<div id="notifButton"
+  style="
+    background: #111;
+    border: 1px solid gold;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    position: relative;
+    transition: 0.2s;
+  ">
 
-        <svg xmlns="http://www.w3.org/2000/svg"
-          width="14" height="14"
-          fill="white"
-          viewBox="0 0 24 24"
-          style="filter: drop-shadow(0 0 2px white);">
-          <path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z"/>
-        </svg>
+  <!-- ✅ SVG ICON (yang bro bagi) -->
+  <svg xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="gold"
+    style="filter: drop-shadow(0 0 2px gold);">
 
-      </div>
+    <path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z"/>
 
-      <!-- 🔔 Bell Button Upgrade -->
-      <div id="notifButton"
-        style="
-          background: linear-gradient(145deg, #111, #1c1c1c);
-          border: 1px solid gold;
-          border-radius: 50%;
-          width: 28px;
-          height: 28px;
-          color: gold;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          cursor: pointer;
-          box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-          position: relative;
-          transition: 0.2s;
-        ">
+  </svg>
 
-        <!-- 🔔 SVG Bell -->
-        <svg xmlns="http://www.w3.org/2000/svg"
-          width="16" height="16"
-          fill="gold"
-          viewBox="0 0 24 24">
-          <path d="M12 24c1.104 0 2-.896 2-2h-4c0 1.104.896 2 2 2zm6.364-6c-.94-1.121-1.364-2.468-1.364-4v-3c0-3.519-2.613-6.432-6-6.92v-.58c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5v.58c-3.387.488-6 3.401-6 6.92v3c0 1.532-.424 2.879-1.364 4h16.728z"/>
-        </svg>
+  <!-- 🔴 DOT -->
+  <span id="notifDot"
+    style="
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: red;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: none;
+      border: 1px solid white;
+      box-shadow: 0 0 5px red;
+    ">
+  </span>
 
-        <!-- 🔴 Dot -->
-        <span id="notifDot"
-          style="
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background: red;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: none;
-            border: 1px solid white;
-            box-shadow: 0 0 5px red;
-          ">
-        </span>
-
-      </div>
-
-      <!-- 🕒 Date Time -->
-      <div id="dateTime" class="date-time"></div>
-
-    </div>
-  </div>
 </div>
+
+        <div id="dateTime" class="date-time"></div>
+      </div>
+
       <div class="user-dropdown">
         <button id="userName" class="user-button" aria-label="Account" title="Account">
           <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
