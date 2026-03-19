@@ -34,6 +34,51 @@ const loginApp = firebase.initializeApp({
   appId: "1:648022690285:web:aefad61a2f46e6cf39f05b"
 }, "loginApp");
 const loginDb = loginApp.database();
+const THEME_KEY = "siteTheme";
+
+function getSavedTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  return saved === "dark" ? "dark" : "light";
+}
+
+function applyTheme(theme, syncToIframe = true) {
+  const body = document.body;
+  if (!body) return;
+
+  body.classList.remove("light-theme", "dark-theme");
+  body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+
+  localStorage.setItem(THEME_KEY, theme);
+
+  const label = document.getElementById("themeToggleLabel");
+  if (label) {
+    label.textContent = theme === "light" ? "Light Mode" : "Dark Mode";
+  }
+
+  if (syncToIframe) {
+    sendThemeToIframe();
+  }
+}
+
+function toggleTheme() {
+  const next = getSavedTheme() === "dark" ? "light" : "dark";
+  applyTheme(next, true);
+}
+
+function sendThemeToIframe() {
+  const frame = document.getElementById("pageFrame");
+  if (!frame || !frame.contentWindow) return;
+
+  const origin = getChildOriginFromSrc(frame.src);
+  if (!origin) return;
+
+  try {
+    frame.contentWindow.postMessage({
+      type: "theme-change",
+      theme: getSavedTheme()
+    }, origin);
+  } catch (_) {}
+}
 function getMainSlugFromPath() {
   const parts = location.pathname.split("/").filter(Boolean);
   if (parts[0] !== "main") return null;
