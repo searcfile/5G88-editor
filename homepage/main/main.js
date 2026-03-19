@@ -576,7 +576,6 @@ if (tabBar) {
   tabBar.style.display = "flex";
   tabBar.style.alignItems = "center";
   tabBar.style.padding = "10px 2px";
-  tabBar.style.background = "#000";
 }
 
 
