@@ -4,6 +4,8 @@
   --text-main: #fff;
   --text-soft: rgba(255,255,255,0.85);
   --text-dim: rgba(255,255,255,0.65);
+  --colorbtn:rgba(255,255,255,0.85);
+  --border:#303030;
   --panel-border: #424242;
 
   --tab-bg: rgba(255,255,255,0.04);
@@ -13,9 +15,9 @@
   --btn-text: rgba(255,255,255,0.85);
   --btn-border: #424242;
 
-  --gold: gold;
-  --gold-hover: #ffe34d;
-  --gold-active: #dbb900;
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
 
   --overlay-bg: rgba(0,0,0,0.5);
   --popup-bg: #1f1f1f;
@@ -34,7 +36,8 @@ body.light-theme{
   --text-main: #111827;
   --text-soft: rgba(17,24,39,0.88);
   --text-dim: rgba(17,24,39,0.72);
-
+  --colorbtn:rgba(0, 0, 0, 0.88);
+  --border:#303030;
   --panel-border: #d4dbe6;
 
   --tab-bg: rgba(255,255,255,0.90);
@@ -44,9 +47,9 @@ body.light-theme{
   --btn-text: rgba(17,24,39,0.88);
   --btn-border: #d4dbe6;
 
-  --gold: #c79800;
-  --gold-hover: #a97d00;
-  --gold-active: #8b6900;
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
 
   --overlay-bg: rgba(15,23,42,0.18);
   --popup-bg: #ffffff;
@@ -192,7 +195,7 @@ body.light-theme{
   #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
   #notifButton:hover #notifTooltip {display: block !important;opacity: 1;z-index: 10000;}
  .user-dropdown {position: relative;display: inline-block;}
- .user-button {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 5px;background-color: transparent;color: rgba(255,255,255,0.85);border:1px solid #424242;border-radius: 6px;padding: 0px 15px;font-size: 14px;cursor: pointer;white-space: nowrap;height: 32px;transition: all 0.3s ease;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);}
+ .user-button {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 5px;background-color: transparent;color:var(--colorbtn);border:1px solid var(--border);border-radius: 6px;padding: 0px 15px;font-size: 14px;cursor: pointer;white-space: nowrap;height: 32px;transition: all 0.3s ease;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);}
  .user-button:hover {border:1px solid #ffe34d;background-color: #141414;color: #ffe34d;}.user-button:active {border: 1px solid gold;background-color: #141414;color: gold;}
 
  .dropdown-content {
@@ -352,20 +355,11 @@ a.tab-open .check-icon {
 
 /* Muncul HANYA di mobile */
 @media (max-width: 768px){
-  /* nav jadi icon-only */
   .live-chat-button .btn-label{ display:none; }
-
-  /* sembunyikan logo & jam */
   .floating-logo{ display:none !important; }
   .date-time{ display:none !important; }
-
-  /* tombol user (kanan) icon-only */
   #userNameText{ display:none !important; }
-
-  /* tampilkan tombol username mobile */
   #dropdownContent .menu-user-btn{ display:flex !important; }
-
-  /* tinggi bar tetap */
   .header{ height:55px; }
   .tab-bar{ margin-top:55px; }
 }
@@ -422,15 +416,15 @@ a.tab-open .check-icon {
 .theme-toggle-btn{
   width: 100%;
   min-height: 32px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid var(--btn-border);
   background: rgba(255,255,255,0.04);
   color: var(--btn-text);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 6px 10px;
+  gap: 6px;
+  padding: 0px 12px;
   cursor: pointer;
   transition: all .25s ease;
   box-shadow: 0 2px 0 rgba(255,255,255,0.04);
