@@ -4,7 +4,9 @@
   --text-main: #fff;
   --text-soft: rgba(255,255,255,0.85);
   --text-dim: rgba(255,255,255,0.65);
-  --colorbtn:rgba(255,255,255,0.85);
+  --colorbtn:rgba(0, 0, 0, 0.88);
+  --backgroundbtn:#141414;
+  --backgrounddrop:#1f1f1f;
   --border:#303030;
   --panel-border: #424242;
 
@@ -36,7 +38,9 @@ body.light-theme{
   --text-main: #111827;
   --text-soft: rgba(17,24,39,0.88);
   --text-dim: rgba(17,24,39,0.72);
-  --colorbtn:rgba(0, 0, 0, 0.88);
+  --colorbtn:rgba(255,255,255,0.85);
+  --backgroundbtn:#ffffff;
+  --backgrounddrop:#ffffff;
   --border:#303030;
   --panel-border: #d4dbe6;
 
@@ -181,7 +185,7 @@ body.light-theme{
   border:1px solid var(--tab-border);
 }
   .tab .close-tab {background: rgba(255,255,255,0.04);z-index:999999999;color: gold;border: none;font-size: 20px !important;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: transform .2s, color .2s !important;}.close-tab:hover {font-weight:bold;}
-  .tab:hover {color: #ffe34d !important;font-weight: bold !important;transition: all 0.3s ease;}
+  .tab:hover {color: var(--gold-hover);font-weight: bold !important;transition: all 0.3s ease;}
  .active-tab {
   background: var(--panel-bg) !important;
   color: var(--gold) !important;
@@ -230,13 +234,13 @@ body.light-theme{
   background: transparent;
   position: relative;
 }
-.live-chat-button:hover {color: rgba(255,255,255,0.85);background: transparent;transition: color 0.3s;}.live-chat-button:active {color: #8d8d8d !important;background: transparent;}
+.live-chat-button:hover {color: #ffffff;background: transparent;transition: color 0.3s;}.live-chat-button:active {color: #8d8d8d !important;background: transparent;}
 .live-chat-button.active-livechat,
 .live-chat-button.active-linkdownload,
 .live-chat-button.active-gamelog,
 .live-chat-button.active-itemBtn {
   background: transparent;
-  color: gold;
+  color: var( --gold);
 }
 .dropdown-wrapper {
   position: relative;
@@ -248,7 +252,7 @@ body.light-theme{
   position: fixed;
   top: 60px;
   z-index: 10000;
-  background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%) !important;
+  background: var(--backgrounddrop);
   border: 1px solid #424242;
   border-radius: 6px;
   min-width: 180px;
