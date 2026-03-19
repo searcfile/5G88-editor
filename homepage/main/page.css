@@ -1,6 +1,6 @@
 :root{
   --bg-main: #000;
-  --sidebar: ##001529;
+  --sidebar: #001529;
   --text-main: #fff;
   --text-soft: rgba(255,255,255,0.85);
   --text-dim: rgba(255,255,255,0.65);
@@ -8,6 +8,7 @@
   --backgroundbtn:#141414;
   --backgrounddrop:#1f1f1f;
   --border:#303030;
+  --border2:#424242;
   --panel-border: #424242;
 
   --tab-bg: rgba(255,255,255,0.04);
@@ -42,6 +43,7 @@ body.light-theme{
   --backgroundbtn:#ffffff;
   --backgrounddrop:#ffffff;
   --border:#303030;
+  --border2:#424242;
   --panel-border: #d4dbe6;
 
   --tab-bg: rgba(255,255,255,0.90);
@@ -192,7 +194,7 @@ body.light-theme{
   .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
   .header.shrink {margin-left: 260px;transition: margin-left 0.3s;}
   .tab-bar.shrink {margin-left: 260px;transition: margin-left 0.3s;}
-  #logoutBtn {display: flex;align-items: center;justify-content: center;height:32px;line-height: 1;gap: 2px;background-color: transparent;color: rgba(255,255,255,0.85);padding: 5px 10px;border-radius: 6px;cursor: pointer;width: 100%;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid #424242;font-size: 14px;}#logoutBtn:hover {color: #ffe34d;transition: all 0.3s ease;border: 1px solid #ffe34d;}#logoutBtn:active {color: #dbb900;transition: all 0.3s ease;border: 1px solid #dbb900;background-color: #141414;}
+  #logoutBtn {display: flex;align-items: center;justify-content: center;height:32px;line-height: 1;gap: 2px;background: var(--backgroundbtn);color: var(--colorbtn);padding: 5px 10px;border-radius: 6px;cursor: pointer;width: 100%;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid var(--border2);font-size: 14px;}#logoutBtn:hover {color: var(--gold-hover);transition: all 0.3s ease;border: 1px solid var(--gold-hover);}#logoutBtn:active {color: var(--gold-active);transition: all 0.3s ease;border: 1px solid var(--gold-active);}
   #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
   #notifButton:hover #notifTooltip {display: block !important;opacity: 1;z-index: 10000;}
  .user-dropdown {position: relative;display: inline-block;}
@@ -249,8 +251,7 @@ body.light-theme{
   position: fixed;
   top: 60px;
   z-index: 10000;
-  background: var(--backgrounddrop);
-  border: 1px solid #424242;
+  background: var(--sidebar);
   border-radius: 6px;
   min-width: 180px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.4);
@@ -291,7 +292,7 @@ body.light-theme{
   display: none;
 }
 a.tab-open .check-icon {
-  color: gold;
+  color: rgba(255,255,255,.85);;
 }
 .dropdown-links a {
   display: flex; /* ✅ ubah dari block ke flex */
@@ -308,15 +309,15 @@ a.tab-open .check-icon {
 
 .dropdown-links a:hover {
   background: transparent;
-  color:  #ffe34d;
+  color:  var(--gold-hover);
   transition: color 0.3s;
 }
 .dropdown-links a:active {
   background: transparent;
-  color: #dbb900!important;
+  color: var(--gold-active)!important;
 }
 #gameLogBtn.active-gamelog {
-  color: gold;
+  color: var(--gold);
   background: transparent;
   transition: all 0.2s ease;
 }
@@ -351,7 +352,7 @@ a.tab-open .check-icon {
   margin-bottom:8px;
 }
 #dropdownContent .menu-user-btn:hover{
-  border-color:#ffe34d; color:#ffe34d;
+  border-color:var(--gold-hover); color:var(--gold-hover);
 }
 
 /* Muncul HANYA di mobile */
@@ -384,10 +385,10 @@ a.tab-open .check-icon {
   .cp-hint{font-size:12px;color:#aaa;margin-top:-4px;margin-bottom:8px}
   .cp-error{font-size:12px;color:#ff6b6b;display:none;margin:-2px 0 8px}
   .cp-ok{font-size:12px;color:#7CFC7C;display:none;margin:-2px 0 8px}
-  .btn-cpw{display:none;width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1;background-color:transparent;color:rgba(255,255,255,0.85);border:1px solid #424242;border-radius:6px;padding:0 12px;cursor:pointer;font-size:14px;transition:all .3s ease;box-shadow:0 2px 0 rgba(255,255,255,0.04);margin-bottom:8px;}
-  .btn-cpw:hover{border:1px solid #ffe34d; color:#ffe34d;}.btn-cpw:active{border:1px solid #dbb900; color:#dbb900;}
+  .btn-cpw{display:none;width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1;background: var(--backgroundbtn);color: var(--colorbtn);border: 1px solid var(--border2);border-radius:6px;padding:0 12px;cursor:pointer;font-size:14px;transition:all .3s ease;box-shadow:0 2px 0 rgba(255,255,255,0.04);margin-bottom:8px;}
+  .btn-cpw:hover{border:1px solid var(--gold-hover); color:var(--gold-hover);}.btn-cpw:active{border:1px solid var(--gold-active); color:var(--gold-active);}
   /* Empty state */
-#mainContainer { position: relative; }          /* container harus relative */
+#mainContainer { position: relative; }
 
 .empty-state{
   position: absolute; inset: 0;
@@ -395,8 +396,8 @@ a.tab-open .check-icon {
   align-items: center; justify-content: center;
   gap: 12px; text-align: center;
   color: rgba(255,255,255,.7);
-  pointer-events: none;                         /* biar tidak ganggu klik header/menu */
-  z-index: 10;                                   /* loader kamu (z-index 1000) tetap di atas */
+  pointer-events: none;         
+  z-index: 10; 
 }
 .empty-state .empty-title{ font-size: 16px; color: rgba(255,255,255,.85); }
 .empty-state .empty-icon{ opacity: .6 }
@@ -418,9 +419,9 @@ a.tab-open .check-icon {
   width: 100%;
   min-height: 32px;
   border-radius: 6px;
-  border: 1px solid var(--btn-border);
-  background: rgba(255,255,255,0.04);
-  color: var(--btn-text);
+  border: 1px solid var(--border2);
+  background: var(--backgroundbtn);
+  color: var(--colorbtn);
   display: flex;
   align-items: center;
   justify-content: space-between;
