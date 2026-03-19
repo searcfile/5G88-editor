@@ -508,6 +508,9 @@ if (pageFrame) {
     if (origin) {
       sendLoginToIframeReliable(pageFrame, 6, 200, origin);
       setTimeout(() => sendLoginToIframeReliable(pageFrame, 6, 250, origin), 800);
+
+      setTimeout(() => sendThemeToIframe(), 120);
+      setTimeout(() => sendThemeToIframe(), 500);
     }
   });
 }
@@ -1337,7 +1340,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   updateChangePwVisibility();
   if (!checkLogin()) return;
-
+  
+applyTheme(getSavedTheme(), false);
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleTheme();
+  });
+}
   const loginDataRaw = localStorage.getItem("gmailLogin");
   let sessionData = null;
 
