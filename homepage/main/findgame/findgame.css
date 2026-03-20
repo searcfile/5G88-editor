@@ -16,7 +16,7 @@
    --line-h:64px;                /* tinggi bar adjust line */
    --list-max: 520px;
    --safe-b: env(safe-area-inset-bottom, 0px);
-   --offset: 12px;
+   --offset: 0px;
   }
 
   body.light-theme{
@@ -117,7 +117,7 @@ body{
   user-select:none; white-space:nowrap; border:1px solid var(--border-input);
   background:transparent; color:var(--page-text);
   padding:8px 14px; border-radius:999px; cursor:pointer;
-  letter-spacing:.02em; transition:.2s; margin-top: 5px;transition: all 0.2s;
+  letter-spacing:.02em; transition:.2s; margin-top: 5px;transition: all 0.2s;background:var(--page-input);
 }
 .tag[aria-pressed="true"], .tag.active{
   color:var(--blue);
@@ -158,7 +158,6 @@ body{
 .list-hdr{
   flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;
   padding:6px 10px; color:var(--page-text); font-size:.9rem;
-  border-bottom:1px solid var(--border-input);
 }
 .count{font-variant-numeric:tabular-nums}
 
@@ -170,7 +169,7 @@ body{
 .game{
   display:grid; grid-template-columns:minmax(0,1fr) auto; /* minmax(0,1fr) supaya ellipsis jalan */
   align-items:center; gap:10px;
-  padding:12px 14px; margin:8px; cursor:pointer; transition:.18s;
+  padding:12px 14px; cursor:pointer; transition:.18s;
   background:var(--page-input); border:1px solid var(--border-input);
 }
 .game:hover{border-color:var(--blue-hover);}
