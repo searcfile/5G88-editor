@@ -1,5 +1,38 @@
-    body {
-      background:#000;
+    :root{
+    --page-bg: #000;
+    --page-text: rgba(255,255,255,0.85);
+    --page-input: #141414;
+    --border-input:#424242;
+    --page-bg2:#1f1f1f;
+    --name:#1668dc;
+    --blur:rgba(255,255,255,0.25);
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+
+   --hdr-h:0px;                 /* header fixed */
+   --flt-h:120px;                /* tinggi filters (diupdate JS) */
+   --line-h:64px;                /* tinggi bar adjust line */
+   --safe-b: env(safe-area-inset-bottom, 0px);
+   --offset: 0px;
+  }
+
+  body.light-theme{
+    --page-bg: #ffffff;
+    --page-text: rgba(0,0,0,0.88);
+    --page-input: #ffffff;
+    --border-input:#d9d9d9;
+    --page-bg2:#ffffff;
+    --name:#1668dc;
+    --blur:#00000063;
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+  }
+body {
+      background:var(--page-bg);
       color: white;
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -15,26 +48,10 @@
      html.body::-webkit-scrollbar {
       display: none;
     }
-    .header {
-      width: 100%;
-      height: 90px;
-      background: gold;
-      color: #000;
-      font-size: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      position: fixed;
-      top: 0;
-      z-index: 999;
-      margin-bottom: 10px;
-    }
-.header {display:none !important;}
     .filter-bar {
       position: sticky;
-      top: 90px;
-      background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%) !important;
+      top: 0;
+      background:var(--page-bg);
       z-index: 998;
       padding-top: 20px;
     }
@@ -54,12 +71,12 @@
     }
     .search-container input {
       padding: 10px;
-      font-size: 16px;
+      font-size: 14px;
       width: 500px;
-      border-radius: 5px;
-      border: 1px solid gold;
-      background-color: #000;
-      color: gold;
+      border-radius: 6px;
+      border: 1px solid var(--border-input);
+      background-color: var(--page-input);
+      color:var(--page-text);
       margin-top: 0;
     }
     .filter-tabs {
@@ -67,19 +84,22 @@
       margin-bottom: 10px;
     }
     .filter-tabs button {
-      background-color: #111;
-      color: gold;
-      border: 1px solid gold;
-      padding: 8px 16px;
+      background-color: var(--page-input);
+      color: var(--page-text);
+      border: 1px solid var(--border-input);
+      padding: 0px 15px;
       margin: 0 5px;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.3s ease;
     }
-    .filter-tabs button.active,
+    .filter-tabs button.active{
+     border: 1px solid var(--blue);
+     color:var(--blue);
+    }
     .filter-tabs button:hover {
-      background-color: gold;
-      color: #111;
+     border: 1px solid var(--blue-hover);
+     color:var(--blue-hover);
     }
     .logo-grid {
       display: grid;
@@ -98,7 +118,7 @@
     }
     .game-alias {
       font-weight: bold;
-      color: gold !important;
+      color: var(--page-text);
       margin-bottom: 1px !important;
       font-size: 12px !important;
     }
@@ -106,9 +126,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%) !important;
-      border: 2px solid gold;
-      border-radius: 10px;
+      background:var(--page-input);
+      border: 1px solid var(--border-input);
+      border-radius: 6px;
       padding: 17px;
       transition: transform 0.2s ease;
       position: relative;
@@ -123,14 +143,12 @@
       margin-bottom: 8px;
     }
     .game-logo span {
-      color: white;
+      color: var(--page-text);
       font-size: 14px;
       text-align: center;
     }
-    .game-logo:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 12px gold;
-      background-color: #1642bd1f;
+    .game-logo span,.game-logo:hover {
+      color: var(--blue);
     }
     .platform-filters {
       text-align: center;
@@ -139,13 +157,12 @@
       .copy-notice {
         position: absolute;
         bottom: -12px;
-        background-color: gold;
-        color: black;
+        background-color: #141414;
+        color: rgba(255,255,255,0.85);
         font-size: 12px;
         font-weight: bold;
         padding: 3px 6px;
         border-radius: 6px;
-        box-shadow: 0 0 5px #000;
         animation: fadeNotice 0.3s ease;
         z-index: 1;
        }
@@ -158,22 +175,20 @@
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: gold;
-  color: black;
+  background-color: var(--blue);
+  color: white;
   padding: 10px 15px;
   font-size: 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   display: none;
   z-index: 1000;
   transition: all 0.3s ease;
 }
 #backToTop:hover {
-  background-color: #ffe34d;
-  color: black;
+  background-color: va(--blue-hover);
 }
 #backToTop:active { 
-  background: #dbb900;
-  color: black;
+  background: var(--blue-active);
 }
