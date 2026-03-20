@@ -15,7 +15,7 @@
    --line-h:64px;                /* tinggi bar adjust line */
    --list-max: 520px;
    --safe-b: env(safe-area-inset-bottom, 0px);
-    
+   --offset: 12px;
   }
 
   body.light-theme{
@@ -127,10 +127,17 @@ body{
 .wrap{
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2px 16px;
-  --offset: 12px;
+  padding: 0 16px 16px;
   margin-top: calc(var(--flt-h) + var(--offset));
-  height: calc(100vh - var(--flt-h) - var(--offset));
+  height: calc(100vh - var(--flt-h) - var(--offset) - 16px);
+  min-height: 0;
+  color:var(--page-text);
+}
+.grid,
+.list,
+.detail,
+.scroll {
+  min-height: 0;
 }
 .grid{
   display:grid; grid-template-columns:1fr; gap:14px; height:100%;
@@ -197,7 +204,7 @@ body{
 .art img{width:100%;height:240px;object-fit:cover;border-radius:6px;border:1px solid var(--border-input);}
 .info{display:grid;gap:8px;padding:0 14px 14px 14px}
 .info .row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--page-input);border:1px solid var(--border-input);border-radius:6px}
-.k{color:var(--blue)}.v{color:var(--page-tex)}.ok{color:#5cff7a}.no{color:red}
+.k{color:var(--blue)}.v{color:var(--page-text)}.ok{color:#5cff7a}.no{color:red}
 .platforms{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px}
 .p{font-size:14px;font-weight:700;padding:2px 10px;border-radius:999px;color:#fff;border:1px solid rgba(255,255,255,.2);text-transform: uppercase;}
 .tag-918kiss{background:#605ca8}.tag-mega888{background:#ff851b}.tag-pussy888{background:#3c8dbc}
@@ -243,8 +250,8 @@ body{
   .filters-inner{padding:10px 12px 14px; gap:8px}
   .wrap{
     padding:12px;
-    margin-top:calc(var(--hdr-h) + var(--flt-h) + 4px);
-    height:calc(100vh - var(--hdr-h) - var(--flt-h) - 4px);
+    margin-top:calc(var(--flt-h) + 4px);
+    height:calc(100vh - var(--flt-h) - 4px);
   }
   .art img{height:auto; max-height:42vh}
 }
@@ -256,9 +263,9 @@ body{
   .detail{
     position: fixed;
     left: 0; right: 0;
-    top:    calc(var(--hdr-h) + var(--flt-h));
+    top: var(--flt-h);
     bottom: 0;
-    height: calc(100vh - var(--hdr-h) - var(--flt-h));
+    height: calc(100vh - var(--flt-h));
     max-height: none;
     border-top-left-radius: 18px;
     border-top-right-radius: 18px;
@@ -306,7 +313,7 @@ body{
 /* Tinggi konten utama */
 @supports (height: 100dvh) {
   .wrap{
-    height: calc(100dvh - var(--hdr-h) - var(--flt-h) - var(--offset));
+    height: calc(100dvh - var(--flt-h) - var(--offset) - 16px);
   }
 }
 
@@ -314,7 +321,45 @@ body{
 @media (max-width: 979px){
   @supports (height: 100dvh) {
     .detail{
-      height: calc(100dvh - var(--hdr-h) - var(--flt-h));
+      height: calc(100dvh - var(--flt-h));
     }
   }
+}
+/* ===== SCROLLBAR CUSTOM ===== */
+.scroll,
+.detail {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(255,255,255,0.25) transparent;
+}
+
+/* Chrome / Edge / Safari */
+.scroll::-webkit-scrollbar,
+.detail::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scroll::-webkit-scrollbar-track,
+.detail::-webkit-scrollbar-track {
+  background: transparent; /* track kosong */
+}
+
+.scroll::-webkit-scrollbar-thumb,
+.detail::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.25);
+  border-radius: 10px;
+  border: 2px solid transparent; /* bagi nampak slim */
+  background-clip: padding-box;
+  transition: all 0.2s ease;
+}
+
+/* hover effect */
+.scroll::-webkit-scrollbar-thumb:hover,
+.detail::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.4);
+}
+
+/* click effect */
+.scroll::-webkit-scrollbar-thumb:active,
+.detail::-webkit-scrollbar-thumb:active {
+  background: rgba(255,255,255,0.6);
 }
