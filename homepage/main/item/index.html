@@ -6,26 +6,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script>if (window.top === window.self) {window.location.replace("/main");}</script>
   <style>
-    :root{
-      --bg: #050816;
-      --bg-soft:#080f1f;
-      --card:#0b1220;
-      --accent:#facc15;    /* gold */
-      --accent-soft:#fbbf24;
-      --accent-2:#38bdf8;  /* biru */
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-    }
+      :root{
+    --page-bg: #000;
+    --page-text: rgba(255,255,255,0.85);
+    --page-input: #141414;
+    --border-input:#424242;
+    --page-bg2:#1f1f1f;
+    --name:#1668dc;
+    --blur:rgba(255,255,255,0.25);
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+  }
+
+  body.light-theme{
+    --page-bg: #ffffff;
+    --page-text: rgba(0,0,0,0.88);
+    --page-input: #ffffff;
+    --border-input:#d9d9d9;
+    --page-bg2:#ffffff;
+    --name:#1668dc;
+    --blur:#00000063;
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+  }
+
 
     *{ box-sizing:border-box; margin:0; padding:0; }
 
     body{
       min-height:100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top, #1f2937 0, transparent 55%),
-        radial-gradient(circle at bottom, #020617 0, #000 65%) !important;
-      color:var(--text);
+      background:var(--page-bg);
+      color:var(--page-text);
       display:flex;
       justify-content:center;
       align-items:flex-start;
@@ -35,25 +51,6 @@
     .wrapper{
       width:100%;
       max-width:1400px;
-    }
-
-    .title{
-      font-size:1.8rem;
-      font-weight:700;
-      letter-spacing:0.08em;
-      text-transform:uppercase;
-      text-align:center;
-      margin-bottom:18px;
-      background:linear-gradient(120deg,var(--accent),var(--accent-2));
-      -webkit-background-clip:text;
-      color:transparent;
-    }
-
-    .subtitle{
-      text-align:center;
-      color:var(--muted);
-      font-size:0.95rem;
-      margin-bottom:18px;
     }
 
     /* SEARCH */
@@ -73,12 +70,11 @@
       width:100%;
       padding:9px 40px 9px 38px;
       border-radius:999px;
-      border:1px solid rgba(148,163,184,0.6);
-      background:radial-gradient(circle at top,#020617,#020617 65%);
-      color:var(--text);
+      border:1px solid var(--border-input);
+      background:var(--page-input);
+      color:var(--page-text);
       font-size:0.9rem;
       outline:none;
-      box-shadow:0 6px 18px rgba(15,23,42,0.9); /* sedikit diringankan */
       transition:
         border-color 0.15s ease,
         box-shadow 0.15s ease,
@@ -87,15 +83,11 @@
     }
 
     .search-input::placeholder{
-      color:rgba(148,163,184,0.85);
+      color:var(--blur);
     }
 
     .search-input:focus{
-      border-color:var(--accent-soft);
-      box-shadow:
-        0 0 0 1px rgba(250,204,21,0.7),
-        0 8px 20px rgba(15,23,42,0.95);
-      background:radial-gradient(circle at top,#020617,#020617 75%);
+      border-color:var(--blue);
     }
 
     .search-icon{
@@ -114,7 +106,7 @@
     .search-svg{
       width:16px;
       height:16px;
-      fill:var(--muted);
+      fill:var(--blur);
       transition:fill 0.15s ease;
     }
 
@@ -132,7 +124,7 @@
       border-radius:999px;
       border:1px solid transparent;
       background:transparent;
-      color:var(--muted);
+      color:var(--page-text);
       font-size:0.78rem;
       cursor:pointer;
       display:flex;
@@ -154,15 +146,11 @@
     }
 
     .clear-btn:hover{
-      background:rgba(15,23,42,0.95);
-      border-color:rgba(248,250,252,0.4);
-      color:var(--accent-soft);
-      transform:translateY(-50%) scale(1.03);
+      color:var(--blue-hover);
     }
 
     .clear-btn:active{
-      transform:translateY(-50%) scale(0.96);
-      background:rgba(15,23,42,1);
+     color:var(--blue-active);
     }
 
     /* GRID */
@@ -176,9 +164,9 @@
     }
 
     .item-card{
-      background: linear-gradient(145deg,#111827,#020617); /* simpler, lebih ringan */
-      border-radius:14px;
-      border:1px solid rgba(148,163,184,0.32);
+      background:var(--page-bg2);
+      border-radius:6px;
+      border:1px solid var(--border-input);
       padding:12px 12px 14px;
       display:flex;
       flex-direction:column;
@@ -212,21 +200,8 @@
       transition:opacity 0.2s ease;
     }
 
-    .item-card:hover{
-      transform:translateY(-2px); /* sedikit saja */
-      box-shadow:0 10px 24px rgba(15,23,42,0.85);
-      border-color:rgba(250,204,21,0.55);
-    }
-
-    .item-card:hover::before{
-      opacity:1;
-    }
-
     .item-card.copied{
-      border-color:var(--accent);
-      box-shadow:
-        0 0 0 1px rgba(250,204,21,0.9),
-        0 0 18px rgba(250,204,21,0.5);
+      border-color:var(--border-input);
     }
 
     .item-card.copied .copy-btn{
@@ -423,11 +398,6 @@
 <body>
 
 <div class="wrapper">
-  <div class="title">Item Collection</div>
-  <div class="subtitle">
-    Click Button <b>Copy Image</b> For Save Image To Clipboard.
-  </div>
-
   <!-- SEARCH BAR -->
   <div class="search-wrapper">
     <div class="search-box" id="searchBox">
@@ -452,7 +422,7 @@
 </div>
 
 <div class="copy-toast" id="copyToast">
-  <span>✅ Image copied to clipboard</span>
+  <span>Image copied!</span>
 </div>
 
 <script>
@@ -588,7 +558,31 @@
       searchInput.focus();
     });
   });
-</script>
+(function () {
+  const THEME_KEY = "siteTheme";
 
+  function applyChildTheme(theme) {
+    document.body.classList.remove("light-theme", "dark-theme");
+    document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+  }
+
+  applyChildTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+
+  window.addEventListener("message", function (e) {
+    const allowedOrigins = [
+      "https://5g88-main.vercel.app",
+      "https://searcfile.github.io"
+    ];
+    if (!allowedOrigins.includes(e.origin)) return;
+
+    const data = e.data || {};
+    if (data.type === "theme-change") {
+      const theme = data.theme === "dark" ? "dark" : "light";
+      localStorage.setItem(THEME_KEY, theme);
+      applyChildTheme(theme);
+    }
+  });
+})();
+</script>
 </body>
 </html>
