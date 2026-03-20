@@ -822,17 +822,6 @@ function renderTabs() {
     tabElement.dataset.index = index;
     tabElement.dataset.label = tab.label;
     tabElement.dataset.url = normUrl(tab.url);
-
-    // Style
-    tabElement.style.padding = "6.5px 16px";
-    tabElement.style.marginRight = "0px";
-    tabElement.style.borderRadius = "8px 8px 0 0";
-    tabElement.style.display = "inline-flex";
-    tabElement.style.alignItems = "center";
-    tabElement.style.fontSize = "14px";
-    tabElement.style.userSelect = "none";
-    tabElement.style.cursor = "pointer";
-
     // Klik efek
     tabElement.addEventListener("mousedown", () => {
       tabElement.style.filter = "brightness(0.7)";
