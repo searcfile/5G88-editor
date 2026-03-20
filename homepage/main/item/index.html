@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>ITEM COLLECTION</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script>if (window.top === window.self) {window.location.replace("/main");}</script>
   <style>
       :root{
     --page-bg: #000;
@@ -45,7 +44,8 @@
       display:flex;
       justify-content:center;
       align-items:flex-start;
-      padding:30px 16px;
+      padding:0px 15px;
+      margin-top:10px;
     }
 
     .wrapper{
@@ -69,7 +69,7 @@
     .search-input{
       width:100%;
       padding:9px 40px 9px 38px;
-      border-radius:999px;
+      border-radius:6px;
       border:1px solid var(--border-input);
       background:var(--page-input);
       color:var(--page-text);
@@ -138,11 +138,6 @@
         border-color 0.12s ease,
         color 0.12s ease,
         transform 0.08s ease;
-    }
-
-    .search-box.has-value .clear-btn{
-      opacity:1;
-      pointer-events:auto;
     }
 
     .clear-btn:hover{
@@ -214,8 +209,8 @@
       border-radius:10px;
       overflow:hidden;
       position:relative;
-      background:#020617;
-      border:1px solid rgba(148,163,184,0.4);
+      background:var(--page-input);
+      border:1px solid var(--border-input);
       height:180px;
       width:100%;
       display:flex;
@@ -276,26 +271,20 @@
       margin-top:8px;
       border:none;
       outline:none;
-      padding:7px 10px;
-      border-radius:999px;
-      font-size:0.8rem;
-      font-weight:600;
+      padding:0px 15px;
+      border-radius:6px;
+      font-size:14px;
       letter-spacing:0.06em;
-      text-transform:uppercase;
       cursor:pointer;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:6px;
-      background:linear-gradient(135deg,#0f172a,#020617);
-      color:var(--text);
-      border:1px solid rgba(148,163,184,0.6);
-      box-shadow:0 3px 8px rgba(15,23,42,0.85); /* diringankan */
-      transition:
-        background 0.16s ease,
-        transform 0.08s ease,
-        box-shadow 0.16s ease,
-        border-color 0.16s ease;
+      background:var(--blue);
+      color:white;
+      border:1px solid transparent;
+      transition: all .2s ease:
+    
     }
 
     .copy-btn span.icon{
@@ -303,20 +292,18 @@
       align-items:center;
       justify-content:center;
       translate:0 0;
-      transition:translate 0.16s ease;
+      transition: all .2s ease:
     }
 
     .copy-btn .copy-icon-svg{
       width:16px;
       height:16px;
       fill:#38bdf8;
-      transition:fill 0.16s ease,
-              transform 0.16s ease;
+      transition: all .2s ease:
     }
 
     .copy-btn:hover .copy-icon-svg{
       fill:#0ea5e9;
-      transform:translateX(2px);
     }
 
     .item-card.copied .copy-icon-svg{
@@ -324,15 +311,11 @@
     }
 
     .copy-btn:hover{
-      background:linear-gradient(135deg,#1e293b,#020617);
-      border-color:var(--accent-soft);
-      box-shadow:0 5px 12px rgba(15,23,42,0.9);
+      background:var(--blue-hover);
     }
 
     .copy-btn:active{
-      transform:translateY(1px) scale(0.99);
-      box-shadow:0 2px 6px rgba(15,23,42,0.8);
-      background:linear-gradient(135deg,#020617,#020617);
+      background:var(--blue-active);
     }
 
     .copy-toast{
@@ -344,10 +327,9 @@
       border-radius:999px;
       background:rgba(15,23,42,0.95);
       border:1px solid rgba(250,204,21,0.75);
-      color:var(--accent);
-      font-size:0.78rem;
+      color:white;
+      font-size:14px;
       letter-spacing:0.08em;
-      text-transform:uppercase;
       display:flex;
       align-items:center;
       gap:8px;
@@ -424,7 +406,7 @@
 <div class="copy-toast" id="copyToast">
   <span>Image copied!</span>
 </div>
-
+<script>if (window.top === window.self) {window.location.replace("/main");}</script>
 <script>
   function showToast(){
     const toast = document.getElementById('copyToast');
