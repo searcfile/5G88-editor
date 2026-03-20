@@ -14,7 +14,6 @@
    --hdr-h:0px;                 /* header fixed */
    --flt-h:120px;                /* tinggi filters (diupdate JS) */
    --line-h:64px;                /* tinggi bar adjust line */
-   --list-max: 600px;
    --safe-b: env(safe-area-inset-bottom, 0px);
    --offset: 0px;
   }
@@ -158,8 +157,10 @@ body{
 .count{font-variant-numeric:tabular-nums}
 
 .scroll{
-  flex:1 1 auto; min-height:0; overflow:auto;
-  max-height: var(--list-max);             /* fallback ±10 items */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .game{
