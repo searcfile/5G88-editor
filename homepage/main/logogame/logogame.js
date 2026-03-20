@@ -1,6 +1,4 @@
-
-  console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
-    const games = [
+const games = [
       {alias: "LOTUS LEGEND",name: "LotusLegend",image: "https://i.imgur.com/6bWBB6Q.png",platform: ["mega888"],type: "slot"},
       {alias: "LUCKY NEKO",name: "LuckyNeko",image: "https://i.imgur.com/OjR3A5u.png",platform: ["mega888"],type: "slot"},
       {alias: "CASH VANDAL",name: "Cash Vandal",image: "https://i.imgur.com/edvmvSN.png",platform: ["mega888"],type: "slot"},
@@ -1158,6 +1156,31 @@ async function copyImageToClipboard(imageUrl, parentElement) {
       console.error("PostMessage fallback failed:", err);
     }
   }
+  (function () {
+  const THEME_KEY = "siteTheme";
+
+  function applyChildTheme(theme) {
+    document.body.classList.remove("light-theme", "dark-theme");
+    document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+  }
+
+  applyChildTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+
+  window.addEventListener("message", function (e) {
+    const allowedOrigins = [
+      "https://5g88-main.vercel.app",
+      "https://searcfile.github.io"
+    ];
+    if (!allowedOrigins.includes(e.origin)) return;
+
+    const data = e.data || {};
+    if (data.type === "theme-change") {
+      const theme = data.theme === "dark" ? "dark" : "light";
+      localStorage.setItem(THEME_KEY, theme);
+      applyChildTheme(theme);
+    }
+  });
+})();
 
   showNotice("❌ Failed to copy image", "error");
 }
