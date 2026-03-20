@@ -1156,7 +1156,10 @@ async function copyImageToClipboard(imageUrl, parentElement) {
       console.error("PostMessage fallback failed:", err);
     }
   }
-  (function () {
+
+  showNotice("❌ Failed to copy image", "error");
+}
+(function () {
   const THEME_KEY = "siteTheme";
 
   function applyChildTheme(theme) {
@@ -1181,6 +1184,3 @@ async function copyImageToClipboard(imageUrl, parentElement) {
     }
   });
 })();
-
-  showNotice("❌ Failed to copy image", "error");
-}
