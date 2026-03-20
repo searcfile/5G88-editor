@@ -74,17 +74,6 @@ body{
   .scroll::-webkit-scrollbar, .detail::-webkit-scrollbar{ width:8px; height:8px }
 }
 
-/* ======================
-   HEADER
-====================== */
-.header{
-  position:fixed; inset:0 0 auto 0; height:var(--hdr-h);
-  display:flex; align-items:center; justify-content:center; gap:.75rem;
-  background:linear-gradient(180deg,#1b1b1b 0%, #0a0a0a 100%);
-  border-bottom:1px solid rgba(255,215,0,.2); box-shadow:0 8px 20px rgba(0,0,0,.35);
-  z-index:1000;
-}
-.header {display:none !important;}
 .brand{display:flex;align-items:center;gap:.6rem}
 .brand img{width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(255,215,0,.45))}
 .title{
@@ -98,8 +87,7 @@ body{
 ====================== */
 .filters{
   position:fixed; top:0; left:0; right:0; z-index:960;
-  background:rgba(0,0,0,.85); backdrop-filter:blur(6px);
-  border-bottom:1px solid rgba(255,215,0,.12);
+  background:var(--page-bg); backdrop-filter:blur(6px);
 }
 .filters-inner{
   max-width:1100px; margin:0 auto; padding:14px 16px 10px;
@@ -123,7 +111,7 @@ body{
 .tags{display:flex;gap:10px;overflow:auto;padding-bottom:4px;scrollbar-width:none}
 .tags::-webkit-scrollbar{display:none}
 .tag{
-  user-select:none; white-space:nowrap; border:1px solid rgba(255,215,0,.5);
+  user-select:none; white-space:nowrap; border:1px solid var(--border-input);
   background:transparent; color:var(--page-text);
   padding:8px 14px; border-radius:999px; cursor:pointer;
   letter-spacing:.02em; transition:.2s; margin-top: 5px;transition: all 0.2s;
@@ -132,7 +120,6 @@ body{
   color:var(--blue);
   border-color:var(--blue);
 }
-.tag:hover{color:var(--blue-hover);border-color:var(--blue-hover);}
 /* ======================
    CONTENT WRAP (di bawah filter)
 ====================== */
@@ -154,14 +141,14 @@ body{
 ====================== */
 .list{
   min-height:0; height:100%;display:flex; flex-direction:column;
-  border:1px solid rgba(255,215,0,.15); border-radius:var(--radius);
-  background:linear-gradient(180deg,#0c0c0c,#111);
+  border:1px solid var(--border-input); border-radius:6px;
+  background:var(--page-bg2);
   padding:10px; overflow:hidden; /* penting: list tidak keluar box */
 }
 .list-hdr{
   flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;
-  padding:6px 10px; color:var(--muted); font-size:.9rem;
-  border-bottom:1px solid rgba(255,215,0,.12);
+  padding:6px 10px; color:var(--page-text); font-size:.9rem;
+  border-bottom:1px solid var(--border-input);
 }
 .count{font-variant-numeric:tabular-nums}
 
@@ -185,7 +172,7 @@ body{
 }
 .g-pill{
   font-size:.72rem; white-space:nowrap; padding:4px 8px; border-radius:999px;
-  border:1px solid var(--blue); background:transparent;
+  border:1px solid var(--blue); background:transparent;color:var(--page-text);
 }
 .empty{padding:18px;color:rgba(255,255,255,0.25);text-align:center}
 
@@ -243,13 +230,13 @@ body{
   box-shadow: none;          /* tidak perlu bayangan bar */
 }
 .btn{
-  border:1px solid rgba(255,215,0,.45);
-  background:linear-gradient(180deg,var(--gold),var(--gold-3));
-  color:#000; border-radius:6px; cursor:pointer;
+  border:1px solid transparent;
+  background:var(--blue);
+  color:white; border-radius:6px; cursor:pointer;
   padding:3px 12px; transition:.15s;
 }
-.btn:hover{filter:brightness(.96)}
-
+.btn:hover{background:var(--blue-hover);}
+.btn:active{background:var(--blue-active);}
 /* ======================
    MOBILE BEHAVIOR
 ====================== */
