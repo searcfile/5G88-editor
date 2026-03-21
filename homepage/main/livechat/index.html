@@ -22,17 +22,6 @@ body {
 }
 html, body { -ms-overflow-style: none; scrollbar-width: none; }
 html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
-
-  header {
-    background-color: #1668dc;
-    padding: 0px 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--bg-color);
-    height: 90px;
-  }
-  .header {display:none !important;}
   h1 {
     color: white;
     margin: 0;
@@ -434,15 +423,6 @@ mark.__hit{ background:#ffe58a; padding:0 2px; border-radius:3px; }
 .chat-wrapper{ position: relative; }   /* supaya absolute nempel ke wrapper */ 
 </style>
 <body>
-  <!-- Header Atas -->
- <header>
-  <div style="display: flex; align-items: center; gap: 10px;">
-    <h1>USER LIVECHAT</h1>
-    <div id="notifDot" style="width: 12px; height: 12px; background: red; border-radius: 50%; display: none;"></div>
-  </div>
-</header>
-
-
 <main>
   <div class="chat-wrapper">
     <!-- CHAT HEADER -->
@@ -488,6 +468,7 @@ mark.__hit{ background:#ffe58a; padding:0 2px; border-radius:3px; }
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script>if (window.top === window.self) {window.location.replace("/main");}</script>
 <script>
 const IS_EMBEDDED = window.top !== window.self;
 function escapeHTML(s){
@@ -1177,6 +1158,31 @@ if (window.ResizeObserver && sendBoxEl) {
   }
   updateUserHeader();
 });
+(function () {
+  const THEME_KEY = "siteTheme";
+
+  function applyChildTheme(theme) {
+    document.body.classList.remove("light-theme", "dark-theme");
+    document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+  }
+
+  applyChildTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+
+  window.addEventListener("message", function (e) {
+    const allowedOrigins = [
+      "https://5g88-main.vercel.app",
+      "https://searcfile.github.io"
+    ];
+    if (!allowedOrigins.includes(e.origin)) return;
+
+    const data = e.data || {};
+    if (data.type === "theme-change") {
+      const theme = data.theme === "dark" ? "dark" : "light";
+      localStorage.setItem(THEME_KEY, theme);
+      applyChildTheme(theme);
+    }
+  });
+})();
 </script>
 </body>
 </html>
