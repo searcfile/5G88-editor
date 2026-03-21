@@ -55,7 +55,7 @@ body.light-theme{
   --border3:#f0f0f0;
   --tab2:#ffffff;
   --border-bottom:#ffffff;
-  --close:rgba(255,255,255,0.45);
+  --close:rgba(0, 0, 0, 0.88);
 
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #d4dbe6;
@@ -294,7 +294,7 @@ body.light-theme{
   flex-shrink: 0;
   line-height: 1.2;
 }
-  .tab .close-tab{
+.tab .close-tab{
   background: transparent;
   color: var(--close);
   border: none;
@@ -310,6 +310,7 @@ body.light-theme{
   transition: color .3s ease, transform .2s ease;
     margin-left: 4px;
     pointer-events: auto;
+  font-size:12px;
 }
 .tab .close-tab svg{
   width: 1em;
@@ -318,14 +319,14 @@ body.light-theme{
   fill: currentColor;
 }
 .tab .close-tab:hover{
-  color:var(--text-main)
+  color:var(--text-main)!important
 }
 .tab .close-tab:active{
-  color:var(--gold-active)
+  color:var(--gold-active)!important
 }
-  .close-tab:hover {font-weight:bold;}
-  .tab:hover {color: var(--gold-hover);transition: all 0.3s ease;}
- .active-tab {
+
+.tab:hover {color: var(--gold-hover)!important;transition: all 0.3s ease;}
+.active-tab {
   color: var(--gold) !important;background:var(--tab2);
   transition: all 0.3s ease;border-bottom: 1px solid var(--border-bottom);
 }
@@ -556,7 +557,7 @@ a.tab-open .check-icon {
   .user-button:active{
     background: transparent !important;
     border: none !important;
-    color: var(--gold-active);
+    color: var(--gold-active);}
 .menu-user-btn:hover{color:var(--gold-hover);border:1px solid var(--gold-hover);}
 .menu-user-btn:active{color:var(--gold-active);border:1px solid var(--gold-active);}
   }
