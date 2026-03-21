@@ -173,13 +173,13 @@ body.light-theme{
 }
 
 .sidebar-inner::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #3c89e8, #1668dc);
+  background: linear-gradient(180deg,  rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.85));
 }
 
 /* Firefox */
 .sidebar-inner {
   scrollbar-width: thin;
-  scrollbar-color: #1668dc rgba(255,255,255,0.04);
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
 }
   .sidebar h2 {color: rgba(255,255,255,0.85);margin-bottom: 15px;border:1px solid #424242;border-radius:6px;text-align:center;font-size: 20px;}.sidebar h2{display:none !important;}
   .sidebar a {display: block;margin: 10px 0;color: rgba(255,255,255,0.65);text-decoration: none;font-size: 14px;font-weight: bold;border-radius: 6px;transition: all 0.2s;padding: 4px 8px;gap: 5px;white-space: nowrap;border-bottom: 1px solid #424242;}
@@ -335,8 +335,12 @@ body.light-theme{
 .tab .close-tab:active{
   color:var(--gold-active)!important
 }
-
-.tab:hover {color: var(--gold-hover)!important;transition: all 0.3s ease;}
+.tab:not(.active-tab):active {
+  color: var(--gold-active) !important;
+}
+.tab:not(.active-tab):hover {
+  color: var(--gold-hover) !important;
+}
 .active-tab {
   color: var(--gold) !important;background:var(--tab2);
   transition: all 0.3s ease;border-bottom: 1px solid var(--border-bottom);z-index: 3;
