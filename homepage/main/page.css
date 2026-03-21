@@ -296,7 +296,7 @@ body.light-theme{
   .tab .close-tab {background: rgba(255,255,255,0.04);z-index:999999999;color: gold;border: none;font-size: 20px !important;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: transform .2s, color .2s !important;}.close-tab:hover {font-weight:bold;}
   .tab:hover {color: var(--gold-hover);transition: all 0.3s ease;}
  .active-tab {
-  color: var(--gold) !important;background:var(--tab2)
+  color: var(--gold) !important;background:var(--tab2);
   transition: all 0.3s ease;border-bottom-color: 1px solid var(--border-bottom);
 }
   .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
@@ -350,7 +350,7 @@ body.light-theme{
   position: relative;
   height: 100%;
   line-height: 1;
-  padding: 0;
+  padding: 0 15px;
 }
 .live-chat-button:hover {color: #ffffff;background: transparent;transition: color 0.3s!important;}
 .live-chat-button.active-livechat,
@@ -493,6 +493,7 @@ a.tab-open .check-icon {
   #dropdownContent .menu-user-btn{ display:flex !important;background:var(--backgroundbtn);color:var(--colorbtn);border:1px solid var(--border2); }
   .header{ height:64px; }
   .tab-bar{ margin-top:64px; }
+  #itemBtn{display:none !important;}
 
   .user-button{
     background: transparent !important;
@@ -588,15 +589,16 @@ a.tab-open .check-icon {
   display: block;
   width: 16px;
   height: 16px;
-  fill: currentColor;
+  fill: rgba(255,255,255,0.65)!important;
+  transition: all 0.3s ease;
 }
 
 #notifButton:hover{
-  color: rgba(255,255,255,0.85);
+  color:white;
 }
 
 #notifButton:active{
-  color: #8d8d8d;
+  color: white;
 }
 #notifDot{
   position: absolute;
