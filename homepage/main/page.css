@@ -261,7 +261,7 @@ body.light-theme{
   display: flex;
   align-items: flex-end;
   gap: 0;
-  z-index: 1000;
+  z-index: 1;
   justify-content: flex-start;
   white-space: nowrap;
   margin-top: 64px;
@@ -271,8 +271,17 @@ body.light-theme{
   scrollbar-width: none;
   scroll-behavior: smooth;
   box-sizing: border-box;
-  border-bottom: 1px solid var(--border2);
   padding: 0px 2px;
+}
+.tab-bar::after{
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--border2);
+  z-index: 1; /* 🔥 belakang tab */
 }
   .tab-bar::-webkit-scrollbar {display: none;}
 .tab {
@@ -293,6 +302,8 @@ body.light-theme{
   box-sizing: border-box;
   flex-shrink: 0;
   line-height: 1.2;
+  z-index: 2;
+  margin-bottom: -1px;
 }
 .tab .close-tab{
   background: transparent;
