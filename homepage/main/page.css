@@ -11,6 +11,9 @@
   --border2:#424242;
   --panel-border: #424242;
   --blur:rgba(255,255,255,0.25);
+  --border3:#303030;
+  --tab2:#141414;
+  --border-bottom:#141414;
 
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #303030;
@@ -31,6 +34,7 @@
 
   --toggle-track: #2c7be5;
   --toggle-knob: #ffffff;
+  --btnfocus:#15325b;
 }
 
 /* default light theme */
@@ -47,8 +51,11 @@ body.light-theme{
   --border2:#d9d9d9;
   --panel-border: #d4dbe6;
   --blur:#00000063;
+  --border3:#f0f0f0;
+  --tab2:#ffffff;
+  --border-bottom:#ffffff;
 
-  --tab-bg: rgba(255,255,255,0.90);
+  --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #d4dbe6;
 
   --btn-bg: transparent;
@@ -67,6 +74,7 @@ body.light-theme{
 
   --toggle-track: #cfd8e3;
   --toggle-knob: #ffffff;
+  --btnfocus:#91caff;
 }
 /* ❄️ SNOW EFFECT – MERRY CHRISTMAS ❄️ */
 .snow-layer {
@@ -273,9 +281,8 @@ body.light-theme{
   border-radius: 8px 8px 0 0;
   gap: 2px;
   white-space: nowrap;
-  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
   transition: all 0.3s ease;
-  border: 1px solid var(--tab-border);
+  border: 1px solid var(--border3);
   display: inline-flex;
   font-size: 14px;
   align-items: center;
@@ -289,8 +296,8 @@ body.light-theme{
   .tab .close-tab {background: rgba(255,255,255,0.04);z-index:999999999;color: gold;border: none;font-size: 20px !important;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: transform .2s, color .2s !important;}.close-tab:hover {font-weight:bold;}
   .tab:hover {color: var(--gold-hover);transition: all 0.3s ease;}
  .active-tab {
-  color: var(--gold) !important;
-  transition: all 0.3s ease;
+  color: var(--gold) !important;background:var(--tab2)
+  transition: all 0.3s ease;border-bottom-color: 1px solid var(--border-bottom);
 }
   .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
   .header.shrink {
