@@ -572,13 +572,6 @@ const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const container = document.getElementById("mainContainer");
 
-if (tabBar) {
-  tabBar.style.display = "flex";
-  tabBar.style.alignItems = "center";
-  tabBar.style.padding = "10px 2px";
-}
-
-
 menuIcon.addEventListener("click", (e) => {
   e.stopPropagation();
   if (sidebar.classList.contains("active")) {
