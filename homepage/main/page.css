@@ -272,18 +272,20 @@ body.light-theme{
   border-radius: 8px 8px 0 0;
   gap: 2px;
   white-space: nowrap;
-  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
   transition: all 0.3s ease;
   border: 1px solid var(--tab-border);
+  border-bottom: none; /* 🔥 buang bawah */
   display: inline-flex;
   font-size: 14px;
   align-items: center;
   user-select: none;
   cursor: pointer;
-  filter: none;
   box-sizing: border-box;
   flex-shrink: 0;
   line-height: 1.2;
+
+  margin-bottom: -1px; /* 🔥 tarik ke bawah */
+  box-shadow: none; /* 🔥 buang floating effect */
 }
   .tab .close-tab {background: rgba(255,255,255,0.04);z-index:999999999;color: gold;border: none;font-size: 20px !important;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: transform .2s, color .2s !important;}.close-tab:hover {font-weight:bold;}
   .tab:hover {color: var(--gold-hover);transition: all 0.3s ease;}
