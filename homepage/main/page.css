@@ -14,6 +14,7 @@
   --border3:#303030;
   --tab2:#141414;
   --border-bottom:#141414;
+  --close:rgba(255,255,255,0.45);
 
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #303030;
@@ -41,7 +42,7 @@
 body.light-theme{
   --bg-main: #fff;
   --sidebar: #001529;
-  --text-main: #111827;
+  --text-main: #000;
   --text-soft: rgba(17,24,39,0.88);
   --text-dim: rgba(17,24,39,0.72);
   --colorbtn:rgba(0, 0, 0, 0.88);
@@ -54,6 +55,7 @@ body.light-theme{
   --border3:#f0f0f0;
   --tab2:#ffffff;
   --border-bottom:#ffffff;
+  --close:rgba(255,255,255,0.45);
 
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #d4dbe6;
@@ -107,7 +109,7 @@ body.light-theme{
   * {margin: 0;padding: 0;box-sizing: border-box;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';}
   body {
   background-color: var(--bg-main);
-  color: var(--text-main);
+  color: var(--colorbtn);
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
@@ -201,7 +203,6 @@ body.light-theme{
 .header-links{
   display: flex;
   align-items: center;
-  gap: 20px;
   height: 100%;
   padding-inline: 16px;
 }
@@ -293,11 +294,40 @@ body.light-theme{
   flex-shrink: 0;
   line-height: 1.2;
 }
-  .tab .close-tab {background: rgba(255,255,255,0.04);z-index:999999999;color: gold;border: none;font-size: 20px !important;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: transform .2s, color .2s !important;}.close-tab:hover {font-weight:bold;}
+  .tab .close-tab{
+  background: transparent;
+  color: var(--close);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .3s ease, transform .2s ease;
+    margin-left: 4px;
+    pointer-events: auto;
+}
+.tab .close-tab svg{
+  width: 1rem;
+  height: 1rem;
+  display: block;
+  fill: currentColor;
+}
+.tab .close-tab:hover{
+  color:var(--text-main)
+}
+.tab .close-tab:active{
+  color:var(--gold-active)
+}
+  .close-tab:hover {font-weight:bold;}
   .tab:hover {color: var(--gold-hover);transition: all 0.3s ease;}
  .active-tab {
   color: var(--gold) !important;background:var(--tab2);
-  transition: all 0.3s ease;border-bottom-color: 1px solid var(--border-bottom);
+  transition: all 0.3s ease;border-bottom: 1px solid var(--border-bottom);
 }
   .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
   .header.shrink {
@@ -511,8 +541,8 @@ a.tab-open .check-icon {
   }
 
   .user-button svg{
-    width: 16px;
-    height: 16px;
+    width: 1.2rem;
+    height: 1.2rem;
     display: block;
     fill: currentColor;
   }
@@ -527,10 +557,10 @@ a.tab-open .check-icon {
     background: transparent !important;
     border: none !important;
     color: var(--gold-active);
-  }
-}
 .menu-user-btn:hover{color:var(--gold-hover);border:1px solid var(--gold-hover);}
 .menu-user-btn:active{color:var(--gold-active);border:1px solid var(--gold-active);}
+  }
+}
   .dragging {opacity: 0.5;transform: scale(1.05);z-index: 999;}
   #cpModal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:10050}
   #cpDialog{width:min(650px,92vw);background:var(--backgroundbtn);border:1px solid var(--border2);border-radius:6px;;overflow:hidden;transition: all 0.3s ease;animation: zoomIn .25s ease forwards;}
@@ -587,8 +617,8 @@ a.tab-open .check-icon {
 
 #notifButton svg{
   display: block;
-  width: 16px;
-  height: 16px;
+  width: 1.2rem;
+  height: 1.2rem;
   fill: rgba(255,255,255,0.65)!important;
   transition: all 0.3s ease;
 }
