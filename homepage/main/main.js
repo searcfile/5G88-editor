@@ -848,10 +848,12 @@ tabElement.onclick = (e) => {
 
       applyActiveTabFromStorage(); // ✅ update highlight
     };
-
-    const title = document.createElement("span");
-    title.textContent = tab.label;
-    title.style.pointerEvents = "none";
+    
+const title = document.createElement("span");
+title.textContent = String(tab.label || "")
+  .toLowerCase()
+  .replace(/\b\w/g, c => c.toUpperCase());
+title.style.pointerEvents = "none";
 
     const closeBtn = document.createElement("button");
     closeBtn.className = "close-tab";
