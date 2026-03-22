@@ -785,15 +785,41 @@ document.getElementById("username")?.addEventListener("blur", () => {
 });
 
   // ====== Notifikasi dari iframe -> tampilkan dot merah ======
-  window.addEventListener("message", (e) => {
-    if (e.origin !== LC_ORIGIN) return;
-    const data = e.data || {};
-    if (data.action === "show-livechat-notif") {
-      lcDot.style.display = "inline-block";
-    } else if (data.action === "hide-livechat-notif") {
-      lcDot.style.display = "none";
+const livechatSound = document.getElementById("livechatSound");
+let lastSoundTime = 0;
+
+window.addEventListener("message", (e) => {
+  if (e.origin !== LC_ORIGIN) return;
+  const data = e.data || {};
+
+if (data.action === "show-livechat-notif") {
+  if (lcDot) lcDot.style.display = "inline-block";
+
+  // 🔊 bunyi notif
+  const now = Date.now();
+  if (livechatSound && now - lastSoundTime > 1500) {
+    livechatSound.currentTime = 0;
+    livechatSound.play().catch((err) => {
+      console.log("Autoplay sound blocked:", err);
+    });
+    lastSoundTime = now;
+  }
+
+  return;
+}
+
+  if (data.action === "hide-livechat-notif") {
+    const isManualOpen =
+      lcPinnedOpen === true &&
+      lcPanel &&
+      lcPanel.classList.contains("active");
+
+    if (isManualOpen) {
+      if (lcDot) lcDot.style.display = "none";
     }
-  });
+    return;
+  }
+});
 // ✅ LOGIN PAGE GUARD (letak paling bawah sekali)
 (function loginPageGuard(){
   const path = location.pathname;
