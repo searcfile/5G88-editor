@@ -604,8 +604,6 @@ async function openLiveChat() {
   } else {
     postIdentityToChat();
   }
-
-  if (lcDot) lcDot.style.display = "none";
 }
 
 function closeLiveChat() {
@@ -720,6 +718,8 @@ lcToggle?.addEventListener("click", async (e) => {
   } else {
     lcPinnedOpen = true;
     await openLiveChat();
+
+    if (lcDot) lcDot.style.display = "none";
   }
 });
 function isDesktopHover() {
