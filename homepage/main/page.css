@@ -195,7 +195,7 @@ body.light-theme{
   background: #001529;
   display: flex;
   align-items: center;
-  padding: 0;
+  padding: 0 12px 0 0;
   top: 0;
   left: 0;
   transition: background .25s ease, color .25s ease;
@@ -205,10 +205,34 @@ body.light-theme{
   align-items: center;
   height: 100%;
   padding-inline: 16px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.header-right-meta{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
 }
   .header img {position: absolute;max-height: 40px;top: 5px;}
-  .user-info {position: absolute;right: 5px;top: 50%;transform: translateY(-50%);display: flex;align-items: center;gap: 10px;white-space: nowrap;flex-wrap: nowrap;transition: 0.3s;}
-  .user-text {gap: 10px;display: flex;align-items: center;}
+  .user-info {
+  position: static;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  transition: 0.3s;
+  height: 100%;
+}
+.user-text {
+  gap: 10px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
   .user-details {display: flex;flex-direction: column;align-items: flex-end;}
   .date-time {color: white;font-size: 14px;white-space: nowrap;transition: color 0.3s;}
 .container {
@@ -359,8 +383,32 @@ body.light-theme{
   #logoutBtn {display: flex;align-items: center;justify-content: center;height:32px;line-height: 1;gap: 8px;background: var(--backgroundbtn);color: var(--colorbtn);padding: 5px 10px;border-radius: 6px;cursor: pointer;width: 100%;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid var(--border2);font-size: 14px;}#logoutBtn:hover {color: var(--gold-hover);transition: all 0.3s ease;border: 1px solid var(--gold-hover);}#logoutBtn:active {color: var(--gold-active);transition: all 0.3s ease;border: 1px solid var(--gold-active);}
   #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
   #notifButton:hover #notifTooltip {display: block !important;opacity: 1;z-index: 10000;}
- .user-dropdown {position: relative;display: inline-block;}
- .user-button {display: flex;align-items: center;justify-content: center;line-height: 1;gap: 8px;background: var(--backgroundbtn);color:var(--colorbtn);border:1px solid var(--border2);border-radius: 6px;padding: 0px 15px;font-size: 14px;cursor: pointer;white-space: nowrap;height: 32px;transition: all 0.3s ease;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);margin-right: 20px;}
+ .user-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.user-dropdown:hover .dropdown-content {opacity: 1;visibility: visible;display: block;}
+.user-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  gap: 8px;
+  background: var(--backgroundbtn);
+  color: var(--colorbtn);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 0px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  height: 32px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
+  margin-right: 0;
+}
  .user-button:hover {border:1px solid var(--gold-hover);color: var(--gold-hover);}.user-button:active {border: 1px solid var(--gold-active);color: var(--gold-active);}
 
  .dropdown-content {
@@ -382,7 +430,6 @@ body.light-theme{
   transition: all 0.2s ease !important;
 }
 .dropdown-content {opacity: 0;visibility: hidden;transition: opacity 0.3s ease, visibility 0.3s ease;}
-.user-dropdown:hover .dropdown-content {opacity: 1;visibility: visible;display: block;}
 .live-chat-button {
   color: rgba(255,255,255,0.65);
   border: none;
