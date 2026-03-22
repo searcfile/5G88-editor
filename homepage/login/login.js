@@ -551,28 +551,69 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('eyeBtn')?.addEventListener('click', togglePassword);
 });
   // ====== CONFIG ======
-  const LC_URL = "https://searcfile.github.io/5g88-php/userlivechatphp/";   // URL app livechat kamu
+  const LC_ICON_OPEN = "M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z";
+  const LC_ICON_CLOSE = "M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06.08a.12.12 0 010 .06c0 .03-.02.05-.06.09L569.93 512l287.7 287.7c.04.04.05.06.06.09a.12.12 0 010 .07c0 .02-.02.04-.06.08l-57.7 57.69c-.03.04-.05.05-.07.06a.12.12 0 01-.07 0c-.03 0-.05-.02-.09-.06L512 569.93l-287.7 287.7c-.04.04-.06.05-.09.06a.12.12 0 01-.07 0c-.02 0-.04-.02-.08-.06l-57.69-57.7c-.04-.03-.05-.05-.06-.07a.12.12 0 010-.07c0-.03.02-.05.06-.09L454.07 512l-287.7-287.7c-.04-.04-.05-.06-.06-.09a.12.12 0 010-.07c0-.02.02-.04.06-.08l57.7-57.69c.03-.04.05-.05.07-.06a.12.12 0 01.07 0c.03 0 .05.02.09.06L512 454.07l287.7-287.7c.04-.04.06-.05.09-.06a.12.12 0 01.07 0z";
+  const LC_URL = "https://5g88-main.vercel.app/main/livechat";   // URL app livechat kamu
   const LC_ORIGIN = new URL(LC_URL).origin;
 
   // ====== Elemen ======
-  const lcToggle = document.getElementById("lcToggle");
-  const lcPanel  = document.getElementById("lcPanel");
-  const lcFrame  = document.getElementById("lcFrame");
-  const lcDot    = document.getElementById("lcDot");
-  // ===== Util: buka LiveChat floating dengan aman =====
-function openLiveChat(){
-  if (!lcPanel || !lcToggle) return;
-  const isOpen = lcPanel.classList.contains("active");
-  if (!isOpen){
-    // trigger alur yang sudah ada (ensureGuestAuth, postMessage, dll)
-    lcToggle.click();
+const lcWrap   = document.getElementById("lcWrap");
+const lcToggle = document.getElementById("lcToggle");
+const lcPanel  = document.getElementById("lcPanel");
+const lcFrame  = document.getElementById("lcFrame");
+const lcDot    = document.getElementById("lcDot");
+const lcIcon   = document.getElementById("lcIcon");
+const lcIconPath = document.getElementById("lcIconPath");
+let lcLoaded = false;
+let lcPinnedOpen = false;     // buka sebab klik
+let lcHovering = false;       // mouse sedang atas button/panel
+let lcCloseTimer = null;
+
+function updateLiveChatButton(isOpen){
+  if (!lcToggle || !lcIcon || !lcIconPath) return;
+
+  if (isOpen){
+    lcIcon.setAttribute("viewBox", "0 0 1024 1024");
+    lcIconPath.setAttribute("d", LC_ICON_CLOSE);
+    lcToggle.setAttribute("aria-label", "Close live chat");
+    lcToggle.setAttribute("aria-expanded", "true");
+  } else {
+    lcIcon.setAttribute("viewBox", "0 0 24 24");
+    lcIconPath.setAttribute("d", LC_ICON_OPEN);
+    lcToggle.setAttribute("aria-label", "Open live chat");
+    lcToggle.setAttribute("aria-expanded", "false");
   }
 }
-function closeLiveChat(){
+async function openLiveChat() {
   if (!lcPanel || !lcToggle) return;
-  if (lcPanel.classList.contains("active")){
-    lcToggle.click(); // gunakan toggle sedia ada untuk close
+
+  lcPanel.classList.add("active");
+  lcPanel.setAttribute("aria-hidden", "false");
+  updateLiveChatButton(true);
+
+  await ensureGuestAuth();
+
+  if (!lcLoaded) {
+    lcFrame.src = LC_URL;
+    lcFrame.addEventListener("load", async () => {
+      lcLoaded = true;
+      await ensureGuestAuth();
+      postIdentityToChat();
+      setTimeout(postIdentityToChat, 300);
+    }, { once: true });
+  } else {
+    postIdentityToChat();
   }
+
+  if (lcDot) lcDot.style.display = "none";
+}
+
+function closeLiveChat() {
+  if (!lcPanel || !lcToggle) return;
+
+  lcPanel.classList.remove("active");
+  lcPanel.setAttribute("aria-hidden", "true");
+  updateLiveChatButton(false);
 }
 
 // ===== CREATE ACCOUNT POPUP =====
@@ -622,7 +663,7 @@ createNow?.addEventListener('click', () => {
     postIdentityToChat();
   }
 });
-  let lcLoaded = false;
+
 
 function getPrechatUser(){
   // 1) Sudah login normal (bukan anonymous)
@@ -668,32 +709,75 @@ function getPrechatUser(){
     lcFrame.contentWindow.postMessage({ type: "user-login", user: u }, LC_ORIGIN);
   }
 
-lcToggle?.addEventListener("click", async () => {
-  const open = !lcPanel.classList.contains("active");
-  if (open){
-    lcPanel.classList.add("active");
-    lcPanel.setAttribute("aria-hidden","false");
+lcToggle?.addEventListener("click", async (e) => {
+  e.stopPropagation();
 
-    // PANGGIL DI SINI SAJA
-    await ensureGuestAuth();
+  const isOpen = lcPanel.classList.contains("active");
 
-    if (!lcLoaded){
-      lcFrame.src = LC_URL;
-      lcFrame.addEventListener("load", async () => {
-        lcLoaded = true;
-        await ensureGuestAuth();  
-        postIdentityToChat();            
-        setTimeout(postIdentityToChat, 300);
-      }, { once:true });
-    } else {
-      postIdentityToChat();
-    }
-    lcDot.style.display = "none";
+  if (isOpen && lcPinnedOpen) {
+    lcPinnedOpen = false;
+    closeLiveChat();
   } else {
-    lcPanel.classList.remove("active");
-    lcPanel.setAttribute("aria-hidden","true");
+    lcPinnedOpen = true;
+    await openLiveChat();
   }
 });
+function isDesktopHover() {
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
+
+function scheduleCloseLiveChat() {
+  clearTimeout(lcCloseTimer);
+
+  lcCloseTimer = setTimeout(() => {
+    if (!lcPinnedOpen && !lcHovering) {
+      closeLiveChat();
+    }
+  }, 180);
+}
+lcToggle?.addEventListener("mouseenter", async () => {
+  if (!isDesktopHover()) return;
+
+  lcHovering = true;
+  clearTimeout(lcCloseTimer);
+
+  if (!lcPinnedOpen) {
+    await openLiveChat();
+  }
+});
+
+lcToggle?.addEventListener("mouseleave", () => {
+  if (!isDesktopHover()) return;
+
+  lcHovering = false;
+  scheduleCloseLiveChat();
+});
+
+lcPanel?.addEventListener("mouseenter", () => {
+  if (!isDesktopHover()) return;
+
+  lcHovering = true;
+  clearTimeout(lcCloseTimer);
+});
+
+lcPanel?.addEventListener("mouseleave", () => {
+  if (!isDesktopHover()) return;
+
+  lcHovering = false;
+  scheduleCloseLiveChat();
+});
+document.addEventListener("click", (e) => {
+  const target = e.target;
+
+  if (!lcWrap) return;
+
+  if (!lcWrap.contains(target)) {
+    lcPinnedOpen = false;
+    lcHovering = false;
+    closeLiveChat();
+  }
+});
+updateLiveChatButton(false);
 document.getElementById("username")?.addEventListener("blur", () => {
   if (lcPanel.classList.contains("active")) {
     postIdentityToChat();
