@@ -1626,22 +1626,19 @@ window.renderMobileUserBtn = function renderMobileUserBtn(){
   });
 })();
 function updateDateTime() {
-  const region = "Kuala_Lumpur"; // 👉 tambah ini
-
+  const region = "Kuala_Lumpur";
   const now = new Date();
+
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
-
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const month = monthNames[now.getMonth()];
-  const year = now.getFullYear();
 
-  const timeString = `${hours}:${minutes}:${seconds} ${day} ${month} ${year}`;
+  const timeString = `${hours}:${minutes} ${month} ${day}`;
 
   document.getElementById('dateTime').textContent =
-    `${region}: ${timeString}`; // 👉 tambah sini
+    `${region}: ${timeString}`;
 }
 
 setInterval(updateDateTime, 1000);
