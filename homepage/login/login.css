@@ -47,7 +47,7 @@ body{
   width:520px; max-width:92vw;
   margin:0; padding:36px 22px 28px;
   border:1px solid var(--border-input); border-radius:6px;
-  background-color:transparent;
+  background-color:var(--page-bg2);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   transition: transform .3s ease, box-shadow .3s ease;
   overflow:hidden;                        /* jaga-jaga biar tak keluar */
@@ -72,7 +72,7 @@ body{
 .input{
   width:100%;
   padding:12px 14px;
-  border-radius:10px;
+  border-radius:6px;
   border:1px solid var(--border-input);
   background:var(--page-input);
   color:var(--page-text); outline:none;
@@ -82,8 +82,8 @@ body{
 .input:focus{
   border-color:var(--blue);
 }
-.input:hover{
-  border-color:var(--blue-hover);
+input:hover:not(:focus){
+  border-color: var(--blue-hover);
 }
 /* ===== Password eye (tengah tepat) ===== */
 .password-wrap { /* boleh kosong atau biarkan seperti ini */ }
