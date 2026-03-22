@@ -224,15 +224,52 @@ input:hover:not(:focus){
 .actions-row{ display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
 #forgotOverlay .popup-close{ top:12px; right:12px; }
   /* Livechat floating widget */
-  .lc-wrap{position:fixed; right:16px; bottom:16px; z-index:9999; font-family:inherit;}
-  .lc-btn{
-    display:flex; align-items:center; gap:8px;
-    padding:10px 14px; border-radius:999px; border:1px solid transparent;
-    background:va(--blue); color:white; font-weight:700; cursor:pointer;
-    transition: all 0.2s;
-  }
-  .lc-btn:hover{ background:var(--blue-hover); }.lc-btn:active{ background:var(--blue-active); }
-  .lc-dot{ width:8px; height:8px; background:#d50000; border-radius:50%; display:none; }
+ .lc-wrap{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  z-index:9999;
+  font-family:inherit;
+}
+.lc-btn{
+  position: relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:46px;
+  height:46px;
+  padding:0;
+  border-radius:999px;
+  border:1px solid transparent;
+  background:var(--blue);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+}
+.lc-btn:hover{
+  background:var(--blue-hover);
+}
+.lc-btn:active{
+  background:var(--blue-active);
+}
+.lc-icon{
+  width:18px;
+  height:18px;
+  display:block;
+  pointer-events:none;
+  flex:0 0 auto;
+}
+.lc-dot{
+  position:absolute;
+  top:8px;
+  right:8px;
+  width:8px;
+  height:8px;
+  background:#d50000;
+  border-radius:50%;
+  display:none;
+}
 
   .lc-panel{
     position:absolute; right:0; bottom:56px; width:min(420px, 92vw); height:520px;
