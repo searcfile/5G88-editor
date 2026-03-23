@@ -469,47 +469,40 @@ input[type="number"] {
 }
 /* ===== TOP CONTROL ROW ===== */
 .form-row-top{
-  display:grid;
-  grid-template-columns:
-    minmax(170px, 1.6fr)
-    minmax(95px, .8fr)
-    minmax(95px, .8fr)
-    minmax(180px, 1.4fr)
-    auto
-    minmax(90px, .8fr)
-    auto
-    auto;
-  gap:10px;
-  align-items:center;
+  display: grid;
+  grid-template-columns: 1.7fr 0.9fr 0.9fr 1.35fr auto 0.9fr auto auto;
+  gap: 10px;
+  align-items: center;
 }
 
 .form-row-top > *{
-  min-width:0;
-  width:100%;
+  min-width: 0;
+}
+
+.form-row-top .cs-wrap,
+.form-row-top select,
+.form-row-top .input-time,
+.form-row-top .input-small{
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .form-row-top button{
-  width:auto;
-  white-space:nowrap;
-}
-
-.form-row-top .cs-wrap{
-  width:100%;
-  min-width:0;
+  width: 100%;
+  min-width: 0;
+  padding: 0 12px;
+  white-space: nowrap;
 }
 
 .form-row-top .cs-display{
-  width:100%;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-.form-row-top .input-time,
-.form-row-top .input-small{
-  width:100%;
-  box-sizing:border-box;
-}
-
-/* ===== MOBILE / SMALL SCREEN ===== */
-@media (max-width: 768px){
+/* desktop kecil / laptop kecil */
+@media (max-width: 1180px){
   .form-row-top{
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-areas:
@@ -518,7 +511,7 @@ input[type="number"] {
       "rows free auto";
   }
 
-  .form-row-top > :nth-child(1){ grid-area: game; } /* gameSelect / custom select wrapper */
+  .form-row-top > :nth-child(1){ grid-area: game; }
   .form-row-top > :nth-child(2){ grid-area: bet; }
   .form-row-top > :nth-child(3){ grid-area: win; }
   .form-row-top > :nth-child(4){ grid-area: time; }
@@ -526,20 +519,12 @@ input[type="number"] {
   .form-row-top > :nth-child(6){ grid-area: rows; }
   .form-row-top > :nth-child(7){ grid-area: free; }
   .form-row-top > :nth-child(8){ grid-area: auto; }
-
-  .form-row-top button,
-  .form-row-top .input-time,
-  .form-row-top .input-small,
-  .form-row-top select,
-  .form-row-top .cs-wrap{
-    width:100%;
-  }
 }
 
-/* ===== EXTRA SMALL PHONE ===== */
-@media (max-width: 480px){
+/* phone */
+@media (max-width: 640px){
   .form-row-top{
-    gap:8px;
+    gap: 8px;
   }
 
   .form-row-top button,
@@ -547,6 +532,18 @@ input[type="number"] {
   .form-row-top .input-small,
   .form-row-top select,
   .form-row-top .cs-display{
-    font-size:13px;
+    font-size: 13px;
   }
+}
+.form-row-top button,
+.form-row-top .cs-display,
+.form-row-top input,
+.form-row-top select{
+  overflow: hidden;
+}
+
+.form-row-top #setFreeGameBtn,
+.form-row-top #autoFreeGameBtn,
+.form-row-top .btn-main{
+  max-width: 100%;
 }
