@@ -358,3 +358,54 @@ button {padding: 5px 10px;font-size: 14px;height: 32px;background: var(--blue);c
   color: #fff;
   border-color: #1e7e34;
 }
+*{
+  scrollbar-width:thin;
+  scrollbar-color: rgba(255,255,255,.16) transparent;
+}
+
+*::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+
+*::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.16);
+  border-radius:999px;
+}
+
+*::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+/* ===== BODY ===== */
+html, body{
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+body{
+  overflow-y:auto;
+}
+
+/* ===== TABLE WRAP ===== */
+.table-wrap{
+  width:100%;
+  max-width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  margin-top:10px;
+  padding-bottom:4px;
+}
+
+/* bagi table boleh scroll kiri kanan */
+.table-wrap table{
+  min-width:1300px; /* boleh adjust 1100 / 1200 / 1300 */
+  width:max-content;
+  margin-top:0;
+}
+
+/* optional: bagi nampak smooth */
+.table-wrap{
+  scroll-behavior:smooth;
+}
