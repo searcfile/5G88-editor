@@ -467,3 +467,86 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+/* ===== TOP CONTROL ROW ===== */
+.form-row-top{
+  display:grid;
+  grid-template-columns:
+    minmax(170px, 1.6fr)
+    minmax(95px, .8fr)
+    minmax(95px, .8fr)
+    minmax(180px, 1.4fr)
+    auto
+    minmax(90px, .8fr)
+    auto
+    auto;
+  gap:10px;
+  align-items:center;
+}
+
+.form-row-top > *{
+  min-width:0;
+  width:100%;
+}
+
+.form-row-top button{
+  width:auto;
+  white-space:nowrap;
+}
+
+.form-row-top .cs-wrap{
+  width:100%;
+  min-width:0;
+}
+
+.form-row-top .cs-display{
+  width:100%;
+}
+
+.form-row-top .input-time,
+.form-row-top .input-small{
+  width:100%;
+  box-sizing:border-box;
+}
+
+/* ===== MOBILE / SMALL SCREEN ===== */
+@media (max-width: 768px){
+  .form-row-top{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "game bet win"
+      "time time now"
+      "rows free auto";
+  }
+
+  .form-row-top > :nth-child(1){ grid-area: game; } /* gameSelect / custom select wrapper */
+  .form-row-top > :nth-child(2){ grid-area: bet; }
+  .form-row-top > :nth-child(3){ grid-area: win; }
+  .form-row-top > :nth-child(4){ grid-area: time; }
+  .form-row-top > :nth-child(5){ grid-area: now; }
+  .form-row-top > :nth-child(6){ grid-area: rows; }
+  .form-row-top > :nth-child(7){ grid-area: free; }
+  .form-row-top > :nth-child(8){ grid-area: auto; }
+
+  .form-row-top button,
+  .form-row-top .input-time,
+  .form-row-top .input-small,
+  .form-row-top select,
+  .form-row-top .cs-wrap{
+    width:100%;
+  }
+}
+
+/* ===== EXTRA SMALL PHONE ===== */
+@media (max-width: 480px){
+  .form-row-top{
+    gap:8px;
+  }
+
+  .form-row-top button,
+  .form-row-top .input-time,
+  .form-row-top .input-small,
+  .form-row-top select,
+  .form-row-top .cs-display{
+    font-size:13px;
+  }
+}
