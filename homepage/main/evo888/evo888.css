@@ -385,7 +385,6 @@ button.clicked::after{
 
 .btn-auto-on {
   height: 32px;
-  margin-left: 8px;
   padding: 0px 15px;
   font-size: 14px;
   background: #1e7e34;
@@ -572,4 +571,65 @@ input[type="number"] {
   height: 1px !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+/* ===== MIDDLE CONTROL ROW ===== */
+.form-row-middle{
+  display: grid;
+  grid-template-columns: 1.2fr auto 1.2fr auto 1.2fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.form-row-middle .inline-group{
+  display: contents;
+}
+
+.form-row-middle input{
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.form-row-middle button{
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+  padding: 0 12px;
+}
+
+/* desktop kecil / tablet / phone */
+@media (max-width: 1180px){
+  .form-row-middle{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "score auto"
+      "jackpot setjackpot"
+      "support setsupport"
+      "win setwinner";
+  }
+
+  .form-row-middle .score-group{ grid-area: score; }
+  .form-row-middle #autoAddScoreBtn{ grid-area: auto; }
+
+  .form-row-middle .jackpot-group{ grid-area: jackpot; }
+  .form-row-middle .btn-jackpot{ grid-area: setjackpot; }
+
+  .form-row-middle .support-group{ grid-area: support; }
+  .form-row-middle .btn-support{ grid-area: setsupport; }
+
+  .form-row-middle .win-group{ grid-area: win; }
+  .form-row-middle .btn-winner{ grid-area: setwinner; }
+}
+
+/* phone kecil */
+@media (max-width: 640px){
+  .form-row-middle{
+    gap: 8px;
+  }
+
+  .form-row-middle input,
+  .form-row-middle button{
+    font-size: 13px;
+  }
 }
