@@ -416,6 +416,57 @@ button.clicked::after{
   background: #22c55e;
   border-color: #22c55e;
 }
+    *{
+  scrollbar-width:thin;
+  scrollbar-color: rgba(255,255,255,.16) transparent;
+}
+
+*::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+
+*::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.16);
+  border-radius:999px;
+}
+
+*::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+/* ===== BODY ===== */
+html, body{
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+body{
+  overflow-y:auto;
+}
+
+/* ===== TABLE WRAP ===== */
+.table-wrap{
+  width:100%;
+  max-width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  margin-top:10px;
+  padding-bottom:4px;
+}
+
+/* bagi table boleh scroll kiri kanan */
+.table-wrap table{
+  min-width:1300px; /* boleh adjust 1100 / 1200 / 1300 */
+  width:max-content;
+  margin-top:0;
+}
+
+/* optional: bagi nampak smooth */
+.table-wrap{
+  scroll-behavior:smooth;
+}
   </style>
 </head>
 <body>
@@ -489,7 +540,7 @@ button.clicked::after{
   <button onclick="deleteCents()" class="btn-main h38">Delete Cents</button>
   <button onclick="copyGameLogImage()" class="btn-main h38">COPY IMAGE</button>
 </div>
-
+<div class="table-wrap">
 <table id="gameLog">
   <thead>
     <tr>
@@ -505,7 +556,7 @@ button.clicked::after{
   <tbody>
   </tbody>
 </table>
-
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 console.log("Page Editor\nVersion Date: 01/04/2025\nCreate by   : M'cng\nPowered by  : 5G88\nOPERATOR\n(01/04/2025)\n• System 'Updated' ");
