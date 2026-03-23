@@ -511,14 +511,38 @@ input[type="number"] {
       "rows free auto";
   }
 
-  .form-row-top > :nth-child(1){ grid-area: game; }
-  .form-row-top > :nth-child(2){ grid-area: bet; }
-  .form-row-top > :nth-child(3){ grid-area: win; }
-  .form-row-top > :nth-child(4){ grid-area: time; }
-  .form-row-top > :nth-child(5){ grid-area: now; }
-  .form-row-top > :nth-child(6){ grid-area: rows; }
-  .form-row-top > :nth-child(7){ grid-area: free; }
-  .form-row-top > :nth-child(8){ grid-area: auto; }
+  /* pakai selector terus, jangan nth-child */
+  .form-row-top .cs-wrap{
+    grid-area: game;
+  }
+
+  .form-row-top #betSelect{
+    grid-area: bet;
+  }
+
+  .form-row-top #pecahanSelect{
+    grid-area: win;
+  }
+
+  .form-row-top #manualTime{
+    grid-area: time;
+  }
+
+  .form-row-top button[onclick="setNow()"]{
+    grid-area: now;
+  }
+
+  .form-row-top #freeGameInput{
+    grid-area: rows;
+  }
+
+  .form-row-top #setFreeGameBtn{
+    grid-area: free;
+  }
+
+  .form-row-top #autoFreeGameBtn{
+    grid-area: auto;
+  }
 }
 
 /* phone */
@@ -546,4 +570,12 @@ input[type="number"] {
 .form-row-top #autoFreeGameBtn,
 .form-row-top .btn-main{
   max-width: 100%;
+}
+.form-row-top #gameSelect{
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
