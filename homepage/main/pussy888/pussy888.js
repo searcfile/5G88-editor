@@ -193,7 +193,6 @@ const gameData = {
 "Garden": 
 { bets: [1.00, 2.00, 5.00, 10.00, 20.00],pecahan: {1.00: [30.00, 60.00, 100.00, 130.00],2.00: [60.00, 90.00, 110.00, 150.00],5.00: [90.00, 120.00, 150.00, 180.00],10.00: [120.00, 150.00, 180.00, 210.00],20.00: [100.00, 150.00, 200.00, 500.00]}}
 };
-if (window.top === window.self) {window.location.replace("/main");
 function updateAutoAddScoreButtonUI() {
   const btn = document.getElementById("autoAddScoreBtn");
   if (!btn) return;
