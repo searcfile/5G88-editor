@@ -826,9 +826,9 @@ function resetLog() {
   localStorage.removeItem("jackpotInsertedMap");
   jackpotInsertedMap = {};
 
-  document.getElementById("gameSelect").value = "";
-  document.getElementById("betSelect").innerHTML = "";
-  document.getElementById("pecahanSelect").innerHTML = "";
+  document.getElementById("gameSelect").value = "Select Game";
+  document.getElementById("betSelect").innerHTML = "Select Bet";
+  document.getElementById("pecahanSelect").innerHTML = "Select Win";
   document.getElementById("manualTime").value = "";
   document.getElementById("manualScore").value = "";
   document.getElementById("manualJackpot").value = "";
