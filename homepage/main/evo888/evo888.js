@@ -819,7 +819,7 @@ function addManualSetScore() {
     lastRow.remove();
   }
 
-  document.getElementById("manualScoreInput").value = "0";
+  document.getElementById("manualScoreInput").value = "";
 }
 function resetLog() {
   localStorage.removeItem("gameLogDataEvo888");
@@ -864,17 +864,17 @@ window.addEventListener("DOMContentLoaded", () => {
 const data = JSON.parse(saved);
 document.getElementById("gameSelect").value = data.game;
 document.getElementById("manualTime").value = data.manualTime;
-document.getElementById("manualScore").value = data.manualScore;
+document.getElementById("manualScore").value = Number(data.manualScore) > 0 ? data.manualScore : "";
   
 if (typeof data.lastWinRowIndex === "number") lastWinRowIndex = data.lastWinRowIndex;
 if (typeof data.manualWinAmount === "number") {
   manualWinAmount = data.manualWinAmount;
   const winInput = document.getElementById("manualWinInput");
-  if (winInput) winInput.value = manualWinAmount;
+  if (winInput) winInput.value = manualWinAmount > 0 ? manualWinAmount : "";
 }
 // kalau ada freeGame tersimpan, isi balik input
 if (typeof data.freeGame !== "undefined") {
-  document.getElementById("freeGameInput").value = data.freeGame;
+  document.getElementById("freeGameInput").value = Number(data.freeGame) > 0 ? data.freeGame : "";
 }
 
 document.getElementById("gameSelect").dispatchEvent(new Event("change"));
