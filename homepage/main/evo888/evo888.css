@@ -632,5 +632,28 @@ input[type="number"] {
 }
 .bottom-gap{
   gap:8px;
-  margin-left:10px;
+}
+/* ===== BOTTOM CONTROL ROW ===== */
+.form-row-bottom{
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 10px 10px;
+}
+
+.form-row-bottom button{
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* phone / layar kecil */
+@media (max-width: 768px){
+  .form-row-bottom{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
