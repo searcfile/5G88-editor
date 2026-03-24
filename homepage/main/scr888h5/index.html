@@ -99,16 +99,17 @@
   height:32px;
   background: var(--blue);
   color: var(--page-text);
-  border: 1px solid transparent;
+  border: 1px solid transparent;  /* hindari garis solid */
   border-radius: 6px;
   outline: none;
   appearance: none; -webkit-appearance: none;
-  background-clip: padding-box;
   cursor: pointer;
   position: relative;
   overflow: visible;
-  transition:all .2s ease;
-  
+  transition:
+    background .2s cubic-bezier(0.645,0.045,0.355,1),
+    transform  .15s ease,
+    box-shadow .6s ease;
 }
 button:hover { background:var(--blue-hover); }
 button:active {background:var(--blue-active);}
