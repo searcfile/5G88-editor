@@ -548,7 +548,7 @@ input[type="number"] {
 /* ===== MIDDLE CONTROL ROW ===== */
 .form-row-middle{
   display: grid;
-  grid-template-columns: 1.2fr auto 1.2fr auto 1.2fr auto;
+  grid-template-columns: minmax(0, 1fr) minmax(120px, auto) minmax(0, 1fr) minmax(120px, auto) minmax(0, 1fr) minmax(120px, auto);
   gap: 8px;
   align-items: center;
   margin: 8px 10px 5px;
@@ -568,11 +568,19 @@ input[type="number"] {
 .form-row-middle button{
   width: 100%;
   min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   white-space: nowrap;
-  padding: 0 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+  text-align: center;
 }
 
-/* desktop kecil / tablet / phone */
+/* layar kecil / tablet / phone */
 @media (max-width: 1180px){
   .form-row-middle{
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -596,7 +604,6 @@ input[type="number"] {
   .form-row-middle .btn-winner{ grid-area: setwinner; }
 }
 
-/* phone kecil */
 @media (max-width: 640px){
   .form-row-middle{
     gap: 8px;
@@ -604,6 +611,43 @@ input[type="number"] {
 
   .form-row-middle input,
   .form-row-middle button{
-    font-size: 13px;
+    font-size: 12px;
+  }
+
+  .form-row-middle input{
+    padding: 0 10px;
+  }
+
+  .form-row-middle button{
+    padding: 0 8px;
+  }
+}
+@media (max-width: 640px){
+  .form-row-middle{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .form-row-middle input,
+  .form-row-middle button{
+    font-size: 12px;
+  }
+
+  .form-row-middle input{
+    padding: 0 10px;
+  }
+
+  .form-row-middle .input-jackpot,
+  .form-row-middle .input-support,
+  .form-row-middle .input-win,
+  .form-row-middle .input-score{
+    width: 100%;
+  }
+
+  .form-row-middle .btn-jackpot,
+  .form-row-middle .btn-support,
+  .form-row-middle .btn-winner,
+  .form-row-middle #autoAddScoreBtn{
+    padding: 6px 8px;
   }
 }
