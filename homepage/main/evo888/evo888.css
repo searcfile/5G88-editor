@@ -568,10 +568,15 @@ input[type="number"] {
 .form-row-middle button{
   width: 100%;
   min-width: 0;
-  white-space: nowrap;
-  padding: 0 12px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.15;
+  height: auto;
+  min-height: 32px;
+  padding: 6px 10px;
+  text-align: center;
 }
-
 /* desktop kecil / tablet / phone */
 @media (max-width: 1180px){
   .form-row-middle{
@@ -605,5 +610,34 @@ input[type="number"] {
   .form-row-middle input,
   .form-row-middle button{
     font-size: 13px;
+  }
+}
+@media (max-width: 640px){
+  .form-row-middle{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .form-row-middle input,
+  .form-row-middle button{
+    font-size: 12px;
+  }
+
+  .form-row-middle input{
+    padding: 0 10px;
+  }
+
+  .form-row-middle .input-jackpot,
+  .form-row-middle .input-support,
+  .form-row-middle .input-win,
+  .form-row-middle .input-score{
+    width: 100%;
+  }
+
+  .form-row-middle .btn-jackpot,
+  .form-row-middle .btn-support,
+  .form-row-middle .btn-winner,
+  .form-row-middle #autoAddScoreBtn{
+    padding: 6px 8px;
   }
 }
