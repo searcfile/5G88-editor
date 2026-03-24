@@ -435,6 +435,116 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+/* ===== TOP CONTROL ROW ===== */
+.form-row-top{
+  display: grid;
+  grid-template-columns: 1.7fr 0.9fr 0.9fr 1.35fr auto 0.9fr auto auto;
+  gap: 8px;
+  align-items: center;
+  margin: 15px 10px 5px;
+}
+
+.form-row-top .cs-wrap,
+.form-row-top select,
+.form-row-top .input-time,
+.form-row-top .input-small{
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.form-row-top button{
+  width: 100%;
+  min-width: 0;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.form-row-top .cs-display{
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* desktop kecil / laptop kecil */
+@media (max-width: 1180px){
+  .form-row-top{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "game bet win"
+      "time time now"
+      "rows free auto";
+  }
+
+  /* pakai selector terus, jangan nth-child */
+  .form-row-top .cs-wrap{
+    grid-area: game;
+  }
+
+  .form-row-top #betSelect{
+    grid-area: bet;
+  }
+
+  .form-row-top #pecahanSelect{
+    grid-area: win;
+  }
+
+  .form-row-top #manualTime{
+    grid-area: time;
+  }
+
+  .form-row-top button[onclick="setNow()"]{
+    grid-area: now;
+  }
+
+  .form-row-top #freeGameInput{
+    grid-area: rows;
+  }
+
+  .form-row-top #setFreeGameBtn{
+    grid-area: free;
+  }
+
+  .form-row-top #autoFreeGameBtn{
+    grid-area: auto;
+  }
+}
+
+/* phone */
+@media (max-width: 640px){
+  .form-row-top{
+    gap: 8px;
+  }
+
+  .form-row-top button,
+  .form-row-top .input-time,
+  .form-row-top .input-small,
+  .form-row-top select,
+  .form-row-top .cs-display{
+    font-size: 13px;
+  }
+}
+.form-row-top button,
+.form-row-top .cs-display,
+.form-row-top input,
+.form-row-top select{
+  overflow: hidden;
+}
+
+.form-row-top #setFreeGameBtn,
+.form-row-top #autoFreeGameBtn,
+.form-row-top .btn-main{
+  max-width: 100%;
+}
+.form-row-top #gameSelect{
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 /* ===== MIDDLE CONTROL ROW FINAL ===== */
 .form-row-middle{
   display: grid;
