@@ -830,12 +830,12 @@ function resetLog() {
   document.getElementById("betSelect").innerHTML = "";
   document.getElementById("pecahanSelect").innerHTML = "";
   document.getElementById("manualTime").value = "";
-  document.getElementById("manualScore").value = "0";
+  document.getElementById("manualScore").value = "";
   document.getElementById("manualJackpot").value = "";
   document.querySelector("#gameLog tbody").innerHTML = "";
       // 🔁 reset free game input
   const fgInput = document.getElementById("freeGameInput");
-  if (fgInput) fgInput.value = "0";
+  if (fgInput) fgInput.value = "";
 
   // 🔁 reset AUTO Free Game
   localStorage.removeItem('autoFreeGameOnEvo888');
