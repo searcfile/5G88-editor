@@ -99,26 +99,19 @@
   height:32px;
   background: var(--blue);
   color: var(--page-text);
-  border: 1px solid transparent;  /* hindari garis solid */
+  border: 1px solid transparent;
   border-radius: 6px;
   outline: none;
   appearance: none; -webkit-appearance: none;
-  background-clip: padding-box;   /* tepi mulus */
+  background-clip: padding-box;
   cursor: pointer;
   position: relative;
   overflow: visible;
-  transition:
-    background .2s cubic-bezier(0.645,0.045,0.355,1),
-    transform  .15s ease,
-    box-shadow .6s ease;
+  transition:all .2s ease;
+  
 }
-
 button:hover { background:var(--blue-hover); }
-
-button:active {
-  background:var(--blue-active);
-  /* biarkan box-shadow di-transition untuk fade-out */
-}
+button:active {background:var(--blue-active);}
 button.clicked::after{
   content:"";
   position:absolute;
@@ -213,11 +206,9 @@ button.clicked::after{
     }
     .reset-button:hover {
      background: #ff4d4d;
-     color: white;
     }
     .reset-button:active {
      background: #bf0000;
-     color: white;
     }
     .toast {
   position: fixed;
