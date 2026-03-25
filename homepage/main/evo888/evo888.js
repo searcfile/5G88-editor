@@ -201,16 +201,19 @@ function updateAutoAddScoreButtonUI() {
     });
   });
 })();
-  document.getElementById("gameSelect").addEventListener("change", function () {
+document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
   const pecahanSelect = document.getElementById("pecahanSelect");
-  betSelect.innerHTML = "";
-  pecahanSelect.innerHTML = "";
-    
-    jackpotInsertedMap[game] = false;
 
-  if (game && gameData[game]) {
+  resetSelectToPlaceholder("betSelect", "Select Bet", false);
+  resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
+
+  if (!game) return;
+
+  jackpotInsertedMap[game] = false;
+
+  if (gameData[game]) {
     gameData[game].bets.forEach(bet => {
       const option = document.createElement("option");
       option.value = bet;
@@ -218,8 +221,8 @@ function updateAutoAddScoreButtonUI() {
       betSelect.appendChild(option);
     });
 
-  
-    betSelect.dispatchEvent(new Event("change"));
+    betSelect.selectedIndex = 0;
+    betSelect.dispatchEvent(new Event("change", { bubbles: true }));
   }
 });
 
@@ -228,10 +231,12 @@ document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(this.value);
   const pecahanSelect = document.getElementById("pecahanSelect");
-  pecahanSelect.innerHTML = "";
 
-  
-    if (gameData[game] && gameData[game].pecahan[bet]) {
+  resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
+
+  if (!game || isNaN(bet)) return;
+
+  if (gameData[game] && gameData[game].pecahan[bet]) {
     const pecahanList = gameData[game].pecahan[bet];
 
     pecahanList.forEach(p => {
@@ -240,6 +245,8 @@ document.getElementById("betSelect").addEventListener("change", function () {
       option.textContent = p.toFixed(2);
       pecahanSelect.appendChild(option);
     });
+
+    pecahanSelect.selectedIndex = 0;
   }
 });
 
@@ -826,25 +833,51 @@ function resetLog() {
   localStorage.removeItem("jackpotInsertedMap");
   jackpotInsertedMap = {};
 
-  document.getElementById("gameSelect").value = "Select Game";
-  document.getElementById("betSelect").innerHTML = "Select Bet";
-  document.getElementById("pecahanSelect").innerHTML = "Select Win";
-  document.getElementById("manualTime").value = "";
-  document.getElementById("manualScore").value = "";
-  document.getElementById("manualJackpot").value = "";
-  document.querySelector("#gameLog tbody").innerHTML = "";
-      // 🔁 reset free game input
-  const fgInput = document.getElementById("freeGameInput");
-  if (fgInput) fgInput.value = "";
+  const gameSelect = document.getElementById("gameSelect");
+  const tbody = document.querySelector("#gameLog tbody");
 
-  // 🔁 reset AUTO Free Game
-  localStorage.removeItem('autoFreeGameOnEvo888');
+  // reset game select + refresh custom select label
+  if (gameSelect) {
+    gameSelect.selectedIndex = 0;
+    gameSelect.value = "";
+    gameSelect.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  // reset dropdown lain ke placeholder asal
+  resetSelectToPlaceholder("betSelect", "Select Bet", false);
+  resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
+
+  // reset semua input
+  const idsToClear = [
+    "manualTime",
+    "manualScore",
+    "manualJackpot",
+    "manualScoreInput",
+    "manualWinInput",
+    "freeGameInput"
+  ];
+
+  idsToClear.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+
+  // kosongkan table
+  if (tbody) tbody.innerHTML = "";
+
+  // reset AUTO Free Game
+  localStorage.removeItem("autoFreeGameOnEvo888");
   autoFreeGameOn = false;
   updateAutoFreeGameButtonUI();
-    // 🔁 reset AUTO AddScore
+
+  // reset AUTO AddScore
   localStorage.removeItem("autoAddScoreOnEvo888");
   autoAddScoreOn = true;
   updateAutoAddScoreButtonUI();
+
+  // reset state lain
+  lastWinRowIndex = null;
+  manualWinAmount = 0;
 }
 
 
