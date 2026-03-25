@@ -828,6 +828,14 @@ function addManualSetScore() {
 
   document.getElementById("manualScoreInput").value = "";
 }
+function resetSelectToPlaceholder(selectId, placeholderText, disable = false) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  select.innerHTML = `<option value="" disabled selected hidden>${placeholderText}</option>`;
+  select.value = "";
+  select.disabled = disable;
+}
 function resetLog() {
   localStorage.removeItem("gameLogDataEvo888");
   localStorage.removeItem("jackpotInsertedMap");
