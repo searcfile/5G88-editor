@@ -918,7 +918,7 @@ function addManualSetScore() {
     allRows[allRows.length - 1].remove();
   }
 
-  document.getElementById("manualScoreInput").value = "0";
+  document.getElementById("manualScoreInput").value = "";
 }
 function resetLog() {
   localStorage.removeItem("gameLogDataPussy888");
@@ -929,12 +929,12 @@ function resetLog() {
   document.getElementById("betSelect").innerHTML = "";
   document.getElementById("pecahanSelect").innerHTML = "";
   document.getElementById("manualTime").value = "";
-  document.getElementById("manualScore").value = "0";
-  document.getElementById("manualJackpot").value = "0";
+  document.getElementById("manualScore").value = "";
+  document.getElementById("manualJackpot").value = "";
   document.querySelector("#gameLog tbody").innerHTML = "";
     // 🔁 reset input Free Game juga
   const fgInput = document.getElementById("freeGameInput");
-  if (fgInput) fgInput.value = "0";
+  if (fgInput) fgInput.value = "";
   // 🔁 reset AUTO Free Game
   localStorage.removeItem('autoFreeGameOnPussy888');
   autoFreeGameOn = false;
@@ -948,7 +948,7 @@ function resetLog() {
   manualWinAmount = 0;
 
   const winInput = document.getElementById("manualWinInput");
-  if (winInput) winInput.value = 0;
+  if (winInput) winInput.value = "";
   
 }
 
@@ -969,15 +969,15 @@ const data = JSON.parse(saved);
 if (typeof data.lastWinRowIndex === "number") lastWinRowIndex = data.lastWinRowIndex;
 if (typeof data.manualWinAmount === "number") {
   const winInput = document.getElementById("manualWinInput");
-  if (winInput) winInput.value = data.manualWinAmount;
+  if (winInput) winInput.value = Number(data.manualWinAmount) > 0 ? data.manualWinAmount : "";
 }
 document.getElementById("gameSelect").value = data.game;
 document.getElementById("manualTime").value = data.manualTime;
-document.getElementById("manualScore").value = data.manualScore;
+document.getElementById("manualScore").value = Number(data.manualScore) > 0 ? data.manualScore : "";
 
 // kalau ada freeGame tersimpan, isi balik input
 if (typeof data.freeGame !== "undefined") {
-  document.getElementById("freeGameInput").value = data.freeGame;
+  document.getElementById("freeGameInput").value = Number(data.freeGame) > 0 ? data.freeGame : "";
 }
 
 document.getElementById("gameSelect").dispatchEvent(new Event("change"));
