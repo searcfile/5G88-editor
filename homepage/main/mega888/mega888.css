@@ -492,14 +492,7 @@ input[type="number"] {
 .form-row-top .btn-main{
   max-width: 100%;
 }
-.form-row-top #gameSelect{
-  position: absolute !important;
-  left: -9999px !important;
-  width: 1px !important;
-  height: 1px !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
+
 /* ===== MIDDLE CONTROL ROW FINAL ===== */
 .form-row-middle{
   display: grid;
@@ -647,4 +640,26 @@ select.has-value {
 
 .cs-display {
   color:var(--blur);
+}
+.cs-wrap{
+  width: 100%;
+  min-width: 0;
+}
+
+.cs-display{
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cs-label{
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.cs-item.disabled{
+  color: var(--blur);
+  cursor: default;
 }
