@@ -8,31 +8,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="header">PUSSY888 GENERATE</div>
-
-  <div class="top-note-row">
-    <button onclick="resetLog()" class="reset-button">Reset Log</button>
-    <span class="key-note">Key (CTRL + C) Copy Image</span>
-  </div>
-
-  <div class="form-row">
-    <label for="gameSelect" class="form-label label-pad">Game:</label>
+  <div class="form-row form-row-top">
     <select id="gameSelect" class="select2 select-main">
+    <option value="" disabled selected hidden>Select Game</option>
     <option value="BananaMonkey">BananaMonkey</option><option value="BeachLife">BeachLife</option><option value="Indian">Indian</option><option value="FORTUNE">FORTUNE</option><option value="LandofGold">LandofGold</option><option value="BaBaoYiHou">BaBaoYiHou</option><option value="ThaiTemple">ThaiTemple</option><option value="Hologram Wilds">Hologram Wilds</option><option value="HalloweenParty">HalloweenParty</option><option value="Neptune Treasure">Neptune Treasure</option><option value="BuffaloBlitz">BuffaloBlitz</option><option value="Desert Treasure">Desert Treasure</option><option value="GaelicLuck">GaelicLuck</option><option value="Tigerclaw">Tigerclaw</option><option value="Berry">Berry</option><option value="Aztec">Aztec</option><option value="Geisha">Geisha</option><option value="GoldenSlut">GoldenSlut</option><option value="Dolphin">Dolphin</option><option value="FortunePanda">FortunePanda</option><option value="StoneAge">StoneAge</option><option value="FORTUNE">FORTUNE</option><option value="Sherlock">Sherlock</option><option value="T-REX">T-REX</option><option value="HighwayPro">HighwayPro</option><option value="WarriorsGold">WarriorsGold</option><option value="White Lion">White Lion</option><option value="GoldenTree">GoldenTree</option><option value="MoneyFever">MoneyFever</option><option value="ICELAND">ICELAND</option><option value="Boxing">Boxing</option><option value="GoldenSlut">GoldenSlut</option><option value="EmperorGate">EmperorGate</option><option value="DolphinReef">DolphinReef</option><option value="Twister">Twister</option><option value="PayDirt">PayDirt</option><option value="WildFox">WildFox</option><option value="PirateShip">PirateShip</option><option value="JinQianWa">JinQianWa</option><option value="Cleopatra">Cleopatra</option><option value="Garden">Garden</option><option value="FiveDragons">FiveDragons</option><option value="Alice">Alice</option><option value="GreatStars">GreatStars</option><option value="SAFARI Heat">SAFARI Heat</option><option value="PatherMoon">PatherMoon</option><option value="Rally">Rally</option><option value="BigShot">BigShot</option><option value="Thai">Thai</option><option value="SeaCaptain">SeaCaptain</option><option value="TreasureIsland">TreasureIsland</option><option value="Magician">Magician</option><option value="SeaWorld">SeaWorld</option><option value="Samurai">Samurai</option><option value="circus">circus</option><option value="TopGun">TopGun</option><option value="BonusBears">BonusBears</option><option value="JAPAN">JAPAN</option><option value="Boyking">Boyking</option><option value="ShiningStars">ShiningStars</option><option value="IrishLuck">IrishLuck</option><option value="Wealth">Wealth</option><option value="CoyoteCash">CoyoteCash</option><option value="Prosperity">Prosperity</option><option value="FairyGarden">FairyGarden</option><option value="GoldenLotus">GoldenLotus</option><option value="Tally Ho">Tally Ho</option><option value="Girls">Girls</option><option value="Dragon Gold">Dragon Gold</option><option value="CatQueen">CatQueen</option><option value="Roaring">Roaring</option><option value="Pyramid">Pyramid</option><option value="Pharaoh Secrets">Pharaoh Secrets</option><option value="FortuneLions">FortuneLions</option><option value="Panda">Panda</option><option value="GreatBlue">GreatBlue</option><option value="Epicape">Epicape</option><option value="Archer">Archer</option><option value="Easter">Easter</option><option value="Queen of Wand">Queen of Wand</option><option value="Arctic">Arctic</option><option value="玄圃联欢">玄圃联欢</option><option value="ShuiHu">ShuiHu</option><option value="Laura">Laura</option><option value="HighWay">HighWay</option><option value="Silver">Silver</option><option value="ZhaoCaiJinBao">ZhaoCaiJinBao</option><option value="FootBall">FootBall</option><option value="Halloween">Halloween</option><option value="GodofWealth">GodofWealth</option><option value="GoldenTour">GoldenTour</option>
   </select>
-    <label for="betSelect" class="form-label">Bet:</label>
-    <select id="betSelect" class="select-main"></select>
-
-    <label for="pecahanSelect" class="form-label">Pecahan:</label>
-    <select id="pecahanSelect" class="select-main"></select>
-
-    <button onclick="setNow()" class="btn-main h38 px12 fs16">Click Now</button>
-
-    <label for="manualTime" class="form-label">Set Time:</label>
-    <input type="text" id="manualTime" placeholder="Add Date & Time" class="input-time" />
-
-    <label for="freeGameInput" class="form-label label-left-gap">Set Rows:</label>
-    <input type="number" id="freeGameInput" min="0" max="10" value="0" class="input-small" />
+    <select id="betSelect" class="select-main">
+      <option value="" disabled selected hidden>Select Bet</option>
+    </select>
+    <select id="pecahanSelect" class="select-main">
+      <option value="" disabled selected hidden>Select Win</option>
+    </select>
+   <input type="text" id="manualTime" placeholder="Set Time" class="input-time" />
+   <button onclick="setNow()" class="btn-main h38 px12 fs16">Click Now</button>
+    
+   <input type="number" id="freeGameInput" placeholder="Set Rows" class="input-small" />
 
     <button id="setFreeGameBtn" class="btn-main h38">Set Free Game</button>
 
@@ -41,42 +31,38 @@
     </button>
   </div>
 
-  <div class="form-row bottom-gap">
+ <div class="form-row form-row-middle bottom-gap">
     <div class="inline-group">
-      <label for="manualScore" class="form-label h38 flex-center label-pad">Add Score :</label>
-      <input type="number" id="manualScore" value="0" class="input-score" />
-
-      <button id="autoAddScoreBtn" type="button" class="btn-auto-on pussy-auto-on">
+      <input type="number" id="manualScore" placeholder="Add Score" class="input-score" />
+      <button id="autoAddScoreBtn" type="button" class="btn-auto-on">
         AUTO ON
       </button>
     </div>
 
     <div class="inline-group">
-      <label for="manualJackpot" class="form-label h38 flex-center">Jackpot Amount:</label>
-      <input type="number" id="manualJackpot" value="0" class="input-jackpot" />
+      <input type="number" id="manualJackpot" placeholder="Jackpot Amount" class="input-jackpot" />
     </div>
 
     <button onclick="addJackpot()" class="btn-main h38">Set Jackpot</button>
 
     <div class="inline-group">
-      <label for="manualScoreInput" class="form-label h38 flex-center">Support Amount:</label>
-      <input type="number" id="manualScoreInput" value="0" class="input-support" />
+      <input type="number" id="manualScoreInput" placeholder="Support Amount" class="input-support" />
     </div>
 
     <button onclick="addManualSetScore()" class="btn-main h38">Support Back</button>
 
     <div class="inline-group">
-      <label for="manualWinInput" class="form-label h38 flex-center">Win Amount:</label>
-      <input type="number" id="manualWinInput" value="0" class="input-win" />
+      <input type="number" id="manualWinInput" placeholder="Win Amount" class="input-win" />
     </div>
 
     <button onclick="setRandomWin()" class="btn-main h38">Set Winner</button>
   </div>
 
-  <div class="form-row bottom-gap">
+  <div class="form-row form-row-bottom bottom-gap">
     <button onclick="generateLog()" class="btn-main h38">Change</button>
     <button onclick="deleteCents()" class="btn-main h38">Delete Cents</button>
     <button onclick="copyGameLogImage()" class="btn-main h38">COPY IMAGE</button>
+    <button onclick="resetLog()" class="reset-button">Reset Log</button>
   </div>
 <div class="table-wrap">
   <table id="gameLog">
