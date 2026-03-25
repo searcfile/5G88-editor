@@ -377,16 +377,19 @@ function updateAutoAddScoreButtonUI() {
     });
   });
 })();
-  document.getElementById("gameSelect").addEventListener("change", function () {
+document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
   const pecahanSelect = document.getElementById("pecahanSelect");
-  betSelect.innerHTML = "";
-  pecahanSelect.innerHTML = "";
-    
-    jackpotInsertedMap[game] = false;
 
-  if (game && gameData[game]) {
+  resetSelectToPlaceholder("betSelect", "Select Bet", false);
+  resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
+
+  if (!game) return;
+
+  jackpotInsertedMap[game] = false;
+
+  if (gameData[game]) {
     gameData[game].bets.forEach(bet => {
       const option = document.createElement("option");
       option.value = bet;
@@ -394,11 +397,10 @@ function updateAutoAddScoreButtonUI() {
       betSelect.appendChild(option);
     });
 
-  
-    betSelect.dispatchEvent(new Event("change"));
+    betSelect.selectedIndex = 0;
+    betSelect.dispatchEvent(new Event("change", { bubbles: true }));
   }
 });
-
 
 document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
@@ -947,29 +949,31 @@ function resetLog() {
   const gameSelect = document.getElementById("gameSelect");
   const tbody = document.querySelector("#gameLog tbody");
 
-  // reset game select
+  // reset game select + trigger custom UI refresh
   if (gameSelect) {
     gameSelect.selectedIndex = 0;
+    gameSelect.value = "";
+    gameSelect.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
-  // reset bet & win select supaya tak kosong blank
+  // reset dropdown lain
   resetSelectToPlaceholder("betSelect", "Select Bet", false);
   resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
 
   // reset semua input
-  const manualTime = document.getElementById("manualTime");
-  const manualScore = document.getElementById("manualScore");
-  const manualJackpot = document.getElementById("manualJackpot");
-  const manualScoreInput = document.getElementById("manualScoreInput");
-  const manualWinInput = document.getElementById("manualWinInput");
-  const freeGameInput = document.getElementById("freeGameInput");
+  const idsToClear = [
+    "manualTime",
+    "manualScore",
+    "manualJackpot",
+    "manualScoreInput",
+    "manualWinInput",
+    "freeGameInput"
+  ];
 
-  if (manualTime) manualTime.value = "";
-  if (manualScore) manualScore.value = "";
-  if (manualJackpot) manualJackpot.value = "";
-  if (manualScoreInput) manualScoreInput.value = "";
-  if (manualWinInput) manualWinInput.value = "";
-  if (freeGameInput) freeGameInput.value = "";
+  idsToClear.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
 
   // kosongkan table
   if (tbody) tbody.innerHTML = "";
