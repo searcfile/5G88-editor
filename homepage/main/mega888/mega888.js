@@ -933,6 +933,27 @@ function addManualSetScore() {
 
   document.getElementById("manualScoreInput").value = "";
   }
+function updateSelectPlaceholderColor(select) {
+  if (!select) return;
+
+  if (!select.value) {
+    select.classList.add("placeholder-select");
+    select.classList.remove("has-value");
+  } else {
+    select.classList.remove("placeholder-select");
+    select.classList.add("has-value");
+  }
+}
+
+["gameSelect", "betSelect", "pecahanSelect"].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  updateSelectPlaceholderColor(el);
+  el.addEventListener("change", function () {
+    updateSelectPlaceholderColor(el);
+  });
+});
 function resetSelectToPlaceholder(selectId, placeholderText, disable = false) {
   const select = document.getElementById(selectId);
   if (!select) return;
