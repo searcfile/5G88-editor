@@ -931,36 +931,62 @@ function addManualSetScore() {
 
   document.getElementById("manualScoreInput").value = "";
   }
+function resetSelectToPlaceholder(selectId, placeholderText, disable = false) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  select.innerHTML = `<option value="" disabled selected hidden>${placeholderText}</option>`;
+  select.value = "";
+  select.disabled = disable;
+}
 function resetLog() {
   localStorage.removeItem("gameLogDataMega888");
   localStorage.removeItem("jackpotInsertedMap");
   jackpotInsertedMap = {};
 
-  document.getElementById("gameSelect").value = "";
-  document.getElementById("betSelect").innerHTML = "";
-  document.getElementById("pecahanSelect").innerHTML = "";
-  document.getElementById("manualTime").value = "";
-  document.getElementById("manualScore").value = "";
-  document.getElementById("manualJackpot").value = "";
-  document.querySelector("#gameLog tbody").innerHTML = "";
-    // 🔁 reset free game input
-  const fgInput = document.getElementById("freeGameInput");
-  if (fgInput) fgInput.value = "";
+  const gameSelect = document.getElementById("gameSelect");
+  const tbody = document.querySelector("#gameLog tbody");
 
-  // 🔁 reset AUTO Free Game
-  localStorage.removeItem('autoFreeGameOnMega888');
+  // reset game select
+  if (gameSelect) {
+    gameSelect.selectedIndex = 0;
+  }
+
+  // reset bet & win select supaya tak kosong blank
+  resetSelectToPlaceholder("betSelect", "Select Bet", false);
+  resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
+
+  // reset semua input
+  const manualTime = document.getElementById("manualTime");
+  const manualScore = document.getElementById("manualScore");
+  const manualJackpot = document.getElementById("manualJackpot");
+  const manualScoreInput = document.getElementById("manualScoreInput");
+  const manualWinInput = document.getElementById("manualWinInput");
+  const freeGameInput = document.getElementById("freeGameInput");
+
+  if (manualTime) manualTime.value = "";
+  if (manualScore) manualScore.value = "";
+  if (manualJackpot) manualJackpot.value = "";
+  if (manualScoreInput) manualScoreInput.value = "";
+  if (manualWinInput) manualWinInput.value = "";
+  if (freeGameInput) freeGameInput.value = "";
+
+  // kosongkan table
+  if (tbody) tbody.innerHTML = "";
+
+  // reset AUTO Free Game
+  localStorage.removeItem("autoFreeGameOnMega888");
   autoFreeGameOn = false;
   updateAutoFreeGameButtonUI();
-    // 🔁 reset AUTO AddScore
+
+  // reset AUTO Add Score
   localStorage.removeItem("autoAddScoreOnMega888");
   autoAddScoreOn = true;
   updateAutoAddScoreButtonUI();
-  // ✅ reset win state
-lastWinRowIndex = null;
-manualWinAmount = 0;
 
-const winInput = document.getElementById("manualWinInput");
-if (winInput) winInput.value = "";
+  // reset state lain
+  lastWinRowIndex = null;
+  manualWinAmount = 0;
 }
 
 window.addEventListener("DOMContentLoaded", () => {
