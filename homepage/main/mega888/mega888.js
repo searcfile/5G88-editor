@@ -405,19 +405,24 @@ document.getElementById("gameSelect").addEventListener("change", function () {
 document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(this.value);
+  const betKey = bet.toFixed(2);
   const pecahanSelect = document.getElementById("pecahanSelect");
-  pecahanSelect.innerHTML = "";
 
-  
-    if (gameData[game] && gameData[game].pecahan[bet]) {
-    const pecahanList = gameData[game].pecahan[bet];
+  resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
+
+  if (!game || isNaN(bet)) return;
+
+  if (gameData[game] && gameData[game].pecahan && gameData[game].pecahan[betKey]) {
+    const pecahanList = gameData[game].pecahan[betKey];
 
     pecahanList.forEach(p => {
       const option = document.createElement("option");
       option.value = p;
-      option.textContent = p.toFixed(2);
+      option.textContent = Number(p).toFixed(2);
       pecahanSelect.appendChild(option);
     });
+
+    pecahanSelect.selectedIndex = 0;
   }
 });
 
