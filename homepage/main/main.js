@@ -403,7 +403,27 @@ const noticeMessageTime = document.getElementById("noticeMessageTime");
 const noticeClose = document.getElementById("noticeClose");
 const noticeOkBtn = document.getElementById("noticeOkBtn");
 
+function moveNotifButtonResponsive() {
+  const notifButtonEl = document.getElementById("notifButton");
+  const mobileSlot = document.getElementById("mobileNotifSlot");
+  const desktopSlot = document.getElementById("desktopNotifSlot");
+
+  if (!notifButtonEl || !mobileSlot || !desktopSlot) return;
+
+  if (window.innerWidth <= 768) {
+    if (!mobileSlot.contains(notifButtonEl)) {
+      mobileSlot.appendChild(notifButtonEl);
+    }
+  } else {
+    if (!desktopSlot.contains(notifButtonEl)) {
+      desktopSlot.appendChild(notifButtonEl);
+    }
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  moveNotifButtonResponsive();
+
   const savedMessage = localStorage.getItem("latestNotifMessage");
   const savedTimestamp = localStorage.getItem("latestNotifTimestamp");
 
@@ -1830,7 +1850,8 @@ if (timestamp > lastNotifTime) {
     if (userEmailElem) userEmailElem.textContent = loginData.email;
     window.renderMobileUserBtn && window.renderMobileUserBtn();
     updateChangePwVisibility();
-
+    moveNotifButtonResponsive();
+    
     dropdownWrapper.addEventListener("mouseenter", () => {
       dropdownContent.style.display = "block";
     });
