@@ -435,6 +435,9 @@ function showNotification(message, timestamp) {
     localStorage.setItem("latestNotifMessage", message);
     localStorage.setItem("latestNotifTimestamp", timestamp);
     if (notifDot) notifDot.style.display = "block";
+    if (window.updateFloatingFabNoticeDot) {
+    window.updateFloatingFabNoticeDot(true);
+    }
   }
 }
 
@@ -493,6 +496,145 @@ window.addEventListener("blur", () => {
   if (popup && popup.style.display === "block") {
     popup.style.display = "none";
   }
+});
+/* =========================
+   FLOATING FAB
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const fabWrap = document.getElementById("floatingFabWrap");
+  const mainBtn = document.getElementById("floatingMainBtn");
+  const liveBtn = document.getElementById("floatingLivechatBtn");
+  const noticeBtn = document.getElementById("floatingNoticeBtn");
+
+  const mainDot = document.getElementById("floatingMainDot");
+  const liveDot = document.getElementById("floatingLivechatDot");
+  const noticeDot = document.getElementById("floatingNoticeDot");
+
+  const infoIcon = document.getElementById("floatingMainInfoIcon");
+  const closeIcon = document.getElementById("floatingMainCloseIcon");
+
+  const headerLiveBtn = document.getElementById("liveChatBtn");
+  const headerNoticeBtn = document.getElementById("notifButton");
+  const headerLiveDot = document.getElementById("livechatDot");
+  const headerNoticeDot = document.getElementById("notifDot");
+
+  if (!fabWrap || !mainBtn) return;
+
+  let isOpen = false;
+
+  function setFabOpen(state){
+    isOpen = !!state;
+    fabWrap.classList.toggle("open", isOpen);
+    if (infoIcon) infoIcon.style.display = isOpen ? "none" : "";
+    if (closeIcon) closeIcon.style.display = isOpen ? "" : "none";
+  }
+
+  function isVisible(el){
+    return !!el && getComputedStyle(el).display !== "none";
+  }
+
+  function refreshMainDot(){
+    let total = 0;
+    if (isVisible(liveDot)) total += 1;
+    if (isVisible(noticeDot)) total += 1;
+
+    if (!mainDot) return;
+
+    if (total <= 0) {
+      mainDot.style.display = "none";
+      mainDot.classList.remove("has-two");
+    } else {
+      mainDot.style.display = "block";
+      mainDot.classList.toggle("has-two", total >= 2);
+    }
+  }
+
+  function syncFloatingDotsFromHeader(){
+    if (liveDot) liveDot.style.display = isVisible(headerLiveDot) ? "block" : "none";
+    if (noticeDot) noticeDot.style.display = isVisible(headerNoticeDot) ? "block" : "none";
+    refreshMainDot();
+  }
+
+  mainBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setFabOpen(!isOpen);
+  });
+
+  fabWrap.addEventListener("mouseenter", () => {
+    setFabOpen(true);
+  });
+
+  fabWrap.addEventListener("mouseleave", () => {
+    setFabOpen(false);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!fabWrap.contains(e.target)) {
+      setFabOpen(false);
+    }
+  });
+
+  if (liveBtn) {
+    liveBtn.addEventListener("click", () => {
+      setFabOpen(false);
+
+      if (headerLiveBtn) {
+        headerLiveBtn.click();
+      } else if (typeof addTab === "function") {
+        addTab("LIVE CHAT", "https://5g88-main.vercel.app/main/livechat");
+      }
+
+      if (headerLiveDot) headerLiveDot.style.display = "none";
+      if (liveDot) liveDot.style.display = "none";
+      refreshMainDot();
+
+      if (typeof markLivechatAsRead === "function") {
+        markLivechatAsRead();
+      }
+    });
+  }
+
+  if (noticeBtn) {
+    noticeBtn.addEventListener("click", () => {
+      setFabOpen(false);
+
+      if (headerNoticeBtn) {
+        headerNoticeBtn.click();
+      }
+
+      if (headerNoticeDot) headerNoticeDot.style.display = "none";
+      if (noticeDot) noticeDot.style.display = "none";
+      refreshMainDot();
+    });
+  }
+
+  if (headerLiveDot) {
+    new MutationObserver(syncFloatingDotsFromHeader).observe(headerLiveDot, {
+      attributes: true,
+      attributeFilter: ["style", "class"]
+    });
+  }
+
+  if (headerNoticeDot) {
+    new MutationObserver(syncFloatingDotsFromHeader).observe(headerNoticeDot, {
+      attributes: true,
+      attributeFilter: ["style", "class"]
+    });
+  }
+
+  syncFloatingDotsFromHeader();
+
+  window.updateFloatingFabLivechatDot = function(show = true){
+    if (headerLiveDot) headerLiveDot.style.display = show ? "block" : "none";
+    if (liveDot) liveDot.style.display = show ? "block" : "none";
+    refreshMainDot();
+  };
+
+  window.updateFloatingFabNoticeDot = function(show = true){
+    if (headerNoticeDot) headerNoticeDot.style.display = show ? "block" : "none";
+    if (noticeDot) noticeDot.style.display = show ? "block" : "none";
+    refreshMainDot();
+  };
 });
 // ===== DROPDOWNS (GameLog & Bank Resit) – versi terpadu =====
 const gameLogBtn        = document.getElementById("gameLogBtn");
@@ -692,10 +834,13 @@ function addTab(label, url, opt = {}) {
   const liveDot = document.getElementById("livechatDot");
 
   if (liveBtn) {
-    if (L === "LIVE CHAT") {
-      liveBtn.classList.add("active-livechat");
-      if (liveDot) liveDot.style.display = "none";
-      markLivechatAsRead();
+if (L === "LIVE CHAT") {
+  liveBtn.classList.add("active-livechat");
+  if (liveDot) liveDot.style.display = "none";
+  if (window.updateFloatingFabLivechatDot) {
+    window.updateFloatingFabLivechatDot(false);
+  }
+  markLivechatAsRead();
     } else {
       liveBtn.classList.remove("active-livechat");
     }
