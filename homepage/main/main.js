@@ -833,18 +833,13 @@ function addTab(label, url, opt = {}) {
   const itemBtn = document.getElementById("itemBtn");
   const liveDot = document.getElementById("livechatDot");
 
-  if (liveBtn) {
-if (L === "LIVE CHAT") {
-  liveBtn.classList.add("active-livechat");
-  if (liveDot) liveDot.style.display = "none";
-  if (window.updateFloatingFabLivechatDot) {
-    window.updateFloatingFabLivechatDot(false);
+if (liveBtn) {
+  if (L === "LIVE CHAT") {
+    liveBtn.classList.add("active-livechat");
+  } else {
+    liveBtn.classList.remove("active-livechat");
   }
-  markLivechatAsRead();
-    } else {
-      liveBtn.classList.remove("active-livechat");
-    }
-  }
+}
 
   linkBtn?.classList.toggle("active-linkdownload", L === "LINK DOWNLOAD");
   itemBtn?.classList.toggle("active-itemBtn", L === "ITEM COLLECTION");
