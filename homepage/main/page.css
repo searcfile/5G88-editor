@@ -661,7 +661,109 @@ a.tab-open .check-icon {
   .btn-cpw:hover{border:1px solid var(--gold-hover); color:var(--gold-hover);}.btn-cpw:active{border:1px solid var(--gold-active); color:var(--gold-active);}
   /* Empty state */
 #mainContainer { position: relative; }
+/* NOTICE MODAL */
+.notice-modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10060;
+}
 
+.notice-dialog{
+  width: min(520px, 92vw);
+  background: var(--backgroundbtn);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  overflow: hidden;
+  animation: zoomIn .25s ease forwards;
+  box-shadow: 0 18px 40px rgba(0,0,0,.35);
+}
+
+.notice-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border2);
+  background: var(--backgrounddrop);
+}
+
+.notice-title{
+  color: #ff3b30;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.notice-close-btn{
+  background: transparent;
+  border: 0;
+  color: var(--colorbtn);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  transition: color .2s ease, transform .2s ease;
+}
+
+.notice-close-btn:hover{
+  color: var(--gold-hover);
+  transform: scale(1.08);
+}
+
+.notice-close-btn:active{
+  color: var(--gold-active);
+}
+
+.notice-body{
+  padding: 16px 14px 12px;
+}
+
+.notice-message-text{
+  color: var(--colorbtn);
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.notice-message-time{
+  margin-top: 14px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--blur);
+}
+
+.notice-foot{
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--backgrounddrop);
+  border-top: 1px solid var(--border2);
+}
+
+.notice-ok-btn{
+  min-width: 88px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: var(--gold);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all .2s ease;
+}
+
+.notice-ok-btn:hover{
+  background: var(--gold-hover);
+}
+
+.notice-ok-btn:active{
+  background: var(--gold-active);
+}
 .empty-state{
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
