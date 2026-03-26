@@ -1018,7 +1018,6 @@ function resetLog() {
   manualWinAmount = 0;
 }
 
-
 window.addEventListener("DOMContentLoaded", () => {
   const savedAuto = localStorage.getItem("autoFreeGameOnEvo888");
   autoFreeGameOn = (savedAuto === "1");
@@ -1076,10 +1075,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }, 80);
 });
 
-  document.querySelector("#gameLog tbody").innerHTML = data.logs;
-    // apply Free Game balik bila reload
-  applyFreeGame();
-});
 function showToast(message, type = "success") {
   const icons = {
     success: `
