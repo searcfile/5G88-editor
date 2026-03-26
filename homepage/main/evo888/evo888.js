@@ -117,8 +117,13 @@ function initCustomSelect(selectId, withSearch = false, searchPlaceholder = "Sea
   const label = document.createElement("span");
   label.className = "cs-label";
 
-  const arrow = document.createElement("i");
+  const arrow = document.createElement("span");
   arrow.className = "cs-arrow";
+  arrow.innerHTML = `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M23.245 4l-11.245 14.374-11.219-14.374-.781.619 12 15.381 12-15.391-.755-.609z"></path>
+  </svg>
+  `;
 
   display.appendChild(label);
   display.appendChild(arrow);
