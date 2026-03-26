@@ -765,17 +765,33 @@ a.tab-open .check-icon {
 body.light-theme .theme-toggle-knob{
   left: 2px;
 }
+.sidebar-inner{
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #001529;
+  position: relative;
+}
+
+.sidebar-top{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #001529;
+  padding: 8px 0 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.20);
+}
+
 .sidebar-search-wrap{
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 0 auto 12px auto;
-  position: sticky;
-  top: 0;
-  z-index: 5;
+  margin: 0 auto;
   background: #001529;
-  padding: 2px 0 10px;
+  padding: 2px 0 0;
 }
+
 .sidebar-search-input{
   width: 100%;
   max-width: 210px;
@@ -789,15 +805,18 @@ body.light-theme .theme-toggle-knob{
   padding: 0 11px;
   font-size: 14px;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
+
 .sidebar-search-input::placeholder{
   color: var(--blur);
   text-align: left;
 }
+
 .sidebar-search-input:hover{
   border-color: var(--gold-hover);
 }
+
 .sidebar-search-input:focus{
   border-color: var(--gold);
 }
-
