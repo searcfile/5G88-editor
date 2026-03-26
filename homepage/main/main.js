@@ -443,51 +443,66 @@ function showNotification(message, timestamp) {
     }
   }
 }
+function toggleNoticePopup(anchorEl) {
+  if (!notifButton || !popup || !content) return;
 
+  const message = notifButton.dataset.message;
+  const timestamp = Number(notifButton.dataset.timestamp);
+  if (!message || !timestamp) return;
+
+  if (popup.style.display === "block") {
+    popup.style.display = "none";
+    return;
+  }
+
+  const dateObj = new Date(timestamp);
+  const isValidDate = !isNaN(dateObj.getTime());
+
+  content.innerHTML = `
+    <div>${message}</div>
+    <div style="text-align:right;font-size:12px;color:#aaa;margin-top:10px;">
+      ${isValidDate ? `
+        ${String(dateObj.getDate()).padStart(2,'0')}/
+        ${String(dateObj.getMonth()+1).padStart(2,'0')}/
+        ${dateObj.getFullYear()} 
+        ${String(dateObj.getHours()).padStart(2,'0')}:
+        ${String(dateObj.getMinutes()).padStart(2,'0')}:
+        ${String(dateObj.getSeconds()).padStart(2,'0')}
+      ` : `Waktu tidak valid`}
+    </div>
+  `;
+
+  popup.style.display = "block";
+
+  setTimeout(() => {
+    const rect = (anchorEl || notifButton).getBoundingClientRect();
+    popup.style.position = "fixed";
+    popup.style.top = `${rect.bottom + 4}px`;
+    popup.style.left = "auto";
+    popup.style.right = `${window.innerWidth - rect.right}px`;
+  }, 0);
+
+  if (notifDot) {
+    notifDot.style.display = "none";
+    notifDot.textContent = "";
+  }
+
+  const cur = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  const curEmail = (cur.email || "guest").toLowerCase();
+  const seenKey = `seenNotif_${timestamp}_${curEmail}`;
+  localStorage.setItem(seenKey, "1");
+
+  if (window.updateFloatingFabNoticeDot) {
+    window.updateFloatingFabNoticeDot(0);
+  }
+}
 if (notifButton) {
-  notifButton.addEventListener("click", () => {
-    const message = notifButton.dataset.message;
-    const timestamp = Number(notifButton.dataset.timestamp);
-    if (!message || !timestamp) return;
-
-    if (popup.style.display === "block") {
-      popup.style.display = "none";
-      return;
-    }
-
-    const dateObj = new Date(timestamp);
-    const isValidDate = !isNaN(dateObj.getTime());
-
-    content.innerHTML = `
-      <div>${message}</div>
-      <div style="text-align:right;font-size:12px;color:#aaa;margin-top:10px;">
-        ${isValidDate ? `
-          ${String(dateObj.getDate()).padStart(2,'0')}/
-          ${String(dateObj.getMonth()+1).padStart(2,'0')}/
-          ${dateObj.getFullYear()} 
-          ${String(dateObj.getHours()).padStart(2,'0')}:
-          ${String(dateObj.getMinutes()).padStart(2,'0')}:
-          ${String(dateObj.getSeconds()).padStart(2,'0')}
-        ` : `Waktu tidak valid`}
-      </div>
-    `;
-
-    popup.style.display = "block";
-    setTimeout(() => {
-      const rect = notifButton.getBoundingClientRect();
-      popup.style.position = "fixed";
-      popup.style.top = `${rect.bottom + 4.1}px`;
-      popup.style.left = "auto";
-      popup.style.right = `${window.innerWidth - rect.right}px`;
-    }, 0);
-
-    if (notifDot) notifDot.style.display = "none";
-    const cur = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-    const curEmail = (cur.email || "guest").toLowerCase();
-    const seenKey = `seenNotif_${timestamp}_${curEmail}`;
-    localStorage.setItem(seenKey, "1");
+  notifButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleNoticePopup(notifButton);
   });
 }
+
 
 // Klik luar = tutup popup (biarkan seperti punyamu)
 document.addEventListener("click", function (event) {
@@ -612,18 +627,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (noticeBtn) {
-    noticeBtn.addEventListener("click", () => {
-      setFabOpen(false);
-
-      if (headerNoticeBtn) {
-        headerNoticeBtn.click();
-      }
-
-      setBadgeCount(noticeDot, 0);
-      setBadgeCount(mainDot, getBadgeCount(liveDot));
-    });
-  }
+if (noticeBtn) {
+  noticeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setFabOpen(false);
+    toggleNoticePopup(noticeBtn);
+  });
+}
 
   if (headerLiveDot) {
     new MutationObserver(syncFloatingDotsFromHeader).observe(headerLiveDot, {
