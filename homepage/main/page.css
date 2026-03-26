@@ -828,3 +828,128 @@ body.light-theme .theme-toggle-knob{
   padding: 10px 0 0;
   background: #001529;
 }
+/* FLOATING FAB */
+.floating-fab-wrap{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 10020;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.floating-fab-actions{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px) scale(0.96);
+  transition: all .22s ease;
+}
+
+.floating-fab-wrap.open .floating-fab-actions{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.floating-main-btn,
+.floating-mini-btn{
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all .2s ease;
+}
+
+.floating-main-btn{
+  width: 52px;
+  height: 52px;
+  background: var(--gold);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,.35);
+}
+
+.floating-main-btn:hover{
+  background: var(--gold-hover);
+  transform: scale(1.05);
+}
+
+.floating-main-btn:active{
+  background: var(--gold-active);
+}
+
+.floating-mini-btn{
+  width: 46px;
+  height: 46px;
+  background: #1f1f1f;
+  color: rgba(255,255,255,.85);
+  border: 1px solid #2f2f2f;
+  box-shadow: 0 6px 14px rgba(0,0,0,.28);
+}
+
+.floating-mini-btn:hover{
+  color: #fff;
+  border-color: var(--gold-hover);
+  transform: scale(1.04);
+}
+
+.floating-mini-btn:active{
+  border-color: var(--gold-active);
+}
+
+.floating-main-icon{
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.floating-mini-icon{
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.floating-mini-dot,
+.floating-main-dot{
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff2b2b;
+  border: 2px solid #fff;
+}
+
+.floating-main-dot.has-two::after{
+  content: "2";
+  position: absolute;
+  top: -5px;
+  right: -7px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: #ff2b2b;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  border: 1px solid #fff;
+}
+
+@media (max-width: 1140px){
+  .floating-fab-wrap{
+    right: 14px;
+    bottom: 14px;
+  }
+}
