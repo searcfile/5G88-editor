@@ -296,16 +296,15 @@ input[type="number"] {
       "rows free auto";
   }
 
-  /* pakai selector terus, jangan nth-child */
-  .form-row-top .cs-wrap{
+  .form-row-top .cs-wrap-gameSelect{
     grid-area: game;
   }
 
-  .form-row-top #betSelect{
+  .form-row-top .cs-wrap-betSelect{
     grid-area: bet;
   }
 
-  .form-row-top #pecahanSelect{
+  .form-row-top .cs-wrap-pecahanSelect{
     grid-area: win;
   }
 
@@ -356,14 +355,7 @@ input[type="number"] {
 .form-row-top .btn-main{
   max-width: 100%;
 }
-.form-row-top #gameSelect{
-  position: absolute !important;
-  left: -9999px !important;
-  width: 1px !important;
-  height: 1px !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
+
 /* ===== MIDDLE CONTROL ROW FINAL ===== */
 .form-row-middle{
   display: grid;
@@ -399,6 +391,7 @@ input[type="number"] {
   box-sizing: border-box;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
   height: 32px;
   min-height: 32px;
   line-height: 1;
@@ -510,4 +503,26 @@ select.has-value {
 
 .cs-display {
   color:var(--page-text);
+}
+.cs-wrap{
+  width: 100%;
+  min-width: 0;
+}
+
+.cs-display{
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cs-label{
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.cs-item.disabled{
+  color: var(--blur);
+  cursor: default;
 }
