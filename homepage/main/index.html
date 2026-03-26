@@ -137,22 +137,24 @@
 
   <div class="user-info">
     <div class="user-text">
-      <div class="header-right-meta">
-        <div id="notificationBell" style="width: 18px; height: 18px; background-color: red; border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 12px; color: white; font-weight: bold; cursor: pointer;" title="You have a new message">!</div>
+<div class="header-right-meta">
+  <div id="notificationBell" style="width: 18px; height: 18px; background-color: red; border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 12px; color: white; font-weight: bold; cursor: pointer;" title="You have a new message">!</div>
 
-<div id="notifButton">
-  <svg xmlns="http://www.w3.org/2000/svg"
-    width="1.2rem"
-    height="1.2rem"
-    viewBox="0 0 24 24"
-    fill="rgba(255,255,255,0.85)">
-    <path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z"/>
-  </svg>
-  <span id="notifDot"></span>
+  <div id="desktopNotifSlot">
+    <div id="notifButton">
+      <svg xmlns="http://www.w3.org/2000/svg"
+        width="1.2rem"
+        height="1.2rem"
+        viewBox="0 0 24 24"
+        fill="rgba(255,255,255,0.85)">
+        <path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z"/>
+      </svg>
+      <span id="notifDot"></span>
+    </div>
+  </div>
+
+  <div id="dateTime" class="date-time"></div>
 </div>
-
-        <div id="dateTime" class="date-time"></div>
-      </div>
 
       <div class="user-dropdown">
         <button id="userName" class="user-button" aria-label="Account" title="Account">
@@ -163,10 +165,11 @@
         </button>
 
         <div id="dropdownContent" class="dropdown-content">
-          <div id="userEmail" style="margin-bottom: 8px;"></div>
+         <div class="dropdown-user-top">
+          <div id="userEmail"></div>
+          <div id="mobileNotifSlot" class="mobile-notif-slot"></div>
+        </div>
           <hr style="border: 0; border-top: 1px solid #424242; margin: 8px 0;">
-        <div id="mobileNotifSlot" class="mobile-notif-slot"></div>
-        <div id="themeToggleWrap" class="theme-toggle-wrap">
           <button id="themeToggleBtn" type="button" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle theme">
            <span id="themeToggleLabel" class="theme-toggle-label">Light Mode</span>
            <span id="themeToggleSwitch" class="theme-toggle-switch">
