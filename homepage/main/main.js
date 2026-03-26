@@ -596,7 +596,21 @@ function closeSidebar() {
   document.getElementById("tabBar").classList.remove("shrink");
   document.getElementById("menuIcon").classList.remove("active-menu-icon");
 }
+function initSidebarSearch() {
+  const input = document.getElementById("sidebarSearchInput");
+  const wrap = document.getElementById("customSidebarTabs");
+  if (!input || !wrap) return;
 
+  input.addEventListener("input", function () {
+    const keyword = this.value.trim().toLowerCase();
+    const links = wrap.querySelectorAll("a");
+
+    links.forEach(link => {
+      const text = (link.textContent || "").toLowerCase();
+      link.style.display = text.includes(keyword) ? "" : "none";
+    });
+  });
+}
 document.addEventListener("click", (e) => {
   const isSidebar = e.target.closest("#sidebar");
   const isMenuIcon = e.target.closest("#menuIcon");
@@ -1354,6 +1368,7 @@ function isTabAllowed(label){
 }
 // ⬇️ GANTI seluruh blok ini
 document.addEventListener("DOMContentLoaded", async () => {
+  initSidebarSearch();
   const forceLogout = sessionStorage.getItem("forceLogout");
   if (forceLogout === "1") {
     sessionStorage.removeItem("forceLogout");
