@@ -420,7 +420,7 @@ function moveNotifButtonResponsive() {
     }
   }
 }
-
+window.addEventListener("resize", moveNotifButtonResponsive);
 document.addEventListener("DOMContentLoaded", () => {
   moveNotifButtonResponsive();
 
