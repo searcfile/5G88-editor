@@ -445,6 +445,9 @@ document.getElementById("gameSelect").addEventListener("change", function () {
   resetSelectToPlaceholder("betSelect", "Select Bet", false);
   resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
 
+  if (betCS) betCS.refresh();
+  if (winCS) winCS.refresh();
+
   if (!game) return;
 
   jackpotInsertedMap[game] = false;
@@ -452,38 +455,45 @@ document.getElementById("gameSelect").addEventListener("change", function () {
   if (gameData[game]) {
     gameData[game].bets.forEach(bet => {
       const option = document.createElement("option");
-      option.value = bet;
-      option.textContent = bet.toFixed(2);
+      option.value = String(bet);
+      option.textContent = Number(bet).toFixed(2);
       betSelect.appendChild(option);
     });
 
-    betSelect.selectedIndex = 0;
-    betSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    if (betCS) betCS.refresh();
+    if (winCS) winCS.refresh();
   }
 });
 
 document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(this.value);
-  const betKey = bet.toFixed(2);
+  const rawBet = this.value;
+  const bet = parseFloat(rawBet);
   const pecahanSelect = document.getElementById("pecahanSelect");
 
   resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
 
-  if (!game || isNaN(bet)) return;
+  if (!game || isNaN(bet)) {
+    if (winCS) winCS.refresh();
+    return;
+  }
 
-  if (gameData[game] && gameData[game].pecahan && gameData[game].pecahan[betKey]) {
-    const pecahanList = gameData[game].pecahan[betKey];
+  const pecahanMap = gameData?.[game]?.pecahan || {};
+  const pecahanList =
+    pecahanMap[rawBet] ??
+    pecahanMap[String(bet)] ??
+    pecahanMap[bet.toFixed(2)];
 
+  if (Array.isArray(pecahanList)) {
     pecahanList.forEach(p => {
       const option = document.createElement("option");
       option.value = p;
       option.textContent = Number(p).toFixed(2);
       pecahanSelect.appendChild(option);
     });
-
-    pecahanSelect.selectedIndex = 0;
   }
+
+  if (winCS) winCS.refresh();
 });
 
  function setNow() {
