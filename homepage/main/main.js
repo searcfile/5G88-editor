@@ -396,9 +396,12 @@ let userId = "";
 // Notifikasi popup atas
 const notifButton = document.getElementById("notifButton");
 const notifDot = document.getElementById("notifDot");
-const popup = document.getElementById("messagePopup");
-const content = document.getElementById("messageContent");
-const notifTooltip = document.getElementById("notifTooltip");
+
+const noticeModal = document.getElementById("noticeModal");
+const noticeMessageText = document.getElementById("noticeMessageText");
+const noticeMessageTime = document.getElementById("noticeMessageTime");
+const noticeClose = document.getElementById("noticeClose");
+const noticeOkBtn = document.getElementById("noticeOkBtn");
 
 document.addEventListener("DOMContentLoaded", () => {
   const savedMessage = localStorage.getItem("latestNotifMessage");
@@ -441,6 +444,39 @@ function showNotification(message, timestamp) {
     if (window.updateFloatingFabNoticeDot) {
     window.updateFloatingFabNoticeDot(1);
     }
+  }
+}
+function closeNoticeModal() {
+  if (noticeModal) {
+    noticeModal.style.display = "none";
+  }
+}
+
+function openNoticeModal(message, timestamp) {
+  if (!noticeModal || !noticeMessageText || !noticeMessageTime) return;
+
+  const dateObj = new Date(Number(timestamp));
+  const isValidDate = !isNaN(dateObj.getTime());
+
+  noticeMessageText.textContent = message || "";
+  noticeMessageTime.textContent = isValidDate
+    ? `${String(dateObj.getDate()).padStart(2,'0')}/${String(dateObj.getMonth()+1).padStart(2,'0')}/${dateObj.getFullYear()} ${String(dateObj.getHours()).padStart(2,'0')}:${String(dateObj.getMinutes()).padStart(2,'0')}:${String(dateObj.getSeconds()).padStart(2,'0')}`
+    : "Waktu tidak valid";
+
+  noticeModal.style.display = "flex";
+
+  if (notifDot) {
+    notifDot.style.display = "none";
+    notifDot.textContent = "";
+  }
+
+  const cur = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  const curEmail = (cur.email || "guest").toLowerCase();
+  const seenKey = `seenNotif_${timestamp}_${curEmail}`;
+  localStorage.setItem(seenKey, "1");
+
+  if (window.updateFloatingFabNoticeDot) {
+    window.updateFloatingFabNoticeDot(0);
   }
 }
 function toggleNoticePopup(anchorEl) {
@@ -499,22 +535,29 @@ function toggleNoticePopup(anchorEl) {
 if (notifButton) {
   notifButton.addEventListener("click", (e) => {
     e.stopPropagation();
-    toggleNoticePopup(notifButton);
+
+    const message = notifButton.dataset.message;
+    const timestamp = Number(notifButton.dataset.timestamp);
+    if (!message || !timestamp) return;
+
+    openNoticeModal(message, timestamp);
   });
 }
+if (noticeClose) {
+  noticeClose.addEventListener("click", closeNoticeModal);
+}
 
+if (noticeOkBtn) {
+  noticeOkBtn.addEventListener("click", closeNoticeModal);
+}
 
-// Klik luar = tutup popup (biarkan seperti punyamu)
-document.addEventListener("click", function (event) {
-  if (popup && popup.style.display === "block" && !popup.contains(event.target) && !notifButton?.contains(event.target)) {
-    popup.style.display = "none";
-  }
-});
-window.addEventListener("blur", () => {
-  if (popup && popup.style.display === "block") {
-    popup.style.display = "none";
-  }
-});
+if (noticeModal) {
+  noticeModal.addEventListener("click", (e) => {
+    if (e.target === noticeModal) {
+      closeNoticeModal();
+    }
+  });
+}
 /* =========================
    FLOATING FAB
 ========================= */
@@ -627,14 +670,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-if (noticeBtn) {
-  noticeBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setFabOpen(false);
-    toggleNoticePopup(noticeBtn);
-  });
-}
-
   if (headerLiveDot) {
     new MutationObserver(syncFloatingDotsFromHeader).observe(headerLiveDot, {
       attributes: true,
@@ -685,6 +720,18 @@ if (noticeBtn) {
     refreshMainDot();
   };
 });
+if (noticeBtn) {
+  noticeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setFabOpen(false);
+
+    const message = notifButton?.dataset.message;
+    const timestamp = Number(notifButton?.dataset.timestamp);
+    if (!message || !timestamp) return;
+
+    openNoticeModal(message, timestamp);
+  });
+}
 // ===== DROPDOWNS (GameLog & Bank Resit) – versi terpadu =====
 const gameLogBtn        = document.getElementById("gameLogBtn");
 const gameLogDropdown   = document.getElementById("gameLogDropdown");
@@ -753,10 +800,7 @@ if (pageFrame) {
 // Blur/ESC -> tutup semuanya
 window.addEventListener("blur", closeAllDropdowns);
 window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAllDropdowns(); });
-function closeMessage() {
-  const popup = document.getElementById("messagePopup");
-  if (popup) popup.style.display = "none";
-}
+
 const tabBar = document.getElementById("tabBar");
 const menuIcon = document.getElementById("menuIcon");
 const sidebar = document.getElementById("sidebar");
