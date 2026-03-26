@@ -691,6 +691,29 @@ if (pageFrame) {
       setTimeout(() => sendThemeToIframe(), 120);
       setTimeout(() => sendThemeToIframe(), 500);
     }
+
+    // ===============================
+    // LIVECHAT AUTO MARK READ
+    // ===============================
+    const currentSrc = (pageFrame.getAttribute("src") || "").toLowerCase();
+
+    if (
+      currentSrc.includes("/main/livechat") ||
+      currentSrc.includes("/main/userlivechatphp")
+    ) {
+      setTimeout(() => {
+        if (typeof markLivechatAsRead === "function") {
+          markLivechatAsRead();
+        }
+
+        const livechatDot = document.getElementById("livechatDot");
+        if (livechatDot) livechatDot.style.display = "none";
+
+        if (window.updateFloatingFabLivechatDot) {
+          window.updateFloatingFabLivechatDot(false);
+        }
+      }, 800);
+    }
   });
 }
 // Blur/ESC -> tutup semuanya
