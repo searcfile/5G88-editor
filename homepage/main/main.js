@@ -733,18 +733,7 @@ if (noticeBtn) {
     refreshMainDot();
   };
 });
-if (noticeBtn) {
-  noticeBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setFabOpen(false);
 
-    const message = notifButton?.dataset.message;
-    const timestamp = Number(notifButton?.dataset.timestamp);
-    if (!message || !timestamp) return;
-
-    openNoticeModal(message, timestamp);
-  });
-}
 // ===== DROPDOWNS (GameLog & Bank Resit) – versi terpadu =====
 const gameLogBtn        = document.getElementById("gameLogBtn");
 const gameLogDropdown   = document.getElementById("gameLogDropdown");
