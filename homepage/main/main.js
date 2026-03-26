@@ -434,9 +434,12 @@ function showNotification(message, timestamp) {
     notifButton.dataset.timestamp = timestamp;
     localStorage.setItem("latestNotifMessage", message);
     localStorage.setItem("latestNotifTimestamp", timestamp);
-    if (notifDot) notifDot.style.display = "block";
+    if (notifDot) {
+    notifDot.style.display = "flex";
+    notifDot.textContent = "1";
+    }
     if (window.updateFloatingFabNoticeDot) {
-    window.updateFloatingFabNoticeDot(true);
+    window.updateFloatingFabNoticeDot(1);
     }
   }
 }
@@ -529,29 +532,52 @@ document.addEventListener("DOMContentLoaded", () => {
     if (closeIcon) closeIcon.style.display = isOpen ? "" : "none";
   }
 
-  function isVisible(el){
-    return !!el && getComputedStyle(el).display !== "none";
-  }
+  function setBadgeCount(el, count) {
+    if (!el) return;
+    const n = Number(count || 0);
 
-  function refreshMainDot(){
-    let total = 0;
-    if (isVisible(liveDot)) total += 1;
-    if (isVisible(noticeDot)) total += 1;
-
-    if (!mainDot) return;
-
-    if (total <= 0) {
-      mainDot.style.display = "none";
-      mainDot.classList.remove("has-two");
-    } else {
-      mainDot.style.display = "block";
-      mainDot.classList.toggle("has-two", total >= 2);
+    if (n <= 0) {
+      el.style.display = "none";
+      el.textContent = "";
+      return;
     }
+
+    el.style.display = "flex";
+    el.textContent = n > 99 ? "99+" : String(n);
   }
 
-  function syncFloatingDotsFromHeader(){
-    if (liveDot) liveDot.style.display = isVisible(headerLiveDot) ? "block" : "none";
-    if (noticeDot) noticeDot.style.display = isVisible(headerNoticeDot) ? "block" : "none";
+  function getBadgeCount(el) {
+    if (!el) return 0;
+    const txt = (el.textContent || "").trim();
+    if (!txt) return 0;
+    if (txt === "99+") return 99;
+    return parseInt(txt, 10) || 0;
+  }
+
+  function getHeaderDotCount(dotEl) {
+    if (!dotEl) return 0;
+    if (getComputedStyle(dotEl).display === "none") return 0;
+
+    const txt = (dotEl.textContent || "").trim();
+    if (!txt) return 1;
+
+    const n = parseInt(txt, 10);
+    return isNaN(n) ? 1 : n;
+  }
+
+  function refreshMainDot() {
+    const liveCount = getBadgeCount(liveDot);
+    const noticeCount = getBadgeCount(noticeDot);
+    const total = liveCount + noticeCount;
+    setBadgeCount(mainDot, total);
+  }
+
+  function syncFloatingDotsFromHeader() {
+    const liveCount = getHeaderDotCount(headerLiveDot);
+    const noticeCount = getHeaderDotCount(headerNoticeDot);
+
+    setBadgeCount(liveDot, liveCount);
+    setBadgeCount(noticeDot, noticeCount);
     refreshMainDot();
   }
 
@@ -574,17 +600,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-if (liveBtn) {
-  liveBtn.addEventListener("click", () => {
-    setFabOpen(false);
+  if (liveBtn) {
+    liveBtn.addEventListener("click", () => {
+      setFabOpen(false);
 
-    if (headerLiveBtn) {
-      headerLiveBtn.click();
-    } else if (typeof addTab === "function") {
-      addTab("LIVE CHAT", "https://5g88-main.vercel.app/main/livechat");
-    }
-  });
-}
+      if (headerLiveBtn) {
+        headerLiveBtn.click();
+      } else if (typeof addTab === "function") {
+        addTab("LIVE CHAT", "https://5g88-main.vercel.app/main/livechat");
+      }
+    });
+  }
 
   if (noticeBtn) {
     noticeBtn.addEventListener("click", () => {
@@ -594,9 +620,8 @@ if (liveBtn) {
         headerNoticeBtn.click();
       }
 
-      if (headerNoticeDot) headerNoticeDot.style.display = "none";
-      if (noticeDot) noticeDot.style.display = "none";
-      refreshMainDot();
+      setBadgeCount(noticeDot, 0);
+      setBadgeCount(mainDot, getBadgeCount(liveDot));
     });
   }
 
@@ -616,15 +641,37 @@ if (liveBtn) {
 
   syncFloatingDotsFromHeader();
 
-  window.updateFloatingFabLivechatDot = function(show = true){
-    if (headerLiveDot) headerLiveDot.style.display = show ? "block" : "none";
-    if (liveDot) liveDot.style.display = show ? "block" : "none";
+  window.updateFloatingFabLivechatDot = function(count = 0){
+    const n = Number(count || 0);
+
+    if (headerLiveDot) {
+      if (n > 0) {
+        headerLiveDot.style.display = "flex";
+        headerLiveDot.textContent = n > 99 ? "99+" : String(n);
+      } else {
+        headerLiveDot.style.display = "none";
+        headerLiveDot.textContent = "";
+      }
+    }
+
+    setBadgeCount(liveDot, n);
     refreshMainDot();
   };
 
-  window.updateFloatingFabNoticeDot = function(show = true){
-    if (headerNoticeDot) headerNoticeDot.style.display = show ? "block" : "none";
-    if (noticeDot) noticeDot.style.display = show ? "block" : "none";
+  window.updateFloatingFabNoticeDot = function(count = 0){
+    const n = Number(count || 0);
+
+    if (headerNoticeDot) {
+      if (n > 0) {
+        headerNoticeDot.style.display = "flex";
+        headerNoticeDot.textContent = n > 99 ? "99+" : String(n);
+      } else {
+        headerNoticeDot.style.display = "none";
+        headerNoticeDot.textContent = "";
+      }
+    }
+
+    setBadgeCount(noticeDot, n);
     refreshMainDot();
   };
 });
@@ -1268,22 +1315,30 @@ function initLivechatNotifListener(userIdParam) {
   if (!login?.email || !userIdParam) return;
 
   blurphpDb.ref("chats/" + userIdParam).on("value", (snapshot) => {
-    let hasUnread = false;
+    let unreadCount = 0;
 
     snapshot.forEach((child) => {
       const msg = child.val() || {};
       const from = String(msg.from || "").trim().toLowerCase();
 
       if (from === "admin" && msg.seenByUser !== true) {
-        hasUnread = true;
+        unreadCount++;
       }
     });
 
     const livechatDot = document.getElementById("livechatDot");
-    if (livechatDot) livechatDot.style.display = hasUnread ? "inline" : "none";
+    if (livechatDot) {
+      if (unreadCount > 0) {
+        livechatDot.style.display = "flex";
+        livechatDot.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+      } else {
+        livechatDot.style.display = "none";
+        livechatDot.textContent = "";
+      }
+    }
 
     if (window.updateFloatingFabLivechatDot) {
-      window.updateFloatingFabLivechatDot(hasUnread);
+      window.updateFloatingFabLivechatDot(unreadCount);
     }
   });
 }
@@ -1659,25 +1714,45 @@ console.log("LIVECHAT seenByUser =", msg.seenByUser);
   if (from !== "admin") return;
   if (msg.seenByUser === true) return;
 
-  const livechatDot = document.getElementById("livechatDot");
-  const notifSound  = document.getElementById("notifSound");
+const livechatDot = document.getElementById("livechatDot");
+const notifSound  = document.getElementById("notifSound");
 
-  const timestamp = Number(msg.time || msg.atMs || Date.now());
+const timestamp = Number(msg.time || msg.atMs || Date.now());
 
-  if (timestamp > lastNotifTime) {
-    lastNotifTime = timestamp;
+if (timestamp > lastNotifTime) {
+  lastNotifTime = timestamp;
 
-    if (livechatDot) livechatDot.style.display = "inline";
+  blurphpDb.ref("chats/" + userId).once("value", (snap) => {
+    let unreadCount = 0;
+
+    snap.forEach((child) => {
+      const row = child.val() || {};
+      const fromRow = String(row.from || "").trim().toLowerCase();
+      if (fromRow === "admin" && row.seenByUser !== true) {
+        unreadCount++;
+      }
+    });
+
+    if (livechatDot) {
+      if (unreadCount > 0) {
+        livechatDot.style.display = "flex";
+        livechatDot.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+      } else {
+        livechatDot.style.display = "none";
+        livechatDot.textContent = "";
+      }
+    }
 
     if (window.updateFloatingFabLivechatDot) {
-      window.updateFloatingFabLivechatDot(true);
+      window.updateFloatingFabLivechatDot(unreadCount);
     }
+  });
 
-    if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
-      notifSound.currentTime = 0;
-      notifSound.play().catch(() => {});
-    }
+  if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
+    notifSound.currentTime = 0;
+    notifSound.play().catch(() => {});
   }
+}
 });
 
   // indikator unread
