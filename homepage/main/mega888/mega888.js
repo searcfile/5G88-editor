@@ -268,7 +268,7 @@ function initCustomSelect(selectId, withSearch = false, searchPlaceholder = "Sea
   native.style.pointerEvents = "none";
 
   const wrap = document.createElement("div");
-  wrap.className = "cs-wrap";
+  wrap.className = `cs-wrap cs-wrap-${selectId}`;
 
   const display = document.createElement("div");
   display.className = "cs-display";
