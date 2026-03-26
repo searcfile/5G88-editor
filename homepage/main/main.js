@@ -1269,14 +1269,22 @@ function initLivechatNotifListener(userIdParam) {
 
   blurphpDb.ref("chats/" + userIdParam).on("value", (snapshot) => {
     let hasUnread = false;
+
     snapshot.forEach((child) => {
-      const msg = child.val();
-      if (msg.from === "admin" && msg.seenByUser !== true) {
+      const msg = child.val() || {};
+      const from = String(msg.from || "").trim().toLowerCase();
+
+      if (from === "admin" && msg.seenByUser !== true) {
         hasUnread = true;
       }
     });
+
     const livechatDot = document.getElementById("livechatDot");
     if (livechatDot) livechatDot.style.display = hasUnread ? "inline" : "none";
+
+    if (window.updateFloatingFabLivechatDot) {
+      window.updateFloatingFabLivechatDot(hasUnread);
+    }
   });
 }
 
@@ -1642,21 +1650,28 @@ const chatsRef = blurphpDb.ref("chats/" + userId);
 chatsRef.off("child_added");
 
 chatsRef.on("child_added", (snapshot) => {
-  const msg = snapshot.val();
-  if (!msg || msg.from !== "admin") return;
+  const msg = snapshot.val() || {};
+  console.log("LIVECHAT NEW MSG =", msg);
+console.log("LIVECHAT FROM =", msg.from);
+console.log("LIVECHAT seenByUser =", msg.seenByUser);
+  const from = String(msg.from || "").trim().toLowerCase();
 
-  // ✅ kalau dah dibaca, jangan nyalakan dot
+  if (from !== "admin") return;
   if (msg.seenByUser === true) return;
 
   const livechatDot = document.getElementById("livechatDot");
   const notifSound  = document.getElementById("notifSound");
 
-  const timestamp = msg.time || msg.atMs || Date.now();
+  const timestamp = Number(msg.time || msg.atMs || Date.now());
 
   if (timestamp > lastNotifTime) {
     lastNotifTime = timestamp;
 
     if (livechatDot) livechatDot.style.display = "inline";
+
+    if (window.updateFloatingFabLivechatDot) {
+      window.updateFloatingFabLivechatDot(true);
+    }
 
     if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
       notifSound.currentTime = 0;
