@@ -1276,7 +1276,10 @@ function renderCustomTabs(){
     if (c.sidebarCustomWrap) c.sidebarCustomWrap.appendChild(linkSidebar);
     else c.sidebar.appendChild(linkSidebar);
   });
-
+  const sidebarSearchInput = document.getElementById("sidebarSearchInput");
+if (sidebarSearchInput) {
+  sidebarSearchInput.dispatchEvent(new Event("input"));
+}
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
