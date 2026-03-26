@@ -766,30 +766,31 @@ body.light-theme .theme-toggle-knob{
   left: 2px;
 }
 .sidebar-inner{
+  position: relative;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   background: #001529;
-  position: relative;
+  padding: 0;
 }
 
 .sidebar-top{
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 999;
   background: #001529;
-  padding: 8px 0 12px;
+  padding: 10px 10px 12px;
+  box-sizing: border-box;
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 8px 12px rgba(0,0,0,0.20);
 }
 
 .sidebar-search-wrap{
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 0 auto;
+  margin: 0;
+  padding: 0;
   background: #001529;
-  padding: 2px 0 0;
 }
 
 .sidebar-search-input{
@@ -819,4 +820,11 @@ body.light-theme .theme-toggle-knob{
 
 .sidebar-search-input:focus{
   border-color: var(--gold);
+}
+
+#customSidebarTabs{
+  position: relative;
+  z-index: 1;
+  padding: 10px 0 0;
+  background: #001529;
 }
