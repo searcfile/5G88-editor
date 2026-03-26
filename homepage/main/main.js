@@ -669,7 +669,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  
+if (noticeBtn) {
+  noticeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setFabOpen(false);
 
+    const message = notifButton?.dataset.message;
+    const timestamp = Number(notifButton?.dataset.timestamp);
+    if (!message || !timestamp) return;
+
+    openNoticeModal(message, timestamp);
+  });
+}
+  
   if (headerLiveDot) {
     new MutationObserver(syncFloatingDotsFromHeader).observe(headerLiveDot, {
       attributes: true,
