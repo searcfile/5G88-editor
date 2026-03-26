@@ -162,209 +162,133 @@ function updateAutoAddScoreButtonUI() {
   }
 }
   let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
-function saveCurrentSelectionOnly() {
-  const oldData = JSON.parse(localStorage.getItem("gameLogDataMega888") || "{}");
+  (function initCustomGameSelect(){
+  const native = document.getElementById('gameSelect');
+  if(!native) return;
 
-  const game = document.getElementById("gameSelect")?.value || "";
-  const bet = document.getElementById("betSelect")?.value || "";
-  const pecahan = document.getElementById("pecahanSelect")?.value || "";
+  // Sembunyikan select asli (tetap dipakai untuk value & event)
+  native.style.position='absolute';
+  native.style.left='-9999px';
 
-  const newData = {
-    ...oldData,
-    game,
-    bet,
-    pecahan
+  // Bungkus baru
+  const wrap = document.createElement('div');
+  wrap.className = 'cs-wrap';
+
+  const display = document.createElement('div');
+  display.className = 'cs-display';
+  const label = document.createElement('span');
+  label.textContent = native.options[native.selectedIndex]?.text || '-- Choose --';
+  const arrow = document.createElement('i'); arrow.className='cs-arrow';
+  display.appendChild(label); display.appendChild(arrow);
+
+  // Panel list
+  const list = document.createElement('div'); list.className='cs-list';
+
+  // 🔎 Search bar
+  const searchBox = document.createElement('div'); searchBox.className = 'cs-search';
+  const searchInput = document.createElement('input');
+  searchInput.type = 'text'; searchInput.placeholder = 'Search game…'; searchInput.autocomplete = 'off';
+  searchBox.appendChild(searchInput);
+
+  // Container item
+  const itemsBox = document.createElement('div'); itemsBox.className = 'cs-items';
+
+  // Render item dari option native
+  const makeItem = (opt) => {
+    const item = document.createElement('div');
+    item.className='cs-item';
+    item.textContent = opt.text;
+    item.dataset.value = opt.value;
+    if(opt.selected) item.classList.add('active');
+    item.addEventListener('click', () => {
+      // Sinkron ke select asli + trigger change (biar JS lain jalan)
+      native.value = opt.value;
+      native.dispatchEvent(new Event('change', {bubbles:true}));
+
+      // Update UI custom
+      label.textContent = opt.text || '-- Choose --';
+      itemsBox.querySelectorAll('.cs-item').forEach(i=>i.classList.remove('active'));
+      item.classList.add('active');
+      wrap.classList.remove('open');
+    });
+    return item;
   };
 
-  localStorage.setItem("gameLogDataMega888", JSON.stringify(newData));
-}
-function initCustomSelect(selectId, withSearch = false, searchPlaceholder = "Search...") {
-  const native = document.getElementById(selectId);
-  if (!native) return null;
+  const allItems = Array.from(native.options).map(opt => makeItem(opt));
+  allItems.forEach(i => itemsBox.appendChild(i));
 
-  if (native.dataset.csReady === "1") {
-    return native._csApi || null;
+  // Filter realtime
+  function applyFilter(q){
+    const query = q.trim().toLowerCase();
+    let firstVisible = null;
+    allItems.forEach(i=>{
+      const show = i.textContent.toLowerCase().includes(query);
+      i.style.display = show ? '' : 'none';
+      if (show && !firstVisible) firstVisible = i;
+    });
+    // auto-highlight item pertama yang kelihatan
+    itemsBox.querySelectorAll('.cs-item').forEach(i=>i.classList.remove('hover'));
+    if(firstVisible) firstVisible.classList.add('hover');
   }
-  native.dataset.csReady = "1";
+  searchInput.addEventListener('input', e => applyFilter(e.target.value));
 
-  // sembunyikan select asli
-  native.style.position = "absolute";
-  native.style.left = "-9999px";
-  native.style.width = "1px";
-  native.style.height = "1px";
-  native.style.opacity = "0";
-  native.style.pointerEvents = "none";
-
-  const wrap = document.createElement("div");
-  wrap.className = "cs-wrap";
-
-  const display = document.createElement("div");
-  display.className = "cs-display";
-  display.tabIndex = 0;
-
-  const label = document.createElement("span");
-  label.className = "cs-label";
-
-  const arrow = document.createElement("i");
-  arrow.className = "cs-arrow";
-
-  display.appendChild(label);
-  display.appendChild(arrow);
-
-  const list = document.createElement("div");
-  list.className = "cs-list";
-
-  let searchInput = null;
-  let itemsBox = document.createElement("div");
-  itemsBox.className = "cs-items";
-
-  if (withSearch) {
-    const searchBox = document.createElement("div");
-    searchBox.className = "cs-search";
-
-    searchInput = document.createElement("input");
-    searchInput.type = "text";
-    searchInput.placeholder = searchPlaceholder;
-    searchInput.autocomplete = "off";
-
-    searchBox.appendChild(searchInput);
-    list.appendChild(searchBox);
+  // Navigasi keyboard dalam list
+  function moveHover(dir){
+    const visible = allItems.filter(i => i.style.display !== 'none');
+    if(visible.length===0) return;
+    let idx = visible.findIndex(i => i.classList.contains('hover'));
+    if(idx === -1) idx = 0;
+    else idx = (idx + dir + visible.length) % visible.length;
+    visible.forEach(i=>i.classList.remove('hover'));
+    const target = visible[idx];
+    target.classList.add('hover');
+    // pastikan terlihat
+    const r = target.getBoundingClientRect();
+    const rb = itemsBox.getBoundingClientRect();
+    if(r.top < rb.top) itemsBox.scrollTop += r.top - rb.top;
+    if(r.bottom > rb.bottom) itemsBox.scrollTop += r.bottom - rb.bottom;
   }
 
-  list.appendChild(itemsBox);
+  searchInput.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowDown'){ e.preventDefault(); moveHover(+1); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); moveHover(-1); }
+    else if(e.key === 'Enter'){
+      e.preventDefault();
+      const chosen = itemsBox.querySelector('.cs-item.hover') || itemsBox.querySelector('.cs-item:not([style*="display: none"])');
+      if(chosen) chosen.click();
+    } else if(e.key === 'Escape'){
+      wrap.classList.remove('open');
+    }
+  });
 
+  // Toggle open/close
+  display.addEventListener('click', () => {
+    wrap.classList.toggle('open');
+    if(wrap.classList.contains('open')){
+      searchInput.value = '';
+      applyFilter('');
+      // fokus ke search
+      setTimeout(()=>searchInput.focus(), 0);
+    }
+  });
+  document.addEventListener('click', (e)=>{ if(!wrap.contains(e.target)) wrap.classList.remove('open'); });
+
+  // Sisipkan setelah select asli
   native.parentNode.insertBefore(wrap, native.nextSibling);
   wrap.appendChild(display);
   wrap.appendChild(list);
+  list.appendChild(searchBox);
+  list.appendChild(itemsBox);
 
-  function getPlaceholderText() {
-    const first = native.options[0];
-    return first ? first.textContent : "-- Choose --";
-  }
-
-  function refresh() {
-    itemsBox.innerHTML = "";
-
-    const options = Array.from(native.options);
-    const selectedOpt = native.options[native.selectedIndex];
-    const hasValue =
-      selectedOpt &&
-      selectedOpt.value !== "" &&
-      !selectedOpt.disabled;
-
-    label.textContent = hasValue ? selectedOpt.textContent : getPlaceholderText();
-    display.classList.toggle("placeholder", !hasValue);
-
-    options.forEach((opt, index) => {
-      const item = document.createElement("div");
-      item.className = "cs-item";
-      item.textContent = opt.textContent;
-      item.dataset.value = opt.value;
-
-      if (opt.disabled && opt.value === "") {
-        item.classList.add("disabled");
-      }
-
-      if (index === native.selectedIndex && hasValue) {
-        item.classList.add("active");
-      }
-
-      item.addEventListener("click", () => {
-        if (opt.disabled) return;
-
-        native.selectedIndex = index;
-        native.value = opt.value;
-        native.dispatchEvent(new Event("change", { bubbles: true }));
-        close();
-        refresh();
-      });
-
-      itemsBox.appendChild(item);
+  // Sinkron jika value select berubah via JS
+  native.addEventListener('change', () => {
+    const txt = native.options[native.selectedIndex]?.text || '-- Choose --';
+    label.textContent = txt;
+    allItems.forEach(i=>{
+      i.classList.toggle('active', i.dataset.value===native.value);
     });
-
-    if (searchInput) {
-      searchInput.value = "";
-      applyFilter("");
-    }
-  }
-
-  function applyFilter(q) {
-    const query = String(q || "").trim().toLowerCase();
-    const items = Array.from(itemsBox.querySelectorAll(".cs-item"));
-
-    items.forEach(item => {
-      const show = item.textContent.toLowerCase().includes(query);
-      item.style.display = show ? "" : "none";
-    });
-  }
-
-  function open() {
-    document.querySelectorAll(".cs-wrap.open").forEach(w => {
-      if (w !== wrap) w.classList.remove("open");
-    });
-    wrap.classList.add("open");
-
-    if (searchInput) {
-      searchInput.value = "";
-      applyFilter("");
-      setTimeout(() => searchInput.focus(), 0);
-    }
-  }
-
-  function close() {
-    wrap.classList.remove("open");
-  }
-
-  function toggle() {
-    wrap.classList.contains("open") ? close() : open();
-  }
-
-  display.addEventListener("click", (e) => {
-    e.stopPropagation();
-    toggle();
   });
-
-  display.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggle();
-    } else if (e.key === "Escape") {
-      close();
-    }
-  });
-
-  if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-      applyFilter(e.target.value);
-    });
-
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") close();
-    });
-  }
-
-  document.addEventListener("click", (e) => {
-    if (!wrap.contains(e.target)) close();
-  });
-
-  native.addEventListener("change", refresh);
-
-  const observer = new MutationObserver(() => refresh());
-  observer.observe(native, {
-    childList: true,
-    subtree: false,
-    attributes: true
-  });
-
-  refresh();
-
-  const api = { refresh, open, close, wrap, display, list };
-  native._csApi = api;
-  return api;
-}
-const gameCS = initCustomSelect("gameSelect", true, "Search game...");
-const betCS = initCustomSelect("betSelect", false);
-const winCS = initCustomSelect("pecahanSelect", false);
+})();
 document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
@@ -373,73 +297,43 @@ document.getElementById("gameSelect").addEventListener("change", function () {
   resetSelectToPlaceholder("betSelect", "Select Bet", false);
   resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
 
-  if (betCS) betCS.refresh();
-  if (winCS) winCS.refresh();
-
-  if (!game) {
-    saveCurrentSelectionOnly();
-    return;
-  }
+  if (!game) return;
 
   jackpotInsertedMap[game] = false;
 
-  if (gameData[game] && Array.isArray(gameData[game].bets)) {
+  if (gameData[game]) {
     gameData[game].bets.forEach(bet => {
       const option = document.createElement("option");
-      option.value = String(bet);
-      option.textContent = Number(bet).toFixed(2);
+      option.value = bet;
+      option.textContent = bet.toFixed(2);
       betSelect.appendChild(option);
     });
 
-    // ✅ auto pilih bet pertama
-    if (gameData[game].bets.length > 0) {
-      betSelect.value = String(gameData[game].bets[0]);
-    }
-
-    if (betCS) betCS.refresh();
-
-    // ✅ trigger supaya pecahan auto dibina
+    betSelect.selectedIndex = 0;
     betSelect.dispatchEvent(new Event("change", { bubbles: true }));
   }
-
-  saveCurrentSelectionOnly();
 });
 document.getElementById("betSelect").addEventListener("change", function () {
   const game = document.getElementById("gameSelect").value;
-  const rawBet = this.value;
-  const bet = parseFloat(rawBet);
+  const bet = parseFloat(this.value);
   const pecahanSelect = document.getElementById("pecahanSelect");
 
   resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
 
-  if (!game || isNaN(bet)) {
-    if (winCS) winCS.refresh();
-    saveCurrentSelectionOnly();
-    return;
-  }
+  if (!game || isNaN(bet)) return;
 
-  const pecahanMap = gameData?.[game]?.pecahan || {};
-  const pecahanList =
-    pecahanMap[rawBet] ??
-    pecahanMap[String(bet)] ??
-    pecahanMap[bet.toFixed(2)];
+  if (gameData[game] && gameData[game].pecahan[bet]) {
+    const pecahanList = gameData[game].pecahan[bet];
 
-  if (Array.isArray(pecahanList)) {
     pecahanList.forEach(p => {
       const option = document.createElement("option");
-      option.value = String(p);
-      option.textContent = Number(p).toFixed(2);
+      option.value = p;
+      option.textContent = p.toFixed(2);
       pecahanSelect.appendChild(option);
     });
 
-    // ✅ auto pilih pecahan pertama
-    if (pecahanList.length > 0) {
-      pecahanSelect.value = String(pecahanList[0]);
-    }
+    pecahanSelect.selectedIndex = 0;
   }
-
-  if (winCS) winCS.refresh();
-  saveCurrentSelectionOnly();
 });
 
  function setNow() {
@@ -638,10 +532,6 @@ document.getElementById("autoAddScoreBtn")?.addEventListener("click", () => {
   autoAddScoreOn = !autoAddScoreOn;
   localStorage.setItem("autoAddScoreOn918kiss", autoAddScoreOn ? "1" : "0");
   updateAutoAddScoreButtonUI();
-});
-document.getElementById("pecahanSelect").addEventListener("change", function () {
-  if (winCS) winCS.refresh();
-  saveCurrentSelectionOnly();
 });
 function generateLog() {
   const game = document.getElementById("gameSelect").value;
@@ -1070,68 +960,46 @@ function resetLog() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  const savedAuto = localStorage.getItem('autoFreeGameOnMega888');
+  const savedAuto = localStorage.getItem('autoFreeGameOn918kiss');
   autoFreeGameOn = (savedAuto === '1');
   updateAutoFreeGameButtonUI();
-
-  const savedAutoAdd = localStorage.getItem("autoAddScoreOnMega888");
-  autoAddScoreOn = (savedAutoAdd !== "0");
+ 
+  const savedAutoAdd = localStorage.getItem("autoAddScoreOn918kiss");
+  autoAddScoreOn = (savedAutoAdd !== "0"); // default ON
   updateAutoAddScoreButtonUI();
-
-  const saved = localStorage.getItem("gameLogDataMega888");
+ 
+  const saved = localStorage.getItem("gameLogData918kiss");
   if (!saved) return;
 
-  const data = JSON.parse(saved);
-
+const data = JSON.parse(saved);
+  // restore last set win info (kalau ada)
   if (typeof data.lastWinRowIndex === "number") lastWinRowIndex = data.lastWinRowIndex;
+if (typeof data.manualWinAmount === "number") {
+  const winInput = document.getElementById("manualWinInput");
+  if (winInput) winInput.value = Number(data.manualWinAmount) > 0 ? data.manualWinAmount : "";
+}
+document.getElementById("gameSelect").value = data.game;
+document.getElementById("manualTime").value = data.manualTime;
+document.getElementById("manualScore").value = Number(data.manualScore) > 0 ? data.manualScore : "";
 
-  if (typeof data.manualWinAmount === "number") {
-    const winInput = document.getElementById("manualWinInput");
-    if (winInput) winInput.value = Number(data.manualWinAmount) > 0 ? data.manualWinAmount : "";
-  }
+// kalau ada freeGame tersimpan, isi balik input
+if (typeof data.freeGame !== "undefined") {
+  document.getElementById("freeGameInput").value = Number(data.freeGame) > 0 ? data.freeGame : "";
+}
 
-  document.getElementById("gameSelect").value = data.game || "";
-  document.getElementById("manualTime").value = data.manualTime || "";
-  document.getElementById("manualScore").value = Number(data.manualScore) > 0 ? data.manualScore : "";
-
-  if (typeof data.freeGame !== "undefined") {
-    document.getElementById("freeGameInput").value = Number(data.freeGame) > 0 ? data.freeGame : "";
-  }
-
-  // ✅ restore game dulu
-  document.getElementById("gameSelect").dispatchEvent(new Event("change", { bubbles: true }));
-  if (gameCS) gameCS.refresh();
+document.getElementById("gameSelect").dispatchEvent(new Event("change"));
 
   setTimeout(() => {
-    const betSelect = document.getElementById("betSelect");
-    if (data.bet !== undefined && data.bet !== "") {
-      betSelect.value = String(data.bet);
-      betSelect.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    if (betCS) betCS.refresh();
+    document.getElementById("betSelect").value = data.bet;
+    document.getElementById("betSelect").dispatchEvent(new Event("change"));
 
     setTimeout(() => {
-      const pecahanSelect = document.getElementById("pecahanSelect");
-      if (data.pecahan !== undefined && data.pecahan !== "") {
-        pecahanSelect.value = String(data.pecahan);
-      }
-      if (winCS) winCS.refresh();
+      document.getElementById("pecahanSelect").value = data.pecahan;
+    }, 50);
+  }, 50);
 
-      saveCurrentSelectionOnly();
-    }, 80);
-  }, 80);
-
-  document.querySelector("#gameLog tbody").innerHTML = data.logs || "";
-
-  if (Array.isArray(data.winBackup)) {
-    const winCells = document.querySelectorAll("tr.log-row .win-cell");
-    winCells.forEach((cell, i) => {
-      if (data.winBackup[i] !== undefined) {
-        cell.dataset.originalWin = data.winBackup[i];
-      }
-    });
-  }
-
+  document.querySelector("#gameLog tbody").innerHTML = data.logs;
+   // apply Free Game balik bila reload
   applyFreeGame();
 });
 function showToast(message, type = "success") {
