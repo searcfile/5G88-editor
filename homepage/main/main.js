@@ -574,25 +574,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  if (liveBtn) {
-    liveBtn.addEventListener("click", () => {
-      setFabOpen(false);
+if (liveBtn) {
+  liveBtn.addEventListener("click", () => {
+    setFabOpen(false);
 
-      if (headerLiveBtn) {
-        headerLiveBtn.click();
-      } else if (typeof addTab === "function") {
-        addTab("LIVE CHAT", "https://5g88-main.vercel.app/main/livechat");
-      }
-
-      if (headerLiveDot) headerLiveDot.style.display = "none";
-      if (liveDot) liveDot.style.display = "none";
-      refreshMainDot();
-
-      if (typeof markLivechatAsRead === "function") {
-        markLivechatAsRead();
-      }
-    });
-  }
+    if (headerLiveBtn) {
+      headerLiveBtn.click();
+    } else if (typeof addTab === "function") {
+      addTab("LIVE CHAT", "https://5g88-main.vercel.app/main/livechat");
+    }
+  });
+}
 
   if (noticeBtn) {
     noticeBtn.addEventListener("click", () => {
