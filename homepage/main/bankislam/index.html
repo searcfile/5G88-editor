@@ -365,6 +365,35 @@
 input::placeholder{
   color: var(--blur);
 }
+  *{
+  scrollbar-width:thin;
+  scrollbar-color: rgba(255,255,255,.16) transparent;
+}
+
+*::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+
+*::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.16);
+  border-radius:999px;
+}
+
+*::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+/* ===== BODY ===== */
+html, body{
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+body{
+  overflow-y:auto;
+}
+
 .btn-mini:hover{background:var(--blue-hover);}.btn-mini:active{background:var(--blue-active);}
 .nm-alpha{ height:36px; border-radius:8px; padding:0 8px; }
 </style>
