@@ -1195,23 +1195,27 @@ function applyRenderedTabVisibility() {
 function initSortableTabs() {
   if (!window.Sortable || !tabBar) return;
 
-  // destroy instance lama kalau ada
   if (tabBar._sortable) {
     tabBar._sortable.destroy();
   }
 
   tabBar._sortable = Sortable.create(tabBar, {
-    animation: 200,
-    ghostClass: "dragging",
+    animation: 180,
+    easing: "cubic-bezier(.2,.8,.2,1)",
 
-    // ✅ desktop: tarik terus
-    // ✅ phone/tablet: hold dulu baru drag
+    ghostClass: "tab-sort-ghost",
+    chosenClass: "tab-sort-chosen",
+    dragClass: "tab-sort-drag",
+
+    forceFallback: true,
+    fallbackOnBody: true,
+
+    // desktop tarik terus, phone hold dulu
     delay: 300,
     delayOnTouchOnly: true,
     touchStartThreshold: 6,
     fallbackTolerance: 6,
 
-    // elak butang close ikut drag
     filter: ".close-tab",
     preventOnFilter: false,
 
