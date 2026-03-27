@@ -1031,7 +1031,7 @@ window.addEventListener("DOMContentLoaded", () => {
   updateAutoFreeGameButtonUI();
 
   const savedAutoAdd = localStorage.getItem("autoAddScoreOnEvo888");
-  autoAddScoreOn = (savedAutoAdd !== "0");
+  autoAddScoreOn = (savedAutoAdd !== "1");
   updateAutoAddScoreButtonUI();
 
   if (typeof skipAutoLoad !== "undefined" && skipAutoLoad) return;
