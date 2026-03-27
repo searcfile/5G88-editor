@@ -760,7 +760,13 @@ function updateUserHeader() {
   if (nameEl) nameEl.textContent = userName;
   if (photoEl) photoEl.src = userPhoto;
 }
+function updateAdminHeader(name, photo) {
+  const nameEl = document.getElementById("headerUserName");
+  const photoEl = document.getElementById("headerUserPhoto");
 
+  if (nameEl) nameEl.textContent = cleanDuplicateName(name || "Admin");
+  if (photoEl) photoEl.src = photo || "https://i.pravatar.cc/40";
+}
 // PATCH START: initChatWithUserData universal
 function initChatWithUserData() {
   if (chatInitialized) return;
@@ -778,7 +784,7 @@ function initChatWithUserData() {
   if (!msgInput || !sendBtn || !fileInput || !searchInput || !chatBox) return;
 
   chatInitialized = true;
-  updateUserHeader();
+  updateAdminHeader("Admin", "https://i.pravatar.cc/40");
   if (typingEl) typingEl.textContent = 'Online';
 
   let typingTimer;
@@ -912,6 +918,16 @@ function listenToChat() {
     let latestAdminMsgTime = 0;
 
     const chatArray = Object.values(chats).sort((a, b) => (a.time || 0) - (b.time || 0));
+    const latestAdminMsg = [...chatArray].reverse().find(m => m.from === "admin");
+
+if (latestAdminMsg) {
+  updateAdminHeader(
+    latestAdminMsg.name || "Admin",
+    latestAdminMsg.photoURL || "https://i.pravatar.cc/40"
+  );
+} else {
+  updateAdminHeader("Admin", "https://i.pravatar.cc/40");
+}
     const today = new Date(); today.setHours(0,0,0,0);
     const pastChats = [], todayChats = [];
 
