@@ -140,7 +140,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
     max-width: 80%;
     word-wrap: break-word;
   }
+  .msg-time {
+  position: absolute;
+  right: 8px;
+  bottom: 5px;
+  font-size: 11px;
+  color: #0b6906;
+  opacity: 0.85;
+  line-height: 1;
+}
 
+.mine .msg-time {
+  color: #0b6906;
+}
+
+.theirs .msg-time {
+  color: #555;
+}
   .mine {
     margin-left: auto;
     background: linear-gradient(to bottom, #1668dc, white);
@@ -1004,34 +1020,43 @@ function renderChats(chatGroup, today) {
     const senderPhoto = c.photoURL || 'https://i.pravatar.cc/40';
 
     // header bubble tanpa src (src diset via property biar aman)
-    div.innerHTML = `
-      <div class="msg-header">
-        <img class="msg-avatar" alt="user" />
-        <span class="msg-info">${escapeHTML(senderLabel)}</span>
-        <small>${escapeHTML(timeFormatted)}</small>
-      </div>
-    `;
+div.innerHTML = `
+  <div class="msg-header">
+    <img class="msg-avatar" alt="user" />
+    <span class="msg-info">${escapeHTML(senderLabel)}</span>
+  </div>
+`;
 
     // set avatar via property (hindari attribute injection)
     const avatarEl = div.querySelector('.msg-avatar');
     if (avatarEl) avatarEl.src = senderPhoto;
 
     // konten: text atau image
-    if (typeof c.text === 'string' && c.text.trim() !== '') {
-      const p = document.createElement('p');
-      p.className = 'msg-text';
-      // dukung newline; tetap aman karena di-escape dulu
-      p.innerHTML = escapeHTML(c.text).replace(/\n/g, '<br>');
-      div.appendChild(p);
-    } else if (c.image) {
-      const img = document.createElement('img');
-      img.alt = 'Image';
-      img.style.maxWidth = '100%';
-      img.style.borderRadius = '8px';
-      img.style.marginTop = '4px';
-      img.src = c.image; // set via property
-      div.appendChild(img);
-    }
+if (typeof c.text === 'string' && c.text.trim() !== '') {
+  const p = document.createElement('p');
+  p.className = 'msg-text';
+  p.innerHTML = escapeHTML(c.text).replace(/\n/g, '<br>');
+  div.appendChild(p);
+
+  const timeEl = document.createElement('div');
+  timeEl.className = 'msg-time';
+  timeEl.textContent = timeFormatted;
+  div.appendChild(timeEl);
+
+} else if (c.image) {
+  const img = document.createElement('img');
+  img.alt = 'Image';
+  img.style.maxWidth = '100%';
+  img.style.borderRadius = '8px';
+  img.style.marginTop = '4px';
+  img.src = c.image;
+  div.appendChild(img);
+
+  const timeEl = document.createElement('div');
+  timeEl.className = 'msg-time';
+  timeEl.textContent = timeFormatted;
+  div.appendChild(timeEl);
+}
 
     chatBox.appendChild(div);
   });
