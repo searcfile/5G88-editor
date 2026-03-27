@@ -809,7 +809,7 @@ let skipAutoLoad = false;
 let hiddenRow = null;
 const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
 let autoFreeGameOn = false;   // ✅ status AUTO (off default)
-let autoAddScoreOn = true;
+let autoAddScoreOn = false;
 let isRestoringSelection = false;
 
 let lastWinRowIndex = -1;
@@ -1837,7 +1837,7 @@ window.addEventListener("DOMContentLoaded", () => {
   updateAutoFreeGameButtonUI();
 
   const savedAutoAdd = localStorage.getItem("autoAddScoreOnScr888h5");
-  autoAddScoreOn = (savedAutoAdd !== "0");
+  autoAddScoreOn = (savedAutoAdd !== "1");
   updateAutoAddScoreButtonUI();
 
   if (typeof skipAutoLoad !== "undefined" && skipAutoLoad) return;
