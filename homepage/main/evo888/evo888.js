@@ -1016,9 +1016,7 @@ function resetLog() {
   updateAutoFreeGameButtonUI();
 
   // reset AUTO AddScore
-  localStorage.removeItem("autoAddScoreOnEvo888");
-  autoAddScoreOn = true;
-  updateAutoAddScoreButtonUI();
+
 
   // reset state lain
   lastWinRowIndex = null;
@@ -1031,7 +1029,7 @@ window.addEventListener("DOMContentLoaded", () => {
   updateAutoFreeGameButtonUI();
 
   const savedAutoAdd = localStorage.getItem("autoAddScoreOnEvo888");
-  autoAddScoreOn = (savedAutoAdd !== "1");
+  autoAddScoreOn = (savedAutoAdd === "1");
   updateAutoAddScoreButtonUI();
 
   if (typeof skipAutoLoad !== "undefined" && skipAutoLoad) return;
