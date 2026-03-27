@@ -178,7 +178,27 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   border-bottom-left-radius: 18px;
   border-bottom-right-radius: 18px;
 }
+.mine::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
 
+.theirs::after {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  clip-path: polygon(100% 0, 100% 100%, 0 0);
+}
   .send-box {
   display: flex;
   gap: 10px;
