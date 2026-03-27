@@ -133,9 +133,17 @@
   .row{ display:flex; gap:10px; }
   .col{ flex:1; }
   .fld input, .fld select{
-    border:1px solid var(--border-input); border-radius:6px; padding:0px 11px; font-size:14px;
-    background:var(--page-input);color:var(--page-text);height:32px;
+    border:1px solid var(--border-input); 
+    border-radius:6px; padding:0px 11px; 
+    font-size:14px;
+    background:var(--page-input);
+    color:var(--page-text);
+    height:32px;
+    transition: all 0.2s;
+    outline:none;
   }
+  .fld input:hover{border-color:var(--blue-hover);}
+  .fld input:focus{border-color:var(--blue);}
   .ctl{ display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
 
   /* BLUR MASKING */
