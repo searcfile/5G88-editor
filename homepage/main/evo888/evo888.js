@@ -3,6 +3,7 @@ let hiddenRow = null;
 const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
 let autoFreeGameOn = false;   // ✅ status AUTO (off default)
 let autoAddScoreOn = true;
+let isRestoringSelection = false;
 let lastWinRowIndex = -1;
 let manualWinAmount = 0;
 const gameData = {
