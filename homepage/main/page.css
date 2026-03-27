@@ -346,7 +346,13 @@ body.light-theme{
   border-radius: 8px 8px 0 0;
   gap: 2px;
   white-space: nowrap;
-  transition: all 0.3s ease;
+  transition:
+    transform .18s ease,
+    color .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    opacity .18s ease;
   border: 1px solid var(--border3);
   display: inline-flex;
   font-size: 14px;
@@ -359,6 +365,7 @@ body.light-theme{
   line-height: 1.2;
   z-index: 2;
   margin-bottom: -1px;
+  will-change: transform;
 }
 .tab .close-tab{
   background: transparent;
@@ -694,15 +701,19 @@ a.tab-open .check-icon {
     display: none !important;
   }
 }
- .tab-sort-chosen{
-  opacity: 1 !important;
+.tab-sort-chosen{
+  opacity: 0.15 !important;
 }
 
 .tab-sort-drag{
-  opacity: 0.98 !important;
+  opacity: 1 !important;
+  background: var(--tab2) !important;
+  color: var(--gold) !important;
+  border: 1px solid var(--border3) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.35) !important;
   transform: scale(1.02) !important;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
-  z-index: 1200 !important;
+  z-index: 99999 !important;
+  pointer-events: none !important;
 }
 
 .tab-sort-ghost{
@@ -711,17 +722,6 @@ a.tab-open .check-icon {
   border-color: transparent !important;
   box-shadow: none !important;
   transform: none !important;
-}
-
-.tab-bar .tab{
-  transition:
-    transform .18s ease,
-    opacity .18s ease,
-    box-shadow .18s ease,
-    color .18s ease,
-    background .18s ease,
-    border-color .18s ease;
-  will-change: transform;
 }
   #cpModal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(1px);display:none;align-items:center;justify-content:center;z-index:10050}
   #cpDialog{width:min(650px,92vw);background:var(--backgroundbtn);border:1px solid var(--border2);border-radius:6px;;overflow:hidden;transition: all 0.3s ease;animation: zoomIn .25s ease forwards;}
