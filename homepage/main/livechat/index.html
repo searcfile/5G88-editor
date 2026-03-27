@@ -133,21 +133,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 .chat-box::-webkit-scrollbar-track {
   background: transparent;
 }
-  .message {
-    padding: 0.5rem 0.75rem;
-    margin: 0.5rem 0;
-    border-radius: 6px;
-    max-width: 80%;
-    word-wrap: break-word;
-  }
-  .msg-time {
+.message {
+  position: relative;
+  padding: 0.5rem 0.75rem 1.5rem 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 6px;
+  max-width: 80%;
+  word-wrap: break-word;
+  box-sizing: border-box;
+}
+.msg-time {
   position: absolute;
-  right: 8px;
-  bottom: 5px;
+  right: 10px;
+  bottom: 6px;
   font-size: 11px;
-  color: #0b6906;
-  opacity: 0.85;
+  opacity: 0.9;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .mine .msg-time {
