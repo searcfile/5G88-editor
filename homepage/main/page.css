@@ -1296,3 +1296,39 @@ body.tab-dragging-active *{
     visibility: visible !important;
   }
 }
+#sidebar a,
+#customSidebarTabs a{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sidebar-link-left{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-link-text{
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-arrow-icon{
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.72);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+#sidebar a:hover .sidebar-arrow-icon,
+#customSidebarTabs a:hover .sidebar-arrow-icon{
+  color: #ffffff;
+  transform: translateX(2px);
+}
