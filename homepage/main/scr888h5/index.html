@@ -1822,7 +1822,7 @@ function resetLog() {
 
   // reset AUTO AddScore
   localStorage.removeItem("autoAddScoreOnScr888h5");
-  autoAddScoreOn = true;
+  autoAddScoreOn = false;
   updateAutoAddScoreButtonUI();
 
   // reset state lain
@@ -1837,7 +1837,7 @@ window.addEventListener("DOMContentLoaded", () => {
   updateAutoFreeGameButtonUI();
 
   const savedAutoAdd = localStorage.getItem("autoAddScoreOnScr888h5");
-  autoAddScoreOn = (savedAutoAdd !== "1");
+  autoAddScoreOn = (savedAutoAdd === "1");
   updateAutoAddScoreButtonUI();
 
   if (typeof skipAutoLoad !== "undefined" && skipAutoLoad) return;
