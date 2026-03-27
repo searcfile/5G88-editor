@@ -135,14 +135,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 }
 .message {
   position: relative;
+  display: inline-block;
+  width: fit-content;
+  max-width: 75%;
+  min-width: 60px;
+
   padding: 10px 12px 20px 12px;
   margin: 8px 0;
-  max-width: 78%;
-  min-width: 90px;
-  word-wrap: break-word;
-  box-sizing: border-box;
+
   border-radius: 18px;
   line-height: 1.4;
+  box-sizing: border-box;
+
+  word-break: break-word;
+  white-space: normal;
+
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
 .msg-time {
@@ -157,23 +164,30 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 }
 
 .mine {
+  display: block;
+  width: fit-content;
   margin-left: auto;
   margin-right: 6px;
+
   background: linear-gradient(180deg, #2f7df0 0%, #f3f6fb 100%);
   color: #000;
-  font-weight: 500;
-  border-top-right-radius: 6px;   /* sudut macam WhatsApp */
+
+  border-top-right-radius: 6px;
   border-top-left-radius: 18px;
   border-bottom-left-radius: 18px;
   border-bottom-right-radius: 18px;
 }
 
 .theirs {
+  display: block;
+  width: fit-content;
   margin-right: auto;
   margin-left: 6px;
+
   background: linear-gradient(180deg, #2f7df0 0%, #f3f6fb 100%);
   color: #000;
-  border-top-left-radius: 6px;    /* sudut macam WhatsApp */
+
+  border-top-left-radius: 6px;
   border-top-right-radius: 18px;
   border-bottom-left-radius: 18px;
   border-bottom-right-radius: 18px;
