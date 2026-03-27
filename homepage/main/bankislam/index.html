@@ -224,8 +224,6 @@
   min-width: 0;        /* penting: izinkan shrink */
 }
 #back .modal{ width: 100% !important; }
-/* kalau masih agak mepet, kecilkan gap sedikit */
-#back .modal .row .col{ flex: 1 1 0; min-width: 0; }
 #inc{ flex: 0 0 auto !important; padding:10px 12px; }
 #back .modal .row{ gap:8px; }
 @media (max-width: 900px){
@@ -234,17 +232,17 @@
   .card{ max-width:100%; }
 }
 .page{
-  max-width: 1160px;            /* boleh 920–1000, sesuaikan layar */
+  max-width: 1160px;          
   margin: 24px auto 56px;
   padding: 0 18px;
 }
 
-/* Dua kolom yang dicenter */
+
 .layout{
   display: grid !important;
-  grid-template-columns: 540px 510px; /* kiri=editor, kanan=resit */
-  gap: 12px;                           /* kecilkan kalau mau lebih “nempel” */
-  justify-content: center;             /* pasangan dicenter */
+  grid-template-columns: 540px 510px;
+  gap: 12px;                   
+  justify-content: center;          
   align-items: start;
 }
 
@@ -258,7 +256,7 @@
   z-index: 1;
 }
 
-/* Panel editor isi penuh kolom kiri, boleh sticky di atas */
+
 #back .modal{
   width: 100% !important;
   position: sticky;
@@ -269,17 +267,13 @@
   overflow: visible;
 }
 
-/* Resit di kolom kanan, lebar tetap */
 .card{
   width: 510px;
   max-width: 510px;
-  margin: 0 !important;      /* jangan auto-center sendiri; mengikuti grid */
+  margin: 0 !important;  
   flex: initial !important;
 }
 
-/* Pastikan field editor tidak meluber */
-#back .modal .row .col input,
-#back .modal .row .col select{ width:100%; }
 #inc{ flex: 0 0 auto !important; padding:10px 12px; }
 #back .modal .row{ gap:8px; }
 
@@ -308,8 +302,6 @@
   flex:1;              /* isi sisa ruang */
   min-width:0;         /* boleh menyusut */
 }
-/* Pastikan kolom editor bisa menyusut */
-#back .modal .row .col{ flex:1 1 0; min-width:0; }
 .more .chev{
   display:inline-block;
   width:19px;               /* ubah ukuran di sini */
