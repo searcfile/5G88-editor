@@ -551,6 +551,8 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
+const ADMIN_PRESENCE_PATH = "adminPresence/main";
+let adminPresenceBound = false;
 
 function getOrCreateLocalGuestId(){
   let id = localStorage.getItem('guest.uid');
@@ -761,6 +763,37 @@ function updateAdminHeader(name, photo) {
   if (nameEl) nameEl.textContent = finalName;
   if (photoEl) photoEl.src = finalPhoto;
 }
+  function bindAdminHeaderPresence(){
+  if (adminPresenceBound) return;
+  adminPresenceBound = true;
+
+  const ref = db.ref(ADMIN_PRESENCE_PATH);
+  const typingEl = document.getElementById("typingStatus");
+
+  ref.on("value", snap => {
+    const data = snap.val() || {};
+
+    updateAdminHeader(
+      data.name || "Admin",
+      data.photoURL || "https://i.imgur.com/qiZFOs9.png"
+    );
+
+    if (!typingEl) return;
+
+    if (data.typing === true) {
+      typingEl.textContent = "Typing...";
+    } else if (data.online === true) {
+      typingEl.textContent = "Online";
+    } else if (data.lastSeen) {
+      const d = new Date(data.lastSeen);
+      const hh = String(d.getHours()).padStart(2, "0");
+      const mm = String(d.getMinutes()).padStart(2, "0");
+      typingEl.textContent = `Last seen ${hh}:${mm}`;
+    } else {
+      typingEl.textContent = "Offline";
+    }
+  });
+}
 // PATCH START: initChatWithUserData universal
 function initChatWithUserData() {
   if (chatInitialized) return;
@@ -777,14 +810,11 @@ function initChatWithUserData() {
 
   if (!msgInput || !sendBtn || !fileInput || !searchInput || !chatBox) return;
 
-  chatInitialized = true;
-  updateAdminHeader("Admin", "https://i.pravatar.cc/40");
-  if (typingEl) typingEl.textContent = 'Online';
+chatInitialized = true;
+updateAdminHeader("Admin", "https://i.imgur.com/qiZFOs9.png");
+if (typingEl) typingEl.textContent = "Offline";
+bindAdminHeaderPresence();
 
-  let typingTimer;
-  const typingDelay = 2000;
-  
-// ✅ letak refreshSend DI SINI
 function refreshSend(){
   sendBtn.disabled = !msgInput.value.trim() && !fileInput.files.length;
 }
@@ -799,13 +829,6 @@ msgInput.addEventListener('keydown', (e) => {
 
 msgInput.addEventListener("input", () => {
   refreshSend();
-  if (typingEl) {
-    typingEl.textContent = msgInput.value.trim() ? 'Typing...' : 'Online';
-    clearTimeout(typingTimer);
-    if (msgInput.value.trim()) {
-      typingTimer = setTimeout(() => { if (typingEl) typingEl.textContent = 'Online'; }, typingDelay);
-    }
-  }
 });
 
 fileInput.addEventListener("change", refreshSend);
