@@ -1223,7 +1223,6 @@ body.light-theme .theme-toggle-knob{
     display: none;
   }
 }
-.tab-sort-drag,
 .tab-sort-fallback,
 .sortable-fallback{
   display: inline-flex !important;
@@ -1231,7 +1230,6 @@ body.light-theme .theme-toggle-knob{
   justify-content: flex-start !important;
   visibility: visible !important;
   opacity: 1 !important;
-  position: fixed !important;
   background: var(--tab-bg) !important;
   color: #fff !important;
   border: 1px solid var(--border3) !important;
@@ -1243,20 +1241,28 @@ body.light-theme .theme-toggle-knob{
   filter: none !important;
 }
 
-/* tab asal di tempat lama jangan nampak */
-.tab-sort-chosen,
-.sortable-chosen{
-  opacity: 0 !important;
+.tab-sort-drag{
+  opacity: 1 !important;
 }
 
-/* ruang tempat drop */
+.tab-sort-chosen,
+.sortable-chosen{
+  opacity: 0.08 !important;
+}
+
 .tab-sort-ghost,
 .sortable-ghost{
-  opacity: 1 !important;
+  opacity: 0.18 !important;
   background: rgba(255,255,255,0.04) !important;
   border: 1px dashed var(--border2) !important;
   box-shadow: none !important;
   transform: none !important;
+}
+
+body.tab-dragging-active,
+body.tab-dragging-active *{
+  user-select: none !important;
+  cursor: grabbing !important;
 }
 @media (max-width: 815px){
   .tab-bar,
