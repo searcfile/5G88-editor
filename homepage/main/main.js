@@ -426,7 +426,7 @@ function handleFloatingFabResponsive() {
   const fab = document.getElementById("floatingFabWrap");
   if (!fab) return;
 
-  if (window.innerWidth <= 940) {
+  if (window.innerWidth <= 355) {
     fab.style.display = "none";
     fab.classList.remove("open");
   } else {
