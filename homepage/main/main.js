@@ -1200,12 +1200,12 @@ function initSortableTabs() {
   }
 
   tabBar._sortable = Sortable.create(tabBar, {
-    animation: 220,
+    animation: 320,
     easing: "cubic-bezier(.22,.61,.36,1)",
 
     forceFallback: true,
     fallbackOnBody: true,
-    fallbackTolerance: 3,
+    fallbackTolerance: 2,
     fallbackClass: "tab-sort-fallback",
     removeCloneOnHide: true,
 
@@ -1222,12 +1222,12 @@ function initSortableTabs() {
 
     scroll: true,
     bubbleScroll: true,
-    scrollSensitivity: 80,
-    scrollSpeed: 16,
+    scrollSensitivity: 110,
+    scrollSpeed: 20,
 
-    swapThreshold: 0.65,
+    swapThreshold: 0.35,
     invertSwap: true,
-    invertedSwapThreshold: 0.65,
+    invertedSwapThreshold: 0.35,
 
     draggable: ".tab",
 
@@ -1269,6 +1269,8 @@ function initSortableTabs() {
       clone.style.borderRadius = getComputedStyle(item).borderRadius;
       clone.style.whiteSpace = "nowrap";
       clone.style.zIndex = "99999";
+      clone.style.willChange = "transform";
+      clone.style.transform = "translateZ(0)";
     },
 
     onEnd(evt) {
@@ -1292,6 +1294,10 @@ function initSortableTabs() {
       tabs.splice(evt.newIndex, 0, movedTab);
       saveTabs(tabs);
       renderTabs();
+
+      requestAnimationFrame(() => {
+        initSortableTabs();
+      });
     }
   });
 }
