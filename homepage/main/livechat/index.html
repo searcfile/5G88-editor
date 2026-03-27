@@ -537,7 +537,38 @@ function sanitizeEmail(email){
 function getChatPath(){ return currentActiveId ? 'chats/' + currentActiveId : null; }
 function getUserPath(){ return currentActiveId ? 'users/' + currentActiveId : null; }
 function getNotifPath(){ return currentActiveId ? 'notifications/' + currentActiveId : null; }
-  
+function getUserTypingPath(){
+  return currentActiveId ? 'users/' + currentActiveId + '/typing' : null;
+}
+
+let userTypingTimer = null;
+
+function bindUserTyping(){
+  const msgInput = document.getElementById("msg");
+  const typingPath = getUserTypingPath();
+  if (!msgInput || !typingPath) return;
+
+  const typingRef = db.ref(typingPath);
+
+  msgInput.addEventListener("input", () => {
+    const hasText = !!msgInput.value.trim();
+
+    typingRef.set(hasText).catch(()=>{});
+
+    clearTimeout(userTypingTimer);
+    userTypingTimer = setTimeout(() => {
+      typingRef.set(false).catch(()=>{});
+    }, 1500);
+  });
+
+  msgInput.addEventListener("blur", () => {
+    typingRef.set(false).catch(()=>{});
+  });
+
+  window.addEventListener("beforeunload", () => {
+    typingRef.set(false).catch(()=>{});
+  });
+}
 const firebaseConfig = {
   apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
   authDomain: "blurphp.firebaseapp.com",
@@ -814,7 +845,7 @@ chatInitialized = true;
 updateAdminHeader("Admin", "https://i.imgur.com/qiZFOs9.png");
 if (typingEl) typingEl.textContent = "Offline";
 bindAdminHeaderPresence();
-
+bindUserTyping();
 function refreshSend(){
   sendBtn.disabled = !msgInput.value.trim() && !fileInput.files.length;
 }
@@ -896,7 +927,8 @@ msgInput.value = '';
 fileInput.value = '';
 const sendBtn = document.getElementById("sendBtn");
 if (sendBtn) sendBtn.disabled = true;
-
+const typingPath = getUserTypingPath();
+if (typingPath) db.ref(typingPath).set(false).catch(()=>{});
   } catch (error) {
     console.error("Error sending message:", error);
     alert("❌ Gagal mengirim pesan.");
@@ -935,16 +967,7 @@ function listenToChat() {
     let latestAdminMsgTime = 0;
 
     const chatArray = Object.values(chats).sort((a, b) => (a.time || 0) - (b.time || 0));
-    const latestAdminMsg = [...chatArray].reverse().find(m => m.from === "admin");
 
-if (latestAdminMsg) {
-  updateAdminHeader(
-    latestAdminMsg.name || "Admin",
-    latestAdminMsg.photoURL || "https://i.pravatar.cc/40"
-  );
-} else {
-  updateAdminHeader("Admin", "https://i.pravatar.cc/40");
-}
     const today = new Date(); today.setHours(0,0,0,0);
     const pastChats = [], todayChats = [];
 
@@ -1254,7 +1277,6 @@ if (window.ResizeObserver && sendBoxEl) {
       initChatWithUserData();
     }
   }
-  updateUserHeader();
 });
 (function () {
   const THEME_KEY = "siteTheme";
