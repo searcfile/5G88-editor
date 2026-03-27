@@ -694,7 +694,35 @@ a.tab-open .check-icon {
     display: none !important;
   }
 }
-  .dragging {opacity: 0.5;transform: scale(1.05);z-index: 999;}
+ .tab-sort-chosen{
+  opacity: 1 !important;
+}
+
+.tab-sort-drag{
+  opacity: 0.98 !important;
+  transform: scale(1.02) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28) !important;
+  z-index: 1200 !important;
+}
+
+.tab-sort-ghost{
+  opacity: 0 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.tab-bar .tab{
+  transition:
+    transform .18s ease,
+    opacity .18s ease,
+    box-shadow .18s ease,
+    color .18s ease,
+    background .18s ease,
+    border-color .18s ease;
+  will-change: transform;
+}
   #cpModal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(1px);display:none;align-items:center;justify-content:center;z-index:10050}
   #cpDialog{width:min(650px,92vw);background:var(--backgroundbtn);border:1px solid var(--border2);border-radius:6px;;overflow:hidden;transition: all 0.3s ease;animation: zoomIn .25s ease forwards;}
   #cpHead{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border2);background:var(--backgrounddrop);}
