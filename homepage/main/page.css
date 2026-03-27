@@ -1226,7 +1226,11 @@ body.light-theme .theme-toggle-knob{
 .tab-sort-drag,
 .tab-sort-fallback,
 .sortable-fallback{
+  display: inline-flex !important;
+  align-items: center !important;
+  visibility: visible !important;
   opacity: 1 !important;
+  position: fixed !important;
   background: var(--tab2) !important;
   color: var(--gold) !important;
   border: 1px solid var(--border3) !important;
@@ -1234,18 +1238,19 @@ body.light-theme .theme-toggle-knob{
   transform: scale(1.02) !important;
   z-index: 99999 !important;
   pointer-events: none !important;
+  white-space: nowrap !important;
 }
 
 .tab-sort-chosen,
 .sortable-chosen{
-  opacity: 0.02 !important;
+  opacity: 0.12 !important;
 }
 
 .tab-sort-ghost,
 .sortable-ghost{
-  opacity: 0 !important;
-  background: transparent !important;
-  border-color: transparent !important;
+  opacity: 0.12 !important;
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px dashed var(--border2) !important;
   box-shadow: none !important;
   transform: none !important;
 }
