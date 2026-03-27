@@ -267,31 +267,34 @@ body.light-theme{
 }
 .menu-icon:hover {background: rgba(255, 255, 255, 0.08);}.menu-icon:active {background:rgba(255, 255, 255, 0.18);}
   .menu-img {width: 20px;height: 20px;vertical-align: middle;margin-right: 8px;border-radius: 4px;}
-@media (max-width: 815px) {
-  .container.shrink {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-
-  .tab-bar.shrink {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-
-  .header.shrink {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-}
 @media (max-width: 815px){
-  .tab-bar{
+  .container,
+  .container.shrink{
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .header,
+  .header.shrink{
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .tab-bar,
+  .tab-bar.shrink{
+    margin-left: 0 !important;
+    width: 100% !important;
     display: flex !important;
+    height: 56px !important;
+    min-height: 56px !important;
     margin-top: 64px !important;
     padding: 0 6px !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
     white-space: nowrap !important;
     -webkit-overflow-scrolling: touch;
+    position: relative !important;
+    z-index: 1002 !important;
   }
 
   .tab{
@@ -329,7 +332,7 @@ body.light-theme{
   content: "";
   position: absolute;
   bottom: 0;
-  left: 10;
+  left: 10px;
   width: calc(100% - 20px); 
   height: 1px;
   background: var(--border2);
