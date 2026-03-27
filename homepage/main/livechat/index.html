@@ -620,8 +620,7 @@ async function ensureGuestLocalIdentity(){
   }
   if (!localStorage.getItem("userphoto")) localStorage.setItem("userphoto", "");
 
-  updateUserHeader();
-  writeUserProfile();       // pastikan rules RTDB mengizinkan path ini
+  writeUserProfile();
   bindPresenceAndNotif();
   initChatWithUserData();
   notifyRead();
@@ -718,7 +717,6 @@ window.addEventListener("message", (e) => {
       return; // identitas tak valid
     }
 
-    updateUserHeader();
     writeUserProfile(); 
     bindPresenceAndNotif();
     initChatWithUserData();
@@ -764,8 +762,11 @@ function updateAdminHeader(name, photo) {
   const nameEl = document.getElementById("headerUserName");
   const photoEl = document.getElementById("headerUserPhoto");
 
-  if (nameEl) nameEl.textContent = cleanDuplicateName(name || "Admin");
-  if (photoEl) photoEl.src = photo || "https://i.pravatar.cc/40";
+  const finalName = cleanDuplicateName(name || "Admin");
+  const finalPhoto = photo || "https://i.imgur.com/qiZFOs9.png";
+
+  if (nameEl) nameEl.textContent = finalName;
+  if (photoEl) photoEl.src = finalPhoto;
 }
 // PATCH START: initChatWithUserData universal
 function initChatWithUserData() {
@@ -1220,14 +1221,12 @@ if (window.ResizeObserver && sendBoxEl) {
           if (!localStorage.getItem("username")) {
             localStorage.setItem("username", "Guest-" + id.slice(-5).toUpperCase());
           }
-          updateUserHeader();
           bindPresenceAndNotif();
           initChatWithUserData();
         }
       }, 2500);
     } else {
       // sudah ada ID dari email/parent → langsung jalan
-      updateUserHeader();
       bindPresenceAndNotif();
       initChatWithUserData();
     }
@@ -1235,7 +1234,6 @@ if (window.ResizeObserver && sendBoxEl) {
     if (!currentActiveId) {
       await ensureGuestLocalIdentity();
     } else {
-      updateUserHeader();
       bindPresenceAndNotif();
       initChatWithUserData();
     }
