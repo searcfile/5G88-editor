@@ -2,7 +2,7 @@ let hiddenRow = null;
 let lastWinRowIndex = -1;
 const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
 let autoFreeGameOn = false;   // ✅ status AUTO (off default)
-let autoAddScoreOn = true;
+let autoAddScoreOn = false;
 let isRestoringSelection = false;
 const gameData = {
 "LandofGold": 
@@ -1118,7 +1118,7 @@ function resetLog() {
 
   // reset AUTO AddScore
   localStorage.removeItem("autoAddScoreOnPussy888");
-  autoAddScoreOn = true;
+  autoAddScoreOn = false;
   updateAutoAddScoreButtonUI();
 
   // reset state lain
@@ -1131,7 +1131,7 @@ window.addEventListener("DOMContentLoaded", () => {
   updateAutoFreeGameButtonUI();
 
   const savedAutoAdd = localStorage.getItem("autoAddScoreOnPussy888");
-  autoAddScoreOn = (savedAutoAdd !== "0");
+  autoAddScoreOn = (savedAutoAdd === "1");
   updateAutoAddScoreButtonUI();
 
   const saved = localStorage.getItem("gameLogDataPussy888");
