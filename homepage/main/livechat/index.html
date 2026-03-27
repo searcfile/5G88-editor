@@ -135,36 +135,49 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 }
 .message {
   position: relative;
-  padding: 0.5rem 0.75rem 1.5rem 0.75rem;
-  margin: 0.5rem 0;
-  border-radius: 6px;
-  max-width: 80%;
+  padding: 10px 12px 20px 12px;
+  margin: 8px 0;
+  max-width: 78%;
+  min-width: 90px;
   word-wrap: break-word;
   box-sizing: border-box;
+  border-radius: 18px;
+  line-height: 1.4;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
 .msg-time {
   position: absolute;
   right: 10px;
   bottom: 6px;
   font-size: 11px;
-  opacity: 0.9;
   line-height: 1;
   white-space: nowrap;
-  color: #555;
+  opacity: 0.75;
+  color:#555;
 }
 
-  .mine {
-    margin-left: auto;
-    background: linear-gradient(to bottom, #1668dc, white);
-    color: black;
-    font-weight: 500;
-  }
+.mine {
+  margin-left: auto;
+  margin-right: 6px;
+  background: linear-gradient(180deg, #2f7df0 0%, #f3f6fb 100%);
+  color: #000;
+  font-weight: 500;
+  border-top-right-radius: 6px;   /* sudut macam WhatsApp */
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
 
-  .theirs {
-    margin-right: auto;
-    background: linear-gradient(to bottom, #1668dc, white);
-    color:black;
-  }
+.theirs {
+  margin-right: auto;
+  margin-left: 6px;
+  background: linear-gradient(180deg, #2f7df0 0%, #f3f6fb 100%);
+  color: #000;
+  border-top-left-radius: 6px;    /* sudut macam WhatsApp */
+  border-top-right-radius: 18px;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
 
   .send-box {
   display: flex;
@@ -235,24 +248,32 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   background: #3c89e8;
 }
  
-  .msg-header {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 2px;
-    font-weight: bold;
-  }
-
+.msg-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+.msg-info {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+}
   .msg-header small {
     font-size: 0.75rem;
     color: #0b6906;
   }
 
-  .msg-text {
-    margin: 0;
-    padding: 0;
-    font-weight: 500;
-  }
+.msg-text {
+  margin: 0;
+  padding: 0;
+  font-weight: 500;
+  font-size: 15px;
+  color: #111;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 
   .date-label {
     text-align: center;
