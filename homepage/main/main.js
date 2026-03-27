@@ -1203,38 +1203,32 @@ function initSortableTabs() {
     animation: 220,
     easing: "cubic-bezier(.22,.61,.36,1)",
 
-    // paksa guna fallback supaya elemen drag ikut mouse / jari
     forceFallback: true,
     fallbackOnBody: true,
     fallbackTolerance: 3,
     fallbackClass: "tab-sort-fallback",
+    removeCloneOnHide: true,
 
-    // class drag
     ghostClass: "tab-sort-ghost",
     chosenClass: "tab-sort-chosen",
     dragClass: "tab-sort-drag",
 
-    // desktop terus drag, touch kena hold dulu
     delay: 320,
     delayOnTouchOnly: true,
     touchStartThreshold: 8,
 
-    // jangan drag bila tekan butang close
     filter: ".close-tab",
     preventOnFilter: false,
 
-    // auto scroll tab bar bila drag ke hujung
     scroll: true,
     bubbleScroll: true,
     scrollSensitivity: 80,
     scrollSpeed: 16,
 
-    // elak drag terlalu mudah bila tersentuh sikit
     swapThreshold: 0.65,
     invertSwap: true,
     invertedSwapThreshold: 0.65,
 
-    // kalau awak mahu cuma tab sahaja boleh drag
     draggable: ".tab",
 
     onChoose() {
@@ -1250,7 +1244,31 @@ function initSortableTabs() {
 
       if (evt.item) {
         evt.item.style.pointerEvents = "none";
+        evt.item.style.width = `${evt.item.offsetWidth}px`;
+        evt.item.style.height = `${evt.item.offsetHeight}px`;
       }
+    },
+
+    onClone(evt) {
+      const item = evt.item;
+      const clone = evt.clone;
+      if (!item || !clone) return;
+
+      clone.style.width = `${item.offsetWidth}px`;
+      clone.style.height = `${item.offsetHeight}px`;
+      clone.style.minWidth = `${item.offsetWidth}px`;
+      clone.style.maxWidth = `${item.offsetWidth}px`;
+      clone.style.display = "inline-flex";
+      clone.style.alignItems = "center";
+      clone.style.visibility = "visible";
+      clone.style.opacity = "1";
+      clone.style.pointerEvents = "none";
+      clone.style.boxSizing = "border-box";
+      clone.style.margin = getComputedStyle(item).margin;
+      clone.style.padding = getComputedStyle(item).padding;
+      clone.style.borderRadius = getComputedStyle(item).borderRadius;
+      clone.style.whiteSpace = "nowrap";
+      clone.style.zIndex = "99999";
     },
 
     onEnd(evt) {
@@ -1258,6 +1276,8 @@ function initSortableTabs() {
 
       if (evt.item) {
         evt.item.style.pointerEvents = "";
+        evt.item.style.width = "";
+        evt.item.style.height = "";
       }
 
       if (evt.oldIndex == null || evt.newIndex == null) return;
