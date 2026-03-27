@@ -1586,10 +1586,19 @@ function buildLink(label, url, kind="dropdown", meta={}){
     try { closeSidebar(); } catch(_){}
   });
 
-  if(kind === "sidebar"){
-    a.innerHTML = `<img src="${SIDEBAR_ICON}" alt="icon" class="menu-img"> ${label}`;
-    return a;
-  }
+if(kind === "sidebar"){
+  a.innerHTML = `
+    <span class="sidebar-link-left">
+      <img src="${SIDEBAR_ICON}" alt="icon" class="menu-img">
+      <span class="sidebar-link-text">${label}</span>
+    </span>
+
+    <svg class="sidebar-arrow-icon" viewBox="0 0 16 16" aria-hidden="true">
+      <path fill="currentColor" d="M4 .755l7.374 7.245-7.374 7.219.619.781 8.381-8-8.391-8-.609.755z"></path>
+    </svg>
+  `;
+  return a;
+}
 
   a.innerHTML = `
     ${label}
