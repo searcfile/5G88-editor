@@ -1801,9 +1801,6 @@ chatsRef.off("child_added");
 
 chatsRef.on("child_added", (snapshot) => {
   const msg = snapshot.val() || {};
-  console.log("LIVECHAT NEW MSG =", msg);
-console.log("LIVECHAT FROM =", msg.from);
-console.log("LIVECHAT seenByUser =", msg.seenByUser);
   const from = String(msg.from || "").trim().toLowerCase();
 
   if (from !== "admin") return;
