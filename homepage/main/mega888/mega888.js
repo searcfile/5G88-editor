@@ -2,7 +2,7 @@ let hiddenRow = null;
 let lastWinRowIndex = -1; 
 const MAX_FREE_GAME_ROWS = 10;
 let autoFreeGameOn = false;   //  status AUTO (off default)
-let autoAddScoreOn = true;
+let autoAddScoreOn = false;
 let isRestoringSelection = false;
 const gameData = {
 "IrishLuck": 
@@ -1120,7 +1120,7 @@ function resetLog() {
 
   // reset AUTO Add Score
   localStorage.removeItem("autoAddScoreOnMega888");
-  autoAddScoreOn = true;
+  autoAddScoreOn = false;
   updateAutoAddScoreButtonUI();
 
   // reset state lain
@@ -1139,7 +1139,7 @@ window.addEventListener("DOMContentLoaded", () => {
   updateAutoFreeGameButtonUI();
 
   const savedAutoAdd = localStorage.getItem("autoAddScoreOnMega888");
-  autoAddScoreOn = (savedAutoAdd !== "0");
+  autoAddScoreOn = (savedAutoAdd === "1");
   updateAutoAddScoreButtonUI();
 
   const saved = localStorage.getItem("gameLogDataMega888");
