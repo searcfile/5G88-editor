@@ -1195,21 +1195,35 @@ function applyRenderedTabVisibility() {
 function initSortableTabs() {
   if (!window.Sortable || !tabBar) return;
 
-  // Destroy instance sebelumnya jika ada
+  // destroy instance lama kalau ada
   if (tabBar._sortable) {
     tabBar._sortable.destroy();
   }
 
-  // Buat baru & simpan ke properti _sortable
   tabBar._sortable = Sortable.create(tabBar, {
     animation: 200,
     ghostClass: "dragging",
+
+    // ✅ desktop: tarik terus
+    // ✅ phone/tablet: hold dulu baru drag
+    delay: 300,
+    delayOnTouchOnly: true,
+    touchStartThreshold: 6,
+    fallbackTolerance: 6,
+
+    // elak butang close ikut drag
+    filter: ".close-tab",
+    preventOnFilter: false,
+
     onEnd: function (evt) {
+      if (evt.oldIndex == null || evt.newIndex == null) return;
+      if (evt.oldIndex === evt.newIndex) return;
+
       const tabs = getTabs();
       const [movedTab] = tabs.splice(evt.oldIndex, 1);
       tabs.splice(evt.newIndex, 0, movedTab);
       saveTabs(tabs);
-      renderTabs(); // akan auto-panggil initSortableTabs()
+      renderTabs();
     }
   });
 }
