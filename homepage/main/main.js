@@ -1203,23 +1203,36 @@ function initSortableTabs() {
     animation: 180,
     easing: "cubic-bezier(.2,.8,.2,1)",
 
-    ghostClass: "tab-sort-ghost",
-    chosenClass: "tab-sort-chosen",
-    dragClass: "tab-sort-drag",
-
+    // ✅ ini yang buat tab ikut mouse / jari
     forceFallback: true,
     fallbackOnBody: true,
+    fallbackTolerance: 4,
 
-    // desktop tarik terus, phone hold dulu
+    // ✅ class berasingan
+    ghostClass: "tab-sort-ghost",     // ruang kosong di tab bar
+    chosenClass: "tab-sort-chosen",   // tab asal yang dipilih
+    dragClass: "tab-sort-drag",       // elemen yang sedang ikut mouse
+
+    // ✅ phone hold dulu, desktop terus drag
     delay: 300,
     delayOnTouchOnly: true,
     touchStartThreshold: 6,
-    fallbackTolerance: 6,
 
+    // ✅ jangan drag kalau tekan tombol X
     filter: ".close-tab",
     preventOnFilter: false,
 
-    onEnd: function (evt) {
+    scroll: true,
+    scrollSensitivity: 60,
+    scrollSpeed: 12,
+
+    onStart() {
+      document.body.classList.add("tab-dragging-active");
+    },
+
+    onEnd(evt) {
+      document.body.classList.remove("tab-dragging-active");
+
       if (evt.oldIndex == null || evt.newIndex == null) return;
       if (evt.oldIndex === evt.newIndex) return;
 
