@@ -569,6 +569,13 @@ function bindUserTyping(){
     touchUserPresence({ typing: hasText });
 
     clearTimeout(userTypingTimer);
+
+    if (!hasText) {
+      typingRef.set(false).catch(()=>{});
+      touchUserPresence({ typing: false });
+      return;
+    }
+
     userTypingTimer = setTimeout(() => {
       typingRef.set(false).catch(()=>{});
       touchUserPresence({ typing: false });
@@ -1253,45 +1260,54 @@ function playNotificationSound() {
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
-const sendBoxEl = document.querySelector('.send-box');
-function setFabOffset(){
-  if (!sendBoxEl) return;
-  document.documentElement.style.setProperty('--composer-h', sendBoxEl.offsetHeight + 'px');
-}
-setFabOffset();
-if (window.ResizeObserver && sendBoxEl) {
-  new ResizeObserver(() => setFabOffset()).observe(sendBoxEl);
-} else {
-  window.addEventListener('resize', setFabOffset);
-}
+  const sendBoxEl = document.querySelector('.send-box');
+
+  function setFabOffset() {
+    if (!sendBoxEl) return;
+    document.documentElement.style.setProperty('--composer-h', sendBoxEl.offsetHeight + 'px');
+  }
+
+  setFabOffset();
+
+  if (window.ResizeObserver && sendBoxEl) {
+    new ResizeObserver(() => setFabOffset()).observe(sendBoxEl);
+  } else {
+    window.addEventListener('resize', setFabOffset);
+  }
+
   // 1) kalau sebelumnya sudah login email, pakai dulu
   const email = localStorage.getItem("useremail");
-  if (!currentActiveId && email){
-    currentIsGuest   = false;
+  if (!currentActiveId && email) {
+    currentIsGuest = false;
     currentUserEmail = email;
-    currentActiveId  = sanitizeEmail(email);
+    currentActiveId = sanitizeEmail(email);
   }
 
   if (IS_EMBEDDED) {
-  const target = getParentOrigin();
-  window.parent.postMessage({ type: "request-login" }, target);
+    const target = getParentOrigin();
+    window.parent.postMessage({ type: "request-login" }, target);
+
     // 2) di iframe: tunggu parent. kalau 2.5s masih belum ada ID, pakai ID lokal
     if (!currentActiveId) {
       setTimeout(() => {
         if (!currentActiveId) {
           const id = getOrCreateLocalGuestId();
-          currentIsGuest  = true;
+          currentIsGuest = true;
           localStorage.removeItem("useremail");
           currentActiveId = id;
+
           if (!localStorage.getItem("username")) {
             localStorage.setItem("username", "Guest-" + id.slice(-5).toUpperCase());
           }
+
+          writeUserProfile();
           bindPresenceAndNotif();
           initChatWithUserData();
         }
       }, 2500);
     } else {
       // sudah ada ID dari email/parent → langsung jalan
+      writeUserProfile();
       bindPresenceAndNotif();
       initChatWithUserData();
     }
@@ -1299,6 +1315,7 @@ if (window.ResizeObserver && sendBoxEl) {
     if (!currentActiveId) {
       await ensureGuestLocalIdentity();
     } else {
+      writeUserProfile();
       bindPresenceAndNotif();
       initChatWithUserData();
     }
