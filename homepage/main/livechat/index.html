@@ -542,7 +542,19 @@ function getUserTypingPath(){
 }
 
 let userTypingTimer = null;
+let userPresenceHeartbeat = null;
 
+function touchUserPresence(extra = {}) {
+  const userPath = getUserPath();
+  if (!userPath) return;
+
+  db.ref(userPath).update({
+    online: true,
+    typing: false,
+    lastLoginTime: Date.now(),
+    ...extra
+  }).catch(()=>{});
+}
 function bindUserTyping(){
   const msgInput = document.getElementById("msg");
   const typingPath = getUserTypingPath();
@@ -554,15 +566,18 @@ function bindUserTyping(){
     const hasText = !!msgInput.value.trim();
 
     typingRef.set(hasText).catch(()=>{});
+    touchUserPresence({ typing: hasText });
 
     clearTimeout(userTypingTimer);
     userTypingTimer = setTimeout(() => {
       typingRef.set(false).catch(()=>{});
+      touchUserPresence({ typing: false });
     }, 1500);
   });
 
   msgInput.addEventListener("blur", () => {
     typingRef.set(false).catch(()=>{});
+    touchUserPresence({ typing: false });
   });
 
   window.addEventListener("beforeunload", () => {
@@ -668,17 +683,27 @@ function bindPresenceAndNotif(){
   connectedRef.off();
   userRef.off();
 
-  connectedRef.on("value", (snap) => {
-    if (snap.val() === true) {
-      userRef.update({ online: true });
-      userRef.onDisconnect().update({ online: false, lastLoginTime: Date.now() });
-    }
-  });
+connectedRef.on("value", (snap) => {
+  if (snap.val() === true) {
+    touchUserPresence({ typing: false });
+    userRef.onDisconnect().update({ online: false, typing: false, lastLoginTime: Date.now() });
+
+    clearInterval(userPresenceHeartbeat);
+    userPresenceHeartbeat = setInterval(() => {
+      touchUserPresence();
+    }, 10000);
+  }
+});
 
   // update offline saat tab ditutup
-  window.addEventListener("beforeunload", () => {
-    firebase.database().ref(userPath).update({ online: false, lastLoginTime: Date.now() });
+window.addEventListener("beforeunload", () => {
+  clearInterval(userPresenceHeartbeat);
+  firebase.database().ref(userPath).update({
+    online: false,
+    typing: false,
+    lastLoginTime: Date.now()
   });
+});
 
   // notifikasi admin -> user
   if (notifPath){
@@ -929,6 +954,7 @@ const sendBtn = document.getElementById("sendBtn");
 if (sendBtn) sendBtn.disabled = true;
 const typingPath = getUserTypingPath();
 if (typingPath) db.ref(typingPath).set(false).catch(()=>{});
+    touchUserPresence({ typing: false });
   } catch (error) {
     console.error("Error sending message:", error);
     alert("❌ Gagal mengirim pesan.");
