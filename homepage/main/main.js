@@ -410,12 +410,14 @@ function moveNotifButtonResponsive() {
 
   if (!notifButtonEl || !mobileSlot || !desktopSlot) return;
 
-  if (window.innerWidth <= 768) {
-    if (!mobileSlot.contains(notifButtonEl)) {
+  const isMobile = window.innerWidth <= 940; // samakan dengan CSS kamu
+
+  if (isMobile) {
+    if (notifButtonEl.parentElement !== mobileSlot) {
       mobileSlot.appendChild(notifButtonEl);
     }
   } else {
-    if (!desktopSlot.contains(notifButtonEl)) {
+    if (notifButtonEl.parentElement !== desktopSlot) {
       desktopSlot.appendChild(notifButtonEl);
     }
   }
