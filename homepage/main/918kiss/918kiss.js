@@ -3,6 +3,7 @@ let lastWinRowIndex = -1;
 const MAX_FREE_GAME_ROWS = 10;   // maksimum 10 baris free game
 let autoFreeGameOn = false;   // ✅ status AUTO (off default)
 let autoAddScoreOn = true;
+let isRestoringSelection = false;
 const gameData = {
 "IrishLuck": 
 { bets: [1.20, 1.50, 1.80, 2.10, 2.40, 2.70, 3.00, 6.00, 7.50, 15.00],pecahan: {1.20: [50.00, 80.00, 100.00, 150.00],1.50: [80.00, 100.00, 130.00, 180.00],1.80: [50.00, 100.00, 200.00, 300.00],2.10: [50.00, 100.00, 200.00, 300.00],2.40: [50.00, 100.00, 200.00, 300.00],2.70: [50.00, 100.00, 200.00, 300.00],3.00: [50.00, 100.00, 200.00, 300.00],6.00: [50.00, 100.00, 200.00, 300.00],7.50: [80.00, 100.00, 200.00, 400.00],15.00: [100.00, 300.00, 500.00, 750.00]}},
@@ -163,6 +164,8 @@ function updateAutoAddScoreButtonUI() {
 }
   let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
 function saveCurrentSelectionOnly() {
+  if (isRestoringSelection) return;
+
   const oldData = JSON.parse(localStorage.getItem("gameLogData918kiss") || "{}");
 
   const game = document.getElementById("gameSelect")?.value || "";
@@ -373,7 +376,6 @@ const winCS = initCustomSelect("pecahanSelect", false);
 document.getElementById("gameSelect").addEventListener("change", function () {
   const game = this.value;
   const betSelect = document.getElementById("betSelect");
-  const pecahanSelect = document.getElementById("pecahanSelect");
 
   resetSelectToPlaceholder("betSelect", "Select Bet", false);
   resetSelectToPlaceholder("pecahanSelect", "Select Win", false);
@@ -396,17 +398,14 @@ document.getElementById("gameSelect").addEventListener("change", function () {
       betSelect.appendChild(option);
     });
 
-    // auto pilih bet pertama
-    if (gameData[game].bets.length > 0) {
+    // hanya auto pilih pertama kalau bukan sedang restore
+    if (!isRestoringSelection && gameData[game].bets.length > 0) {
       betSelect.value = String(gameData[game].bets[0]);
+      betSelect.dispatchEvent(new Event("change", { bubbles: true }));
     }
-
-    if (betCS) betCS.refresh();
-
-    // trigger supaya pecahan auto keluar
-    betSelect.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
+  if (betCS) betCS.refresh();
   saveCurrentSelectionOnly();
 });
 document.getElementById("betSelect").addEventListener("change", function () {
@@ -437,8 +436,8 @@ document.getElementById("betSelect").addEventListener("change", function () {
       pecahanSelect.appendChild(option);
     });
 
-    // auto pilih pecahan pertama
-    if (pecahanList.length > 0) {
+    // hanya auto pilih pertama kalau bukan sedang restore
+    if (!isRestoringSelection && pecahanList.length > 0) {
       pecahanSelect.value = String(pecahanList[0]);
     }
   }
@@ -1076,8 +1075,8 @@ function resetLog() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  const savedAuto = localStorage.getItem('autoFreeGameOn918kiss');
-  autoFreeGameOn = (savedAuto === '1');
+  const savedAuto = localStorage.getItem("autoFreeGameOn918kiss");
+  autoFreeGameOn = (savedAuto === "1");
   updateAutoFreeGameButtonUI();
 
   const savedAutoAdd = localStorage.getItem("autoAddScoreOn918kiss");
@@ -1089,46 +1088,64 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const data = JSON.parse(saved);
 
-  if (typeof data.lastWinRowIndex === "number") lastWinRowIndex = data.lastWinRowIndex;
+  if (typeof data.lastWinRowIndex === "number") {
+    lastWinRowIndex = data.lastWinRowIndex;
+  }
 
   if (typeof data.manualWinAmount === "number") {
     const winInput = document.getElementById("manualWinInput");
-    if (winInput) winInput.value = Number(data.manualWinAmount) > 0 ? data.manualWinAmount : "";
-  }
-
-  document.getElementById("gameSelect").value = data.game || "";
-  document.getElementById("manualTime").value = data.manualTime || "";
-  document.getElementById("manualScore").value = Number(data.manualScore) > 0 ? data.manualScore : "";
-
-  if (typeof data.freeGame !== "undefined") {
-    document.getElementById("freeGameInput").value = Number(data.freeGame) > 0 ? data.freeGame : "";
-  }
-
-  // restore game dulu
-  document.getElementById("gameSelect").dispatchEvent(new Event("change", { bubbles: true }));
-  if (gameCS) gameCS.refresh();
-
-  setTimeout(() => {
-    const betSelect = document.getElementById("betSelect");
-    if (data.bet !== undefined && data.bet !== "") {
-      betSelect.value = String(data.bet);
-      betSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    if (winInput) {
+      winInput.value = Number(data.manualWinAmount) > 0 ? data.manualWinAmount : "";
     }
-    if (betCS) betCS.refresh();
+  }
 
-    setTimeout(() => {
-      const pecahanSelect = document.getElementById("pecahanSelect");
-      if (data.pecahan !== undefined && data.pecahan !== "") {
-        pecahanSelect.value = String(data.pecahan);
-      }
-      if (winCS) winCS.refresh();
+  const gameSelect = document.getElementById("gameSelect");
+  const betSelect = document.getElementById("betSelect");
+  const pecahanSelect = document.getElementById("pecahanSelect");
+  const manualTimeInput = document.getElementById("manualTime");
+  const manualScoreInput = document.getElementById("manualScore");
+  const freeGameInput = document.getElementById("freeGameInput");
+  const tbody = document.querySelector("#gameLog tbody");
 
-      saveCurrentSelectionOnly();
-    }, 80);
-  }, 80);
+  if (manualTimeInput) {
+    manualTimeInput.value = data.manualTime || "";
+  }
 
-  document.querySelector("#gameLog tbody").innerHTML = data.logs || "";
+  if (manualScoreInput) {
+    manualScoreInput.value = Number(data.manualScore) > 0 ? data.manualScore : "";
+  }
+
+  if (freeGameInput && typeof data.freeGame !== "undefined") {
+    freeGameInput.value = Number(data.freeGame) > 0 ? data.freeGame : "";
+  }
+
+  isRestoringSelection = true;
+
+  if (gameSelect) {
+    gameSelect.value = data.game || "";
+    gameSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    if (typeof gameCS !== "undefined" && gameCS) gameCS.refresh();
+  }
+
+  if (betSelect && data.bet !== undefined && data.bet !== "") {
+    betSelect.value = String(data.bet);
+    betSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    if (typeof betCS !== "undefined" && betCS) betCS.refresh();
+  }
+
+  if (pecahanSelect && data.pecahan !== undefined && data.pecahan !== "") {
+    pecahanSelect.value = String(data.pecahan);
+    if (typeof winCS !== "undefined" && winCS) winCS.refresh();
+  }
+
+  isRestoringSelection = false;
+
+  if (tbody) {
+    tbody.innerHTML = data.logs || "";
+  }
+
   applyFreeGame();
+  saveCurrentSelectionOnly();
 });
 function showToast(message, type = "success") {
   const icons = {
