@@ -1200,44 +1200,75 @@ function initSortableTabs() {
   }
 
   tabBar._sortable = Sortable.create(tabBar, {
-    animation: 180,
-    easing: "cubic-bezier(.2,.8,.2,1)",
+    animation: 220,
+    easing: "cubic-bezier(.22,.61,.36,1)",
 
-    // ✅ ini yang buat tab ikut mouse / jari
+    // paksa guna fallback supaya elemen drag ikut mouse / jari
     forceFallback: true,
     fallbackOnBody: true,
-    fallbackTolerance: 4,
+    fallbackTolerance: 3,
+    fallbackClass: "tab-sort-fallback",
 
-    // ✅ class berasingan
-    ghostClass: "tab-sort-ghost",     // ruang kosong di tab bar
-    chosenClass: "tab-sort-chosen",   // tab asal yang dipilih
-    dragClass: "tab-sort-drag",       // elemen yang sedang ikut mouse
+    // class drag
+    ghostClass: "tab-sort-ghost",
+    chosenClass: "tab-sort-chosen",
+    dragClass: "tab-sort-drag",
 
-    // ✅ phone hold dulu, desktop terus drag
-    delay: 300,
+    // desktop terus drag, touch kena hold dulu
+    delay: 320,
     delayOnTouchOnly: true,
-    touchStartThreshold: 6,
+    touchStartThreshold: 8,
 
-    // ✅ jangan drag kalau tekan tombol X
+    // jangan drag bila tekan butang close
     filter: ".close-tab",
     preventOnFilter: false,
 
+    // auto scroll tab bar bila drag ke hujung
     scroll: true,
-    scrollSensitivity: 60,
-    scrollSpeed: 12,
+    bubbleScroll: true,
+    scrollSensitivity: 80,
+    scrollSpeed: 16,
 
-    onStart() {
+    // elak drag terlalu mudah bila tersentuh sikit
+    swapThreshold: 0.65,
+    invertSwap: true,
+    invertedSwapThreshold: 0.65,
+
+    // kalau awak mahu cuma tab sahaja boleh drag
+    draggable: ".tab",
+
+    onChoose() {
       document.body.classList.add("tab-dragging-active");
+    },
+
+    onUnchoose() {
+      document.body.classList.remove("tab-dragging-active");
+    },
+
+    onStart(evt) {
+      document.body.classList.add("tab-dragging-active");
+
+      if (evt.item) {
+        evt.item.style.pointerEvents = "none";
+      }
     },
 
     onEnd(evt) {
       document.body.classList.remove("tab-dragging-active");
 
+      if (evt.item) {
+        evt.item.style.pointerEvents = "";
+      }
+
       if (evt.oldIndex == null || evt.newIndex == null) return;
       if (evt.oldIndex === evt.newIndex) return;
 
       const tabs = getTabs();
-      const [movedTab] = tabs.splice(evt.oldIndex, 1);
+      if (!Array.isArray(tabs) || !tabs.length) return;
+
+      const movedTab = tabs.splice(evt.oldIndex, 1)[0];
+      if (!movedTab) return;
+
       tabs.splice(evt.newIndex, 0, movedTab);
       saveTabs(tabs);
       renderTabs();
