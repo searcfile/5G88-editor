@@ -971,6 +971,13 @@ searchBox.addEventListener('keydown', e=>{
     searchHits[hitIndex].scrollIntoView({behavior:'smooth', block:'center'});
   }
 });
+function formatDateTime(ts){
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+
+  return `${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()} ` +
+         `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
 // refresh highlight bila DOM pesan berubah
 function renderChats(chatGroup, today) {
   const chatBox = document.getElementById('chatBox');
@@ -983,7 +990,7 @@ function renderChats(chatGroup, today) {
     if (!c || !c.time || isNaN(new Date(c.time).getTime())) return;
 
     const msgDate = new Date(c.time);
-    const timeFormatted = msgDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const timeFormatted = formatDateTime(c.time);
     const dateKey = msgDate.toDateString();
 
     const yesterday = new Date(today);
