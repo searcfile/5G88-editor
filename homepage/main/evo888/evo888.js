@@ -1016,7 +1016,9 @@ function resetLog() {
   updateAutoFreeGameButtonUI();
 
   // reset AUTO AddScore
-
+  localStorage.removeItem("autoAddScoreOnEvo888");
+  autoAddScoreOn = false;
+  updateAutoAddScoreButtonUI();
 
   // reset state lain
   lastWinRowIndex = null;
