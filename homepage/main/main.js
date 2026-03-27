@@ -422,6 +422,23 @@ function moveNotifButtonResponsive() {
     }
   }
 }
+function handleFloatingFabResponsive() {
+  const fab = document.getElementById("floatingFabWrap");
+  if (!fab) return;
+
+  if (window.innerWidth <= 940) {
+    fab.style.display = "none";
+    fab.classList.remove("open");
+  } else {
+    fab.style.display = "";
+  }
+}
+
+window.addEventListener("resize", handleFloatingFabResponsive);
+
+document.addEventListener("DOMContentLoaded", () => {
+  handleFloatingFabResponsive();
+});
 window.addEventListener("resize", moveNotifButtonResponsive);
 document.addEventListener("DOMContentLoaded", () => {
   moveNotifButtonResponsive();
