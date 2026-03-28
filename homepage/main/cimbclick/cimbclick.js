@@ -568,7 +568,7 @@ function resetDisplay() {
 
   // ✅ reset ke 00000 / 0000
   lastRealAcc  = buildZeroAccount(selectedBank);
-  lastRealName = "No recipient name";
+  lastRealName = "";
 
   // input recipient pun jadi 0000 (supaya refresh kekal)
   if (inRec) inRec.value = lastRealName;
