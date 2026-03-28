@@ -45,15 +45,16 @@ body {
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
-     html.body::-webkit-scrollbar {
-      display: none;
-    }
-    .filter-bar {
-      position: sticky;
-      top: 0;
-      background:var(--page-bg);
-      z-index: 998;
-    }
+      -ms-overflow-style: none;
+.filter-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--page-bg);
+  z-index: 998;
+  padding-top: 12px;
+}
      .search-title {
       font-size: 30px;
       font-weight: bold;
@@ -101,18 +102,18 @@ body {
      border: 1px solid var(--blue-hover);
      color:var(--blue-hover);
     }
-    .logo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 23px;
-      padding: 0px 30px;
-      justify-content: center;
-      max-width: 1000px;
-      margin:auto;
-      overflow-y: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 23px;
+  padding: 170px 30px 30px;
+  justify-content: center;
+  max-width: 1000px;
+  margin: auto;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
     .logo-grid::-webkit-scrollbar {
       display: none;
     }
