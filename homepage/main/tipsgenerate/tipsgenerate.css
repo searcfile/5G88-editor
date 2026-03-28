@@ -242,3 +242,57 @@ background: var(--page-bg);
   background: var(--page-bg2);
   color: var(--page-text);
 }
+.tip-top-bar{
+  width: 90%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px 0;
+}
+
+.tip-search-input{
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-input);
+  background: var(--page-input);
+  color: var(--page-text);
+  outline: none;
+  box-sizing: border-box;
+  font-size: 13px;
+}
+
+.tip-search-input::placeholder{
+  color: rgba(255,255,255,0.45);
+}
+
+body.light-theme .tip-search-input::placeholder{
+  color: rgba(0,0,0,0.35);
+}
+
+.tip-search-input:focus{
+  border-color: var(--blue);
+}
+
+.percent-toggle-wrap{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.percent-toggle-label{
+  font-size: 11px;
+  color: var(--page-text);
+  white-space: nowrap;
+}
+
+.percent-checkbox{
+  width: 16px;
+  height: 16px;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
