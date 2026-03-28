@@ -305,16 +305,17 @@ border:1px solid var(--blue);
   cursor: pointer;
   transition: all .2s;
 }
-.btn-update:active{ background:#a7a7a7!important; transform: translateY(1px);}
-.btn-reset:active{ background:#9e0106!important; transform: translateY(1px);}
-.btn-now:active{ background:#a7a7a7!important; transform: translateY(1px);}
-.btn-now:hover{ background:#dcdcdc;}
-.btn-reset:hover{ background:#ff6e73;}
-.btn-update:hover{ background:#dcdcdc;}
+.btn-update:active{ background:var(--blue-active)!important;}
+.btn-reset:active{ color:var(--blue-hover)!important;border:1px solid var(--blue-active);}
+.btn-now:active{ background:var(--blue-hover)!important;}
+.btn-now:hover{ background:var(--blue-hover);}
+.btn-reset:hover{ color:var(--blue-hover);border:1px solid var(--blue-hover);}
+.btn-update:hover{ background:var(--blue-hover);}
     *, *::before, *::after { box-sizing: border-box; }
 .builder-row-2{
   display: flex;
   width: 100%;
+  gap:8px;
 }
 
 .builder-row-2 .builder-field{
