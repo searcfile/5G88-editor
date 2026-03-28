@@ -308,3 +308,43 @@ input:hover:not(:focus){
   height:100%;
   border:0;
 }
+.field{
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: rgba(255,255,255,0.45);
+  z-index: 2;
+}
+
+.left-icon{
+  left: 14px;
+}
+
+.field-icon svg{
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.input.has-left-icon{
+  padding-left: 44px !important;
+}
+
+.input.has-right-icon{
+  padding-right: 46px !important;
+}
+
+/* kalau mahu icon ikut focus */
+.field:focus-within .field-icon{
+  color: rgba(255,255,255,0.75);
+}
