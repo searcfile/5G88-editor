@@ -400,25 +400,25 @@ input:hover:not(:focus){
     height: 18px;
   }
 }
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active{
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
+.input:-webkit-autofill:active{
 
   /* warna text */
   -webkit-text-fill-color: var(--page-text) !important;
   caret-color: var(--page-text) !important;
 
-  /* penting: override background Chrome */
+  /* 2 layer: outer + inner */
   -webkit-box-shadow:
-    0 0 0 30px rgba(70,90,126,0.4) inset !important;
+    0 0 0 1000px #141414 inset,                /* outer */
+    0 0 0 14px rgba(70,90,126,0.4) inset !important; /* inner */
 
   box-shadow:
-    0 0 0 30px rgba(70,90,126,0.4) inset !important;
+    0 0 0 1000px #141414 inset,
+    0 0 0 14px rgba(70,90,126,0.4) inset !important;
 
-  /* bagi nampak ikut padding (bukan full block keras) */
-  background-clip: content-box !important;
-  -webkit-background-clip: content-box !important;
- border: 1px solid var(--blue) !important;
+  border: 1px solid var(--blue) !important;
+
   transition: background-color 99999s ease-in-out 0s !important;
 }
