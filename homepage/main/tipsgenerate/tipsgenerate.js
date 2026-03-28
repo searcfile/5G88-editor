@@ -83,7 +83,6 @@ function createPlatform(name, tips, rowId) {
       >
 
       <label class="percent-toggle-wrap" for="${percentId}">
-        <span class="percent-toggle-label">%</span>
         <input
           type="checkbox"
           class="percent-checkbox"
