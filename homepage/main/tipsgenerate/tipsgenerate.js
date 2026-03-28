@@ -41,6 +41,22 @@ function restoreLastUpdated(name){
   const el = document.getElementById('time-' + name);
   if (saved && el) el.innerText = `Last Updated on ${saved}`;
 }
+function generateRandomPercent() {
+  const value = (90 + Math.random() * 8.99).toFixed(2);
+  return `${value}%`;
+}
+
+function getPercentState(name) {
+  return localStorage.getItem(`percent-${name}`) === 'on';
+}
+
+function filterTipsBySearch(name, list) {
+  const searchEl = document.getElementById(`search-${name}`);
+  const keyword = (searchEl?.value || '').trim().toLowerCase();
+
+  if (!keyword) return list;
+  return list.filter(item => item.toLowerCase().includes(keyword));
+}
 function createPlatform(name, tips, rowId) {
   const container = document.createElement('div');
   container.className = 'platform-box';
@@ -51,10 +67,34 @@ function createPlatform(name, tips, rowId) {
   const autoId = `auto-${name}`;
   const durationId = `duration-${name}`;
   const timeId = `time-${name}`;
+  const searchId = `search-${name}`;
+  const percentId = `percent-${name}`;
 
   container.innerHTML = `
     <div class="platform-header">${name}</div>
+
+    <div class="tip-top-bar">
+      <input
+        type="text"
+        class="tip-search-input"
+        id="${searchId}"
+        placeholder="Search tips..."
+        oninput="refreshList('${name}')"
+      >
+
+      <label class="percent-toggle-wrap" for="${percentId}">
+        <span class="percent-toggle-label">%</span>
+        <input
+          type="checkbox"
+          class="percent-checkbox"
+          id="${percentId}"
+          onchange="togglePercent('${name}')"
+        >
+      </label>
+    </div>
+
     <div class="tip-list" id="${tipListId}"></div>
+
     <div class="bottom-controls">
       <div class="row-center">
         <button class="btn-number" onclick="toggleNumber('${name}', this)">NUMBER</button>
@@ -88,17 +128,21 @@ function createPlatform(name, tips, rowId) {
 
   document.getElementById(rowId).appendChild(container);
   restoreLastUpdated(name);
-  // ✅ Restore tombol NUMBER jika sebelumnya aktif
+
   const numberStatus = localStorage.getItem(`number-${name}`);
   if (numberStatus === 'on') {
     const numberBtn = container.querySelector('.btn-number');
     if (numberBtn) numberBtn.classList.add('active');
   }
 
-  // ✅ Render tips setelah cek tombol number
+  const percentCheckbox = document.getElementById(percentId);
+  const savedPercent = localStorage.getItem(`percent-${name}`);
+  if (savedPercent === 'on') {
+    percentCheckbox.checked = true;
+  }
+
   refreshList(name);
 
-  // ✅ Restore status checkbox auto-refresh
   const autoCheckbox = document.getElementById(`auto-${name}`);
   const savedStatus = localStorage.getItem(`auto-${name}`);
   if (savedStatus === 'on') {
@@ -109,23 +153,35 @@ function createPlatform(name, tips, rowId) {
 function renderTips(name, tips) {
   const el = document.getElementById('tips-' + name);
   const numberBtn = document.querySelector(`.platform-box[data-platform="${name.toLowerCase()}"] .btn-number`);
+  const percentOn = getPercentState(name);
+
   let content = `<strong>${name}</strong><br>=========<br>`;
 
   tips.forEach((t, i) => {
-    const line = numberBtn && numberBtn.classList.contains('active') ? `${i + 1}. ${t}` : t;
+    let line = numberBtn && numberBtn.classList.contains('active')
+      ? `${i + 1}. ${t}`
+      : t;
+
+    if (percentOn) {
+      line += ` ${generateRandomPercent()}`;
+    }
+
     content += `${line}<br>`;
   });
 
   el.innerHTML = content;
 }
 
-    function refreshList(name) {
-      const count = parseInt(document.getElementById('count-' + name).value) || 3;
-      const list = platformData[name];
-      const shuffled = [...list].sort(() => 0.5 - Math.random());
-      const random = shuffled.slice(0, count);
-      renderTips(name, random);
-    }
+function refreshList(name) {
+  const count = parseInt(document.getElementById('count-' + name).value) || 3;
+  const list = platformData[name];
+
+  const filteredList = filterTipsBySearch(name, list);
+  const shuffled = [...filteredList].sort(() => 0.5 - Math.random());
+  const random = shuffled.slice(0, count);
+
+  renderTips(name, random);
+}
 
     function copyTips(name) {
   const text = document.getElementById('tips-' + name).innerText;
@@ -188,7 +244,7 @@ function renderTips(name, tips) {
   }
 }
 
-    function toggleAuto(name) {
+function toggleAuto(name) {
   const checkbox = document.getElementById('auto-' + name);
   clearInterval(autoIntervals[name]);
   localStorage.setItem(`auto-${name}`, checkbox.checked ? 'on' : 'off');
@@ -206,7 +262,11 @@ function renderTips(name, tips) {
   }
 }
 
-
+function togglePercent(name) {
+  const checkbox = document.getElementById(`percent-${name}`);
+  localStorage.setItem(`percent-${name}`, checkbox.checked ? 'on' : 'off');
+  refreshList(name);
+}
     function filterPlatforms(query) {
       const allBoxes = document.querySelectorAll('.platform-box');
       query = query.trim().toLowerCase();
@@ -222,28 +282,13 @@ allPlatforms.forEach((name, i) => {
   const rowId = `row-${rowIndex}`;
   createPlatform(name, platformData[name], rowId);
 });
- function toggleNumber(name, btn) {
+function toggleNumber(name, btn) {
   btn.classList.toggle('active');
 
   const isActive = btn.classList.contains('active');
   localStorage.setItem(`number-${name}`, isActive ? 'on' : 'off');
 
-  const tipsBox = document.getElementById('tips-' + name);
-  const lines = tipsBox.innerHTML.split('<br>').filter(line => line.trim() !== '');
-
-  const platformTitle = lines[0];
-  const separator = lines[1];
-  const contentLines = lines.slice(2);
-
-  let updatedLines;
-
-  if (isActive) {
-    updatedLines = contentLines.map((line, index) => `${index + 1}. ${line}`);
-  } else {
-    updatedLines = contentLines.map(line => line.replace(/^\d+\.\s*/, ''));
-  }
-
-  tipsBox.innerHTML = [platformTitle, separator, ...updatedLines].join('<br>');
+  refreshList(name);
 }
 (function () {
   const THEME_KEY = "siteTheme";
