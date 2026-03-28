@@ -44,15 +44,24 @@
     }
 
 .wrap{
-  max-width: 1160px;
+  max-width: 1200px;
   margin: 15px auto;
   display: grid;
-  grid-template-columns: 540px 520px;
+  grid-template-columns: 540px minmax(560px, 1fr);
   gap: 12px;
-  justify-content: center;
   align-items: start;
 }
+.panel{
+  width: 540px;
+  max-width: 540px;
+}
 
+.receipt{
+  width: 100%;
+  min-width: 560px;
+  background: var(--card);
+  overflow: hidden;
+}
     @media (max-width: 980px){
       .wrap{ grid-template-columns: 1fr; }
     }
