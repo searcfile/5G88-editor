@@ -51,16 +51,24 @@
   gap: 12px;
   align-items: start;
 }
-.panel{
-  width: 540px;
-  max-width: 540px;
-}
+  .panel{
+    width: 100%;
+    max-width: 100%;
+  }
 
-.receipt{
-  width: 100%;
-  min-width: 560px;
-  background: var(--card);
-  overflow: hidden;
+  .receipt{
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .nameRow,
+  .dateRow{
+    width: 100%;
+  }
+  .nameRow input,
+  .dateRow input{
+    min-width: 0;
+  }
 }
     @media (max-width: 980px){
       .wrap{ grid-template-columns: 1fr; }
