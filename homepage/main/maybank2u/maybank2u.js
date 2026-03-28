@@ -17,18 +17,18 @@ const BANK_CONFIG = {
 };
     const DEFAULT_STATE = {
       bank: "Please Select",
-      effectiveDate: "-------",
+      effectiveDate: "",
       amount: 100.00,
       amountText: "1000.00",
-      refPrefix4: "8292",
-      referenceId10: "-------",
-      holderName: "-------",
+      refPrefix4: "",
+      referenceId10: "",
+      holderName: "",
       autoName: false,
-      completedText: "-------",
+      completedText: "",
       created: false,
       // store generated accounts per bank
       accountsByBank: {
-        "CIMB BANK BERHAD": []
+        "Select Bank": []
       },
       selectedAccountByBank: {}
     };
