@@ -913,18 +913,18 @@ if (userNameBtn && dropdownContent) {
     }
   });
 }
-  async function logoutAccount() {
-    try {
-      await loginAuth.signOut();
-    } catch (err) {
-      console.error("Logout error:", err);
-    } finally {
-      localStorage.removeItem("loginUser");
-      localStorage.removeItem("openTabs");
-      localStorage.removeItem("activeTabUrl");
-      window.location.replace(LOGIN_URL);
-    }
+async function logoutAccount() {
+  try {
+    await loginAuth.signOut();
+  } catch (err) {
+    console.error("Logout error:", err);
+  } finally {
+    localStorage.removeItem("loginUser");
+    // ❌ jangan buang openTabs
+    // ❌ jangan buang activeTabUrl
+    window.location.replace(LOGIN_URL);
   }
+}
   // ✅ Interaksi user diperlukan agar audio bisa diputar
   let userHasInteracted = false;
   document.addEventListener('click', () => {
