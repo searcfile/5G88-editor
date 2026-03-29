@@ -516,15 +516,15 @@
           <div class="brand-logo">S</div>
           <div class="brand-text">
             <h1>Secure Portal</h1>
-            <p>Modern email/password access</p>
+            <p>Modern username / email access</p>
           </div>
         </div>
 
         <div class="hero">
-          <h2>Login dengan selamat dan terus masuk ke halaman settings.</h2>
+          <h2>Login dengan username atau email dan terus masuk ke halaman settings.</h2>
           <p>
-            Halaman ini dibuat dengan design yang lebih modern, kemas, responsive,
-            dan terus redirect ke path yang kamu mahu selepas login berjaya.
+            User boleh login guna username seperti <b>skw88</b> atau terus guna
+            email sebenar. Sistem akan cari email asal dari database sebelum login.
           </p>
         </div>
 
@@ -532,8 +532,8 @@
           <div class="feature">
             <div class="feature-icon">🔒</div>
             <div class="feature-text">
-              <strong>Secure Login</strong>
-              <span>Guna Firebase Authentication email/password yang sesuai untuk sistem login moden.</span>
+              <strong>Username or Email Login</strong>
+              <span>Boleh isi username seperti skw88 atau email penuh seperti skw88@gmail.com.</span>
             </div>
           </div>
 
@@ -541,7 +541,7 @@
             <div class="feature-icon">⚡</div>
             <div class="feature-text">
               <strong>Fast Redirect</strong>
-              <span>Selepas login berjaya, user akan terus pergi ke path yang kamu tetapkan seperti <b>/settings</b>.</span>
+              <span>Selepas login berjaya, user akan terus pergi ke path seperti <b>/settings</b>.</span>
             </div>
           </div>
 
@@ -563,21 +563,21 @@
     <div class="right-panel">
       <div class="login-card">
         <h3>Welcome Back</h3>
-        <div class="sub">Masukkan email dan password untuk terus masuk.</div>
+        <div class="sub">Masukkan username/email dan password untuk terus masuk.</div>
 
         <div id="errorBox" class="error-box"></div>
         <div id="successBox" class="success-box"></div>
 
-        <form id="loginForm">
+        <form id="loginForm" novalidate>
           <div class="form-group">
-            <label class="form-label" for="email">Email</label>
+            <label class="form-label" for="loginInput">Username / Email</label>
             <div class="input-wrap">
               <input
-                id="email"
+                id="loginInput"
                 class="input"
-                type="email"
-                placeholder="example@email.com"
-                autocomplete="email"
+                type="text"
+                placeholder="Contoh: skw88 atau skw88@gmail.com"
+                autocomplete="username"
                 required
               />
             </div>
@@ -635,29 +635,30 @@
       sendPasswordResetEmail,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      get
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-    // =========================
-    // 1) GANTI CONFIG FIREBASE KAMU DI SINI
-    // =========================
-const firebaseConfig = {
-  apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
-  authDomain: "page-login2.firebaseapp.com",
-  projectId: "page-login2",
-  storageBucket: "page-login2.firebasestorage.app",
-  messagingSenderId: "860837620702",
-  appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
+      authDomain: "page-login2.firebaseapp.com",
+      databaseURL: "https://page-login2-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "page-login2",
+      storageBucket: "page-login2.firebasestorage.app",
+      messagingSenderId: "860837620702",
+      appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
+    };
 
-    // =========================
-    // 2) PATH TUJUAN SELEPAS LOGIN
-    // =========================
     const REDIRECT_PATH = "/settings";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getDatabase(app);
 
     const loginForm = document.getElementById("loginForm");
-    const emailInput = document.getElementById("email");
+    const loginInput = document.getElementById("loginInput");
     const passwordInput = document.getElementById("password");
     const rememberMe = document.getElementById("rememberMe");
     const loginBtn = document.getElementById("loginBtn");
@@ -691,12 +692,9 @@ const firebaseConfig = {
 
     function setLoading(isLoading){
       loginBtn.disabled = isLoading;
-
-      if(isLoading){
-        loginBtn.innerHTML = '<span class="spinner"></span>Signing in...';
-      }else{
-        loginBtn.innerHTML = 'Login';
-      }
+      loginBtn.innerHTML = isLoading
+        ? '<span class="spinner"></span>Signing in...'
+        : 'Login';
     }
 
     function mapFirebaseError(code){
@@ -707,7 +705,7 @@ const firebaseConfig = {
           return "Akaun ini telah dinyahaktifkan.";
         case "auth/user-not-found":
         case "auth/invalid-credential":
-          return "Email atau password salah.";
+          return "Username/email atau password salah.";
         case "auth/wrong-password":
           return "Password salah.";
         case "auth/too-many-requests":
@@ -725,6 +723,38 @@ const firebaseConfig = {
       window.location.href = REDIRECT_PATH;
     }
 
+    function sanitizeUsername(value){
+      return String(value || "")
+        .trim()
+        .toLowerCase();
+    }
+
+    async function resolveEmailFromUsernameOrEmail(inputValue){
+      const value = sanitizeUsername(inputValue);
+
+      if (!value) {
+        throw new Error("Username/email wajib diisi.");
+      }
+
+      if (value.includes("@")) {
+        return value;
+      }
+
+      const snap = await get(ref(db, "usernames/" + value));
+
+      if (!snap.exists()) {
+        throw new Error("Username tidak ditemukan.");
+      }
+
+      const data = snap.val();
+
+      if (!data || !data.email) {
+        throw new Error("Email untuk username ini tidak ditemukan.");
+      }
+
+      return String(data.email).trim().toLowerCase();
+    }
+
     togglePassword.addEventListener("click", () => {
       const isPassword = passwordInput.type === "password";
       passwordInput.type = isPassword ? "text" : "password";
@@ -735,11 +765,11 @@ const firebaseConfig = {
       e.preventDefault();
       clearMessages();
 
-      const email = emailInput.value.trim();
+      const inputValue = loginInput.value.trim();
       const password = passwordInput.value;
 
-      if(!email || !password){
-        showError("Email dan password wajib diisi.");
+      if(!inputValue || !password){
+        showError("Username/email dan password wajib diisi.");
         return;
       }
 
@@ -751,7 +781,16 @@ const firebaseConfig = {
           rememberMe.checked ? browserLocalPersistence : browserSessionPersistence
         );
 
-        await signInWithEmailAndPassword(auth, email, password);
+        const email = await resolveEmailFromUsernameOrEmail(inputValue);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        localStorage.setItem("gmailLogin", JSON.stringify({
+          uid: user.uid,
+          email: user.email || email,
+          username: inputValue.includes("@") ? (email.split("@")[0] || "") : sanitizeUsername(inputValue),
+          name: inputValue.includes("@") ? (email.split("@")[0] || "") : sanitizeUsername(inputValue)
+        }));
 
         showSuccess("Login berjaya. Sedang redirect...");
         setTimeout(() => {
@@ -759,7 +798,7 @@ const firebaseConfig = {
         }, 700);
 
       }catch(err){
-        showError(mapFirebaseError(err.code));
+        showError(err?.message && !err.code ? err.message : mapFirebaseError(err.code));
       }finally{
         setLoading(false);
       }
@@ -767,19 +806,20 @@ const firebaseConfig = {
 
     forgotBtn.addEventListener("click", async () => {
       clearMessages();
-      const email = emailInput.value.trim();
+      const inputValue = loginInput.value.trim();
 
-      if(!email){
-        showError("Masukkan email dulu untuk reset password.");
-        emailInput.focus();
+      if(!inputValue){
+        showError("Masukkan username atau email dulu untuk reset password.");
+        loginInput.focus();
         return;
       }
 
       try{
+        const email = await resolveEmailFromUsernameOrEmail(inputValue);
         await sendPasswordResetEmail(auth, email);
         showSuccess("Link reset password sudah dihantar ke email kamu.");
       }catch(err){
-        showError(mapFirebaseError(err.code));
+        showError(err?.message && !err.code ? err.message : mapFirebaseError(err.code));
       }
     });
 
