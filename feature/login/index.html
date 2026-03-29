@@ -647,8 +647,8 @@ import {
   };
 
   const REDIRECT_PATH = "/settings";
-  const urlParams = new URLSearchParams(window.location.search);
-const isLogout = urlParams.get("logout") === "1";
+const urlParams = new URLSearchParams(window.location.search);
+let isLogout = urlParams.get("logout") === "1";
   const USERNAME_DOMAIN = "@5g88.local";
 
   const app = initializeApp(firebaseConfig);
@@ -775,6 +775,8 @@ try{
   setLoading(true);
 
   sessionStorage.removeItem("justLoggedOut");
+  isLogout = false;
+  window.history.replaceState({}, document.title, "/login");
 
   await setPersistence(
     auth,
