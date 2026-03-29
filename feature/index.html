@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="https://i.imgur.com/uGijtpF.png">
   <title>Feature</title>
- 
+    <script>
+    (function () {
+      const MAIN_URL = "https://admin-support-eight.vercel.app/login";
+
+      // 🚫 Elak loop kalau sudah di main
+      if (location.hostname === "admin-support-eight.vercel.app/login") return;
+
+      // 🔥 Clear semua query & hash supaya tak ikut redirect lama
+      window.location.replace(MAIN_URL);
+    })();
+  </script>
+
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=https://admin-support-eight.vercel.app/login">
+  </noscript>
 <body></body>
 </html>
