@@ -209,119 +209,116 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
-      authDomain: "page-login2.firebaseapp.com",
-      projectId: "page-login2",
-      storageBucket: "page-login2.firebasestorage.app",
-      messagingSenderId: "860837620702",
-      appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
-    };
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
+    authDomain: "page-login2.firebaseapp.com",
+    projectId: "page-login2",
+    storageBucket: "page-login2.firebasestorage.app",
+    messagingSenderId: "860837620702",
+    appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
+  };
 
-    const loginApp = firebase.apps.length
-      ? firebase.app()
-      : firebase.initializeApp(firebaseConfig);
+  const loginApp = firebase.apps.length
+    ? firebase.app()
+    : firebase.initializeApp(firebaseConfig);
 
-    const auth = loginApp.auth();
+  const auth = loginApp.auth();
 
-    const loginForm = document.getElementById("loginForm");
-    const usernameEl = document.getElementById("username");
-    const passwordEl = document.getElementById("password");
-    const loginBtn = document.getElementById("loginBtn");
-    const loginMsg = document.getElementById("loginMsg");
-    const loginBox = document.getElementById("loginBox");
-    const togglePassword = document.getElementById("togglePassword");
+  const loginForm = document.getElementById("loginForm");
+  const usernameEl = document.getElementById("username");
+  const passwordEl = document.getElementById("password");
+  const loginBtn = document.getElementById("loginBtn");
+  const loginMsg = document.getElementById("loginMsg");
+  const loginBox = document.getElementById("loginBox");
+  const togglePassword = document.getElementById("togglePassword");
 
-    const SETTINGS_URL = "../settings/";
-    const USER_DOMAIN = "@5g88.local";
+  const SETTINGS_URL = "/5G88-editor/feature/settings/";
+  const USER_DOMAIN = "@5g88.local";
 
-    function showMsg(text, type = "") {
-      loginMsg.textContent = text;
-      loginMsg.className = "info " + type;
+  let isSubmitting = false;
+  let hasRedirected = false;
+
+  function showMsg(text, type = "") {
+    loginMsg.textContent = text;
+    loginMsg.className = "info " + type;
+  }
+
+  function normalizeEmailFromUsername(input) {
+    const v = String(input || "").trim().toLowerCase();
+    if (!v) return "";
+    if (v.includes("@")) return v;
+    return v + USER_DOMAIN;
+  }
+
+  function setLoading(state) {
+    loginBtn.disabled = state;
+    loginBox.classList.toggle("loading", state);
+    loginBtn.textContent = state ? "PLEASE WAIT..." : "LOGIN";
+  }
+
+  togglePassword.addEventListener("click", () => {
+    const isPwd = passwordEl.type === "password";
+    passwordEl.type = isPwd ? "text" : "password";
+    togglePassword.textContent = isPwd ? "HIDE" : "SHOW";
+  });
+
+  // ✅ hanya redirect kalau memang sudah login
+  auth.onAuthStateChanged((user) => {
+    if (!user) return;
+
+    localStorage.setItem("loginUser", JSON.stringify({
+      uid: user.uid,
+      email: user.email || "",
+      username: (user.email || "").replace("@5g88.local", ""),
+      lastLogin: Date.now()
+    }));
+
+    if (!hasRedirected && location.pathname !== "/5G88-editor/feature/settings/") {
+      hasRedirected = true;
+      window.location.replace(SETTINGS_URL);
+    }
+  });
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    const username = usernameEl.value.trim();
+    const password = passwordEl.value;
+
+    if (!username || !password) {
+      showMsg("Username dan password wajib isi.", "error");
+      return;
     }
 
-    function normalizeEmailFromUsername(input) {
-      const v = String(input || "").trim().toLowerCase();
-      if (!v) return "";
-      if (v.includes("@")) return v;
-      return v + USER_DOMAIN;
+    const email = normalizeEmailFromUsername(username);
+
+    try {
+      isSubmitting = true;
+      setLoading(true);
+      showMsg("Sedang login...", "");
+
+      await auth.signInWithEmailAndPassword(email, password);
+
+      // ✅ jangan redirect di sini lagi
+      // biar onAuthStateChanged yang urus redirect
+
+    } catch (err) {
+      console.error("Login error:", err);
+
+      let msg = "Login gagal.";
+      if (err.code === "auth/user-not-found") msg = "User tidak ditemukan.";
+      else if (err.code === "auth/wrong-password") msg = "Password salah.";
+      else if (err.code === "auth/invalid-login-credentials") msg = "Username atau password salah.";
+      else if (err.code === "auth/invalid-email") msg = "Format username/email tidak sah.";
+      else if (err.code === "auth/too-many-requests") msg = "Terlalu banyak percubaan. Cuba lagi nanti.";
+
+      showMsg(msg, "error");
+      isSubmitting = false;
+      setLoading(false);
     }
-
-    function setLoading(state) {
-      loginBtn.disabled = state;
-      loginBox.classList.toggle("loading", state);
-      loginBtn.textContent = state ? "PLEASE WAIT..." : "LOGIN";
-    }
-
-    togglePassword.addEventListener("click", () => {
-      const isPwd = passwordEl.type === "password";
-      passwordEl.type = isPwd ? "text" : "password";
-      togglePassword.textContent = isPwd ? "HIDE" : "SHOW";
-    });
-
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        localStorage.setItem("loginUser", JSON.stringify({
-          uid: user.uid,
-          email: user.email || "",
-          username: (user.email || "").replace("@5g88.local", ""),
-          lastLogin: Date.now()
-        }));
-
-        if (!location.pathname.includes("../settings")) {
-          window.location.replace(SETTINGS_URL);
-        }
-      }
-    });
-
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const username = usernameEl.value.trim();
-      const password = passwordEl.value;
-
-      if (!username || !password) {
-        showMsg("Username dan password wajib isi.", "error");
-        return;
-      }
-
-      const email = normalizeEmailFromUsername(username);
-
-      try {
-        setLoading(true);
-        showMsg("Sedang login...", "");
-
-        const cred = await auth.signInWithEmailAndPassword(email, password);
-        const user = cred.user;
-
-        localStorage.setItem("loginUser", JSON.stringify({
-          uid: user.uid,
-          email: user.email || "",
-          username: username.toLowerCase(),
-          lastLogin: Date.now()
-        }));
-
-        showMsg("Login berjaya. Redirect...", "success");
-        setTimeout(() => {
-          window.location.replace(SETTINGS_URL);
-        }, 500);
-
-      } catch (err) {
-        console.error("Login error:", err);
-
-        let msg = "Login gagal.";
-        if (err.code === "auth/user-not-found") msg = "User tidak ditemukan.";
-        else if (err.code === "auth/wrong-password") msg = "Password salah.";
-        else if (err.code === "auth/invalid-login-credentials") msg = "Username atau password salah.";
-        else if (err.code === "auth/invalid-email") msg = "Format username/email tidak sah.";
-        else if (err.code === "auth/too-many-requests") msg = "Terlalu banyak percubaan. Cuba lagi nanti.";
-
-        showMsg(msg, "error");
-      } finally {
-        setLoading(false);
-      }
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
