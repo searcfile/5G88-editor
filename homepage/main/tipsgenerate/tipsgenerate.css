@@ -115,8 +115,12 @@ background: var(--page-bg);
       border: 1px solid var(--border-input);
       background:var(--page-input);
       color:var(--page-text);
+      outline: none;
     }
-
+    ..count-input, .duration-input:hover{
+      border:1px solid var(--blue-hover);}
+    ..count-input, .duration-input:focus{
+      border:1px solid var(--blue);}
     .switch {
       position: relative;
       display: inline-block;
@@ -303,15 +307,6 @@ body.light-theme .tip-search-input::placeholder{
 .percent-checkbox:checked{
   background: var(--blue);
   border:1px solid var(--blue);
-}
-.percent-checkbox:checked::before{
-  content: "✔";
-  position: absolute;
-  color: white;
-  font-size: 16px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
 }
 .percent-checkbox:checked::after{
   content: "✔";
