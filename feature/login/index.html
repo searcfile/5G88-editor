@@ -768,16 +768,18 @@ function goToSettings(){
       return;
     }
 
-    try{
-      setLoading(true);
+try{
+  setLoading(true);
 
-      await setPersistence(
-        auth,
-        rememberMe.checked ? browserLocalPersistence : browserSessionPersistence
-      );
+  sessionStorage.removeItem("justLoggedOut");
 
-      const email = normalizeLoginToEmail(inputValue);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  await setPersistence(
+    auth,
+    rememberMe.checked ? browserLocalPersistence : browserSessionPersistence
+  );
+
+  const email = normalizeLoginToEmail(inputValue);
+  const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       const username = extractUsername(inputValue, email);
 
@@ -831,8 +833,10 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  if(user){
-    goToSettings();
+  if (user) {
+    setTimeout(() => {
+      goToSettings();
+    }, 80);
   }
 });
 </script>
