@@ -239,14 +239,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   color: rgba(255,255,255,0.88);
   font-family: 'Segoe UI', sans-serif;
   overflow-y: auto;
-  box-sizing: border-box;
 }
 
 #msg::placeholder {
   color: rgba(255,255,255,0.35);
 }
 
-#msg:hover,
 #msg:focus {
   border: none;
   outline: none;
@@ -372,24 +370,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
     font-size: 12px;
     color: #555;
   }
-  @media (max-width: 600px) {
-    .chat-header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    #searchChat {
-      width: 100%;
-    }
-
-    .send-box {
-      flex-direction: column;
-    }
-
-    #msg {
-      width: 100%;
-    }
+@media (max-width: 600px) {
+  .chat-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
+
+  #searchChat {
+    width: 100%;
+  }
+}
   .chat-wrapper {
   background: white;
   max-width: 640px;
@@ -476,11 +466,18 @@ background-color:black;
   }
 }
 
-/* --- layar sangat kecil <= 400px --- */
 @media (max-width: 400px) {
   #msg { font-size: 14px; }
-  .file-label,
-  .send-box button { padding: 0 8px; }
+
+  .send-tool-btn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .send-main-btn {
+    width: 32px;
+    height: 32px;
+  }
 }
 /* === SEARCH highlight === */
 mark.__hit{ background:#ffe58a; padding:0 2px; border-radius:3px; }
@@ -551,22 +548,28 @@ mark.__hit{ background:#ffe58a; padding:0 2px; border-radius:3px; }
 
   <textarea id="msg" placeholder="Type your message..." rows="1"></textarea>
 
-  <div class="send-actions">
-    <button type="button" class="send-tool-btn" title="Emoji">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M9 10h.01M15 10h.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-        <path d="M8.5 14.5c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-    </button>
+<div class="send-actions">
+  <button type="button" class="send-tool-btn" title="Gift">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7M12 4v16M3 8h18v4H3V8zm4.5 0h0A2.5 2.5 0 1 1 10 5.5V8H7.5zm9 0H14V5.5A2.5 2.5 0 1 1 16.5 8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 
-    <button type="button" id="sendBtn" class="send-main-btn" disabled title="Send">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 20l17-8L4 4l3 8-3 8zm3-8h14"
-          fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-  </div>
+  <button type="button" class="send-tool-btn" title="Emoji">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M9 10h.01M15 10h.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M8.5 14.5c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <button type="button" id="sendBtn" class="send-main-btn" disabled title="Send">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 20l17-8L4 4l3 8-3 8zm3-8h14"
+        fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
 </div>
   </div>
 </main>
