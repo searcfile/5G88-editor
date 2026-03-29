@@ -822,10 +822,10 @@ function loadPage(url) {
 
     return "Admin";
   }
-  const savedLogin = getLoginData();
-  if (!savedLogin) {
-    window.location.href = LOGIN_PAGE_URL;
-  }
+const savedLogin = getLoginData();
+if (!savedLogin) {
+  window.location.replace(LOGIN_PAGE_URL);
+}
   function setHeaderUser() {
     const loginData = getLoginData();
 
@@ -871,6 +871,21 @@ async function doLogout() {
     console.warn("Logout Firebase gagal:", err);
   }
 
+  try {
+    localStorage.removeItem("gmailLogin");
+    localStorage.removeItem("openTabs");
+    localStorage.removeItem("activeTabUrl");
+    sessionStorage.setItem("justLoggedOut", "1");
+  } catch (err) {
+    console.warn("Gagal clear storage:", err);
+  }
+
+  closeUserDropdown();
+
+  setTimeout(() => {
+    window.location.replace(LOGIN_PAGE_URL);
+  }, 120);
+}
   localStorage.removeItem("gmailLogin");
   localStorage.removeItem("openTabs");
   localStorage.removeItem("activeTabUrl");
