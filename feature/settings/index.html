@@ -886,22 +886,13 @@ async function doLogout() {
     window.location.replace(LOGIN_PAGE_URL);
   }, 120);
 }
-  localStorage.removeItem("gmailLogin");
-  localStorage.removeItem("openTabs");
-  localStorage.removeItem("activeTabUrl");
-  sessionStorage.setItem("justLoggedOut", "1");
 
-  closeUserDropdown();
-
-  window.location.replace(LOGIN_PAGE_URL);
+if (userMenuBtn) {
+  userMenuBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
+    toggleUserDropdown();
+  });
 }
-
-  if (userMenuBtn) {
-    userMenuBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      toggleUserDropdown();
-    });
-  }
 
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async function() {
