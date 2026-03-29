@@ -457,9 +457,12 @@ html, body {
   width: 100%;
   transition: none;
 }
-.tab-bar.shrink {
-  margin-left: 255px;
-  width: calc(100% - 255px);
+.container {
+  transition: all 0.25s ease;
+}
+
+.tab-bar {
+  transition: all 0.25s ease;
 }
 .live-chat-button .btn-label {
     display: inline-flex;
@@ -881,7 +884,6 @@ function openSidebar() {
 
   container.classList.add("shrink");
   document.querySelector('.header').classList.add('shrink');
-  document.getElementById("tabBar").classList.add('shrink');
   document.getElementById("menuIcon").classList.add("active-menu-icon");
 }
 
@@ -890,7 +892,6 @@ function openSidebar() {
     overlay.classList.remove("active");
     container.classList.remove("shrink");
     document.querySelector('.header').classList.remove('shrink');
-    document.getElementById("tabBar").classList.remove('shrink');
     document.getElementById("menuIcon").classList.remove("active-menu-icon");
   }
   document.addEventListener("click", (e) => {
