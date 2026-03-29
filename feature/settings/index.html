@@ -314,6 +314,36 @@ body.light-theme{
   margin-bottom: 6px;
   word-break: break-word;
 }
+.dropdown-profile-btn{
+  width: 100%;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: var(--backgroundbtn);
+  color: var(--colorbtn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  pointer-events: none;
+  font-weight: 600;
+}
+
+.dropdown-profile-btn svg{
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.dropdown-profile-name{
+  display: inline-block;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .container {
   position: relative;
   transition: margin-left 0.3s ease, width 0.3s ease;
@@ -579,18 +609,7 @@ html, body {
   border-color: var(--gold);
 }
 .date-time {color: white;font-size: 14px;white-space: nowrap;transition: color 0.3s;}
-@media (max-width: 520px){
-  .user-name-text{
-    display: none !important;
-  }
 
-  .user-button{
-    width: 36px;
-    min-width: 36px;
-    padding: 0;
-    justify-content: center;
-  }
-}
 .header-btn-icon{
   flex-shrink: 0;
 }
@@ -682,39 +701,7 @@ html, body {
     white-space: nowrap;
   }
 }
-  @media (max-width: 520px){
 
-  /* ❌ hide username text */
-  .user-name-text{
-    display: none !important;
-  }
-
-  /* 🔥 buang border & background */
-  .user-button{
-    border: none !important;
-    background: transparent !important;
-    padding: 0 !important;
-
-    width: 40px;
-    height: 40px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* 🔥 icon jadi center & cantik */
-  .user-button svg{
-    width: 22px;
-    height: 22px;
-  }
-
-  /* (optional) hover effect clean */
-  .user-button:hover{
-    background: rgba(255,255,255,0.08) !important;
-    border-radius: 50%;
-  }
-}
 @media (max-width: 520px){
   .user-name-text{
     display: none !important;
@@ -726,9 +713,20 @@ html, body {
     padding: 0 !important;
     width: 40px;
     height: 40px;
+    min-width: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .user-button svg{
+    width: 22px;
+    height: 22px;
+  }
+
+  .user-button:hover{
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 50%;
   }
 
   .dropdown-content{
@@ -737,7 +735,7 @@ html, body {
   }
 
   .dropdown-user-name{
-    display: block;
+    display: flex;
   }
 }
   </style>
@@ -827,19 +825,25 @@ html, body {
 
 <div id="dropdownContent" class="dropdown-content">
   <div class="dropdown-user-top">
-    <div id="dropdownUserName" class="dropdown-user-name"></div>
     <div id="userEmail"></div>
   </div>
 
   <hr class="dropdown-divider">
 
+  <button id="dropdownProfileBtn" class="dropdown-btn dropdown-profile-btn" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
+    </svg>
+    <span id="dropdownUserName" class="dropdown-profile-name"></span>
+  </button>
+
   <button id="logoutBtn" class="dropdown-btn" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
-          </svg>
-          <span>Logout</span>
-        </button>
-      </div>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
+    </svg>
+    <span>Logout</span>
+  </button>
+</div>
     </div>
   </div>
 </div>
