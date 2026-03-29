@@ -244,7 +244,7 @@ const loginAuth = loginApp.auth();
 loginAuth.onAuthStateChanged((user) => {
   if (!user) {
     localStorage.removeItem("loginUser");
-    window.location.replace("/feature/");
+    window.location.replace("../login/");
     return;
   }
 
@@ -619,7 +619,7 @@ if (logoutBtn) {
     localStorage.removeItem("loginUser");
     localStorage.removeItem("openTabs");
     localStorage.removeItem("activeTabUrl");
-    window.location.replace("/feature/");
+    window.location.replace("../login/");
   }
 }
   </script>
