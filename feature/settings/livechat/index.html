@@ -154,11 +154,11 @@ body {
 .chat-box {
   height: 60vh;
   overflow-y: auto;
-  border: 1px solid #1668dc;
+  border: 1px solid var(--border2);
   padding: 15px;
-  background: #000;
+  background: var(backgroundbtn);
   color: white;
-  border-radius: 10px;
+  border-radius: 6px;
   box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.05);
   scroll-behavior: smooth;
 }
@@ -178,25 +178,45 @@ body {
 
 /* ===== Message Bubble ===== */
 .message {
-  padding: 0.5rem;
-  margin: 0.5rem 0;
-  border-radius: 10px;
-  max-width: 70%;
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  color:black;
-  font-weight: bold;
+    position: relative;
+    display: inline-block;
+    width: fit-content;
+    max-width: 75%;
+    min-width: 60px;
+    padding: 10px 12px 20px 12px;
+    margin: 8px 0;
+    border-radius: 18px;
+    line-height: 1.4;
+    box-sizing: border-box;
+    word-break: break-word;
+    white-space: normal;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 .mine {
-  background-image: linear-gradient(to bottom, #1668dc, #d7e9ff, #c5ff4a);
-  color: #000;
-  margin-left: auto;
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: 6px;
+    background: #15523E;
+    color: #000;
+    border-top-right-radius: 0px;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 .theirs {
-  background-image: linear-gradient(to bottom, #1668dc, white);
+    display: block;
+    width: fit-content;
+    margin-right: auto;
+    margin-left: 6px;
+    background: #15523E;
+    color: #000;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 /* ===== Send Box ===== */
@@ -241,7 +261,16 @@ body {
 .send-box button:active {
   background: #1554ad;
 }
-
+.msg-time {
+    position: absolute;
+    right: 10px;
+    bottom: 6px;
+    font-size: 10px;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0.75;
+    color: rgb(255, 255, 255, 85);
+}
 /* ===== User List ===== */
 .user-item {
   border: 1px solid #424242;
