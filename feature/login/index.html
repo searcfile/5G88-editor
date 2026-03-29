@@ -823,11 +823,18 @@
     goToSettings();
   });
 
-  onAuthStateChanged(auth, (user) => {
-    if(user){
-      goToSettings();
-    }
-  });
+onAuthStateChanged(auth, (user) => {
+  const justLoggedOut = sessionStorage.getItem("justLoggedOut");
+
+  if (justLoggedOut === "1") {
+    sessionStorage.removeItem("justLoggedOut");
+    return;
+  }
+
+  if(user){
+    goToSettings();
+  }
+});
 </script>
 </body>
 </html>
