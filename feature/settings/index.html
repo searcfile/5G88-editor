@@ -96,17 +96,7 @@
      font-weight: bold !important;
      transition: all 0.3s ease;
     }
-    .floating-logo {
-      position: fixed;
-      top: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      height: 40px;
-      z-index: 1103; 
-    }
-    .floating-logo.shrink {
-      transform: translateX(calc(-50% + 130px));
-    }
+
     .header.shrink {
       margin-left: 260px;
       transition: margin-left 0.3s;
@@ -200,7 +190,7 @@
 </button>
   </div>
 </div>
-<img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
+
    <div id="tabBar" class="tab-bar"></div>
 
   <div class="container" id="mainContainer">
@@ -374,7 +364,6 @@ function openSidebar() {
   sidebar.classList.add("active");
   overlay.classList.add("active");
   container.classList.add("shrink");
-  document.querySelector(".floating-logo").classList.add("shrink");
   document.querySelector('.header').classList.add('shrink');
   document.getElementById("tabBar").classList.add('shrink');
   document.getElementById("menuIcon").classList.add("active-menu-icon");
@@ -384,7 +373,6 @@ function openSidebar() {
     sidebar.classList.remove("active");
     overlay.classList.remove("active");
     container.classList.remove("shrink");
-    document.querySelector(".floating-logo").classList.remove("shrink");
     document.querySelector('.header').classList.remove('shrink');
     document.getElementById("tabBar").classList.remove('shrink');
     document.getElementById("menuIcon").classList.remove("active-menu-icon");
