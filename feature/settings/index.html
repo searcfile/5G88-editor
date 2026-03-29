@@ -307,6 +307,13 @@ body.light-theme{
   fill: currentColor;
   flex-shrink: 0;
 }
+.dropdown-user-name{
+  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  word-break: break-word;
+}
 .container {
   position: relative;
   transition: margin-left 0.3s ease, width 0.3s ease;
@@ -708,6 +715,31 @@ html, body {
     border-radius: 50%;
   }
 }
+@media (max-width: 520px){
+  .user-name-text{
+    display: none !important;
+  }
+
+  .user-button{
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dropdown-content{
+    min-width: 230px;
+    right: 0;
+  }
+
+  .dropdown-user-name{
+    display: block;
+  }
+}
   </style>
 </head>
 <body>
@@ -793,14 +825,15 @@ html, body {
         <span id="userNameText" class="user-name-text"></span>
       </button>
 
-      <div id="dropdownContent" class="dropdown-content">
-        <div class="dropdown-user-top">
-          <div id="userEmail"></div>
-        </div>
+<div id="dropdownContent" class="dropdown-content">
+  <div class="dropdown-user-top">
+    <div id="dropdownUserName" class="dropdown-user-name"></div>
+    <div id="userEmail"></div>
+  </div>
 
-        <hr class="dropdown-divider">
+  <hr class="dropdown-divider">
 
-        <button id="logoutBtn" class="dropdown-btn" type="button">
+  <button id="logoutBtn" class="dropdown-btn" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
           </svg>
@@ -887,19 +920,23 @@ loginAuth.onAuthStateChanged((user) => {
     lastLogin: Date.now()
   }));
 
-  const userNameTextEl = document.getElementById("userNameText");
-  const userEmailEl = document.getElementById("userEmail");
+const userNameTextEl = document.getElementById("userNameText");
+const userEmailEl = document.getElementById("userEmail");
+const dropdownUserNameEl = document.getElementById("dropdownUserName");
 
-  if (userNameTextEl) userNameTextEl.textContent = username;
-  if (userEmailEl) userEmailEl.textContent = email;
+if (userNameTextEl) userNameTextEl.textContent = username;
+if (userEmailEl) userEmailEl.textContent = email;
+if (dropdownUserNameEl) dropdownUserNameEl.textContent = username;
 });
 const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
 if (savedLoginUser) {
   const userNameTextEl = document.getElementById("userNameText");
   const userEmailEl = document.getElementById("userEmail");
+  const dropdownUserNameEl = document.getElementById("dropdownUserName");
 
   if (userNameTextEl) userNameTextEl.textContent = savedLoginUser.username || "Admin";
   if (userEmailEl) userEmailEl.textContent = savedLoginUser.email || "";
+  if (dropdownUserNameEl) dropdownUserNameEl.textContent = savedLoginUser.username || "Admin";
 }
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
