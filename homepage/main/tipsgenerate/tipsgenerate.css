@@ -302,6 +302,16 @@ body.light-theme .tip-search-input::placeholder{
 }
 .percent-checkbox:checked{
   background: var(--blue);
+  border:1px solid var(--blue);
+}
+.percent-checkbox:checked::before{
+  content: "✔";
+  position: absolute;
+  color: white;
+  font-size: 16px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 .percent-checkbox:checked::after{
   content: "✔";
