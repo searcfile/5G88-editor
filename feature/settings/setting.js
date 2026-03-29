@@ -89,7 +89,7 @@ function setBrowserRoute(tab) {
   if (tab && tab.route) {
     history.replaceState({}, "", tab.route);
   } else {
-    history.replaceState({}, "", "/main");
+    history.replaceState({}, "", "/settings");
   }
 }
 const TAB_ROUTE_MAP = {
@@ -125,7 +125,7 @@ const TAB_ROUTE_MAP = {
   }
 };
 (function captureMainQuery(){
-  if (!location.pathname.startsWith("/main")) return;
+  if (!location.pathname.startsWith("/settings")) return;
 
   try {
     const qs = new URLSearchParams(location.search);
