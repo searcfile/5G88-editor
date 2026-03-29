@@ -626,15 +626,16 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import {
-    getAuth,
-    setPersistence,
-    browserLocalPersistence,
-    browserSessionPersistence,
-    signInWithEmailAndPassword,
-    sendPasswordResetEmail,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
@@ -825,11 +826,19 @@ try{
     goToSettings();
   });
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   const justLoggedOut = sessionStorage.getItem("justLoggedOut");
 
   if (justLoggedOut === "1") {
     sessionStorage.removeItem("justLoggedOut");
+
+    if (user) {
+      try {
+        await signOut(auth);
+      } catch (err) {
+        console.warn("Force signOut di login gagal:", err);
+      }
+    }
     return;
   }
 
