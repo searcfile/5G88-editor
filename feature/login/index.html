@@ -836,20 +836,11 @@ onAuthStateChanged(auth, async (user) => {
 
   const justLoggedOut = sessionStorage.getItem("justLoggedOut");
 
-  // kalau baru logout, paksa stay di login
-  if (justLoggedOut === "1" || isLogout) {
-    if (user) {
-      try {
-        await signOut(auth);
-      } catch (err) {
-        console.warn("Force signOut di login gagal:", err);
-      }
-    }
+  if ((justLoggedOut === "1" || isLogout) && !user) {
     sessionStorage.removeItem("justLoggedOut");
     return;
   }
 
-  // kalau sudah login, terus masuk settings
   if (user) {
     authRedirectHandled = true;
 
@@ -863,6 +854,7 @@ onAuthStateChanged(auth, async (user) => {
       name: username
     }));
 
+    window.history.replaceState({}, document.title, "/login");
     goToSettings();
   }
 });
