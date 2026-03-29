@@ -6,64 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Back Office Editor Admin</title>
   <style>
-    :root{
-  --bg-main: #000;
-  --sidebar: #001529;
-  --text-main: #fff;
-  --text-soft: rgba(255,255,255,0.85);
-  --text-dim: rgba(255,255,255,0.65);
-  --colorbtn:rgba(255,255,255,0.85);
-  --backgroundbtn:#141414;
-  --backgrounddrop:#1f1f1f;
-  --border:#303030;
-  --border2:#424242;
-  --panel-border: #424242;
-  --blur:rgba(255,255,255,0.25);
-  --border3:#303030;
-  --tab2:#141414;
-  --border-bottom:#141414;
-  --close:rgba(255,255,255,0.45);
-
-  --tab-bg: rgba(255,255,255,0.04);
-  --tab-border: #303030;
-
-  --btn-bg: transparent;
-  --btn-text: rgba(255,255,255,0.85);
-  --btn-border: #424242;
-
-  --gold: #1668dc;
-  --gold-hover: #3c89e8;
-  --gold-active: #1554ad;
-
-  --overlay-bg: rgba(0,0,0,0.5);
-  --popup-bg: #1f1f1f;
-
-  --empty-text: rgba(255,255,255,.7);
-  --empty-title: rgba(255,255,255,.85);
-
-  --toggle-track: #2c7be5;
-  --toggle-knob: #ffffff;
-  --btnfocus:#15325b;
-}
-
-/* default light theme */
-body.light-theme{
+:root{
   --bg-main: #fff;
   --sidebar: #001529;
   --text-main: #000;
   --text-soft: rgba(17,24,39,0.88);
   --text-dim: rgba(17,24,39,0.72);
-  --colorbtn:rgba(0, 0, 0, 0.88);
-  --backgroundbtn:#ffffff;
-  --backgrounddrop:#ffffff;
-  --border:#303030;
-  --border2:#d9d9d9;
+  --colorbtn: rgba(0, 0, 0, 0.88);
+  --backgroundbtn: #ffffff;
+  --backgrounddrop: #ffffff;
+  --border: #303030;
+  --border2: #d9d9d9;
   --panel-border: #d4dbe6;
-  --blur:rgba(0,0,0,0.25);
-  --border3:#f0f0f0;
-  --tab2:#ffffff;
-  --border-bottom:#ffffff;
-  --close:rgba(0, 0, 0, 0.88);
+  --blur: rgba(0,0,0,0.25);
+  --border3: #f0f0f0;
+  --tab2: #ffffff;
+  --border-bottom: #ffffff;
+  --close: rgba(0, 0, 0, 0.88);
 
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #d4dbe6;
@@ -84,15 +43,55 @@ body.light-theme{
 
   --toggle-track: #cfd8e3;
   --toggle-knob: #ffffff;
-  --btnfocus:#91caff;
+  --btnfocus: #91caff;
+}
+
+body.dark-theme{
+  --bg-main: #000;
+  --sidebar: #001529;
+  --text-main: #fff;
+  --text-soft: rgba(255,255,255,0.85);
+  --text-dim: rgba(255,255,255,0.65);
+  --colorbtn: rgba(255,255,255,0.85);
+  --backgroundbtn: #141414;
+  --backgrounddrop: #1f1f1f;
+  --border: #303030;
+  --border2: #424242;
+  --panel-border: #424242;
+  --blur: rgba(255,255,255,0.25);
+  --border3: #303030;
+  --tab2: #141414;
+  --border-bottom: #141414;
+  --close: rgba(255,255,255,0.45);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #303030;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(255,255,255,0.85);
+  --btn-border: #424242;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(0,0,0,0.5);
+  --popup-bg: #1f1f1f;
+
+  --empty-text: rgba(255,255,255,.7);
+  --empty-title: rgba(255,255,255,.85);
+
+  --toggle-track: #2c7be5;
+  --toggle-knob: #ffffff;
+  --btnfocus: #15325b;
 }
     * {margin: 0;padding: 0;
       box-sizing: border-box;
       font-family: 'Segoe UI', sans-serif;
     }
     body {
-      background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%);
-      color: #fff;
+      background:var(--bg-main);
+      color: var(--colorbtn);
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
@@ -336,6 +335,69 @@ body.light-theme{
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.theme-toggle-btn{
+  width: 100%;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: var(--backgroundbtn);
+  color: var(--colorbtn);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 10px;
+  cursor: pointer;
+  transition: border-color .2s ease, color .2s ease, background .2s ease;
+  margin-top: 8px;
+}
+
+.theme-toggle-btn:hover{
+  border-color: var(--gold-hover);
+  color: var(--gold-hover);
+}
+
+.theme-toggle-btn:active{
+  border-color: var(--gold-active);
+  color: var(--gold-active);
+}
+
+.theme-toggle-label{
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.theme-switch{
+  width: 42px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--toggle-track);
+  position: relative;
+  flex-shrink: 0;
+  transition: background .25s ease;
+}
+
+.theme-switch-knob{
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--toggle-knob);
+  transition: transform .25s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* masa dark aktif */
+body.dark-theme .theme-switch{
+  background: #2c7be5;
+}
+
+body.dark-theme .theme-switch-knob{
+  transform: translateX(20px);
 }
 .container {
   position: relative;
@@ -934,14 +996,21 @@ html, body {
     <span id="userNameText" class="user-name-text"></span>
   </button>
 
-  <div id="dropdownContent" class="dropdown-content">
-    <div class="dropdown-user-top">
-      <div id="userEmail"></div>
-    </div>
+<div id="dropdownContent" class="dropdown-content">
+  <div class="dropdown-user-top">
+    <div id="userEmail"></div>
+  </div>
 
-    <hr class="dropdown-divider">
+  <hr class="dropdown-divider">
 
-    <button id="dropdownProfileBtn" class="dropdown-btn dropdown-profile-btn" type="button">
+  <button id="themeToggleBtn" class="theme-toggle-btn" type="button" aria-label="Toggle theme">
+    <span id="themeToggleLabel" class="theme-toggle-label">Light Mode</span>
+    <span id="themeToggleSwitch" class="theme-switch" aria-hidden="true">
+      <span class="theme-switch-knob"></span>
+    </span>
+  </button>
+
+  <button id="dropdownProfileBtn" class="dropdown-btn dropdown-profile-btn" type="button">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
       </svg>
@@ -1176,7 +1245,52 @@ if (submitChangePasswordBtn) {
 }
 const userNameBtn = document.getElementById("userName");
 const dropdownContent = document.getElementById("dropdownContent");
+const THEME_KEY = "siteTheme";
 
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+const themeToggleLabel = document.getElementById("themeToggleLabel");
+
+function applyTheme(theme) {
+  const finalTheme = theme === "dark" ? "dark" : "light";
+
+  document.body.classList.toggle("dark-theme", finalTheme === "dark");
+
+  if (themeToggleLabel) {
+    themeToggleLabel.textContent = finalTheme === "dark" ? "Dark Mode" : "Light Mode";
+  }
+
+  localStorage.setItem(THEME_KEY, finalTheme);
+
+  try {
+    const frame = document.getElementById("pageFrame");
+    const targetOrigin = frame?.src ? new URL(frame.src, location.origin).origin : "*";
+
+    if (frame && frame.contentWindow) {
+      frame.contentWindow.postMessage(
+        { type: "theme-change", theme: finalTheme },
+        targetOrigin
+      );
+    }
+  } catch (err) {
+    console.warn("Theme postMessage failed:", err);
+  }
+}
+
+function toggleTheme() {
+  const isDark = document.body.classList.contains("dark-theme");
+  applyTheme(isDark ? "light" : "dark");
+}
+
+(function initTheme() {
+  const savedTheme = localStorage.getItem(THEME_KEY) || "light";
+  applyTheme(savedTheme);
+})();
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", () => {
+    toggleTheme();
+  });
+}
 if (userNameBtn && dropdownContent) {
   userNameBtn.addEventListener("click", (e) => {
     e.stopPropagation();
