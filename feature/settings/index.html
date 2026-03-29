@@ -107,6 +107,7 @@ body.light-theme{
   height: calc(100vh - 64px);
   z-index: 1001;
   display: none;
+  background: transparent;
 }
 .sidebar-overlay.active {
   display: block;
@@ -861,6 +862,7 @@ if (userNameBtn && dropdownContent) {
   const menuIcon = document.getElementById("menuIcon");
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
+  overlay.addEventListener("click", closeSidebar);
   const container = document.getElementById("mainContainer");
   const pageFrame = document.getElementById("pageFrame");
 
@@ -875,12 +877,7 @@ if (userNameBtn && dropdownContent) {
 
 function openSidebar() {
   sidebar.classList.add("active");
-
-  if (window.innerWidth <= 815) {
-    overlay.classList.add("active");
-  } else {
-    overlay.classList.remove("active");
-  }
+  overlay.classList.add("active"); // ✅ desktop + mobile sama-sama aktif
 
   container.classList.add("shrink");
   document.querySelector('.header').classList.add('shrink');
