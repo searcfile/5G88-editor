@@ -505,6 +505,27 @@ mark.__hit{ background:#ffe58a; padding:0 2px; border-radius:3px; }
   #toBottomBtn{width:40px; height:40px; right:10px;bottom: calc(var(--composer-h, 64px) + 10px);z-index: 20;}
   #toBottomBtn svg{ width:20px; height:20px; }
 }
+.emoji-picker-wrap{
+  position: absolute;
+  right: 16px;
+  bottom: 78px;
+  z-index: 999;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 14px 30px rgba(0,0,0,.35);
+}
+
+emoji-picker{
+  --border-size: 0;
+  --border-radius: 14px;
+  --background: #ffffff;
+  --input-border-color: #1668dc;
+  --input-border-radius: 10px;
+  --category-icon-size: 20px;
+  --emoji-size: 1.45rem;
+  height: 420px;
+  width: 350px;
+}
 </style>
 <body>
 <main>
@@ -555,7 +576,7 @@ mark.__hit{ background:#ffe58a; padding:0 2px; border-radius:3px; }
     </svg>
   </button>
 
-  <button type="button" class="send-tool-btn" title="Emoji">
+  <button type="button" class="send-tool-btn" id="emojiBtn" title="Emoji">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
       <path d="M9 10h.01M15 10h.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
@@ -571,6 +592,9 @@ mark.__hit{ background:#ffe58a; padding:0 2px; border-radius:3px; }
   </button>
 </div>
 </div>
+<div id="emojiPickerWrap" class="emoji-picker-wrap" hidden>
+  <emoji-picker id="emojiPicker"></emoji-picker>
+</div>
   </div>
 </main>
 <audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
@@ -578,6 +602,7 @@ mark.__hit{ background:#ffe58a; padding:0 2px; border-radius:3px; }
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 <script>if (window.top === window.self) {window.location.replace("/main");}</script>
 <script>
 const IS_EMBEDDED = window.top !== window.self;
@@ -937,6 +962,9 @@ function initChatWithUserData() {
 }
   const sendBtn   = document.getElementById('sendBtn');
   const fileInput = document.getElementById('fileInput');
+  const emojiBtn = document.getElementById("emojiBtn");
+  const emojiPickerWrap = document.getElementById("emojiPickerWrap");
+  const emojiPicker = document.getElementById("emojiPicker");
   const searchInput = document.getElementById('searchChat');
   const chatBox     = document.getElementById('chatBox');
   const typingEl    = document.getElementById('typingStatus');
@@ -952,7 +980,37 @@ function refreshSend(){
   sendBtn.disabled = !msgInput.value.trim() && !fileInput.files.length;
 }
 refreshSend();
+if (emojiBtn && emojiPickerWrap && emojiPicker && msgInput) {
+  emojiBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    emojiPickerWrap.hidden = !emojiPickerWrap.hidden;
+  });
 
+  emojiPicker.addEventListener("emoji-click", (event) => {
+    const emoji = event.detail?.unicode || "";
+    if (!emoji) return;
+
+    const start = msgInput.selectionStart ?? msgInput.value.length;
+    const end = msgInput.selectionEnd ?? msgInput.value.length;
+    const value = msgInput.value;
+
+    msgInput.value = value.slice(0, start) + emoji + value.slice(end);
+    msgInput.focus();
+
+    const pos = start + emoji.length;
+    msgInput.setSelectionRange(pos, pos);
+
+    emojiPickerWrap.hidden = true;
+    refreshSend();
+    autoResizeMsgBox();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!emojiPickerWrap.contains(e.target) && e.target !== emojiBtn) {
+      emojiPickerWrap.hidden = true;
+    }
+  });
+}
 msgInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
     e.preventDefault();
