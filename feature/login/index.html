@@ -647,6 +647,8 @@ import {
   };
 
   const REDIRECT_PATH = "/settings";
+  const urlParams = new URLSearchParams(window.location.search);
+const isLogout = urlParams.get("logout") === "1";
   const USERNAME_DOMAIN = "@5g88.local";
 
   const app = initializeApp(firebaseConfig);
@@ -846,6 +848,11 @@ onAuthStateChanged(auth, async (user) => {
     setTimeout(() => {
       goToSettings();
     }, 80);
+  }
+});
+onAuthStateChanged(auth, (user) => {
+  if (user && !isLogout) {
+    goToSettings();
   }
 });
 </script>
