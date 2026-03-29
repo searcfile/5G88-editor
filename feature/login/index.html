@@ -219,9 +219,9 @@
     appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
   };
 
-  const loginApp = firebase.apps.length
-    ? firebase.app()
-    : firebase.initializeApp(firebaseConfig);
+  // ✅ guna NAMA APP YANG SAMA macam settings page
+  const loginApp = firebase.apps.find(app => app.name === "loginApp")
+    || firebase.initializeApp(firebaseConfig, "loginApp");
 
   const auth = loginApp.auth();
 
@@ -236,8 +236,8 @@
   const SETTINGS_URL = "/5G88-editor/feature/settings/";
   const USER_DOMAIN = "@5g88.local";
 
-  let isSubmitting = false;
   let hasRedirected = false;
+  let isSubmitting = false;
 
   function showMsg(text, type = "") {
     loginMsg.textContent = text;
@@ -263,7 +263,11 @@
     togglePassword.textContent = isPwd ? "HIDE" : "SHOW";
   });
 
-  // ✅ hanya redirect kalau memang sudah login
+  // ✅ pastikan session disimpan local
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .catch(err => console.error("Persistence error:", err));
+
+  // ✅ hanya redirect dari sini
   auth.onAuthStateChanged((user) => {
     if (!user) return;
 
@@ -274,7 +278,7 @@
       lastLogin: Date.now()
     }));
 
-    if (!hasRedirected && location.pathname !== "/5G88-editor/feature/settings/") {
+    if (!hasRedirected) {
       hasRedirected = true;
       window.location.replace(SETTINGS_URL);
     }
@@ -301,8 +305,8 @@
 
       await auth.signInWithEmailAndPassword(email, password);
 
-      // ✅ jangan redirect di sini lagi
-      // biar onAuthStateChanged yang urus redirect
+      // ✅ jangan redirect di sini
+      // biar onAuthStateChanged saja yang redirect
 
     } catch (err) {
       console.error("Login error:", err);
