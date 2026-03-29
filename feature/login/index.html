@@ -1,221 +1,797 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/main/logo.svg">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <link rel="stylesheet" href="./login/login.css" />
-  <title>Back Office Admin</title>
-  <meta http-equiv="Content-Security-Policy"
-content="
-  default-src 'self';
-  img-src 'self' data: https://i.imgur.com https://*.googleusercontent.com;
-  script-src 'self' 'unsafe-inline'
-    https://www.gstatic.com
-    https://cdn.jsdelivr.net
-    https://openfpcdn.io
-    https://www.googleapis.com
-    https://accounts.google.com
-    https://apis.google.com
-    https://*.firebaseio.com
-    https://*.firebasedatabase.app;
-  style-src 'self' 'unsafe-inline';
-  connect-src 'self'
-    https://www.gstatic.com
-    https://*.googleapis.com
-    https://*.firebaseio.com
-    https://*.firebasedatabase.app
-    wss://*.firebaseio.com
-    wss://*.firebasedatabase.app
-    https://www.googleapis.com
-    https://identitytoolkit.googleapis.com
-    https://securetoken.googleapis.com
-    https://apis.google.com;
-  frame-src 'self'
-    https://accounts.google.com
-    https://searcfile.github.io
-    https://logins-d615f.firebaseapp.com
-    https://logins-d615f.web.app;
-  child-src 'self'
-    https://accounts.google.com
-    https://logins-d615f.firebaseapp.com
-    https://logins-d615f.web.app;
-  base-uri 'self';
-  form-action 'self' https://accounts.google.com;
-">
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Secure Access</title>
+
+  <style>
+    :root{
+      --bg-1:#0b1220;
+      --bg-2:#111827;
+      --card:rgba(17,24,39,0.82);
+      --card-border:rgba(255,255,255,0.08);
+      --text:#f9fafb;
+      --muted:#94a3b8;
+      --primary:#3b82f6;
+      --primary-hover:#2563eb;
+      --danger:#ef4444;
+      --success:#22c55e;
+      --input:#0f172a;
+      --input-border:rgba(255,255,255,0.10);
+      --shadow:0 20px 60px rgba(0,0,0,0.45);
+      --radius:22px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html,body{
+      width:100%;
+      min-height:100%;
+      font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(59,130,246,0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,0.10), transparent 28%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      color:var(--text);
+    }
+
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      overflow-x:hidden;
+    }
+
+    .bg-blur{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
+    .blob{
+      position:absolute;
+      border-radius:50%;
+      filter:blur(70px);
+      opacity:.25;
+      animation:float 10s ease-in-out infinite;
+    }
+
+    .blob.one{
+      width:260px;
+      height:260px;
+      background:#2563eb;
+      top:8%;
+      left:6%;
+    }
+
+    .blob.two{
+      width:220px;
+      height:220px;
+      background:#06b6d4;
+      right:8%;
+      top:14%;
+      animation-delay:1.2s;
+    }
+
+    .blob.three{
+      width:260px;
+      height:260px;
+      background:#22c55e;
+      bottom:8%;
+      left:42%;
+      animation-delay:2.4s;
+    }
+
+    @keyframes float{
+      0%,100%{ transform:translateY(0) translateX(0) scale(1); }
+      50%{ transform:translateY(-18px) translateX(10px) scale(1.04); }
+    }
+
+    .login-shell{
+      width:100%;
+      max-width:1080px;
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:30px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(14px);
+    }
+
+    .left-panel{
+      position:relative;
+      padding:54px 48px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:680px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:36px;
+    }
+
+    .brand-logo{
+      width:48px;
+      height:48px;
+      border-radius:14px;
+      background:linear-gradient(135deg, #3b82f6, #06b6d4);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      font-weight:800;
+      box-shadow:0 10px 26px rgba(59,130,246,.35);
+    }
+
+    .brand-text h1{
+      font-size:22px;
+      line-height:1.1;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .brand-text p{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .hero h2{
+      font-size:42px;
+      line-height:1.08;
+      margin-bottom:14px;
+      font-weight:800;
+      letter-spacing:-0.5px;
+      max-width:420px;
+    }
+
+    .hero p{
+      color:#cbd5e1;
+      font-size:15px;
+      line-height:1.7;
+      max-width:470px;
+    }
+
+    .feature-list{
+      display:grid;
+      gap:14px;
+      margin-top:34px;
+      max-width:480px;
+    }
+
+    .feature{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:14px 16px;
+      border:1px solid rgba(255,255,255,0.06);
+      background:rgba(255,255,255,0.04);
+      border-radius:16px;
+    }
+
+    .feature-icon{
+      width:34px;
+      height:34px;
+      flex-shrink:0;
+      border-radius:10px;
+      background:rgba(59,130,246,0.16);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:16px;
+    }
+
+    .feature-text strong{
+      display:block;
+      font-size:14px;
+      margin-bottom:4px;
+    }
+
+    .feature-text span{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .footer-note{
+      margin-top:28px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .right-panel{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px 28px;
+      background:rgba(2,6,23,0.35);
+    }
+
+    .login-card{
+      width:100%;
+      max-width:430px;
+      background:var(--card);
+      border:1px solid var(--card-border);
+      border-radius:var(--radius);
+      padding:34px 28px 26px;
+      box-shadow:0 16px 40px rgba(0,0,0,0.28);
+      backdrop-filter:blur(16px);
+    }
+
+    .login-card h3{
+      font-size:30px;
+      font-weight:800;
+      letter-spacing:-0.3px;
+      margin-bottom:8px;
+      text-align:center;
+    }
+
+    .login-card .sub{
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:26px;
+      line-height:1.6;
+    }
+
+    .form-group{
+      margin-bottom:16px;
+    }
+
+    .form-label{
+      display:block;
+      margin-bottom:8px;
+      font-size:13px;
+      font-weight:600;
+      color:#dbeafe;
+    }
+
+    .input-wrap{
+      position:relative;
+    }
+
+    .input{
+      width:100%;
+      height:52px;
+      border-radius:14px;
+      border:1px solid var(--input-border);
+      background:var(--input);
+      color:var(--text);
+      padding:0 14px;
+      font-size:15px;
+      outline:none;
+      transition:.2s ease;
+    }
+
+    .input::placeholder{
+      color:#64748b;
+    }
+
+    .input:focus{
+      border-color:rgba(59,130,246,0.75);
+      box-shadow:0 0 0 4px rgba(59,130,246,0.12);
+    }
+
+    .input.password{
+      padding-right:52px;
+    }
+
+    .toggle-password{
+      position:absolute;
+      top:50%;
+      right:12px;
+      transform:translateY(-50%);
+      width:34px;
+      height:34px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background:transparent;
+      color:#cbd5e1;
+      font-size:16px;
+      transition:.2s ease;
+    }
+
+    .toggle-password:hover{
+      background:rgba(255,255,255,0.06);
+    }
+
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin:6px 0 18px;
+      flex-wrap:wrap;
+    }
+
+    .remember{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      color:#cbd5e1;
+      font-size:13px;
+      user-select:none;
+    }
+
+    .remember input{
+      width:16px;
+      height:16px;
+      accent-color:var(--primary);
+      cursor:pointer;
+    }
+
+    .link-btn{
+      border:none;
+      background:none;
+      color:#93c5fd;
+      font-size:13px;
+      cursor:pointer;
+      padding:0;
+      transition:.2s ease;
+    }
+
+    .link-btn:hover{
+      color:#bfdbfe;
+      text-decoration:underline;
+    }
+
+    .error-box,
+    .success-box{
+      display:none;
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:13px;
+      margin-bottom:16px;
+      line-height:1.55;
+    }
+
+    .error-box{
+      background:rgba(239,68,68,0.10);
+      border:1px solid rgba(239,68,68,0.25);
+      color:#fecaca;
+    }
+
+    .success-box{
+      background:rgba(34,197,94,0.10);
+      border:1px solid rgba(34,197,94,0.25);
+      color:#bbf7d0;
+    }
+
+    .btn{
+      width:100%;
+      height:52px;
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      font-size:15px;
+      font-weight:700;
+      transition:.22s ease;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg, var(--primary), #2563eb);
+      color:white;
+      box-shadow:0 14px 30px rgba(37,99,235,.35);
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-1px);
+      background:linear-gradient(135deg, #4a8df7, var(--primary-hover));
+    }
+
+    .btn-primary:disabled{
+      opacity:.75;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .btn-secondary{
+      margin-top:12px;
+      background:rgba(255,255,255,0.04);
+      color:#e2e8f0;
+      border:1px solid rgba(255,255,255,0.07);
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,0.07);
+    }
+
+    .divider{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:var(--muted);
+      font-size:12px;
+      margin:18px 0;
+    }
+
+    .divider::before,
+    .divider::after{
+      content:"";
+      flex:1;
+      height:1px;
+      background:rgba(255,255,255,0.08);
+    }
+
+    .bottom-note{
+      margin-top:16px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .spinner{
+      width:17px;
+      height:17px;
+      border:2px solid rgba(255,255,255,.35);
+      border-top-color:white;
+      border-radius:50%;
+      display:inline-block;
+      vertical-align:middle;
+      animation:spin .7s linear infinite;
+      margin-right:8px;
+    }
+
+    @keyframes spin{
+      to{ transform:rotate(360deg); }
+    }
+
+    @media (max-width: 920px){
+      .login-shell{
+        grid-template-columns:1fr;
+      }
+
+      .left-panel{
+        min-height:auto;
+        padding:34px 24px 24px;
+      }
+
+      .hero h2{
+        font-size:30px;
+        max-width:none;
+      }
+
+      .hero p,
+      .feature-list{
+        max-width:none;
+      }
+
+      .right-panel{
+        padding:20px;
+      }
+    }
+
+    @media (max-width: 560px){
+      body{
+        padding:14px;
+      }
+
+      .login-card{
+        padding:26px 18px 22px;
+        border-radius:20px;
+      }
+
+      .left-panel{
+        padding:24px 18px 18px;
+      }
+
+      .hero h2{
+        font-size:25px;
+      }
+
+      .brand-text h1{
+        font-size:18px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Welcome popup -->
-  <div class="popup-overlay" id="popup">
-    <div class="popup-box" id="popupBox">
-      <button class="popup-close" onclick="closePopup()">✕</button>
-      <p class="popup-title">Welcome to 5G88!</p>
-      <img src="https://i.imgur.com/x1b1tj8.png" alt="5G88 Logo" class="popup-logo">
-      <div style="font-size:12px; opacity:.9; text-align:center;">
-      By continuing, you agree to our Terms and acknowledge our Privacy Policy.
-    </div>
-      <button class="popup-btn" onclick="closePopup()">OK</button>
-    </div>
+  <div class="bg-blur">
+    <div class="blob one"></div>
+    <div class="blob two"></div>
+    <div class="blob three"></div>
   </div>
 
-  <!-- BLOCKED POPUP -->
-  <div class="blocked-overlay" id="blockedPopup" aria-hidden="true">
-    <div class="blocked-box" role="dialog" aria-modal="true" aria-labelledby="blockedTitle" tabindex="-1">
-      <button class="popup-close" onclick="hideBlockedPopup()" aria-label="Close">✕</button>
-      <h2 id="blockedTitle" class="blocked-title">Access Denied</h2>
-      <p class="blocked-sub">You need permission to access 5G88.</p>
-      <div id="blockedInfo" class="blocked-info"></div>
-      <div class="blocked-actions">
-        <button class="btn-cancel" onclick="hideBlockedPopup()">Cancel</button>
-        <a class="btn-contact" id="contactBtn" href="mailto:support@5g88.local">Contact us</a>
+  <div class="login-shell">
+    <div class="left-panel">
+      <div>
+        <div class="brand">
+          <div class="brand-logo">S</div>
+          <div class="brand-text">
+            <h1>Secure Portal</h1>
+            <p>Modern email/password access</p>
+          </div>
+        </div>
+
+        <div class="hero">
+          <h2>Login dengan selamat dan terus masuk ke halaman settings.</h2>
+          <p>
+            Halaman ini dibuat dengan design yang lebih modern, kemas, responsive,
+            dan terus redirect ke path yang kamu mahu selepas login berjaya.
+          </p>
+        </div>
+
+        <div class="feature-list">
+          <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-text">
+              <strong>Secure Login</strong>
+              <span>Guna Firebase Authentication email/password yang sesuai untuk sistem login moden.</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-text">
+              <strong>Fast Redirect</strong>
+              <span>Selepas login berjaya, user akan terus pergi ke path yang kamu tetapkan seperti <b>/settings</b>.</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">🎨</div>
+            <div class="feature-text">
+              <strong>Premium UI</strong>
+              <span>Tampilan gelap premium, blur effect, button interaktif, dan mobile friendly.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        © 2026 Secure Portal. All rights reserved.
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="login-card">
+        <h3>Welcome Back</h3>
+        <div class="sub">Masukkan email dan password untuk terus masuk.</div>
+
+        <div id="errorBox" class="error-box"></div>
+        <div id="successBox" class="success-box"></div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <div class="input-wrap">
+              <input
+                id="email"
+                class="input"
+                type="email"
+                placeholder="example@email.com"
+                autocomplete="email"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="input-wrap">
+              <input
+                id="password"
+                class="input password"
+                type="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
+              <button type="button" id="togglePassword" class="toggle-password" aria-label="Show Password">👁</button>
+            </div>
+          </div>
+
+          <div class="row">
+            <label class="remember">
+              <input type="checkbox" id="rememberMe" />
+              <span>Remember me</span>
+            </label>
+
+            <button type="button" id="forgotBtn" class="link-btn">Forgot password?</button>
+          </div>
+
+          <button type="submit" id="loginBtn" class="btn btn-primary">Login</button>
+
+          <div class="divider">Secure Access</div>
+
+          <button type="button" id="goSettingsBtn" class="btn btn-secondary">
+            Go to settings if already logged in
+          </button>
+        </form>
+
+        <div class="bottom-note">
+          Login berjaya akan redirect ke path:<br>
+          <b id="pathPreview">/settings</b>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="login-box">
-    <img src="https://i.imgur.com/voSG3KC.gif" alt="5G88 Logo">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getAuth,
+      setPersistence,
+      browserLocalPersistence,
+      browserSessionPersistence,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-    <!-- Tabs -->
-<div class="tabs">
-  <div class="tab active tab-image" id="tab-userpass">
-    <img src="https://i.imgur.com/UmOnRke.png" alt="Username Login" class="tab-label-img">
-  </div>
+    // =========================
+    // 1) GANTI CONFIG FIREBASE KAMU DI SINI
+    // =========================
+const firebaseConfig = {
+  apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
+  authDomain: "page-login2.firebaseapp.com",
+  projectId: "page-login2",
+  storageBucket: "page-login2.firebasestorage.app",
+  messagingSenderId: "860837620702",
+  appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
+};
 
-  <div class="tab tab-image" id="tab-google">
-    <img src="https://i.imgur.com/ST1xVru.png" alt="Google Login" class="tab-label-img">
-  </div>
-</div>
+    // =========================
+    // 2) PATH TUJUAN SELEPAS LOGIN
+    // =========================
+    const REDIRECT_PATH = "/settings";
 
-    <!-- Username/Password Form -->
-    <form id="form-userpass" class="form active" autocomplete="off">
-  <input type="text" style="display:none">
-  <input type="password" style="display:none">
-<div class="group">
-  <label class="label" for="username"></label>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-  <div class="field field-user">
-    <span class="field-icon left-icon" aria-hidden="true">
-      <svg viewBox="64 64 896 896" width="1em" height="1em">
-        <path fill="currentColor" d="M858.5 763.6a374 374 0 00-80.6-119.5 375.63 375.63 0 00-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 00-80.6 119.5A371.7 371.7 0 00136 901.8a8 8 0 008 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 008-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
-      </svg>
-    </span>
+    const loginForm = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const rememberMe = document.getElementById("rememberMe");
+    const loginBtn = document.getElementById("loginBtn");
+    const forgotBtn = document.getElementById("forgotBtn");
+    const goSettingsBtn = document.getElementById("goSettingsBtn");
+    const togglePassword = document.getElementById("togglePassword");
+    const errorBox = document.getElementById("errorBox");
+    const successBox = document.getElementById("successBox");
+    const pathPreview = document.getElementById("pathPreview");
 
-    <input class="input has-left-icon" id="username"
-           name="login_user_5g88"
-           autocomplete="off"
-           autocorrect="off"
-           autocapitalize="off"
-           spellcheck="false"
-           placeholder="Username"
-           required>
-  </div>
-</div>
-<div class="group password-wrap">
-  <label class="label" for="password"></label>
+    pathPreview.textContent = REDIRECT_PATH;
 
-<div class="field field-pass">
-  <span class="field-icon left-icon" aria-hidden="true">
-    <svg viewBox="64 64 896 896" width="1em" height="1em">
-      <path fill="currentColor" d="M832 464h-68V240c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zM332 240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v224H332V240zm460 600H232V536h560v304zM484 701v53c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-53a48.01 48.01 0 10-56 0z"></path>
-    </svg>
-  </span>
+    function showError(message){
+      successBox.style.display = "none";
+      errorBox.textContent = message;
+      errorBox.style.display = "block";
+    }
 
-  <input class="input has-left-icon has-right-icon" id="password" type="password"
-         name="login_pass_5g88"
-         autocomplete="new-password"
-         placeholder="Password"
-         required>
+    function showSuccess(message){
+      errorBox.style.display = "none";
+      successBox.textContent = message;
+      successBox.style.display = "block";
+    }
 
-<button type="button" class="toggle-eye" id="eyeBtn"
-        aria-label="Show password" aria-pressed="false" data-state="hide">
-  <svg viewBox="64 64 896 896" width="1em" height="1em" aria-hidden="true">
-    <path id="eyePath" fill="currentColor"
-      d="M942.2 486.2C847.4 333.5 693.7 256 512 256S176.6 333.5 81.8 486.2a47.8 47.8 0 000 51.6C176.6 690.5 330.3 768 512 768s335.4-77.5 430.2-230.2a47.8 47.8 0 000-51.6zM512 704c-153.3 0-286.3-68.2-368-192 81.7-123.8 214.7-192 368-192s286.3 68.2 368 192c-81.7 123.8-214.7 192-368 192zm0-320a128 128 0 10128 128 128 128 0 00-128-128zm0 208a80 80 0 1180-80 80 80 0 01-80 80z"/>
-  </svg>
-</button>
-  </div>
-</div>
-<div class="forgot-row">
-  <button type="button" id="createBtn" class="link-btn">Create username</button>
-  <button type="button" id="forgotBtn" class="link-btn">Forgot password?</button>
-</div>
-      <button class="btn" id="btnUserpass">Login</button>
-      <!-- (Opsional) Buat akaun baru -->
-      <!-- <button type="button" class="btn ghost" onclick="createAccount()">Create Account</button> -->
-    </form>
+    function clearMessages(){
+      errorBox.style.display = "none";
+      successBox.style.display = "none";
+      errorBox.textContent = "";
+      successBox.textContent = "";
+    }
 
-    <!-- Google Login Form -->
-    <div id="form-google" class="form">
-      <button class="btn" id="googleLoginBtn">Login with Google</button>
-    </div>
+    function setLoading(isLoading){
+      loginBtn.disabled = isLoading;
 
-    <div class="sep"><span>or</span></div>
-    <div style="font-size:12px; opacity:.9; text-align:center;display:none;">
-      By continuing, you agree to our Terms and acknowledge our Privacy Policy.
-    </div>
-  </div>
-<!-- FORGOT PASSWORD POPUP -->
-<div id="forgotOverlay" class="blocked-overlay" aria-hidden="true">
-  <div class="blocked-box forgot-box zoom-in" role="dialog" aria-modal="true">
-    <button class="popup-close" id="forgotClose" aria-label="Close">✕</button>
-    <h3 class="popup-title" style="margin-bottom:14px">Forgot Password</h3>
+      if(isLoading){
+        loginBtn.innerHTML = '<span class="spinner"></span>Signing in...';
+      }else{
+        loginBtn.innerHTML = 'Login';
+      }
+    }
 
-    <div class="group">
-      <label class="label" for="fpUsername">Username register</label>
-      <input id="fpUsername" class="input" placeholder="Username">
-      <div id="fpUserErr" class="err-msg" style="display:none">Username not register</div>
-    </div>
+    function mapFirebaseError(code){
+      switch(code){
+        case "auth/invalid-email":
+          return "Format email tidak sah.";
+        case "auth/user-disabled":
+          return "Akaun ini telah dinyahaktifkan.";
+        case "auth/user-not-found":
+        case "auth/invalid-credential":
+          return "Email atau password salah.";
+        case "auth/wrong-password":
+          return "Password salah.";
+        case "auth/too-many-requests":
+          return "Terlalu banyak cubaan login. Sila cuba sebentar lagi.";
+        case "auth/network-request-failed":
+          return "Masalah rangkaian. Sila periksa internet.";
+        case "auth/missing-password":
+          return "Password belum diisi.";
+        default:
+          return "Login gagal. Sila cuba lagi.";
+      }
+    }
 
-    <div class="group" style="margin-bottom:6px">
-      <label class="label" for="fpNote">Optional (forgot password)</label>
-      <input id="fpNote" class="input" placeholder="(opsional)">
-    </div>
+    function goToSettings(){
+      window.location.href = REDIRECT_PATH;
+    }
 
-    <div class="actions-row">
-      <button id="fpCancel" class="btn-cfp" type="button">Cancel</button>
-      <button id="fpRequest" class="btn-req" type="button">Request</button>
-    </div>
-  </div>
-</div>
-<!-- CREATE ACCOUNT POPUP -->
-<div id="createOverlay" class="blocked-overlay" aria-hidden="true">
-  <div class="blocked-box forgot-box zoom-in" role="dialog" aria-modal="true">
-    <button class="popup-close" id="createClose" aria-label="Close">✕</button>
-    <h3 class="popup-title" style="margin-bottom:14px">Create Account</h3>
+    togglePassword.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      togglePassword.textContent = isPassword ? "🙈" : "👁";
+    });
 
-    <p style="var(--page-text); line-height:1.6; margin:6px 0 16px;">
-      Contact our 5G88 LiveChat admin to create a login username &amp; password,Click Create Now!
-    </p>
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearMessages();
 
-    <div class="actions-row">
-      <button id="createCancel" class="btn-cfp" type="button">Cancel</button>
-      <button id="createNow" class="btn-req" type="button">Create Now</button>
-    </div>
-  </div>
-</div>
-<!-- Live Chat floating widget -->
-<div class="lc-wrap" id="lcWrap">
-<button class="lc-btn" id="lcToggle" aria-label="Open live chat" aria-expanded="false" type="button">
-  <svg id="lcIcon" class="lc-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-    <path id="lcIconPath" fill="currentColor"
-      d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10S6.486 2 12 2zm0-2C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z">
-    </path>
-  </svg>
-  <span class="lc-dot" id="lcDot"></span>
-</button>
-  <div class="lc-panel" id="lcPanel" aria-hidden="true">
-  <iframe id="lcFrame" class="lc-iframe"
-        title="Live Chat"
-        sandbox="allow-scripts allow-same-origin allow-popups"
-        referrerpolicy="no-referrer">
-  </iframe>
-  </div>
-</div>
-<audio id="livechatSound" src="https://5g88-main.vercel.app/main/audio/audio.wav" preload="auto"></audio>
-<script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-<script src="./login/login.js"></script>
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if(!email || !password){
+        showError("Email dan password wajib diisi.");
+        return;
+      }
+
+      try{
+        setLoading(true);
+
+        await setPersistence(
+          auth,
+          rememberMe.checked ? browserLocalPersistence : browserSessionPersistence
+        );
+
+        await signInWithEmailAndPassword(auth, email, password);
+
+        showSuccess("Login berjaya. Sedang redirect...");
+        setTimeout(() => {
+          goToSettings();
+        }, 700);
+
+      }catch(err){
+        showError(mapFirebaseError(err.code));
+      }finally{
+        setLoading(false);
+      }
+    });
+
+    forgotBtn.addEventListener("click", async () => {
+      clearMessages();
+      const email = emailInput.value.trim();
+
+      if(!email){
+        showError("Masukkan email dulu untuk reset password.");
+        emailInput.focus();
+        return;
+      }
+
+      try{
+        await sendPasswordResetEmail(auth, email);
+        showSuccess("Link reset password sudah dihantar ke email kamu.");
+      }catch(err){
+        showError(mapFirebaseError(err.code));
+      }
+    });
+
+    goSettingsBtn.addEventListener("click", () => {
+      goToSettings();
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if(user){
+        goToSettings();
+      }
+    });
+  </script>
 </body>
 </html>
