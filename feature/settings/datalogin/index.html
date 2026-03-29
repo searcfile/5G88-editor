@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin</title>
+<style>
+:root{
+  --bg-main: #fff;
+  --sidebar: #001529;
+  --text-main: #000;
+  --text-soft: rgba(17,24,39,0.88);
+  --text-dim: rgba(17,24,39,0.72);
+  --colorbtn: rgba(0, 0, 0, 0.88);
+  --backgroundbtn: #ffffff;
+  --backgrounddrop: #ffffff;
+  --border: #303030;
+  --border2: #d9d9d9;
+  --panel-border: #d4dbe6;
+  --blur: rgba(0,0,0,0.25);
+  --border3: #f0f0f0;
+  --tab2: #ffffff;
+  --border-bottom: #ffffff;
+  --close: rgba(0, 0, 0, 0.88);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #d4dbe6;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(17,24,39,0.88);
+  --btn-border: #d4dbe6;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(15,23,42,0.18);
+  --popup-bg: #ffffff;
+
+  --empty-text: rgba(17,24,39,.7);
+  --empty-title: rgba(17,24,39,.88);
+
+  --toggle-track: #cfd8e3;
+  --toggle-knob: #ffffff;
+  --btnfocus: #91caff;
+}
+
+body.dark-theme{
+  --bg-main: #000;
+  --sidebar: #001529;
+  --text-main: #fff;
+  --text-soft: rgba(255,255,255,0.85);
+  --text-dim: rgba(255,255,255,0.65);
+  --colorbtn: rgba(255,255,255,0.85);
+  --backgroundbtn: #141414;
+  --backgrounddrop: #1f1f1f;
+  --border: #303030;
+  --border2: #424242;
+  --panel-border: #424242;
+  --blur: rgba(255,255,255,0.25);
+  --border3: #303030;
+  --tab2: #141414;
+  --border-bottom: #141414;
+  --close: rgba(255,255,255,0.45);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #303030;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(255,255,255,0.85);
+  --btn-border: #424242;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(0,0,0,0.5);
+  --popup-bg: #1f1f1f;
+
+  --empty-text: rgba(255,255,255,.7);
+  --empty-title: rgba(255,255,255,.85);
+
+  --toggle-track: #2c7be5;
+  --toggle-knob: #ffffff;
+  --btnfocus: #15325b;
+}
+  body {
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #3b8cff;
+    padding: 0; margin: 0;
+    overflow-y: scroll; overflow-x: hidden;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  html,body { overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none; }
+  html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+  html { overflow-x: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  .header{
+    background-color: #1668dc; font-size: 30px; height: 90px;
+    display: flex; justify-content: center; align-items: center;
+    color: #fff; font-weight: bold;
+  }
+  .table-container{ padding: 0 20px; }
+
+  .search-container{
+    display: flex; align-items: center; justify-content: flex-start;
+    max-width: 100%; padding: 0 20px; margin: 20px 0 10px;
+    background: transparent; gap: 8px; box-sizing: border-box; flex-wrap: wrap;
+  }
+  .search-box{ display:flex; min-width:260px; width:auto; flex:0 1 500px;position: relative; }
+  /* INPUT */
+  .search-container input{
+    flex:1; padding:10px 34px 10px 10px; font-size:14px; color:#fff;
+    background:#141414; border:1px solid #424242; border-radius:6px 0 0 6px; outline:none; transition:.2s;
+  }
+  .search-container input::placeholder{ color:rgba(255,255,255,.4); }
+  .search-container input:hover{ border-color:#3b8cff; }
+  .search-container input:focus{ border-color:#1668dc; }
+
+  /* BUTTON Search */
+.search-container #searchBtn{
+  padding:10px 10px; background:#141414; border:1px solid #424242; border-left:1px solid #424242;
+  border-radius:0 6px 6px 0; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:#aaa; transition:.2s;
+}
+.search-container #searchBtn:hover{ border-color:#3b8cff; color:#3b8cff; background:#1a1a1a; }
+.search-container #searchBtn:active{ border-color:#1668dc; color:#1668dc; background:#1a1a1a; }
+.search-container #searchBtn svg{ stroke:currentColor; transition:stroke .2s; }
+  #searchBtn.loading{
+    border:1px solid #3b8cff; border-radius:0 6px 6px 0; box-shadow:0 0 10px #3b8cff; background:#1a1a1a;
+  }
+  #searchBtn.loading svg{ stroke:#3b8cff; filter:drop-shadow(0 0 5px #3b8cff); animation:pulseIcon 5s ease-in-out infinite; }
+  @keyframes pulseIcon{ 0%{filter:drop-shadow(0 0 0 #3b8cff)}50%{filter:drop-shadow(0 0 8px #3b8cff)}100%{filter:drop-shadow(0 0 0 #3b8cff)} }
+  /* DROPDOWN Status Filter */
+  .status-filter{
+    padding:10px; font-size:14px; color:#3b8cff; background:#141414;
+    border:1px solid #424242; border-radius:6px; outline:none; transition:.2s;height:38px;
+  }
+  .status-filter:hover{ border-color:#3b8cff; }
+  .status-filter:focus{ border-color:#1668dc; }
+
+  /* Force Logout All */
+  #forceLogoutAllBtn{
+    background:#dc2626; color:#fff; padding:10px 16px; border:none; border-radius:6px; cursor:pointer; white-space:nowrap; transition:.2s;
+  }
+  #forceLogoutAllBtn:hover{ background:#e75858; color:#fff; }
+  #forceLogoutAllBtn:active{ background:#b31616; color:#fff; }
+
+  /* Confirm popover */
+  .confirm-box{
+    background:#1f1f1f; border:1px solid #3b8cff; border-radius:6px; padding:10px; width:180px;
+    box-shadow:0 4px 10px rgba(0,0,0,.4); color:#fff; font-size:12px; line-height:1.3; word-wrap:break-word;
+    white-space:normal; opacity:0; transition:opacity .2s ease;
+  }
+  .confirm-box.show{ opacity:1; }
+  .confirm-message{ margin-bottom:8px; }
+  .confirm-user-info{ margin-bottom:8px; font-size:11px; line-height:1.2; color:#ccc; }
+  .confirm-actions{ display:flex; justify-content:flex-start; gap:6px; flex-wrap:wrap; }
+  .user-line{ background:#2c1618; border:1px solid #5b2526; padding:4px 6px; border-radius:4px; margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .btn-no,.btn-yes{ padding:4px 10px; border-radius:4px; font-size:12px; cursor:pointer; border:none; }
+  .btn-no{ background:#3a3a3a; color:#fff; }
+  .btn-yes{ background:#dc2626; color:#fff; }
+  .btn-no:hover,.btn-yes:hover{ opacity:.9; }
+  @media (max-width:480px){
+    .confirm-box{ width:95vw!important; max-width:95vw; left:10px!important; right:10px!important; }
+  }
+
+  /* Toast */
+  .toast{
+    position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:#1e293b; color:#cbd5e1; padding:12px 20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,.35);
+    font-size:14px; z-index:99999; opacity:0; display:flex; align-items:center; gap:10px; min-width:280px; max-width:90%;
+    transition:transform .4s ease, opacity .4s ease;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+  .toast .close-btn{ background:transparent; border:none; color:#888; font-size:18px; cursor:pointer; margin-left:auto; }
+  .toast .close-btn:hover{ color:#fff; }
+  .toast.success .toast-icon{ color:#22c55e; font-size:14px;}
+  .toast.error .toast-icon{ color:#ef4444; font-size:14px;}
+  .toast-icon{ flex-shrink:0; display:inline-block; vertical-align:middle; width:20px; height:20px;}
+
+  /* Buttons in table */
+  .action-buttons{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap;justify-content:center; }
+  .logout-btn{
+    background:#dc2626; color:#fff; padding:6px 12px; border:none; border-radius:4px; cursor:pointer; transition:background .2s; min-width:0 !important;
+  }
+  .logout-btn:hover{ background:#e75858; color:#fff; }
+  .logout-btn:active{ background:#b31616; color:#fff; }
+  .block-btn{
+    background:#facc15; color:#000; padding:6px 12px; border:none; border-radius:4px; cursor:pointer; transition:all .2s; min-width:0 !important;
+  }
+  .block-btn:hover{ background:#fcd34d; }
+  .block-btn:active{ background:#a5882b; }
+  .block-btn.blocked{ color:red; background:#facc15; }
+  .block-btn.blocked:hover{ color:#000; background:#fcd34d; }
+  .block-btn.blocked:active{ background:#a5882b; color:#000; }
+
+  /* Viewport & table */
+  .table-viewport{
+    --row-h:48px; --head-h:52px;
+    max-height: calc(var(--head-h) + var(--row-h) * 15);
+    overflow:auto; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    border:1px solid #3b8cff; border-radius:8px; background:#0b0b0b;
+    scrollbar-width:thin; scrollbar-color:#1668dc transparent;
+  }
+  .table-viewport::-webkit-scrollbar{ width:10px; height:10px; }
+  .table-viewport::-webkit-scrollbar-track{ background:#0f172a; border-radius:8px; box-shadow:inset 0 0 0 1px #1f2937; }
+  .table-viewport::-webkit-scrollbar-thumb{ background:#6b7280; border-radius:8px; border:2px solid #0f172a; }
+  .table-viewport::-webkit-scrollbar-thumb:hover{ background:#3c89e8; }
+  .table-viewport::-webkit-scrollbar-corner{ background:#0f172a; }
+  .table-viewport::-webkit-scrollbar-button{ height:10px; width:10px; background:#0f172a; }
+
+  .tbl{ width:100%; border-collapse:collapse; table-layout:fixed; }
+  .tbl th,.tbl td{ padding:8px 12px; border-bottom:1px solid #1f2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tbl thead th{ position:sticky; top:0; z-index:2; background:#1668dc; color:#fff; text-align:center; }
+
+  /* OVERRIDES: single line, horizontal scroll */
+  .table-viewport{ overflow-x:auto !important; }
+  .tbl{ table-layout:auto !important; width:max-content !important; min-width:100% !important; }
+  .tbl th,.tbl td{ white-space:nowrap !important; overflow:visible !important; text-overflow:initial !important; text-align:center;vertical-align:middle;}
+  .tbl th:nth-child(2), .tbl td:nth-child(2),
+  .tbl th:nth-child(3), .tbl td:nth-child(3){
+  text-align:left;
+}
+
+  /* Column widths (updated indices) */
+  .tbl th:nth-child(1), .tbl td:nth-child(1){ width:56px !important; text-align:center; }       /* No */
+  .tbl th:nth-child(8), .tbl td:nth-child(8){ width:170px !important; } /* Action */
+  .tbl th:nth-child(7), .tbl td:nth-child(7){ width:140px !important; } /* Status */
+  .tbl th:nth-child(6), .tbl td:nth-child(6){ width:160px !important; } /* Last login */
+  .tbl th:nth-child(5), .tbl td:nth-child(5){ width:120px !important; } /* Source */
+  text-align:left;
+}
+  /* Status badge layout */
+  .status-cell{ display:flex; align-items:center; gap:8px;justify-content:center; }
+  .status-text{ color:#cbd5e1; font-size:13px; }
+
+  /* Mobile tweaks */
+  @media (max-width:640px){
+    .search-container{ gap:8px; justify-content:flex-start; }
+    .search-box{ width:auto; flex:1 1 auto; min-width:0; }
+    .status-filter{ flex:0 0 auto; }
+    #forceLogoutAllBtn{ flex:0 0 auto; margin-left:auto; margin-top:4px; }
+    .tbl th:nth-child(1), .tbl td:nth-child(1){ width:46px !important; }
+    .tbl th:nth-child(6), .tbl td:nth-child(6){ width:140px !important; }
+    .logout-btn, .block-btn{ padding:6px 10px; }
+  }
+  /* tombol X */
+.clear-btn{
+  position:absolute;
+  top:50%;
+  transform: translateY(-50%);
+  right: 42px;                /* ✅ sebelum tombol search */
+  border:none;
+  color: #1668dc;
+  display: flex;
+  background:none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color .2s, border-color .2s, background-color .2s; z-index:2;
+}
+
+.clear-btn:hover{
+  color:#3b8cff;
+}
+.clear-btn:active{
+  color:#1554ad;
+}
+[hidden]{
+  display: none !important;
+}
+/* Create Username button (hijau) */
+.create-btn{
+  background:#1668dc; color:#fff; padding:10px 16px; border:none;
+  border-radius:6px; cursor:pointer; white-space:nowrap; transition:.2s;
+}
+.create-btn:hover{ background:#3b8cff; }
+.create-btn:active{ background:#1554ad; }
+
+/* Modal overlay & box */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.6);
+  display:flex; align-items:center; justify-content:center; z-index:100000;
+}
+.modal-box{
+  width:min(92vw, 460px); background:#111; color:#e5e7eb;
+  border:1px solid #3b8cff; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+.modal-head{
+  display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #1f2937;
+}
+.modal-head h3{ margin:0; font-size:16px; font-weight:700; color:#3b8cff; }
+.modal-close{
+  background:transparent; border:none; color:#9ca3af; font-size:14px; cursor:pointer;
+}
+.modal-close:hover{ color:#fff; }.modal-close:active{ color:#9ca3af;transition:.2s; }
+
+.modal-body{ padding:14px 16px; display:grid; gap:12px; }
+.field{ display:grid; gap:6px; }
+.field span{ font-size:13px; color:#3b8cff; }
+.field input{
+  padding:10px 12px; border:1px solid #424242; border-radius:6px; background:#141414; color:#fff; outline:none; font-size:14px;
+}
+.field input:focus{ border-color:#1668dc; }
+.hint{ font-size:11px; color:#ff4747; }
+.hint2{ font-size:11px; color:#3b8cff; }
+.error-line{ background:#2b1a1a; border:1px solid #7f1d1d; color:#ff4747; padding:8px; border-radius:6px; font-size:12px; }
+
+.modal-foot{
+  display:flex; gap:8px; justify-content:flex-end; padding:12px 16px; border-top:1px solid #1f2937;
+}
+.btn{ padding:10px 14px; border-radius:8px; font-size:14px; cursor:pointer; border:1px solid transparent; }
+.btn.ghost{ background:#141414; color:#e5e7eb; border-radius:6px; border:1px solid #424242;transition:.2s; }
+.btn.ghost:hover{ border:1px solid #3b8cff;color:#3b8cff; }.btn.ghost:active{ border:1px solid #1554ad; color:#1554ad; }
+.btn.primary{ background:#1668dc; color:#fff; border-radius:6px; transition:.2s;}
+.btn.primary:hover{ background:#3b8cff; }.btn.primary:active{ background:#1554ad; }
+.btn[disabled]{ opacity:.6; cursor:not-allowed; }
+/* grup tombol kanan */
+.right-buttons{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-left:auto;      /* ✅ dorong seluruh grup ke kanan */
+}
+
+.reset-btn{
+  background:#1668dc;    /* biru muda */
+  color:#fff;
+  padding:10px 16px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.2s;
+}
+.reset-btn:hover{ background:#3b8cff; }
+.reset-btn:active{ background:#1554ad; }
+/* Hover satu baris penuh */
+.tbl tbody tr{
+  transition: background-color .15s ease;
+}
+
+.tbl tbody tr:hover{
+  background-color: rgba(59, 140, 255, 0.15);  /* biru soft transparan */
+}
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="header">User List (Login)</div>
+
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search" autocomplete="off" />
+       <!-- ✅ NEW: clear button -->
+      <button id="clearSearch" class="clear-btn" type="button" aria-label="Clear search" hidden>
+    <!-- ikon X -->
+     <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+      <button id="searchBtn" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M21 21L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- ✅ NEW: Status filter -->
+    <select id="statusFilter" class="status-filter">
+      <option value="All">All</option>
+      <option value="Active">Active</option>
+      <option value="Unactive">Unactive</option>
+    </select>
+    <button id="sameDeviceBtn" class="reset-btn" title="Show users with same Device ID">Same Browser</button>
+    <div class="right-buttons">
+    <button id="resetPwBtn" class="reset-btn">Reset Password</button>
+    <button id="createUserBtn" class="create-btn">Create Username</button>
+    <button id="forceLogoutAllBtn">Force Logout All</button>
+  </div>
+</div>
+  
+  <div class="table-container">
+    <div class="table-viewport" id="tableViewport">
+      <table class="tbl" id="loginTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Device ID</th>
+            <th>Source</th> 
+            <th>Last login</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="loginTableBody">
+          <tr><td colspan="8">Loading data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Confirm popovers -->
+  <div id="confirmAllBox" class="confirm-box" style="display:none; position:absolute; z-index:9999;">
+    <div class="confirm-message">Logout all users?</div>
+    <div class="confirm-actions">
+      <button id="confirmAllNo" class="btn-no">No</button>
+      <button id="confirmAllYes" class="btn-yes">Yes</button>
+    </div>
+  </div>
+  <div id="confirmBox" class="confirm-box" style="display:none; position:absolute; z-index:9999;">
+    <div class="confirm-message">Logout this user?</div>
+    <div class="confirm-user-info">
+      <div id="confirmUserName" class="user-line"></div>
+      <div id="confirmUserEmail" class="user-line"></div>
+    </div>
+    <div class="confirm-actions">
+      <button id="confirmNo" class="btn-no">No</button>
+      <button id="confirmYes" class="btn-yes">Yes</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <span class="toast-icon"></span>
+    <span class="toast-message" id="toast-message"></span>
+    <button type="button" class="close-btn" onclick="hideToast()">✖</button>
+  </div>
+<!-- Create Username Modal -->
+<div id="createUserModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="cu-title">
+    <div class="modal-head">
+      <h3 id="cu-title">Create Username</h3>
+      <button type="button" class="modal-close" aria-label="Close">✖</button>
+    </div>
+
+    <div class="modal-body">
+      <label class="field">
+        <span>Username</span>
+        <input id="cu-username" type="text" inputmode="latin" autocomplete="off" />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input id="cu-password" type="password" autocomplete="new-password" />
+        <small class="hint2">Min 6 characters</small>
+      </label>
+      <div class="error-line" id="cu-error" hidden></div>
+    </div>
+
+    <div class="modal-foot">
+      <button type="button" class="btn ghost" id="cu-cancel">Cancel</button>
+      <button type="button" class="btn primary" id="cu-create">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div id="resetPwModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="rp-title">
+    <div class="modal-head">
+      <h3 id="rp-title" style="color:#3b8cff;">Reset Password</h3>
+      <button type="button" class="modal-close" id="rp-close" aria-label="Close">✖</button>
+    </div>
+
+    <div class="modal-body">
+      <label class="field">
+        <span>Username</span>
+        <input id="rp-username" type="text" inputmode="latin" autocomplete="off" />
+        <small class="hint">Masukkan username yang akan di-reset.</small>
+      </label>
+
+      <label class="field">
+        <span>New Password</span>
+        <input id="rp-password" type="password" autocomplete="new-password" />
+      </label>
+
+      <label class="field">
+        <span>Confirm Password</span>
+        <input id="rp-password2" type="password" autocomplete="new-password" />
+      </label>
+
+      <div class="error-line" id="rp-error" hidden></div>
+    </div>
+
+    <div class="modal-foot">
+      <button type="button" class="btn ghost" id="rp-cancel">Cancel</button>
+      <button type="button" class="btn primary" id="rp-reset">Reset</button>
+    </div>
+  </div>
+</div>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZ9zUxDf3V9TvI3vOdgeZD7pLE4IuPrOE",
+    authDomain: "logins-d615f.firebaseapp.com",
+    databaseURL: "https://logins-d615f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "logins-d615f",
+    storageBucket: "logins-d615f.appspot.com",
+    messagingSenderId: "580872784703",
+    appId: "1:580872784703:web:07957551c3214f3d32618a"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  const dbRef       = firebase.database().ref('logins');
+  const blockedRef  = firebase.database().ref('logins/blocked_users');
+
+  // ---------- Utils ----------
+  function esc(s){
+    return String(s ?? '').replace(/[&<>"']/g, m => (
+      {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]
+    ));
+  }
+  function sanitizeEmail(email){
+    if (!email || typeof email !== 'string') return '';
+    return email.replace(/\./g, "_").replace(/[#$\[\]]/g, '');
+  }
+  function parseDateString(dateString){
+    if (!dateString) return null;
+    const cleaned = dateString.replace(/\s*-\s*/g, '-').trim();
+    const parts = cleaned.split(' ');
+    if (parts.length < 2) return null;
+    const [y,m,d] = parts[0].split('-');
+    const iso = `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T${parts[1]}`;
+    const dt = new Date(iso);
+    return isNaN(dt) ? null : dt;
+  }
+  function formatDateTime(date){
+    const dd = String(date.getDate()).padStart(2,'0');
+    const mm = String(date.getMonth()+1).padStart(2,'0');
+    const yy = date.getFullYear();
+    const hh = String(date.getHours()).padStart(2,'0');
+    const mi = String(date.getMinutes()).padStart(2,'0');
+    const ss = String(date.getSeconds()).padStart(2,'0');
+    return `${dd}/${mm}/${yy}, ${hh}:${mi}:${ss}`;
+  }
+
+  // Search + Status filter
+function filterByQuery(query, data){
+  const q = (query || '').toLowerCase();
+  return data.filter(it => {
+    const device = (getDeviceIdFromItem(it) || '').toLowerCase();
+    return (
+      (it.name  || '').toLowerCase().includes(q) ||
+      (it.email || '').toLowerCase().includes(q) ||
+      device.includes(q) // ✅ boleh cari Device ID
+    );
+  });
+}
+  function applyFilters(query, status, data){
+    let arr = filterByQuery(query, data);
+    if (status === 'Active'){
+      arr = arr.filter(it => !isEmailBlockedFast(it.email));
+    } else if (status === 'Unactive'){
+      arr = arr.filter(it => isEmailBlockedFast(it.email));
+    }
+    return arr;
+  }
+
+  // Viewport
+  function fitViewportToRows(n = 15){
+    const vp  = document.getElementById('tableViewport');
+    const tbl = document.getElementById('loginTable');
+    if (!vp || !tbl) return;
+    const headH = tbl.tHead ? tbl.tHead.offsetHeight : 0;
+    const rows  = Array.from(tbl.tBodies[0]?.rows || []).slice(0, n);
+    const rowsH = rows.reduce((sum, tr) => sum + tr.getBoundingClientRect().height, 0);
+    vp.style.maxHeight = (headH + rowsH) + 'px';
+  }
+
+  // ---------- Global state ----------
+  let allLoginData = [];
+  let currentConfirmEmail = null;
+  let isConfirmAllVisible = false;
+  let blockedSet = new Set();
+
+  // ---------- Same Device filter ----------
+let selectedDeviceId = null;
+let sameDeviceMode = false;
+
+function getDeviceIdFromItem(it){
+  const v =
+    (it.deviceId ||
+     it.visitorId ||
+     it.fingerprint ||
+     it.fp ||
+     it.device ||
+     '').toString().trim();
+  return v;
+}
+function normalizeDeviceId(v){
+  v = (v || '').toString().trim();
+  if (!v || v === '-' || v.toLowerCase() === 'unknown') return '';
+  return v;
+}
+
+function getRowsWithDeviceOnly(arr){
+  return arr.filter(it => normalizeDeviceId(getDeviceIdFromItem(it)));
+}
+
+function getDuplicateDeviceRows(arr){
+  const counts = new Map();
+
+  arr.forEach(it => {
+    const id = normalizeDeviceId(getDeviceIdFromItem(it));
+    if (!id) return;
+    counts.set(id, (counts.get(id) || 0) + 1);
+  });
+
+  const dupSet = new Set([...counts.entries()]
+    .filter(([,c]) => c >= 2)
+    .map(([id]) => id)
+  );
+
+  const dupRows = arr.filter(it => dupSet.has(normalizeDeviceId(getDeviceIdFromItem(it))));
+
+  return { dupRows, dupSet, counts };
+}
+function applySameDeviceFilter(){
+  if (!selectedDeviceId){
+    showToast("Klik dulu Device ID pada table, baru tekan Same Device.", "error");
+    return;
+  }
+  sameDeviceMode = true;
+  const q = currentQueryValue();
+  const s = currentStatusValue();
+
+  // filter status + search dulu
+  let arr = applyFilters(q, s, allLoginData);
+
+  // filter ikut device
+  arr = arr.filter(it => getDeviceIdFromItem(it) === selectedDeviceId);
+
+  renderLoginTable(arr);
+}
+
+function clearSameDeviceFilter(){
+  sameDeviceMode = false;
+  selectedDeviceId = null;
+  // render balik normal ikut filter semasa
+  rerenderWithCurrentFilters();
+}
+  // ---------- Toast ----------
+  function showToast(message, type="success", duration=4000){
+    const toast = document.getElementById("toast");
+    const msgSpan = toast.querySelector(".toast-message");
+    const iconSvg = toast.querySelector(".toast-icon");
+    toast.classList.remove("success","error");
+    toast.classList.add(type);
+    msgSpan.textContent = message;
+    iconSvg.innerHTML = (type === "success")
+      ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 17l-5-5.299 1.399-1.43 3.574 3.736 6.572-7.007 1.455 1.403-8 8.597z"/></svg>`
+      : `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm5.5 15.1L15.1 17.5 12 14.4 8.9 17.5 6.5 15.1 9.6 12 6.5 8.9 8.9 6.5 12 9.6l3.1-3.1 2.4 2.4L14.4 12l3.1 3.1z"/></svg>`;
+    toast.style.display = "flex";
+    requestAnimationFrame(()=> toast.classList.add("show"));
+    clearTimeout(window.toastTimeout);
+    window.toastTimeout = setTimeout(hideToast, duration);
+  }
+  function hideToast(){
+    const toast = document.getElementById("toast");
+    toast.classList.remove("show");
+    setTimeout(()=> { toast.style.display = "none"; }, 300);
+  }
+
+  // ---------- Block cache ----------
+  blockedRef.on('value', (snap) => {
+    const val = snap.val() || {};
+    blockedSet = new Set(
+      Object.entries(val).filter(([_,v]) => Boolean(v)).map(([k]) => k)
+    );
+
+    // Sinkronkan tombol block dan status cell
+    document.querySelectorAll('.block-btn').forEach(btn => {
+      const email = btn.dataset.email || '';
+      const isBlocked = isEmailBlockedFast(email);
+      btn.textContent = isBlocked ? 'Unblock' : 'Block';
+      btn.classList.toggle('blocked', isBlocked);
+    });
+
+    // Re-render supaya kolom status ikut update
+    rerenderWithCurrentFilters();
+  });
+
+  function isEmailBlockedFast(email){
+    return blockedSet.has(sanitizeEmail(email));
+  }
+
+  // ---------- Actions ----------
+  function forceLogoutUser(email){
+    const key = sanitizeEmail(email);
+    const payload = { forceLogout: true, at: Date.now() };
+    firebase.database()
+      .ref('logins/admin_override/' + key)
+      .set(payload)
+      .then(()=> showToast(`Logout sent to ${email}`))
+      .catch(err=> showToast(`Error logout: ${err.message}`, "error"));
+  }
+
+  function toggleBlockUser(button){
+    const email = button.getAttribute("data-email");
+    const key   = sanitizeEmail(email);
+    const newStatus = !isEmailBlockedFast(email);
+    blockedRef.child(key).set(newStatus)
+      .then(()=> showToast(`${newStatus ? "Blocked" : "Unblocked"}: ${email}`, "success"))
+      .catch(err=> showToast(`Failed: ${err.message}`, "error"));
+  }
+
+  // ---------- Render table (UPDATED) ----------
+  function statusCellHtml(isActive){
+    if (isActive){
+      return `
+        <div class="status-cell" title="Active">
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="#00ff00"></circle>
+          </svg>
+          <span class="status-text">Active</span>
+        </div>`;
+    } else {
+      return `
+        <div class="status-cell" title="Unactive">
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="red"></circle>
+            <path d="M8 8 L16 16 M16 8 L8 16" stroke="#111" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+          <span class="status-text">Unactive</span>
+        </div>`;
+    }
+  }
+
+  function renderLoginTable(dataArray){
+    const tbody = document.getElementById('loginTableBody');
+
+    if (!dataArray.length){
+      tbody.innerHTML = '<tr><td colspan="8">No matching login data found.</td></tr>';
+      requestAnimationFrame(()=> fitViewportToRows(1));
+      return;
+    }
+
+    let html = '';
+    let no = 0;
+
+    dataArray.forEach(item => {
+      const email = item.email || '';
+      const name  = item.name  || '';
+      const tStr = item.dateObj? formatDateTime(item.dateObj): (item.loginRaw && item.loginRaw !== '-' ? item.loginRaw : '');
+      if (!email && !name && !tStr) return;
+
+      no++;
+      const active = !isEmailBlockedFast(email);
+
+const deviceId = getDeviceIdFromItem(item);
+const browser  = (item.browser || '').toString().trim() || 'Unknown';
+const deviceLabel = deviceId ? `${browser}_${deviceId}` : '-';
+const deviceSource = (item.deviceSource || item.fpSource || item.source || '').toString().trim() || '-';
+html += `
+  <tr data-email="${esc(email)}" data-device="${esc(deviceId || '')}">
+    <td>${no}</td>
+    <td title="${esc(name)}">${esc(name || '-')}</td>
+    <td title="${esc(email)}">${esc(email)}</td>
+
+<td class="deviceCell"
+    title="Click to select this Device ID"
+    style="color:#3b8cff;">
+  ${esc(deviceLabel)}
+</td>
+
+<td title="${esc(deviceSource)}" style="color:#cbd5e1;">
+  ${esc(deviceSource)}
+</td>
+
+<td title="${esc(tStr)}">${esc(tStr)}</td>
+    <td>${statusCellHtml(active)}</td>
+    <td>
+      <div class="action-buttons">
+        <button class="logout-btn"
+                data-email="${esc(email)}"
+                data-name="${esc(name || '-')}"
+                onclick="showConfirmBox(this, this.dataset.email, this.dataset.name)">
+          Logout
+        </button>
+        <button class="block-btn"
+                data-email="${esc(email)}"
+                onclick="toggleBlockUser(this)">
+          ${active ? 'Block' : 'Unblock'}
+        </button>
+      </div>
+    </td>
+  </tr>`;
+    });
+
+    tbody.innerHTML = html;
+
+    // Set tampilan tombol block dari cache
+    tbody.querySelectorAll('.block-btn').forEach(btn => {
+      const email = btn.dataset.email || '';
+      const blocked = isEmailBlockedFast(email);
+      btn.textContent = blocked ? "Unblock" : "Block";
+      btn.classList.toggle("blocked", blocked);
+    });
+
+    requestAnimationFrame(()=> fitViewportToRows(15));
+  }
+
+function startRealtime(){
+  const searchBtn = document.getElementById('searchBtn');
+  searchBtn.classList.add('loading');
+
+  dbRef.on('value', (snapshot) => {
+    const data = snapshot.val() || {};
+
+    allLoginData = Object.entries(data)
+      .filter(([k]) =>
+        k !== "blocked_users" &&
+        k !== "admin_override" &&
+        k !== "user_accounts"        // ✅ jangan ikut koleksi akun
+      )
+      .map(([_, item]) => {
+        const raw = typeof item?.loginAt === 'string' ? item.loginAt.trim() : '';
+        const dateObj = parseDateString(raw);
+        return { ...item, dateObj, loginRaw: raw };   // ❌ tanpa default '-'
+      })
+      // ✅ buang entry yatim (tak ada email, nama, dan waktu valid)
+      .filter(it =>
+        (it.email && it.email.trim()) ||
+        (it.name && it.name.trim()) ||
+        it.dateObj
+      )
+      .sort((a,b) => {
+        if (!a.dateObj && !b.dateObj) return 0;
+        if (!a.dateObj) return 1;
+        if (!b.dateObj) return -1;
+        return b.dateObj - a.dateObj;
+      });
+
+    rerenderWithCurrentFilters();
+    searchBtn.classList.remove('loading');
+  }, (error) => {
+    document.getElementById('loginTableBody').innerHTML =
+      `<tr><td colspan="8">Error: ${error.message}</td></tr>`;
+    searchBtn.classList.remove('loading');
+  });
+}
+
+  // ---------- Search & Filter listeners ----------
+  function currentStatusValue(){
+    return document.getElementById('statusFilter')?.value || 'All';
+  }
+  function currentQueryValue(){
+    return document.getElementById('searchInput')?.value || '';
+  }
+  function rerenderWithCurrentFilters(){
+    const q = currentQueryValue();
+    const s = currentStatusValue();
+    renderLoginTable(applyFilters(q, s, allLoginData));
+  }
+
+  function setupSearchListener(){
+    const input = document.getElementById('searchInput');
+    const select = document.getElementById('statusFilter');
+
+    if (input){
+      input.addEventListener('input', () => rerenderWithCurrentFilters());
+    }
+    if (select){
+      select.addEventListener('change', () => rerenderWithCurrentFilters());
+    }
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      rerenderWithCurrentFilters();
+    });
+  }
+  // ✅ TAMBAHKAN: setelah setupSearchListener()
+function setupClearButton(){
+  const input = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearSearch');
+  if (!input || !clearBtn) return;
+
+  function toggleClearBtn(){
+    clearBtn.hidden = !(input.value && input.value.trim() !== '');
+  }
+
+  // saat ketik: show/hide X + render ulang tabel
+  input.addEventListener('input', () => {
+    toggleClearBtn();
+    if (typeof rerenderWithCurrentFilters === 'function') {
+      rerenderWithCurrentFilters();
+    }
+  });
+
+  // klik X: kosongkan input + hide X + fokus balik + render ulang
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    toggleClearBtn();
+    input.focus();
+    if (typeof rerenderWithCurrentFilters === 'function') {
+      rerenderWithCurrentFilters();
+    }
+  });
+
+  // status awal
+  toggleClearBtn();
+}
+  // ---------- Confirm popovers ----------
+  function showConfirmAllBox(button){
+    const box = document.getElementById("confirmAllBox");
+    if (isConfirmAllVisible){
+      box.style.display = "none";
+      box.classList.remove("show");
+      isConfirmAllVisible = false;
+      return;
+    }
+    const yesBtn = document.getElementById("confirmAllYes");
+    const noBtn  = document.getElementById("confirmAllNo");
+
+    box.style.display = "block";
+    box.classList.add("show");
+    isConfirmAllVisible = true;
+
+    const rect = button.getBoundingClientRect();
+    const bw   = box.offsetWidth;
+    let left   = rect.left + (rect.width/2) - (bw/2);
+    const maxL = window.innerWidth - bw - 10;
+    if (left > maxL) left = maxL;
+    if (left < 10)  left = 10;
+
+    box.style.top  = `${rect.bottom + window.scrollY + 6}px`;
+    box.style.left = `${left}px`;
+
+    yesBtn.replaceWith(yesBtn.cloneNode(true));
+    noBtn.replaceWith(noBtn.cloneNode(true));
+
+    document.getElementById("confirmAllYes").onclick = () => {
+      box.style.display = "none";
+      box.classList.remove("show");
+      isConfirmAllVisible = false;
+      doForceLogoutAll();
+    };
+    document.getElementById("confirmAllNo").onclick = () => {
+      box.style.display = "none";
+      box.classList.remove("show");
+      isConfirmAllVisible = false;
+    };
+  }
+
+  function showConfirmBox(button, email, name='-'){
+    const box = document.getElementById("confirmBox");
+    if (box.style.display === "block" && currentConfirmEmail === email){
+      box.style.display = "none";
+      box.classList.remove("show");
+      currentConfirmEmail = null;
+      return;
+    }
+    const yesBtn = document.getElementById("confirmYes");
+    const noBtn  = document.getElementById("confirmNo");
+
+    currentConfirmEmail = email;
+    document.getElementById("confirmUserName").textContent  = name || '-';
+    document.getElementById("confirmUserEmail").textContent = email;
+
+    box.style.display = "block";
+    box.classList.add("show");
+
+    const rect = button.getBoundingClientRect();
+    const bw   = box.offsetWidth;
+    let left   = rect.left + (rect.width/2) - (bw/2);
+    const maxL = window.innerWidth - bw - 10;
+    if (left > maxL) left = maxL;
+    if (left < 10)  left = 10;
+
+    box.style.top  = `${rect.bottom + window.scrollY + 6}px`;
+    box.style.left = `${left}px`;
+
+    yesBtn.replaceWith(yesBtn.cloneNode(true));
+    noBtn.replaceWith(noBtn.cloneNode(true));
+
+    document.getElementById("confirmYes").onclick = () => {
+      box.style.display = "none";
+      box.classList.remove("show");
+      currentConfirmEmail = null;
+      forceLogoutUser(email);
+    };
+    document.getElementById("confirmNo").onclick = () => {
+      box.style.display = "none";
+      box.classList.remove("show");
+      currentConfirmEmail = null;
+    };
+  }
+  document.getElementById('forceLogoutAllBtn')
+    .addEventListener('click', function(){ showConfirmAllBox(this); });
+
+  function doForceLogoutAll(){
+    const ts = Date.now();
+    const emails = allLoginData.filter(u => u.email).map(u => u.email);
+    if (emails.length === 0) return showToast('Tidak ada user untuk di-logout.', 'error');
+
+    const updates = {};
+    emails.forEach(email => {
+      const key = sanitizeEmail(email);
+      updates['logins/admin_override/' + key] = { forceLogout: true, at: ts };
+    });
+
+    firebase.database().ref().update(updates)
+      .then(() => {
+        let delay = 0;
+        emails.forEach(email => {
+          setTimeout(() => showToast(`Logout sent to ${email}`), delay);
+          delay += 200;
+        });
+      })
+      .catch(err => showToast(`Error force logout all: ${err.message}`, "error"));
+  }
+    // === Username Store Reference ===
+  // Disimpan di: logins/user_accounts/{username}
+  const userAcctRef = firebase.database().ref('logins/user_accounts');
+
+  // Validasi dan sanitasi username
+  function sanitizeUsername(u){
+    u = String(u || '').trim();
+    // Hanya huruf/angka/._- , panjang 3–24
+    const ok = /^[a-zA-Z0-9._-]{3,24}$/;
+    return ok.test(u) ? u : '';
+  }
+
+  // Hash password (SHA-256) -> hex
+  async function sha256Hex(text){
+    const enc = new TextEncoder().encode(text);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    const bytes = new Uint8Array(buf);
+    return Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  // Modal helpers
+  function openCreateUserModal(){
+    const overlay = document.getElementById('createUserModal');
+    const u = document.getElementById('cu-username');
+    const p = document.getElementById('cu-password');
+    const err = document.getElementById('cu-error');
+    err.textContent = ''; err.hidden = true;
+    u.value = ''; p.value = '';
+    overlay.style.display = 'flex';
+    setTimeout(()=> u.focus(), 60);
+    // Prevent background scroll (optional)
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCreateUserModal(){
+    const overlay = document.getElementById('createUserModal');
+    overlay.style.display = 'none';
+    document.body.style.overflow = ''; // restore
+  }
+
+  // Create handler
+  async function handleCreateUser(){
+    const btn = document.getElementById('cu-create');
+    const cancel = document.getElementById('cu-cancel');
+    const uEl = document.getElementById('cu-username');
+    const pEl = document.getElementById('cu-password');
+    const err = document.getElementById('cu-error');
+
+    const rawU = (uEl.value || '').trim();
+    const username = sanitizeUsername(rawU);
+    const password = String(pEl.value || '');
+
+    if (!username){
+      err.textContent = 'Username tidak valid. Gunakan huruf/angka/._- (3–24).';
+      err.hidden = false; uEl.focus(); return;
+    }
+    if (password.length < 6){
+      err.textContent = 'Password minimal 6 karakter.';
+      err.hidden = false; pEl.focus(); return;
+    }
+
+    btn.disabled = true; cancel.disabled = true;
+    try{
+      // Cek apakah sudah ada
+      const snap = await userAcctRef.child(username).get();
+      if (snap.exists()){
+        err.textContent = 'Username sudah dipakai.';
+        err.hidden = false; btn.disabled = false; cancel.disabled = false; return;
+      }
+      const hash = await sha256Hex(password);
+      const payload = {
+        username,
+        passwordHash: hash,
+        createdAt: Date.now(),
+        createdBy: 'admin-ui',
+        active: true
+      };
+      await userAcctRef.child(username).set(payload);
+      showToast(`User "${username}" berhasil dibuat.`, 'success');
+      closeCreateUserModal();
+    }catch(e){
+      err.textContent = `Gagal membuat user: ${e.message}`;
+      err.hidden = false;
+    }finally{
+      btn.disabled = false; cancel.disabled = false;
+    }
+  }
+
+  // Pasang event & integrate ke init()
+  function setupCreateUserModal(){
+    const openBtn = document.getElementById('createUserBtn');
+    const overlay = document.getElementById('createUserModal');
+    const closeBtn = overlay.querySelector('.modal-close');
+    const cancelBtn = document.getElementById('cu-cancel');
+    const createBtn = document.getElementById('cu-create');
+    const uEl = document.getElementById('cu-username');
+    const pEl = document.getElementById('cu-password');
+
+    if (openBtn){ openBtn.addEventListener('click', openCreateUserModal); }
+    if (closeBtn){ closeBtn.addEventListener('click', closeCreateUserModal); }
+    if (cancelBtn){ cancelBtn.addEventListener('click', closeCreateUserModal); }
+    if (createBtn){ createBtn.addEventListener('click', handleCreateUser); }
+
+    // Tutup kalau klik di luar box
+    overlay.addEventListener('click', (e)=>{
+      if (e.target === overlay) closeCreateUserModal();
+    });
+    // Esc untuk tutup, Enter untuk Create
+    overlay.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape') closeCreateUserModal();
+      if (e.key === 'Enter') handleCreateUser();
+    });
+
+    // Enter dari input fokus juga trigger create
+    [uEl, pEl].forEach(el=>{
+      el.addEventListener('keydown', (e)=>{
+        if (e.key === 'Enter') handleCreateUser();
+      });
+    });
+  }
+
+  // Tambahkan panggilan setup ini ke init() yang sudah ada
+  (function hookInit(){
+    const oldInit = window.init;
+    window.init = function(){
+      if (typeof oldInit === 'function') oldInit();
+      setupCreateUserModal();
+    };
+  })();
+  // --------- Startup ----------
+  function init(){
+    startRealtime();
+    setupSearchListener();
+    setupClearButton();
+
+      // Same IP button
+  const sameBtn = document.getElementById('sameDeviceBtn');
+if (sameBtn){
+  sameBtn.addEventListener('click', () => {
+
+    // OFF mode -> balik normal ikut search + status
+    if (sameDeviceMode){
+      sameDeviceMode = false;
+      selectedDeviceId = null; // optional reset
+      rerenderWithCurrentFilters();
+      showToast("Same IP filter cleared.", "success");
+      return;
+    }
+
+    // ON mode
+    sameDeviceMode = true;
+
+    const q = currentQueryValue();
+    const s = currentStatusValue();
+
+    // ikut search + status dulu
+    let arr = applyFilters(q, s, allLoginData);
+
+    // 1) buang semua yang tiada deviceId
+    const withDevice = getRowsWithDeviceOnly(arr);
+
+    if (withDevice.length === 0){
+      renderLoginTable([]);
+      showToast("Tiada user yang mempunyai Device ID.", "error");
+      return;
+    }
+
+    // 2) cari duplicates
+    const { dupRows, dupSet } = getDuplicateDeviceRows(withDevice);
+
+    // jika tiada same device: still show device-only list
+    if (dupRows.length === 0){
+      renderLoginTable(withDevice);
+      showToast("Tiada same IP/device yang sama ditemui.", "error");
+      return;
+    }
+
+    // jika ada: show only duplicates
+    renderLoginTable(dupRows);
+
+    const groups = dupSet.size;      // berapa device yang duplicate
+    const users  = dupRows.length;   // berapa row/akaun terlibat
+    showToast(`Jumpa ${groups} same device. Total ${users} account.`, "success");
+  });
+}
+    if (window.ResizeObserver){
+      const ro = new ResizeObserver(() => fitViewportToRows(15));
+      const tbody = document.getElementById('loginTableBody');
+      if (tbody) ro.observe(tbody);
+    } else {
+      window.addEventListener('resize', () => fitViewportToRows(15));
+    }
+  }
+
+document.addEventListener("click", (e) => {
+  const cell = e.target.closest(".deviceCell");
+  if (!cell) return;
+
+  const tr = cell.closest("tr");
+  const rawId = (tr?.dataset?.device || "").trim(); // ✅ ID asal dari data-device
+
+  if (!rawId || rawId === "-") {
+    showToast("Device ID belum ada untuk user ini.", "error");
+    return;
+  }
+
+  selectedDeviceId = rawId;
+  sameDeviceMode = false;
+
+  document.querySelectorAll(".deviceCell").forEach(x => x.style.textDecoration = "none");
+  cell.style.textDecoration = "underline";
+
+  showToast(`Selected Device ID: ${rawId}`, "success", 2000);
+});
+  // ============ RESET PASSWORD ============
+function openResetPwModal(){
+  const o = document.getElementById('resetPwModal');
+  const u = document.getElementById('rp-username');
+  const p1 = document.getElementById('rp-password');
+  const p2 = document.getElementById('rp-password2');
+  const err = document.getElementById('rp-error');
+  err.textContent = ''; err.hidden = true;
+  u.value = ''; p1.value = ''; p2.value = '';
+  o.style.display = 'flex';
+  setTimeout(()=> u.focus(), 60);
+  document.body.style.overflow = 'hidden';
+}
+
+function closeResetPwModal(){
+  const o = document.getElementById('resetPwModal');
+  o.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+async function handleResetPassword(){
+  const btn = document.getElementById('rp-reset');
+  const cancel = document.getElementById('rp-cancel');
+  const uEl = document.getElementById('rp-username');
+  const p1El = document.getElementById('rp-password');
+  const p2El = document.getElementById('rp-password2');
+  const err = document.getElementById('rp-error');
+
+  const rawU = (uEl.value || '').trim();
+  const username = sanitizeUsername(rawU);
+  const pw1 = String(p1El.value || '');
+  const pw2 = String(p2El.value || '');
+
+  if (!username){
+    err.textContent = 'Username tidak valid.'; err.hidden = false; uEl.focus(); return;
+  }
+  if (pw1.length < 6){
+    err.textContent = 'Password minimal 6 karakter.'; err.hidden = false; p1El.focus(); return;
+  }
+  if (pw1 !== pw2){
+    err.textContent = 'Konfirmasi password tidak sama.'; err.hidden = false; p2El.focus(); return;
+  }
+
+  btn.disabled = true; cancel.disabled = true;
+  try{
+    const snap = await userAcctRef.child(username).get();
+    if (!snap.exists()){
+      err.textContent = 'Username tidak ditemukan.'; err.hidden = false;
+      btn.disabled = false; cancel.disabled = false; return;
+    }
+    const cur = snap.val() || {};
+    const newHash = await sha256Hex(pw1);
+
+    // set lengkap sesuai rules (harus ada semua field wajib)
+    const payload = {
+      username: cur.username || username,
+      passwordHash: newHash,
+      createdAt: cur.createdAt || Date.now(),
+      createdBy: cur.createdBy || 'admin-ui',
+      active: (typeof cur.active === 'boolean') ? cur.active : true,
+      updatedAt: Date.now(),
+      updatedBy: 'admin-ui'
+    };
+
+    await userAcctRef.child(username).set(payload);
+    showToast(`Password "${username}" berhasil di-reset.`, 'success');
+    closeResetPwModal();
+  }catch(e){
+    err.textContent = `Gagal reset password: ${e.message}`;
+    err.hidden = false;
+  }finally{
+    btn.disabled = false; cancel.disabled = false;
+  }
+}
+
+// Pasang event untuk modal reset
+function setupResetPwModal(){
+  const openBtn = document.getElementById('resetPwBtn');
+  const overlay = document.getElementById('resetPwModal');
+  const closeBtn = document.getElementById('rp-close');
+  const cancelBtn = document.getElementById('rp-cancel');
+  const resetBtn = document.getElementById('rp-reset');
+  const uEl = document.getElementById('rp-username');
+  const p1El = document.getElementById('rp-password');
+  const p2El = document.getElementById('rp-password2');
+
+  openBtn?.addEventListener('click', openResetPwModal);
+  closeBtn?.addEventListener('click', closeResetPwModal);
+  cancelBtn?.addEventListener('click', closeResetPwModal);
+  resetBtn?.addEventListener('click', handleResetPassword);
+
+  // klik di luar box menutup
+  overlay.addEventListener('click', (e)=>{ if (e.target === overlay) closeResetPwModal(); });
+
+  // Esc = tutup, Enter = submit
+  overlay.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape') closeResetPwModal();
+    if (e.key === 'Enter') handleResetPassword();
+  });
+  [uEl,p1El,p2El].forEach(el=>{
+    el.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') handleResetPassword(); });
+  });
+}
+
+// panggil saat init
+(function hookInitReset(){
+  const oldInit = window.init;
+  window.init = function(){
+    if (typeof oldInit === 'function') oldInit();
+    setupResetPwModal();
+  };
+})();
+  window.addEventListener('DOMContentLoaded', init);
+  const THEME_KEY = "siteTheme";
+
+  function applyTheme(theme) {
+    const finalTheme = theme === "dark" ? "dark" : "light";
+    document.body.classList.toggle("dark-theme", finalTheme === "dark");
+  }
+
+  // apply masa mula load
+  applyTheme(localStorage.getItem(THEME_KEY) || "light");
+
+  // dengar dari parent
+  window.addEventListener("message", (event) => {
+    if (event.data?.type === "theme-change") {
+      applyTheme(event.data.theme);
+    }
+  });
+</script>
+</body>
+</html>
