@@ -736,14 +736,16 @@ function scheduleRender(){
 function formatDateTimeMY(ts){
   const n = Number(ts || 0);
   if (!n) return "-";
+
   const d = new Date(n);
-  const dd = String(d.getDate()).padStart(2,"0");
-  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yy = d.getFullYear();
-  const HH = String(d.getHours()).padStart(2,"0");
-  const MM = String(d.getMinutes()).padStart(2,"0");
-  const SS = String(d.getSeconds()).padStart(2,"0");
-  return `${dd}/${mm}/${yy} ${HH}:${MM}:${SS}`;
+  const HH = String(d.getHours()).padStart(2, "0");
+  const MM = String(d.getMinutes()).padStart(2, "0");
+  const SS = String(d.getSeconds()).padStart(2, "0");
+
+  return `${dd}-${mm}-${yy} ${HH}:${MM}:${SS}`;
 }
 
 function desanitizeUserId(sanitized){
@@ -907,7 +909,7 @@ function renderChatMessages(messages){
     const div = document.createElement("div");
     div.className = "message " + (msg.from === "admin" ? "mine" : "theirs");
 
-    const timeStr = msgDate.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+    const timeStr = formatDateTimeMY(msg.time);
     const isUser = msg.from !== "admin";
     const rawName = isUser
     ? (msg.name || msg.email || "User")
