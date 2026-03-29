@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiveChat - Admin</title>
+  <style>
+    :root {
+  --bg-color: #29858f;
+  --text-color: #f1f1f1;
+  --primary-color: #facc15;
+
+  --bg-main: #fff;
+  --sidebar: #001529;
+  --text-main: #000;
+  --text-soft: rgba(17,24,39,0.88);
+  --text-dim: rgba(17,24,39,0.72);
+  --colorbtn: rgba(0, 0, 0, 0.88);
+  --backgroundbtn: #ffffff;
+  --backgrounddrop: #ffffff;
+  --border: #303030;
+  --border2: #d9d9d9;
+  --panel-border: #d4dbe6;
+  --blur: rgba(0,0,0,0.25);
+  --border3: #f0f0f0;
+  --tab2: #ffffff;
+  --border-bottom: #ffffff;
+  --close: rgba(0, 0, 0, 0.88);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #d4dbe6;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(17,24,39,0.88);
+  --btn-border: #d4dbe6;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(15,23,42,0.18);
+  --popup-bg: #ffffff;
+
+  --empty-text: rgba(17,24,39,.7);
+  --empty-title: rgba(17,24,39,.88);
+
+  --toggle-track: #cfd8e3;
+  --toggle-knob: #ffffff;
+  --btnfocus: #91caff;
+}
+
+body.dark-theme{
+  --bg-main: #000;
+  --sidebar: #001529;
+  --text-main: #fff;
+  --text-soft: rgba(255,255,255,0.85);
+  --text-dim: rgba(255,255,255,0.65);
+  --colorbtn: rgba(255,255,255,0.85);
+  --backgroundbtn: #141414;
+  --backgrounddrop: #1f1f1f;
+  --border: #303030;
+  --border2: #424242;
+  --panel-border: #424242;
+  --blur: rgba(255,255,255,0.25);
+  --border3: #303030;
+  --tab2: #141414;
+  --border-bottom: #141414;
+  --close: rgba(255,255,255,0.45);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #303030;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(255,255,255,0.85);
+  --btn-border: #424242;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(0,0,0,0.5);
+  --popup-bg: #1f1f1f;
+
+  --empty-text: rgba(255,255,255,.7);
+  --empty-title: rgba(255,255,255,.85);
+
+  --toggle-track: #2c7be5;
+  --toggle-knob: #ffffff;
+  --btnfocus: #15325b;
+
+}
+body {
+  background: #111;
+  color: #111;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Header ===== */
+.header {
+  background-color: #1668dc;
+  font-size: 30px;
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+}
+
+/* ===== Container Chat Box ===== */
+#containerChatBox {
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #1668dc;
+  padding: 15px;
+  max-width: 640px;
+  margin: 0 auto;
+  border: 1px solid #1668dc;
+}
+
+/* ===== Chat Header ===== */
+#chatHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to right, #1668dc, #c5ff4a);
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+#chatUserName {
+  font-weight: bold;
+  font-size: 16px;
+  color: black;
+}
+
+/* ===== Search Message ===== */
+#searchMessage {
+  border: 1px solid #ccc;
+  padding: 6px 12px 6px 36px;
+  border-radius: 6px;
+  font-size: 14px;
+  background: url('https://cdn-icons-png.flaticon.com/512/622/622669.png') no-repeat 10px center;
+  background-size: 16px;
+  background-color: #fff8dc;
+  color: #333;
+  width: 50%;
+  transition: 0.3s;
+}
+
+#searchMessage:focus {
+  outline: none;
+  border-color: #d4af37;
+  background-color: #fff9e3;
+}
+
+/* ===== Chat Box ===== */
+.chat-box {
+  height: 60vh;
+  overflow-y: auto;
+  border: 1px solid #1668dc;
+  padding: 15px;
+  background: #000;
+  color: white;
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.05);
+  scroll-behavior: smooth;
+}
+
+.chat-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+  background: #1668dc;
+  border-radius: 6px;
+}
+
+.chat-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ===== Message Bubble ===== */
+.message {
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 10px;
+  max-width: 70%;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  color:black;
+  font-weight: bold;
+}
+
+.mine {
+  background-image: linear-gradient(to bottom, #1668dc, #d7e9ff, #c5ff4a);
+  color: #000;
+  margin-left: auto;
+}
+
+.theirs {
+  background-image: linear-gradient(to bottom, #1668dc, white);
+}
+
+/* ===== Send Box ===== */
+.send-box {
+  display: flex;
+  width: 100%;
+  margin: 10px auto 0;
+  border: 2px solid #3c89e8;
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+}
+
+#msg {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'Segoe UI', sans-serif;
+}
+#msg:focus {
+ border: 1px solid #1668dc;
+ outline: none;
+}
+
+.send-box button {
+  padding: 0 16px;
+  font-size: 14px;
+  background: #1668dc;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.send-box button:hover {
+  background: #3c89e8;
+}
+
+.send-box button:active {
+  background: #1554ad;
+}
+
+/* ===== User List ===== */
+.user-item {
+  border: 1px solid #424242;
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background: #141414;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.user-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.user-item.active {
+  background-color: #1668dc;
+  color: white;
+  border: 1px solid #1668dc;
+}
+
+/* ===== Date Label ===== */
+.date-label {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.date-label-inner {
+  display: inline-block;
+  background-color: lightgreen;
+  padding: 2px 22px;
+  border-radius: 30px;
+  font-size: 14px;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.date-label-inner .day-label {
+  font-weight: bold;
+  display: block;
+  font-size: 16px;
+}
+
+.date-label-inner .full-date-label {
+  font-size: 14px;
+  color: #555;
+  display: block;
+  margin-top: 2px;
+  text-transform: capitalize;
+}
+
+/* ===== Panel Optional ===== */
+.chat-panel {
+  flex: 1;
+  max-width: 400px;
+  padding: 1rem;
+}
+    #chatHeaderUser img {
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+#searchUser {
+ padding: 10px 5px; margin-bottom: 10px; border-radius: 6px;
+ border:1px solid #424242;
+ background: #141414;
+ color: rgba(255, 255, 255, 0.85);
+ width: 100%;
+ transition: border 0.2s ease;
+}
+#searchUser:hover {
+ border: 1px solid #3c89e8;
+ transition: border 0.2s ease;
+}
+#searchUser:focus {
+ border: 1px solid #1668dc;
+ transition: border 0.2s ease;
+ outline: none;
+}
+.user-list-header {
+  position: sticky;
+  top: 0;
+  background: #111;
+  z-index: 10;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.user-list-panel {
+  width: 500px;
+  border-right: 1px solid #424242;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  color: white; 
+  background: #111;
+}
+.user-list-header {
+  padding: 1rem;
+  background: #111;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.user-scroll-box {
+  overflow-y: auto;
+  max-height: calc(80vh - 140px);
+  padding: 1rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.user-scroll-box::-webkit-scrollbar {
+  display: none;
+}
+#filterAll, #filterUnread {
+  border:1px solid #424242;
+  background-color: #141414;     /* warna latar */
+  color: white;                  /* warna teks */
+  padding: 6px 14px;
+  border-radius: 6px;            /* buat lengkung */
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+  transition: border 0.2s ease;
+}
+
+#filterAll:hover,
+#filterUnread:hover {
+  border:1px solid #3c89e8 !important;
+  background-color: #141414;
+  color: #3c89e8;   /* warna hover */
+  transition: border 0.2s ease !important;
+}
+#filterAll:active,
+#filterUnread:active {
+  border:1px solid #1554ad !important;
+  background-color: #141414;
+  color: #1554ad;   /* warna hover */
+  transition: border 0.2s ease !important;
+}
+.active-filter {
+  border:1px solid #1668dc !important;
+  background-color: #141414 !important;
+  color: #1668dc !important;
+  transition: border 0.2s ease !important;
+}
+.online-indicator {
+  float: right;
+  margin-left: auto;
+}
+#chatUserStatus {
+  display: block;             /* ⬅️ Ganti jadi block agar tidak terlalu dipaksa horizontal */
+  white-space: nowrap;        /* Tetap cegah baris baru */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1;
+}
+
+.status-main {
+  font-size: 12px;
+  font-weight: bold;
+  color: #0f0;
+}
+
+.status-sub {
+  font-size: 12px;
+  color: #bbb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+.status-main {
+  color: #00ff00;
+  font-weight: bold;
+}
+.status-sub {
+  color: #aaa;
+  font-size: 12px;
+}
+.status-typing {
+  color: orange;
+  font-weight: bold;
+}
+  </style>
+</head>
+<body>
+<div class="header">Admin LiveChat</div>
+
+<main style="display: flex;">
+  <!-- Panel User -->
+  <div id="userList" class="user-list-panel">
+    <div class="user-list-header">
+      <h3>User List</h3>
+      <input type="text" id="searchUser" placeholder="Search user..." />
+      <div style="display: flex; gap: 10px; margin-top: 10px; align-items: center;">
+        <button id="filterAll" class="active-filter">All</button>
+        <button id="filterUnread">Unread</button>
+        <button id="enableSoundBtn" type="button" style="margin-top:10px;" class="active-filter">Enable Sound</button>
+        
+        <div style="margin-left: auto; color:#fff; font-size: 14px;">
+          Total Users: <span id="totalUsers">0</span> | Online: <span id="onlineUsers">0</span>
+        </div>
+      </div>
+    </div>
+
+  <div id="userListBox" class="user-scroll-box"></div>
+</div>
+
+ <div style="flex: 0.5; padding: 1rem;">
+  <div id="containerChatBox">
+    <!-- Header Chat -->
+    <div id="chatHeader">
+ <div id="chatHeaderUser" style="display: flex; flex-direction: column;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <img id="chatUserAvatar" src="" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; display: none;" />
+    <div>
+      <strong id="chatUserName">Select a user</strong>
+      <div id="chatUserStatus" style="font-size: 12px; color: #aaa;">Offline</div>
+    </div>
+  </div>
+</div>
+  <input
+    type="text"
+    id="searchMessage"
+    placeholder="Search messages..."
+  />
+</div>
+
+    <!-- Chat Box -->
+    <div class="chat-box" id="chatBox"></div>
+
+    <!-- Send Box -->
+    <div class="send-box">
+      <textarea id="msg" placeholder="Type your message" rows="2"></textarea>
+      <button id="sendBtn" disabled>Send</button>
+    </div>
+  </div>
+</div>
+</main>
+
+<audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<script>
+"use strict";
+
+/* ======================= STATE GLOBAL ======================= */
+let initialUserListLoaded = false;
+let currentFilterMode = "all";
+
+let activeUserIdSanitized = "";
+let selectedUserId = null;
+
+let allUsersData = []; // [ [sanitized, userData, activityTime], ... ]
+let allMessages = [];
+let justOpenedChat = false;
+
+let lastPresenceId = null;
+
+// chatMeta: simpan info realtime chat (listener sekali saja per user)
+const chatMeta = {}; // { sid: { listening:true, lastChatTime:number, identity:{...}, booted:true/false } }
+let renderTimer = null;
+
+/* ======================= INIT FIREBASE ======================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+  authDomain: "blurphp.firebaseapp.com",
+  databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "blurphp",
+  storageBucket: "blurphp.appspot.com",
+  messagingSenderId: "593904200464",
+  appId: "1:593904200464:web:cea7bc1360532c20d99395",
+  measurementId: "G-R494S2DPZ5"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const ADMIN_PRESENCE_PATH = "adminPresence/main";
+
+function getAdminIdentity(){
+  return {
+    name:
+      localStorage.getItem("username") ||
+      localStorage.getItem("adminName") ||
+      "Admin",
+    photoURL:
+      localStorage.getItem("userphoto") ||
+      localStorage.getItem("adminPhoto") ||
+      "https://i.imgur.com/qiZFOs9.png",
+    email:
+      localStorage.getItem("useremail") ||
+      localStorage.getItem("adminEmail") ||
+      "admin@domain.com"
+  };
+}
+
+function bindAdminPresence(){
+  const ref = db.ref(ADMIN_PRESENCE_PATH);
+  const connectedRef = db.ref(".info/connected");
+
+  connectedRef.on("value", snap => {
+    if (snap.val() === true) {
+      touchAdminPresence({ typing: false });
+
+      ref.onDisconnect().update({
+        online: false,
+        typing: false,
+        lastSeen: Date.now()
+      });
+
+      clearInterval(adminPresenceHeartbeat);
+      adminPresenceHeartbeat = setInterval(() => {
+        touchAdminPresence();
+      }, 10000);
+    }
+  });
+
+  window.addEventListener("beforeunload", () => {
+    clearInterval(adminPresenceHeartbeat);
+    ref.update({
+      online: false,
+      typing: false,
+      lastSeen: Date.now()
+    }).catch(()=>{});
+  });
+}
+let adminTypingTimer = null;
+let adminPresenceHeartbeat = null;
+
+function touchAdminPresence(extra = {}) {
+  db.ref(ADMIN_PRESENCE_PATH).update({
+    ...getAdminIdentity(),
+    online: true,
+    typing: false,
+    lastSeen: Date.now(),
+    ...extra
+  }).catch(()=>{});
+}
+function bindAdminTyping(){
+  if (!msgInput) return;
+
+  const typingRef = db.ref(ADMIN_PRESENCE_PATH + "/typing");
+
+  msgInput.addEventListener("input", () => {
+    const hasText = !!msgInput.value.trim();
+
+    typingRef.set(hasText).catch(()=>{});
+    touchAdminPresence({ typing: hasText });
+
+    clearTimeout(adminTypingTimer);
+    adminTypingTimer = setTimeout(() => {
+      typingRef.set(false).catch(()=>{});
+      touchAdminPresence({ typing: false });
+    }, 1500);
+  });
+
+  msgInput.addEventListener("blur", () => {
+    typingRef.set(false).catch(()=>{});
+    touchAdminPresence({ typing: false });
+  });
+}
+
+/* ======================= SCHEDULE RENDER ======================= */
+function scheduleRender(){
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(()=>{
+    const displayList = allUsersData.map(([id,user])=> [id, user]);
+    renderUserListFast(
+      displayList,
+      currentFilterMode,
+      document.getElementById("searchUser")?.value || ""
+    );
+  }, 80);
+}
+
+/* ======================= HELPERS ======================= */
+function formatDateTimeMY(ts){
+  const n = Number(ts || 0);
+  if (!n) return "-";
+  const d = new Date(n);
+  const dd = String(d.getDate()).padStart(2,"0");
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const yy = d.getFullYear();
+  const HH = String(d.getHours()).padStart(2,"0");
+  const MM = String(d.getMinutes()).padStart(2,"0");
+  const SS = String(d.getSeconds()).padStart(2,"0");
+  return `${dd}/${mm}/${yy} ${HH}:${MM}:${SS}`;
+}
+
+function desanitizeUserId(sanitized){
+  const str = String(sanitized || "");
+  const at = str.indexOf("@");
+  if (at === -1) return str.replace(/_/g, ".");
+  const local  = str.slice(0, at);
+  const domain = str.slice(at + 1).replace(/_/g,".");
+  return `${local}@${domain}`;
+}
+
+function dedupeName(str){
+  const s = String(str || "").trim().replace(/\s+/g," ");
+  const parts = s.split(" ");
+  if (parts.length === 2 && parts[0].toLowerCase() === parts[1].toLowerCase()) return parts[0];
+  return s;
+}
+
+function formatUserName(name){
+  if(!name) return "Unknown";
+  const words = String(name).trim().split(" ");
+  if (words.length === 2 && words[0] === words[1]) return words[0];
+  return name;
+}
+
+function getLabelParts(id, data){
+  const tryEmailFromId = desanitizeUserId(id);
+  const email = (data?.email || "").trim() || (tryEmailFromId.includes("@") ? tryEmailFromId : "");
+
+  const rawName  = (data?.name || "").trim();
+  const photoURL = data?.photoURL || "";
+
+  let displayName = rawName || (email ? email.split("@")[0] : "");
+  displayName = dedupeName(displayName);
+
+  if (!displayName){
+    const code = String(id).slice(-5).toUpperCase();
+    displayName = `Guest-${code}`;
+  }
+
+  const label = email ? `${displayName} (${email})` : displayName;
+  return { displayName, email, photoURL, label };
+}
+
+/* ======================= SOUND (ENABLE ONCE) ======================= */
+let soundEnabled = false;
+let soundQueued = 0;
+
+async function enableSound(){
+  const a = document.getElementById("notifSound");
+  if(!a) return console.log("[SOUND] ❌ notifSound not found");
+
+  try{
+    // unlock trick
+    a.muted = true;
+    await a.play();
+    a.pause();
+    a.currentTime = 0;
+    a.muted = false;
+
+    soundEnabled = true;
+    console.log("[SOUND] ✅ enabled");
+
+    // ✅ test bunyi sekali (confirm memang boleh)
+    try { a.currentTime = 0; await a.play(); } catch(e) {}
+    try { a.pause(); a.currentTime = 0; } catch(e) {}
+
+    // ✅ kalau ada bunyi yang “queue” masa belum enable
+    if(soundQueued > 0){
+      soundQueued = 0;
+      beep();
+    }
+  }catch(e){
+    soundEnabled = false;
+    console.log("[SOUND] ❌ blocked:", e.name, e.message);
+    alert("Sound kena unblock dulu bro. Klik Enable Sound sekali lagi.");
+  }
+}
+
+function beep(){
+  const a = document.getElementById("notifSound");
+  if(!a) return;
+
+  if(!soundEnabled){
+    soundQueued++;
+    return;
+  }
+
+  try{ a.currentTime = 0; }catch(e){}
+  a.play().catch(err=>{
+    console.log("[SOUND] ❌ play failed:", err?.name, err?.message);
+  });
+}
+function beep(){
+  if(!soundEnabled) return;
+  const a = document.getElementById("notifSound");
+  if(!a) return;
+  try{ a.currentTime = 0; }catch(e){}
+  a.play().catch(()=>{});
+}
+
+/* ======================= ACTIVITY TIME ======================= */
+function getLoginTimeFromUser(data){
+  return Number(data?.lastLoginTime || data?.lastLoginAt || 0);
+}
+function makeActivityTime(lastChatTime, userData){
+  const loginTime = getLoginTimeFromUser(userData);
+  return Math.max(Number(lastChatTime||0), loginTime);
+}
+
+/* ======================= COUNTERS ======================= */
+function updateUserCounts(){
+  const totalUsersElem  = document.getElementById("totalUsers");
+  const onlineUsersElem = document.getElementById("onlineUsers");
+  if (!totalUsersElem || !onlineUsersElem) return;
+
+  db.ref("users").on("value", snap=>{
+    const users = snap.val() || {};
+    totalUsersElem.textContent = Object.keys(users).length;
+    onlineUsersElem.textContent = Object.values(users).filter(u=>u && u.online).length;
+  });
+}
+
+/* ======================= RENDER CHAT ======================= */
+function formatDateLabel(dateInput){
+  const today = new Date();
+  const date  = new Date(dateInput);
+  const reset = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diff  = reset(today) - reset(date);
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+  if (diff === 0){
+    return { day:"Today", full: date.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}) };
+  } else if (diff === 86400000){
+    return { day:"Yesterday", full: date.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}) };
+  } else {
+    return {
+      day: cap(date.toLocaleDateString("en-GB",{weekday:"long"})),
+      full: date.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})
+    };
+  }
+}
+
+function renderChatMessages(messages){
+  const chatBox = document.getElementById("chatBox");
+  if (!chatBox) return;
+  chatBox.innerHTML = "";
+
+  let lastDate = null;
+
+  messages.forEach(msg=>{
+    const msgDate = new Date(msg.time);
+    const dateLabels = formatDateLabel(msgDate);
+    const dateStr = dateLabels.day + ", " + dateLabels.full;
+
+    if (lastDate !== dateStr){
+      lastDate = dateStr;
+      const dateLabelDiv = document.createElement("div");
+      dateLabelDiv.className = "date-label";
+      dateLabelDiv.innerHTML = `
+        <div class="date-label-inner">
+          <span class="day-label">${dateLabels.day}</span>
+          <span class="full-date-label">${dateLabels.full}</span>
+        </div>`;
+      chatBox.appendChild(dateLabelDiv);
+    }
+
+    const div = document.createElement("div");
+    div.className = "message " + (msg.from === "admin" ? "mine" : "theirs");
+
+    const timeStr = msgDate.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+    const isUser = msg.from !== "admin";
+    const rawName = isUser
+    ? (msg.name || msg.email || "User")
+    : (msg.name || "Admin");
+    const senderName = formatUserName(rawName);
+    const avatarURL = msg.photoURL || (isUser ? "https://i.pravatar.cc/40" : "https://i.imgur.com/UhV9EWa.png");
+
+    let html = `
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <img src="${avatarURL}" alt="Avatar"
+             style="width:24px;height:24px;object-fit:cover;border-radius:50%;border:1px solid white;margin-right:6px;background-color:currentcolor;">
+        <div style="font-weight:bold;">
+          ${senderName}
+          <small style="font-size:.75rem;color:#0b6906;">${timeStr}</small>
+        </div>
+      </div>`;
+
+    if (msg.text)  html += `<div>${msg.text}</div>`;
+    if (msg.image) html += `<img src="${msg.image}" alt="Image" style="max-width:100%;border-radius:8px;margin-top:4px;">`;
+
+    div.innerHTML = html;
+    chatBox.appendChild(div);
+  });
+
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+/* ======================= UNREAD SEED (FOR OLD UNREAD) ======================= */
+// ✅ untuk unread lama yang belum pernah set users/unreadForAdmin
+function seedUnreadFlagOnce(sid){
+  // kalau dah true, skip
+  db.ref(`users/${sid}/unreadForAdmin`).once("value").then(s=>{
+    if (s.val() === true) return;
+
+    return db.ref(`chats/${sid}`)
+      .orderByChild("time")
+      .limitToLast(50)
+      .once("value")
+      .then(cs=>{
+        const chats = cs.val() || {};
+        const list = Object.values(chats).filter(Boolean);
+        const hasUnread = list.some(m => m && m.from === "user" && m.readByAdmin !== true);
+        if (hasUnread){
+          return db.ref(`users/${sid}`).update({ unreadForAdmin:true }).catch(()=>{});
+        }
+      });
+  }).catch(()=>{});
+}
+
+/* ======================= META LISTENER (REALTIME + AUTO FLAG UNREAD) ======================= */
+function ensureChatMetaListener(sanitized){
+  if (chatMeta[sanitized]?.listening) return;
+
+  chatMeta[sanitized] = chatMeta[sanitized] || {};
+  chatMeta[sanitized].listening = true;
+  chatMeta[sanitized].booted = false;
+
+  const lastRef = db.ref(`chats/${sanitized}`).limitToLast(1);
+
+  lastRef.on("child_added", snap=>{
+    const m = snap.val() || {};
+    const t = Number(m.time) || Date.now();
+    chatMeta[sanitized].lastChatTime = t;
+
+    // ✅ detect message lama vs baru
+    const wasBooted = !!chatMeta[sanitized].booted;
+    if(!wasBooted) chatMeta[sanitized].booted = true;
+
+    // identity
+    if (m.name || m.email || m.photoURL){
+      chatMeta[sanitized].identity = { name:m.name, email:m.email, photoURL:m.photoURL };
+    }
+
+    // ✅ bila user msg unread → set users/unreadForAdmin TRUE (supaya icon merah muncul)
+    if (m.from === "user" && m.readByAdmin !== true){
+      db.ref(`users/${sanitized}`).update({
+        unreadForAdmin: true,
+        lastChatTime: t
+      }).catch(()=>{});
+
+      // ✅ bunyi hanya untuk msg baru (bukan masa boot attach)
+      if (initialUserListLoaded && wasBooted && sanitized !== activeUserIdSanitized){
+        beep();
+      }
+    }
+
+    // bump activity + sort list
+    const idx = allUsersData.findIndex(([id])=> id === sanitized);
+    if (idx !== -1){
+      const userData = allUsersData[idx][1] || {};
+      allUsersData[idx][2] = makeActivityTime(t, userData);
+      allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
+      scheduleRender();
+    } else {
+      // kalau user belum ada dalam list (rare), add dummy
+      allUsersData.push([sanitized, {}, t]);
+      allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
+      scheduleRender();
+    }
+  });
+
+  // ✅ kalau ada update (contoh readByAdmin berubah), refresh activity juga
+  lastRef.on("child_changed", snap=>{
+    const m = snap.val() || {};
+    const t = Number(m.time) || chatMeta[sanitized].lastChatTime || Date.now();
+    chatMeta[sanitized].lastChatTime = t;
+
+    if (m.name || m.email || m.photoURL){
+      chatMeta[sanitized].identity = { name:m.name, email:m.email, photoURL:m.photoURL };
+    }
+
+    const idx = allUsersData.findIndex(([id])=> id === sanitized);
+    if (idx !== -1){
+      const userData = allUsersData[idx][1] || {};
+      allUsersData[idx][2] = makeActivityTime(t, userData);
+      allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
+      scheduleRender();
+    }
+  });
+}
+
+/* ======================= FAST RENDER USER LIST ======================= */
+function renderUserListFast(userList, filter="all", searchTerm=""){
+  const userListBox = document.getElementById("userListBox");
+  if (!userListBox) return;
+
+  userListBox.innerHTML = "";
+  const q = String(searchTerm||"").toLowerCase();
+
+  userList.forEach(([sanitized, userData])=>{
+    const hasUnread = (userData?.unreadForAdmin === true);
+
+    if (filter === "unread" && !hasUnread) return;
+
+    const meta = chatMeta[sanitized] || {};
+    const mergedIdentity = {
+      name:     userData?.name     ?? meta.identity?.name,
+      email:    userData?.email    ?? meta.identity?.email,
+      photoURL: userData?.photoURL ?? meta.identity?.photoURL
+    };
+
+    const { label, displayName, email, photoURL } = getLabelParts(sanitized, mergedIdentity);
+    if (q && !label.toLowerCase().includes(q)) return;
+
+    const loginTs   = getLoginTimeFromUser(userData);
+    const loginText = formatDateTimeMY(loginTs);
+
+    const userDiv = document.createElement("div");
+    userDiv.className = "user-item";
+    if (sanitized === activeUserIdSanitized) userDiv.classList.add("active");
+    userDiv.setAttribute("data-sanitized", sanitized);
+
+    const userLabel = document.createElement("span");
+    userLabel.style.display = "block";
+    userLabel.style.width = "100%";
+
+    userLabel.innerHTML = `
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;">
+        <span class="label-text">${label}</span>
+
+        ${hasUnread ? `
+          <svg class="unread-icon" width="14" height="14" viewBox="0 0 24 24" fill="red" style="margin-left:4px;">
+            <path d="M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2zm0 4a1 1 0 0 0-1 1v6a1 1 0 1 0 2 0V7a1 1 0 0 0-1-1zm0 10a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3z"/>
+          </svg>` : ""}
+
+        <svg class="online-indicator" width="10" height="10" viewBox="0 0 24 24" fill="#00ff00"
+          style="margin-left:auto;display:${userData?.online ? "inline-block":"none"};">
+          <circle cx="12" cy="12" r="10"/>
+        </svg>
+      </div>
+
+      <div style="margin-top:4px;font-size:12px;color:rgba(255,255,255,.65);">
+        Date time ${loginText}
+      </div>
+    `;
+
+    userLabel.style.fontWeight = hasUnread ? "bold" : "normal";
+    userDiv.appendChild(userLabel);
+
+    userDiv.onclick = ()=>{
+      justOpenedChat = true;
+      activeUserIdSanitized = sanitized;
+      selectedUserId = sanitized;
+
+      const selectedUserName =
+      userData?.name ||
+      displayName ||
+      "User";
+
+      const selectedUserPhoto =
+      userData?.photoURL ||
+      photoURL ||
+      "https://i.pravatar.cc/40";
+
+      const nameEl = document.getElementById("chatUserName");
+      if (nameEl) nameEl.textContent = selectedUserName;
+
+      const avatarImg = document.getElementById("chatUserAvatar");
+      if (avatarImg){
+      avatarImg.src = selectedUserPhoto;
+      avatarImg.style.display = "block";
+      }
+
+      document.querySelectorAll(".user-item").forEach(el=> el.classList.remove("active"));
+      userDiv.classList.add("active");
+
+      const searchMsg = document.getElementById("searchMessage");
+      if (searchMsg) searchMsg.value = "";
+
+      updateUserPresenceById(sanitized);
+      listenToChat();
+      scheduleRender();
+    };
+
+    userListBox.appendChild(userDiv);
+  });
+}
+
+/* ======================= LOAD USER LIST ======================= */
+function loadUserList(){
+  const userListBox = document.getElementById("userListBox");
+  if (userListBox) userListBox.innerHTML = '<p style="text-align:center;color:gray;">Memuat...</p>';
+
+  db.ref("users").once("value", snap=>{
+    const users = snap.val() || {};
+    const entries = Object.entries(users);
+
+    allUsersData = entries.map(([sanitized, data])=>{
+      const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
+      const activity = makeActivityTime(lastChat, data);
+      return [sanitized, data, activity];
+    });
+
+    allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
+
+    // ✅ attach listeners + seed unread lama
+    allUsersData.forEach(([sid])=>{
+      ensureChatMetaListener(sid);
+      seedUnreadFlagOnce(sid);
+    });
+
+    initialUserListLoaded = true;
+
+    if (userListBox) userListBox.innerHTML = "";
+    scheduleRender();
+  });
+}
+
+/* ======================= STREAM CHAT (ACTIVE USER) ======================= */
+function listenToChat(){
+  if (!activeUserIdSanitized) return;
+
+  const chatRef = db.ref("chats/" + activeUserIdSanitized);
+  const chatBox = document.getElementById("chatBox");
+
+  if (chatBox) chatBox.innerHTML = '<p style="text-align:center;color:white;">Loading...</p>';
+
+  chatRef.off();
+  chatRef.on("value", snap=>{
+    const chats = snap.val();
+    if (!chats){
+      if (chatBox) chatBox.innerHTML = '<p style="text-align:center;color:white;">Start Message.</p>';
+      allMessages = [];
+      return;
+    }
+
+    const chatEntries = Object.entries(chats).sort((a,b)=>(a[1].time||0)-(b[1].time||0));
+    const messagesToMarkRead = [];
+
+    allMessages = chatEntries.map(([key, msg])=>{
+      const isUnread = msg.from === "user" && !msg.readByAdmin;
+      if (isUnread) messagesToMarkRead.push(key);
+      return msg;
+    });
+
+    renderChatMessages(allMessages);
+
+    if (justOpenedChat){
+      justOpenedChat = false;
+
+      // mark read messages
+      if (messagesToMarkRead.length){
+        const updates = {};
+        messagesToMarkRead.forEach(k=> updates[`${k}/readByAdmin`] = true);
+        db.ref(`chats/${activeUserIdSanitized}`).update(updates).catch(()=>{});
+      }
+
+      // ✅ clear unread flag (NO REFRESH)
+      db.ref(`users/${activeUserIdSanitized}`).update({
+        unreadForAdmin: false
+      }).catch(()=>{});
+
+      // ✅ update cache terus (supaya icon merah hilang terus)
+      const idx = allUsersData.findIndex(([sid])=> sid === activeUserIdSanitized);
+      if(idx !== -1){
+        allUsersData[idx][1] = { ...(allUsersData[idx][1]||{}), unreadForAdmin:false };
+      }
+      scheduleRender();
+    }
+  });
+}
+
+/* ======================= SEND MESSAGE (ADMIN) ======================= */
+let msgInput, sendBtn;
+
+function updateSendButtonState(){
+  const msg = msgInput?.value.trim();
+  const isUserSelected = !!selectedUserId;
+  if (sendBtn) sendBtn.disabled = !(isUserSelected && msg);
+}
+
+function sendMessage(){
+  const msg = msgInput?.value.trim();
+  if (!selectedUserId || !msg) return alert("Pilih user dan tulis pesan dulu!");
+
+const now = Date.now();
+const admin = getAdminIdentity();
+const newMsg = {
+  from: "admin",
+  name: admin.name,
+  email: admin.email,
+  photoURL: admin.photoURL,
+  text: msg,
+  time: now,
+  readByAdmin: true,
+  seenByUser: false,
+  deliveredAt: now,
+  readAt: null
+};
+
+  db.ref(`chats/${selectedUserId}`).push(newMsg, err=>{
+    if (err) return alert("Gagal mengirim pesan");
+
+msgInput.value = "";
+updateSendButtonState();
+
+db.ref(ADMIN_PRESENCE_PATH + "/typing").set(false).catch(()=>{});
+touchAdminPresence({ typing: false });
+
+db.ref(`notifications/${selectedUserId}`).set({
+  from:"admin", text: msg, time: now, unread:true
+});
+
+    // update lastChatTime
+    db.ref(`users/${selectedUserId}`).update({
+      lastChatTime: now
+    }).catch(()=>{});
+  });
+}
+
+/* ======================= PRESENCE (ONLINE / TYPING) ======================= */
+function updateUserPresenceById(id){
+  const prev = lastPresenceId;
+  if (prev && prev !== id){
+    db.ref("users/" + prev).off();
+    db.ref("users/" + prev + "/typing").off();
+  }
+  lastPresenceId = id;
+
+  const userRef   = db.ref("users/" + id);
+  const typingRef = db.ref("users/" + id + "/typing");
+  const statusElem = document.getElementById("chatUserStatus");
+  if (!statusElem) return;
+
+  userRef.on("value", snap=>{
+    const data = snap.val() || {};
+    if (data.typing) return;
+
+    if (data.online){
+      statusElem.innerHTML = `<span class="status-main">Online</span>`;
+    } else {
+      const t = data.lastLoginTime;
+      if (!t){ 
+        statusElem.innerHTML = ``; 
+        return; 
+      }
+
+      const d = new Date(t), now = new Date();
+      const isToday = d.toDateString() === now.toDateString();
+      const h = d.getHours(), m = String(d.getMinutes()).padStart(2,"0");
+      const ampm = h >= 12 ? "PM" : "AM";
+      const hh = h % 12 || 12;
+
+      statusElem.innerHTML = `<span class="status-sub">Last seen ${isToday ? "today" : d.toLocaleDateString()} at ${hh}:${m} ${ampm}</span>`;
+    }
+  });
+
+  typingRef.on("value", snap=>{
+    const isTyping = !!snap.val();
+
+    if (isTyping){
+      statusElem.innerHTML = `<span class="status-typing">Typing...</span>`;
+      return;
+    }
+
+    userRef.once("value", s => {
+      const data = s.val() || {};
+
+      if (data.online){
+        statusElem.innerHTML = `<span class="status-main">Online</span>`;
+      } else {
+        const t = data.lastLoginTime;
+        if (!t){ 
+          statusElem.innerHTML = ``; 
+          return; 
+        }
+
+        const d = new Date(t), now = new Date();
+        const isToday = d.toDateString() === now.toDateString();
+        const h = d.getHours(), m = String(d.getMinutes()).padStart(2,"0");
+        const ampm = h >= 12 ? "PM" : "AM";
+        const hh = h % 12 || 12;
+
+        statusElem.innerHTML = `<span class="status-sub">Last seen ${isToday ? "today" : d.toLocaleDateString()} at ${hh}:${m} ${ampm}</span>`;
+      }
+    });
+  });
+}
+/* ======================= SEARCH MSG ======================= */
+function filterMessages(query){
+  if (!query){ renderChatMessages(allMessages); return; }
+  const q = String(query).toLowerCase();
+  const filtered = allMessages.filter(m => String(m.text || "").toLowerCase().includes(q));
+  renderChatMessages(filtered);
+}
+
+/* ======================= BOOTSTRAP ======================= */
+window.onload = ()=>{
+  selectedUserId = null;
+  activeUserIdSanitized = "";
+
+  // ✅ sound enable button (WAJIB click sekali sebab browser block autoplay)
+  document.getElementById("enableSoundBtn")?.addEventListener("click", enableSound);
+
+  loadUserList();
+  updateUserCounts();
+
+  msgInput = document.getElementById("msg");
+  sendBtn  = document.getElementById("sendBtn");
+  bindAdminPresence();
+  bindAdminTyping();
+  if (msgInput){
+    msgInput.addEventListener("input", updateSendButtonState);
+    msgInput.addEventListener("keydown", e=>{
+      if (e.key === "Enter" && !(e.shiftKey || e.ctrlKey)){
+        e.preventDefault();
+        const text = msgInput.value.trim();
+        if (!selectedUserId || !text) return;
+        sendMessage();
+      }
+    });
+  }
+  if (sendBtn){
+    sendBtn.addEventListener("click", sendMessage);
+    updateSendButtonState();
+  }
+
+  const btnAll    = document.getElementById("filterAll");
+  const btnUnread = document.getElementById("filterUnread");
+
+  btnAll?.addEventListener("click", ()=>{
+    currentFilterMode = "all";
+    btnAll.classList.add("active-filter");
+    btnUnread?.classList.remove("active-filter");
+    scheduleRender();
+  });
+
+  btnUnread?.addEventListener("click", ()=>{
+    currentFilterMode = "unread";
+    btnUnread.classList.add("active-filter");
+    btnAll?.classList.remove("active-filter");
+    scheduleRender();
+  });
+
+  document.getElementById("searchUser")?.addEventListener("input", ()=> scheduleRender());
+  document.getElementById("searchMessage")?.addEventListener("input", e=> filterMessages(e.target.value));
+
+  // ✅ users realtime refresh list + (bunyi disini kalau berubah)
+  db.ref("users").on("child_added", snap=>{
+    const sanitized = snap.key;
+    const data = snap.val() || {};
+
+    const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
+    const activity = makeActivityTime(lastChat, data);
+
+    const idx = allUsersData.findIndex(([sid])=> sid === sanitized);
+    if (idx !== -1){
+      allUsersData[idx][1] = data;
+      allUsersData[idx][2] = activity;
+    } else {
+      allUsersData.push([sanitized, data, activity]);
+    }
+
+    allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
+    ensureChatMetaListener(sanitized);
+    seedUnreadFlagOnce(sanitized);
+    scheduleRender();
+  });
+
+  db.ref("users").on("child_changed", snap=>{
+    const sanitized = snap.key;
+    const data = snap.val() || {};
+
+    // ✅ bunyi bila server set unreadForAdmin true
+    if (initialUserListLoaded && data.unreadForAdmin === true && sanitized !== activeUserIdSanitized){
+      beep();
+    }
+
+    const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
+    const activity = makeActivityTime(lastChat, data);
+
+    const idx = allUsersData.findIndex(([sid])=> sid === sanitized);
+    if (idx !== -1){
+      allUsersData[idx][1] = data;
+      allUsersData[idx][2] = activity;
+    } else {
+      allUsersData.push([sanitized, data, activity]);
+    }
+
+    allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
+    ensureChatMetaListener(sanitized);
+    scheduleRender();
+  });
+};
+  const THEME_KEY = "siteTheme";
+
+  function applyTheme(theme) {
+    const finalTheme = theme === "dark" ? "dark" : "light";
+    document.body.classList.toggle("dark-theme", finalTheme === "dark");
+  }
+
+  // apply masa mula load
+  applyTheme(localStorage.getItem(THEME_KEY) || "light");
+
+  // dengar dari parent
+  window.addEventListener("message", (event) => {
+    if (event.data?.type === "theme-change") {
+      applyTheme(event.data.theme);
+    }
+  });
+</script>
+</body>
+</html>
