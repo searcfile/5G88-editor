@@ -1009,7 +1009,11 @@ function updateDateTime() {
   document.getElementById('dateTime').textContent =
     `${region}: ${timeString}`;
 }
+updateDateTime();
+setInterval(updateDateTime, 1000);
 
+document.addEventListener("DOMContentLoaded", updateDateTime);
+window.addEventListener("load", updateDateTime);
   function cleanUrl() {
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl);
