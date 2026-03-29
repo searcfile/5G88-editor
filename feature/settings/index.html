@@ -459,6 +459,50 @@ body.light-theme{
   display: none;
   z-index: 2;
 }
+#mainContainer { position: relative; }
+.container {
+  position: relative;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  width: 100%;
+}
+.container.shrink {
+  margin-left: 255px;
+  width: calc(100% - 255px);
+}
+@media (max-width: 815px){
+  .container,
+  .container.shrink{
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .header,
+  .header.shrink{
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .tab-bar,
+  .tab-bar.shrink{
+    margin-left: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    max-height: 56px !important;
+    min-height:56px !important;
+    margin-top: 64px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    position: relative !important;
+    z-index: 1000 !important;
+  }
+
+  .tab{
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+  }
+}
   </style>
 </head>
 <body>
@@ -550,7 +594,25 @@ body.light-theme{
    <div id="tabBar" class="tab-bar"></div>
 
   <div class="container" id="mainContainer">
-  <iframe id="pageFrame"></iframe>
+      <div id="emptyState" class="empty-state hidden" role="status" aria-live="polite">
+    <h3 class="empty-title">Click menu open sidebar!</h3>
+    <svg class="empty-icon" width="64" height="64" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+            fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M3 13h5l2 3h4l2-3h5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    <p class="empty-desc">No data</p>
+  </div>
+    <div id="iframeLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0, 0, 0, 0.55); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 1000;">
+      <img src="https://api.5g88.homes/media/p1_5G_logo_gif.gif" alt="Loading..." style="width: 150px; height: auto;" />
+      <div style="margin-top: 1px; color: white; font-size: 14px; font-family: sans-serif;">Loading...</div>
+    </div>
+<iframe
+  id="pageFrame"
+  allow="clipboard-write"
+  sandbox="allow-scripts allow-same-origin"
+  style="width: 100%; border: none;">
+</iframe>
 </iframe>
 </div>
 
