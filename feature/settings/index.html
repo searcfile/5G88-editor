@@ -1099,7 +1099,7 @@ html, body {
     || firebase.initializeApp(loginFirebaseConfig, "loginApp");
 
   const loginAuth = loginApp.auth();
-  function syncAdminIdentityForLivechat() {
+function syncAdminIdentityForLivechat() {
   const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
   if (!savedLoginUser) return;
 
@@ -1108,7 +1108,7 @@ html, body {
   const adminPhoto =
     savedLoginUser.photoURL ||
     localStorage.getItem("userphoto") ||
-    "";
+    "https://i.imgur.com/qiZFOs9.png";
 
   localStorage.setItem("username", adminName);
   localStorage.setItem("useremail", adminEmail);
@@ -1148,12 +1148,13 @@ loginAuth.onAuthStateChanged((user) => {
   const email = user.email || "";
   const username = email.replace("@5g88.local", "") || "Admin";
 
-  localStorage.setItem("loginUser", JSON.stringify({
-    uid: user.uid,
-    email,
-    username,
-    lastLogin: Date.now()
-  }));
+localStorage.setItem("loginUser", JSON.stringify({
+  uid: user.uid,
+  email,
+  username,
+  photoURL: user.photoURL || localStorage.getItem("userphoto") || "",
+  lastLogin: Date.now()
+}));
 
   syncAdminIdentityForLivechat();
 
