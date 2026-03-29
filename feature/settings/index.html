@@ -433,16 +433,43 @@ try {
 }
 
 const loginAuth = loginApp.auth();
-loginAuth.onAuthStateChanged((user) => {
-  const justLoggedOut = sessionStorage.getItem("justLoggedOut");
+let settingsAuthChecked = false;
 
-  if (!user && !justLoggedOut) {
-    redirectToLoginPage();
-  }
+loginAuth.onAuthStateChanged((user) => {
+  settingsAuthChecked = true;
+
+  const justLoggedOut = sessionStorage.getItem("justLoggedOut");
 
   if (user) {
     sessionStorage.removeItem("justLoggedOut");
+
+    const email = (user.email || "").toLowerCase();
+    const username = email ? email.split("@")[0] : "admin";
+
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      uid: user.uid,
+      email: user.email || "",
+      username,
+      name: username
+    }));
+
+    setHeaderUser();
+    return;
   }
+
+  if (!user && justLoggedOut === "1") {
+    return;
+  }
+
+  setTimeout(() => {
+    const currentUser = loginAuth.currentUser;
+    const logoutFlag = sessionStorage.getItem("justLoggedOut");
+
+    if (!currentUser && logoutFlag !== "1") {
+      localStorage.removeItem("gmailLogin");
+      redirectToLoginPage();
+    }
+  }, 400);
 });
   // ✅ Interaksi user diperlukan agar audio bisa diputar
   let userHasInteracted = false;
@@ -877,12 +904,11 @@ async function doLogout() {
   try {
     sessionStorage.setItem("justLoggedOut", "1");
 
-    await loginAuth.signOut();
-
     localStorage.removeItem("gmailLogin");
     localStorage.removeItem("openTabs");
     localStorage.removeItem("activeTabUrl");
 
+    await loginAuth.signOut();
   } catch (err) {
     console.warn("Logout Firebase gagal:", err);
   }
@@ -891,7 +917,7 @@ async function doLogout() {
 
   setTimeout(() => {
     redirectToLoginPage();
-  }, 200);
+  }, 250);
 }
 
 if (userMenuBtn) {
