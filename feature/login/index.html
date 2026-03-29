@@ -793,10 +793,9 @@ try{
         name: username
       }));
 
-      showSuccess("Login berjaya. Sedang redirect...");
-      setTimeout(() => {
-        goToSettings();
-      }, 700);
+    showSuccess("Login berjaya. Sedang redirect...");
+authRedirectHandled = true;
+goToSettings();
 
     }catch(err){
       showError(err?.message && !err.code ? err.message : mapFirebaseError(err.code));
@@ -828,12 +827,15 @@ try{
     goToSettings();
   });
 
+let authRedirectHandled = false;
+
 onAuthStateChanged(auth, async (user) => {
+  if (authRedirectHandled) return;
+
   const justLoggedOut = sessionStorage.getItem("justLoggedOut");
 
-  if (justLoggedOut === "1") {
-    sessionStorage.removeItem("justLoggedOut");
-
+  // kalau baru logout, paksa stay di login
+  if (justLoggedOut === "1" || isLogout) {
     if (user) {
       try {
         await signOut(auth);
@@ -841,17 +843,24 @@ onAuthStateChanged(auth, async (user) => {
         console.warn("Force signOut di login gagal:", err);
       }
     }
+    sessionStorage.removeItem("justLoggedOut");
     return;
   }
 
+  // kalau sudah login, terus masuk settings
   if (user) {
-    setTimeout(() => {
-      goToSettings();
-    }, 80);
-  }
-});
-onAuthStateChanged(auth, (user) => {
-  if (user && !isLogout) {
+    authRedirectHandled = true;
+
+    const email = (user.email || "").toLowerCase();
+    const username = email ? email.split("@")[0] : "admin";
+
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      uid: user.uid,
+      email: user.email || "",
+      username,
+      name: username
+    }));
+
     goToSettings();
   }
 });
