@@ -731,6 +731,124 @@ html, body {
     display: flex;
   }
 }
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 16px;
+}
+
+.modal-overlay.show{
+  display: flex;
+}
+
+.modal-box{
+  width: 100%;
+  max-width: 420px;
+  background: var(--backgrounddrop);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+  padding: 20px;
+  position: relative;
+}
+
+.modal-title{
+  color: var(--text-main);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.modal-close-btn{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--backgroundbtn);
+  color: var(--colorbtn);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-close-btn:hover{
+  border-color: var(--gold-hover);
+  color: var(--gold-hover);
+}
+
+.modal-form{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-input{
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--backgroundbtn);
+  color: var(--text-soft);
+  padding: 0 12px;
+  outline: none;
+  font-size: 14px;
+}
+
+.modal-input:focus{
+  border-color: var(--gold);
+}
+
+.modal-input::placeholder{
+  color: var(--blur);
+}
+
+.modal-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.modal-btn{
+  min-width: 92px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--backgroundbtn);
+  color: var(--colorbtn);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.modal-btn:hover{
+  border-color: var(--gold-hover);
+  color: var(--gold-hover);
+}
+
+.modal-btn-primary{
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+}
+
+.modal-btn-primary:hover{
+  background: var(--gold-hover);
+  border-color: var(--gold-hover);
+  color: #fff;
+}
+
+.modal-btn-primary:active{
+  background: var(--gold-active);
+  border-color: var(--gold-active);
+}
   </style>
 </head>
 <body>
@@ -816,18 +934,18 @@ html, body {
         <span id="userNameText" class="user-name-text"></span>
       </button>
 
-<div id="dropdownContent" class="dropdown-content">
-  <div class="dropdown-user-top">
-    <div id="userEmail"></div>
-  </div>
-
-  <hr class="dropdown-divider">
-
   <button id="dropdownProfileBtn" class="dropdown-btn dropdown-profile-btn" type="button">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
     </svg>
     <span id="dropdownUserName" class="dropdown-profile-name"></span>
+  </button>
+
+  <button id="changePasswordBtn" class="dropdown-btn" type="button">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M17 8h-1V6a4 4 0 10-8 0v2H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V10a2 2 0 00-2-2zm-6 8.73V19h2v-2.27a2 2 0 10-2 0zM10 8V6a2 2 0 114 0v2h-4z"/>
+    </svg>
+    <span>Change Password</span>
   </button>
 
   <button id="logoutBtn" class="dropdown-btn" type="button">
@@ -840,7 +958,26 @@ html, body {
     </div>
   </div>
 </div>
+  
+<div id="changePasswordModal" class="modal-overlay">
+  <div class="modal-box">
+    <button id="closeChangePasswordModal" class="modal-close-btn" type="button">×</button>
 
+    <div class="modal-title">Change Password</div>
+
+    <div class="modal-form">
+      <input id="oldPasswordInput" class="modal-input" type="password" placeholder="Old Password" />
+      <input id="newPasswordInput" class="modal-input" type="password" placeholder="New Password" />
+      <input id="confirmPasswordInput" class="modal-input" type="password" placeholder="Confirm Password" />
+    </div>
+
+    <div class="modal-actions">
+      <button id="cancelChangePasswordBtn" class="modal-btn modal-btn-cancel" type="button">Cancel</button>
+      <button id="submitChangePasswordBtn" class="modal-btn modal-btn-primary" type="button">Change</button>
+    </div>
+  </div>
+</div>
+  
 <div id="mainContainer" class="container">
   <div id="tabBar" class="tab-bar"></div>
 
@@ -939,6 +1076,97 @@ if (savedLoginUser) {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", logoutAccount);
   }
+const changePasswordBtn = document.getElementById("changePasswordBtn");
+const changePasswordModal = document.getElementById("changePasswordModal");
+const closeChangePasswordModal = document.getElementById("closeChangePasswordModal");
+const cancelChangePasswordBtn = document.getElementById("cancelChangePasswordBtn");
+const submitChangePasswordBtn = document.getElementById("submitChangePasswordBtn");
+
+const oldPasswordInput = document.getElementById("oldPasswordInput");
+const newPasswordInput = document.getElementById("newPasswordInput");
+const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+
+function openChangePasswordModal() {
+  if (dropdownContent) dropdownContent.classList.remove("show");
+  if (changePasswordModal) changePasswordModal.classList.add("show");
+}
+
+function closeChangePasswordPopup() {
+  if (changePasswordModal) changePasswordModal.classList.remove("show");
+  if (oldPasswordInput) oldPasswordInput.value = "";
+  if (newPasswordInput) newPasswordInput.value = "";
+  if (confirmPasswordInput) confirmPasswordInput.value = "";
+}
+
+if (changePasswordBtn) {
+  changePasswordBtn.addEventListener("click", openChangePasswordModal);
+}
+
+if (closeChangePasswordModal) {
+  closeChangePasswordModal.addEventListener("click", closeChangePasswordPopup);
+}
+
+if (cancelChangePasswordBtn) {
+  cancelChangePasswordBtn.addEventListener("click", closeChangePasswordPopup);
+}
+
+if (changePasswordModal) {
+  changePasswordModal.addEventListener("click", (e) => {
+    if (e.target === changePasswordModal) {
+      closeChangePasswordPopup();
+    }
+  });
+}
+if (submitChangePasswordBtn) {
+  submitChangePasswordBtn.addEventListener("click", async () => {
+    const oldPassword = oldPasswordInput?.value?.trim() || "";
+    const newPassword = newPasswordInput?.value?.trim() || "";
+    const confirmPassword = confirmPasswordInput?.value?.trim() || "";
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      alert("Please fill in all password fields.");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      alert("New password must be at least 6 characters.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      alert("New password and confirm password do not match.");
+      return;
+    }
+
+    const user = loginAuth.currentUser;
+    if (!user || !user.email) {
+      alert("User not found. Please login again.");
+      return;
+    }
+
+    try {
+      const credential = firebase.auth.EmailAuthProvider.credential(user.email, oldPassword);
+
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassword);
+
+      alert("Password changed successfully.");
+      closeChangePasswordPopup();
+    } catch (err) {
+      console.error("Change password error:", err);
+
+      if (err.code === "auth/wrong-password") {
+        alert("Old password is incorrect.");
+      } else if (err.code === "auth/too-many-requests") {
+        alert("Too many attempts. Please try again later.");
+      } else if (err.code === "auth/requires-recent-login") {
+        alert("Please login again and try changing password.");
+      } else {
+        alert(err.message || "Failed to change password.");
+      }
+    }
+  });
+}
 const userNameBtn = document.getElementById("userName");
 const dropdownContent = document.getElementById("dropdownContent");
 
