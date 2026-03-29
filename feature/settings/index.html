@@ -482,13 +482,79 @@ body.light-theme{
   display: none;
   z-index: 2;
 }
+.sidebar-inner{
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #001529;
+  padding: 0;
+}
+
+.sidebar-top{
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: #001529;
+  padding: 10px 10px 12px;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-search-wrap{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  background: #001529;
+}
+.sidebar-search-input{
+  width: 100%;
+  max-width: 210px;
+  height: 32px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--backgroundbtn);
+  color: var(--text-soft);
+  text-align: left;
+  outline: none;
+  padding: 0 11px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.sidebar-search-input::placeholder{
+  color: var(--blur);
+  text-align: left;
+}
+
+.sidebar-search-input:hover{
+  border-color: var(--gold-hover);
+}
+
+.sidebar-search-input:focus{
+  border-color: var(--gold);
+}
 .date-time {color: white;font-size: 14px;white-space: nowrap;transition: color 0.3s;}
   </style>
 </head>
 <body>
-  <div class="sidebar-overlay" id="overlay"></div>
-
-  <div class="sidebar" id="sidebar">
+<div class="sidebar-overlay" id="overlay"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-inner">
+    <div class="sidebar-top">
+      <div class="sidebar-search-wrap">
+        <input
+          type="text"
+          id="sidebarSearchInput"
+          class="sidebar-search-input"
+          placeholder="Search menu..."
+          autocomplete="off"
+        />
+      </div>
+    </div>
    
    
   <a href="#" onclick="addTab('ADMIN LIVECHAT', 'https://searcfile.github.io/5g88-php/adminsitelivechat/')">
@@ -581,7 +647,6 @@ body.light-theme{
     sandbox="allow-scripts allow-same-origin allow-modals"
     style="width: 100%; border: none;">
   </iframe>
-</div>
 </div>
 
 <audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
@@ -805,7 +870,22 @@ function openSidebar() {
   function getTabs() {
     return JSON.parse(localStorage.getItem("openTabs")) || [];
   }
+const sidebarSearchInput = document.getElementById("sidebarSearchInput");
 
+function initSidebarSearch() {
+  if (!sidebarSearchInput || !sidebar) return;
+
+  const sidebarLinks = sidebar.querySelectorAll("a");
+
+  sidebarSearchInput.addEventListener("input", function () {
+    const keyword = this.value.trim().toLowerCase();
+
+    sidebarLinks.forEach(link => {
+      const text = link.textContent.trim().toLowerCase();
+      link.style.display = text.includes(keyword) ? "" : "none";
+    });
+  });
+}
 function addTab(label, url) {
   const existingTabs = getTabs();
   const exists = existingTabs.some(tab => tab.label === label);
@@ -994,6 +1074,8 @@ function loadPage(url) {
 
 window.onload = () => {
   renderTabs();
+  initSidebarSearch();
+
   const tabs = getTabs();
   const activeUrl = localStorage.getItem("activeTabUrl");
   const match = tabs.find(tab => tab.url === activeUrl);
