@@ -289,9 +289,29 @@ body.light-theme .tip-search-input::placeholder{
 }
 
 .percent-checkbox{
+  appearance: none;
+  -webkit-appearance: none;
   width: 25px;
   height: 30px;
-  margin: 0;
-  accent-color: var(--blue);
+  border-radius: 6px;
+  border: 1px solid var(--border-input);
+  background: var(--page-input);
   cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+.percent-checkbox:checked{
+  background: var(--blue);
+}
+.percent-checkbox:checked::after{
+  content: "✔";
+  position: absolute;
+  color: white;
+  font-size: 16px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.percent-checkbox:hover{
+  border-color: var(--blue-hover);
 }
