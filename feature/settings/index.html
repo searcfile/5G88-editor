@@ -173,6 +173,7 @@ body.light-theme{
   display: flex;
   align-items: center;
   margin-left: auto;
+  gap: 12px;
 }
 .user-dropdown {
   position: relative;
@@ -503,6 +504,10 @@ body.light-theme{
     flex: 0 0 auto !important;
   }
 }
+  @media (max-width: 1132px){
+  .date-time{ display:none !important; }
+}
+.date-time {color: white;font-size: 14px;white-space: nowrap;transition: color 0.3s;}
   </style>
 </head>
 <body>
@@ -565,6 +570,7 @@ body.light-theme{
   </div>
 
 <div class="header-right">
+  <div id="dateTime" class="date-time"></div>
   <div class="user-dropdown">
     <button id="userName" class="user-button" type="button" aria-label="Account" title="Account">
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -650,6 +656,21 @@ body.light-theme{
     || firebase.initializeApp(loginFirebaseConfig, "loginApp");
 
   const loginAuth = loginApp.auth();
+function updateDateTime() {
+  const region = "Kuala_Lumpur";
+  const now = new Date();
+
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = monthNames[now.getMonth()];
+
+  const timeString = `${hours}:${minutes} ${month} ${day}`;
+
+  document.getElementById('dateTime').textContent =
+    `${region}: ${timeString}`;
+}
 
 // ✅ Guard: kalau belum login, terus balik ke login page
   const LOGIN_URL = "/5G88-editor/feature/login/";
