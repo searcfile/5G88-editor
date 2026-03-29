@@ -1099,6 +1099,25 @@ html, body {
     || firebase.initializeApp(loginFirebaseConfig, "loginApp");
 
   const loginAuth = loginApp.auth();
+  function syncAdminIdentityForLivechat() {
+  const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
+  if (!savedLoginUser) return;
+
+  const adminName = savedLoginUser.username || "Admin";
+  const adminEmail = savedLoginUser.email || "";
+  const adminPhoto =
+    savedLoginUser.photoURL ||
+    localStorage.getItem("userphoto") ||
+    "";
+
+  localStorage.setItem("username", adminName);
+  localStorage.setItem("useremail", adminEmail);
+  localStorage.setItem("userphoto", adminPhoto);
+
+  localStorage.setItem("adminName", adminName);
+  localStorage.setItem("adminEmail", adminEmail);
+  localStorage.setItem("adminPhoto", adminPhoto);
+}
 function getCurrentUserStorageKey(baseKey) {
   const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
   const userKey =
@@ -1116,6 +1135,12 @@ loginAuth.onAuthStateChanged((user) => {
 
   if (!user) {
     localStorage.removeItem("loginUser");
+    localStorage.removeItem("username");
+    localStorage.removeItem("useremail");
+    localStorage.removeItem("userphoto");
+    localStorage.removeItem("adminName");
+    localStorage.removeItem("adminEmail");
+    localStorage.removeItem("adminPhoto");
     window.location.replace(LOGIN_URL);
     return;
   }
@@ -1130,16 +1155,20 @@ loginAuth.onAuthStateChanged((user) => {
     lastLogin: Date.now()
   }));
 
-const userNameTextEl = document.getElementById("userNameText");
-const userEmailEl = document.getElementById("userEmail");
-const dropdownUserNameEl = document.getElementById("dropdownUserName");
+  syncAdminIdentityForLivechat();
 
-if (userNameTextEl) userNameTextEl.textContent = username;
-if (userEmailEl) userEmailEl.textContent = email;
-if (dropdownUserNameEl) dropdownUserNameEl.textContent = username;
+  const userNameTextEl = document.getElementById("userNameText");
+  const userEmailEl = document.getElementById("userEmail");
+  const dropdownUserNameEl = document.getElementById("dropdownUserName");
+
+  if (userNameTextEl) userNameTextEl.textContent = username;
+  if (userEmailEl) userEmailEl.textContent = email;
+  if (dropdownUserNameEl) dropdownUserNameEl.textContent = username;
 });
 const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
 if (savedLoginUser) {
+  syncAdminIdentityForLivechat();
+
   const userNameTextEl = document.getElementById("userNameText");
   const userEmailEl = document.getElementById("userEmail");
   const dropdownUserNameEl = document.getElementById("dropdownUserName");
@@ -1311,8 +1340,13 @@ async function logoutAccount() {
     console.error("Logout error:", err);
   } finally {
     localStorage.removeItem("loginUser");
-    // ❌ jangan buang openTabs
-    // ❌ jangan buang activeTabUrl
+    localStorage.removeItem("username");
+    localStorage.removeItem("useremail");
+    localStorage.removeItem("userphoto");
+    localStorage.removeItem("adminName");
+    localStorage.removeItem("adminEmail");
+    localStorage.removeItem("adminPhoto");
+
     window.location.replace(LOGIN_URL);
   }
 }
