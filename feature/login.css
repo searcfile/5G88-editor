@@ -1,0 +1,424 @@
+      :root{
+    --page-bg: #000;
+    --page-text: rgba(255,255,255,0.85);
+    --page-input: #141414;
+    --border-input:#424242;
+    --page-bg2:#1f1f1f;
+    --name:#1668dc;
+    --blur:rgba(255,255,255,0.25);
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+
+   --hdr-h:0px;                 /* header fixed */
+   --flt-h:120px;                /* tinggi filters (diupdate JS) */
+   --line-h:64px;                /* tinggi bar adjust line */
+   --safe-b: env(safe-area-inset-bottom, 0px);
+   --offset: 0px;
+  }
+
+  body.light-theme{
+    --page-bg: #ffffff;
+    --page-text: rgba(0,0,0,0.88);
+    --page-input: #ffffff;
+    --border-input:#d9d9d9;
+    --page-bg2:#ffffff;
+    --name:#1668dc;
+    --blur:#00000063;
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+  }
+
+/* ===== Base & Layout ===== */
+*, *::before, *::after { box-sizing: border-box; }   /* anti overflow */
+html, body { height: 100%; }
+body{
+  background: var(--page-bg);
+  color:var(--page-text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+  margin:0; display:flex; align-items:center; justify-content:center; min-height:100svh;
+}
+
+/* ===== Login Card ===== */
+.login-box{
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  width: 100%;
+  max-width: 400px;
+  margin:0 auto; 
+  padding:60px 30px;
+  border:1px solid var(--border-input); 
+  border-radius:20px;
+  background-color:var(--page-bg2);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  transition: transform .3s ease, box-shadow .3s ease;
+  overflow:hidden;                        /* jaga-jaga biar tak keluar */
+}
+.login-box img { max-width: 100%; width:360px; height:auto;display:block; }
+.sep{display:none !important;}
+/* ===== Tabs (Username / Google) ===== */
+.tabs{ display:flex; gap:12px; width:100%; margin:6px 0 16px; }
+.tab{
+  flex:1;
+  text-align:
+  center; 
+  padding: 5px 5px;
+  border:1px solid var(--border-input); 
+  border-radius:30px;
+  cursor:pointer; user-select:none; transition:.2s;
+  background:var(--page-input); color:var(--page-text); font-weight:500; font-size:14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tab:hover{color:var(--blue-hover);border:1px solid var(--blue-hover);}.tab.active{color:var(--blue);border:1px solid var(--blue);}
+.form{ width:100%; display:none; }
+.form.active{ display:block; }
+
+/* ===== Inputs & Buttons ===== */
+.group{ margin-bottom:24px; width:100%; max-width:100%; }
+.label{ display:block; font-size:13px; color:var(--page-text); }
+.label {display:none !important;}
+.input{
+  width:100%;
+  height:32px;
+  padding:4px 11px;
+  border-radius:6px;
+  border:1px solid var(--border-input);
+  background:var(--page-input);
+  color:var(--page-text); outline:none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.input::placeholder{ color:var(--blur); opacity:.9; }
+.input:focus{
+  border-color:var(--blue);
+}
+input:hover:not(:focus){
+  border-color: var(--blue-hover);
+}
+/* ===== Password eye (tengah tepat) ===== */
+.password-wrap { /* boleh kosong atau biarkan seperti ini */ }
+.password-wrap .field {              /* NEW */
+  position: relative;
+}
+.password-wrap .field .input{ padding-right:46px; }          /* ruang untuk icon */
+.toggle-eye{
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1em;
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--page-text);
+  cursor: pointer;
+  line-height: 0;
+  padding: 0;
+  z-index: 3;
+  font-size:14px;
+}
+.toggle-eye:focus{ outline:none; }
+.toggle-eye svg{ width:1em; height:1em; display:block; }
+
+/* ===== Buttons ===== */
+.btn,
+.login-btn{
+  width:100%;
+  height:32px;
+  padding:0px 15px;
+  border-radius:6px;
+  border:1px solid transparent;
+  background:var(--blue); color:white;
+  font-size:14px; font-weight:400; cursor:pointer; transition:.2s;
+}
+.btn:hover, .login-btn:hover{
+  background:var(--blue-hover);
+}
+.btn:active, .login-btn:active{
+  background:var(--blue-active);
+}
+.btn-req{width:100%;padding:12px 14px;margin-top:10px;border-radius:6px;border:1px solid transparent;background:var(--blue); color:white;font-size:14px; cursor:pointer;font-weight:bold; transition:.2s;}
+.btn-req:hover{background:var(--blue-hover);}.btn-req:active{background:var(--blue-active);}
+.btn-cfp:hover{ color:var(--blue-hover); border-color:var(--blue-hover);}.btn-cfp:active{ color:var(--blue-active); border-color:var(--blue-active);}
+.btn-cfp{width:100%;padding:12px 14px;margin-top:10px;border-radius:6px;border:1px solid var(--border-input);background:transparent; color:var(--page-text);font-size:14px;cursor:pointer; transition:.2s;}
+
+/* ===== Welcome Popup123 ===== */
+/*@keyframes zoomIn{ from{transform:scale(.7);opacity:0} to{transform:scale(1);opacity:1} } */
+/*.zoom-in{ animation: zoomIn .3s ease forwards; }*/
+/*.popup-overlay{
+/* position: fixed; inset: 0; background: rgba(0,0,0,0.7);*/
+  /*display: flex; align-items: center; justify-content: center; z-index: 9999;*/
+/*}*/
+#popupBox{display:none !important;}
+/*#popupBox{ position: relative; }*/
+/*#popupBox .popup-btn{*/
+/*  position: absolute;*/
+/*  left: 11px; */         /* samakan dengan padding kiri */
+ /* right: 11px;  */       /* samakan dengan padding kanan */
+/*  bottom: 15px;  */       /* seberapa dekat ke tepi bawah */
+/*  width: auto;   */      /* biar ikut left/right */
+/*  margin-top: 0;*/
+/*  border-radius:6px;height:40px;*/
+/*  background:gold;color:black;transition:.2s;font-weight:bold;*/
+/*}*/
+/*.popup-btn:hover{ background:#ffe34d !important;}.popup-btn:active{ background:#dbb900 !important;}*/
+.popup-box{display:none !important;}
+.popup-box{
+  border: 1px solid gold; border-radius: 12px; padding: 40px 20px 30px; text-align: center; position: relative;
+  width:min(520px,92vw); min-height: 500px; box-shadow: 0 0 10px rgba(255,215,0,.7);
+  background-color: rgba(0,0,0,0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+}
+.popup-box img {max-width: 280px; margin-bottom: 18px;}
+.popup-title { font-size: 26px; font-weight: 700; margin: 0 0 10px; color: var(--page-text);text-shadow: 0 0 #000000; }
+.popup-btn{
+  border:1px solid var(--border-input); background:transparent; color: va(--page-text); padding: 10px 20px; border-radius: 8px; cursor:pointer; transition:.2s;
+}
+
+.btn-contact{background:var(--blue); color: white; padding: 10px 20px; border-radius: 6px;text-decoration:none; cursor:pointer; transition:.2s;}
+.btn-contact:hover{background:var(--blue-hover);}.btn-contact:active{background:var(--blue-active);}
+.btn-cancel{border:1px solid var(--border-input); background:transparent; color: var(--page-text); padding: 10px 20px; border-radius: 6px; cursor:pointer; transition:.2s;}
+.btn-cancel:hover{border:1px solid var(--blue-hover);color: var(--blue-hover);}.btn-cancel:active{border:1px solid va(--blue-active);color:var(--blue-active);}
+/* === Posisi tombol X di pojok kanan atas === */
+.popup-box .popup-close,
+.blocked-box .popup-close{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border: 0; background: transparent;
+  color: var(--page-text); cursor: pointer;
+  line-height: 1; font-size: 14px;   /* ikon ✕ jelas */
+  border-radius: 6px;
+  z-index: 1;
+  transition:.2s;
+}
+/* beri ruang kanan agar X tidak menimpa judul/konten */
+.popup-box,
+.blocked-box{
+  padding-right: 24px !important;   /* samakan dengan kiri */
+  padding-left: 24px !important;    /* (opsional) biar simetris */
+  padding-top: 56px !important;     /* ruang aman untuk tombol X */
+}
+.popup-close:hover{color:var(--blue-hover); }.popup-close:active{color:var(--blue-active); }
+/* ===== Blocked Popup ===== */
+.blocked-overlay::before{
+  content:""; position: fixed; inset: 0; backdrop-filter: brightness(.55); -webkit-backdrop-filter: brightness(.55); pointer-events: none;
+}
+.blocked-overlay{ position:fixed; inset:0; background:transparent; display:none; align-items:center; justify-content:center; z-index:10000; }
+.blocked-overlay.show{ display:flex; }
+.blocked-box{
+  position:relative; width:min(650px, 92vw);
+  border:1px solid var(--border-input); border-radius:6px; background:var(--page-bg2);
+  backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
+  padding:26px 22px 20px; animation: zoomIn .25s ease forwards; color:var(--page-text); text-align:left;
+}
+.blocked-title{ margin:6px 6px 2px; font-size:26px; font-weight:700; color:#d50000; }
+.blocked-sub{ margin:0 6px 12px; color:var(--page-text); opacity:.9; }
+.blocked-info{
+  margin:8px 6px 18px; padding:12px; border:1px dashed #d50000; border-radius:6px;
+  background: var(--page-bg2); font-size:14px; line-height:1.5; color:var(--page-text);
+}
+.blocked-actions{ display:flex; gap:10px; justify-content:flex-end; align-items:center; margin-top:6px; }
+
+
+/* ===== Small screens ===== */
+@media (max-width: 480px){
+  .login-box{ padding:60px 30px; border-radius:20px; }
+  .tab{ font-size:13px; padding:10px 12px; }
+
+  .input{
+    height: 32px;
+    padding: 4px 11px;
+  }
+
+  .input.has-left-icon{
+    padding-left: 32px !important;
+  }
+
+  .input.has-right-icon{
+    padding-right: 32px !important;
+  }
+
+  .btn{
+    padding: 0 15px;
+  }
+}
+/* === Forgot Password UI === */
+.forgot-row{ width:100%; display:flex; justify-content:space-between; margin:6px 0 10px;align-items:center;transition: all 0.2s;margin-top:-20px; }
+.link-btn{ background:transparent; border:0; color:var(--page-text); font-size:12px; cursor:pointer; text-decoration:underline; padding:0; }
+.link-btn:hover{ color:var(--blue-hover); }.link-btn:active{ color:var(--blue-active); }
+
+.err-msg{ color:#d50000; font-size:12px; margin-top:6px; }
+.input.invalid{ border-color:#d50000 !important;}
+
+.forgot-box{ width:min(650px,92vw); text-align:left; align-items:stretch; }
+.actions-row{ display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
+#forgotOverlay .popup-close{ top:12px; right:12px; }
+  /* Livechat floating widget */
+ .lc-wrap{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  z-index:9999;
+  font-family:inherit;
+}
+.lc-btn{
+  position: relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:40px;
+  min-height:40px;
+  padding:2px 4px;
+  border-radius:999px;
+  border:1px solid transparent;
+  background:var(--blue);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+}
+.lc-btn:hover{
+  background:var(--blue-hover);
+}
+.lc-btn:active{
+  background:var(--blue-active);
+}
+.lc-icon{
+  width:18px;
+  height:18px;
+  display:block;
+  pointer-events:none;
+  flex:0 0 auto;
+}
+.lc-dot{
+  position:absolute;
+  top:8px;
+  right:8px;
+  width:8px;
+  height:8px;
+  background:#d50000;
+  border-radius:50%;
+  display:none;
+}
+
+.lc-panel{
+  position:absolute;
+  right:0;
+  bottom:56px;
+  width:min(420px, 92vw);
+  height:620px;
+
+  background:var(--page-bg2);
+  border:1px solid var(--border-input);
+  border-radius:6px;
+  overflow:hidden;
+
+  /* penting */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity .2s ease, transform .2s ease;
+
+  will-change: transform, opacity;
+}
+
+.lc-panel.active{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.lc-iframe{
+  width:100%;
+  height:100%;
+  border:0;
+}
+.field{
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.field-icon{
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1em;
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: rgba(255,255,255,0.45);
+  z-index: 2;
+}
+
+.field-icon svg{
+  width: 1em;
+  height: 1em;
+  display: block;
+}
+
+.input.has-left-icon{
+  padding-left: 32px !important;
+}
+
+.input.has-right-icon{
+  padding-right: 32px !important;
+}
+/* kalau mahu icon ikut focus */
+.field:focus-within .field-icon{
+  color: rgba(255,255,255,0.75);
+}
+.tab-image{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-label-img{
+  display: block;
+  max-width: 100%;
+  width: 32px !important;
+  height: 32px !important;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+@media (max-width: 480px){
+  .tab-label-img{
+    height: 18px;
+  }
+}
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
+.input:-webkit-autofill:active{
+
+  /* warna text */
+  -webkit-text-fill-color: var(--page-text) !important;
+  caret-color: var(--page-text) !important;
+
+  /* 2 layer: outer + inner */
+  -webkit-box-shadow:
+    0 0 0 1000px #141414 inset,                /* outer */
+    0 0 0 14px rgba(70,90,126,0.4) inset !important; /* inner */
+
+  box-shadow:
+    0 0 0 1000px #141414 inset,
+    0 0 0 14px rgba(70,90,126,0.4) inset !important;
+
+  border: 1px solid var(--border-input) !important;
+
+  transition: background-color 99999s ease-in-out 0s !important;
+}
