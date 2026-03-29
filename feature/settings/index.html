@@ -783,7 +783,7 @@ function loadPage(url) {
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl);
   }
-    const LOGIN_PAGE_URL = "/login"; 
+const LOGIN_PAGE_URL = "/login?logout=1";
 function redirectToLoginPage() {
   const targetWindow = (window.top && window.top !== window) ? window.top : window;
   targetWindow.location.replace(LOGIN_PAGE_URL);
