@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Notice</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 100%;
+      max-width: 600px;
+      background-color: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      border-right: 2px solid #333;
+    }
+
+ 
+
+    .sidebar-header h3 {
+      margin: 0;
+      font-size: 20px;
+      color: white;
+      text-align: center;
+    }
+
+    .btn-create {
+      background-color: #1668dc;
+      color: white;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 10px 15px 0 auto;
+    }
+    .btn-create:hover { 
+     background: #3c89e8;
+     color: white;
+    }
+    .btn-create:active { 
+     background: #1554ad;
+     color: white;
+    }
+
+    .notice-scroll {
+      padding: 15px;
+      overflow-y: auto;
+      flex-grow: 1;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .notice-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .notice-row {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .notice-row textarea {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px;
+      font-size: 12px;
+      border: none;
+      border-radius: 6px;
+      background-color: #111;
+      color: skyblue;
+      resize: vertical;
+      min-height: 40px;
+      word-break: break-word;
+      border: 1px solid #1668dc;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .notice-row textarea::-webkit-scrollbar {
+      display: none;
+    }
+    .notice-row button {
+      padding: 6px 10px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .btn-send { background-color: #1668dc;}
+    .btn-send:hover {
+     background: #3c89e8;
+     color: white;
+    }
+    .btn-send:active {
+     background: #1554ad;
+     color: white;
+    }
+    .btn-edit { background-color: #999; }
+    .btn-edit:hover {
+     background: #bbbbbb;
+     color: white;
+    }
+    .btn-edit:active {
+     background: #757575;
+     color: white !important;
+    }
+    .btn-save { background-color: #17cb17d1; }
+    .btn-save:hover {
+     background: #20ed20d1 !important;
+     color: white !important;
+    }
+    .btn-save:active {
+     background: #0e970ed1 !important;
+     color: white !important;
+    }
+    .btn-delete { background-color: red; }
+    .btn-delete:hover {
+     background: #e75858;
+     color: white;
+    }
+    .btn-delete:active {
+     background: #b31616;
+     color: white !important;
+    }
+    .main {
+      flex-grow: 1;
+      padding: 0;
+    }
+    .main-body {
+    padding: 0 20px;
+    }
+
+    .main textarea {
+      width: 99%;
+      height: 700px;
+      background-color: #222;
+      color: #1668dc;
+      font-size: 14px;
+      border-radius: 6px;
+      padding: 10px;
+      border: 1px solid #3c89e8;
+      resize: none;
+    }
+   .main textarea:focus {
+      outline: none;
+      border: 1px solid #1668dc;
+   }
+   .main button:active {
+    color: rgba(255, 255, 255, 0.6);
+   }
+  .btn-fly, .btn-clear {
+  padding: 10px 20px;
+  font-size: 14px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 15px;
+}
+
+.btn-fly {
+  background-color: #1668dc;
+}
+
+.btn-fly:hover {
+ background: #3c89e8;
+ color: white;
+}
+.btn-fly:active {
+ background: #1554ad;
+ color: white !important;
+}
+
+.btn-clear {
+  background: #dd1717;
+}
+.btn-clear:hover {
+  background: #e75858;
+  color: white;
+}
+.btn-clear:active {
+  background: #b31616;
+  color: white !important;
+}
+    .toggle-switch {
+  width: 46px;
+  height: 22px;
+  background-color: #444;
+  border-radius: 30px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  transition: left 0.3s ease;
+}
+
+.toggle-switch.active {
+  background-color: #1668dc;
+}
+
+.toggle-switch.active::after {
+  left: 26px;
+}
+  .judul-input {
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    border: 1px solid #1668dc;
+    background-color: #111;
+    color: white;
+    transition: all 0.2s ease;
+  }
+.judul-input:hover {
+    border: 1px solid #3c89e8;
+}
+.judul-input:focus {
+    outline: none;
+    border: 1px solid #1668dc;
+}
+.textarea-message {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px;
+  font-size: 12px;
+  border: 1px solid #1668dc;
+  border-radius: 6px;
+  background-color: #111;
+  color: white !important;
+  resize: none !important;
+  transition: all 0.2s ease;
+}
+
+.textarea-message:hover {
+  border-color: #3c89e8;
+}
+
+.textarea-message:focus {
+  outline: none;
+  border-color: #1668dc;
+}
+.create-time {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #1668dc;
+  background-color: #111;
+  color: gray;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.create-time:hover {
+  border-color: #3c89e8;
+}
+
+.create-time:focus {
+  outline: none;
+  border-color: #1668dc;
+}
+.create-day {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #1668dc;
+  background-color: #111;
+  color: gray;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.create-day:hover {
+  border-color: #3c89e8;
+}
+
+.create-day:focus {
+  outline: none;
+  border-color: #1668dc;
+}
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+    </div>
+    <button class="btn-create" onclick="createNotice()">+ Create</button>
+    <div id="noticeList" class="notice-scroll"></div>
+  </div>
+
+  <div class="main">
+  <div class="main-header">
+  
+  </div>
+
+  <div class="main-body">
+    <textarea id="pesan" placeholder="Type Your Notice HERE..." onkeydown="handleKeyPress(event)"></textarea><br>
+ <div style="display: flex; gap: 10px; margin-top: 15px;">
+  <button class="btn-fly" onclick="kirimPesan()">FLY NOTICE!</button>
+  <button class="btn-clear" onclick="clearPesan()">🗑️ CLEAR TEXT</button>
+</div>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+      const firebaseConfig = {
+    apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
+    authDomain: "notice-83ae5.firebaseapp.com",
+    databaseURL: "https://notice-83ae5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "notice-83ae5",
+    storageBucket: "notice-83ae5.appspot.com",
+    messagingSenderId: "268106877488",
+    appId: "1:268106877488:web:798beadfe45104297e7bf5"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const encodedAllowedEmail = "NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ==";
+  const allowedAdmin = atob(encodedAllowedEmail);
+  const urlParams = new URLSearchParams(window.location.search);
+  const adminEmail = atob(urlParams.get("admin") || "");
+
+  let isCreating = false;
+  let noticeData = [];
+  const noticeList = document.getElementById('noticeList');
+  const pesanTextarea = document.getElementById("pesan");
+
+function renderNotices() {
+  noticeList.innerHTML = '';
+  const sorted = [...noticeData].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  sorted.forEach(({ id, text, title }) => {
+    const row = document.createElement('div');
+    row.className = 'notice-row';
+
+    const judulInput = document.createElement('input');
+    judulInput.type = 'text';
+    judulInput.value = title || '';
+    judulInput.disabled = true;
+    judulInput.placeholder = 'No Title...';
+    judulInput.style.cssText = `
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 5px;
+      border-radius: 6px;
+      border: 1px solid #1668dc;
+      background-color: #111;
+      color: rgb(34, 197, 94);
+      font-weight: bold;
+    `;
+
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.disabled = true;
+    textarea.style.resize = 'none';
+
+    const sendBtn = document.createElement('button');
+    sendBtn.className = 'btn-send';
+    sendBtn.textContent = 'Send';
+    sendBtn.onclick = () => {
+      pesanTextarea.value = text;
+      localStorage.setItem("lastNoticeMessage", text);
+      kirimPesan();
+    };
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn-edit';
+    editBtn.textContent = 'Edit';
+    editBtn.onclick = () => {
+      textarea.disabled = false;
+      judulInput.disabled = false;
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'inline-block';
+    };
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-save';
+    saveBtn.textContent = 'Save';
+    saveBtn.style.display = 'none';
+    saveBtn.onclick = () => {
+      const newText = textarea.value.trim();
+      const newTitle = judulInput.value.trim();
+      if (!newText) return;
+      db.ref("notifikasi/list/" + id).set({
+        text: newText,
+        title: newTitle,
+        timestamp: Date.now()
+      });
+    };
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn-delete';
+    delBtn.textContent = 'Delete';
+    delBtn.onclick = () => {
+      db.ref("notifikasi/list/" + id).remove();
+      localStorage.removeItem(`autoSend_${id}`);
+    };
+
+    const controlDiv = document.createElement('div');
+    controlDiv.style.display = "flex";
+    controlDiv.style.alignItems = "center";
+    controlDiv.style.gap = "10px";
+    controlDiv.style.marginTop = "5px";
+
+    const timeInput = document.createElement('input');
+    timeInput.type = 'datetime-local';
+    timeInput.style.padding = '6px';
+    timeInput.style.borderRadius = '6px';
+    timeInput.style.border = '1px solid #999';
+    timeInput.style.backgroundColor = '#1668dc';
+    timeInput.style.color = 'white';
+    timeInput.style.cursor = 'pointer';
+
+    const countdownText = document.createElement('div');
+    countdownText.style.color = '#3c89e8';
+    countdownText.style.fontSize = '14px';
+    countdownText.style.fontWeight = 'bold';
+    countdownText.textContent = '00:00:00';
+
+    const toggle = document.createElement('div');
+    toggle.className = 'toggle-switch';
+    toggle.title = 'Enable Auto Send';
+    toggle.style.marginLeft = 'auto';
+
+    const daySelect = document.createElement('select');
+    daySelect.style.padding = '6px';
+    daySelect.style.borderRadius = '6px';
+    daySelect.style.border = '1px solid #999';
+    daySelect.style.backgroundColor = '#1668dc';
+    daySelect.style.color = 'white';
+    daySelect.style.cursor = 'pointer';
+
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    for (let i = 1; i <= daysInMonth; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = `${i} day${i > 1 ? 's' : ''}`;
+      daySelect.appendChild(option);
+    }
+
+    const savedAuto = JSON.parse(localStorage.getItem(`autoSend_${id}`)) || {};
+    if (savedAuto.time) timeInput.value = savedAuto.time;
+    if (savedAuto.enabled) toggle.classList.add("active");
+    if (savedAuto.selectedDay) daySelect.value = savedAuto.selectedDay;
+
+    const isToggleOn = () => toggle.classList.contains("active");
+
+    const updateCountdown = () => {
+      const targetTime = new Date(timeInput.value).getTime();
+      startCountdown(targetTime, countdownText, () => isToggleOn());
+    };
+
+    if (savedAuto.time) updateCountdown();
+
+    daySelect.addEventListener("change", () => {
+      const days = parseInt(daySelect.value);
+      const future = new Date();
+      future.setDate(future.getDate() + days);
+      future.setSeconds(0);
+      future.setMilliseconds(0);
+      const formatted = future.toISOString().slice(0, 16);
+      timeInput.value = formatted;
+      updateCountdown();
+
+      localStorage.setItem(`autoSend_${id}`, JSON.stringify({
+        time: formatted,
+        enabled: isToggleOn(),
+        selectedDay: daySelect.value
+      }));
+    });
+
+    timeInput.addEventListener("change", () => {
+      updateCountdown();
+      localStorage.setItem(`autoSend_${id}`, JSON.stringify({
+        time: timeInput.value,
+        enabled: isToggleOn(),
+        selectedDay: daySelect.value
+      }));
+    });
+
+    toggle.addEventListener("click", () => {
+      toggle.classList.toggle("active");
+      updateCountdown();
+      localStorage.setItem(`autoSend_${id}`, JSON.stringify({
+        time: timeInput.value,
+        enabled: isToggleOn(),
+        selectedDay: daySelect.value
+      }));
+    });
+
+    setInterval(() => {
+      const target = new Date(timeInput.value).getTime();
+      const now = Date.now();
+      if (
+        isToggleOn() &&
+        timeInput.value &&
+        !timeInput.disabled &&
+        now >= target
+      ) {
+        pesanTextarea.value = text;
+        localStorage.setItem("lastNoticeMessage", text);
+        kirimPesan();
+
+        toggle.classList.remove("active");
+        timeInput.disabled = true;
+        toggle.style.pointerEvents = "none";
+        sendBtn.textContent = "Complate";
+        sendBtn.disabled = true;
+
+        localStorage.setItem(`autoSend_${id}`, JSON.stringify({
+          time: timeInput.value,
+          enabled: false,
+          selectedDay: daySelect.value
+        }));
+      }
+    }, 1000);
+
+    controlDiv.appendChild(timeInput);
+    controlDiv.appendChild(daySelect);
+    controlDiv.appendChild(toggle);
+    controlDiv.appendChild(countdownText);
+
+    row.appendChild(judulInput);
+    row.appendChild(textarea);
+    row.appendChild(sendBtn);
+    row.appendChild(editBtn);
+    row.appendChild(saveBtn);
+    row.appendChild(delBtn);
+    row.appendChild(controlDiv);
+    noticeList.appendChild(row);
+  });
+}
+
+function startCountdown(targetTime, display, isActiveCallback = () => true) {
+  clearInterval(display._timer);
+
+  function update() {
+    const now = Date.now();
+    const diff = targetTime - now;
+
+    if (!isActiveCallback()) {
+      display.textContent = '⏸️ Paused';
+      display.style.color = 'gray';
+      return;
+    }
+
+    if (diff <= 0) {
+      display.textContent = "00:00:00";
+      display.style.color = "gray";
+      clearInterval(display._timer);
+      return;
+    }
+
+    const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    display.textContent = `${h}:${m}:${s}`;
+    display.style.color = diff < 300000 ? "red" : "#3c89e8";
+  }
+
+  update();
+  display._timer = setInterval(update, 1000);
+}
+
+  function createNotice() {
+  if (isCreating) return;
+  isCreating = true;
+
+  const row = document.createElement('div');
+  row.className = 'notice-row';
+
+  const judulInput = document.createElement('input');
+  judulInput.type = 'text';
+  judulInput.placeholder = 'Title Message...';
+  judulInput.className = 'judul-input';
+
+ const textarea = document.createElement('textarea');
+ textarea.placeholder = 'Type new message...';
+ textarea.className = 'textarea-message';
+
+  const timeInput = document.createElement('input');
+  timeInput.type = 'datetime-local';
+  timeInput.className = 'create-time';
+
+  const countdownText = document.createElement('div');
+  countdownText.style.color = 'gray';
+  countdownText.style.fontSize = '14px';
+  countdownText.style.fontWeight = 'bold';
+  countdownText.textContent = '00:00:00';
+
+  const toggle = document.createElement('div');
+  toggle.className = 'toggle-switch';
+  toggle.title = 'Enable Auto Send';
+  toggle.style.cursor = 'pointer';
+  toggle.addEventListener("click", () => {
+    toggle.classList.toggle("active");
+  });
+
+  const daySelect = document.createElement('select');
+  daySelect.className = 'create-day';
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let i = 1; i <= daysInMonth; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = `${i} day${i > 1 ? 's' : ''}`;
+    daySelect.appendChild(option);
+  }
+
+  // ⏱️ Countdown handler
+  function startCountdownInCreate(targetTime) {
+    clearInterval(countdownText._timer);
+    function update() {
+      const now = Date.now();
+      const diff = targetTime - now;
+      if (diff <= 0) {
+        countdownText.textContent = "00:00:00";
+        countdownText.style.color = "gray";
+        clearInterval(countdownText._timer);
+        return;
+      }
+      const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+      countdownText.textContent = `${h}:${m}:${s}`;
+      countdownText.style.color = diff < 300000 ? "red" : "#3c89e8";
+    }
+    update();
+    countdownText._timer = setInterval(update, 1000);
+  }
+
+  daySelect.addEventListener("change", () => {
+    const days = parseInt(daySelect.value);
+    const future = new Date();
+    future.setDate(future.getDate() + days);
+    future.setSeconds(0);
+    future.setMilliseconds(0);
+    const formatted = future.toISOString().slice(0, 16);
+    timeInput.value = formatted;
+    startCountdownInCreate(future.getTime());
+  });
+
+  timeInput.addEventListener("change", () => {
+    const t = new Date(timeInput.value).getTime();
+    startCountdownInCreate(t);
+  });
+
+  const controlDiv = document.createElement('div');
+  controlDiv.style.display = 'flex';
+  controlDiv.style.alignItems = 'center';
+  controlDiv.style.gap = '10px';
+  controlDiv.style.marginTop = '5px';
+  controlDiv.appendChild(timeInput);
+  controlDiv.appendChild(daySelect);
+  controlDiv.appendChild(toggle);
+  controlDiv.appendChild(countdownText);
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'btn-save';
+  saveBtn.textContent = 'Save';
+  saveBtn.onclick = () => {
+    const newText = textarea.value.trim();
+    const newTitle = judulInput.value.trim();
+    if (!newText) return;
+
+    const newId = db.ref().child("notifikasi/list").push().key;
+
+    db.ref("notifikasi/list/" + newId).set({
+      text: newText,
+      title: newTitle,
+      timestamp: Date.now()
+    }).then(() => {
+      // Hanya simpan autoSend jika waktu valid
+      if (timeInput.value) {
+        localStorage.setItem(`autoSend_${newId}`, JSON.stringify({
+          time: timeInput.value,
+          enabled: toggle.classList.contains("active"),
+          selectedDay: daySelect.value
+        }));
+      }
+
+      clearInterval(countdownText._timer);
+      row.remove();
+      isCreating = false;
+      renderNotices();
+    });
+  };
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-delete';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.onclick = () => {
+    clearInterval(countdownText._timer);
+    row.remove();
+    isCreating = false;
+  };
+
+  row.appendChild(judulInput);
+  row.appendChild(textarea);
+  row.appendChild(saveBtn);
+  row.appendChild(cancelBtn);
+  row.appendChild(controlDiv);
+  noticeList.prepend(row);
+}
+  function kirimPesan() {
+    if (!adminEmail || adminEmail.toLowerCase() !== allowedAdmin.toLowerCase()) return;
+
+    const teks = pesanTextarea.value.trim();
+    if (!teks) return;
+
+    const data = {
+      message: teks,
+      timestamp: Date.now()
+    };
+
+    db.ref("notifikasi/pesanTerbaru").set(data).then(() => {
+    });
+  }
+
+  function handleKeyPress(event) {
+    if (event.key === "Enter" && !event.ctrlKey) {
+      event.preventDefault();
+      kirimPesan();
+    } else if (event.key === "Enter" && event.ctrlKey) {
+      const cursorPos = pesanTextarea.selectionStart;
+      const textBefore = pesanTextarea.value.substring(0, cursorPos);
+      const textAfter = pesanTextarea.value.substring(cursorPos);
+      pesanTextarea.value = textBefore + "\n" + textAfter;
+      pesanTextarea.selectionStart = pesanTextarea.selectionEnd = cursorPos + 1;
+      event.preventDefault();
+    }
+  }
+
+  
+  window.addEventListener("DOMContentLoaded", function () {
+    const saved = localStorage.getItem("lastNoticeMessage");
+    if (saved) {
+      pesanTextarea.value = saved;
+    }
+  });
+
+  pesanTextarea.addEventListener("input", function () {
+    localStorage.setItem("lastNoticeMessage", pesanTextarea.value);
+  });
+
+
+  db.ref("notifikasi/list").on("value", (snapshot) => {
+    const raw = snapshot.val() || {};
+    noticeData = Object.entries(raw).map(([id, val]) => ({ id, ...val }));
+    renderNotices();
+  });
+function clearPesan() {
+  pesanTextarea.value = "";
+  localStorage.removeItem("lastNoticeMessage");
+}
+</script>
+</body>
+</html>
