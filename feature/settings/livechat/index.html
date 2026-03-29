@@ -100,6 +100,7 @@ body {
 
 /* ===== Container Chat Box ===== */
 #containerChatBox {
+  position: relative;
   background: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 0 10px #1668dc;
@@ -555,6 +556,27 @@ body {
   color: #00ff00;
   font-weight: bold;
 }
+.emoji-picker-wrap{
+  position: absolute;
+  right: 16px;
+  bottom: 78px;
+  z-index: 999;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 14px 30px rgba(0,0,0,.35);
+}
+
+emoji-picker{
+  --border-size: 0;
+  --border-radius: 14px;
+  --background: #ffffff;
+  --input-border-color: #1668dc;
+  --input-border-radius: 10px;
+  --category-icon-size: 20px;
+  --emoji-size: 1.45rem;
+  height: 420px;
+  width: 350px;
+}
   </style>
 </head>
 <body>
@@ -618,7 +640,7 @@ body {
       </svg>
     </button>
 
-    <button type="button" class="send-tool-btn" title="Emoji">
+    <button type="button" class="send-tool-btn" id="emojiBtn" title="Emoji">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
         <path d="M9 10h.01M15 10h.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
@@ -633,6 +655,9 @@ body {
     </button>
   </div>
 </div>
+  <div id="emojiPickerWrap" class="emoji-picker-wrap" hidden>
+  <emoji-picker id="emojiPicker"></emoji-picker>
+</div>
   </div>
 </div>
 </main>
@@ -641,7 +666,7 @@ body {
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 <script>
 "use strict";
 
@@ -1468,7 +1493,41 @@ window.onload = ()=>{
 
   msgInput = document.getElementById("msg");
   sendBtn  = document.getElementById("sendBtn");
+const emojiBtn = document.getElementById("emojiBtn");
+const emojiPickerWrap = document.getElementById("emojiPickerWrap");
+const emojiPicker = document.getElementById("emojiPicker");
 
+if (emojiBtn && emojiPickerWrap && emojiPicker && msgInput) {
+  emojiBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    emojiPickerWrap.hidden = !emojiPickerWrap.hidden;
+  });
+
+  emojiPicker.addEventListener("emoji-click", (event) => {
+    const emoji = event.detail?.unicode || "";
+    if (!emoji) return;
+
+    const start = msgInput.selectionStart ?? msgInput.value.length;
+    const end = msgInput.selectionEnd ?? msgInput.value.length;
+    const value = msgInput.value;
+
+    msgInput.value = value.slice(0, start) + emoji + value.slice(end);
+    msgInput.focus();
+
+    const pos = start + emoji.length;
+    msgInput.setSelectionRange(pos, pos);
+
+    emojiPickerWrap.hidden = true;
+    updateSendButtonState();
+    if (typeof autoResizeMsgBox === "function") autoResizeMsgBox();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!emojiPickerWrap.contains(e.target) && e.target !== emojiBtn) {
+      emojiPickerWrap.hidden = true;
+    }
+  });
+}
 if (msgInput) {
   autoResizeMsgBox();
   msgInput.addEventListener("input", autoResizeMsgBox);
