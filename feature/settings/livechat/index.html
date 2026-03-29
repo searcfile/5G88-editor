@@ -1451,7 +1451,11 @@ function filterMessages(query){
   const filtered = allMessages.filter(m => String(m.text || "").toLowerCase().includes(q));
   renderChatMessages(filtered);
 }
-
+function autoResizeMsgBox() {
+  if (!msgInput) return;
+  msgInput.style.height = "24px";
+  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + "px";
+}
 /* ======================= BOOTSTRAP ======================= */
 window.onload = ()=>{
   selectedUserId = null;
@@ -1464,11 +1468,6 @@ window.onload = ()=>{
 
   msgInput = document.getElementById("msg");
   sendBtn  = document.getElementById("sendBtn");
-  function autoResizeMsgBox() {
-  if (!msgInput) return;
-  msgInput.style.height = "24px";
-  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + "px";
-}
 
 if (msgInput) {
   autoResizeMsgBox();
