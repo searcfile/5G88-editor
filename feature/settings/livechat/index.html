@@ -538,6 +538,9 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const ADMIN_PRESENCE_PATH = "adminPresence/main";
+  db.ref(ADMIN_PRESENCE_PATH).on("value", (snap) => {
+  console.log("ADMIN PRESENCE LIVE =", snap.val());
+});
 
 function bootstrapAdminIdentityFromSettings() {
   const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
@@ -666,25 +669,37 @@ function bindAdminTyping(){
   const typingRef = db.ref(ADMIN_PRESENCE_PATH + "/typing");
 
   msgInput.addEventListener("focus", () => {
-    touchAdminPresence();
+    touchAdminPresence({ online: true, typing: false });
   });
 
   msgInput.addEventListener("input", () => {
     const hasText = !!msgInput.value.trim();
 
     typingRef.set(hasText).catch(()=>{});
-    touchAdminPresence({ typing: hasText });
+    touchAdminPresence({
+      online: true,
+      typing: hasText,
+      lastSeen: Date.now()
+    });
 
     clearTimeout(adminTypingTimer);
     adminTypingTimer = setTimeout(() => {
       typingRef.set(false).catch(()=>{});
-      touchAdminPresence({ typing: false });
+      touchAdminPresence({
+        online: true,
+        typing: false,
+        lastSeen: Date.now()
+      });
     }, 1500);
   });
 
   msgInput.addEventListener("blur", () => {
     typingRef.set(false).catch(()=>{});
-    touchAdminPresence({ typing: false });
+    touchAdminPresence({
+      online: true,
+      typing: false,
+      lastSeen: Date.now()
+    });
   });
 }
 
@@ -805,13 +820,6 @@ function beep(){
   a.play().catch(err=>{
     console.log("[SOUND] ❌ play failed:", err?.name, err?.message);
   });
-}
-function beep(){
-  if(!soundEnabled) return;
-  const a = document.getElementById("notifSound");
-  if(!a) return;
-  try{ a.currentTime = 0; }catch(e){}
-  a.play().catch(()=>{});
 }
 
 /* ======================= ACTIVITY TIME ======================= */
@@ -1315,7 +1323,6 @@ window.onload = ()=>{
   selectedUserId = null;
   activeUserIdSanitized = "";
 
-  // ✅ sound enable button (WAJIB click sekali sebab browser block autoplay)
   document.getElementById("enableSoundBtn")?.addEventListener("click", enableSound);
 
   loadUserList();
@@ -1323,10 +1330,17 @@ window.onload = ()=>{
 
   msgInput = document.getElementById("msg");
   sendBtn  = document.getElementById("sendBtn");
+
   bootstrapAdminIdentityFromSettings();
-  touchAdminPresence();
+  touchAdminPresence({ online: true, typing: false });
+
+  setTimeout(() => {
+    touchAdminPresence({ online: true, typing: false });
+  }, 800);
+
   bindAdminPresence();
   bindAdminTyping();
+
   if (msgInput){
     msgInput.addEventListener("input", updateSendButtonState);
     msgInput.addEventListener("keydown", e=>{
@@ -1338,6 +1352,7 @@ window.onload = ()=>{
       }
     });
   }
+
   if (sendBtn){
     sendBtn.addEventListener("click", sendMessage);
     updateSendButtonState();
@@ -1363,7 +1378,6 @@ window.onload = ()=>{
   document.getElementById("searchUser")?.addEventListener("input", ()=> scheduleRender());
   document.getElementById("searchMessage")?.addEventListener("input", e=> filterMessages(e.target.value));
 
-  // ✅ users realtime refresh list + (bunyi disini kalau berubah)
   db.ref("users").on("child_added", snap=>{
     const sanitized = snap.key;
     const data = snap.val() || {};
@@ -1389,7 +1403,6 @@ window.onload = ()=>{
     const sanitized = snap.key;
     const data = snap.val() || {};
 
-    // ✅ bunyi bila server set unreadForAdmin true
     if (initialUserListLoaded && data.unreadForAdmin === true && sanitized !== activeUserIdSanitized){
       beep();
     }
