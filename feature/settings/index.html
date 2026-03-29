@@ -856,6 +856,14 @@ html, body {
     || firebase.initializeApp(loginFirebaseConfig, "loginApp");
 
   const loginAuth = loginApp.auth();
+function getCurrentUserStorageKey(baseKey) {
+  const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
+  const userKey =
+    savedLoginUser?.email ||
+    savedLoginUser?.username ||
+    "guest";
+  return `${baseKey}_${userKey}`;
+}
 // ✅ Guard: kalau belum login, terus balik ke login page
   const LOGIN_URL = "/login/";
   let authChecked = false;
@@ -1036,13 +1044,13 @@ function openSidebar() {
   }
 });
 
-  function saveTabs(tabs) {
-    localStorage.setItem("openTabs", JSON.stringify(tabs));
-  }
+function saveTabs(tabs) {
+  localStorage.setItem(getCurrentUserStorageKey("openTabs"), JSON.stringify(tabs));
+}
 
-  function getTabs() {
-    return JSON.parse(localStorage.getItem("openTabs")) || [];
-  }
+function getTabs() {
+  return JSON.parse(localStorage.getItem(getCurrentUserStorageKey("openTabs")) || "[]");
+}
 const sidebarSearchInput = document.getElementById("sidebarSearchInput");
 
 function initSidebarSearch() {
@@ -1195,7 +1203,7 @@ if (settingsBtn) {
 
 function loadPage(url) {
   pageFrame.src = url;
-  localStorage.setItem("activeTabUrl", url);
+  localStorage.setItem(getCurrentUserStorageKey("activeTabUrl"), url);
   closeSidebar();
 
   document.querySelectorAll(".tab").forEach(tab => {
@@ -1250,7 +1258,7 @@ window.onload = () => {
   initSidebarSearch();
 
   const tabs = getTabs();
-  const activeUrl = localStorage.getItem("activeTabUrl");
+  const activeUrl = localStorage.getItem(getCurrentUserStorageKey("activeTabUrl"));
   const match = tabs.find(tab => tab.url === activeUrl);
 
   if (match) {
