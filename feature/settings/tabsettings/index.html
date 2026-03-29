@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>5G88 • Setting Homepage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  :root{
+    --bg:#020617;
+    --bg2:#000;
+    --panel: rgba(255,255,255,.06);
+    --panel2: rgba(0,0,0,.28);
+    --stroke: rgba(148,163,184,.22);
+    --stroke2: rgba(148,163,184,.35);
+    --text:#ffffff;
+    --muted:#9ca3af;
+
+    --accent:#facc15;         /* gold */
+    --accent2:#fbbf24;
+
+    /* ✅ requested button palette */
+    --btn:#1668dc;
+    --btnH:#3c89e8;
+    --btnA:#1554ad;
+
+    --danger:#fb7185;
+    --success:#22c55e;
+
+    --r:16px;
+    --shadow: 0 18px 45px rgba(0,0,0,.70);
+    --shadow2: 0 0 0 1px rgba(2,6,23,.9), 0 18px 40px rgba(0,0,0,.65);
+
+    --headerH:64px;
+
+
+  --bg-main: #fff;
+  --sidebar: #001529;
+  --text-main: #000;
+  --text-soft: rgba(17,24,39,0.88);
+  --text-dim: rgba(17,24,39,0.72);
+  --colorbtn: rgba(0, 0, 0, 0.88);
+  --backgroundbtn: #ffffff;
+  --backgrounddrop: #ffffff;
+  --border: #303030;
+  --border2: #d9d9d9;
+  --panel-border: #d4dbe6;
+  --blur: rgba(0,0,0,0.25);
+  --border3: #f0f0f0;
+  --tab2: #ffffff;
+  --border-bottom: #ffffff;
+  --close: rgba(0, 0, 0, 0.88);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #d4dbe6;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(17,24,39,0.88);
+  --btn-border: #d4dbe6;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(15,23,42,0.18);
+  --popup-bg: #ffffff;
+
+  --empty-text: rgba(17,24,39,.7);
+  --empty-title: rgba(17,24,39,.88);
+
+  --toggle-track: #cfd8e3;
+  --toggle-knob: #ffffff;
+  --btnfocus: #91caff;
+}
+
+body.dark-theme{
+  --bg-main: #000;
+  --sidebar: #001529;
+  --text-main: #fff;
+  --text-soft: rgba(255,255,255,0.85);
+  --text-dim: rgba(255,255,255,0.65);
+  --colorbtn: rgba(255,255,255,0.85);
+  --backgroundbtn: #141414;
+  --backgrounddrop: #1f1f1f;
+  --border: #303030;
+  --border2: #424242;
+  --panel-border: #424242;
+  --blur: rgba(255,255,255,0.25);
+  --border3: #303030;
+  --tab2: #141414;
+  --border-bottom: #141414;
+  --close: rgba(255,255,255,0.45);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #303030;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(255,255,255,0.85);
+  --btn-border: #424242;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(0,0,0,0.5);
+  --popup-bg: #1f1f1f;
+
+  --empty-text: rgba(255,255,255,.7);
+  --empty-title: rgba(255,255,255,.85);
+
+  --toggle-track: #2c7be5;
+  --toggle-knob: #ffffff;
+  --btnfocus: #15325b;
+}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh;
+    color:var(--text);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:#000000;
+  }
+
+  .container{
+    max-width:1200px;
+    margin:24px auto 40px;
+    padding:0 18px;
+  }
+
+  /* ===== Header (64px) ===== */
+  header{
+    height:var(--headerH);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:18px;
+    padding:10px 14px;
+    border-bottom:1px solid rgba(148,163,184,.18);
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.03)),
+      radial-gradient(circle at 30% 0%, rgba(22,104,220,.25), transparent 55%);
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    backdrop-filter: blur(10px);
+  }
+
+  .title-wrap{display:flex;flex-direction:column;gap:4px;min-width:0}
+  h1{
+    font-size:22px;
+    font-weight:900;
+    color:var(--accent);
+    letter-spacing:.04em;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .subtitle{
+    font-size:12.5px;
+    color:rgba(226,232,240,.75);
+  }
+
+  /* ===== Main Grid: left 1fr, right 2fr ===== */
+  .pageGrid{
+    display:grid;
+    grid-template-columns: 1fr 1fr; /* ✅ 1 grid, 2fr layout */
+    gap:16px;
+    align-items:stretch;
+  } 
+  /* responsive stack */
+  @media (max-width: 980px){
+    .container{ margin:16px auto 28px; }
+    .pageGrid{ grid-template-columns: 1fr; }
+  }
+
+  /* ===== Card/Section base ===== */
+  .cardShell{
+    border-radius:8px;
+    border:1px solid #303030;
+    background:#1f1f1f;
+    box-shadow: var(--shadow2);
+    backdrop-filter: blur(10px);
+    overflow:hidden;height:100%;
+  }
+
+  /* ===== LEFT: Add Tab Panel (upgrade) ===== */
+  .rightPanel{
+    padding:14px;
+  }
+
+  .rpHead{
+    padding:12px 12px 10px;
+    border-radius:14px;
+    border:1px solid rgba(148,163,184,.18);
+    background: linear-gradient(135deg, rgba(0,0,0,.28), rgba(255,255,255,.03));
+    box-shadow: 0 10px 25px rgba(0,0,0,.35);
+    margin-bottom:12px;
+  }
+
+  .rpTitle{
+    font-weight:1000;
+    letter-spacing:.03em;
+    color:#dbeafe;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .rpSub{
+    margin-top:4px;
+    color: rgba(226,232,240,.70);
+    font-size:12px;
+    line-height:1.35;
+  }
+
+  .rpBody{ display:flex; flex-direction:column; gap:10px; padding:0 6px 6px; }
+  .rpLabel{ font-size:12px; color:rgba(226,232,240,.78); }
+
+  .rpInput{
+    width:100%;
+    padding:0px 15px;
+    border-radius:6px;
+    background: #141414;
+    border:1px solid #303030;
+    color:var(--text);
+    outline:none;
+    transition: .15s ease;
+    height:32px;
+  }
+  .rpInput:focus{border-color: #1668dc;}
+  .rpInput:hover{border-color: #3c89e8;}
+
+  .rpRow{ display:flex; gap:10px; }
+  .rpCol{ flex:1; display:flex; flex-direction:column; gap:6px; }
+  @media (max-width: 520px){
+    .rpRow{ flex-direction:column; }
+  }
+
+  /* ===== Buttons (requested colors) ===== */
+  .rpBtns{ display:flex; gap:10px; margin-top:2px; }
+  .rpBtn{
+    flex:1;
+    padding:0px 15px;
+    border-radius:6px;
+    border:1px solid #303030;
+    background: #1668dc;
+    color:#ffffff;
+    letter-spacing:.03em;
+    cursor:pointer;
+    transition: all 0.2s;
+    height:32px;
+  }
+  .rpBtn:hover{ background:#3c89e8; }
+  .rpBtn:active{ background:#1554ad; }
+
+  .rpBtn.ghost{
+    background: rgba(255,255,255,.06);
+    color: rgba(226,232,240,.9);
+  }
+  .rpBtn.ghost:hover{ background: rgba(255,255,255,.09); }
+  .rpBtn.ghost:active{ background: rgba(255,255,255,.12); }
+
+  .rpDivider{ height:1px; background: rgba(148,163,184,.18); margin: 10px 0 6px; }
+  .rpTitleSmall{ font-size:14px; font-weight:700; color:#ffffff; }
+
+  .rpList{ display:flex; flex-direction:column; gap:8px; }
+  .rpItem{
+    display:flex; gap:10px; align-items:center; justify-content:space-between;
+    padding:10px 10px;
+    border-radius:12px;
+    border:1px solid #303030;
+    background:#141414;
+  }
+  .rpMeta{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .rpMeta .t{ color:#fff; font-weight:1000; }
+  .rpMeta .s{ color: rgba(226,232,240,.65); font-size:12px; }
+  .rpMeta .u{
+    color: rgba(226,232,240,.55);
+    font-size:12px;
+    max-width:260px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .rpActions{ display:flex; gap:8px; }
+  .rpMini{
+    padding:8px 10px;
+    border-radius:10px;
+    border:1px solid rgba(148,163,184,.18);
+    background: rgba(255,255,255,.06);
+    color:#fff;
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .rpMini:hover{ background: rgba(255,255,255,.10); }
+  .rpMini:active{ transform: translateY(1px); }
+  .rpMini.danger{ color:#ff6b6b; }
+
+  /* ===== RIGHT: Tab Setting Section ===== */
+  .section{
+    padding:16px 16px 10px;
+  }
+  .section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .section-title{
+    font-size:14px;
+    font-weight:700;
+    color:#ffffff;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    white-space:nowrap;
+  }
+  .section-note{
+    font-size:12px;
+    color:rgba(226,232,240,.65);
+    text-align:right;
+    line-height:1.35;
+    max-width:420px;
+  }
+
+  /* ===== table ===== */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    border-radius:12px;
+    overflow:hidden;
+    table-layout:fixed;
+  }
+  th,td{
+    padding:10px 8px;
+    font-size:13px;
+    border-bottom:1px solid rgba(15,23,42,.9);
+  }
+  th{
+    text-align:left;
+    color:#ffffff;
+    font-weight:900;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    font-size:11px;
+    background:#1668dc;
+  }
+  tbody tr{
+    background: rgba(2,6,23,.35);
+    transition:.15s ease;
+  }
+  tbody tr:nth-child(odd){
+    background: rgba(2,6,23,.48);
+  }
+  tbody tr:hover{
+    background: rgba(22,104,220,.16);
+    box-shadow: inset 0 0 0 1px rgba(60,137,232,.22);
+  }
+
+  .feature-name{ font-weight:700; font-size:13px; }
+  .feature-sub{ font-size:11px; color: rgba(226,232,240,.55); margin-top:2px; }
+
+  /* columns width */
+  .col-name{ width:50%; text-align:left; }
+  .col-switch{ width:25%; text-align:center; }
+  .col-status{ width:25%; text-align:center; }
+  td:nth-child(2), th:nth-child(2){ text-align:center; }
+  td:nth-child(3), th:nth-child(3){ text-align:center; }
+
+  /* scroll wrapper */
+  .table-scroll{
+    max-height: 740px;
+    overflow-y:auto;
+    border-radius:14px;
+    border:1px solid #303030;
+    background: #141414;
+  }
+  .table-scroll::-webkit-scrollbar{ width:6px; }
+  .table-scroll::-webkit-scrollbar-thumb{ background: rgba(148,163,184,.22); border-radius:999px; }
+  .table-scroll::-webkit-scrollbar-track{ background: transparent; }
+
+  /* switch center */
+  .switch-wrap{ display:flex; align-items:center; justify-content:center; gap:8px; }
+
+  .switch{
+    position: relative;
+    display:inline-block;
+    width:46px;
+    height:22px;
+  }
+  .switch input{ opacity:0; width:0; height:0; }
+  .slider{
+    position:absolute; inset:0;
+    cursor:pointer;
+    background:#334155;
+    transition:.25s;
+    border-radius:999px;
+    box-shadow:inset 0 0 0 1px rgba(15,23,42,.9);
+  }
+  .slider:before{
+    position:absolute;
+    content:"";
+    height:18px;width:18px;
+    left:3px; bottom:2px;
+    background:linear-gradient(to bottom, #f9fafb, #e5e7eb);
+    border-radius:50%;
+    transition:.25s;
+    box-shadow:0 1px 3px rgba(15,23,42,.7);
+  }
+  input:checked + .slider{
+    background: linear-gradient(120deg, rgba(22,104,220,.95), rgba(60,137,232,.95));
+    box-shadow:0 0 12px rgba(22,104,220,.55);
+  }
+  input:checked + .slider:before{ transform:translateX(24px); }
+
+  .status-pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    letter-spacing:.04em;
+    gap:5px;
+  }
+  .hide-pill{
+    color:#fff;
+  }
+  .show-pill{
+    color:#fff;
+  }
+  .pill-dot{ width:7px;height:7px;border-radius:50%; }
+  .pill-dot.hide{ background:#fb7185; box-shadow:0 0 8px rgba(248,113,113,.6); }
+  .pill-dot.show{ background:#22c55e; box-shadow:0 0 8px rgba(34,197,94,.6); }
+
+  /* toast */
+  .toast{
+    position:fixed;
+    bottom:16px;
+    left:50%;
+    transform:translateX(-50%);
+    background: rgba(2,6,23,.92);
+    color:#e5e7eb;
+    border-radius:12px;
+    border:1px solid rgba(148,163,184,.25);
+    box-shadow:var(--shadow);
+    padding:10px 12px;
+    font-size:12px;
+    display:none;
+    align-items:center;
+    gap:8px;
+    z-index:40;
+    backdrop-filter: blur(10px);
+  }
+  .toast.show{ display:flex; }
+  .toast span.icon{ font-size:16px; }
+.rpListWrap{ max-height:360px; overflow-y:auto; padding-right:6px; border-radius:14px; border:1px solid rgba(148,163,184,.14); background: rgba(0,0,0,.10); }
+.rpListWrap::-webkit-scrollbar{ width:6px; }
+.rpListWrap::-webkit-scrollbar-track{ background:transparent; }
+.rpListWrap::-webkit-scrollbar-thumb{ background: rgba(148,163,184,.22); border-radius:999px; }
+
+.rpSavedHead{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.rpSearch{ width:52%; min-width:160px; padding:0px 15px; border-radius:6px; background:#141414; border:1px solid #303030; color: var(--text); outline:none;height:32px;transition:.15s ease; }
+.rpSearch:focus{ border-color: #1668dc;}.rpSearch:hover{ border-color: #3c89e8;}
+  /* ===== Feature Search (Tab Setting) ===== */
+.secSearch{
+  width: 260px;
+  max-width: 45%;
+  padding:0px 15px;
+  border-radius:6px;
+  background: #141414;
+  border:1px solid #303030;
+  color: var(--text);
+  outline:none;
+  transition:.15s ease;
+  height:32px;
+}
+.secSearch:focus{border-color: #1668dc;}
+.secSearch:hover{border-color: #3c89e8;}
+/* responsive: bila kecil, turun bawah */
+@media (max-width: 520px){
+  .section-header{ flex-wrap:wrap; }
+  .secSearch{ width:100%; max-width:100%; }
+}
+</style>
+</head>
+<body>
+  <header>
+    <div class="title-wrap">
+      <h1>⚙️ 5G88 • Admin Control</h1>
+      <div class="subtitle">Setting On/hide tabbar Function Homepage <b>All site</b>.</div>
+    </div>
+  </header>
+<div class="container">
+
+  <!-- ✅ GRID: LEFT Add Tab Link, RIGHT Tab Setting -->
+  <div class="pageGrid">
+
+    <!-- ===== LEFT: ADD TAB LINK (moved here) ===== -->
+    <div class="cardShell rightPanel" id="tabLinkPanel">
+      <div class="rpHead">
+        <div class="rpTitle">➕ Add Tab Link</div>
+        <div class="rpSub">Tambah tab baru untuk Sidebar / Header (GameLog, Bank Receipt, List Type).</div>
+      </div>
+
+      <div class="rpBody">
+        <label class="rpLabel">Tab Name</label>
+        <input class="rpInput" id="newTabName" placeholder="Contoh: VAULT" />
+
+        <label class="rpLabel">Tab URL</label>
+        <input class="rpInput" id="newTabUrl" placeholder="https://searcfile.github.io/5g88-php/vault/" />
+
+        <div class="rpRow">
+          <div class="rpCol">
+            <label class="rpLabel">Place</label>
+            <select class="rpInput" id="newTabPlace">
+              <option value="sidebar">Sidebar</option>
+              <option value="header">Header</option>
+            </select>
+          </div>
+
+          <div class="rpCol">
+            <label class="rpLabel">Header Group</label>
+            <select class="rpInput" id="newTabGroup" disabled>
+              <option value="gamelog">GameLog</option>
+              <option value="bank">Bank Receipt</option>
+              <option value="list">List Type</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rpBtns">
+          <button class="rpBtn ghost" id="btnClearTab" type="button">Clear</button>
+          <button class="rpBtn" id="btnAddTab" type="button">Save / Add</button>
+        </div>
+
+        <div class="rpDivider"></div>
+
+<div class="rpSavedHead">
+  <div class="rpTitleSmall">Saved Custom Tabs</div>
+  <input class="rpSearch" id="tabSearch" placeholder="Search tab name or URL..." />
+</div>
+
+<div class="rpListWrap" id="customTabWrap">
+  <div class="rpList" id="customTabList"></div>
+</div>
+      </div>
+    </div>
+
+    <!-- ===== RIGHT: TAB SETTING (moved here) ===== -->
+    <div class="cardShell section">
+      <div class="section-header">
+        <div class="section-title">
+          <span>Tab Setting</span>
+        </div>
+          <input class="secSearch" id="featureSearch" placeholder="Search feature..." />
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-name">Nama Feature</th>
+              <th class="col-switch">On/Hide</th>
+              <th class="col-status">Status</th>
+            </tr>
+          </thead>
+          <tbody id="uiGlobalBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /pageGrid -->
+
+</div>
+
+<!-- Toast mini -->
+<div id="toast" class="toast">
+  <span class="icon">✅</span>
+  <span id="toastMsg">Saved</span>
+</div>
+
+<!-- ====== FIREBASE ====== -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+<script>
+// ==== Firebase blurphp ====
+const blurphpConfig = {
+  apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+  authDomain: "blurphp.firebaseapp.com",
+  databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "blurphp",
+  storageBucket: "blurphp.appspot.com",
+  messagingSenderId: "593904200464",
+  appId: "1:593904200464:web:cea7bc1360532c20d99395"
+};
+
+const blurphpApp = firebase.initializeApp(blurphpConfig, "blurphp-settings");
+const db        = blurphpApp.database();
+const auth      = blurphpApp.auth();
+
+// login anon supaya rules `auth != null` aman
+auth.signInAnonymously().catch(err => {
+  console.error("Anon auth blurphp gagal:", err);
+});
+
+// Toast helper
+function showToast(msg){
+  const toast = document.getElementById("toast");
+  const msgEl = document.getElementById("toastMsg");
+  if (!toast || !msgEl) return;
+  msgEl.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(()=> toast.classList.remove("show"), 1300);
+}
+function applyFeatureFilter(){
+  const input = document.getElementById("featureSearch");
+  const q = (input?.value || "").trim().toUpperCase();
+
+  const tbody = document.getElementById("uiGlobalBody");
+  if(!tbody) return;
+
+  Array.from(tbody.querySelectorAll("tr")).forEach(tr=>{
+    const nameEl = tr.querySelector(".feature-name");
+    const label = (nameEl?.textContent || "").trim().toUpperCase();
+    tr.style.display = (!q || label.includes(q)) ? "" : "none";
+  });
+}
+function buildGlobalUiTable(list, tbody, dbNode){
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+  const rowMap = {}; // reset
+
+  list.forEach(label => {
+    const tr = document.createElement("tr");
+
+    const td1 = document.createElement("td");
+    const name = document.createElement("div");
+    name.className = "feature-name";
+    name.textContent = label;
+
+    const sub = document.createElement("div");
+    sub.className = "feature-sub";
+    sub.textContent = "Terapkan untuk semua user di homepage";
+
+    td1.appendChild(name);
+    td1.appendChild(sub);
+
+    const td2 = document.createElement("td");
+    const wrap = document.createElement("div");
+    wrap.className = "switch-wrap";
+
+    const sw = document.createElement("label");
+    sw.className = "switch";
+
+    const chk = document.createElement("input");
+    chk.type = "checkbox";
+
+    const slider = document.createElement("span");
+    slider.className = "slider";
+
+    sw.appendChild(chk);
+    sw.appendChild(slider);
+    wrap.appendChild(sw);
+    td2.appendChild(wrap);
+
+    const td3 = document.createElement("td");
+    const pill = document.createElement("span");
+    pill.className = "status-pill show-pill";
+
+    const pillDot = document.createElement("span");
+    pillDot.className = "pill-dot show";
+    const pillText = document.createElement("span");
+    pillText.textContent = "Shown";
+
+    pill.appendChild(pillDot);
+    pill.appendChild(pillText);
+    td3.appendChild(pill);
+
+    rowMap[label] = { chk, pill, pillDot, pillText };
+
+    // ✅ handler toggle
+    chk.addEventListener("change", () => {
+      const hide = chk.checked;        // checked = hide
+      const ref  = db.ref(dbNode + "/" + label);
+
+      const op = hide ? ref.set(true) : ref.remove();
+
+      op.then(() => {
+        pill.className = hide ? "status-pill hide-pill" : "status-pill show-pill";
+        pillDot.className = "pill-dot " + (hide ? "hide" : "show");
+        pillText.textContent = hide ? "Inactive" : "Active";
+        showToast("Saved: " + label + " → " + (hide ? "Inactive" : "Active"));
+      }).catch(err => {
+        console.error("Gagal simpan setting", dbNode, label, err);
+        chk.checked = !hide;
+        alert("Gagal simpan ke server (cek Firebase rules / internet).");
+      });
+    });
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tbody.appendChild(tr);
+  });
+
+  return rowMap; // ✅ pulangkan mapping
+}
+/* ===============================
+   CUSTOM TABS (Firebase)
+   path: settings/uiCustomTabs/{id}
+   =============================== */
+const CUSTOM_TABS_NODE = "settings/uiCustomTabs";
+// ===== DEFAULT FEATURES (yang memang ada dalam homepage) =====
+const DEFAULT_FEATURES = [
+  "LINK DOWNLOAD","ITEM COLLECTION","LIST TYPE","BANK RECEIPT","GAMELOG"
+];
+
+function toLabel(s){
+  return String(s||"").trim().toUpperCase();
+}
+
+// gabung default + custom (auto)
+function buildFeatureListFromCustomTabs(customObj){
+  const set = new Set(DEFAULT_FEATURES.map(toLabel));
+
+  Object.values(customObj || {}).forEach(t=>{
+    const label = toLabel(t?.label);
+    if(label) set.add(label);
+  });
+
+  return Array.from(set).filter(Boolean).sort((a,b)=>a.localeCompare(b));
+}
+
+function safeId(s){
+  return String(s||"")
+    .trim().toLowerCase()
+    .replace(/\s+/g,"_")
+    .replace(/[^a-z0-9_]/g,"");
+}
+function makeTabId(label, place, group){
+  const base = safeId(label) || ("tab_" + Date.now());
+  const p = (place || "sidebar").toLowerCase();
+  const g = (group || "none").toLowerCase();
+  return (p === "header") ? `${base}__header__${g}` : `${base}__sidebar`;
+}
+function isValidUrl(url){
+  try{
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:";
+  }catch{ return false; }
+}
+
+function setGroupEnabled(){
+  const placeEl = document.getElementById("newTabPlace");
+  const grpEl   = document.getElementById("newTabGroup");
+  if(!placeEl || !grpEl) return;
+  grpEl.disabled = (placeEl.value !== "header");
+}
+
+function clearTabForm(){
+  const nameEl  = document.getElementById("newTabName");
+  const urlEl   = document.getElementById("newTabUrl");
+  const placeEl = document.getElementById("newTabPlace");
+  const grpEl   = document.getElementById("newTabGroup");
+  if(nameEl) nameEl.value = "";
+  if(urlEl)  urlEl.value  = "";
+  if(placeEl) placeEl.value = "sidebar";
+  if(grpEl) grpEl.value = "gamelog";
+  setGroupEnabled();
+}
+
+function renderCustomTabList(dataObj){
+  const box = document.getElementById("customTabList");
+  if(!box) return;
+
+  const entries = Object.entries(dataObj || {});
+  if(!entries.length){
+    box.innerHTML = `<div style="color:rgba(255,255,255,.55);font-size:12px;">No custom tabs yet.</div>`;
+    return;
+  }
+
+  // sort terbaru atas
+  entries.sort((a,b)=> (b[1]?.updatedAt||0) - (a[1]?.updatedAt||0));
+
+  box.innerHTML = "";
+  entries.forEach(([id, t])=>{
+    const label = t?.label || id;
+    const url   = t?.url || "";
+    const place = t?.place || "sidebar";
+    const group = t?.group || "gamelog";
+
+    const item = document.createElement("div");
+    item.className = "rpItem";
+
+    // ✅ NEW: dataset untuk search
+    item.dataset.name = String(label || "").toLowerCase();
+    item.dataset.url  = String(url   || "").toLowerCase();
+
+    item.innerHTML = `
+      <div class="rpMeta">
+        <div class="t">${label}</div>
+        <div class="s">${place.toUpperCase()}${place==="header" ? " • "+group.toUpperCase() : ""}</div>
+        <div class="u">${url}</div>
+      </div>
+      <div class="rpActions">
+        <button class="rpMini" type="button" data-act="copy" data-id="${id}">Copy</button>
+        <button class="rpMini danger" type="button" data-act="del" data-id="${id}">Delete</button>
+      </div>
+    `;
+    box.appendChild(item);
+  });
+  applyTabSearchFilter();
+}
+function applyTabSearchFilter(){
+  const input = document.getElementById("tabSearch");
+  const q = (input?.value || "").trim().toLowerCase();
+
+  document.querySelectorAll("#customTabList .rpItem").forEach(el=>{
+    const n = el.dataset.name || "";
+    const u = el.dataset.url  || "";
+    el.style.display = (!q || n.includes(q) || u.includes(q)) ? "" : "none";
+  });
+}
+function bindCustomTabsPanel(){
+  const nameEl  = document.getElementById("newTabName");
+  const urlEl   = document.getElementById("newTabUrl");
+  const placeEl = document.getElementById("newTabPlace");
+  const grpEl   = document.getElementById("newTabGroup");
+  const addBtn  = document.getElementById("btnAddTab");
+  const clrBtn  = document.getElementById("btnClearTab");
+  const listBox = document.getElementById("customTabList");
+  const searchEl = document.getElementById("tabSearch");
+  if(searchEl){
+    searchEl.addEventListener("input", applyTabSearchFilter);
+  }
+  if(!nameEl || !urlEl || !placeEl || !grpEl || !addBtn || !clrBtn || !listBox) return;
+
+  placeEl.addEventListener("change", setGroupEnabled);
+  setGroupEnabled();
+
+  clrBtn.addEventListener("click", clearTabForm);
+
+addBtn.addEventListener("click", async ()=>{
+  const label = (nameEl.value || "").trim();
+  const url   = (urlEl.value  || "").trim();
+  const place = placeEl.value; // sidebar/header
+  const group = grpEl.value;   // gamelog/bank/list
+
+  if(!label) return alert("Isi Tab Name dulu bro.");
+  if(!isValidUrl(url)) return alert("URL tak valid bro. Pastikan https://...");
+
+  // ✅ ID unik ikut place+group
+  let id = makeTabId(label, place, group);
+
+  const payload = {
+    label, url, place,
+    group: (place==="header" ? group : "none"),
+    updatedAt: Date.now()
+  };
+
+  try{
+    // ✅ elak overwrite kalau id dah ada
+    const exist = await db.ref(`${CUSTOM_TABS_NODE}/${id}`).get();
+    if(exist.exists()){
+      id = id + "__" + Date.now();
+    }
+
+    await db.ref(`${CUSTOM_TABS_NODE}/${id}`).set(payload);
+    showToast("Saved tab: " + label);
+    clearTabForm();
+  }catch(err){
+    console.error("Save custom tab error:", err);
+    alert("Gagal save tab (cek rules Firebase).");
+  }
+});
+
+  listBox.addEventListener("click", async (e)=>{
+    const btn = e.target.closest("button[data-act]");
+    if(!btn) return;
+
+    const act = btn.getAttribute("data-act");
+    const id  = btn.getAttribute("data-id");
+    if(!id) return;
+
+    if(act === "copy"){
+      const snap = await db.ref(`${CUSTOM_TABS_NODE}/${id}`).get().catch(()=>null);
+      const url = snap?.val()?.url || "";
+      if(!url) return;
+      navigator.clipboard.writeText(url).then(()=> showToast("Copied"));
+    }
+
+    if(act === "del"){
+      if(!confirm("Delete tab ni bro?")) return;
+      try{
+        await db.ref(`${CUSTOM_TABS_NODE}/${id}`).remove();
+        showToast("Deleted");
+      }catch(err){
+        console.error("Delete custom tab error:", err);
+        alert("Gagal delete tab.");
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const tbody = document.getElementById("uiGlobalBody");
+  const node  = "settings/uiVisibility";
+
+  let latestCustomTabs = {};
+  let latestHidden = {};
+
+  let currentRowMap = {};
+
+  function render(){
+    const features = buildFeatureListFromCustomTabs(latestCustomTabs);
+
+    // build semula table
+    currentRowMap = buildGlobalUiTable(features, tbody, node) || {};
+
+    // apply hidden state yang current
+    features.forEach(label=>{
+      const ui = currentRowMap[label];
+      if(!ui) return;
+      const hide = !!latestHidden[label];
+      ui.chk.checked          = hide;
+      ui.pill.className       = hide ? "status-pill hide-pill" : "status-pill show-pill";
+      ui.pillDot.className    = "pill-dot " + (hide ? "hide" : "show");
+      ui.pillText.textContent = hide ? "Inactive" : "Active";
+    });
+  }
+
+  // ✅ listen uiVisibility (hidden map)
+  db.ref(node).on("value", snap=>{
+    latestHidden = snap.val() || {};
+    render();
+  });
+
+  // ✅ listen custom tabs (auto add/remove)
+  db.ref(CUSTOM_TABS_NODE).on("value", snap=>{
+    latestCustomTabs = snap.val() || {};
+    render();                 // table kiri auto update
+    renderCustomTabList(latestCustomTabs); // panel kanan pun update
+  });
+
+  // init panel kanan
+  bindCustomTabsPanel();
+  setGroupEnabled();
+  const featureSearch = document.getElementById("featureSearch");
+if(featureSearch){
+  featureSearch.addEventListener("input", applyFeatureFilter);
+}
+applyFeatureFilter();
+});
+  const THEME_KEY = "siteTheme";
+
+  function applyTheme(theme) {
+    const finalTheme = theme === "dark" ? "dark" : "light";
+    document.body.classList.toggle("dark-theme", finalTheme === "dark");
+  }
+
+  // apply masa mula load
+  applyTheme(localStorage.getItem(THEME_KEY) || "light");
+
+  // dengar dari parent
+  window.addEventListener("message", (event) => {
+    if (event.data?.type === "theme-change") {
+      applyTheme(event.data.theme);
+    }
+  });
+</script>
+</body>
+</html>
