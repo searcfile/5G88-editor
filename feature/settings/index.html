@@ -147,6 +147,176 @@
   display: none;
   z-index: 2;
 }
+.header-left-links{
+  display:flex;
+  gap:20px;
+  position:absolute;
+  top:15px;
+  left:60px;
+  align-items:center;
+}
+
+.header-user-wrap{
+  position:absolute;
+  right:18px;
+  top:8px;
+  z-index:1105;
+}
+
+.user-menu-btn{
+  height:38px;
+  min-width:140px;
+  max-width:260px;
+  padding:0 12px 0 8px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.04);
+  color:rgba(255,255,255,0.88);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  transition:all 0.25s ease;
+}
+
+.user-menu-btn:hover{
+  border-color:#1668dc;
+  color:#fff;
+  box-shadow:0 0 0 1px rgba(22,104,220,0.25) inset;
+}
+
+.user-menu-btn.active{
+  border-color:#1668dc;
+  color:#fff;
+}
+
+.user-avatar{
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  background:#1668dc;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:700;
+  flex-shrink:0;
+  text-transform:uppercase;
+}
+
+.user-name{
+  max-width:150px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:13px;
+  font-weight:600;
+}
+
+.user-caret{
+  margin-left:auto;
+  flex-shrink:0;
+  opacity:.8;
+  transition:transform .25s ease;
+}
+
+.user-menu-btn.active .user-caret{
+  transform:rotate(180deg);
+}
+
+.user-dropdown{
+  position:absolute;
+  top:46px;
+  right:0;
+  width:240px;
+  background:linear-gradient(180deg, #0f172a, #020617);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:14px;
+  padding:10px;
+  box-shadow:0 14px 30px rgba(0,0,0,.35);
+  display:none;
+}
+
+.user-dropdown.show{
+  display:block;
+}
+
+.user-dropdown-info{
+  padding:8px 10px 10px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  margin-bottom:8px;
+}
+
+.user-dropdown-name{
+  font-size:14px;
+  font-weight:700;
+  color:#fff;
+  margin-bottom:4px;
+  word-break:break-word;
+}
+
+.user-dropdown-email{
+  font-size:12px;
+  color:rgba(255,255,255,0.55);
+  word-break:break-word;
+}
+
+.user-dropdown-item{
+  width:100%;
+  border:none;
+  background:transparent;
+  color:rgba(255,255,255,0.85);
+  padding:10px 12px;
+  border-radius:10px;
+  text-align:left;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+  transition:all .2s ease;
+}
+
+.user-dropdown-item:hover{
+  background:rgba(255,255,255,0.06);
+  color:#fff;
+}
+
+.logout-btn:hover{
+  background:rgba(255,0,0,0.12);
+  color:#ff6b6b;
+}
+
+@media (max-width: 900px){
+  .header-left-links{
+    gap:10px;
+    left:50px;
+  }
+
+  .user-name{
+    max-width:90px;
+  }
+}
+
+@media (max-width: 700px){
+  .header-left-links{
+    gap:8px;
+    left:46px;
+    top:14px;
+  }
+
+  .header-left-links .live-chat-button span{
+    display:none;
+  }
+
+  .user-menu-btn{
+    min-width:auto;
+    padding:0 10px 0 8px;
+  }
+
+  .user-name{
+    display:none;
+  }
+}
   </style>
 </head>
 <body>
@@ -171,17 +341,18 @@
 </div> 
   
 <div class="header">
-    <div class="menu-icon" id="menuIcon">☰</div>
-   <div style="display: flex; gap: 20px; position: absolute; top: 15px; left: 60px;">
+  <div class="menu-icon" id="menuIcon">☰</div>
+
+  <div class="header-left-links">
     <button id="liveChatBtn" onclick="addTab('ADMIN LIVECHAT', 'https://searcfile.github.io/5g88-php/adminsitelivechat/')" class="live-chat-button" style="position: relative;">
-       <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
-       <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
-       </svg>
-  <span>LiveChat</span>
-  <svg id="livechatDot" class="dot-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="red" viewBox="0 0 24 24">
-    <path d="M12 1c-6.338 0-12 4.226-12 10.007 0 2.05.739 4.063 2.047 5.625.055 1.83-1.023 4.456-1.993 6.368 2.602-.47 6.301-1.508 7.978-2.536 9.236 2.247 15.968-3.405 15.968-9.457 0-5.812-5.701-10.007-12-10.007zm1 15h-2v-6h2v6zm-1-7.75c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
-  </svg>
-</button>
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
+        <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
+      </svg>
+      <span>LiveChat</span>
+      <svg id="livechatDot" class="dot-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="red" viewBox="0 0 24 24">
+        <path d="M12 1c-6.338 0-12 4.226-12 10.007 0 2.05.739 4.063 2.047 5.625.055 1.83-1.023 4.456-1.993 6.368 2.602-.47 6.301-1.508 7.978-2.536 9.236 2.247 15.968-3.405 15.968-9.457 0-5.812-5.701-10.007-12-10.007zm1 15h-2v-6h2v6zm-1-7.75c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
+      </svg>
+    </button>
 
     <button id="detailLoginBtn" onclick="addTab('DETAIL LOGIN', 'https://searcfile.github.io/5G88-editor/admindatabase/')" class="live-chat-button">
       <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;">
@@ -196,6 +367,27 @@
       </svg>
       <span>Tab Settings</span>
     </button>
+  </div>
+
+  <div class="header-user-wrap" id="headerUserWrap">
+    <button class="user-menu-btn" id="userMenuBtn" type="button">
+      <div class="user-avatar" id="userAvatar">A</div>
+      <span class="user-name" id="userNameText">Admin</span>
+      <svg class="user-caret" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M7 10l5 5 5-5z"></path>
+      </svg>
+    </button>
+
+    <div class="user-dropdown" id="userDropdown">
+      <div class="user-dropdown-info">
+        <div class="user-dropdown-name" id="dropdownUserName">Admin</div>
+        <div class="user-dropdown-email" id="dropdownUserEmail">-</div>
+      </div>
+
+      <button class="user-dropdown-item logout-btn" id="logoutBtn" type="button">
+        Logout
+      </button>
+    </div>
   </div>
 </div>
 <img src="https://i.imgur.com/QrxyBjc.png" class="floating-logo" alt="Logo 5G88" />
@@ -574,6 +766,117 @@ function loadPage(url) {
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl);
   }
+    const LOGIN_PAGE_URL = "/login"; 
+  // kalau login page kamu bukan /login, tukar sini
+  // contoh:
+  // const LOGIN_PAGE_URL = "https://5g88-login.vercel.app/";
+
+  const userMenuBtn = document.getElementById("userMenuBtn");
+  const userDropdown = document.getElementById("userDropdown");
+  const userNameText = document.getElementById("userNameText");
+  const dropdownUserName = document.getElementById("dropdownUserName");
+  const dropdownUserEmail = document.getElementById("dropdownUserEmail");
+  const userAvatar = document.getElementById("userAvatar");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const headerUserWrap = document.getElementById("headerUserWrap");
+
+  function getLoginData() {
+    try {
+      return JSON.parse(localStorage.getItem("gmailLogin")) || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getDisplayName(loginData) {
+    if (!loginData) return "Admin";
+
+    if (loginData.username && String(loginData.username).trim()) {
+      return String(loginData.username).trim();
+    }
+
+    if (loginData.name && String(loginData.name).trim()) {
+      return String(loginData.name).trim();
+    }
+
+    if (loginData.email && String(loginData.email).trim()) {
+      return String(loginData.email).split("@")[0];
+    }
+
+    return "Admin";
+  }
+  const savedLogin = getLoginData();
+  if (!savedLogin) {
+    window.location.href = LOGIN_PAGE_URL;
+  }
+  function setHeaderUser() {
+    const loginData = getLoginData();
+
+    if (!loginData) {
+      userNameText.textContent = "Guest";
+      dropdownUserName.textContent = "Guest";
+      dropdownUserEmail.textContent = "No login data";
+      userAvatar.textContent = "G";
+      return;
+    }
+
+    const displayName = getDisplayName(loginData);
+    const email = loginData.email || "-";
+
+    userNameText.textContent = displayName;
+    dropdownUserName.textContent = displayName;
+    dropdownUserEmail.textContent = email;
+    userAvatar.textContent = displayName.charAt(0).toUpperCase();
+  }
+
+  function openUserDropdown() {
+    userDropdown.classList.add("show");
+    userMenuBtn.classList.add("active");
+  }
+
+  function closeUserDropdown() {
+    userDropdown.classList.remove("show");
+    userMenuBtn.classList.remove("active");
+  }
+
+  function toggleUserDropdown() {
+    if (userDropdown.classList.contains("show")) {
+      closeUserDropdown();
+    } else {
+      openUserDropdown();
+    }
+  }
+
+  function doLogout() {
+    localStorage.removeItem("gmailLogin");
+    localStorage.removeItem("openTabs");
+    localStorage.removeItem("activeTabUrl");
+
+    closeUserDropdown();
+
+    window.location.href = LOGIN_PAGE_URL;
+  }
+
+  if (userMenuBtn) {
+    userMenuBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      toggleUserDropdown();
+    });
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", function() {
+      doLogout();
+    });
+  }
+
+  document.addEventListener("click", function(e) {
+    if (!headerUserWrap.contains(e.target)) {
+      closeUserDropdown();
+    }
+  });
+
+  setHeaderUser();
   </script>
 </body>
 </html>
