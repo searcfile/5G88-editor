@@ -854,7 +854,13 @@ if (userNameBtn && dropdownContent) {
 
 function openSidebar() {
   sidebar.classList.add("active");
-  overlay.classList.add("active");
+
+  if (window.innerWidth <= 815) {
+    overlay.classList.add("active");
+  } else {
+    overlay.classList.remove("active");
+  }
+
   container.classList.add("shrink");
   document.querySelector('.header').classList.add('shrink');
   document.getElementById("tabBar").classList.add('shrink');
