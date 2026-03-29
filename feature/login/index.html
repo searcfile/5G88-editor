@@ -624,214 +624,210 @@
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import {
-      getAuth,
-      setPersistence,
-      browserLocalPersistence,
-      browserSessionPersistence,
-      signInWithEmailAndPassword,
-      sendPasswordResetEmail,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import {
-      getDatabase,
-      ref,
-      get
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import {
+    getAuth,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
-      authDomain: "page-login2.firebaseapp.com",
-      databaseURL: "https://page-login2-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "page-login2",
-      storageBucket: "page-login2.firebasestorage.app",
-      messagingSenderId: "860837620702",
-      appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
+    authDomain: "page-login2.firebaseapp.com",
+    projectId: "page-login2",
+    storageBucket: "page-login2.firebasestorage.app",
+    messagingSenderId: "860837620702",
+    appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
+  };
 
-    const REDIRECT_PATH = "/settings";
+  const REDIRECT_PATH = "/settings";
+  const USERNAME_DOMAIN = "@5g88.local";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    const loginForm = document.getElementById("loginForm");
-    const loginInput = document.getElementById("loginInput");
-    const passwordInput = document.getElementById("password");
-    const rememberMe = document.getElementById("rememberMe");
-    const loginBtn = document.getElementById("loginBtn");
-    const forgotBtn = document.getElementById("forgotBtn");
-    const goSettingsBtn = document.getElementById("goSettingsBtn");
-    const togglePassword = document.getElementById("togglePassword");
-    const errorBox = document.getElementById("errorBox");
-    const successBox = document.getElementById("successBox");
-    const pathPreview = document.getElementById("pathPreview");
+  const loginForm = document.getElementById("loginForm");
+  const loginInput = document.getElementById("loginInput");
+  const passwordInput = document.getElementById("password");
+  const rememberMe = document.getElementById("rememberMe");
+  const loginBtn = document.getElementById("loginBtn");
+  const forgotBtn = document.getElementById("forgotBtn");
+  const goSettingsBtn = document.getElementById("goSettingsBtn");
+  const togglePassword = document.getElementById("togglePassword");
+  const errorBox = document.getElementById("errorBox");
+  const successBox = document.getElementById("successBox");
+  const pathPreview = document.getElementById("pathPreview");
 
-    pathPreview.textContent = REDIRECT_PATH;
+  pathPreview.textContent = REDIRECT_PATH;
 
-    function showError(message){
-      successBox.style.display = "none";
-      errorBox.textContent = message;
-      errorBox.style.display = "block";
+  function showError(message){
+    successBox.style.display = "none";
+    errorBox.textContent = message;
+    errorBox.style.display = "block";
+  }
+
+  function showSuccess(message){
+    errorBox.style.display = "none";
+    successBox.textContent = message;
+    successBox.style.display = "block";
+  }
+
+  function clearMessages(){
+    errorBox.style.display = "none";
+    successBox.style.display = "none";
+    errorBox.textContent = "";
+    successBox.textContent = "";
+  }
+
+  function setLoading(isLoading){
+    loginBtn.disabled = isLoading;
+    loginBtn.innerHTML = isLoading
+      ? '<span class="spinner"></span>Signing in...'
+      : 'Login';
+  }
+
+  function mapFirebaseError(code){
+    switch(code){
+      case "auth/invalid-email":
+        return "Format username/email tidak sah.";
+      case "auth/user-disabled":
+        return "Akaun ini telah dinyahaktifkan.";
+      case "auth/user-not-found":
+      case "auth/invalid-credential":
+        return "Username/email atau password salah.";
+      case "auth/wrong-password":
+        return "Password salah.";
+      case "auth/too-many-requests":
+        return "Terlalu banyak cubaan login. Sila cuba sebentar lagi.";
+      case "auth/network-request-failed":
+        return "Masalah rangkaian. Sila periksa internet.";
+      case "auth/missing-password":
+        return "Password belum diisi.";
+      default:
+        return "Login gagal. Sila cuba lagi.";
+    }
+  }
+
+  function goToSettings(){
+    window.location.href = REDIRECT_PATH;
+  }
+
+  function sanitizeUsername(value){
+    return String(value || "")
+      .trim()
+      .toLowerCase();
+  }
+
+  function normalizeLoginToEmail(inputValue){
+    const value = sanitizeUsername(inputValue);
+
+    if (!value) {
+      throw new Error("Username/email wajib diisi.");
     }
 
-    function showSuccess(message){
-      errorBox.style.display = "none";
-      successBox.textContent = message;
-      successBox.style.display = "block";
+    if (value.includes("@")) {
+      return value;
     }
 
-    function clearMessages(){
-      errorBox.style.display = "none";
-      successBox.style.display = "none";
-      errorBox.textContent = "";
-      successBox.textContent = "";
+    return value + USERNAME_DOMAIN;
+  }
+
+  function extractUsername(inputValue, finalEmail){
+    const raw = sanitizeUsername(inputValue);
+
+    if (raw && !raw.includes("@")) {
+      return raw;
     }
 
-    function setLoading(isLoading){
-      loginBtn.disabled = isLoading;
-      loginBtn.innerHTML = isLoading
-        ? '<span class="spinner"></span>Signing in...'
-        : 'Login';
+    return String(finalEmail || "")
+      .trim()
+      .toLowerCase()
+      .split("@")[0] || "";
+  }
+
+  togglePassword.addEventListener("click", () => {
+    const isPassword = passwordInput.type === "password";
+    passwordInput.type = isPassword ? "text" : "password";
+    togglePassword.textContent = isPassword ? "🙈" : "👁";
+  });
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMessages();
+
+    const inputValue = loginInput.value.trim();
+    const password = passwordInput.value;
+
+    if(!inputValue || !password){
+      showError("Username/email dan password wajib diisi.");
+      return;
     }
 
-    function mapFirebaseError(code){
-      switch(code){
-        case "auth/invalid-email":
-          return "Format email tidak sah.";
-        case "auth/user-disabled":
-          return "Akaun ini telah dinyahaktifkan.";
-        case "auth/user-not-found":
-        case "auth/invalid-credential":
-          return "Username/email atau password salah.";
-        case "auth/wrong-password":
-          return "Password salah.";
-        case "auth/too-many-requests":
-          return "Terlalu banyak cubaan login. Sila cuba sebentar lagi.";
-        case "auth/network-request-failed":
-          return "Masalah rangkaian. Sila periksa internet.";
-        case "auth/missing-password":
-          return "Password belum diisi.";
-        default:
-          return "Login gagal. Sila cuba lagi.";
-      }
-    }
+    try{
+      setLoading(true);
 
-    function goToSettings(){
-      window.location.href = REDIRECT_PATH;
-    }
+      await setPersistence(
+        auth,
+        rememberMe.checked ? browserLocalPersistence : browserSessionPersistence
+      );
 
-    function sanitizeUsername(value){
-      return String(value || "")
-        .trim()
-        .toLowerCase();
-    }
+      const email = normalizeLoginToEmail(inputValue);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const username = extractUsername(inputValue, email);
 
-    async function resolveEmailFromUsernameOrEmail(inputValue){
-      const value = sanitizeUsername(inputValue);
+      localStorage.setItem("gmailLogin", JSON.stringify({
+        uid: user.uid,
+        email: user.email || email,
+        username: username,
+        name: username
+      }));
 
-      if (!value) {
-        throw new Error("Username/email wajib diisi.");
-      }
-
-      if (value.includes("@")) {
-        return value;
-      }
-
-      const snap = await get(ref(db, "usernames/" + value));
-
-      if (!snap.exists()) {
-        throw new Error("Username tidak ditemukan.");
-      }
-
-      const data = snap.val();
-
-      if (!data || !data.email) {
-        throw new Error("Email untuk username ini tidak ditemukan.");
-      }
-
-      return String(data.email).trim().toLowerCase();
-    }
-
-    togglePassword.addEventListener("click", () => {
-      const isPassword = passwordInput.type === "password";
-      passwordInput.type = isPassword ? "text" : "password";
-      togglePassword.textContent = isPassword ? "🙈" : "👁";
-    });
-
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearMessages();
-
-      const inputValue = loginInput.value.trim();
-      const password = passwordInput.value;
-
-      if(!inputValue || !password){
-        showError("Username/email dan password wajib diisi.");
-        return;
-      }
-
-      try{
-        setLoading(true);
-
-        await setPersistence(
-          auth,
-          rememberMe.checked ? browserLocalPersistence : browserSessionPersistence
-        );
-
-        const email = await resolveEmailFromUsernameOrEmail(inputValue);
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        localStorage.setItem("gmailLogin", JSON.stringify({
-          uid: user.uid,
-          email: user.email || email,
-          username: inputValue.includes("@") ? (email.split("@")[0] || "") : sanitizeUsername(inputValue),
-          name: inputValue.includes("@") ? (email.split("@")[0] || "") : sanitizeUsername(inputValue)
-        }));
-
-        showSuccess("Login berjaya. Sedang redirect...");
-        setTimeout(() => {
-          goToSettings();
-        }, 700);
-
-      }catch(err){
-        showError(err?.message && !err.code ? err.message : mapFirebaseError(err.code));
-      }finally{
-        setLoading(false);
-      }
-    });
-
-    forgotBtn.addEventListener("click", async () => {
-      clearMessages();
-      const inputValue = loginInput.value.trim();
-
-      if(!inputValue){
-        showError("Masukkan username atau email dulu untuk reset password.");
-        loginInput.focus();
-        return;
-      }
-
-      try{
-        const email = await resolveEmailFromUsernameOrEmail(inputValue);
-        await sendPasswordResetEmail(auth, email);
-        showSuccess("Link reset password sudah dihantar ke email kamu.");
-      }catch(err){
-        showError(err?.message && !err.code ? err.message : mapFirebaseError(err.code));
-      }
-    });
-
-    goSettingsBtn.addEventListener("click", () => {
-      goToSettings();
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if(user){
+      showSuccess("Login berjaya. Sedang redirect...");
+      setTimeout(() => {
         goToSettings();
-      }
-    });
-  </script>
+      }, 700);
+
+    }catch(err){
+      showError(err?.message && !err.code ? err.message : mapFirebaseError(err.code));
+    }finally{
+      setLoading(false);
+    }
+  });
+
+  forgotBtn.addEventListener("click", async () => {
+    clearMessages();
+    const inputValue = loginInput.value.trim();
+
+    if(!inputValue){
+      showError("Masukkan username atau email dulu untuk reset password.");
+      loginInput.focus();
+      return;
+    }
+
+    try{
+      const email = normalizeLoginToEmail(inputValue);
+      await sendPasswordResetEmail(auth, email);
+      showSuccess("Link reset password sudah dihantar ke email kamu.");
+    }catch(err){
+      showError(err?.message && !err.code ? err.message : mapFirebaseError(err.code));
+    }
+  });
+
+  goSettingsBtn.addEventListener("click", () => {
+    goToSettings();
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    if(user){
+      goToSettings();
+    }
+  });
+</script>
 </body>
 </html>
