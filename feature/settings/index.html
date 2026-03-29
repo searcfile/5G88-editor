@@ -224,38 +224,62 @@
     appId: "1:593904200464:web:cea7bc1360532c20d99395",
     measurementId: "G-R494S2DPZ5"
   };
+
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-// ✅ Firebase login app (asing dari blurphp)
-const loginFirebaseConfig = {
-  apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
-  authDomain: "page-login2.firebaseapp.com",
-  projectId: "page-login2",
-  storageBucket: "page-login2.firebasestorage.app",
-  messagingSenderId: "860837620702",
-  appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
-};
 
-const loginApp = firebase.apps.find(app => app.name === "loginApp")
-  || firebase.initializeApp(loginFirebaseConfig, "loginApp");
+  // ✅ Firebase login app
+  const loginFirebaseConfig = {
+    apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
+    authDomain: "page-login2.firebaseapp.com",
+    projectId: "page-login2",
+    storageBucket: "page-login2.firebasestorage.app",
+    messagingSenderId: "860837620702",
+    appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
+  };
 
-const loginAuth = loginApp.auth();
+  const loginApp = firebase.apps.find(app => app.name === "loginApp")
+    || firebase.initializeApp(loginFirebaseConfig, "loginApp");
+
+  const loginAuth = loginApp.auth();
+
 // ✅ Guard: kalau belum login, terus balik ke login page
-loginAuth.onAuthStateChanged((user) => {
-  if (!user) {
-    localStorage.removeItem("loginUser");
-    window.location.replace("../login/");
-    return;
+  const LOGIN_URL = "/5G88-editor/feature/login/";
+  let authChecked = false;
+
+  loginAuth.onAuthStateChanged((user) => {
+    authChecked = true;
+
+    if (!user) {
+      localStorage.removeItem("loginUser");
+      window.location.replace(LOGIN_URL);
+      return;
+    }
+
+    localStorage.setItem("loginUser", JSON.stringify({
+      uid: user.uid,
+      email: user.email || "",
+      username: (user.email || "").replace("@5g88.local", ""),
+      lastLogin: Date.now()
+    }));
+  });
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", logoutAccount);
   }
 
-  localStorage.setItem("loginUser", JSON.stringify({
-    uid: user.uid,
-    email: user.email || "",
-    username: (user.email || "").replace("@5g88.local", ""),
-    lastLogin: Date.now()
-  }));
-});
-
+  async function logoutAccount() {
+    try {
+      await loginAuth.signOut();
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      localStorage.removeItem("loginUser");
+      localStorage.removeItem("openTabs");
+      localStorage.removeItem("activeTabUrl");
+      window.location.replace(LOGIN_URL);
+    }
+  }
   // ✅ Interaksi user diperlukan agar audio bisa diputar
   let userHasInteracted = false;
   document.addEventListener('click', () => {
@@ -606,22 +630,6 @@ function loadPage(url) {
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl);
   }
-  const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", logoutAccount);
-}
-  async function logoutAccount() {
-  try {
-    await loginAuth.signOut();
-  } catch (err) {
-    console.error("Logout error:", err);
-  } finally {
-    localStorage.removeItem("loginUser");
-    localStorage.removeItem("openTabs");
-    localStorage.removeItem("activeTabUrl");
-    window.location.replace("../login/");
-  }
-}
   </script>
 </body>
 </html>
