@@ -926,36 +926,43 @@ html, body {
 
   <div class="header-right">
     <div id="dateTime" class="date-time"></div>
-    <div class="user-dropdown">
-      <button id="userName" class="user-button" type="button" aria-label="Account" title="Account">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
-        </svg>
-        <span id="userNameText" class="user-name-text"></span>
-      </button>
-
-  <button id="dropdownProfileBtn" class="dropdown-btn dropdown-profile-btn" type="button">
+<div class="user-dropdown">
+  <button id="userName" class="user-button" type="button" aria-label="Account" title="Account">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
     </svg>
-    <span id="dropdownUserName" class="dropdown-profile-name"></span>
+    <span id="userNameText" class="user-name-text"></span>
   </button>
 
-  <button id="changePasswordBtn" class="dropdown-btn" type="button">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M17 8h-1V6a4 4 0 10-8 0v2H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V10a2 2 0 00-2-2zm-6 8.73V19h2v-2.27a2 2 0 10-2 0zM10 8V6a2 2 0 114 0v2h-4z"/>
-    </svg>
-    <span>Change Password</span>
-  </button>
-
-  <button id="logoutBtn" class="dropdown-btn" type="button">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
-    </svg>
-    <span>Logout</span>
-  </button>
-</div>
+  <div id="dropdownContent" class="dropdown-content">
+    <div class="dropdown-user-top">
+      <div id="userEmail"></div>
     </div>
+
+    <hr class="dropdown-divider">
+
+    <button id="dropdownProfileBtn" class="dropdown-btn dropdown-profile-btn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
+      </svg>
+      <span id="dropdownUserName" class="dropdown-profile-name"></span>
+    </button>
+
+    <button id="changePasswordBtn" class="dropdown-btn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17 8h-1V6a4 4 0 10-8 0v2H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V10a2 2 0 00-2-2zm-6 8.73V19h2v-2.27a2 2 0 10-2 0zM10 8V6a2 2 0 114 0v2h-4z"/>
+      </svg>
+      <span>Change Password</span>
+    </button>
+
+    <button id="logoutBtn" class="dropdown-btn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
+      </svg>
+      <span>Logout</span>
+    </button>
+  </div>
+</div>
   </div>
 </div>
   
