@@ -157,45 +157,95 @@
   z-index: 1; /* 🔥 belakang tab */
 }
 .tab-bar::-webkit-scrollbar {display: none;}
-    .tab {background: gold;color: rgba(255,255,255,0.85);padding: 5px 12px;border-radius: 8px;font-weight: bold;display: flex;align-items: center;gap: 2px;cursor: default;transition: background-color 0.3s ease;white-space: nowrap;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;}
-    .tab .close-tab {background: rgba(255,255,255,0.04);color: gold;border: none;font-size: 14px;border-radius: 50%;cursor: pointer;width: 20px;height: 20px;display: flex;align-items: center;justify-content: center;transition: all 0.3s ease;}
-  .tab:hover {
-      color: #3c89e8 !important;
-      transition: all 0.3s ease;
-    }
-    .active-tab {
-      background: radial-gradient(circle at top, #1f2937 0, transparent 55%), radial-gradient(circle at bottom, #020617 0, #000 65%)!important;
-      color: #1668dc !important;
-      transition: all 0.3s ease;
-    }
-    .tab:active {
-     color: #1554ad!important;
-     font-weight: bold !important;
-     transition: all 0.3s ease;
-    }
-
-    .header.shrink {
-      margin-left: 260px;
-      transition: margin-left 0.3s;
-    }
-  .tab-bar.shrink {
-   margin-left: 260px;
-   transition: margin-left 0.3s;
-   }
-  .live-chat-button {
-  display: flex;
+.tab {
+  background: var(--tab-bg);
+  color: var(--text-soft)!important;
+  padding: 12px 16px;
+  border-radius: 8px 8px 0 0;
+  gap: 2px;
+  white-space: nowrap;
+  transition:
+    transform .18s ease,
+    color .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    opacity .18s ease;
+  border: 1px solid var(--border3);
+  display: inline-flex;
+  font-size: 14px;
   align-items: center;
+  user-select: none;
+  cursor: pointer;
+  filter: none;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  line-height: 1.2;
+  z-index: 2;
+  margin-bottom: -1px;
+  will-change: transform;
+}
+.tab .close-tab{
   background: transparent;
+  color: var(--close);
   border: none;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 15px;
+  border-radius: 0;
+  cursor: pointer;
+  width: 1em;
+  height: 1em;
+  padding: 0;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .3s ease, transform .2s ease;
+    margin-left: 4px;
+    pointer-events: auto;
+  font-size:12px;
+}
+.tab .close-tab:hover{
+  color:var(--text-main)!important
+}
+.tab .close-tab:active{
+  color:var(--gold-active)!important
+}
+.tab:not(.active-tab):hover {
+  color: var(--gold-hover) !important;
+}
+.tab:not(.active-tab):active,
+.tab:not(.active-tab):hover:active {
+  color: var(--gold-active) !important;
+}
+.active-tab {
+  color: var(--gold) !important;background:var(--tab2);
+  transition: all 0.3s ease;border-bottom: 1px solid var(--border-bottom);z-index: 3;
+}
+
+.header.shrink {
+  margin-left: 0 !important;
+  width: 100%;
+  transition: none;
+}
+.tab-bar.shrink {
+  margin-left: 255px;
+  width: calc(100% - 255px);
+}
+.live-chat-button {
+  color: rgba(255,255,255,0.65);
+  border: none;
+  font-size: 14px;
   cursor: pointer;
   transition: color 0.3s;
-  }
-.live-chat-button:hover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.85);
-  transition: color 0.3s;
+  position: relative;
+  height: 100%;
+  line-height: 1;
+  padding: 0 15px;
+  white-space: nowrap;
 }
 .live-chat-button.active-detail {
   background: transparent;
