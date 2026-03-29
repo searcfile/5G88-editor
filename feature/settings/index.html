@@ -784,9 +784,10 @@ function loadPage(url) {
     window.history.replaceState({}, document.title, cleanUrl);
   }
     const LOGIN_PAGE_URL = "/login"; 
-  // kalau login page kamu bukan /login, tukar sini
-  // contoh:
-  // const LOGIN_PAGE_URL = "https://5g88-login.vercel.app/";
+function redirectToLoginPage() {
+  const targetWindow = (window.top && window.top !== window) ? window.top : window;
+  targetWindow.location.replace(LOGIN_PAGE_URL);
+}
 
   const userMenuBtn = document.getElementById("userMenuBtn");
   const userDropdown = document.getElementById("userDropdown");
@@ -824,7 +825,7 @@ function loadPage(url) {
   }
 const savedLogin = getLoginData();
 if (!savedLogin) {
-  window.location.replace(LOGIN_PAGE_URL);
+  redirectToLoginPage();
 }
   function setHeaderUser() {
     const loginData = getLoginData();
@@ -883,8 +884,8 @@ async function doLogout() {
   closeUserDropdown();
 
   setTimeout(() => {
-    window.location.replace(LOGIN_PAGE_URL);
-  }, 120);
+    redirectToLoginPage();
+  }, 150);
 }
 
 if (userMenuBtn) {
