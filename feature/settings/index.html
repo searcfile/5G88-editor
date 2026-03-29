@@ -401,6 +401,7 @@
 <audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script>
   // ✅ Firebase config
   const firebaseConfig = {
@@ -415,7 +416,23 @@
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
+const loginFirebaseConfig = {
+  apiKey: "AIzaSyC2uWjeQriOICtmuc8VU6yCRdXAtK8x0X4",
+  authDomain: "page-login2.firebaseapp.com",
+  projectId: "page-login2",
+  storageBucket: "page-login2.firebasestorage.app",
+  messagingSenderId: "860837620702",
+  appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
+};
 
+let loginApp;
+try {
+  loginApp = firebase.app("loginApp");
+} catch (e) {
+  loginApp = firebase.initializeApp(loginFirebaseConfig, "loginApp");
+}
+
+const loginAuth = loginApp.auth();
   // ✅ Interaksi user diperlukan agar audio bisa diputar
   let userHasInteracted = false;
   document.addEventListener('click', () => {
@@ -847,15 +864,22 @@ function loadPage(url) {
     }
   }
 
-  function doLogout() {
-    localStorage.removeItem("gmailLogin");
-    localStorage.removeItem("openTabs");
-    localStorage.removeItem("activeTabUrl");
-
-    closeUserDropdown();
-
-    window.location.href = LOGIN_PAGE_URL;
+async function doLogout() {
+  try {
+    await loginAuth.signOut();
+  } catch (err) {
+    console.warn("Logout Firebase gagal:", err);
   }
+
+  localStorage.removeItem("gmailLogin");
+  localStorage.removeItem("openTabs");
+  localStorage.removeItem("activeTabUrl");
+  sessionStorage.setItem("justLoggedOut", "1");
+
+  closeUserDropdown();
+
+  window.location.replace(LOGIN_PAGE_URL);
+}
 
   if (userMenuBtn) {
     userMenuBtn.addEventListener("click", function(e) {
@@ -864,11 +888,11 @@ function loadPage(url) {
     });
   }
 
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function() {
-      doLogout();
-    });
-  }
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async function() {
+    await doLogout();
+  });
+}
 
   document.addEventListener("click", function(e) {
     if (!headerUserWrap.contains(e.target)) {
