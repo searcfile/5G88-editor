@@ -541,13 +541,28 @@ const ADMIN_PRESENCE_PATH = "adminPresence/main";
 
 function bootstrapAdminIdentityFromSettings() {
   const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
-  if (!savedLoginUser) return;
+
+  if (!savedLoginUser) {
+    const fallbackName  = localStorage.getItem("username") || localStorage.getItem("adminName") || "Admin";
+    const fallbackEmail = localStorage.getItem("useremail") || localStorage.getItem("adminEmail") || "";
+    const fallbackPhoto = localStorage.getItem("userphoto") || localStorage.getItem("adminPhoto") || "https://i.imgur.com/qiZFOs9.png";
+
+    localStorage.setItem("username", fallbackName);
+    localStorage.setItem("useremail", fallbackEmail);
+    localStorage.setItem("userphoto", fallbackPhoto);
+
+    localStorage.setItem("adminName", fallbackName);
+    localStorage.setItem("adminEmail", fallbackEmail);
+    localStorage.setItem("adminPhoto", fallbackPhoto);
+    return;
+  }
 
   const adminName  = savedLoginUser.username || "Admin";
   const adminEmail = savedLoginUser.email || "";
   const adminPhoto =
     savedLoginUser.photoURL ||
     localStorage.getItem("userphoto") ||
+    localStorage.getItem("adminPhoto") ||
     "https://i.imgur.com/qiZFOs9.png";
 
   localStorage.setItem("username", adminName);
@@ -583,7 +598,9 @@ function bindAdminPresence(){
   const connectedRef = db.ref(".info/connected");
 
   connectedRef.on("value", snap => {
-    if (snap.val() === true) {
+    const connected = snap.val() === true;
+
+    if (connected) {
       touchAdminPresence({ typing: false });
 
       ref.onDisconnect().update({
@@ -595,7 +612,14 @@ function bindAdminPresence(){
       clearInterval(adminPresenceHeartbeat);
       adminPresenceHeartbeat = setInterval(() => {
         touchAdminPresence();
-      }, 10000);
+      }, 5000);
+    } else {
+      clearInterval(adminPresenceHeartbeat);
+      ref.update({
+        online: false,
+        typing: false,
+        lastSeen: Date.now()
+      }).catch(()=>{});
     }
   });
 
@@ -607,23 +631,43 @@ function bindAdminPresence(){
       lastSeen: Date.now()
     }).catch(()=>{});
   });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      touchAdminPresence();
+    }
+  });
+
+  window.addEventListener("focus", () => {
+    touchAdminPresence();
+  });
 }
 let adminTypingTimer = null;
 let adminPresenceHeartbeat = null;
 
 function touchAdminPresence(extra = {}) {
+  const admin = getAdminIdentity();
+
   db.ref(ADMIN_PRESENCE_PATH).update({
-    ...getAdminIdentity(),
+    name: admin.name || "Admin",
+    email: admin.email || "",
+    photoURL: admin.photoURL || "https://i.imgur.com/qiZFOs9.png",
     online: true,
     typing: false,
     lastSeen: Date.now(),
     ...extra
-  }).catch(()=>{});
+  }).catch((err) => {
+    console.warn("touchAdminPresence failed:", err);
+  });
 }
 function bindAdminTyping(){
   if (!msgInput) return;
 
   const typingRef = db.ref(ADMIN_PRESENCE_PATH + "/typing");
+
+  msgInput.addEventListener("focus", () => {
+    touchAdminPresence();
+  });
 
   msgInput.addEventListener("input", () => {
     const hasText = !!msgInput.value.trim();
