@@ -174,6 +174,117 @@ body.light-theme{
   align-items: center;
   margin-left: auto;
 }
+.user-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.user-button {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .2s ease, color .2s ease, background .2s ease;
+}
+
+.user-button:hover {
+  border-color: var(--gold-hover);
+  color: var(--gold-hover);
+}
+
+.user-button:active {
+  border-color: var(--gold-active);
+  color: var(--gold-active);
+}
+
+.user-button svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.user-name-text {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: calc(100% - 2px);
+  right: 0;
+  min-width: 240px;
+  background: var(--backgrounddrop);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 10px;
+  display: none;
+  z-index: 1200;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+}
+
+.dropdown-content.show {
+  display: block;
+}
+
+.dropdown-user-top {
+  padding: 4px 4px 8px;
+}
+
+#userEmail {
+  color: var(--text-soft);
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.dropdown-divider {
+  border: 0;
+  border-top: 1px solid var(--border2);
+  margin: 8px 0;
+}
+
+.dropdown-btn {
+  width: 100%;
+  min-height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color .2s ease, color .2s ease, background .2s ease;
+  margin-top: 8px;
+}
+
+.dropdown-btn:hover {
+  border-color: var(--gold-hover);
+  color: var(--gold-hover);
+}
+
+.dropdown-btn:active {
+  border-color: var(--gold-active);
+  color: var(--gold-active);
+}
+
+.dropdown-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
     .container {transition: margin-left 0.3s ease;position: relative;}
     .container.shrink {margin-left: 260px;}
 .menu-icon {
@@ -404,9 +515,31 @@ body.light-theme{
     </button>
   </div>
 
-  <div class="header-right">
-    <button id="logoutBtn" class="live-chat-button">Logout</button>
+<div class="header-right">
+  <div class="user-dropdown">
+    <button id="userName" class="user-button" type="button" aria-label="Account" title="Account">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8V22h19.2v-2.8c0-3.2-6.4-4.8-9.6-4.8z"/>
+      </svg>
+      <span id="userNameText" class="user-name-text">Admin</span>
+    </button>
+
+    <div id="dropdownContent" class="dropdown-content">
+      <div class="dropdown-user-top">
+        <div id="userEmail">admin88@5g88.local</div>
+      </div>
+
+      <hr class="dropdown-divider">
+
+      <button id="logoutBtn" class="dropdown-btn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
+        </svg>
+        <span>Logout</span>
+      </button>
+    </div>
   </div>
+</div>
 </div>
 
    <div id="tabBar" class="tab-bar"></div>
@@ -455,27 +588,59 @@ body.light-theme{
   const LOGIN_URL = "/5G88-editor/feature/login/";
   let authChecked = false;
 
-  loginAuth.onAuthStateChanged((user) => {
-    authChecked = true;
+loginAuth.onAuthStateChanged((user) => {
+  authChecked = true;
 
-    if (!user) {
-      localStorage.removeItem("loginUser");
-      window.location.replace(LOGIN_URL);
-      return;
-    }
+  if (!user) {
+    localStorage.removeItem("loginUser");
+    window.location.replace(LOGIN_URL);
+    return;
+  }
 
-    localStorage.setItem("loginUser", JSON.stringify({
-      uid: user.uid,
-      email: user.email || "",
-      username: (user.email || "").replace("@5g88.local", ""),
-      lastLogin: Date.now()
-    }));
-  });
+  const email = user.email || "";
+  const username = email.replace("@5g88.local", "") || "Admin";
+
+  localStorage.setItem("loginUser", JSON.stringify({
+    uid: user.uid,
+    email,
+    username,
+    lastLogin: Date.now()
+  }));
+
+  const userNameTextEl = document.getElementById("userNameText");
+  const userEmailEl = document.getElementById("userEmail");
+
+  if (userNameTextEl) userNameTextEl.textContent = username;
+  if (userEmailEl) userEmailEl.textContent = email;
+});
+const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
+if (savedLoginUser) {
+  const userNameTextEl = document.getElementById("userNameText");
+  const userEmailEl = document.getElementById("userEmail");
+
+  if (userNameTextEl) userNameTextEl.textContent = savedLoginUser.username || "Admin";
+  if (userEmailEl) userEmailEl.textContent = savedLoginUser.email || "";
+}
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", logoutAccount);
   }
+const userNameBtn = document.getElementById("userName");
+const dropdownContent = document.getElementById("dropdownContent");
 
+if (userNameBtn && dropdownContent) {
+  userNameBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdownContent.classList.toggle("show");
+  });
+
+  document.addEventListener("click", (e) => {
+    const insideDropdown = e.target.closest(".user-dropdown");
+    if (!insideDropdown) {
+      dropdownContent.classList.remove("show");
+    }
+  });
+}
   async function logoutAccount() {
     try {
       await loginAuth.signOut();
