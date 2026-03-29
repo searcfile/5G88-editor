@@ -248,47 +248,119 @@ body {
     white-space: pre-wrap;
     word-break: break-word;
 }
-/* ===== Send Box ===== */
 .send-box {
   display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
-  margin: 10px auto 0;
-  border: 2px solid #3c89e8;
-  border-radius: 6px;
-  overflow: hidden;
-  background: white;
+  margin: 12px auto 0;
+  padding: 10px 12px;
+  border: 1px solid #424242;
+  border-radius: 16px;
+  background: #000;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.send-box:focus-within {
+  border-color: #1668dc;
+  box-shadow: 0 0 0 2px rgba(22, 104, 220, 0.15);
 }
 
 #msg {
   flex: 1;
-  padding: 10px;
+  min-height: 24px;
+  max-height: 120px;
+  padding: 10px 0;
   font-size: 14px;
+  line-height: 1.45;
   border: none;
   outline: none;
   resize: none;
+  background: transparent;
+  color: rgba(255,255,255,0.88);
   font-family: 'Segoe UI', sans-serif;
+  overflow-y: auto;
 }
+
+#msg::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+
 #msg:focus {
- border: 1px solid #1668dc;
- outline: none;
-}
-
-.send-box button {
-  padding: 0 16px;
-  font-size: 14px;
-  background: #1668dc;
   border: none;
-  color: white;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  outline: none;
+  box-shadow: none;
 }
 
-.send-box button:hover {
+.send-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.send-tool-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.send-tool-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.send-tool-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+.send-tool-btn:active {
+  transform: scale(0.96);
+}
+
+.send-main-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #1668dc;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+.send-main-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.send-main-btn:hover {
   background: #3c89e8;
 }
 
-.send-box button:active {
-  background: #1554ad;
+.send-main-btn:active {
+  transform: scale(0.96);
+}
+
+.send-main-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .msg-time {
     position: absolute;
@@ -530,10 +602,27 @@ body {
     <div class="chat-box" id="chatBox"></div>
 
     <!-- Send Box -->
-    <div class="send-box">
-      <textarea id="msg" placeholder="Type your message" rows="2"></textarea>
-      <button id="sendBtn" disabled>Send</button>
-    </div>
+ <button type="button" class="send-tool-btn" title="Gift">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7M12 4v16M3 8h18v4H3V8zm4.5 0h0A2.5 2.5 0 1 1 10 5.5V8H7.5zm9 0H14V5.5A2.5 2.5 0 1 1 16.5 8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button type="button" class="send-tool-btn" title="Emoji">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M9 10h.01M15 10h.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M8.5 14.5c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <button id="sendBtn" type="button" class="send-main-btn" disabled title="Send">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 20l17-8L4 4l3 8-3 8zm3-8h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
   </div>
 </div>
 </main>
@@ -1260,6 +1349,7 @@ const newMsg = {
     if (err) return alert("Gagal mengirim pesan");
 
 msgInput.value = "";
+if (typeof autoResizeMsgBox === "function") autoResizeMsgBox();
 updateSendButtonState();
 
 db.ref(ADMIN_PRESENCE_PATH + "/typing").set(false).catch(()=>{});
@@ -1364,7 +1454,16 @@ window.onload = ()=>{
 
   msgInput = document.getElementById("msg");
   sendBtn  = document.getElementById("sendBtn");
+  function autoResizeMsgBox() {
+  if (!msgInput) return;
+  msgInput.style.height = "24px";
+  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + "px";
+}
 
+if (msgInput) {
+  autoResizeMsgBox();
+  msgInput.addEventListener("input", autoResizeMsgBox);
+}
   bootstrapAdminIdentityFromSettings();
   touchAdminPresence({ online: true, typing: false });
   
