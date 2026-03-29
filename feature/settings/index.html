@@ -969,7 +969,7 @@ function loadPage(url) {
   }
 }
 
-  window.onload = () => {
+window.onload = () => {
   renderTabs();
   const tabs = getTabs();
   const activeUrl = localStorage.getItem("activeTabUrl");
@@ -980,6 +980,9 @@ function loadPage(url) {
   } else if (tabs.length > 0) {
     loadPage(tabs[tabs.length - 1].url);
   }
+
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
 };
 
   function formatTimestamp(date) {
