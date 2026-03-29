@@ -544,6 +544,19 @@ emoji-picker::part(search-input):focus {
   box-shadow: 0 0 0 2px rgba(22, 104, 220, 0.2);
   background: #1f1f1f;
 }
+.picker {
+    contain: content;
+    display: flex;
+    flex-direction: column;
+    background: black !important;
+    border: var(--border-size) solid var(--border-color);
+    border-radius: var(--border-radius);
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    --total-emoji-size: calc(var(--emoji-size) + (2 * var(--emoji-padding)));
+    --total-category-emoji-size: calc(var(--category-emoji-size) + (2 * var(--category-emoji-padding)));
+}
 </style>
 <body>
 <main>
