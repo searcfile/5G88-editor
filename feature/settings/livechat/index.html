@@ -539,7 +539,29 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const ADMIN_PRESENCE_PATH = "adminPresence/main";
 
+function bootstrapAdminIdentityFromSettings() {
+  const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
+  if (!savedLoginUser) return;
+
+  const adminName  = savedLoginUser.username || "Admin";
+  const adminEmail = savedLoginUser.email || "";
+  const adminPhoto =
+    savedLoginUser.photoURL ||
+    localStorage.getItem("userphoto") ||
+    "https://i.imgur.com/qiZFOs9.png";
+
+  localStorage.setItem("username", adminName);
+  localStorage.setItem("useremail", adminEmail);
+  localStorage.setItem("userphoto", adminPhoto);
+
+  localStorage.setItem("adminName", adminName);
+  localStorage.setItem("adminEmail", adminEmail);
+  localStorage.setItem("adminPhoto", adminPhoto);
+}
+
 function getAdminIdentity(){
+  bootstrapAdminIdentityFromSettings();
+
   return {
     name:
       localStorage.getItem("username") ||
@@ -1257,6 +1279,8 @@ window.onload = ()=>{
 
   msgInput = document.getElementById("msg");
   sendBtn  = document.getElementById("sendBtn");
+  bootstrapAdminIdentityFromSettings();
+  touchAdminPresence();
   bindAdminPresence();
   bindAdminTyping();
   if (msgInput){
