@@ -1863,23 +1863,33 @@ async function ensureAnonAuth(maxRetries = 2) {
   // ======= SEMUA YANG DI BAWAH INI BUTUH sessionData =======
   userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
 
-  // Admin override (paksa logout user tertentu)
-  const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
-  let lastAt = 0;
-  myOverrideRef.on('value', async (snap) => {
-    const v = snap.val();
-    if (!v || v.forceLogout !== true) return;
-    if (v.at && v.at <= lastAt) return;
-    lastAt = v.at || Date.now();
+// Admin override (paksa logout user tertentu)
+const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
+let lastAt = 0;
 
-    try { await loginAuth.signOut(); } catch (_) {}
-    localStorage.removeItem('gmailLogin');
-    sessionStorage.setItem('forceLogout', '1');
-    try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
+myOverrideRef.on('value', async (snap) => {
+  const v = snap.val();
+  if (!v || v.forceLogout !== true) return;
+  if (v.at && v.at <= lastAt) return;
+  lastAt = v.at || Date.now();
 
-    myOverrideRef.remove().catch(()=>{});
-    window.location.href = "/login?blocked=1";
-  });
+  try { await loginAuth.signOut(); } catch (_) {}
+
+  // ✅ hanya clear semua storage kalau arahan datang dari admin logout / logout all
+  if (v.clearAllStorage === true) {
+    try { localStorage.clear(); } catch (_) {}
+    try { sessionStorage.clear(); } catch (_) {}
+  } else {
+    // ✅ kalau tiada flag ini, kekal macam biasa
+    try { localStorage.removeItem('gmailLogin'); } catch (_) {}
+    try { sessionStorage.setItem('forceLogout', '1'); } catch (_) {}
+  }
+
+  try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
+
+  try { await myOverrideRef.remove(); } catch (_) {}
+  window.location.href = "/login?blocked=1";
+});
 
   // User diblok
   loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
