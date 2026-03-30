@@ -1370,7 +1370,9 @@ async function logoutAccount() {
   });
 
   let hasPlayed = false;
-  const notifiedKeys = new Set(); // untuk deteksi pesan baru yang belum dibunyikan
+  const notifiedKeys = new Set();
+  const livechatMeta = {};
+  let livechatTrackerStarted = false;
 
   function playNotif() {
     const audio = document.getElementById("notifSound");
@@ -1416,6 +1418,55 @@ db.ref("users").on("value", (snapshot) => {
   // ✅ selalu ikut total sebenar, walaupun tab livechat tengah buka
   setLivechatBadgeCount(totalUnread);
 });
+function ensureHeaderChatTracker(userId) {
+  if (!userId) return;
+  if (livechatMeta[userId]?.listening) return;
+
+  livechatMeta[userId] = livechatMeta[userId] || {};
+  livechatMeta[userId].listening = true;
+  livechatMeta[userId].booted = false;
+
+  const lastRef = db.ref(`chats/${userId}`).limitToLast(1);
+
+  lastRef.on("child_added", (snap) => {
+    const msg = snap.val() || {};
+    const wasBooted = !!livechatMeta[userId].booted;
+    if (!wasBooted) {
+      livechatMeta[userId].booted = true;
+      return;
+    }
+
+    if (msg.from !== "user") return;
+    if (msg.readByAdmin === true) return;
+
+    db.ref(`users/${userId}`).transaction((userData) => {
+      userData = userData || {};
+      const current = Number(userData.unreadCountForAdmin || 0);
+
+      userData.unreadForAdmin = true;
+      userData.unreadCountForAdmin = current + 1;
+      userData.lastChatTime = Number(msg.time) || Date.now();
+      return userData;
+    });
+  });
+}
+
+function startHeaderLivechatTracker() {
+  if (livechatTrackerStarted) return;
+  livechatTrackerStarted = true;
+
+  db.ref("users").on("child_added", (snap) => {
+    const userId = snap.key;
+    ensureHeaderChatTracker(userId);
+  });
+
+  db.ref("users").once("value", (snap) => {
+    const users = snap.val() || {};
+    Object.keys(users).forEach((userId) => {
+      ensureHeaderChatTracker(userId);
+    });
+  });
+}
   const tabBar = document.getElementById("tabBar");
   const menuIcon = document.getElementById("menuIcon");
   const sidebar = document.getElementById("sidebar");
@@ -1689,6 +1740,7 @@ if (liveBtn) {
 window.onload = () => {
   renderTabs();
   initSidebarSearch();
+  startHeaderLivechatTracker();
 
   const tabs = getTabs();
   const activeUrl = localStorage.getItem(getCurrentUserStorageKey("activeTabUrl"));
