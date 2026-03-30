@@ -1128,6 +1128,8 @@ let unreadCountCache = {};
 // chatMeta: simpan info realtime chat (listener sekali saja per user)
 const chatMeta = {}; // { sid: { listening:true, lastChatTime:number, identity:{...}, booted:true/false } }
 let renderTimer = null;
+let activeChatRef = null;
+let activeChatValueHandler = null;
 function isMobileView(){
   return window.innerWidth <= 768;
 }
@@ -1160,6 +1162,12 @@ function showEmptyState(){
   if (statusEl) statusEl.textContent = "Offline";
   if (msgEl) msgEl.value = "";
   if (searchMsg) searchMsg.value = "";
+
+  if (activeChatRef && activeChatValueHandler) {
+    activeChatRef.off("value", activeChatValueHandler);
+  }
+  activeChatRef = null;
+  activeChatValueHandler = null;
 
   selectedUserId = null;
   activeUserIdSanitized = "";
@@ -1935,64 +1943,76 @@ function loadUserList(){
 function listenToChat(){
   if (!activeUserIdSanitized) return;
 
+  // ✅ buang listener chat aktif lama sahaja
+  if (activeChatRef && activeChatValueHandler) {
+    activeChatRef.off("value", activeChatValueHandler);
+  }
+
   const chatRef = db.ref("chats/" + activeUserIdSanitized);
   const chatBox = document.getElementById("chatBox");
 
-  if (chatBox) chatBox.innerHTML = '<p style="text-align:center;color:white;">Loading...</p>';
+  if (chatBox) {
+    chatBox.innerHTML = '<p style="text-align:center;color:white;">Loading...</p>';
+  }
 
-  chatRef.off();
-  chatRef.on("value", snap=>{
+  activeChatRef = chatRef;
+  activeChatValueHandler = (snap) => {
     const chats = snap.val();
     if (!chats){
-      if (chatBox) chatBox.innerHTML = '<p style="text-align:center;color:white;">Start Message.</p>';
+      if (chatBox) {
+        chatBox.innerHTML = '<p style="text-align:center;color:white;">Start Message.</p>';
+      }
       allMessages = [];
       return;
     }
 
-   const normalizedMessages = Object.entries(chats)
-  .map(([key, raw]) => normalizeChatMessage(key, raw))
-  .filter(Boolean)
-  .sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
+    const normalizedMessages = Object.entries(chats)
+      .map(([key, raw]) => normalizeChatMessage(key, raw))
+      .filter(Boolean)
+      .sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
 
-const messagesToMarkRead = [];
+    const messagesToMarkRead = [];
 
-allMessages = normalizedMessages.map(msg => {
-  const isUnread = msg.from === "user" && !chats[msg._key]?.readByAdmin;
-  if (isUnread) messagesToMarkRead.push(msg._key);
-  return msg;
-});
+    allMessages = normalizedMessages.map(msg => {
+      const isUnread = msg.from === "user" && !chats[msg._key]?.readByAdmin;
+      if (isUnread) messagesToMarkRead.push(msg._key);
+      return msg;
+    });
 
     renderChatMessages(allMessages);
 
-if (justOpenedChat || activeUserIdSanitized){
-  justOpenedChat = false;
+    if (justOpenedChat || activeUserIdSanitized){
+      justOpenedChat = false;
 
-  if (messagesToMarkRead.length){
-    const updates = {};
-    messagesToMarkRead.forEach(k => updates[`${k}/readByAdmin`] = true);
-    db.ref(`chats/${activeUserIdSanitized}`).update(updates).catch(()=>{});
-  }
+      if (messagesToMarkRead.length){
+        const updates = {};
+        messagesToMarkRead.forEach(k => {
+          updates[`${k}/readByAdmin`] = true;
+        });
+        db.ref(`chats/${activeUserIdSanitized}`).update(updates).catch(()=>{});
+      }
 
-  db.ref(`users/${activeUserIdSanitized}`).update({
-    unreadForAdmin: false,
-    unreadCountForAdmin: 0
-  }).catch(()=>{});
+      db.ref(`users/${activeUserIdSanitized}`).update({
+        unreadForAdmin: false,
+        unreadCountForAdmin: 0
+      }).catch(()=>{});
 
-  const idx = allUsersData.findIndex(([sid]) => sid === activeUserIdSanitized);
-  if (idx !== -1){
-    allUsersData[idx][1] = {
-      ...(allUsersData[idx][1] || {}),
-      unreadForAdmin: false,
-      unreadCountForAdmin: 0
-    };
-  }
+      const idx = allUsersData.findIndex(([sid]) => sid === activeUserIdSanitized);
+      if (idx !== -1){
+        allUsersData[idx][1] = {
+          ...(allUsersData[idx][1] || {}),
+          unreadForAdmin: false,
+          unreadCountForAdmin: 0
+        };
+      }
 
-  unreadCountCache[activeUserIdSanitized] = 0;
-  scheduleRender();
+      unreadCountCache[activeUserIdSanitized] = 0;
+      scheduleRender();
+    }
+  };
+
+  chatRef.on("value", activeChatValueHandler);
 }
-  });
-}
-
 /* ======================= SEND MESSAGE (ADMIN) ======================= */
 let msgInput, sendBtn;
 
