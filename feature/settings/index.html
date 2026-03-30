@@ -1407,24 +1407,15 @@ db.ref("users").on("value", (snapshot) => {
     totalUnread += Number(user?.unreadCountForAdmin || 0);
   });
 
-  // kalau unread bertambah, baru bunyi
   if (totalUnread > lastHeaderUnreadTotal) {
     playNotif();
   }
 
   lastHeaderUnreadTotal = totalUnread;
 
-  const liveBtn = document.getElementById("liveChatBtn");
-  const isLivechatActive = liveBtn?.classList.contains("active-livechat");
-
-  // kalau tab livechat tengah buka, hide badge
-  if (isLivechatActive) {
-    setLivechatBadgeCount(0);
-  } else {
-    setLivechatBadgeCount(totalUnread);
-  }
+  // ✅ selalu ikut total sebenar, walaupun tab livechat tengah buka
+  setLivechatBadgeCount(totalUnread);
 });
-
   const tabBar = document.getElementById("tabBar");
   const menuIcon = document.getElementById("menuIcon");
   const sidebar = document.getElementById("sidebar");
@@ -1508,21 +1499,20 @@ function addTab(label, url) {
 if (liveBtn) {
   if (label === "ADMIN LIVECHAT" || label === "LIVE CHAT") {
     liveBtn.classList.add("active-livechat");
-    if (dot) dot.style.display = "none";
   } else {
     liveBtn.classList.remove("active-livechat");
-
-    db.ref("users").once("value").then((snapshot) => {
-      const users = snapshot.val() || {};
-      let totalUnread = 0;
-
-      Object.values(users).forEach(user => {
-        totalUnread += Number(user?.unreadCountForAdmin || 0);
-      });
-
-      setLivechatBadgeCount(totalUnread);
-    });
   }
+
+  db.ref("users").once("value").then((snapshot) => {
+    const users = snapshot.val() || {};
+    let totalUnread = 0;
+
+    Object.values(users).forEach(user => {
+      totalUnread += Number(user?.unreadCountForAdmin || 0);
+    });
+
+    setLivechatBadgeCount(totalUnread);
+  });
 }
   const detailBtn = document.getElementById("detailLoginBtn");
 
@@ -1664,22 +1654,20 @@ function loadPage(url) {
 if (liveBtn) {
   if (label === "ADMIN LIVECHAT" || label === "LIVE CHAT") {
     liveBtn.classList.add("active-livechat");
-    const dot = document.getElementById("livechatDot");
-    if (dot) dot.style.display = "none";
   } else {
     liveBtn.classList.remove("active-livechat");
-
-    db.ref("users").once("value").then((snapshot) => {
-      const users = snapshot.val() || {};
-      let totalUnread = 0;
-
-      Object.values(users).forEach(user => {
-        totalUnread += Number(user?.unreadCountForAdmin || 0);
-      });
-
-      setLivechatBadgeCount(totalUnread);
-    });
   }
+
+  db.ref("users").once("value").then((snapshot) => {
+    const users = snapshot.val() || {};
+    let totalUnread = 0;
+
+    Object.values(users).forEach(user => {
+      totalUnread += Number(user?.unreadCountForAdmin || 0);
+    });
+
+    setLivechatBadgeCount(totalUnread);
+  });
 }
 
   if (detailBtn) {
