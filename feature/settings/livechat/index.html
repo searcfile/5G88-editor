@@ -1121,6 +1121,7 @@ let selectedUserId = null;
 let allUsersData = []; // [ [sanitized, userData, activityTime], ... ]
 let allMessages = [];
 let justOpenedChat = false;
+let forceScrollToBottom = false;
 
 let lastPresenceId = null;
 let unreadCountCache = {};
@@ -1173,6 +1174,7 @@ function showEmptyState(){
   activeUserIdSanitized = "";
   allMessages = [];
   justOpenedChat = false;
+  forceScrollToBottom = false;
 
   document.querySelectorAll(".user-item").forEach(el => el.classList.remove("active"));
 
@@ -1605,8 +1607,15 @@ function formatDateLabel(dateInput){
 function renderChatMessages(messages){
   const chatBox = document.getElementById("chatBox");
   if (!chatBox) return;
-  chatBox.innerHTML = "";
 
+  const shouldForceBottom = forceScrollToBottom || justOpenedChat;
+
+  // sembunyikan sekejap masa buka chat baru supaya tak nampak lompat dari atas ke bawah
+  if (shouldForceBottom) {
+    chatBox.style.visibility = "hidden";
+  }
+
+  chatBox.innerHTML = "";
   let lastDate = null;
 
   messages.forEach(msg => {
@@ -1664,7 +1673,19 @@ function renderChatMessages(messages){
     chatBox.appendChild(div);
   });
 
-  chatBox.scrollTop = chatBox.scrollHeight;
+  const jumpBottom = () => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  };
+
+  requestAnimationFrame(() => {
+    jumpBottom();
+
+    requestAnimationFrame(() => {
+      jumpBottom();
+      chatBox.style.visibility = "visible";
+      forceScrollToBottom = false;
+    });
+  });
 }
 
 function seedUnreadFlagOnce(sid){
@@ -1872,6 +1893,7 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
 
     userDiv.onclick = ()=>{
       justOpenedChat = true;
+      forceScrollToBottom = true;
       activeUserIdSanitized = sanitized;
       selectedUserId = sanitized;
 
