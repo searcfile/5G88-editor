@@ -1428,7 +1428,73 @@ function getLabelParts(id, data){
   const label = email ? `${displayName} (${email})` : displayName;
   return { displayName, email, photoURL, label };
 }
+function normalizeChatMessage(key, raw){
+  if (!raw || typeof raw !== "object") return null;
 
+  const time =
+    Number(raw.time) ||
+    Number(raw.timestamp) ||
+    Number(raw.createdAt) ||
+    Number(raw.sentAt) ||
+    0;
+
+  const text =
+    raw.text ??
+    raw.message ??
+    raw.msg ??
+    raw.content ??
+    "";
+
+  const image =
+    raw.image ??
+    raw.imageUrl ??
+    raw.photo ??
+    raw.fileUrl ??
+    "";
+
+  const from =
+    raw.from ??
+    raw.sender ??
+    raw.role ??
+    "";
+
+  const name =
+    raw.name ??
+    raw.senderName ??
+    raw.username ??
+    raw.userName ??
+    raw.email ??
+    "";
+
+  const email =
+    raw.email ??
+    raw.userEmail ??
+    "";
+
+  const photoURL =
+    raw.photoURL ??
+    raw.photoUrl ??
+    raw.avatar ??
+    raw.avatarUrl ??
+    "";
+
+  // kalau langsung tak ada data penting, anggap bukan message valid
+  const hasUsefulData =
+    !!from || !!text || !!image || !!time || !!name || !!email;
+
+  if (!hasUsefulData) return null;
+
+  return {
+    _key: key,
+    from: from === "admin" ? "admin" : "user",
+    name,
+    email,
+    photoURL,
+    text: String(text || ""),
+    image: image || "",
+    time
+  };
+}
 /* ======================= SOUND (ENABLE ONCE) ======================= */
 let soundUnlocked = false;
 let soundQueued = 0;
@@ -1536,9 +1602,53 @@ function renderChatMessages(messages){
   let lastDate = null;
 
   messages.forEach(msg=>{
-    const msgDate = new Date(msg.time);
+  const hasValidTime = Number(msg.time) > 0;
+
+  if (hasValidTime) {
+    const msgDate = new Date(Number(msg.time));
     const dateLabels = formatDateLabel(msgDate);
     const dateStr = dateLabels.day + ", " + dateLabels.full;
+
+    if (lastDate !== dateStr){
+      lastDate = dateStr;
+      const dateLabelDiv = document.createElement("div");
+      dateLabelDiv.className = "date-label";
+      dateLabelDiv.innerHTML = `
+        <div class="date-label-inner">
+          <span class="day-label">${dateLabels.day}</span>
+          <span class="full-date-label">${dateLabels.full}</span>
+        </div>`;
+      chatBox.appendChild(dateLabelDiv);
+    }
+  }
+
+  const div = document.createElement("div");
+  div.className = "message " + (msg.from === "admin" ? "mine" : "theirs");
+
+  const timeStr = hasValidTime ? formatDateTimeMY(msg.time) : "";
+  const isUser = msg.from !== "admin";
+  const rawName = isUser
+    ? (msg.name || msg.email || "User")
+    : (msg.name || "Admin");
+  const senderName = formatUserName(rawName);
+  const avatarURL = msg.photoURL || (isUser ? "https://i.pravatar.cc/40" : "https://i.imgur.com/UhV9EWa.png");
+
+  let html = `
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+      <img src="${avatarURL}" alt="Avatar"
+           style="width:24px;height:24px;object-fit:cover;border-radius:50%;border:1px solid white;margin-right:6px;background-color:#000;">
+      <div>
+        ${senderName}
+        ${timeStr ? `<small class="msg-time">${timeStr}</small>` : ``}
+      </div>
+    </div>`;
+
+  if (msg.text)  html += `<div class="msg-text">${msg.text}</div>`;
+  if (msg.image) html += `<img src="${msg.image}" alt="Image" style="max-width:100%;border-radius:8px;margin-top:4px;">`;
+
+  div.innerHTML = html;
+  chatBox.appendChild(div);
+});
 
     if (lastDate !== dateStr){
       lastDate = dateStr;
@@ -1873,14 +1983,18 @@ function listenToChat(){
       return;
     }
 
-    const chatEntries = Object.entries(chats).sort((a,b)=>(a[1].time||0)-(b[1].time||0));
-    const messagesToMarkRead = [];
+   const normalizedMessages = Object.entries(chats)
+  .map(([key, raw]) => normalizeChatMessage(key, raw))
+  .filter(Boolean)
+  .sort((a, b) => (Number(a.time) || 0) - (Number(b.time) || 0));
 
-    allMessages = chatEntries.map(([key, msg])=>{
-      const isUnread = msg.from === "user" && !msg.readByAdmin;
-      if (isUnread) messagesToMarkRead.push(key);
-      return msg;
-    });
+const messagesToMarkRead = [];
+
+allMessages = normalizedMessages.map(msg => {
+  const isUnread = msg.from === "user" && !chats[msg._key]?.readByAdmin;
+  if (isUnread) messagesToMarkRead.push(msg._key);
+  return msg;
+});
 
     renderChatMessages(allMessages);
 
