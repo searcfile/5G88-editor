@@ -1601,75 +1601,36 @@ function renderChatMessages(messages){
 
   let lastDate = null;
 
-  messages.forEach(msg=>{
-  const hasValidTime = Number(msg.time) > 0;
+  messages.forEach(msg => {
+    const hasValidTime = Number(msg.time) > 0;
 
-  if (hasValidTime) {
-    const msgDate = new Date(Number(msg.time));
-    const dateLabels = formatDateLabel(msgDate);
-    const dateStr = dateLabels.day + ", " + dateLabels.full;
+    if (hasValidTime) {
+      const msgDate = new Date(Number(msg.time));
+      const dateLabels = formatDateLabel(msgDate);
+      const dateStr = dateLabels.day + ", " + dateLabels.full;
 
-    if (lastDate !== dateStr){
-      lastDate = dateStr;
-      const dateLabelDiv = document.createElement("div");
-      dateLabelDiv.className = "date-label";
-      dateLabelDiv.innerHTML = `
-        <div class="date-label-inner">
-          <span class="day-label">${dateLabels.day}</span>
-          <span class="full-date-label">${dateLabels.full}</span>
-        </div>`;
-      chatBox.appendChild(dateLabelDiv);
-    }
-  }
+      if (lastDate !== dateStr) {
+        lastDate = dateStr;
 
-  const div = document.createElement("div");
-  div.className = "message " + (msg.from === "admin" ? "mine" : "theirs");
-
-  const timeStr = hasValidTime ? formatDateTimeMY(msg.time) : "";
-  const isUser = msg.from !== "admin";
-  const rawName = isUser
-    ? (msg.name || msg.email || "User")
-    : (msg.name || "Admin");
-  const senderName = formatUserName(rawName);
-  const avatarURL = msg.photoURL || (isUser ? "https://i.pravatar.cc/40" : "https://i.imgur.com/UhV9EWa.png");
-
-  let html = `
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-      <img src="${avatarURL}" alt="Avatar"
-           style="width:24px;height:24px;object-fit:cover;border-radius:50%;border:1px solid white;margin-right:6px;background-color:#000;">
-      <div>
-        ${senderName}
-        ${timeStr ? `<small class="msg-time">${timeStr}</small>` : ``}
-      </div>
-    </div>`;
-
-  if (msg.text)  html += `<div class="msg-text">${msg.text}</div>`;
-  if (msg.image) html += `<img src="${msg.image}" alt="Image" style="max-width:100%;border-radius:8px;margin-top:4px;">`;
-
-  div.innerHTML = html;
-  chatBox.appendChild(div);
-});
-
-    if (lastDate !== dateStr){
-      lastDate = dateStr;
-      const dateLabelDiv = document.createElement("div");
-      dateLabelDiv.className = "date-label";
-      dateLabelDiv.innerHTML = `
-        <div class="date-label-inner">
-          <span class="day-label">${dateLabels.day}</span>
-          <span class="full-date-label">${dateLabels.full}</span>
-        </div>`;
-      chatBox.appendChild(dateLabelDiv);
+        const dateLabelDiv = document.createElement("div");
+        dateLabelDiv.className = "date-label";
+        dateLabelDiv.innerHTML = `
+          <div class="date-label-inner">
+            <span class="day-label">${dateLabels.day}</span>
+            <span class="full-date-label">${dateLabels.full}</span>
+          </div>`;
+        chatBox.appendChild(dateLabelDiv);
+      }
     }
 
     const div = document.createElement("div");
     div.className = "message " + (msg.from === "admin" ? "mine" : "theirs");
 
-    const timeStr = formatDateTimeMY(msg.time);
+    const timeStr = hasValidTime ? formatDateTimeMY(msg.time) : "";
     const isUser = msg.from !== "admin";
     const rawName = isUser
-    ? (msg.name || msg.email || "User")
-    : (msg.name || "Admin");
+      ? (msg.name || msg.email || "User")
+      : (msg.name || "Admin");
     const senderName = formatUserName(rawName);
     const avatarURL = msg.photoURL || (isUser ? "https://i.pravatar.cc/40" : "https://i.imgur.com/UhV9EWa.png");
 
@@ -1679,12 +1640,17 @@ function renderChatMessages(messages){
              style="width:24px;height:24px;object-fit:cover;border-radius:50%;border:1px solid white;margin-right:6px;background-color:#000;">
         <div>
           ${senderName}
-          <small class="msg-time">${timeStr}</small>
+          ${timeStr ? `<small class="msg-time">${timeStr}</small>` : ``}
         </div>
       </div>`;
 
-    if (msg.text)  html += `<div class="msg-text">${msg.text}</div>`;
-    if (msg.image) html += `<img src="${msg.image}" alt="Image" style="max-width:100%;border-radius:8px;margin-top:4px;">`;
+    if (msg.text) {
+      html += `<div class="msg-text">${msg.text}</div>`;
+    }
+
+    if (msg.image) {
+      html += `<img src="${msg.image}" alt="Image" style="max-width:100%;border-radius:8px;margin-top:4px;">`;
+    }
 
     div.innerHTML = html;
     chatBox.appendChild(div);
