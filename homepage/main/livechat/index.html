@@ -949,7 +949,47 @@ function updateAdminHeader(name, photo) {
   if (nameEl) nameEl.textContent = finalName;
   if (photoEl) photoEl.src = finalPhoto;
 }
-  function bindAdminHeaderPresence(){
+function formatLastSeenText(ts) {
+  if (!ts) return "Offline";
+
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return "Offline";
+
+  const now = new Date();
+
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const msgDay = new Date(d);
+  msgDay.setHours(0, 0, 0, 0);
+
+  const timeText = d.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  if (msgDay.getTime() === today.getTime()) {
+    return `Last seen today at ${timeText}`;
+  }
+
+  if (msgDay.getTime() === yesterday.getTime()) {
+    return `Last seen yesterday at ${timeText}`;
+  }
+
+  const sameYear = d.getFullYear() === now.getFullYear();
+
+  const dateText = d.toLocaleDateString('en-GB', sameYear
+    ? { day: 'numeric', month: 'short' }
+    : { day: 'numeric', month: 'short', year: 'numeric' }
+  );
+
+  return `Last seen ${dateText} at ${timeText}`;
+}
+function bindAdminHeaderPresence(){
   if (adminPresenceBound) return;
   adminPresenceBound = true;
 
@@ -971,10 +1011,7 @@ function updateAdminHeader(name, photo) {
     } else if (data.online === true) {
       typingEl.textContent = "Online";
     } else if (data.lastSeen) {
-      const d = new Date(data.lastSeen);
-      const hh = String(d.getHours()).padStart(2, "0");
-      const mm = String(d.getMinutes()).padStart(2, "0");
-      typingEl.textContent = `Last seen ${hh}:${mm}`;
+      typingEl.textContent = formatLastSeenText(data.lastSeen);
     } else {
       typingEl.textContent = "Offline";
     }
