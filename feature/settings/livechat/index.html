@@ -1011,7 +1011,7 @@ body{
       <div class="top-filter-row">
         <button id="filterAll" class="active-filter">All</button>
         <button id="filterUnread">Unread</button>
-        <button id="enableSoundBtn" type="button" class="active-filter">Enable Sound</button>
+
 
         <div class="user-stats">
           Total Users: <span id="totalUsers">0</span> |
@@ -1430,55 +1430,62 @@ function getLabelParts(id, data){
 }
 
 /* ======================= SOUND (ENABLE ONCE) ======================= */
-let soundEnabled = false;
+let soundUnlocked = false;
 let soundQueued = 0;
 
-async function enableSound(){
-  const a = document.getElementById("notifSound");
-  if(!a) return console.log("[SOUND] ❌ notifSound not found");
+async function unlockSoundOnce() {
+  if (soundUnlocked) return true;
 
-  try{
-    // unlock trick
+  const a = document.getElementById("notifSound");
+  if (!a) return false;
+
+  try {
     a.muted = true;
     await a.play();
     a.pause();
     a.currentTime = 0;
     a.muted = false;
 
-    soundEnabled = true;
-    console.log("[SOUND] ✅ enabled");
+    soundUnlocked = true;
+    console.log("[SOUND] ✅ unlocked");
 
-    // ✅ test bunyi sekali (confirm memang boleh)
-    try { a.currentTime = 0; await a.play(); } catch(e) {}
-    try { a.pause(); a.currentTime = 0; } catch(e) {}
-
-    // ✅ kalau ada bunyi yang “queue” masa belum enable
-    if(soundQueued > 0){
+    if (soundQueued > 0) {
+      const queued = soundQueued;
       soundQueued = 0;
-      beep();
+
+      // mainkan sekali saja walau queue banyak
+      if (queued > 0) {
+        setTimeout(() => {
+          beep();
+        }, 80);
+      }
     }
-  }catch(e){
-    soundEnabled = false;
-    console.log("[SOUND] ❌ blocked:", e.name, e.message);
-    alert("Sound kena unblock dulu bro. Klik Enable Sound sekali lagi.");
+
+    return true;
+  } catch (e) {
+    console.log("[SOUND] ❌ unlock blocked:", e?.name, e?.message);
+    return false;
   }
 }
 
-function beep(){
+function beep() {
   const a = document.getElementById("notifSound");
-  if(!a) return;
+  if (!a) return;
 
-  if(!soundEnabled){
+  if (!soundUnlocked) {
     soundQueued++;
     return;
   }
 
-  try{ a.currentTime = 0; }catch(e){}
-  a.play().catch(err=>{
+  try {
+    a.pause();
+    a.currentTime = 0;
+  } catch (e) {}
+
+  a.play().catch(err => {
     console.log("[SOUND] ❌ play failed:", err?.name, err?.message);
   });
 }
-
 /* ======================= ACTIVITY TIME ======================= */
 function getLoginTimeFromUser(data){
   return Number(data?.lastLoginTime || data?.lastLoginAt || 0);
@@ -2039,8 +2046,7 @@ function autoResizeMsgBox() {
 window.onload = ()=>{
   selectedUserId = null;
   activeUserIdSanitized = "";
-
-  document.getElementById("enableSoundBtn")?.addEventListener("click", enableSound);
+  
   document.getElementById("closeChatBtn")?.addEventListener("click", () => {
   showEmptyState();
   
@@ -2048,7 +2054,13 @@ window.onload = ()=>{
 
   showEmptyState();
     setMobileChatOpen(false);
+  const tryUnlock = () => {
+    unlockSoundOnce();
+  };
 
+  window.addEventListener("pointerdown", tryUnlock, { passive: true });
+  window.addEventListener("keydown", tryUnlock);
+  window.addEventListener("touchstart", tryUnlock, { passive: true });
   window.addEventListener("resize", () => {
     if (!isMobileView()) {
       setMobileChatOpen(false);
