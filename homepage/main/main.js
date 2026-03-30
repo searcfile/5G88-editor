@@ -897,12 +897,7 @@ document.addEventListener("click", (e) => {
     closeSidebar();
   }
 });
-function saveTabs(tabs) {
-  localStorage.setItem("openTabs", JSON.stringify(tabs));
-}
-function getTabs() {
-  return JSON.parse(localStorage.getItem("openTabs")) || [];
-}
+
 const emptyState = document.getElementById('emptyState');
 function updateEmptyState(){
   if (!emptyState) return;
@@ -919,13 +914,50 @@ function normUrl(u){
     return String(u||"").trim().replace(/\/+$/, "");
   }
 }
-function setActiveTabUrl(url){
-  if(!url) return;
-  localStorage.setItem("activeTabUrl", normUrl(url));
+function getCurrentUserStorageSuffix() {
+  try {
+    const login = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+    const email = String(login.email || "").trim().toLowerCase();
+
+    if (!email) return "guest";
+
+    // sanitize supaya aman untuk nama key localStorage
+    return email.replace(/[^a-z0-9]/g, "_");
+  } catch (e) {
+    return "guest";
+  }
 }
 
+function getTabsStorageKey() {
+  return `openTabs_${getCurrentUserStorageSuffix()}`;
+}
+
+function getActiveTabStorageKey() {
+  return `activeTabUrl_${getCurrentUserStorageSuffix()}`;
+}
+
+function saveTabs(tabs) {
+  localStorage.setItem(getTabsStorageKey(), JSON.stringify(tabs || []));
+}
+
+function getTabs() {
+  try {
+    return JSON.parse(localStorage.getItem(getTabsStorageKey()) || "[]");
+  } catch (e) {
+    return [];
+  }
+}
+
+function setActiveTabUrl(url){
+  if(!url) return;
+  localStorage.setItem(getActiveTabStorageKey(), normUrl(url));
+}
+
+function getActiveTabUrl(){
+  return normUrl(localStorage.getItem(getActiveTabStorageKey()) || "");
+}
 function applyActiveTabFromStorage(){
-  const activeUrl = normUrl(localStorage.getItem("activeTabUrl") || "");
+  const activeUrl = getActiveTabUrl();
   document.querySelectorAll(".tab").forEach(el=>{
     const u = normUrl(el.dataset.url || "");
     el.classList.toggle("active-tab", u === activeUrl);
@@ -1398,8 +1430,8 @@ window.addEventListener("load", () => {
   updateEmptyState();
   updateGameLogCheckmarks();
   updateGameLinksCheckmarks();
-  const activeUrl = localStorage.getItem("activeTabUrl");
-  const match = tabs.find(tab => tab.url === activeUrl);
+  const activeUrl = getActiveTabUrl();
+  const match = tabs.find(tab => normUrl(tab.url) === activeUrl);
 
   const liveBtn = document.getElementById("liveChatBtn");
   const linkBtn = document.getElementById("linkDownloadBtn");
