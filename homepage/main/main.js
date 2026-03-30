@@ -1902,13 +1902,13 @@ myOverrideRef.on('value', async (snap) => {
   });
 
   // Simpan info user di blurphp + status online
-  const sanitizedEmail = sessionData.email.toLowerCase().replace(/\./g, '_');
-  blurphpDb.ref('users/' + sanitizedEmail).update({
-    name: sessionData.name,
-    email: sessionData.email,
-    photoURL: sessionData.photo || '',
-    lastLoginTime: Date.now()
-  });
+blurphpDb.ref('users/' + sanitizedEmail).update({
+  name: sessionData.name,
+  email: sessionData.email,
+  photoURL: sessionData.photo || '',
+  lastLoginTime: Date.now(),
+  pageLoginTime: Date.now()
+});
 
   const connectedRef = blurphpDb.ref(".info/connected");
   const onlineRef = blurphpDb.ref("users/" + sanitizedEmail + "/online");
