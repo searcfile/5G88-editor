@@ -1626,32 +1626,62 @@ function ensureChatMetaListener(sanitized){
     }
 
 if (m.from === "user" && m.readByAdmin !== true){
-  const idxCache = allUsersData.findIndex(([id]) => id === sanitized);
-  const currentCount = Number(
-    idxCache !== -1
-      ? (allUsersData[idxCache][1]?.unreadCountForAdmin || 0)
-      : 0
-  );
-  const nextCount = currentCount + 1;
+  // ✅ kalau chat user ini sedang dibuka admin sekarang,
+  // terus mark read, jangan tambah unread badge
+  if (sanitized === activeUserIdSanitized) {
+    db.ref(`chats/${sanitized}/${snap.key}`).update({
+      readByAdmin: true
+    }).catch(()=>{});
 
-  db.ref(`users/${sanitized}`).update({
-    unreadForAdmin: true,
-    unreadCountForAdmin: nextCount,
-    lastChatTime: t
-  }).catch(()=>{});
+    db.ref(`users/${sanitized}`).update({
+      unreadForAdmin: false,
+      unreadCountForAdmin: 0,
+      lastChatTime: t
+    }).catch(()=>{});
 
-  if (idxCache !== -1){
-    allUsersData[idxCache][1] = {
-      ...(allUsersData[idxCache][1] || {}),
+    const idxActive = allUsersData.findIndex(([id]) => id === sanitized);
+    if (idxActive !== -1){
+      allUsersData[idxActive][1] = {
+        ...(allUsersData[idxActive][1] || {}),
+        unreadForAdmin: false,
+        unreadCountForAdmin: 0,
+        lastChatTime: t
+      };
+    }
+
+    unreadCountCache[sanitized] = 0;
+    scheduleRender();
+  } else {
+    const idxCache = allUsersData.findIndex(([id]) => id === sanitized);
+    const currentCount = Number(
+      idxCache !== -1
+        ? (allUsersData[idxCache][1]?.unreadCountForAdmin || 0)
+        : 0
+    );
+    const nextCount = currentCount + 1;
+
+    db.ref(`users/${sanitized}`).update({
       unreadForAdmin: true,
       unreadCountForAdmin: nextCount,
       lastChatTime: t
-    };
-  }
+    }).catch(()=>{});
 
-  // ✅ bunyi hanya untuk msg baru (bukan masa boot attach)
-  if (initialUserListLoaded && wasBooted && sanitized !== activeUserIdSanitized){
-    beep();
+    if (idxCache !== -1){
+      allUsersData[idxCache][1] = {
+        ...(allUsersData[idxCache][1] || {}),
+        unreadForAdmin: true,
+        unreadCountForAdmin: nextCount,
+        lastChatTime: t
+      };
+    }
+
+    unreadCountCache[sanitized] = nextCount;
+
+    if (initialUserListLoaded && wasBooted){
+      beep();
+    }
+
+    scheduleRender();
   }
 }
 
@@ -1847,34 +1877,32 @@ function listenToChat(){
 
     renderChatMessages(allMessages);
 
-    if (justOpenedChat){
-      justOpenedChat = false;
+if (justOpenedChat || activeUserIdSanitized){
+  justOpenedChat = false;
 
-      // mark read messages
-      if (messagesToMarkRead.length){
-        const updates = {};
-        messagesToMarkRead.forEach(k=> updates[`${k}/readByAdmin`] = true);
-        db.ref(`chats/${activeUserIdSanitized}`).update(updates).catch(()=>{});
-      }
+  if (messagesToMarkRead.length){
+    const updates = {};
+    messagesToMarkRead.forEach(k => updates[`${k}/readByAdmin`] = true);
+    db.ref(`chats/${activeUserIdSanitized}`).update(updates).catch(()=>{});
+  }
 
-      // ✅ clear unread flag (NO REFRESH)
-      db.ref(`users/${activeUserIdSanitized}`).update({
-      unreadForAdmin: false,
-      unreadCountForAdmin: 0
-      }).catch(()=>{});
-
-      // ✅ update cache terus (supaya icon merah hilang terus)
-      const idx = allUsersData.findIndex(([sid])=> sid === activeUserIdSanitized);
-     if(idx !== -1){
-  allUsersData[idx][1] = {
-    ...(allUsersData[idx][1] || {}),
+  db.ref(`users/${activeUserIdSanitized}`).update({
     unreadForAdmin: false,
     unreadCountForAdmin: 0
-  };
+  }).catch(()=>{});
+
+  const idx = allUsersData.findIndex(([sid]) => sid === activeUserIdSanitized);
+  if (idx !== -1){
+    allUsersData[idx][1] = {
+      ...(allUsersData[idx][1] || {}),
+      unreadForAdmin: false,
+      unreadCountForAdmin: 0
+    };
+  }
+
+  unreadCountCache[activeUserIdSanitized] = 0;
+  scheduleRender();
 }
-unreadCountCache[activeUserIdSanitized] = 0;
-scheduleRender();
-    }
   });
 }
 
