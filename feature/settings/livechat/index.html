@@ -980,6 +980,24 @@ body{
     font-size: 13px;
   }
 }
+.unread-badge{
+  margin-left: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #ff2b2b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+}
   </style>
 </head>
 <body>
@@ -1557,23 +1575,26 @@ function renderChatMessages(messages){
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-/* ======================= UNREAD SEED (FOR OLD UNREAD) ======================= */
-// ✅ untuk unread lama yang belum pernah set users/unreadForAdmin
 function seedUnreadFlagOnce(sid){
-  // kalau dah true, skip
   db.ref(`users/${sid}/unreadForAdmin`).once("value").then(s=>{
-    if (s.val() === true) return;
+    const hasFlag = s.val() === true;
 
     return db.ref(`chats/${sid}`)
       .orderByChild("time")
-      .limitToLast(50)
+      .limitToLast(200)
       .once("value")
       .then(cs=>{
         const chats = cs.val() || {};
         const list = Object.values(chats).filter(Boolean);
-        const hasUnread = list.some(m => m && m.from === "user" && m.readByAdmin !== true);
-        if (hasUnread){
-          return db.ref(`users/${sid}`).update({ unreadForAdmin:true }).catch(()=>{});
+
+        const unreadCount = list.filter(m => m && m.from === "user" && m.readByAdmin !== true).length;
+        const hasUnread = unreadCount > 0;
+
+        if (hasUnread || hasFlag){
+          return db.ref(`users/${sid}`).update({
+            unreadForAdmin: hasUnread,
+            unreadCountForAdmin: unreadCount
+          }).catch(()=>{});
         }
       });
   }).catch(()=>{});
@@ -1603,18 +1624,35 @@ function ensureChatMetaListener(sanitized){
       chatMeta[sanitized].identity = { name:m.name, email:m.email, photoURL:m.photoURL };
     }
 
-    // ✅ bila user msg unread → set users/unreadForAdmin TRUE (supaya icon merah muncul)
-    if (m.from === "user" && m.readByAdmin !== true){
-      db.ref(`users/${sanitized}`).update({
-        unreadForAdmin: true,
-        lastChatTime: t
-      }).catch(()=>{});
+if (m.from === "user" && m.readByAdmin !== true){
+  const idxCache = allUsersData.findIndex(([id]) => id === sanitized);
+  const currentCount = Number(
+    idxCache !== -1
+      ? (allUsersData[idxCache][1]?.unreadCountForAdmin || 0)
+      : 0
+  );
+  const nextCount = currentCount + 1;
 
-      // ✅ bunyi hanya untuk msg baru (bukan masa boot attach)
-      if (initialUserListLoaded && wasBooted && sanitized !== activeUserIdSanitized){
-        beep();
-      }
-    }
+  db.ref(`users/${sanitized}`).update({
+    unreadForAdmin: true,
+    unreadCountForAdmin: nextCount,
+    lastChatTime: t
+  }).catch(()=>{});
+
+  if (idxCache !== -1){
+    allUsersData[idxCache][1] = {
+      ...(allUsersData[idxCache][1] || {}),
+      unreadForAdmin: true,
+      unreadCountForAdmin: nextCount,
+      lastChatTime: t
+    };
+  }
+
+  // ✅ bunyi hanya untuk msg baru (bukan masa boot attach)
+  if (initialUserListLoaded && wasBooted && sanitized !== activeUserIdSanitized){
+    beep();
+  }
+}
 
     // bump activity + sort list
     const idx = allUsersData.findIndex(([id])=> id === sanitized);
@@ -1660,7 +1698,8 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
   const q = String(searchTerm||"").toLowerCase();
 
   userList.forEach(([sanitized, userData])=>{
-    const hasUnread = (userData?.unreadForAdmin === true);
+    const unreadCount = Number(userData?.unreadCountForAdmin || 0);
+    const hasUnread = unreadCount > 0 || userData?.unreadForAdmin === true;
 
     if (filter === "unread" && !hasUnread) return;
 
@@ -1691,9 +1730,9 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
         <span class="label-text">${label}</span>
 
         ${hasUnread ? `
-          <svg class="unread-icon" width="14" height="14" viewBox="0 0 24 24" fill="red" style="margin-left:4px;">
-            <path d="M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2zm0 4a1 1 0 0 0-1 1v6a1 1 0 1 0 2 0V7a1 1 0 0 0-1-1zm0 10a1.5 1.5 0 1 0 0 3a1.5 1.5 0 0 0 0-3z"/>
-          </svg>` : ""}
+        <span class="unread-badge">
+        ${unreadCount > 99 ? "99+" : unreadCount}
+        </span>` : ""}
 
         <svg class="online-indicator" width="10" height="10" viewBox="0 0 24 24" fill="#00ff00"
           style="margin-left:auto;display:${userData?.online ? "inline-block":"none"};">
@@ -1819,14 +1858,19 @@ function listenToChat(){
 
       // ✅ clear unread flag (NO REFRESH)
       db.ref(`users/${activeUserIdSanitized}`).update({
-        unreadForAdmin: false
+      unreadForAdmin: false,
+      unreadCountForAdmin: 0
       }).catch(()=>{});
 
       // ✅ update cache terus (supaya icon merah hilang terus)
       const idx = allUsersData.findIndex(([sid])=> sid === activeUserIdSanitized);
       if(idx !== -1){
-        allUsersData[idx][1] = { ...(allUsersData[idx][1]||{}), unreadForAdmin:false };
-      }
+  allUsersData[idx][1] = {
+    ...(allUsersData[idx][1] || {}),
+    unreadForAdmin: false,
+    unreadCountForAdmin: 0
+  };
+}
       scheduleRender();
     }
   });
