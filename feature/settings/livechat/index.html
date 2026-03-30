@@ -1123,6 +1123,7 @@ let allMessages = [];
 let justOpenedChat = false;
 
 let lastPresenceId = null;
+let lastPresenceId = null;
 
 // chatMeta: simpan info realtime chat (listener sekali saja per user)
 const chatMeta = {}; // { sid: { listening:true, lastChatTime:number, identity:{...}, booted:true/false } }
@@ -1864,14 +1865,15 @@ function listenToChat(){
 
       // ✅ update cache terus (supaya icon merah hilang terus)
       const idx = allUsersData.findIndex(([sid])=> sid === activeUserIdSanitized);
-      if(idx !== -1){
+     if(idx !== -1){
   allUsersData[idx][1] = {
     ...(allUsersData[idx][1] || {}),
     unreadForAdmin: false,
     unreadCountForAdmin: 0
   };
 }
-      scheduleRender();
+unreadCountCache[activeUserIdSanitized] = 0;
+scheduleRender();
     }
   });
 }
@@ -2121,50 +2123,62 @@ if (msgInput) {
   document.getElementById("searchUser")?.addEventListener("input", ()=> scheduleRender());
   document.getElementById("searchMessage")?.addEventListener("input", e=> filterMessages(e.target.value));
 
-  db.ref("users").on("child_added", snap=>{
-    const sanitized = snap.key;
-    const data = snap.val() || {};
+db.ref("users").on("child_added", snap=>{
+  const sanitized = snap.key;
+  const data = snap.val() || {};
 
-    const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
-    const activity = makeActivityTime(lastChat, data);
+  unreadCountCache[sanitized] = Number(data?.unreadCountForAdmin || 0);
 
-    const idx = allUsersData.findIndex(([sid])=> sid === sanitized);
-    if (idx !== -1){
-      allUsersData[idx][1] = data;
-      allUsersData[idx][2] = activity;
-    } else {
-      allUsersData.push([sanitized, data, activity]);
-    }
+  const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
+  const activity = makeActivityTime(lastChat, data);
 
-    allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
-    ensureChatMetaListener(sanitized);
-    seedUnreadFlagOnce(sanitized);
-    scheduleRender();
-  });
+  const idx = allUsersData.findIndex(([sid])=> sid === sanitized);
+  if (idx !== -1){
+    allUsersData[idx][1] = data;
+    allUsersData[idx][2] = activity;
+  } else {
+    allUsersData.push([sanitized, data, activity]);
+  }
 
-  db.ref("users").on("child_changed", snap=>{
-    const sanitized = snap.key;
-    const data = snap.val() || {};
+  allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
+  ensureChatMetaListener(sanitized);
+  seedUnreadFlagOnce(sanitized);
+  scheduleRender();
+});
 
-    if (initialUserListLoaded && data.unreadForAdmin === true && sanitized !== activeUserIdSanitized){
-      beep();
-    }
+db.ref("users").on("child_changed", snap=>{
+  const sanitized = snap.key;
+  const data = snap.val() || {};
 
-    const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
-    const activity = makeActivityTime(lastChat, data);
+  const prevUnread = Number(unreadCountCache[sanitized] || 0);
+  const nextUnread = Number(data?.unreadCountForAdmin || 0);
 
-    const idx = allUsersData.findIndex(([sid])=> sid === sanitized);
-    if (idx !== -1){
-      allUsersData[idx][1] = data;
-      allUsersData[idx][2] = activity;
-    } else {
-      allUsersData.push([sanitized, data, activity]);
-    }
+  unreadCountCache[sanitized] = nextUnread;
 
-    allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
-    ensureChatMetaListener(sanitized);
-    scheduleRender();
-  });
+  // bunyi hanya kalau unread bertambah
+  if (
+    initialUserListLoaded &&
+    nextUnread > prevUnread &&
+    sanitized !== activeUserIdSanitized
+  ){
+    beep();
+  }
+
+  const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
+  const activity = makeActivityTime(lastChat, data);
+
+  const idx = allUsersData.findIndex(([sid])=> sid === sanitized);
+  if (idx !== -1){
+    allUsersData[idx][1] = data;
+    allUsersData[idx][2] = activity;
+  } else {
+    allUsersData.push([sanitized, data, activity]);
+  }
+
+  allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
+  ensureChatMetaListener(sanitized);
+  scheduleRender();
+});
 };
   const THEME_KEY = "siteTheme";
 
