@@ -687,15 +687,20 @@ function clearSameDeviceFilter(){
   }
 
   // ---------- Actions ----------
-  function forceLogoutUser(email){
-    const key = sanitizeEmail(email);
-    const payload = { forceLogout: true, at: Date.now() };
-    firebase.database()
-      .ref('logins/admin_override/' + key)
-      .set(payload)
-      .then(()=> showToast(`Logout sent to ${email}`))
-      .catch(err=> showToast(`Error logout: ${err.message}`, "error"));
-  }
+function forceLogoutUser(email){
+  const key = sanitizeEmail(email);
+  const payload = {
+    forceLogout: true,
+    clearAllStorage: true,   // ✅ hanya admin logout clear semua storage
+    at: Date.now()
+  };
+
+  firebase.database()
+    .ref('logins/admin_override/' + key)
+    .set(payload)
+    .then(()=> showToast(`Logout sent to ${email}`))
+    .catch(err=> showToast(`Error logout: ${err.message}`, "error"));
+}
 
   function toggleBlockUser(button){
     const email = button.getAttribute("data-email");
@@ -988,27 +993,31 @@ function setupClearButton(){
   document.getElementById('forceLogoutAllBtn')
     .addEventListener('click', function(){ showConfirmAllBox(this); });
 
-  function doForceLogoutAll(){
-    const ts = Date.now();
-    const emails = allLoginData.filter(u => u.email).map(u => u.email);
-    if (emails.length === 0) return showToast('Tidak ada user untuk di-logout.', 'error');
+function doForceLogoutAll(){
+  const ts = Date.now();
+  const emails = allLoginData.filter(u => u.email).map(u => u.email);
+  if (emails.length === 0) return showToast('Tidak ada user untuk di-logout.', 'error');
 
-    const updates = {};
-    emails.forEach(email => {
-      const key = sanitizeEmail(email);
-      updates['logins/admin_override/' + key] = { forceLogout: true, at: ts };
-    });
+  const updates = {};
+  emails.forEach(email => {
+    const key = sanitizeEmail(email);
+    updates['logins/admin_override/' + key] = {
+      forceLogout: true,
+      clearAllStorage: true,   // ✅ hanya untuk admin logout all
+      at: ts
+    };
+  });
 
-    firebase.database().ref().update(updates)
-      .then(() => {
-        let delay = 0;
-        emails.forEach(email => {
-          setTimeout(() => showToast(`Logout sent to ${email}`), delay);
-          delay += 200;
-        });
-      })
-      .catch(err => showToast(`Error force logout all: ${err.message}`, "error"));
-  }
+  firebase.database().ref().update(updates)
+    .then(() => {
+      let delay = 0;
+      emails.forEach(email => {
+        setTimeout(() => showToast(`Logout sent to ${email}`), delay);
+        delay += 200;
+      });
+    })
+    .catch(err => showToast(`Error force logout all: ${err.message}`, "error"));
+}
     // === Username Store Reference ===
   // Disimpan di: logins/user_accounts/{username}
   const userAcctRef = firebase.database().ref('logins/user_accounts');
