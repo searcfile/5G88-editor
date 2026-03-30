@@ -267,8 +267,8 @@ body.dark-theme{
   .rpItem{
     display:flex; gap:10px; align-items:center; justify-content:space-between;
     padding:10px 10px;
-    border-radius:12px;
-    border:1px solid #303030;
+    border-radius:6px;
+    border:1px solid #424242;
     background:#141414;
   }
   .rpMeta{ display:flex; flex-direction:column; gap:2px; min-width:0; }
@@ -284,13 +284,15 @@ body.dark-theme{
   }
   .rpActions{ display:flex; gap:8px; }
   .rpMini{
-    padding:8px 10px;
-    border-radius:10px;
+    padding:0px 15px;
+    border-radius:6px;
     border:1px solid rgba(148,163,184,.18);
     background: rgba(255,255,255,.06);
     color:#fff;
     cursor:pointer;
     transition:.15s ease;
+    height:32px;
+   font-site:14px;
   }
   .rpMini:hover{ background: rgba(255,255,255,.10); }
   .rpMini:active{ transform: translateY(1px); }
@@ -348,11 +350,11 @@ body.dark-theme{
     background:#1668dc;
   }
   tbody tr{
-    background: rgba(2,6,23,.35);
+    background: 141414;
     transition:.15s ease;
   }
   tbody tr:nth-child(odd){
-    background: rgba(2,6,23,.48);
+    background: 141414;
   }
   tbody tr:hover{
     background: rgba(22,104,220,.16);
@@ -493,16 +495,16 @@ body.dark-theme{
     <!-- ===== LEFT: ADD TAB LINK (moved here) ===== -->
     <div class="cardShell rightPanel" id="tabLinkPanel">
       <div class="rpHead">
-        <div class="rpTitle">➕ Add Tab Link</div>
-        <div class="rpSub">Tambah tab baru untuk Sidebar / Header (GameLog, Bank Receipt, List Type).</div>
+        <div class="rpTitle">Add Tab Link</div>
+        <div class="rpSub">Provider API Link Tab Main.</div>
       </div>
 
       <div class="rpBody">
         <label class="rpLabel">Tab Name</label>
-        <input class="rpInput" id="newTabName" placeholder="Contoh: VAULT" />
+        <input class="rpInput" id="newTabName" placeholder="Vault" />
 
         <label class="rpLabel">Tab URL</label>
-        <input class="rpInput" id="newTabUrl" placeholder="https://searcfile.github.io/5g88-php/vault/" />
+        <input class="rpInput" id="newTabUrl" placeholder="URL Provider" />
 
         <div class="rpRow">
           <div class="rpCol">
@@ -545,7 +547,7 @@ body.dark-theme{
     <div class="cardShell section">
       <div class="section-header">
         <div class="section-title">
-          <span>Tab Setting</span>
+          <span>Tab Settings</span>
         </div>
           <input class="secSearch" id="featureSearch" placeholder="Search feature..." />
       </div>
@@ -554,7 +556,7 @@ body.dark-theme{
         <table>
           <thead>
             <tr>
-              <th class="col-name">Nama Feature</th>
+              <th class="col-name">Product Feature</th>
               <th class="col-switch">On/Hide</th>
               <th class="col-status">Status</th>
             </tr>
