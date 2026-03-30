@@ -943,7 +943,7 @@ function updateAdminHeader(name, photo) {
   const nameEl = document.getElementById("headerUserName");
   const photoEl = document.getElementById("headerUserPhoto");
 
-  const finalName = cleanDuplicateName(name || "Admin");
+  const finalName = "Admin";
   const finalPhoto = photo || "https://i.imgur.com/qiZFOs9.png";
 
   if (nameEl) nameEl.textContent = finalName;
@@ -1000,9 +1000,9 @@ function bindAdminHeaderPresence(){
     const data = snap.val() || {};
 
     updateAdminHeader(
-      data.name || "Admin",
-      data.photoURL || "https://i.imgur.com/qiZFOs9.png"
-    );
+    "Admin",
+    data.photoURL || "https://i.imgur.com/qiZFOs9.png"
+   );
 
     if (!typingEl) return;
 
