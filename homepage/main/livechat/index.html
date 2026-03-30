@@ -116,7 +116,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   background: var(--page-input);
   height: 60vh;
   border-radius: 6px;
-  border: 1px solid #3c89e8;
+  border: 1px solid var(--border-input);
   -webkit-overflow-scrolling: touch;
   scroll-behavior: auto;
   overscroll-behavior: contain;
@@ -214,10 +214,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   margin-top: 12px;
   padding: 10px 12px;
   border: 1px solid var(--border-input);
-  border-radius: 16px;
-  background: #000;
+  border-radius: 6px;
+  background: var(--page-input);
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  color:var(--page-text);
 }
 
 .send-box:focus-within {
@@ -242,7 +243,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 }
 
 #msg::placeholder {
-  color: rgba(255,255,255,0.35);
+  color: var(--blur);
 }
 
 #msg:focus {
