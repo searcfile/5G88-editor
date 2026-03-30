@@ -412,7 +412,7 @@ function moveNotifButtonResponsive() {
 
   if (!notifButtonEl || !mobileSlot || !desktopSlot) return;
 
-  const isMobile = window.innerWidth <= 940; // samakan dengan CSS kamu
+  const isMobile = window.innerWidth <= 768; // samakan dengan CSS kamu
 
   if (isMobile) {
     if (notifButtonEl.parentElement !== mobileSlot) {
