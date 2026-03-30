@@ -38,6 +38,13 @@ const loginDb = loginApp.database();
 const loginAuth = loginApp.auth();
 const THEME_KEY = "siteTheme";
 
+function sanitizeEmail(email) {
+  return String(email || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\./g, "_")
+    .replace(/[#$\[\]/]/g, "_");
+}
 function getSavedTheme() {
   const saved = localStorage.getItem(THEME_KEY);
   return saved === "dark" ? "dark" : "light";
