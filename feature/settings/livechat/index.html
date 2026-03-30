@@ -1557,7 +1557,12 @@ function beep() {
 }
 /* ======================= ACTIVITY TIME ======================= */
 function getLoginTimeFromUser(data){
-  return Number(data?.lastLoginTime || data?.lastLoginAt || 0);
+  return Number(
+    data?.pageLoginTime ||
+    data?.lastLoginTime ||
+    data?.lastLoginAt ||
+    0
+  );
 }
 function makeActivityTime(lastChatTime, userData){
   const loginTime = getLoginTimeFromUser(userData);
