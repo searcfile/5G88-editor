@@ -33,7 +33,9 @@ const loginApp = firebase.initializeApp({
   messagingSenderId: "648022690285",
   appId: "1:648022690285:web:aefad61a2f46e6cf39f05b"
 }, "loginApp");
+
 const loginDb = loginApp.database();
+const loginAuth = loginApp.auth();
 const THEME_KEY = "siteTheme";
 
 function getSavedTheme() {
@@ -203,7 +205,7 @@ const TAB_ROUTE_MAP = {
       try { sessRef.off('value', onValue); } catch(_){}
       try { clearInterval(hb); } catch(_){}
       try { await sessRef.remove(); } catch(_){}
-      try { await loginApp.auth().signOut(); } catch(_){}
+      try { await loginAuth.signOut(); } catch(_){}
       if (typeof onForcedLogout === 'function') onForcedLogout();
       else location.reload();
     }
@@ -272,7 +274,7 @@ const TAB_ROUTE_MAP = {
   }
   async function doLogout(reason="timeout"){
     try { clearInterval(checkTimer); } catch {}
-    try { loginApp?.auth && (await loginApp.auth().signOut()); } catch(_) {}
+    try { await loginAuth.signOut(); } catch(_) {}
     try { localStorage.removeItem("gmailLogin"); } catch(_) {}
     try { localStorage.removeItem(STORAGE_EXPIRE); } catch(_) {}
     try { bc && bc.postMessage({t:"logout", reason}); } catch {}
