@@ -203,17 +203,19 @@ body.light-theme{
 .header-links{
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-left: 38px; /* bagi ruang untuk menu icon */
+  height: 100%;
+  padding-inline: 16px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .header-right-meta{
   display: flex;
   align-items: center;
-  margin-left: auto;
-  gap: 12px;
+  gap: 8px;
+  height: 100%;
 }
   .header img {position: absolute;max-height: 40px;top: 5px;}
-.user-info {
+  .user-info {
   position: static;
   margin-left: auto;
   display: flex;
@@ -222,10 +224,8 @@ body.light-theme{
   gap: 8px;
   white-space: nowrap;
   flex-wrap: nowrap;
+  transition: 0.3s;
   height: 100%;
-
-  flex: 0 0 auto;   /* kanan jangan shrink */
-  min-width: max-content; /* kanan simpan ruang sendiri */
 }
 .user-text {
   gap: 8px;
@@ -420,7 +420,7 @@ body.light-theme{
   #logoutBtn {display: flex;align-items: center;justify-content: center;height:32px;line-height: 1;gap: 8px;background: var(--backgroundbtn);color: var(--colorbtn);padding: 5px 10px;border-radius: 6px;cursor: pointer;width: 100%;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid var(--border2);font-size: 14px;}#logoutBtn:hover {color: var(--gold-hover);transition: all 0.3s ease;border: 1px solid var(--gold-hover);}#logoutBtn:active {color: var(--gold-active);transition: all 0.3s ease;border: 1px solid var(--gold-active);}
   #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
   #notifButton:hover #notifTooltip {display: block !important;opacity: 1;z-index: 10000;}
-.user-dropdown {
+ .user-dropdown {
   position: relative;
   display: flex;
   align-items: center;
