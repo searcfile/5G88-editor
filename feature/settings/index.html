@@ -601,12 +601,25 @@ html, body {
   background: var(--gold);
   color: white;
 }
-  .dot-icon {
+.livechat-badge{
   position: absolute;
-  top: 13px;
-  right: 0;
+  top: 8px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #ff2b2b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
   display: none;
-  z-index: 2;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
 }
 .sidebar-inner{
   position: relative;
@@ -961,15 +974,13 @@ html, body {
   </div>
 
   <div class="header-left">
-    <button id="liveChatBtn" onclick="addTab('ADMIN LIVECHAT', 'https://feature-settings.vercel.app/settings/livechat')" class="live-chat-button" style="position: relative;">
-      <svg width="16" height="16" fill="white" viewBox="0 0 24 24" style="margin-right: 6px;">
-        <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
-      </svg>
-      <span class="btn-label">LiveChat</span>
-      <svg id="livechatDot" class="dot-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="red" viewBox="0 0 24 24">
-        <path d="M12 1c-6.338 0-12 4.226-12 10.007 0 2.05.739 4.063 2.047 5.625.055 1.83-1.023 4.456-1.993 6.368 2.602-.47 6.301-1.508 7.978-2.536 9.236 2.247 15.968-3.405 15.968-9.457 0-5.812-5.701-10.007-12-10.007zm1 15h-2v-6h2v6zm-1-7.75c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
-      </svg>
-    </button>
+<button id="liveChatBtn" onclick="addTab('ADMIN LIVECHAT', 'https://feature-settings.vercel.app/settings/livechat')" class="live-chat-button" style="position: relative;">
+  <svg width="16" height="16" fill="white" viewBox="0 0 24 24" style="margin-right: 6px;">
+    <path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-6-6h-9.667l-5.333 4v-4h-3v-14.001h18v14.001zm-9-4.084h-5v1.084h5v-1.084zm5-2.916h-10v1h10v-1zm0-3h-10v1h10v-1z"/>
+  </svg>
+  <span class="btn-label">LiveChat</span>
+  <span id="livechatDot" class="livechat-badge" style="display:none;">0</span>
+</button>
 
     <button id="detailLoginBtn" onclick="addTab('DETAIL LOGIN', 'https://feature-settings.vercel.app/settings/datalogin')" class="live-chat-button">
       <svg width="16" height="16" fill="white" viewBox="0 0 24 24" style="margin-right: 6px;">
@@ -1372,54 +1383,48 @@ async function logoutAccount() {
       console.warn("❌ Tidak bisa play: belum ada interaksi user");
     }
   }
+let lastHeaderUnreadTotal = 0;
 
-  function showLivechatDot(status) {
-    const dot = document.getElementById("livechatDot");
-    if (dot) dot.style.display = status ? "inline-block" : "none";
+function setLivechatBadgeCount(count) {
+  const badge = document.getElementById("livechatDot");
+  if (!badge) return;
+
+  const total = Number(count || 0);
+
+  if (total > 0) {
+    badge.textContent = total > 99 ? "99+" : String(total);
+    badge.style.display = "inline-flex";
+  } else {
+    badge.textContent = "0";
+    badge.style.display = "none";
+  }
+}
+db.ref("users").on("value", (snapshot) => {
+  const users = snapshot.val() || {};
+  let totalUnread = 0;
+
+  Object.values(users).forEach(user => {
+    totalUnread += Number(user?.unreadCountForAdmin || 0);
+  });
+
+  // kalau unread bertambah, baru bunyi
+  if (totalUnread > lastHeaderUnreadTotal) {
+    playNotif();
   }
 
-  // ✅ Pantau semua pesan baru (real-time)
-  db.ref("chats").on("child_changed", (snapshot) => {
-    const userId = snapshot.key;
-    const messages = snapshot.val();
-    let foundUnread = false;
+  lastHeaderUnreadTotal = totalUnread;
 
-    for (const msgId in messages) {
-      const msg = messages[msgId];
-      const key = `${userId}-${msgId}`;
+  const liveBtn = document.getElementById("liveChatBtn");
+  const isLivechatActive = liveBtn?.classList.contains("active-livechat");
 
-      if (msg.from === "user" && msg.readByAdmin !== true && !notifiedKeys.has(key)) {
-        console.log("🔔 Pesan baru terdeteksi:", key);
-        playNotif();
-        showLivechatDot(true);
-        notifiedKeys.add(key);
-        foundUnread = true;
-      }
-    }
+  // kalau tab livechat tengah buka, hide badge
+  if (isLivechatActive) {
+    setLivechatBadgeCount(0);
+  } else {
+    setLivechatBadgeCount(totalUnread);
+  }
+});
 
-    if (!foundUnread) {
-      showLivechatDot(false);
-    }
-  });
-
-  // ✅ Juga pantau child_added (jika user baru kirim pesan pertama kali)
-  db.ref("chats").on("child_added", (snapshot) => {
-    const userId = snapshot.key;
-    const messages = snapshot.val();
-    if (!messages) return;
-
-    for (const msgId in messages) {
-      const msg = messages[msgId];
-      const key = `${userId}-${msgId}`;
-
-      if (msg.from === "user" && msg.readByAdmin !== true && !notifiedKeys.has(key)) {
-        console.log("🔔 Pesan baru dari user baru:", key);
-        playNotif();
-        showLivechatDot(true);
-        notifiedKeys.add(key);
-      }
-    }
-  });
   const tabBar = document.getElementById("tabBar");
   const menuIcon = document.getElementById("menuIcon");
   const sidebar = document.getElementById("sidebar");
@@ -1500,14 +1505,25 @@ function addTab(label, url) {
   const liveBtn = document.getElementById("liveChatBtn");
   const dot = document.getElementById("livechatDot");
 
-  if (liveBtn) {
-    if (label === "ADMIN LIVECHAT" || label === "LIVE CHAT") {
-      liveBtn.classList.add("active-livechat");
-      if (dot) dot.style.display = "none"; // sembunyikan dot merah
-    } else {
-      liveBtn.classList.remove("active-livechat");
-    }
+if (liveBtn) {
+  if (label === "ADMIN LIVECHAT" || label === "LIVE CHAT") {
+    liveBtn.classList.add("active-livechat");
+    if (dot) dot.style.display = "none";
+  } else {
+    liveBtn.classList.remove("active-livechat");
+
+    db.ref("users").once("value").then((snapshot) => {
+      const users = snapshot.val() || {};
+      let totalUnread = 0;
+
+      Object.values(users).forEach(user => {
+        totalUnread += Number(user?.unreadCountForAdmin || 0);
+      });
+
+      setLivechatBadgeCount(totalUnread);
+    });
   }
+}
   const detailBtn = document.getElementById("detailLoginBtn");
 
 if (detailBtn) {
@@ -1645,15 +1661,26 @@ function loadPage(url) {
   const detailBtn = document.getElementById("detailLoginBtn");
   const settingsBtn = document.getElementById("tabsettingsBtn");
 
-  if (liveBtn) {
-    if (label === "ADMIN LIVECHAT" || label === "LIVE CHAT") {
-      liveBtn.classList.add("active-livechat");
-      const dot = document.getElementById("livechatDot");
-      if (dot) dot.style.display = "none";
-    } else {
-      liveBtn.classList.remove("active-livechat");
-    }
+if (liveBtn) {
+  if (label === "ADMIN LIVECHAT" || label === "LIVE CHAT") {
+    liveBtn.classList.add("active-livechat");
+    const dot = document.getElementById("livechatDot");
+    if (dot) dot.style.display = "none";
+  } else {
+    liveBtn.classList.remove("active-livechat");
+
+    db.ref("users").once("value").then((snapshot) => {
+      const users = snapshot.val() || {};
+      let totalUnread = 0;
+
+      Object.values(users).forEach(user => {
+        totalUnread += Number(user?.unreadCountForAdmin || 0);
+      });
+
+      setLivechatBadgeCount(totalUnread);
+    });
   }
+}
 
   if (detailBtn) {
     if (label === "DETAIL LOGIN") {
