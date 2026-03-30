@@ -338,12 +338,7 @@
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-
-  const encodedAllowedEmail = "NWc4OC5vZmZpY2FsQGdtYWlsLmNvbQ==";
-  const allowedAdmin = atob(encodedAllowedEmail);
-  const urlParams = new URLSearchParams(window.location.search);
-  const adminEmail = atob(urlParams.get("admin") || "");
-
+    
   let isCreating = false;
   let noticeData = [];
   const noticeList = document.getElementById('noticeList');
@@ -731,20 +726,23 @@ function startCountdown(targetTime, display, isActiveCallback = () => true) {
   row.appendChild(controlDiv);
   noticeList.prepend(row);
 }
-  function kirimPesan() {
-    if (!adminEmail || adminEmail.toLowerCase() !== allowedAdmin.toLowerCase()) return;
+function kirimPesan() {
+  const teks = pesanTextarea.value.trim();
+  if (!teks) return;
 
-    const teks = pesanTextarea.value.trim();
-    if (!teks) return;
+  const data = {
+    message: teks,
+    timestamp: Date.now()
+  };
 
-    const data = {
-      message: teks,
-      timestamp: Date.now()
-    };
-
-    db.ref("notifikasi/pesanTerbaru").set(data).then(() => {
+  db.ref("notifikasi/pesanTerbaru").set(data)
+    .then(() => {
+      console.log("FLY NOTICE berjaya dihantar");
+    })
+    .catch((err) => {
+      console.error("Gagal hantar FLY NOTICE:", err);
     });
-  }
+}
 
   function handleKeyPress(event) {
     if (event.key === "Enter" && !event.ctrlKey) {
