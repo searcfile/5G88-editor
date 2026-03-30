@@ -1784,22 +1784,27 @@ if (themeToggleBtn) {
     window.location.href = "https://5g88-main.vercel.app/";
     return;
   }
+try {
+  await loginAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+} catch (_) {}
 
+try {
+  await loginAuth.signOut();
+} catch (_) {}
   // ✅ 1) RTDB rules `auth != null` → login anon di project loginApp
-  async function ensureAnonAuth(maxRetries = 2) {
-    for (let i = 0; i <= maxRetries; i++) {
-      try {
-        const auth = loginApp.auth();
-        if (auth.currentUser) return true;
-        await auth.signInAnonymously();
-        return true;
-      } catch (err) {
-        console.warn(`[AnonAuth] Percobaan ${i+1} gagal:`, err?.message || err);
-        await new Promise(r => setTimeout(r, 400));
-      }
+async function ensureAnonAuth(maxRetries = 2) {
+  for (let i = 0; i <= maxRetries; i++) {
+    try {
+      if (loginAuth.currentUser) return true;
+      await loginAuth.signInAnonymously();
+      return true;
+    } catch (err) {
+      console.warn(`[AnonAuth] Percobaan ${i + 1} gagal:`, err?.message || err);
+      await new Promise(r => setTimeout(r, 400));
     }
-    return false;
   }
+  return false;
+}
 
   const authed = await ensureAnonAuth();
   if (!authed) {
@@ -1825,8 +1830,6 @@ if (themeToggleBtn) {
 
   // ======= SEMUA YANG DI BAWAH INI BUTUH sessionData =======
   userId = (sessionData.email || '').toLowerCase().replace(/\./g, '_');
-  let loginAuth = null;
-  try { loginAuth = loginApp.auth(); } catch (_) {}
 
   // Admin override (paksa logout user tertentu)
   const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
@@ -1837,7 +1840,7 @@ if (themeToggleBtn) {
     if (v.at && v.at <= lastAt) return;
     lastAt = v.at || Date.now();
 
-    try { loginApp.auth && (await loginApp.auth().signOut()); } catch (_){}
+    try { await loginAuth.signOut(); } catch (_) {}
     localStorage.removeItem('gmailLogin');
     sessionStorage.setItem('forceLogout', '1');
     try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
