@@ -138,14 +138,7 @@
   }
  .btn.primary:hover{background:var(--blue-hover);}.btn.primary:active{background:var(--blue-active);}
   /* MODAL EDITOR */
-.copy-btn{
-  flex: 1;
-  white-space: nowrap;
-}
-.copy-btn.is-copying{
-  opacity: 0.75;
-  pointer-events: none;
-}
+
   .modal{ width:min(520px,92vw);}
   .modal h3{ margin:0 0 12px 0; font-size:16px; }
   .fld{ display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
@@ -165,22 +158,8 @@
   .fld input:focus{border-color:var(--blue);}
   .fld select:hover{border-color:var(--blue-hover);}
   .fld select:focus{border-color:var(--blue);}
-  .ctl{
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  margin-top:8px;
-  flex-wrap: wrap;
-}
-.ctl .btn{
-  min-width: 0;
-}
+  .ctl{ display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
 
-@media (max-width: 560px){
-  .ctl .btn{
-    flex: 1 1 100%;
-  }
-}
   /* BLUR MASKING */
   .blurred{ filter:blur(3px); transition:filter .25s ease; }
   .initial{ font-weight:400;  }
@@ -286,6 +265,9 @@
   justify-content: center;          
   align-items: start;
   margin:15px 20px;
+    overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
 }
 #back{
   position: static !important;
@@ -386,44 +368,6 @@
 input::placeholder{
   color: var(--blur);
 }
-#card-copy-temp .right-col{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:6px;
-  min-width:140px;
-  position:relative;
-}
-
-#card-copy-temp .badge{
-  transform: translateY(1px);
-}
-
-#card-copy-temp .ref-blur{
-  filter: blur(3px);
-}
-
-#card-copy-temp .blurred{
-  filter: blur(3px);
-}
-#card-copy-temp .ref-shot-mask{
-  color:#6b6b6b;
-  letter-spacing: 0.2px;
-  margin-left:-6px;
-}
-
-#card-copy-temp .chev-svg-shot{
-  width:19px;
-  height:19px;
-  vertical-align:-4px;
-  fill: currentColor;
-  flex: 0 0 auto;
-}
-
-#card-copy-temp .blurred,
-#card-copy-temp .ref-blur{
-  filter: none !important;
-}
 .btn-mini:hover{background:var(--blue-hover);}.btn-mini:active{background:var(--blue-active);}
 .nm-alpha{ height:36px; border-radius:8px; padding:0 8px; }
 </style>
@@ -485,11 +429,10 @@ input::placeholder{
   <label>Saat Update, data sensitif akan otomatis di-blur, hanya huruf awal nama yang tampak.</label>
 </div>
 
-<div class="ctl">
-  <button type="button" class="btn" onclick="resetLocal()">Reset</button>
-  <button class="btn primary" id="apply">Update &amp; Blur</button>
-  <button type="button" class="btn primary copy-btn" id="copyImageBtn">Copy Image</button>
-</div>
+          <div class="ctl">
+            <button type="button" class="btn" onclick="resetLocal()">Reset</button>
+            <button class="btn primary" id="apply">Update &amp; Blur</button>
+          </div>
         </div>
       </div>
 
@@ -534,7 +477,8 @@ input::placeholder{
       </div>
     </div>
     <!-- ===== end layout ===== -->
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  
 <script>
   /* ======== DATA BANK (panjang no. akun) ======== */
   const BANKS = [
@@ -547,9 +491,7 @@ input::placeholder{
   /* ======== EL ======== */
   const apply   = document.getElementById('apply');
   const btnNow  = document.getElementById('btnNow');
-
-  const copyImageBtn = document.getElementById('copyImageBtn');
-  const cardEl = document.getElementById('card');
+ 
   const refNum  = document.getElementById('refNum');
   const dateText= document.getElementById('dateText');
   const amt     = document.getElementById('amt');
@@ -754,65 +696,6 @@ function showRefMasked(fullRef, keep = KEEP_VISIBLE){
   refNum.innerHTML =
     `<span class="ref-keep">${head}</span><span class="ref-blur">${tail}</span>`;
 }
-function maskTextForScreenshot(text, keepStart = 1) {
-  const s = String(text || '');
-  if (!s) return s;
-  return s.slice(0, keepStart) + '█'.repeat(Math.max(0, s.length - keepStart));
-}
-
-function maskDigitsForScreenshot(text, keepStart = 0, keepEnd = 0) {
-  const s = String(text || '');
-  if (!s) return s;
-  const start = s.slice(0, keepStart);
-  const end = keepEnd ? s.slice(-keepEnd) : '';
-  const middleLen = Math.max(0, s.length - keepStart - keepEnd);
-  return start + '█'.repeat(middleLen) + end;
-}
-
-function prepareCloneForScreenshot(clone) {
-  if (!clone) return;
-
-  // 1) Pastikan blur versi screenshot sentiasa jadi
-  const cloneNmIni  = clone.querySelector('#nmIni');
-  const cloneNmRest = clone.querySelector('#nmRest');
-  const cloneAccNum = clone.querySelector('#accNum');
-  const cloneRefNum = clone.querySelector('#refNum');
-
-  if (cloneNmIni && cloneNmRest) {
-    const fullName = (cloneNmIni.textContent || '') + (cloneNmRest.textContent || '');
-    cloneNmIni.textContent = fullName ? fullName.charAt(0) : '';
-    cloneNmRest.textContent = maskTextForScreenshot(fullName.slice(1), 0);
-    cloneNmRest.classList.remove('blurred');
-  }
-
-  if (cloneAccNum) {
-    cloneAccNum.textContent = maskDigitsForScreenshot(cloneAccNum.textContent, 0, 0);
-    cloneAccNum.classList.remove('blurred');
-  }
-
-  if (cloneRefNum) {
-    const keepWrap = cloneRefNum.querySelector('.ref-keep');
-    const blurWrap = cloneRefNum.querySelector('.ref-blur');
-    if (keepWrap && blurWrap) {
-      const keepText = keepWrap.textContent || '';
-      const blurText = blurWrap.textContent || '';
-      cloneRefNum.innerHTML = `
-        <span class="ref-keep">${keepText}</span><span class="ref-shot-mask">${'█'.repeat(blurText.length)}</span>
-      `;
-    }
-  }
-
-  // 2) Ganti chevron CSS-mask kepada SVG sebenar masa screenshot
-  const moreEl = clone.querySelector('.more');
-  if (moreEl) {
-    moreEl.innerHTML = `
-      View More
-      <svg class="chev-svg-shot" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M7.41 8.59 12 13.17l4.59-4.58 1.41 1.41L12 16 6 10l1.41-1.41Z"></path>
-      </svg>
-    `;
-  }
-}
 // ===== Amount format helpers =====
 const cleanNum   = s => String(s||'').replace(/[^0-9.]/g,''); // buang koma/karakter lain
 const toNumber   = s => Number(cleanNum(s) || 0);
@@ -864,103 +747,6 @@ function genNameByLetter(letter){
   localStorage.removeItem(LS_CARD);
   location.reload();
 }
-async function copyCardImageToClipboard() {
-  if (!cardEl) return;
-
-  if (!window.html2canvas) {
-    alert('html2canvas belum load.');
-    return;
-  }
-
-  if (!navigator.clipboard || !window.ClipboardItem) {
-    alert('Browser ini tidak support copy image ke clipboard.');
-    return;
-  }
-
-  const oldText = copyImageBtn.textContent;
-  let clone = null;
-
-  try {
-    copyImageBtn.classList.add('is-copying');
-    copyImageBtn.textContent = 'Copying...';
-
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
-
-    clone = cardEl.cloneNode(true);
-clone.id = 'card-copy-temp';
-
-clone.style.zoom = '1';
-clone.style.transform = 'none';
-clone.style.transformOrigin = 'top left';
-clone.style.width = '510px';
-clone.style.maxWidth = '510px';
-clone.style.margin = '0';
-clone.style.position = 'fixed';
-clone.style.left = '0';
-clone.style.top = '-10000px';
-clone.style.zIndex = '-1';
-clone.style.overflow = 'hidden';
-clone.style.background = '#fff';
-clone.style.boxSizing = 'border-box';
-
-prepareCloneForScreenshot(clone);
-
-    const badge = clone.querySelector('.badge');
-    if (badge) {
-      badge.style.transform = 'translateY(1px)';
-    }
-
-    const viewReceipt = clone.querySelector('.right-col .view-receipt');
-    if (viewReceipt) {
-      viewReceipt.style.position = 'relative';
-      viewReceipt.style.top = '18px';
-      viewReceipt.style.right = '7px';
-      viewReceipt.style.marginTop = '0';
-      viewReceipt.style.display = 'inline-block';
-    }
-
-    document.body.appendChild(clone);
-
-    const canvas = await html2canvas(clone, {
-      backgroundColor: '#ffffff',
-      scale: 2,
-      useCORS: true,
-      logging: false
-    });
-
-    const blob = await new Promise(resolve => {
-      canvas.toBlob(resolve, 'image/png');
-    });
-
-    if (!blob) {
-      throw new Error('Gagal buat image blob.');
-    }
-
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        'image/png': blob
-      })
-    ]);
-
-    copyImageBtn.textContent = 'Copied!';
-    setTimeout(() => {
-      copyImageBtn.textContent = oldText;
-      copyImageBtn.classList.remove('is-copying');
-    }, 1200);
-
-  } catch (err) {
-    console.error('Copy image gagal:', err);
-    copyImageBtn.textContent = oldText;
-    copyImageBtn.classList.remove('is-copying');
-    alert('Gagal copy image. Cuba guna Chrome/Edge dan pastikan page dibuka melalui https.');
-  } finally {
-    if (clone && clone.parentNode) {
-      clone.parentNode.removeChild(clone);
-    }
-  }
-}
   function setNowToInput(){
     inDate.value = formatNowDDMMYYYY_12(new Date());
     inDate.focus();
@@ -970,7 +756,7 @@ prepareCloneForScreenshot(clone);
     updatePrefixFromDate();
   }
   if (btnNow) btnNow.addEventListener('click', setNowToInput);
-  copyImageBtn?.addEventListener('click', copyCardImageToClipboard);
+
   // Shortcut Alt+N
   document.addEventListener('keydown', (e)=>{
     if(e.altKey && e.key.toLowerCase()==='n'){ e.preventDefault(); setNowToInput(); }
