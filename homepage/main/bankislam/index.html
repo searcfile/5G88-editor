@@ -386,6 +386,26 @@
 input::placeholder{
   color: var(--blur);
 }
+#card-copy-temp .right-col{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+  min-width:140px;
+  position:relative;
+}
+
+#card-copy-temp .badge{
+  transform: translateY(1px);
+}
+
+#card-copy-temp .ref-blur{
+  filter: blur(3px);
+}
+
+#card-copy-temp .blurred{
+  filter: blur(3px);
+}
 .btn-mini:hover{background:var(--blue-hover);}.btn-mini:active{background:var(--blue-active);}
 .nm-alpha{ height:36px; border-radius:8px; padding:0 8px; }
 </style>
@@ -781,15 +801,54 @@ async function copyCardImageToClipboard() {
   }
 
   const oldText = copyImageBtn.textContent;
+  let clone = null;
 
   try {
     copyImageBtn.classList.add('is-copying');
     copyImageBtn.textContent = 'Copying...';
 
-    const canvas = await html2canvas(cardEl, {
-      backgroundColor: null,
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    clone = cardEl.cloneNode(true);
+    clone.id = 'card-copy-temp';
+
+    clone.style.zoom = '1';
+    clone.style.transform = 'none';
+    clone.style.transformOrigin = 'top left';
+    clone.style.width = '510px';
+    clone.style.maxWidth = '510px';
+    clone.style.margin = '0';
+    clone.style.position = 'fixed';
+    clone.style.left = '-99999px';
+    clone.style.top = '0';
+    clone.style.zIndex = '-1';
+    clone.style.overflow = 'hidden';
+    clone.style.background = '#fff';
+    clone.style.boxSizing = 'border-box';
+
+    const badge = clone.querySelector('.badge');
+    if (badge) {
+      badge.style.transform = 'translateY(1px)';
+    }
+
+    const viewReceipt = clone.querySelector('.right-col .view-receipt');
+    if (viewReceipt) {
+      viewReceipt.style.position = 'relative';
+      viewReceipt.style.top = '18px';
+      viewReceipt.style.right = '7px';
+      viewReceipt.style.marginTop = '0';
+      viewReceipt.style.display = 'inline-block';
+    }
+
+    document.body.appendChild(clone);
+
+    const canvas = await html2canvas(clone, {
+      backgroundColor: '#ffffff',
       scale: 2,
-      useCORS: true
+      useCORS: true,
+      logging: false
     });
 
     const blob = await new Promise(resolve => {
@@ -817,6 +876,10 @@ async function copyCardImageToClipboard() {
     copyImageBtn.textContent = oldText;
     copyImageBtn.classList.remove('is-copying');
     alert('Gagal copy image. Cuba guna Chrome/Edge dan pastikan page dibuka melalui https.');
+  } finally {
+    if (clone && clone.parentNode) {
+      clone.parentNode.removeChild(clone);
+    }
   }
 }
   function setNowToInput(){
