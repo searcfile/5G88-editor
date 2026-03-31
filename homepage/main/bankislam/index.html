@@ -138,7 +138,14 @@
   }
  .btn.primary:hover{background:var(--blue-hover);}.btn.primary:active{background:var(--blue-active);}
   /* MODAL EDITOR */
-
+.copy-btn{
+  flex: 1;
+  white-space: nowrap;
+}
+.copy-btn.is-copying{
+  opacity: 0.75;
+  pointer-events: none;
+}
   .modal{ width:min(520px,92vw);}
   .modal h3{ margin:0 0 12px 0; font-size:16px; }
   .fld{ display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
@@ -158,8 +165,22 @@
   .fld input:focus{border-color:var(--blue);}
   .fld select:hover{border-color:var(--blue-hover);}
   .fld select:focus{border-color:var(--blue);}
-  .ctl{ display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
+  .ctl{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:8px;
+  flex-wrap: wrap;
+}
+.ctl .btn{
+  min-width: 0;
+}
 
+@media (max-width: 560px){
+  .ctl .btn{
+    flex: 1 1 100%;
+  }
+}
   /* BLUR MASKING */
   .blurred{ filter:blur(3px); transition:filter .25s ease; }
   .initial{ font-weight:400;  }
@@ -426,10 +447,11 @@ input::placeholder{
   <label>Saat Update, data sensitif akan otomatis di-blur, hanya huruf awal nama yang tampak.</label>
 </div>
 
-          <div class="ctl">
-            <button type="button" class="btn" onclick="resetLocal()">Reset</button>
-            <button class="btn primary" id="apply">Update &amp; Blur</button>
-          </div>
+<div class="ctl">
+  <button type="button" class="btn" onclick="resetLocal()">Reset</button>
+  <button class="btn primary" id="apply">Update &amp; Blur</button>
+  <button type="button" class="btn primary copy-btn" id="copyImageBtn">Copy Image</button>
+</div>
         </div>
       </div>
 
@@ -474,8 +496,7 @@ input::placeholder{
       </div>
     </div>
     <!-- ===== end layout ===== -->
-
-  
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
   /* ======== DATA BANK (panjang no. akun) ======== */
   const BANKS = [
@@ -488,7 +509,9 @@ input::placeholder{
   /* ======== EL ======== */
   const apply   = document.getElementById('apply');
   const btnNow  = document.getElementById('btnNow');
- 
+
+  const copyImageBtn = document.getElementById('copyImageBtn');
+  const cardEl = document.getElementById('card');
   const refNum  = document.getElementById('refNum');
   const dateText= document.getElementById('dateText');
   const amt     = document.getElementById('amt');
@@ -744,6 +767,58 @@ function genNameByLetter(letter){
   localStorage.removeItem(LS_CARD);
   location.reload();
 }
+async function copyCardImageToClipboard() {
+  if (!cardEl) return;
+
+  if (!window.html2canvas) {
+    alert('html2canvas belum load.');
+    return;
+  }
+
+  if (!navigator.clipboard || !window.ClipboardItem) {
+    alert('Browser ini tidak support copy image ke clipboard.');
+    return;
+  }
+
+  const oldText = copyImageBtn.textContent;
+
+  try {
+    copyImageBtn.classList.add('is-copying');
+    copyImageBtn.textContent = 'Copying...';
+
+    const canvas = await html2canvas(cardEl, {
+      backgroundColor: null,
+      scale: 2,
+      useCORS: true
+    });
+
+    const blob = await new Promise(resolve => {
+      canvas.toBlob(resolve, 'image/png');
+    });
+
+    if (!blob) {
+      throw new Error('Gagal buat image blob.');
+    }
+
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'image/png': blob
+      })
+    ]);
+
+    copyImageBtn.textContent = 'Copied!';
+    setTimeout(() => {
+      copyImageBtn.textContent = oldText;
+      copyImageBtn.classList.remove('is-copying');
+    }, 1200);
+
+  } catch (err) {
+    console.error('Copy image gagal:', err);
+    copyImageBtn.textContent = oldText;
+    copyImageBtn.classList.remove('is-copying');
+    alert('Gagal copy image. Cuba guna Chrome/Edge dan pastikan page dibuka melalui https.');
+  }
+}
   function setNowToInput(){
     inDate.value = formatNowDDMMYYYY_12(new Date());
     inDate.focus();
@@ -753,7 +828,7 @@ function genNameByLetter(letter){
     updatePrefixFromDate();
   }
   if (btnNow) btnNow.addEventListener('click', setNowToInput);
-
+  copyImageBtn?.addEventListener('click', copyCardImageToClipboard);
   // Shortcut Alt+N
   document.addEventListener('keydown', (e)=>{
     if(e.altKey && e.key.toLowerCase()==='n'){ e.preventDefault(); setNowToInput(); }
