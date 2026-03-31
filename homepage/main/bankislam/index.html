@@ -429,7 +429,8 @@ input::placeholder{
 
 <div class="ctl">
   <button type="button" class="btn" onclick="resetLocal()">Reset</button>
-  <button class="btn primary" id="apply">Update & Blur</button>
+  <button type="button" class="btn primary" id="apply">Create</button>
+  <button type="button" class="btn primary" id="btnBlur">Blur</button>
   <button type="button" class="btn primary" id="copyImg">Copy Image</button>
 </div>
         </div>
@@ -489,7 +490,7 @@ input::placeholder{
   /* ======== EL ======== */
   const apply   = document.getElementById('apply');
   const btnNow  = document.getElementById('btnNow');
- 
+ const btnBlur = document.getElementById('btnBlur');
   const refNum  = document.getElementById('refNum');
   const dateText= document.getElementById('dateText');
   const amt     = document.getElementById('amt');
@@ -589,8 +590,9 @@ function updatePrefixFromDate(){
   saveDraft?.();
 }
   // ======== PERSISTENCE (LocalStorage) ========
-const LS_DRAFT = 'txn_editor_draft_v1';   // nilai form (sementara)
-const LS_CARD  = 'txn_card_snapshot_v1';  // tampilan kartu (sesudah Apply)
+const LS_DRAFT = 'txn_editor_draft_v1';
+const LS_CARD  = 'txn_card_snapshot_v1';
+const LS_BLUR  = 'txn_card_blur_v1'; 
 
 function saveDraft(){
   const data = {
@@ -626,7 +628,16 @@ function loadCardSnapshot(){
   try { return JSON.parse(localStorage.getItem(LS_CARD) || 'null'); }
   catch { return null; }
 }
+function setBlurState(shouldBlur){
+  [nmRest, accNum].forEach(el => {
+    el.classList.toggle('blurred', !!shouldBlur);
+  });
+  localStorage.setItem(LS_BLUR, shouldBlur ? '1' : '0');
+}
 
+function getBlurState(){
+  return localStorage.getItem(LS_BLUR) === '1';
+}
 function restoreFromStorage(){
   // 1) Balikkan draft -> isi form editor
   const d = loadDraft();
@@ -653,12 +664,13 @@ function restoreFromStorage(){
     nmRest.textContent = r;
 
     // apply blur seperti setelah Apply
-    [nmRest, accNum].forEach(el => el.classList.add('blurred'));
+    // ikut status blur yang disimpan
+    setBlurState(getBlurState());
     amt.classList.remove('blurred');
     dateText.classList.remove('blurred');
   }else{
-    // belum ada snapshot: minimal mask ref default
     showRefMasked(refNum.textContent, KEEP_VISIBLE);
+    setBlurState(false);
   }
 }
 
@@ -740,9 +752,10 @@ function genNameByLetter(letter){
   return full;
 }
 
-  function resetLocal(){
+function resetLocal(){
   localStorage.removeItem(LS_DRAFT);
   localStorage.removeItem(LS_CARD);
+  localStorage.removeItem(LS_BLUR);
   location.reload();
 }
   function setNowToInput(){
@@ -776,7 +789,9 @@ apply.addEventListener('click', e=>{
 amt.textContent = `RM ${amountNum.toLocaleString('en-MY', {
   minimumFractionDigits: 2, maximumFractionDigits: 2
 })}`;
-
+btnBlur?.addEventListener('click', () => {
+  setBlurState(true);
+});
   // datetime -> kartu + validasi ringan
 const isValid = !!parseManualDate(inDate.value);
 if (!isValid) {
@@ -807,10 +822,11 @@ saveCardSnapshot({ ref: fullRef });// sync panjang (opsional)
   nmRest.textContent = r;
 
   // BLUR SENSITIF
-  [nmRest, accNum].forEach(el=> el.classList.add('blurred'));
   amt.classList.remove('blurred');
   dateText.classList.remove('blurred');
-
+    if (!getBlurState()) {
+    setBlurState(false);
+  }
   // ===== simpan ke localStorage (HARUS di akhir, setelah newRef ada) =====
   saveDraft();
 });
