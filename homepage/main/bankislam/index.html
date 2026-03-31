@@ -406,6 +406,24 @@ input::placeholder{
 #card-copy-temp .blurred{
   filter: blur(3px);
 }
+#card-copy-temp .ref-shot-mask{
+  color:#6b6b6b;
+  letter-spacing: 0.2px;
+  margin-left:-6px;
+}
+
+#card-copy-temp .chev-svg-shot{
+  width:19px;
+  height:19px;
+  vertical-align:-4px;
+  fill: currentColor;
+  flex: 0 0 auto;
+}
+
+#card-copy-temp .blurred,
+#card-copy-temp .ref-blur{
+  filter: none !important;
+}
 .btn-mini:hover{background:var(--blue-hover);}.btn-mini:active{background:var(--blue-active);}
 .nm-alpha{ height:36px; border-radius:8px; padding:0 8px; }
 </style>
@@ -736,6 +754,65 @@ function showRefMasked(fullRef, keep = KEEP_VISIBLE){
   refNum.innerHTML =
     `<span class="ref-keep">${head}</span><span class="ref-blur">${tail}</span>`;
 }
+function maskTextForScreenshot(text, keepStart = 1) {
+  const s = String(text || '');
+  if (!s) return s;
+  return s.slice(0, keepStart) + '█'.repeat(Math.max(0, s.length - keepStart));
+}
+
+function maskDigitsForScreenshot(text, keepStart = 0, keepEnd = 0) {
+  const s = String(text || '');
+  if (!s) return s;
+  const start = s.slice(0, keepStart);
+  const end = keepEnd ? s.slice(-keepEnd) : '';
+  const middleLen = Math.max(0, s.length - keepStart - keepEnd);
+  return start + '█'.repeat(middleLen) + end;
+}
+
+function prepareCloneForScreenshot(clone) {
+  if (!clone) return;
+
+  // 1) Pastikan blur versi screenshot sentiasa jadi
+  const cloneNmIni  = clone.querySelector('#nmIni');
+  const cloneNmRest = clone.querySelector('#nmRest');
+  const cloneAccNum = clone.querySelector('#accNum');
+  const cloneRefNum = clone.querySelector('#refNum');
+
+  if (cloneNmIni && cloneNmRest) {
+    const fullName = (cloneNmIni.textContent || '') + (cloneNmRest.textContent || '');
+    cloneNmIni.textContent = fullName ? fullName.charAt(0) : '';
+    cloneNmRest.textContent = maskTextForScreenshot(fullName.slice(1), 0);
+    cloneNmRest.classList.remove('blurred');
+  }
+
+  if (cloneAccNum) {
+    cloneAccNum.textContent = maskDigitsForScreenshot(cloneAccNum.textContent, 0, 0);
+    cloneAccNum.classList.remove('blurred');
+  }
+
+  if (cloneRefNum) {
+    const keepWrap = cloneRefNum.querySelector('.ref-keep');
+    const blurWrap = cloneRefNum.querySelector('.ref-blur');
+    if (keepWrap && blurWrap) {
+      const keepText = keepWrap.textContent || '';
+      const blurText = blurWrap.textContent || '';
+      cloneRefNum.innerHTML = `
+        <span class="ref-keep">${keepText}</span><span class="ref-shot-mask">${'█'.repeat(blurText.length)}</span>
+      `;
+    }
+  }
+
+  // 2) Ganti chevron CSS-mask kepada SVG sebenar masa screenshot
+  const moreEl = clone.querySelector('.more');
+  if (moreEl) {
+    moreEl.innerHTML = `
+      View More
+      <svg class="chev-svg-shot" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7.41 8.59 12 13.17l4.59-4.58 1.41 1.41L12 16 6 10l1.41-1.41Z"></path>
+      </svg>
+    `;
+  }
+}
 // ===== Amount format helpers =====
 const cleanNum   = s => String(s||'').replace(/[^0-9.]/g,''); // buang koma/karakter lain
 const toNumber   = s => Number(cleanNum(s) || 0);
@@ -812,21 +889,23 @@ async function copyCardImageToClipboard() {
     }
 
     clone = cardEl.cloneNode(true);
-    clone.id = 'card-copy-temp';
+clone.id = 'card-copy-temp';
 
-    clone.style.zoom = '1';
-    clone.style.transform = 'none';
-    clone.style.transformOrigin = 'top left';
-    clone.style.width = '510px';
-    clone.style.maxWidth = '510px';
-    clone.style.margin = '0';
-    clone.style.position = 'fixed';
-    clone.style.left = '-99999px';
-    clone.style.top = '0';
-    clone.style.zIndex = '-1';
-    clone.style.overflow = 'hidden';
-    clone.style.background = '#fff';
-    clone.style.boxSizing = 'border-box';
+clone.style.zoom = '1';
+clone.style.transform = 'none';
+clone.style.transformOrigin = 'top left';
+clone.style.width = '510px';
+clone.style.maxWidth = '510px';
+clone.style.margin = '0';
+clone.style.position = 'fixed';
+clone.style.left = '0';
+clone.style.top = '-10000px';
+clone.style.zIndex = '-1';
+clone.style.overflow = 'hidden';
+clone.style.background = '#fff';
+clone.style.boxSizing = 'border-box';
+
+prepareCloneForScreenshot(clone);
 
     const badge = clone.querySelector('.badge');
     if (badge) {
