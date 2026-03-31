@@ -15,6 +15,7 @@
 let selectedBank = "CIMB BANK BERHAD";
 let lastRealAcc  = "";
 let lastRealName = "";
+const LS_BLUR_MODE = "cimb_blur_mode_v1";
 // ✅ Show / Hide "MYR" text in Bank Charges
 function updateBankChargeCurrencyVisibility(bankName) {
   const currencyEl = document.querySelector(".charges .currency");
@@ -212,6 +213,17 @@ function showRecipientFull(name){
   if (!el) return;
   el.textContent = String(name || "");
 }
+function setPreviewBlurred(blurOn){
+  if (blurOn) {
+    setAccountPreviewMode("blur", lastRealAcc);
+    setNamePreviewMode("blur", lastRealName);
+    localStorage.setItem(LS_BLUR_MODE, "1");
+  } else {
+    setAccountPreviewMode("full", lastRealAcc);
+    setNamePreviewMode("full", lastRealName);
+    localStorage.setItem(LS_BLUR_MODE, "0");
+  }
+}
 // ===== FORMAT DATE TIME =====
 function getFormattedDateTime() {
   const now = new Date();
@@ -368,11 +380,12 @@ if (String(selectedBank).trim().toUpperCase() === "CIMB BANK BERHAD") {
     localStorage.setItem("lastRecipientName", lastRealName);
 
     // ✅ Create: baru blur
-    setAccountPreviewMode("blur", lastRealAcc);
-    setNamePreviewMode("blur", lastRealName);
+    setPreviewBlurred(false);
 
     // ✅ simpan untuk reload
     const displayData = {
+      mode: "created",
+      blurMode: "0",
       date,
       amount: amountFixed,
       mainAmount: main,
@@ -385,6 +398,7 @@ if (String(selectedBank).trim().toUpperCase() === "CIMB BANK BERHAD") {
       accountName: accountNameSelected
     };
     localStorage.setItem("displayData", JSON.stringify(displayData));
+    localStorage.setItem(LS_BLUR_MODE, "0");
   }
 }
 
@@ -531,18 +545,15 @@ try {
   }
 
 const mode = data.mode || "created";
+const blurMode = data.blurMode || localStorage.getItem(LS_BLUR_MODE) || "0";
 
 lastRealAcc  = data.realAcc || buildAccountNumber(selectedBank);
 lastRealName = data.realName || ((inRec?.value || "").trim() || "PA");
 
 if (mode === "reset") {
-  // ✅ reset: FULL tanpa blur
-  setAccountPreviewMode("full", lastRealAcc);
-  setNamePreviewMode("full", lastRealName);
+  setPreviewBlurred(false);
 } else {
-  // ✅ create: BLUR
-  setAccountPreviewMode("blur", lastRealAcc);
-  setNamePreviewMode("blur", lastRealName);
+  setPreviewBlurred(blurMode === "1");
 }
 });
 // ===== RESET =====
@@ -582,6 +593,7 @@ function resetDisplay() {
   // ✅ Simpan sebagai mode reset supaya refresh kekal 0000
   const displayData = {
     mode: "reset",
+    blurMode: "0",
     bank: selectedBank,
     realAcc: lastRealAcc,
     realName: lastRealName,
@@ -593,12 +605,29 @@ function resetDisplay() {
     ref4: ""
   };
   localStorage.setItem("displayData", JSON.stringify(displayData));
+  localStorage.setItem(LS_BLUR_MODE, "0");
 }
 // ===== CREATE BUTTON HANDLER (WAJIB DI BAWAH SEKALI) =====
 const btnCreate = document.getElementById("btn-create");
 if (btnCreate) {
   btnCreate.addEventListener("click", () => {
     updateDisplay(false);   // ⬅️ trigger SAVE mode
+  });
+}
+const btnBlur = document.getElementById("btn-blur");
+if (btnBlur) {
+  btnBlur.addEventListener("click", () => {
+    const stored = localStorage.getItem("displayData");
+    if (!stored) return;
+
+    const data = JSON.parse(stored);
+    lastRealAcc  = data.realAcc || lastRealAcc;
+    lastRealName = data.realName || lastRealName;
+
+    setPreviewBlurred(true);
+
+    data.blurMode = "1";
+    localStorage.setItem("displayData", JSON.stringify(data));
   });
 }
 (function () {
