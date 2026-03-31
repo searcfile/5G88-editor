@@ -865,17 +865,44 @@ btnCopy.addEventListener("click", async () => {
   const card = document.getElementById("card");
 
   try {
-    // render jadi canvas
     const canvas = await html2canvas(card, {
-      scale: 3, // HD sharp
+      scale: 3,
       useCORS: true,
-      backgroundColor: null
+      backgroundColor: "#ffffff",
+      onclone: (clonedDoc) => {
+        const clonedCard = clonedDoc.getElementById("card");
+        if (!clonedCard) return;
+
+        // cari icon chevron dalam clone sahaja
+        const chev = clonedCard.querySelector(".more .chev");
+        if (chev) {
+          const svg = clonedDoc.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("viewBox", "0 0 24 24");
+          svg.setAttribute("aria-hidden", "true");
+          svg.style.width = "19px";
+          svg.style.height = "19px";
+          svg.style.display = "block";
+          svg.style.fill = getComputedStyle(chev).color || "currentColor";
+          svg.style.flex = "0 0 auto";
+
+          const path = clonedDoc.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("d", "M7.41 8.59 12 13.17l4.59-4.58 1.41 1.41L12 16 6 10l1.41-1.41Z");
+
+          svg.appendChild(path);
+          chev.replaceWith(svg);
+        }
+
+        // pastikan card clone nampak stabil
+        clonedCard.style.background = "#ffffff";
+      }
     });
 
     canvas.toBlob(async (blob) => {
-      if (!blob) return;
+      if (!blob) {
+        alert("❌ Failed generate image");
+        return;
+      }
 
-      // copy ke clipboard
       await navigator.clipboard.write([
         new ClipboardItem({
           "image/png": blob
@@ -883,7 +910,7 @@ btnCopy.addEventListener("click", async () => {
       ]);
 
       alert("✅ Image copied! (boleh paste di WhatsApp / Telegram)");
-    });
+    }, "image/png");
 
   } catch (err) {
     console.error(err);
