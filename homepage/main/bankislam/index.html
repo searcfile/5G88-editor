@@ -429,10 +429,11 @@ input::placeholder{
   <label>Saat Update, data sensitif akan otomatis di-blur, hanya huruf awal nama yang tampak.</label>
 </div>
 
-          <div class="ctl">
-            <button type="button" class="btn" onclick="resetLocal()">Reset</button>
-            <button class="btn primary" id="apply">Update &amp; Blur</button>
-          </div>
+<div class="ctl">
+  <button type="button" class="btn" onclick="resetLocal()">Reset</button>
+  <button type="button" class="btn" id="copyImg">Copy Image</button>
+  <button class="btn primary" id="apply">Update & Blur</button>
+</div>
         </div>
       </div>
 
@@ -477,8 +478,7 @@ input::placeholder{
       </div>
     </div>
     <!-- ===== end layout ===== -->
-
-  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   /* ======== DATA BANK (panjang no. akun) ======== */
   const BANKS = [
@@ -859,6 +859,37 @@ document.addEventListener('keydown', (e)=>{
     }
   });
 })();
+const btnCopy = document.getElementById("copyImg");
+
+btnCopy.addEventListener("click", async () => {
+  const card = document.getElementById("card");
+
+  try {
+    // render jadi canvas
+    const canvas = await html2canvas(card, {
+      scale: 3, // HD sharp
+      useCORS: true,
+      backgroundColor: null
+    });
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      // copy ke clipboard
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          "image/png": blob
+        })
+      ]);
+
+      alert("✅ Image copied! (boleh paste di WhatsApp / Telegram)");
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ Failed copy image");
+  }
+});
 </script>
 </body>
 </html>
