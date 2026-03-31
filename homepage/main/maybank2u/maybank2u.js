@@ -42,6 +42,7 @@ const BANK_CONFIG = {
     const amountInput  = document.getElementById("amountInput");
     const createBtn    = document.getElementById("createBtn");
     const resetBtn     = document.getElementById("resetBtn");
+    const blurBtn      = document.getElementById("blurBtn");
 
     const bankValue    = document.getElementById("bankValue");
     const dateValue    = document.getElementById("dateValue");
@@ -454,7 +455,10 @@ function attachLiveHandlers(){
     if(list.length){
       state.selectedAccountByBank[state.bank] = list[Math.floor(Math.random() * list.length)];
     }
-
+blurBtn?.addEventListener("click", () => {
+  state.created = true;
+  state = render(state);
+});
     // auto name (if ON)
     if(state.autoName){
       state.holderName = randomHolderName();
@@ -469,7 +473,7 @@ function attachLiveHandlers(){
     // completed now every create
     state.completedText = completedInput.value.trim() || state.completedText;
 
-    state.created = true;
+    state.created = false;
     state = render(state);
   });
 
