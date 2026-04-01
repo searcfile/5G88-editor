@@ -1288,7 +1288,16 @@ if (submitChangePasswordBtn) {
 const userNameBtn = document.getElementById("userName");
 const dropdownContent = document.getElementById("dropdownContent");
 const THEME_KEY = "siteTheme";
+function closeUserDropdown() {
+  if (dropdownContent) {
+    dropdownContent.classList.remove("show");
+  }
+}
 
+function closeAllFloatingUi() {
+  closeUserDropdown();
+  closeSidebar();
+}
 const themeToggleBtn = document.getElementById("themeToggleBtn");
 const themeToggleLabel = document.getElementById("themeToggleLabel");
 
@@ -1342,7 +1351,7 @@ if (userNameBtn && dropdownContent) {
   document.addEventListener("click", (e) => {
     const insideDropdown = e.target.closest(".user-dropdown");
     if (!insideDropdown) {
-      dropdownContent.classList.remove("show");
+      closeUserDropdown();
     }
   });
 }
@@ -1475,7 +1484,24 @@ function startHeaderLivechatTracker() {
   overlay.addEventListener("click", closeSidebar);
   const container = document.getElementById("mainContainer");
   const pageFrame = document.getElementById("pageFrame");
-
+  if (pageFrame) {
+  pageFrame.addEventListener("load", () => {
+    try {
+      pageFrame.contentWindow.addEventListener("pointerdown", () => {
+        closeAllFloatingUi();
+      });
+    } catch (err) {
+      // cross-origin iframe mungkin tak boleh inject event
+    }
+  });
+}
+  window.addEventListener("blur", () => {
+  setTimeout(() => {
+    if (document.activeElement === pageFrame) {
+      closeAllFloatingUi();
+    }
+  }, 0);
+});
   menuIcon.addEventListener("click", () => {
   if (sidebar.classList.contains("active")) {
     closeSidebar();
@@ -1501,12 +1527,17 @@ function openSidebar() {
     document.querySelector('.header').classList.remove('shrink');
     document.getElementById("menuIcon").classList.remove("active-menu-icon");
   }
-  document.addEventListener("click", (e) => {
+ document.addEventListener("click", (e) => {
   const isSidebar = e.target.closest("#sidebar");
   const isMenuIcon = e.target.closest("#menuIcon");
+  const isUserDropdown = e.target.closest(".user-dropdown");
 
   if (!isSidebar && !isMenuIcon && sidebar.classList.contains("active")) {
     closeSidebar();
+  }
+
+  if (!isUserDropdown) {
+    closeUserDropdown();
   }
 });
 
