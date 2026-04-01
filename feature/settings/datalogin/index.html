@@ -108,16 +108,16 @@ body.dark-theme{
   .search-box{ display:flex; min-width:260px; width:auto; flex:0 1 500px;position: relative; }
   /* INPUT */
   .search-container input{
-    flex:1; padding:10px 34px 10px 10px; font-size:14px; color:#fff;
-    background:#141414; border:1px solid #424242; border-radius:6px 0 0 6px; outline:none; transition:.2s;
+    flex:1; padding:10px 34px 10px 10px; font-size:14px; color:var(--colorbtn);
+    background:var(--backgroundbtn); border:1px solid var(--border2); border-radius:6px 0 0 6px; outline:none; transition:.2s;
   }
-  .search-container input::placeholder{ color:rgba(255,255,255,.4); }
+  .search-container input::placeholder{ color:var(--blur); }
   .search-container input:hover{ border-color:#3b8cff; }
   .search-container input:focus{ border-color:#1668dc; }
 
   /* BUTTON Search */
 .search-container #searchBtn{
-  padding:10px 10px; background:#141414; border:1px solid #424242; border-left:1px solid #424242;
+  padding:10px 10px; background:vaR(--backgroundbtn); border:1px solid var(--border2); border-left:1px solid var(--border2);
   border-radius:0 6px 6px 0; display:flex; align-items:center; justify-content:center;
   cursor:pointer; color:#aaa; transition:.2s;
 }
@@ -131,7 +131,7 @@ body.dark-theme{
   @keyframes pulseIcon{ 0%{filter:drop-shadow(0 0 0 #3b8cff)}50%{filter:drop-shadow(0 0 8px #3b8cff)}100%{filter:drop-shadow(0 0 0 #3b8cff)} }
   /* DROPDOWN Status Filter */
   .status-filter{
-    padding:0px 15px; font-size:14px; color:var(--colorbtn); background:var(--backgroundbtn);
+    padding:4px 11px; font-size:14px; color:var(--colorbtn); background:var(--backgroundbtn);
     border:1px solid var(--border2); border-radius:6px; outline:none; transition:.2s;height:38px;
   }
   .status-filter:hover{ border-color:#3c89e8; }
@@ -232,7 +232,7 @@ body.dark-theme{
 }
   /* Status badge layout */
   .status-cell{ display:flex; align-items:center; gap:8px;justify-content:center; }
-  .status-text{ color:#cbd5e1; font-size:13px; }
+  .status-text{ color:var(--colorbtn); font-size:14px; }
 
   /* Mobile tweaks */
   @media (max-width:640px){
@@ -769,11 +769,11 @@ html += `
 
 <td class="deviceCell"
     title="Click to select this Device ID"
-    style="color:#3b8cff;">
+    style="color:#3c89e8;">
   ${esc(deviceLabel)}
 </td>
 
-<td title="${esc(deviceSource)}" style="color:#cbd5e1;">
+<td title="${esc(deviceSource)}" style="color:var(--colorbtn);">
   ${esc(deviceSource)}
 </td>
 
