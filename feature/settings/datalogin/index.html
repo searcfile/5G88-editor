@@ -7,46 +7,6 @@
 <title>Admin</title>
 <style>
 :root{
-  --bg-main: #fff;
-  --sidebar: #001529;
-  --text-main: #000;
-  --text-soft: rgba(17,24,39,0.88);
-  --text-dim: rgba(17,24,39,0.72);
-  --colorbtn: rgba(0, 0, 0, 0.88);
-  --backgroundbtn: #ffffff;
-  --backgrounddrop: #ffffff;
-  --border: #303030;
-  --border2: #d9d9d9;
-  --panel-border: #d4dbe6;
-  --blur: rgba(0,0,0,0.25);
-  --border3: #f0f0f0;
-  --tab2: #ffffff;
-  --border-bottom: #ffffff;
-  --close: rgba(0, 0, 0, 0.88);
-
-  --tab-bg: rgba(255,255,255,0.04);
-  --tab-border: #d4dbe6;
-
-  --btn-bg: transparent;
-  --btn-text: rgba(17,24,39,0.88);
-  --btn-border: #d4dbe6;
-
-  --gold: #1668dc;
-  --gold-hover: #3c89e8;
-  --gold-active: #1554ad;
-
-  --overlay-bg: rgba(15,23,42,0.18);
-  --popup-bg: #ffffff;
-
-  --empty-text: rgba(17,24,39,.7);
-  --empty-title: rgba(17,24,39,.88);
-
-  --toggle-track: #cfd8e3;
-  --toggle-knob: #ffffff;
-  --btnfocus: #91caff;
-}
-
-body.dark-theme{
   --bg-main: #000;
   --sidebar: #001529;
   --text-main: #fff;
@@ -84,6 +44,46 @@ body.dark-theme{
   --toggle-track: #2c7be5;
   --toggle-knob: #ffffff;
   --btnfocus: #15325b;
+}
+
+body.dark-theme{
+  --bg-main: #fff;
+  --sidebar: #001529;
+  --text-main: #000;
+  --text-soft: rgba(17,24,39,0.88);
+  --text-dim: rgba(17,24,39,0.72);
+  --colorbtn: rgba(0, 0, 0, 0.88);
+  --backgroundbtn: #ffffff;
+  --backgrounddrop: #ffffff;
+  --border: #303030;
+  --border2: #d9d9d9;
+  --panel-border: #d4dbe6;
+  --blur: rgba(0,0,0,0.25);
+  --border3: #f0f0f0;
+  --tab2: #ffffff;
+  --border-bottom: #ffffff;
+  --close: rgba(0, 0, 0, 0.88);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #d4dbe6;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(17,24,39,0.88);
+  --btn-border: #d4dbe6;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(15,23,42,0.18);
+  --popup-bg: #ffffff;
+
+  --empty-text: rgba(17,24,39,.7);
+  --empty-title: rgba(17,24,39,.88);
+
+  --toggle-track: #cfd8e3;
+  --toggle-knob: #ffffff;
+  --btnfocus: #91caff;
 }
   body {
     font-family: Arial, sans-serif;
@@ -131,15 +131,16 @@ body.dark-theme{
   @keyframes pulseIcon{ 0%{filter:drop-shadow(0 0 0 #3b8cff)}50%{filter:drop-shadow(0 0 8px #3b8cff)}100%{filter:drop-shadow(0 0 0 #3b8cff)} }
   /* DROPDOWN Status Filter */
   .status-filter{
-    padding:10px; font-size:14px; color:#3b8cff; background:#141414;
-    border:1px solid #424242; border-radius:6px; outline:none; transition:.2s;height:38px;
+    padding:0px 15px; font-size:14px; color:var(--colorbtn); background:var(--backgroundbtn);
+    border:1px solid var(--border2); border-radius:6px; outline:none; transition:.2s;height:38px;
   }
-  .status-filter:hover{ border-color:#3b8cff; }
+  .status-filter:hover{ border-color:#3c89e8; }
   .status-filter:focus{ border-color:#1668dc; }
 
   /* Force Logout All */
   #forceLogoutAllBtn{
-    background:#dc2626; color:#fff; padding:10px 16px; border:none; border-radius:6px; cursor:pointer; white-space:nowrap; transition:.2s;
+    background:#dc2626; color:#fff; padding:0px 15px; border:none; border-radius:6px; cursor:pointer; white-space:nowrap; transition:.2s;
+    height:32px;
   }
   #forceLogoutAllBtn:hover{ background:#e75858; color:#fff; }
   #forceLogoutAllBtn:active{ background:#b31616; color:#fff; }
@@ -199,7 +200,7 @@ body.dark-theme{
     max-height: calc(var(--head-h) + var(--row-h) * 15);
     overflow:auto; overflow-x:auto; -webkit-overflow-scrolling:touch;
     border:1px solid #3b8cff; border-radius:8px; background:#0b0b0b;
-    scrollbar-width:thin; scrollbar-color:#1668dc transparent;
+    scrollbar-width:thin; scrollbar-color:grey transparent;
   }
   .table-viewport::-webkit-scrollbar{ width:10px; height:10px; }
   .table-viewport::-webkit-scrollbar-track{ background:#0f172a; border-radius:8px; box-shadow:inset 0 0 0 1px #1f2937; }
@@ -209,8 +210,8 @@ body.dark-theme{
   .table-viewport::-webkit-scrollbar-button{ height:10px; width:10px; background:#0f172a; }
 
   .tbl{ width:100%; border-collapse:collapse; table-layout:fixed; }
-  .tbl th,.tbl td{ padding:8px 12px; border-bottom:1px solid #1f2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .tbl thead th{ position:sticky; top:0; z-index:2; background:#1668dc; color:#fff; text-align:center; }
+  .tbl th,.tbl td{ padding:8px 12px; border-bottom:1px solid var(--border); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tbl thead th{ position:sticky; top:0; z-index:2; background:var(--backgrounddrop); color:var(--colorbtn); text-align:center; }
 
   /* OVERRIDES: single line, horizontal scroll */
   .table-viewport{ overflow-x:auto !important; }
@@ -260,7 +261,7 @@ body.dark-theme{
 }
 
 .clear-btn:hover{
-  color:#3b8cff;
+  color:#3c89e8;
 }
 .clear-btn:active{
   color:#1554ad;
@@ -270,10 +271,11 @@ body.dark-theme{
 }
 /* Create Username button (hijau) */
 .create-btn{
-  background:#1668dc; color:#fff; padding:10px 16px; border:none;
+  background:#1668dc; color:#fff; padding:0px 15px; border:none;
   border-radius:6px; cursor:pointer; white-space:nowrap; transition:.2s;
+  height:32px;
 }
-.create-btn:hover{ background:#3b8cff; }
+.create-btn:hover{ background:#3c89e8; }
 .create-btn:active{ background:#1554ad; }
 
 /* Modal overlay & box */
@@ -325,14 +327,15 @@ body.dark-theme{
 .reset-btn{
   background:#1668dc;    /* biru muda */
   color:#fff;
-  padding:10px 16px;
+  padding:0px 15px;
   border:none;
   border-radius:6px;
   cursor:pointer;
   white-space:nowrap;
   transition:.2s;
+  height:32px;
 }
-.reset-btn:hover{ background:#3b8cff; }
+.reset-btn:hover{ background:#3c89e8; }
 .reset-btn:active{ background:#1554ad; }
 /* Hover satu baris penuh */
 .tbl tbody tr{
