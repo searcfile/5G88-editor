@@ -1,3 +1,4 @@
+
 /*Mcng 112 updated 232131*/
 const firebaseConfig = {
   apiKey: "AIzaSyBTeofEXBlzZmELtVAVZ-dctZmOGvf0Y34",
@@ -87,114 +88,43 @@ function getMainSlugFromPath() {
   return parts[1] ? parts[1].toLowerCase() : null;
 }
 
-function setBrowserRoute(tab, mode = "push") {
-  const target = (tab && tab.route) ? tab.route : "/main";
-
-  if (mode === "replace") {
-    history.replaceState({}, "", target);
+function setBrowserRoute(tab) {
+  if (tab && tab.route) {
+    history.replaceState({}, "", tab.route);
   } else {
-    history.pushState({}, "", target);
+    history.replaceState({}, "", "/main");
   }
 }
 const TAB_ROUTE_MAP = {
   "918kiss": {
     label: "918KISS",
-    url: "/main/918kiss/index.html",
+    url: "/main//918kiss/index.html",
     group: "gamelog",
     route: "/main/918kiss"
   },
   "mega888": {
     label: "MEGA888",
-    url: "/main/mega888/index.html",
+    url: "/main//mega888/index.html",
     group: "gamelog",
     route: "/main/mega888"
   },
   "pussy888": {
     label: "PUSSY888",
-    url: "/main/pussy888/index.html",
+    url: "/main//pussy888/index.html",
     group: "gamelog",
     route: "/main/pussy888"
   },
   "evo888": {
     label: "EVO888",
-    url: "/main/evo888/index.html",
+    url: "/main//evo888/index.html",
     group: "gamelog",
     route: "/main/evo888"
   },
   "scr888h5": {
     label: "SCR888H5",
-    url: "/main/scr888h5/index.html",
+    url: "/main//scr888h5/index.html",
     group: "gamelog",
     route: "/main/scr888h5"
-  },
-
-  "maybank": {
-    label: "MAYBANK",
-    url: "/main/maybank/index.html",
-    group: "bank",
-    route: "/main/maybank"
-  },
-  "maybank2u": {
-    label: "MAYBANK2U",
-    url: "/main/maybank2u/index.html",
-    group: "bank",
-    route: "/main/maybank2u"
-  },
-  "bankislam": {
-    label: "BANK ISLAM",
-    url: "/main/bankislam/index.html",
-    group: "bank",
-    route: "/main/bankislam"
-  },
-  "cimbclick": {
-    label: "CIMB BANK",
-    url: "/main/cimbclick/index.html",
-    group: "bank",
-    route: "/main/cimbclick"
-  },
-  "rhbbank": {
-    label: "RHB BANK",
-    url: "/main/rhbbank/index.html",
-    group: "bank",
-    route: "/main/rhbbank"
-  },
-
-  "findgame": {
-    label: "FIND GAME",
-    url: "/main/findgame/index.html",
-    group: "list",
-    route: "/main/findgame"
-  },
-  "tipsgenerate": {
-    label: "TIPS GAME",
-    url: "/main/tipsgenerate/index.html",
-    group: "list",
-    route: "/main/tipsgenerate"
-  },
-  "logogame": {
-    label: "LOGO GAME",
-    url: "/main/logogame/index.html",
-    group: "list",
-    route: "/main/logogame"
-  },
-
-  "linkdownload": {
-    label: "LINK DOWNLOAD",
-    url: "/main/linkdownload/index.html",
-    group: "none",
-    route: "/main/linkdownload"
-  },
-  "livechat": {
-    label: "LIVE CHAT",
-    url: "/main/livechat/index.html",
-    group: "none",
-    route: "/main/livechat"
-  },
-  "item": {
-    label: "ITEM COLLECTION",
-    url: "5g88-main.vercel.app/main/item",
-    group: "none",
-    route: "/main/item"
   }
 };
 (function captureMainQuery(){
@@ -1083,7 +1013,7 @@ if (liveBtn) {
   linkBtn?.classList.toggle("active-linkdownload", L === "LINK DOWNLOAD");
   itemBtn?.classList.toggle("active-itemBtn", L === "ITEM COLLECTION");
 
-  setBrowserRoute({ route }, opt?.historyMode || "push");
+  setBrowserRoute({ route });
 }
 function setHeaderActiveByGroup(group, labelUpper){
   const gameLogBtnEl = document.getElementById("gameLogBtn");
@@ -1489,11 +1419,10 @@ window.addEventListener("load", () => {
 
   if (slug && TAB_ROUTE_MAP[slug]) {
     const cfg = TAB_ROUTE_MAP[slug];
-addTab(cfg.label, cfg.url, {
-  group: cfg.group,
-  route: cfg.route,
-  historyMode: "replace"
-});
+    addTab(cfg.label, cfg.url, {
+      group: cfg.group,
+      route: cfg.route
+    });
     return;
   }
   renderTabs();
@@ -1521,7 +1450,6 @@ addTab(cfg.label, cfg.url, {
 
   if (match) {
     loadPage(match.url);
-    setBrowserRoute(match, "replace");
     updateGameLogCheckmarks();
     updateBankResitCheckmarks();
     updateGameLinksCheckmarks();
@@ -1549,43 +1477,11 @@ addTab(cfg.label, cfg.url, {
     if (gameLogBtn && gameLogLabels.includes(match.label)) {
       gameLogBtn.classList.add("active-gamelog");
     }
-   } else if (tabs.length > 0) {
-  loadPage(tabs[tabs.length - 1].url);
-  setBrowserRoute(tabs[tabs.length - 1], "replace");
-}
-});
-window.addEventListener("popstate", () => {
-  const slug = getMainSlugFromPath();
-
-  if (slug && TAB_ROUTE_MAP[slug]) {
-    const cfg = TAB_ROUTE_MAP[slug];
-    addTab(cfg.label, cfg.url, {
-      group: cfg.group,
-      route: cfg.route,
-      historyMode: "replace"
-    });
-    return;
-  }
-
-  if (location.pathname === "/main") {
-    const tabs = getTabs();
-    renderTabs();
-    updateEmptyState();
-
-    const activeUrl = getActiveTabUrl();
-    const match = tabs.find(tab => normUrl(tab.url) === activeUrl);
-
-    if (match) {
-      loadPage(match.url);
     } else if (tabs.length > 0) {
-      loadPage(tabs[tabs.length - 1].url);
-    } else {
-      const frame = document.getElementById("pageFrame");
-      if (frame) frame.src = "";
-      setBrowserRoute(null, "replace");
-    }
-  }
+    loadPage(tabs[tabs.length - 1].url);
+   }
 });
+
 function formatTimestamp(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -1719,14 +1615,11 @@ function buildLink(label, url, kind="dropdown", meta={}){
   a.setAttribute("data-label", label);
   if(meta?.group) a.setAttribute("data-group", meta.group);
 
-a.addEventListener("click", (e)=>{
-  e.preventDefault();
-  addTab(label, url, {
-    group: meta?.group || "none",
-    route: meta?.route || ""
+  a.addEventListener("click", (e)=>{
+    e.preventDefault();
+    addTab(label, url, { group: meta?.group || "none" });
+    try { closeSidebar(); } catch(_){}
   });
-  try { closeSidebar(); } catch(_){}
-});
 
 if(kind === "sidebar"){
   a.innerHTML = `
