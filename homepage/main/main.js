@@ -192,7 +192,7 @@ const TAB_ROUTE_MAP = {
   },
   "item": {
     label: "ITEM COLLECTION",
-    url: "/main/item/index.html",
+    url: "5g88-main.vercel.app/main/item",
     group: "none",
     route: "/main/item"
   }
