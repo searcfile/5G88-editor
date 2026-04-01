@@ -1521,6 +1521,7 @@ addTab(cfg.label, cfg.url, {
 
   if (match) {
     loadPage(match.url);
+    setBrowserRoute(match, "replace");
     updateGameLogCheckmarks();
     updateBankResitCheckmarks();
     updateGameLinksCheckmarks();
@@ -1548,9 +1549,10 @@ addTab(cfg.label, cfg.url, {
     if (gameLogBtn && gameLogLabels.includes(match.label)) {
       gameLogBtn.classList.add("active-gamelog");
     }
-    } else if (tabs.length > 0) {
-    loadPage(tabs[tabs.length - 1].url);
-   }
+   } else if (tabs.length > 0) {
+  loadPage(tabs[tabs.length - 1].url);
+  setBrowserRoute(tabs[tabs.length - 1], "replace");
+}
 });
 window.addEventListener("popstate", () => {
   const slug = getMainSlugFromPath();
@@ -1717,11 +1719,14 @@ function buildLink(label, url, kind="dropdown", meta={}){
   a.setAttribute("data-label", label);
   if(meta?.group) a.setAttribute("data-group", meta.group);
 
-  a.addEventListener("click", (e)=>{
-    e.preventDefault();
-    addTab(label, url, { group: meta?.group || "none" });
-    try { closeSidebar(); } catch(_){}
+a.addEventListener("click", (e)=>{
+  e.preventDefault();
+  addTab(label, url, {
+    group: meta?.group || "none",
+    route: meta?.route || ""
   });
+  try { closeSidebar(); } catch(_){}
+});
 
 if(kind === "sidebar"){
   a.innerHTML = `
