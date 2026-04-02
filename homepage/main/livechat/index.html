@@ -890,6 +890,16 @@ let pendingImageFile = null;
 let pendingImageUrl = "";
 let isUploadingImage = false;
 let currentImageUploadToken = 0;
+
+let msgInputEl = null;
+let sendBtnEl = null;
+let fileInputEl = null;
+let imagePreviewWrapEl = null;
+let imagePreviewEl = null;
+let removeImageBtnEl = null;
+let imageUploadStatusEl = null;
+let imageUploadTextEl = null;
+  
   
 function sanitizeEmail(email){
   return String(email || "")
@@ -1266,19 +1276,19 @@ function initChatWithUserData() {
   // wajib ada activeId (uid guest atau email_sanitized)
   if (!currentActiveId) return;
 
-  const msgInput    = document.getElementById('msg');
+  msgInputEl = document.getElementById('msg');
   function autoResizeMsgBox() {
   if (!msgInput) return;
   msgInput.style.height = "24px";
   msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + "px";
 }
-  const sendBtn   = document.getElementById('sendBtn');
-  const fileInput = document.getElementById('fileInput');
-  const imagePreviewWrap = document.getElementById('imagePreviewWrap');
-  const imagePreview = document.getElementById('imagePreview');
-  const removeImageBtn = document.getElementById('removeImageBtn');
-  const imageUploadStatus = document.getElementById('imageUploadStatus');
-  const imageUploadText = document.getElementById('imageUploadText');
+sendBtnEl = document.getElementById('sendBtn');
+fileInputEl = document.getElementById('fileInput');
+imagePreviewWrapEl = document.getElementById('imagePreviewWrap');
+imagePreviewEl = document.getElementById('imagePreview');
+removeImageBtnEl = document.getElementById('removeImageBtn');
+imageUploadStatusEl = document.getElementById('imageUploadStatus');
+imageUploadTextEl = document.getElementById('imageUploadText');
   
   const emojiBtn = document.getElementById("emojiBtn");
   const emojiPickerWrap = document.getElementById("emojiPickerWrap");
@@ -1287,7 +1297,7 @@ function initChatWithUserData() {
   const chatBox     = document.getElementById('chatBox');
   const typingEl    = document.getElementById('typingStatus');
 
-  if (!msgInput || !sendBtn || !fileInput || !searchInput || !chatBox) return;
+ if (!msgInputEl || !sendBtnEl || !fileInputEl || !searchInput || !chatBox) return;
 
 chatInitialized = true;
 updateAdminHeader("Admin", "https://i.imgur.com/qiZFOs9.png");
@@ -1295,126 +1305,6 @@ if (typingEl) typingEl.textContent = "Offline";
 bindAdminHeaderPresence();
 bindUserTyping();
   
-function refreshSend(){
-  const text = (msgInput.value || "").trim();
-  const hasImageReady = !!pendingImageUrl;
-  const hasAnything = !!text || !!pendingImageFile || !!hasImageReady;
-
-  sendBtn.disabled = !hasAnything || isUploadingImage;
-}
-function setImageUploadLoading(isLoading, text = "Uploading image..."){
-  isUploadingImage = !!isLoading;
-
-  if (imageUploadStatus) {
-    imageUploadStatus.hidden = !isLoading;
-    imageUploadStatus.style.display = isLoading ? "flex" : "none";
-  }
-
-  if (imageUploadText) {
-    imageUploadText.textContent = text;
-  }
-
-  refreshSend();
-}
-
-function clearSelectedImage(resetInput = true){
-  currentImageUploadToken++;
-
-  pendingImageFile = null;
-  pendingImageUrl = "";
-  isUploadingImage = false;
-
-  if (resetInput && fileInput) fileInput.value = "";
-
-  if (imagePreview) imagePreview.src = "";
-  if (imagePreviewWrap) imagePreviewWrap.hidden = true;
-  if (imageUploadStatus) {
-    imageUploadStatus.hidden = true;
-    imageUploadStatus.style.display = "none";
-  }
-  if (imageUploadText) imageUploadText.textContent = "Uploading image...";
-
-  refreshSend();
-}
-
-async function uploadImageToCloudinary(file, uploadToken){
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-    method: "POST",
-    body: formData
-  });
-
-  const data = await res.json();
-
-  if (uploadToken !== currentImageUploadToken) {
-    return null;
-  }
-
-  if (!res.ok || !data.secure_url) {
-    throw new Error(data?.error?.message || "Upload failed");
-  }
-
-  return data.secure_url;
-}
-
-async function handleSelectedImageFile(file){
-  if (!file) {
-    clearSelectedImage();
-    return;
-  }
-
-  if (!file.type.startsWith("image/")) {
-    alert("❌ Only image allowed");
-    clearSelectedImage();
-    return;
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-    alert("❌ Image too large (max 5MB)");
-    clearSelectedImage();
-    return;
-  }
-
-  const uploadToken = ++currentImageUploadToken;
-  pendingImageFile = file;
-  pendingImageUrl = "";
-
-  if (imagePreviewWrap) imagePreviewWrap.hidden = false;
-
-  const reader = new FileReader();
-  reader.onload = function(e){
-    if (uploadToken !== currentImageUploadToken) return;
-    if (imagePreview) imagePreview.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-
-  setImageUploadLoading(true, "Uploading image...");
-  refreshSend();
-
-  try {
-    const secureUrl = await uploadImageToCloudinary(file, uploadToken);
-
-    if (uploadToken !== currentImageUploadToken) return;
-
-    pendingImageUrl = secureUrl || "";
-    pendingImageFile = file;
-  } catch (err) {
-    if (uploadToken !== currentImageUploadToken) return;
-
-    console.error("Image pre-upload failed:", err);
-    alert("❌ Upload image gagal. Sila cuba lagi.");
-    clearSelectedImage(true);
-    return;
-  } finally {
-    if (uploadToken === currentImageUploadToken) {
-      setImageUploadLoading(false);
-      refreshSend();
-    }
-  }
-}
 refreshSend();
 if (emojiBtn && emojiPickerWrap && emojiPicker && msgInput) {
   emojiBtn.addEventListener("click", (e) => {
@@ -1447,7 +1337,7 @@ if (emojiBtn && emojiPickerWrap && emojiPicker && msgInput) {
     }
   });
 }
-msgInput.addEventListener('keydown', (e) => {
+msgInputEl.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
     e.preventDefault();
 
@@ -1458,11 +1348,11 @@ msgInput.addEventListener('keydown', (e) => {
   }
 });
 
-msgInput.addEventListener("input", () => {
+msgInputEl.addEventListener("input", () => {
   autoResizeMsgBox();
   refreshSend();
 });
-msgInput.addEventListener("paste", async (e) => {
+msgInputEl.addEventListener("paste", async (e) => {
   const items = (e.clipboardData || e.originalEvent.clipboardData).items;
   if (!items) return;
 
@@ -1484,27 +1374,150 @@ msgInput.addEventListener("paste", async (e) => {
 });
 autoResizeMsgBox();
 
-fileInput.addEventListener("change", async () => {
-  const file = fileInput.files?.[0] || null;
+fileInputEl.addEventListener("change", async () => {
+  const file = fileInputEl.files?.[0] || null;
   await handleSelectedImageFile(file);
 });
 if (removeImageBtn) {
-  removeImageBtn.addEventListener("click", () => {
+  removeImageBtnEl.addEventListener("click", () => {
     clearSelectedImage(true);
   });
 }
 
-sendBtn.addEventListener('click', () => sendMessage());
-sendBtn.disabled = true;
+sendBtnEl.addEventListener('click', () => sendMessage());
+sendBtnEl.disabled = true;
 forceOpenBottom = true;
 listenToChat();
 }
+function refreshSend(){
+  const text = (msgInputEl?.value || "").trim();
+  const hasImageReady = !!pendingImageUrl;
+  const hasAnything = !!text || !!pendingImageFile || !!hasImageReady;
 
+  if (!sendBtnEl) return;
+  sendBtnEl.disabled = !hasAnything || isUploadingImage;
+}
+
+function setImageUploadLoading(isLoading, text = "Uploading image..."){
+  isUploadingImage = !!isLoading;
+
+  if (imageUploadStatusEl) {
+    imageUploadStatusEl.hidden = !isLoading;
+    imageUploadStatusEl.style.display = isLoading ? "flex" : "none";
+  }
+
+  if (imageUploadTextEl) {
+    imageUploadTextEl.textContent = text;
+  }
+
+  refreshSend();
+}
+
+function clearSelectedImage(resetInput = true){
+  currentImageUploadToken++;
+
+  pendingImageFile = null;
+  pendingImageUrl = "";
+  isUploadingImage = false;
+
+  if (resetInput && fileInputEl) fileInputEl.value = "";
+
+  if (imagePreviewEl) imagePreviewEl.src = "";
+  if (imagePreviewWrapEl) imagePreviewWrapEl.hidden = true;
+
+  if (imageUploadStatusEl) {
+    imageUploadStatusEl.hidden = true;
+    imageUploadStatusEl.style.display = "none";
+  }
+
+  if (imageUploadTextEl) {
+    imageUploadTextEl.textContent = "Uploading image...";
+  }
+
+  refreshSend();
+}
+
+async function uploadImageToCloudinary(file, uploadToken){
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+
+  if (uploadToken !== currentImageUploadToken) return null;
+
+  if (!res.ok || !data.secure_url) {
+    throw new Error(data?.error?.message || "Upload failed");
+  }
+
+  return data.secure_url;
+}
+
+async function handleSelectedImageFile(file){
+  if (!file) {
+    clearSelectedImage();
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    alert("❌ Only image allowed");
+    clearSelectedImage();
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert("❌ Image too large (max 5MB)");
+    clearSelectedImage();
+    return;
+  }
+
+  const uploadToken = ++currentImageUploadToken;
+  pendingImageFile = file;
+  pendingImageUrl = "";
+
+  if (imagePreviewWrapEl) imagePreviewWrapEl.hidden = false;
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    if (uploadToken !== currentImageUploadToken) return;
+    if (imagePreviewEl) imagePreviewEl.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+
+  setImageUploadLoading(true, "Uploading image...");
+  refreshSend();
+
+  try {
+    const secureUrl = await uploadImageToCloudinary(file, uploadToken);
+
+    if (uploadToken !== currentImageUploadToken) return;
+    if (!secureUrl) return;
+
+    pendingImageUrl = secureUrl;
+    pendingImageFile = file;
+  } catch (err) {
+    if (uploadToken !== currentImageUploadToken) return;
+
+    console.error("Image pre-upload failed:", err);
+    alert("❌ Upload image gagal. Sila cuba lagi.");
+    clearSelectedImage(true);
+    return;
+  } finally {
+    if (uploadToken === currentImageUploadToken) {
+      setImageUploadLoading(false);
+      refreshSend();
+    }
+  }
+}
 async function sendMessage() {
   if (!currentActiveId) return;
 
-  const msgInput = document.getElementById('msg');
-  const msg = (msgInput.value || '').trim();
+  const msg = (msgInputEl?.value || '').trim();
 
   if (isUploadingImage) {
     alert("⏳ Please wait, image still uploading...");
@@ -1535,20 +1548,31 @@ async function sendMessage() {
 
     setTimeout(() => onNewMessageRendered({ forceToBottom: true, instant: false }), 0);
 
-    msgInput.value = '';
-    msgInput.style.height = "24px";
+    if (msgInputEl) {
+  msgInputEl.value = '';
+  msgInputEl.style.height = "24px";
+}
 
     clearSelectedImage(true);
 
+    const imagePreviewWrap = document.getElementById("imagePreviewWrap");
+const imageUploadStatus = document.getElementById("imageUploadStatus");
+
+if (imagePreviewWrap) imagePreviewWrap.hidden = true;
+if (imageUploadStatus) {
+  imageUploadStatus.hidden = true;
+  imageUploadStatus.style.display = "none";
+}
     const typingPath = getUserTypingPath();
     if (typingPath) db.ref(typingPath).set(false).catch(()=>{});
     touchUserPresence({ typing: false });
 
     refreshSend();
-  } catch (error) {
-    console.error("Error sending message:", error);
-    alert("❌ Gagal mengirim pesan.");
-  }
+} catch (error) {
+  console.error("Error sending message:", error);
+  refreshSend();
+  alert("❌ Gagal mengirim pesan.");
+}
 }
 // PATCH START: listenToChat universal
 function listenToChat() {
