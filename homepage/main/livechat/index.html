@@ -1655,13 +1655,9 @@ if (typeof c.text === 'string' && c.text.trim() !== '') {
   p.className = 'msg-text';
   p.innerHTML = escapeHTML(c.text).replace(/\n/g, '<br>');
   div.appendChild(p);
+}
 
-  const timeEl = document.createElement('div');
-  timeEl.className = 'msg-time';
-  timeEl.textContent = timeFormatted;
-  div.appendChild(timeEl);
-
-} else if (c.image) {
+if (c.image) {
   const wrap = document.createElement('div');
   wrap.className = 'chat-image-wrap';
   wrap.title = 'Preview';
@@ -1682,12 +1678,12 @@ if (typeof c.text === 'string' && c.text.trim() !== '') {
   wrap.addEventListener('click', () => {
     openImageLightbox(c.image);
   });
-
-  const timeEl = document.createElement('div');
-  timeEl.className = 'msg-time';
-  timeEl.textContent = timeFormatted;
-  div.appendChild(timeEl);
 }
+
+const timeEl = document.createElement('div');
+timeEl.className = 'msg-time';
+timeEl.textContent = timeFormatted;
+div.appendChild(timeEl);
 
     chatBox.appendChild(div);
   });
