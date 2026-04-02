@@ -632,7 +632,6 @@ emoji-picker::part(search-input):focus {
 <audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 <script>if (window.top === window.self) {window.location.replace("/main");}</script>
@@ -726,7 +725,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
-const storage = firebase.storage();
+const CLOUDINARY_CLOUD_NAME = "dqctvbenv";
+const CLOUDINARY_UPLOAD_PRESET = "chat_upload";
 const ADMIN_PRESENCE_PATH = "adminPresence/main";
 let adminPresenceBound = false;
 
@@ -1107,24 +1107,24 @@ async function sendMessage() {
 
   const msgInput = document.getElementById('msg');
   const fileInput = document.getElementById('fileInput');
-  const msg  = (msgInput.value || '').trim();
+  const msg = (msgInput.value || '').trim();
   const file = fileInput.files[0];
-  // ✅ Pastikan hanya image boleh dihantar
-if (file) {
-  if (!file.type.startsWith("image/")) {
-    alert("❌ Only image allowed");
-    return;
-  }
 
-  if (file.size > 5 * 1024 * 1024) {
-    alert("❌ Image too large (max 5MB)");
-    return;
+  if (file) {
+    if (!file.type.startsWith("image/")) {
+      alert("❌ Only image allowed");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("❌ Image too large (max 5MB)");
+      return;
+    }
   }
-}
 
   if (!msg && !file) return;
 
-  const userName  = localStorage.getItem("username") || (currentIsGuest ? "Guest" : "User");
+  const userName = localStorage.getItem("username") || (currentIsGuest ? "Guest" : "User");
   const userPhoto = localStorage.getItem("userphoto") || "";
   const time = Date.now();
 
@@ -1136,9 +1136,24 @@ if (file) {
 
   try {
     if (file) {
-      const fileRef = storage.ref(`chat_images/${currentActiveId}/${time}_${file.name}`);
-      const snapshot = await fileRef.put(file);
-      imageUrl = await snapshot.ref.getDownloadURL();
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.secure_url) {
+        console.error("Cloudinary upload failed:", data);
+        alert("❌ Upload image gagal");
+        return;
+      }
+
+      imageUrl = data.secure_url;
     }
 
     await chatRef.push({
@@ -1152,17 +1167,19 @@ if (file) {
       readByAdmin: false
     });
 
-    // 👉 paksa scroll ke bawah setelah pesan kita terkirim
     setTimeout(() => onNewMessageRendered({ forceToBottom: true, instant: false }), 0);
 
-msgInput.value = '';
-fileInput.value = '';
-msgInput.style.height = "24px";
-const sendBtn = document.getElementById("sendBtn");
-if (sendBtn) sendBtn.disabled = true;
-const typingPath = getUserTypingPath();
-if (typingPath) db.ref(typingPath).set(false).catch(()=>{});
+    msgInput.value = '';
+    fileInput.value = '';
+    msgInput.style.height = "24px";
+
+    const sendBtn = document.getElementById("sendBtn");
+    if (sendBtn) sendBtn.disabled = true;
+
+    const typingPath = getUserTypingPath();
+    if (typingPath) db.ref(typingPath).set(false).catch(()=>{});
     touchUserPresence({ typing: false });
+
   } catch (error) {
     console.error("Error sending message:", error);
     alert("❌ Gagal mengirim pesan.");
