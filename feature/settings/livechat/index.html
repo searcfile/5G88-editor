@@ -2021,14 +2021,23 @@ function recalcUnreadForAdmin(sid, lastChatTime = null){
   return db.ref(`chats/${sid}`).once("value").then(snapshot => {
     if (unreadCalcToken[sid] !== token) return null;
 
-    let unreadCount = 0;
+ let unreadCount = 0;
+    const unreadKeys = [];
 
     snapshot.forEach(child => {
       const m = child.val();
       if (m && m.from === "user" && m.readByAdmin !== true) {
         unreadCount++;
+        unreadKeys.push({
+          key: child.key,
+          text: m.text || "",
+          image: !!m.image,
+          time: m.time || 0
+        });
       }
     });
+
+    console.log("[ADMIN unread debug]", sid, "count =", unreadCount, unreadKeys);
 
     const hasUnread = unreadCount > 0;
     const updateData = {
