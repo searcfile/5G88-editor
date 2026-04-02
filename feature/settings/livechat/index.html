@@ -991,6 +991,48 @@ body{
   box-sizing: border-box;
   box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
 }
+.image-preview-wrap{
+  position: relative;
+  width: fit-content;
+  max-width: 140px;
+  margin: 10px 14px 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #424242;
+  background: #141414;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+}
+
+.image-preview{
+  display: block;
+  width: 140px;
+  max-width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.remove-image-btn{
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-image-btn:hover{
+  background: rgba(255,0,0,0.85);
+}
   </style>
 </head>
 <body>
@@ -1054,14 +1096,19 @@ body{
 
         <!-- Chat Box -->
         <div class="chat-box" id="chatBox"></div>
-
+        
+<div id="imagePreviewWrap" class="image-preview-wrap" hidden>
+  <img id="imagePreview" class="image-preview" alt="Preview">
+  <button type="button" id="removeImageBtn" class="remove-image-btn" title="Remove image">×</button>
+</div>
         <!-- Send Box -->
-        <div class="send-box">
-          <button type="button" class="send-tool-btn attach-btn" title="Attach">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M16.5 6.5l-7.79 7.79a3 3 0 104.24 4.24l8.14-8.14a5 5 0 10-7.07-7.07L5.32 12.02a7 7 0 109.9 9.9l7.07-7.07" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+<div class="send-box">
+  <label for="fileInput" class="send-tool-btn attach-btn" title="Upload Image">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M16.5 6.5l-7.79 7.79a3 3 0 104.24 4.24l8.14-8.14a5 5 0 10-7.07-7.07L5.32 12.02a7 7 0 109.9 9.9l7.07-7.07" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <input type="file" id="fileInput" accept="image/*" hidden>
+  </label>
 
           <textarea id="msg" placeholder="Type your message..." rows="1"></textarea>
 
@@ -1118,7 +1165,12 @@ let forceScrollToBottom = false;
 
 let lastPresenceId = null;
 let unreadCountCache = {};
-
+let msgInput = null;
+let sendBtn = null;
+let fileInput = null;
+let imagePreviewWrap = null;
+let imagePreview = null;
+let removeImageBtn = null;
 // chatMeta: simpan info realtime chat (listener sekali saja per user)
 const chatMeta = {}; // { sid: { listening:true, lastChatTime:number, identity:{...}, booted:true/false } }
 let renderTimer = null;
@@ -1202,6 +1254,8 @@ const firebaseConfig = {
 };
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const CLOUDINARY_CLOUD_NAME = "dqctvbenv";
+const CLOUDINARY_UPLOAD_PRESET = "chat_upload";
 const ADMIN_PRESENCE_PATH = "adminPresence/main";
 
 function bootstrapAdminIdentityFromSettings() {
@@ -2037,49 +2091,106 @@ function listenToChat(){
 let msgInput, sendBtn;
 
 function updateSendButtonState(){
-  const msg = msgInput?.value.trim();
-  const isUserSelected = !!selectedUserId;
-  if (sendBtn) sendBtn.disabled = !(isUserSelected && msg);
+  const text = (msgInput?.value || "").trim();
+  const file = fileInput?.files?.[0] || null;
+
+  if (sendBtn) {
+    sendBtn.disabled = !text && !file;
+  }
+
+  if (file && file.type.startsWith("image/")) {
+    const reader = new FileReader();
+    reader.onload = function(e){
+      if (imagePreview) imagePreview.src = e.target.result;
+      if (imagePreviewWrap) imagePreviewWrap.hidden = false;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    if (imagePreview) imagePreview.src = "";
+    if (imagePreviewWrap) imagePreviewWrap.hidden = true;
+  }
 }
 
-function sendMessage(){
-  const msg = msgInput?.value.trim();
-  if (!selectedUserId || !msg) return alert("Pilih user dan tulis pesan dulu!");
+async function sendMessage() {
+  if (!selectedUserId) return;
 
-const now = Date.now();
-const admin = getAdminIdentity();
-const newMsg = {
-  from: "admin",
-  name: admin.name,
-  email: admin.email,
-  photoURL: admin.photoURL,
-  text: msg,
-  time: now,
-  readByAdmin: true,
-  seenByUser: false,
-  deliveredAt: now,
-  readAt: null
-};
+  const text = (msgInput?.value || "").trim();
+  const file = fileInput?.files?.[0] || null;
 
-  db.ref(`chats/${selectedUserId}`).push(newMsg, err=>{
-    if (err) return alert("Gagal mengirim pesan");
+  if (file) {
+    if (!file.type.startsWith("image/")) {
+      alert("❌ Only image allowed");
+      return;
+    }
 
-msgInput.value = "";
-if (typeof autoResizeMsgBox === "function") autoResizeMsgBox();
-updateSendButtonState();
+    if (file.size > 5 * 1024 * 1024) {
+      alert("❌ Image too large (max 5MB)");
+      return;
+    }
+  }
 
-db.ref(ADMIN_PRESENCE_PATH + "/typing").set(false).catch(()=>{});
-touchAdminPresence({ typing: false });
+  if (!text && !file) return;
 
-db.ref(`notifications/${selectedUserId}`).set({
-  from:"admin", text: msg, time: now, unread:true
-});
+  const admin = getAdminIdentity();
+  const time = Date.now();
+  let imageUrl = null;
 
-    // update lastChatTime
-    db.ref(`users/${selectedUserId}`).update({
-      lastChatTime: now
-    }).catch(()=>{});
-  });
+  try {
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.secure_url) {
+        console.error("Cloudinary upload failed:", data);
+        alert("❌ Upload image gagal");
+        return;
+      }
+
+      imageUrl = data.secure_url;
+    }
+
+    await db.ref(`chats/${selectedUserId}`).push({
+      from: "admin",
+      name: admin.name || "Admin",
+      email: admin.email || "",
+      photoURL: admin.photoURL || "https://i.imgur.com/qiZFOs9.png",
+      text: text || null,
+      image: imageUrl || null,
+      time,
+      seenByUser: false
+    });
+
+    await db.ref(`notifications/${selectedUserId}`).update({
+      unread: true,
+      lastMessageTime: time
+    });
+
+    if (msgInput) {
+      msgInput.value = "";
+      msgInput.style.height = "24px";
+    }
+
+    if (fileInput) fileInput.value = "";
+    if (imagePreview) imagePreview.src = "";
+    if (imagePreviewWrap) imagePreviewWrap.hidden = true;
+
+    touchAdminPresence({ online: true, typing: false, lastSeen: Date.now() });
+    updateSendButtonState();
+
+    forceScrollToBottom = true;
+
+  } catch (err) {
+    console.error("sendMessage admin error:", err);
+    alert("❌ Gagal mengirim pesan.");
+  }
 }
 
 /* ======================= PRESENCE (ONLINE / TYPING) ======================= */
@@ -2201,6 +2312,10 @@ window.onload = ()=>{
 
   msgInput = document.getElementById("msg");
   sendBtn  = document.getElementById("sendBtn");
+  fileInput = document.getElementById("fileInput");
+imagePreviewWrap = document.getElementById("imagePreviewWrap");
+imagePreview = document.getElementById("imagePreview");
+removeImageBtn = document.getElementById("removeImageBtn");
 const emojiBtn = document.getElementById("emojiBtn");
 const emojiPickerWrap = document.getElementById("emojiPickerWrap");
 const emojiPicker = document.getElementById("emojiPicker");
@@ -2251,9 +2366,15 @@ if (msgInput) {
     msgInput.addEventListener("keydown", e=>{
       if (e.key === "Enter" && !(e.shiftKey || e.ctrlKey)){
         e.preventDefault();
-        const text = msgInput.value.trim();
-        if (!selectedUserId || !text) return;
-        sendMessage();
+msgInput.addEventListener("keydown", e=>{
+  if (e.key === "Enter" && !(e.shiftKey || e.ctrlKey)){
+    e.preventDefault();
+    const text = msgInput.value.trim();
+    const file = fileInput?.files?.[0] || null;
+    if (!selectedUserId || (!text && !file)) return;
+    sendMessage();
+  }
+});
       }
     });
   }
@@ -2262,7 +2383,18 @@ if (msgInput) {
     sendBtn.addEventListener("click", sendMessage);
     updateSendButtonState();
   }
+if (fileInput){
+  fileInput.addEventListener("change", updateSendButtonState);
+}
 
+if (removeImageBtn){
+  removeImageBtn.addEventListener("click", () => {
+    if (fileInput) fileInput.value = "";
+    if (imagePreview) imagePreview.src = "";
+    if (imagePreviewWrap) imagePreviewWrap.hidden = true;
+    updateSendButtonState();
+  });
+}
   const btnAll    = document.getElementById("filterAll");
   const btnUnread = document.getElementById("filterUnread");
 
