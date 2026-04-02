@@ -2176,14 +2176,28 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
 
     if (filter === "unread" && !hasUnread) return;
 
-    const meta = chatMeta[sanitized] || {};
-    const mergedIdentity = {
-      name:     userData?.name     ?? meta.identity?.name,
-      email:    userData?.email    ?? meta.identity?.email,
-      photoURL: userData?.photoURL ?? meta.identity?.photoURL
-    };
+const meta = chatMeta[sanitized] || {};
+const safeEmailFromId = desanitizeUserId(sanitized);
+const fallbackNameFromId = safeEmailFromId.includes("@")
+  ? safeEmailFromId.split("@")[0]
+  : sanitized;
 
-    const { label, displayName, email, photoURL } = getLabelParts(sanitized, mergedIdentity);
+const mergedIdentity = {
+  name: (
+    meta.identity?.name &&
+    meta.identity.name.trim() &&
+    meta.identity.name.trim().toLowerCase() !== "sky88"
+  )
+    ? meta.identity.name.trim()
+    : fallbackNameFromId,
+  email: (userData?.email || meta.identity?.email || safeEmailFromId),
+  photoURL: userData?.photoURL || meta.identity?.photoURL || ""
+};
+
+const displayName = mergedIdentity.name || fallbackNameFromId;
+const email = mergedIdentity.email || safeEmailFromId;
+const photoURL = mergedIdentity.photoURL || "";
+const label = `${displayName} (${email})`;
     if (q && !label.toLowerCase().includes(q)) return;
 
     const loginTs   = getLoginTimeFromUser(userData);
@@ -2227,10 +2241,10 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
       activeUserIdSanitized = sanitized;
       selectedUserId = sanitized;
 
-      const selectedUserName =
-      userData?.name ||
-      displayName ||
-      "User";
+const selectedUserName =
+  displayName ||
+  fallbackNameFromId ||
+  "User";
       showChatDetail();
       const selectedUserPhoto =
       userData?.photoURL ||
