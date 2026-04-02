@@ -2570,6 +2570,46 @@ if (msgInput) {
   autoResizeMsgBox();
   msgInput.addEventListener("input", autoResizeMsgBox);
 }
+if (msgInput) {
+  msgInput.addEventListener("paste", (e) => {
+    const items = (e.clipboardData || window.clipboardData)?.items;
+    if (!items || !fileInput) return;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      if (item.kind === "file" && item.type.startsWith("image/")) {
+        const file = item.getAsFile();
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+          alert("❌ Image too large (max 5MB)");
+          e.preventDefault();
+          return;
+        }
+
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        fileInput.files = dt.files;
+
+        if (imagePreview && imagePreviewWrap) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            imagePreview.src = ev.target.result;
+            imagePreviewWrap.hidden = false;
+          };
+          reader.readAsDataURL(file);
+        }
+
+        updateSendButtonState();
+        if (typeof autoResizeMsgBox === "function") autoResizeMsgBox();
+
+        e.preventDefault();
+        break;
+      }
+    }
+  });
+}
   bootstrapAdminIdentityFromSettings();
   touchAdminPresence({ online: true, typing: false });
   
