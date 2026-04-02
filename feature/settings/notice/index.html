@@ -127,11 +127,10 @@ body.dark-theme{
       max-width: 590px;
       min-width: 380px;
       background: var(--backgroundbtn);
-      border-right: 1px solid rgba(255,255,255,.07);
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       position: relative;
-      box-shadow: inset -1px 0 0 rgba(60,137,232,.12);
     }
 
     .sidebar::before{
@@ -139,7 +138,6 @@ body.dark-theme{
       position:absolute;
       inset:0;
       pointer-events:none;
-      background: linear-gradient(180deg, rgba(60,137,232,.08), transparent 18%);
     }
 
     .sidebar-header{
@@ -323,7 +321,7 @@ body.dark-theme{
       background:var(--blue-hover);
     }
     .btn-save:active {
-      background: var(--blue-active));
+      background:var(--blue-active);
     }
 
     .btn-delete {
@@ -445,19 +443,18 @@ body.dark-theme{
       width: 100%;
       flex: 1;
       min-height: 260px;
-      background: linear-gradient(180deg, rgba(29,34,44,.96), rgba(25,29,38,.98));
-      color: #dbe8ff;
+      background:var(--backgroundbtn);
+      color:var(--colorbtn);
       font-size: 14px;
       line-height: 1.6;
-      border-radius: 18px;
+      border-radius: 6px;
       padding: 16px 16px;
-      border: 1px solid rgba(60,137,232,.5);
+      border: 1px solid var(--border2);
       resize: none;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02), var(--shadow-soft);
     }
 
     .main-compose textarea::placeholder{
-      color: #7f8eab;
+      color: var(--blur);
       letter-spacing: .3px;
     }
 
@@ -497,7 +494,7 @@ body.dark-theme{
     }
 
     .btn-clear:hover {
-    background:(var(--red-hover);
+    background:var(--red-hover);
     }
 
     .btn-clear:active {
