@@ -1277,10 +1277,10 @@ function initChatWithUserData() {
   if (!currentActiveId) return;
 
   msgInputEl = document.getElementById('msg');
-  function autoResizeMsgBox() {
-  if (!msgInput) return;
-  msgInput.style.height = "24px";
-  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + "px";
+function autoResizeMsgBox() {
+  if (!msgInputEl) return;
+  msgInputEl.style.height = "24px";
+  msgInputEl.style.height = Math.min(msgInputEl.scrollHeight, 120) + "px";
 }
 sendBtnEl = document.getElementById('sendBtn');
 fileInputEl = document.getElementById('fileInput');
@@ -1306,7 +1306,7 @@ bindAdminHeaderPresence();
 bindUserTyping();
   
 refreshSend();
-if (emojiBtn && emojiPickerWrap && emojiPicker && msgInput) {
+if (emojiBtn && emojiPickerWrap && emojiPicker && msgInputEl) {
   emojiBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     emojiPickerWrap.hidden = !emojiPickerWrap.hidden;
@@ -1316,15 +1316,15 @@ if (emojiBtn && emojiPickerWrap && emojiPicker && msgInput) {
     const emoji = event.detail?.unicode || "";
     if (!emoji) return;
 
-    const start = msgInput.selectionStart ?? msgInput.value.length;
-    const end = msgInput.selectionEnd ?? msgInput.value.length;
-    const value = msgInput.value;
+    const start = msgInputEl.selectionStart ?? msgInputEl.value.length;
+const end = msgInputEl.selectionEnd ?? msgInputEl.value.length;
+const value = msgInputEl.value;
 
-    msgInput.value = value.slice(0, start) + emoji + value.slice(end);
-    msgInput.focus();
+msgInputEl.value = value.slice(0, start) + emoji + value.slice(end);
+msgInputEl.focus();
 
-    const pos = start + emoji.length;
-    msgInput.setSelectionRange(pos, pos);
+const pos = start + emoji.length;
+msgInputEl.setSelectionRange(pos, pos);
 
     emojiPickerWrap.hidden = true;
     refreshSend();
@@ -1342,7 +1342,7 @@ msgInputEl.addEventListener('keydown', (e) => {
     e.preventDefault();
 
     if (isUploadingImage) return;
-    if (!msgInput.value.trim() && !pendingImageUrl) return;
+    if (!msgInputEl.value.trim() && !pendingImageUrl) return;
 
     sendMessage();
   }
@@ -1363,7 +1363,7 @@ msgInputEl.addEventListener("paste", async (e) => {
 
       const dt = new DataTransfer();
       dt.items.add(file);
-      fileInput.files = dt.files;
+      fileInputEl.files = dt.files;
 
       e.preventDefault();
 
@@ -1378,7 +1378,7 @@ fileInputEl.addEventListener("change", async () => {
   const file = fileInputEl.files?.[0] || null;
   await handleSelectedImageFile(file);
 });
-if (removeImageBtn) {
+if (removeImageBtnEl) {
   removeImageBtnEl.addEventListener("click", () => {
     clearSelectedImage(true);
   });
