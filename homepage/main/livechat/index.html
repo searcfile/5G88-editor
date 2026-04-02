@@ -558,6 +558,48 @@ emoji-picker::part(search-input):focus {
     --total-emoji-size: calc(var(--emoji-size) + (2 * var(--emoji-padding)));
     --total-category-emoji-size: calc(var(--category-emoji-size) + (2 * var(--category-emoji-padding)));
 }
+.image-preview-wrap{
+  position: relative;
+  width: fit-content;
+  max-width: 140px;
+  margin: 0 0 10px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-input);
+  background: var(--page-input);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+}
+
+.image-preview{
+  display: block;
+  width: 140px;
+  max-width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.remove-image-btn{
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-image-btn:hover{
+  background: rgba(255,0,0,0.85);
+}
 </style>
 <body>
 <main>
@@ -588,6 +630,11 @@ emoji-picker::part(search-input):focus {
 </button>
 <div id="noResults" style="display:none;position:absolute;top:62px;right:16px;background:#222;color:#fff;border:1px solid #444;border-radius:8px;padding:6px 10px;font-size:12px;">
   No data
+</div>
+    
+<div id="imagePreviewWrap" class="image-preview-wrap" hidden>
+  <img id="imagePreview" class="image-preview" alt="Preview">
+  <button type="button" id="removeImageBtn" class="remove-image-btn" title="Remove image">×</button>
 </div>
     <!-- SEND BOX -->
 <div class="send-box">
@@ -1032,6 +1079,9 @@ function initChatWithUserData() {
 }
   const sendBtn   = document.getElementById('sendBtn');
   const fileInput = document.getElementById('fileInput');
+  const imagePreviewWrap = document.getElementById('imagePreviewWrap');
+  const imagePreview = document.getElementById('imagePreview');
+  const removeImageBtn = document.getElementById('removeImageBtn');
   const emojiBtn = document.getElementById("emojiBtn");
   const emojiPickerWrap = document.getElementById("emojiPickerWrap");
   const emojiPicker = document.getElementById("emojiPicker");
@@ -1047,7 +1097,21 @@ if (typingEl) typingEl.textContent = "Offline";
 bindAdminHeaderPresence();
 bindUserTyping();
 function refreshSend(){
-  sendBtn.disabled = !msgInput.value.trim() && !fileInput.files.length;
+  const file = fileInput.files[0];
+
+  sendBtn.disabled = !msgInput.value.trim() && !file;
+
+  if (file && file.type.startsWith("image/")) {
+    const reader = new FileReader();
+    reader.onload = function(e){
+      imagePreview.src = e.target.result;
+      imagePreviewWrap.hidden = false;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    imagePreview.src = "";
+    imagePreviewWrap.hidden = true;
+  }
 }
 refreshSend();
 if (emojiBtn && emojiPickerWrap && emojiPicker && msgInput) {
@@ -1095,6 +1159,14 @@ msgInput.addEventListener("input", () => {
 autoResizeMsgBox();
 
 fileInput.addEventListener("change", refreshSend);
+  if (removeImageBtn) {
+  removeImageBtn.addEventListener("click", () => {
+    fileInput.value = "";
+    imagePreview.src = "";
+    imagePreviewWrap.hidden = true;
+    refreshSend();
+  });
+}
 
 sendBtn.addEventListener('click', () => sendMessage());
 sendBtn.disabled = true;
@@ -1171,6 +1243,10 @@ async function sendMessage() {
 
     msgInput.value = '';
     fileInput.value = '';
+    const imagePreviewWrap = document.getElementById("imagePreviewWrap");
+    const imagePreview = document.getElementById("imagePreview");
+    if (imagePreviewWrap) imagePreviewWrap.hidden = true;
+    if (imagePreview) imagePreview.src = "";
     msgInput.style.height = "24px";
 
     const sendBtn = document.getElementById("sendBtn");
