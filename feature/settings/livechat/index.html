@@ -1037,7 +1037,13 @@ body{
   padding: 8px;
   box-sizing: border-box;
 }
+.image-upload-status[hidden]{
+  display: none !important;
+}
 
+.image-preview-wrap[hidden]{
+  display: none !important;
+}
 .upload-spinner{
   width: 20px;
   height: 20px;
@@ -2368,6 +2374,12 @@ function setImageUploadLoading(isLoading, text = "Uploading image..."){
 
   if (imageUploadStatus) {
     imageUploadStatus.hidden = !isLoading;
+
+    if (isLoading) {
+      imageUploadStatus.style.display = "flex";
+    } else {
+      imageUploadStatus.style.display = "none";
+    }
   }
 
   if (imageUploadText) {
@@ -2458,15 +2470,18 @@ async function handleSelectedImageFile(file){
 
     pendingImageUrl = secureUrl || "";
     pendingImageFile = file;
-
-    setImageUploadLoading(false);
-    updateSendButtonState();
   } catch (err) {
     if (uploadToken !== currentImageUploadToken) return;
 
     console.error("Image pre-upload failed:", err);
     alert("❌ Upload image gagal. Sila cuba lagi.");
     clearSelectedImage(true);
+    return;
+  } finally {
+    if (uploadToken === currentImageUploadToken) {
+      setImageUploadLoading(false);
+      updateSendButtonState();
+    }
   }
 }
 async function sendMessage() {
