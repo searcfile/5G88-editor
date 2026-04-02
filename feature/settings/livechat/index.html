@@ -2484,7 +2484,42 @@ async function sendMessage() {
   const time = Date.now();
 
   try {
-    await db.ref(`chats/${selectedUserId}`).push({
+    const chatRef = db.ref(`chats/${selectedUserId}`);
+
+    // 1) bila admin reply, semua message user lama dianggap sudah dibaca
+    const oldSnap = await chatRef.once("value");
+    const oldUpdates = {};
+
+    oldSnap.forEach(child => {
+      const m = child.val();
+      if (m && m.from === "user" && m.readByAdmin !== true) {
+        oldUpdates[`${child.key}/readByAdmin`] = true;
+      }
+    });
+
+    if (Object.keys(oldUpdates).length) {
+      await chatRef.update(oldUpdates);
+    }
+
+    // 2) reset unread count dulu
+    await db.ref(`users/${selectedUserId}`).update({
+      unreadForAdmin: false,
+      unreadCountForAdmin: 0
+    });
+
+    const idx = allUsersData.findIndex(([sid]) => sid === selectedUserId);
+    if (idx !== -1) {
+      allUsersData[idx][1] = {
+        ...(allUsersData[idx][1] || {}),
+        unreadForAdmin: false,
+        unreadCountForAdmin: 0
+      };
+    }
+
+    unreadCountCache[selectedUserId] = 0;
+
+    // 3) baru kirim message admin
+    await chatRef.push({
       from: "admin",
       name: admin.name || "Admin",
       email: admin.email || "",
@@ -2499,6 +2534,8 @@ async function sendMessage() {
       unread: true,
       lastMessageTime: time
     });
+
+    await recalcUnreadForAdmin(selectedUserId, time);
 
     if (msgInput) {
       msgInput.value = "";
