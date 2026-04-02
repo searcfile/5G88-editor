@@ -2010,31 +2010,57 @@ chatBox.appendChild(div);
   });
 }
 
-function seedUnreadFlagOnce(sid){
-  db.ref(`users/${sid}/unreadForAdmin`).once("value").then(s=>{
-    const hasFlag = s.val() === true;
+const unreadCalcToken = {};
 
-    return db.ref(`chats/${sid}`)
-      .orderByChild("time")
-      .limitToLast(200)
-      .once("value")
-      .then(cs=>{
-        const chats = cs.val() || {};
-        const list = Object.values(chats).filter(Boolean);
+function recalcUnreadForAdmin(sid, lastChatTime = null){
+  if (!sid) return Promise.resolve(0);
 
-        const unreadCount = list.filter(m => m && m.from === "user" && m.readByAdmin !== true).length;
-        const hasUnread = unreadCount > 0;
+  const token = Date.now() + "_" + Math.random().toString(36).slice(2);
+  unreadCalcToken[sid] = token;
 
-        if (hasUnread || hasFlag){
-          return db.ref(`users/${sid}`).update({
-            unreadForAdmin: hasUnread,
-            unreadCountForAdmin: unreadCount
-          }).catch(()=>{});
-        }
-      });
-  }).catch(()=>{});
+  return db.ref(`chats/${sid}`).once("value").then(snapshot => {
+    if (unreadCalcToken[sid] !== token) return null;
+
+    let unreadCount = 0;
+
+    snapshot.forEach(child => {
+      const m = child.val();
+      if (m && m.from === "user" && m.readByAdmin !== true) {
+        unreadCount++;
+      }
+    });
+
+    const hasUnread = unreadCount > 0;
+    const updateData = {
+      unreadForAdmin: hasUnread,
+      unreadCountForAdmin: unreadCount
+    };
+
+    if (lastChatTime != null) {
+      updateData.lastChatTime = Number(lastChatTime) || Date.now();
+    }
+
+    return db.ref(`users/${sid}`).update(updateData).then(() => {
+      const idx = allUsersData.findIndex(([id]) => id === sid);
+      if (idx !== -1) {
+        allUsersData[idx][1] = {
+          ...(allUsersData[idx][1] || {}),
+          ...updateData
+        };
+      }
+
+      unreadCountCache[sid] = unreadCount;
+      return unreadCount;
+    });
+  }).catch(err => {
+    console.warn("recalcUnreadForAdmin fail:", sid, err);
+    return null;
+  });
 }
 
+function seedUnreadFlagOnce(sid){
+  return recalcUnreadForAdmin(sid).catch(()=>{});
+}
 /* ======================= META LISTENER (REALTIME + AUTO FLAG UNREAD) ======================= */
 function ensureChatMetaListener(sanitized){
   if (chatMeta[sanitized]?.listening) return;
@@ -2060,71 +2086,18 @@ function ensureChatMetaListener(sanitized){
     }
 
 if (m.from === "user" && m.readByAdmin !== true){
-  // ✅ kalau chat user ini sedang dibuka admin sekarang,
-  // terus mark read, jangan tambah unread badge
   if (sanitized === activeUserIdSanitized) {
     db.ref(`chats/${sanitized}/${snap.key}`).update({
       readByAdmin: true
+    }).then(() => {
+      return recalcUnreadForAdmin(sanitized, t);
+    }).then(() => {
+      scheduleRender();
     }).catch(()=>{});
-
-    db.ref(`users/${sanitized}`).update({
-      unreadForAdmin: false,
-      unreadCountForAdmin: 0,
-      lastChatTime: t
-    }).catch(()=>{});
-
-    const idxActive = allUsersData.findIndex(([id]) => id === sanitized);
-    if (idxActive !== -1){
-      allUsersData[idxActive][1] = {
-        ...(allUsersData[idxActive][1] || {}),
-        unreadForAdmin: false,
-        unreadCountForAdmin: 0,
-        lastChatTime: t
-      };
-    }
-
-    unreadCountCache[sanitized] = 0;
-    scheduleRender();
   } else {
-    db.ref(`chats/${sanitized}`)
-      .orderByChild("time")
-      .once("value")
-      .then(snapshot => {
-        const chats = snapshot.val() || {};
-
-        const unreadCount = Object.values(chats).filter(m =>
-          m && m.from === "user" && m.readByAdmin !== true
-        ).length;
-
-        db.ref(`users/${sanitized}`).update({
-          unreadForAdmin: unreadCount > 0,
-          unreadCountForAdmin: unreadCount,
-          lastChatTime: t
-        }).catch(()=>{});
-
-        const idxCache = allUsersData.findIndex(([id]) => id === sanitized);
-        if (idxCache !== -1){
-          allUsersData[idxCache][1] = {
-            ...(allUsersData[idxCache][1] || {}),
-            unreadForAdmin: unreadCount > 0,
-            unreadCountForAdmin: unreadCount,
-            lastChatTime: t
-          };
-        }
-
-        unreadCountCache[sanitized] = unreadCount;
-
-        if (
-          initialUserListLoaded &&
-          wasBooted &&
-          sanitized !== activeUserIdSanitized
-        ){
-          beep();
-        }
-
-        scheduleRender();
-      })
-      .catch(()=>{});
+    recalcUnreadForAdmin(sanitized, t).then(() => {
+      scheduleRender();
+    }).catch(()=>{});
   }
 }
     // bump activity + sort list
@@ -2143,23 +2116,26 @@ if (m.from === "user" && m.readByAdmin !== true){
   });
 
   // ✅ kalau ada update (contoh readByAdmin berubah), refresh activity juga
-  lastRef.on("child_changed", snap=>{
-    const m = snap.val() || {};
-    const t = Number(m.time) || chatMeta[sanitized].lastChatTime || Date.now();
-    chatMeta[sanitized].lastChatTime = t;
+lastRef.on("child_changed", snap=>{
+  const m = snap.val() || {};
+  const t = Number(m.time) || chatMeta[sanitized].lastChatTime || Date.now();
+  chatMeta[sanitized].lastChatTime = t;
 
-    if (m.name || m.email || m.photoURL){
-      chatMeta[sanitized].identity = { name:m.name, email:m.email, photoURL:m.photoURL };
-    }
+  if (m.name || m.email || m.photoURL){
+    chatMeta[sanitized].identity = { name:m.name, email:m.email, photoURL:m.photoURL };
+  }
 
-    const idx = allUsersData.findIndex(([id])=> id === sanitized);
-    if (idx !== -1){
-      const userData = allUsersData[idx][1] || {};
-      allUsersData[idx][2] = makeActivityTime(t, userData);
-      allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
-      scheduleRender();
-    }
-  });
+  const idx = allUsersData.findIndex(([id])=> id === sanitized);
+  if (idx !== -1){
+    const userData = allUsersData[idx][1] || {};
+    allUsersData[idx][2] = makeActivityTime(t, userData);
+    allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
+  }
+
+  recalcUnreadForAdmin(sanitized, t).then(() => {
+    scheduleRender();
+  }).catch(()=>{});
+});
 }
 
 /* ======================= FAST RENDER USER LIST ======================= */
@@ -2830,14 +2806,7 @@ db.ref("users").on("child_changed", snap=>{
 
   unreadCountCache[sanitized] = nextUnread;
 
-  // bunyi hanya kalau unread bertambah
-  if (
-    initialUserListLoaded &&
-    nextUnread > prevUnread &&
-    sanitized !== activeUserIdSanitized
-  ){
-    beep();
-  }
+
 
   const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
   const activity = makeActivityTime(lastChat, data);
