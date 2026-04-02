@@ -2054,10 +2054,14 @@ function ensureChatMetaListener(sanitized){
     const wasBooted = !!chatMeta[sanitized].booted;
     if(!wasBooted) chatMeta[sanitized].booted = true;
 
-    // identity
-    if (m.name || m.email || m.photoURL){
-      chatMeta[sanitized].identity = { name:m.name, email:m.email, photoURL:m.photoURL };
-    }
+// identity user sahaja, jangan ambil admin
+if (m.from === "user" && (m.name || m.email || m.photoURL)) {
+  chatMeta[sanitized].identity = {
+    name: m.name || "",
+    email: m.email || "",
+    photoURL: m.photoURL || ""
+  };
+}
 
 if (m.from === "user" && m.readByAdmin !== true){
   // ✅ kalau chat user ini sedang dibuka admin sekarang,
@@ -2148,9 +2152,13 @@ if (m.from === "user" && m.readByAdmin !== true){
     const t = Number(m.time) || chatMeta[sanitized].lastChatTime || Date.now();
     chatMeta[sanitized].lastChatTime = t;
 
-    if (m.name || m.email || m.photoURL){
-      chatMeta[sanitized].identity = { name:m.name, email:m.email, photoURL:m.photoURL };
-    }
+   if (m.from === "user" && (m.name || m.email || m.photoURL)) {
+  chatMeta[sanitized].identity = {
+    name: m.name || "",
+    email: m.email || "",
+    photoURL: m.photoURL || ""
+  };
+}
 
     const idx = allUsersData.findIndex(([id])=> id === sanitized);
     if (idx !== -1){
@@ -2185,13 +2193,12 @@ const fallbackNameFromId = safeEmailFromId.includes("@")
 const mergedIdentity = {
   name: (
     meta.identity?.name &&
-    meta.identity.name.trim() &&
-    meta.identity.name.trim().toLowerCase() !== "sky88"
+    meta.identity.name.trim()
   )
     ? meta.identity.name.trim()
     : fallbackNameFromId,
-  email: (userData?.email || meta.identity?.email || safeEmailFromId),
-  photoURL: userData?.photoURL || meta.identity?.photoURL || ""
+  email: (meta.identity?.email || userData?.email || safeEmailFromId),
+  photoURL: (meta.identity?.photoURL || userData?.photoURL || "")
 };
 
 const displayName = mergedIdentity.name || fallbackNameFromId;
@@ -2246,10 +2253,10 @@ const selectedUserName =
   fallbackNameFromId ||
   "User";
       showChatDetail();
-      const selectedUserPhoto =
-      userData?.photoURL ||
-      photoURL ||
-      "https://i.pravatar.cc/40";
+const selectedUserPhoto =
+  meta.identity?.photoURL ||
+  userData?.photoURL ||
+  "https://i.pravatar.cc/40";
 
       const nameEl = document.getElementById("chatUserName");
       if (nameEl) nameEl.textContent = selectedUserName;
