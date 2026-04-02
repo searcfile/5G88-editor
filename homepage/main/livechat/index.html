@@ -601,6 +601,27 @@ emoji-picker::part(search-input):focus {
 .remove-image-btn:hover{
   background: rgba(255,0,0,0.85);
 }
+.image-lightbox-content{
+  position: relative;
+  z-index: 2;
+  max-width: 92vw;
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-lightbox-img{
+  max-width: 92vw;
+  max-height: 92vh;
+  object-fit: contain;
+  transform-origin: center center;
+  transition: transform 0.08s linear;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-drag: none;
+}
 </style>
 <body>
 <main>
@@ -676,6 +697,13 @@ emoji-picker::part(search-input):focus {
   <emoji-picker id="emojiPicker"></emoji-picker>
 </div>
   </div>
+<div id="imageLightbox" class="image-lightbox" hidden>
+  <div class="image-lightbox-backdrop"></div>
+
+  <div class="image-lightbox-content">
+    <img id="lightboxImage" class="image-lightbox-img" alt="Preview">
+  </div>
+</div>
 </main>
 <audio id="notifSound" src="https://searcfile.github.io/5G88-audio/notifsound/notification.wav" preload="auto"></audio>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -1521,13 +1549,26 @@ if (typeof c.text === 'string' && c.text.trim() !== '') {
   div.appendChild(timeEl);
 
 } else if (c.image) {
+  const wrap = document.createElement('div');
+  wrap.className = 'chat-image-wrap';
+  wrap.title = 'Preview';
+
   const img = document.createElement('img');
-  img.alt = 'Image';
-  img.style.maxWidth = '100%';
-  img.style.borderRadius = '8px';
-  img.style.marginTop = '4px';
+  img.className = 'chat-image-thumb';
+  img.alt = 'Preview';
   img.src = c.image;
-  div.appendChild(img);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'chat-image-overlay';
+  overlay.textContent = '◉ Preview';
+
+  wrap.appendChild(img);
+  wrap.appendChild(overlay);
+  div.appendChild(wrap);
+
+  wrap.addEventListener('click', () => {
+    openImageLightbox(c.image);
+  });
 
   const timeEl = document.createElement('div');
   timeEl.className = 'msg-time';
@@ -1656,6 +1697,61 @@ window.addEventListener("DOMContentLoaded", async () => {
       bindPresenceAndNotif();
       initChatWithUserData();
     }
+  }
+});
+let lightboxScale = 1;
+
+function openImageLightbox(src){
+  if (!imageLightbox || !lightboxImage) return;
+
+  lightboxScale = 1;
+  lightboxImage.src = src;
+  lightboxImage.style.transform = 'scale(1)';
+  imageLightbox.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImageLightbox(){
+  if (!imageLightbox || !lightboxImage) return;
+
+  imageLightbox.hidden = true;
+  lightboxImage.src = '';
+  lightboxScale = 1;
+  lightboxImage.style.transform = 'scale(1)';
+  document.body.style.overflow = '';
+}
+if (imageLightbox) {
+  imageLightbox.addEventListener('click', (e) => {
+    const clickedImage = e.target === lightboxImage;
+    const clickedContent = e.target.closest('.image-lightbox-content');
+
+    if (!clickedImage && !clickedContent) {
+      closeImageLightbox();
+    }
+
+    if (e.target.classList.contains('image-lightbox-backdrop')) {
+      closeImageLightbox();
+    }
+  });
+}
+
+if (lightboxImage) {
+  lightboxImage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+
+    const delta = e.deltaY < 0 ? 0.15 : -0.15;
+    lightboxScale += delta;
+
+    if (lightboxScale < 0.4) lightboxScale = 0.4;
+    if (lightboxScale > 5) lightboxScale = 5;
+
+    lightboxImage.style.transform = `scale(${lightboxScale})`;
+  }, { passive: false });
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && imageLightbox && !imageLightbox.hidden) {
+    closeImageLightbox();
   }
 });
 (function () {
