@@ -1298,6 +1298,26 @@ msgInput.addEventListener("input", () => {
   autoResizeMsgBox();
   refreshSend();
 });
+msgInput.addEventListener("paste", (e) => {
+  const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf("image") !== -1) {
+      const file = items[i].getAsFile();
+
+      // masukkan ke input file
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileInput.files = dt.files;
+
+      // trigger preview
+      refreshSend();
+
+      e.preventDefault(); // elak paste text sekali
+      break;
+    }
+  }
+});
 autoResizeMsgBox();
 
 fileInput.addEventListener("change", refreshSend);
