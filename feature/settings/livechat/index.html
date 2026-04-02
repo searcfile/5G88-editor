@@ -1015,7 +1015,41 @@ body{
   border: 1px solid #424242;
   background: #141414;
 }
+.image-preview-card{
+  position: relative;
+  width: 90px;
+  height: 90px;
+}
 
+.image-upload-status{
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.62);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 11px;
+  text-align: center;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.upload-spinner{
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: #ffffff;
+  animation: spinUpload 0.8s linear infinite;
+}
+
+@keyframes spinUpload{
+  to { transform: rotate(360deg); }
+}
 .remove-image-btn{
   position: absolute;
   top: 6px;
@@ -1237,10 +1271,18 @@ body{
 <div class="chat-box" id="chatBox"></div>
 
 <div class="send-box">
-  <div id="imagePreviewWrap" class="image-preview-wrap" hidden>
+<div id="imagePreviewWrap" class="image-preview-wrap" hidden>
+  <div class="image-preview-card">
     <img id="imagePreview" class="image-preview" alt="Preview">
+
+    <div id="imageUploadStatus" class="image-upload-status" hidden>
+      <span class="upload-spinner"></span>
+      <span id="imageUploadText">Uploading image...</span>
+    </div>
+
     <button type="button" id="removeImageBtn" class="remove-image-btn" title="Remove image">×</button>
   </div>
+</div>
 
   <label for="fileInput" class="send-tool-btn attach-btn" title="Upload Image">
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1328,6 +1370,13 @@ let dragStartY = 0;
 let imagePreviewWrap = null;
 let imagePreview = null;
 let removeImageBtn = null;
+let imageUploadStatus = null;
+let imageUploadText = null;
+
+let pendingImageFile = null;
+let pendingImageUrl = "";
+let isUploadingImage = false;
+let currentImageUploadToken = 0;
 // chatMeta: simpan info realtime chat (listener sekali saja per user)
 const chatMeta = {}; // { sid: { listening:true, lastChatTime:number, identity:{...}, booted:true/false } }
 let renderTimer = null;
@@ -2306,78 +2355,143 @@ function listenToChat(){
 
 function updateSendButtonState(){
   const text = (msgInput?.value || "").trim();
-  const file = fileInput?.files?.[0] || null;
+  const hasImageReady = !!pendingImageUrl;
+  const hasUploadingImage = !!isUploadingImage;
+  const hasAnything = !!text || !!hasImageReady || !!pendingImageFile;
 
-  if (sendBtn) {
-    sendBtn.disabled = !text && !file;
+  if (!sendBtn) return;
+
+  sendBtn.disabled = !selectedUserId || !hasAnything || hasUploadingImage;
+}
+function setImageUploadLoading(isLoading, text = "Uploading image..."){
+  isUploadingImage = !!isLoading;
+
+  if (imageUploadStatus) {
+    imageUploadStatus.hidden = !isLoading;
   }
 
-  if (file && file.type.startsWith("image/")) {
-    const reader = new FileReader();
-    reader.onload = function(e){
-      if (imagePreview) imagePreview.src = e.target.result;
-      if (imagePreviewWrap) imagePreviewWrap.hidden = false;
-    };
-    reader.readAsDataURL(file);
-  } else {
-    if (imagePreview) imagePreview.src = "";
-    if (imagePreviewWrap) imagePreviewWrap.hidden = true;
+  if (imageUploadText) {
+    imageUploadText.textContent = text;
   }
+
+  updateSendButtonState();
 }
 
+function clearSelectedImage(resetInput = true){
+  currentImageUploadToken++;
+
+  pendingImageFile = null;
+  pendingImageUrl = "";
+  isUploadingImage = false;
+
+  if (resetInput && fileInput) fileInput.value = "";
+
+  if (imagePreview) imagePreview.src = "";
+  if (imagePreviewWrap) imagePreviewWrap.hidden = true;
+  if (imageUploadStatus) imageUploadStatus.hidden = true;
+  if (imageUploadText) imageUploadText.textContent = "Uploading image...";
+
+  updateSendButtonState();
+}
+
+async function uploadImageToCloudinary(file, uploadToken){
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+
+  if (uploadToken !== currentImageUploadToken) {
+    return null;
+  }
+
+  if (!res.ok || !data.secure_url) {
+    throw new Error(data?.error?.message || "Upload failed");
+  }
+
+  return data.secure_url;
+}
+
+async function handleSelectedImageFile(file){
+  if (!file) {
+    clearSelectedImage();
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    alert("❌ Only image allowed");
+    clearSelectedImage();
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert("❌ Image too large (max 5MB)");
+    clearSelectedImage();
+    return;
+  }
+
+  const uploadToken = ++currentImageUploadToken;
+  pendingImageFile = file;
+  pendingImageUrl = "";
+
+  if (imagePreviewWrap) imagePreviewWrap.hidden = false;
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    if (uploadToken !== currentImageUploadToken) return;
+    if (imagePreview) imagePreview.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+
+  setImageUploadLoading(true, "Uploading image...");
+  updateSendButtonState();
+
+  try {
+    const secureUrl = await uploadImageToCloudinary(file, uploadToken);
+
+    if (uploadToken !== currentImageUploadToken) return;
+
+    pendingImageUrl = secureUrl || "";
+    pendingImageFile = file;
+
+    setImageUploadLoading(false);
+    updateSendButtonState();
+  } catch (err) {
+    if (uploadToken !== currentImageUploadToken) return;
+
+    console.error("Image pre-upload failed:", err);
+    alert("❌ Upload image gagal. Sila cuba lagi.");
+    clearSelectedImage(true);
+  }
+}
 async function sendMessage() {
   if (!selectedUserId) return;
 
   const text = (msgInput?.value || "").trim();
-  const file = fileInput?.files?.[0] || null;
 
-  if (file) {
-    if (!file.type.startsWith("image/")) {
-      alert("❌ Only image allowed");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("❌ Image too large (max 5MB)");
-      return;
-    }
+  if (isUploadingImage) {
+    alert("⏳ Please wait, image still uploading...");
+    return;
   }
 
-  if (!text && !file) return;
+  if (!text && !pendingImageUrl) return;
 
   const admin = getAdminIdentity();
   const time = Date.now();
-  let imageUrl = null;
 
   try {
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.secure_url) {
-        console.error("Cloudinary upload failed:", data);
-        alert("❌ Upload image gagal");
-        return;
-      }
-
-      imageUrl = data.secure_url;
-    }
-
     await db.ref(`chats/${selectedUserId}`).push({
       from: "admin",
       name: admin.name || "Admin",
       email: admin.email || "",
       photoURL: admin.photoURL || "https://i.imgur.com/qiZFOs9.png",
       text: text || null,
-      image: imageUrl || null,
+      image: pendingImageUrl || null,
       time,
       seenByUser: false
     });
@@ -2392,14 +2506,12 @@ async function sendMessage() {
       msgInput.style.height = "24px";
     }
 
-    if (fileInput) fileInput.value = "";
-    if (imagePreview) imagePreview.src = "";
-    if (imagePreviewWrap) imagePreviewWrap.hidden = true;
+    clearSelectedImage(true);
 
     touchAdminPresence({ online: true, typing: false, lastSeen: Date.now() });
-    updateSendButtonState();
 
     forceScrollToBottom = true;
+    updateSendButtonState();
 
   } catch (err) {
     console.error("sendMessage admin error:", err);
@@ -2530,6 +2642,8 @@ window.onload = ()=>{
 imagePreviewWrap = document.getElementById("imagePreviewWrap");
 imagePreview = document.getElementById("imagePreview");
 removeImageBtn = document.getElementById("removeImageBtn");
+imageUploadStatus = document.getElementById("imageUploadStatus");
+imageUploadText = document.getElementById("imageUploadText");
 const emojiBtn = document.getElementById("emojiBtn");
 const emojiPickerWrap = document.getElementById("emojiPickerWrap");
 const emojiPicker = document.getElementById("emojiPicker");
@@ -2570,7 +2684,7 @@ if (msgInput) {
   msgInput.addEventListener("input", autoResizeMsgBox);
 }
 if (msgInput) {
-  msgInput.addEventListener("paste", (e) => {
+  msgInput.addEventListener("paste", async (e) => {
     const items = (e.clipboardData || window.clipboardData)?.items;
     if (!items || !fileInput) return;
 
@@ -2591,19 +2705,11 @@ if (msgInput) {
         dt.items.add(file);
         fileInput.files = dt.files;
 
-        if (imagePreview && imagePreviewWrap) {
-          const reader = new FileReader();
-          reader.onload = function(ev) {
-            imagePreview.src = ev.target.result;
-            imagePreviewWrap.hidden = false;
-          };
-          reader.readAsDataURL(file);
-        }
-
-        updateSendButtonState();
-        if (typeof autoResizeMsgBox === "function") autoResizeMsgBox();
-
         e.preventDefault();
+
+        await handleSelectedImageFile(file);
+
+        if (typeof autoResizeMsgBox === "function") autoResizeMsgBox();
         break;
       }
     }
@@ -2623,9 +2729,11 @@ if (msgInput){
       e.preventDefault();
 
       const text = msgInput.value.trim();
-      const file = fileInput?.files?.[0] || null;
 
-      if (!selectedUserId || (!text && !file)) return;
+      if (!selectedUserId) return;
+      if (isUploadingImage) return;
+      if (!text && !pendingImageUrl) return;
+
       sendMessage();
     }
   });
@@ -2636,15 +2744,15 @@ if (msgInput){
     updateSendButtonState();
   }
 if (fileInput){
-  fileInput.addEventListener("change", updateSendButtonState);
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files?.[0] || null;
+    await handleSelectedImageFile(file);
+  });
 }
 
 if (removeImageBtn){
   removeImageBtn.addEventListener("click", () => {
-    if (fileInput) fileInput.value = "";
-    if (imagePreview) imagePreview.src = "";
-    if (imagePreviewWrap) imagePreviewWrap.hidden = true;
-    updateSendButtonState();
+    clearSelectedImage(true);
   });
 }
   const btnAll    = document.getElementById("filterAll");
