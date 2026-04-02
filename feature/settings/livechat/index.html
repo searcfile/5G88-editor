@@ -2088,7 +2088,6 @@ function listenToChat(){
   chatRef.on("value", activeChatValueHandler);
 }
 /* ======================= SEND MESSAGE (ADMIN) ======================= */
-let msgInput, sendBtn;
 
 function updateSendButtonState(){
   const text = (msgInput?.value || "").trim();
@@ -2361,23 +2360,21 @@ if (msgInput) {
   bindAdminPresence();
   bindAdminTyping();
 
-  if (msgInput){
-    msgInput.addEventListener("input", updateSendButtonState);
-    msgInput.addEventListener("keydown", e=>{
-      if (e.key === "Enter" && !(e.shiftKey || e.ctrlKey)){
-        e.preventDefault();
-msgInput.addEventListener("keydown", e=>{
-  if (e.key === "Enter" && !(e.shiftKey || e.ctrlKey)){
-    e.preventDefault();
-    const text = msgInput.value.trim();
-    const file = fileInput?.files?.[0] || null;
-    if (!selectedUserId || (!text && !file)) return;
-    sendMessage();
-  }
-});
-      }
-    });
-  }
+if (msgInput){
+  msgInput.addEventListener("input", updateSendButtonState);
+
+  msgInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !(e.shiftKey || e.ctrlKey)) {
+      e.preventDefault();
+
+      const text = msgInput.value.trim();
+      const file = fileInput?.files?.[0] || null;
+
+      if (!selectedUserId || (!text && !file)) return;
+      sendMessage();
+    }
+  });
+}
 
   if (sendBtn){
     sendBtn.addEventListener("click", sendMessage);
