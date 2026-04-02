@@ -578,41 +578,7 @@ emoji-picker::part(search-input):focus {
   border: 1px solid var(--border-input);
   background: var(--page-bg2);
 }
-.image-preview-card{
-  position: relative;
-  width: 90px;
-  height: 90px;
-}
 
-.image-upload-status{
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.62);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: #fff;
-  font-size: 11px;
-  text-align: center;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.upload-spinner{
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.25);
-  border-top-color: #ffffff;
-  animation: spinUpload 0.8s linear infinite;
-}
-
-@keyframes spinUpload{
-  to { transform: rotate(360deg); }
-}
 .remove-image-btn{
   position: absolute;
   top: 6px;
@@ -800,18 +766,10 @@ emoji-picker::part(search-input):focus {
 </div>
     
 <div class="send-box">
-<div id="imagePreviewWrap" class="image-preview-wrap" hidden>
-  <div class="image-preview-card">
+  <div id="imagePreviewWrap" class="image-preview-wrap" hidden>
     <img id="imagePreview" class="image-preview" alt="Preview">
-
-    <div id="imageUploadStatus" class="image-upload-status" hidden>
-      <span class="upload-spinner"></span>
-      <span id="imageUploadText">Uploading image...</span>
-    </div>
-
     <button type="button" id="removeImageBtn" class="remove-image-btn" title="Remove image">×</button>
   </div>
-</div>
 
   <label for="fileInput" class="send-tool-btn attach-btn" title="Upload Image">
     <svg viewBox="0 0 24 24" aria-hidden="true">
