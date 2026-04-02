@@ -601,24 +601,95 @@ emoji-picker::part(search-input):focus {
 .remove-image-btn:hover{
   background: rgba(255,0,0,0.85);
 }
-.image-lightbox-content{
+.chat-image-wrap{
   position: relative;
-  z-index: 2;
-  max-width: 92vw;
-  max-height: 92vh;
+  display: inline-block;
+  width: 170px;
+  max-width: 100%;
+  margin-top: 6px;
+  border-radius: 12px;
   overflow: hidden;
+  cursor: pointer;
+  background: #0f0f0f;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.chat-image-thumb{
+  display: block;
+  width: 170px;
+  max-width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.chat-image-overlay{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 8px 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0));
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.chat-image-wrap:hover .chat-image-overlay{
+  opacity: 1;
+}
+
+.image-lightbox{
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.image-lightbox-img{
+.image-lightbox[hidden]{
+  display: none !important;
+}
+
+.message{
+  overflow: visible;
+}
+
+.message .chat-image-wrap{
+  max-width: 170px;
+}
+.image-lightbox-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+}
+
+.image-lightbox-content{
+  position: relative;
+  z-index: 2;
   max-width: 92vw;
   max-height: 92vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  box-sizing: border-box;
+}
+
+.image-lightbox-img{
+  display: block;
+  max-width: 92vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
   transform-origin: center center;
   transition: transform 0.08s linear;
-  cursor: grab;
+  cursor: zoom-in;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -1699,6 +1770,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   }
 });
+const imageLightbox = document.getElementById('imageLightbox');
+const lightboxImage = document.getElementById('lightboxImage');
 let lightboxScale = 1;
 
 function openImageLightbox(src){
@@ -1720,6 +1793,21 @@ function closeImageLightbox(){
   lightboxImage.style.transform = 'scale(1)';
   document.body.style.overflow = '';
 }
+if (imageLightbox) {
+  imageLightbox.addEventListener('click', (e) => {
+    const clickedImage = e.target === lightboxImage;
+    const clickedContent = e.target.closest('.image-lightbox-content');
+
+    if (!clickedImage && !clickedContent) {
+      closeImageLightbox();
+    }
+
+    if (e.target.classList.contains('image-lightbox-backdrop')) {
+      closeImageLightbox();
+    }
+  });
+}
+
 if (imageLightbox) {
   imageLightbox.addEventListener('click', (e) => {
     const clickedImage = e.target === lightboxImage;
