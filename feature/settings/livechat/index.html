@@ -2157,7 +2157,11 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
 
   userList.forEach(([sanitized, userData])=>{
     const unreadCount = Number(userData?.unreadCountForAdmin || 0);
-    const hasUnread = unreadCount > 0 || userData?.unreadForAdmin === true;
+    const hasUnread = unreadCount > 0;
+
+    if (sanitized === activeUserIdSanitized) {
+      console.log("[RENDER badge]", sanitized, { unreadCount, unreadForAdmin: userData?.unreadForAdmin, hasUnread });
+    }
 
     if (filter === "unread" && !hasUnread) return;
 
@@ -2211,7 +2215,15 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
       forceScrollToBottom = true;
       activeUserIdSanitized = sanitized;
       selectedUserId = sanitized;
-
+      const idxNow = allUsersData.findIndex(([sid]) => sid === sanitized);
+      if (idxNow !== -1) {
+        allUsersData[idxNow][1] = {
+          ...(allUsersData[idxNow][1] || {}),
+          unreadForAdmin: false,
+          unreadCountForAdmin: 0
+        };
+      }
+      unreadCountCache[sanitized] = 0;
       const selectedUserName =
       userData?.name ||
       displayName ||
@@ -2237,9 +2249,9 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
       const searchMsg = document.getElementById("searchMessage");
       if (searchMsg) searchMsg.value = "";
 
+      scheduleRender();
       updateUserPresenceById(sanitized);
       listenToChat();
-      scheduleRender();
     };
 
     userListBox.appendChild(userDiv);
