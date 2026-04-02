@@ -8,7 +8,6 @@
 
   <style>
     :root{
-      --bg: #0a0d14;
       --panel: #111723;
       --panel-2: #161d2b;
       --panel-3: #0f1521;
@@ -16,12 +15,6 @@
       --line-strong: rgba(60,137,232,.75);
       --text: #eef4ff;
       --muted: #8b9ab7;
-      --blue: #1668dc;
-      --blue-hover: #3c89e8;
-      --blue-active: #1554ad;
-      --green: #17cb17d1;
-      --green-hover: #20ed20d1;
-      --green-active: #0e970ed1;
       --red: #dd1717;
       --red-hover: #e75858;
       --red-active: #b31616;
@@ -32,7 +25,86 @@
       --shadow-soft: 0 6px 18px rgba(0,0,0,.22);
       --radius: 16px;
       --radius-sm: 10px;
-    }
+
+ 
+  --bg-main: #fff;
+  --sidebar: #001529;
+  --text-main: #000;
+  --text-soft: rgba(17,24,39,0.88);
+  --text-dim: rgba(17,24,39,0.72);
+  --colorbtn: rgba(0, 0, 0, 0.88);
+  --backgroundbtn: #ffffff;
+  --backgrounddrop: #ffffff;
+  --border: #303030;
+  --border2: #d9d9d9;
+  --panel-border: #d4dbe6;
+  --blur: rgba(0,0,0,0.25);
+  --border3: #f0f0f0;
+  --tab2: #ffffff;
+  --border-bottom: #ffffff;
+  --close: rgba(0, 0, 0, 0.88);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #d4dbe6;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(17,24,39,0.88);
+  --btn-border: #d4dbe6;
+
+  --blue: #1668dc;
+  --blue-hover: #3c89e8;
+  --blue-active: #1554ad;
+
+  --overlay-bg: rgba(15,23,42,0.18);
+  --popup-bg: #ffffff;
+
+  --empty-text: rgba(17,24,39,.7);
+  --empty-title: rgba(17,24,39,.88);
+
+  --toggle-track: #cfd8e3;
+  --toggle-knob: #ffffff;
+  --btnfocus: #91caff;
+}
+
+body.dark-theme{
+  --bg-main: #000;
+  --sidebar: #001529;
+  --text-main: #fff;
+  --text-soft: rgba(255,255,255,0.85);
+  --text-dim: rgba(255,255,255,0.65);
+  --colorbtn: rgba(255,255,255,0.85);
+  --backgroundbtn: #141414;
+  --backgrounddrop: #1f1f1f;
+  --border: #303030;
+  --border2: #424242;
+  --panel-border: #424242;
+  --blur: rgba(255,255,255,0.25);
+  --border3: #303030;
+  --tab2: #141414;
+  --border-bottom: #141414;
+  --close: rgba(255,255,255,0.45);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #303030;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(255,255,255,0.85);
+  --btn-border: #424242;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(0,0,0,0.5);
+  --popup-bg: #1f1f1f;
+
+  --empty-text: rgba(255,255,255,.7);
+  --empty-title: rgba(255,255,255,.85);
+
+  --toggle-track: #2c7be5;
+  --toggle-knob: #ffffff;
+  --btnfocus: #15325b;
+}
 
     * { box-sizing: border-box; }
 
@@ -57,7 +129,7 @@
       width: 100%;
       max-width: 590px;
       min-width: 380px;
-      background: linear-gradient(180deg, rgba(17,23,35,.96), rgba(12,17,27,.98));
+      background: var(--backgroundbtn);
       border-right: 1px solid rgba(255,255,255,.07);
       display: flex;
       flex-direction: column;
@@ -75,7 +147,8 @@
 
     .sidebar-header{
       padding: 18px 18px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.05);
+      border-bottom: 1px solid var(--border2);
+      background:var(--backgrounddrop);
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -93,38 +166,31 @@
       font-size: 18px;
       font-weight: 700;
       letter-spacing: .4px;
-      color: #fff;
+      color: var(--colorbtn);
     }
 
     .sidebar-subtitle{
       margin:0;
       font-size: 12px;
-      color: var(--muted);
+      color: var(--blur);
     }
 
     .btn-create {
-      background: linear-gradient(180deg, var(--blue-hover), var(--blue));
+      background:var(--blue);
       color: white;
-      padding: 10px 14px;
+      padding: 0px 15px;
       font-size: 14px;
-      font-weight: 700;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 12px;
+      border: 1px solid transparent;
+      border-radius: 6px;
       cursor: pointer;
-      box-shadow: var(--shadow-soft);
       transition: all 0.2s ease;
       flex-shrink: 0;
     }
-
     .btn-create:hover {
-      transform: translateY(-1px);
-      background: linear-gradient(180deg, #56a0ff, var(--blue-hover));
-      box-shadow: 0 10px 20px rgba(22,104,220,.28);
+      background: var(--blue-hover);
     }
-
     .btn-create:active {
-      transform: translateY(0);
-      background: linear-gradient(180deg, var(--blue), var(--blue-active));
+      background: var(--blue-active);
     }
 
     .notice-scroll {
@@ -155,9 +221,9 @@
       flex-wrap: wrap;
       gap: 8px;
       padding: 12px;
-      background: linear-gradient(180deg, rgba(20,27,40,.95), rgba(11,16,24,.98));
-      border: 1px solid rgba(60,137,232,.22);
-      border-radius: 16px;
+      background: var(--backgroundbtn);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
       box-shadow: var(--shadow-soft);
       position: relative;
       overflow: hidden;
@@ -180,10 +246,10 @@
       padding: 12px 13px;
       font-size: 13px;
       line-height: 1.5;
-      border-radius: 12px;
-      background: #0a0f18;
-      color: #dbe8ff !important;
-      border: 1px solid rgba(60,137,232,.42);
+      border-radius: 6px;
+      background: var(--backgroundbtn);
+      color:var(--colorbtn)  !important;
+      border: 1px solid var(--border2);
       resize: none !important;
       transition: all 0.2s ease;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
@@ -219,12 +285,11 @@
     }
 
     .notice-row button {
-      padding: 8px 14px;
-      min-height: 38px;
-      font-size: 13px;
-      font-weight: 700;
+      padding: 0px 15px;
+      height: 32px;
+      font-size: 14px;
       border: none;
-      border-radius: 10px;
+      border-radius: 6px;
       cursor: pointer;
       color: white;
       white-space: nowrap;
@@ -233,15 +298,13 @@
     }
 
     .btn-send {
-      background: linear-gradient(180deg, var(--blue-hover), var(--blue));
+      background:var(--blue);
     }
     .btn-send:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(22,104,220,.26);
+     background:var(--blue-hover);
     }
     .btn-send:active {
-      background: linear-gradient(180deg, var(--blue), var(--blue-active));
-      transform: translateY(0);
+     background: var(--blue-active);
     }
 
     .btn-edit {
