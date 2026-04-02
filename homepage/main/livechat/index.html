@@ -268,9 +268,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--page-text);
+  color: rgba(255,255,255,0.75);
   cursor: pointer;
-  border:none;
+  border-radius: 50%;
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
@@ -280,7 +280,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 }
 
 .send-tool-btn:hover {
+  background: rgba(255,255,255,0.08);
   color: #fff;
+}
+
+.send-tool-btn:active {
+  transform: scale(0.96);
 }
 
 .send-main-btn {
