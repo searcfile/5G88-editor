@@ -1096,8 +1096,8 @@ body{
 .image-lightbox-content{
   position: relative;
   z-index: 2;
-  max-width: 92vw;
-  max-height: 92vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1160,6 +1160,10 @@ body{
   margin-top:4px;
   font-size:12px;
   color:var(--text-dim);
+}
+.start-message {
+  text-align:center;
+  color:var(--colorbtn);
 }
   </style>
 </head>
@@ -2282,7 +2286,7 @@ function listenToChat(){
     const chats = snap.val();
     if (!chats){
       if (chatBox) {
-        chatBox.innerHTML = '<p style="text-align:center;color:white;">Start Message.</p>';
+        chatBox.innerHTML = '<p class="start-message">Start Message.</p>';
       }
       allMessages = [];
       return;
