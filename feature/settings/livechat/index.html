@@ -7,6 +7,8 @@
   <title>LiveChat - Admin</title>
   <style>
     :root {
+  --headerbg:#ffffff;
+  --header-border:#d9d9d9;
   --bg-color: #29858f;
   --text-color: #f1f1f1;
   --primary-color: #facc15;
@@ -51,9 +53,12 @@
   --toggle-track: #cfd8e3;
   --toggle-knob: #ffffff;
   --btnfocus: #91caff;
+  --input:#ffffff;
 }
 
 body.dark-theme{
+  --input:#050505;
+  --headerbg:#0f0f0f;
   --bg-main: #000;
   --sidebar: #001529;
   --text-main: #fff;
@@ -76,6 +81,7 @@ body.dark-theme{
   --hover:rgba(0, 0, 0, 0.25);
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #303030;
+  --header-border:#2a2a2a;
 
   --btn-bg: transparent;
   --btn-text: rgba(255,255,255,0.85);
@@ -119,20 +125,6 @@ body {
   flex-direction: column;
   overflow: hidden;
   position: relative;
-}
-/* ===== Chat Header ===== */
-#chatHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(to right, #1668dc, #c5ff4a);
-  padding: 12px 18px;
-  border-radius: 10px;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 10px;
 }
 /* ===== Search Message ===== */
 #searchMessage {
@@ -261,14 +253,16 @@ body {
   width: 100%;
   margin: 0;
   padding: 10px 14px 12px;
-  border: 1px solid #424242;
+  border: 1px solid var(--border2);
   border-radius: 0;
-  background: #050505;
+  background: var(--input);
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   border-bottom-left-radius: 14px;
   border-bottom-right-radius: 14px;
   flex-wrap: wrap;
+  flex-shrink: 0;
+  border-radius: 0;
 }
 
 .send-box:focus-within {
@@ -394,12 +388,12 @@ body {
 
 .user-item:hover {
   background: var(--hover);
-  color: white;
+  color: var(--hover2);
 }
 
 .user-item.active {
   background-color: #1668dc;
-  color: var(--hover2);
+  color: white;
 }
 
 /* ===== Date Label ===== */
@@ -443,7 +437,7 @@ body {
 }
     #chatHeaderUser img {
   object-fit: cover;
-  border: 1px solid #424242;
+  border: 1px solid var(--border2);
 }
 #searchUser {
  padding: 10px 5px; margin-bottom: 10px; border-radius: 6px;
@@ -731,12 +725,16 @@ body{
   flex-shrink: 0;
   margin-bottom: 0;
   border-radius: 0;
-  background: #0f0f0f;
+  background: var(--headerbg);
   border: none;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--header-border);
   box-shadow: none;
   padding: 14px 16px;
-  color: #fff;
+  color: var(--colorbtn);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
 }
 
 .chat-header-user{
@@ -824,18 +822,8 @@ body{
   min-height: 0;
   border: none;
   border-radius: 0;
-  background: #000;
+  background: var(--bg-main);
   padding: 16px;
-}
-
-.send-box{
-  flex-shrink: 0;
-  margin: 0;
-  border-radius: 0;
-  padding: 10px 14px 12px;
-  background: #050505;
-  border-bottom-left-radius: 14px;
-  border-bottom-right-radius: 14px;
 }
 
 @media (max-width: 900px){
