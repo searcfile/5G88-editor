@@ -10,6 +10,7 @@
   --bg-color: #29858f;
   --text-color: #f1f1f1;
   --primary-color: #facc15;
+  --blur:rgba(0,0,0,0.25);
 
   --bg-main: #fff;
   --sidebar: #001529;
@@ -67,6 +68,7 @@ body.dark-theme{
   --tab2: #141414;
   --border-bottom: #141414;
   --close: rgba(255,255,255,0.45);
+  --blur:rgba(255,255,255,0.25);
 
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #303030;
@@ -376,14 +378,14 @@ body {
 }
 /* ===== User List ===== */
 .user-item {
-  border: 1px solid #424242;
+  border: 1px solid var(--border2);
   border-radius: 6px;
   padding: 8px 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  background: #141414;
-  color: rgba(255, 255, 255, 0.85);
+  background: var(--backgroundbtn);
+  color: var(--colorbtn);
 }
 
 .user-item:hover {
@@ -480,36 +482,27 @@ body {
   display: none;
 }
 #filterAll, #filterUnread {
-  border:1px solid #424242;
-  background-color: #141414;     /* warna latar */
-  color: white;                  /* warna teks */
-  padding: 6px 14px;
-  border-radius: 6px;            /* buat lengkung */
+  border:1px solid var(--border2);
+  background-color: var(--backgroundbtn);
+  color: var(--colorbtn);
+  padding: 0px 15px;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s ease;
-  transition: border 0.2s ease;
+  transition: all 0.2s ease;
 }
-
 #filterAll:hover,
 #filterUnread:hover {
   border:1px solid #3c89e8 !important;
-  background-color: #141414;
   color: #3c89e8;   /* warna hover */
-  transition: border 0.2s ease !important;
 }
 #filterAll:active,
 #filterUnread:active {
   border:1px solid #1554ad !important;
-  background-color: #141414;
   color: #1554ad;   /* warna hover */
-  transition: border 0.2s ease !important;
 }
 .active-filter {
   border:1px solid #1668dc !important;
-  background-color: #141414 !important;
   color: #1668dc !important;
-  transition: border 0.2s ease !important;
 }
 .online-indicator {
   float: right;
@@ -627,7 +620,7 @@ body{
 
 .user-stats{
   margin-left: auto;
-  color: #fff;
+  color: var(--colorbtn);
   font-size: 14px;
 }
 
@@ -691,16 +684,16 @@ body{
 .chat-empty-state{
   width: 100%;
   height: 100%;
-  border: 1px solid #424242;
+  border: 1px solid var(--border2);
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
+  background: var(--bg-main);
 }
 
 .chat-empty-inner{
-  color: rgba(255,255,255,0.55);
+  color: var(--blur);
   font-size: 16px;
   text-align: center;
   padding: 20px;
@@ -721,8 +714,8 @@ body{
   max-width: none !important;
   margin: 0 !important;
   border-radius: 14px;
-  background: #000;
-  border: 1px solid #424242;
+  background: var(--bg-main);
+  border: 1px solid var(--border2);
   box-shadow: none !important;
   padding: 0;
   display: flex;
