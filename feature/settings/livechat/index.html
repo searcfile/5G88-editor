@@ -475,7 +475,7 @@ body {
 .user-scroll-box::-webkit-scrollbar {
   display: none;
 }
-#filterAll, #filterUnread {
+#filterAll, #filterUnread, #filterOnline {
   border:1px solid var(--border2);
   background-color: var(--backgroundbtn);
   color: var(--colorbtn);
@@ -486,14 +486,16 @@ body {
   height:32px;
 }
 #filterAll:hover,
-#filterUnread:hover {
+#filterUnread:hover,
+#filterOnline:hover {
   border:1px solid #3c89e8 !important;
-  color: #3c89e8;   /* warna hover */
+  color: #3c89e8;
 }
 #filterAll:active,
-#filterUnread:active {
+#filterUnread:active,
+#filterOnline:active {
   border:1px solid #1554ad !important;
-  color: #1554ad;   /* warna hover */
+  color: #1554ad;
 }
 .active-filter {
   border:1px solid #1668dc !important;
@@ -1202,10 +1204,12 @@ body{
 <div class="top-filter-row">
   <button id="filterAll" class="active-filter">All</button>
 
-<button id="filterUnread">
-  <span>Unread</span>
-  <span id="filterUnreadBadge" class="filter-unread-badge" style="display:none;">0</span>
-</button>
+  <button id="filterUnread">
+    <span>Unread</span>
+    <span id="filterUnreadBadge" class="filter-unread-badge" style="display:none;">0</span>
+  </button>
+
+  <button id="filterOnline">Online</button>
 
   <div class="user-stats">
     Total Users: <span id="totalUsers">0</span> |
@@ -2185,11 +2189,12 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
   const q = String(searchTerm||"").toLowerCase();
 
   userList.forEach(([sanitized, userData])=>{
-    const unreadCount = Number(userData?.unreadCountForAdmin || 0);
-    const hasUnread = unreadCount > 0 || userData?.unreadForAdmin === true;
+const unreadCount = Number(userData?.unreadCountForAdmin || 0);
+const hasUnread = unreadCount > 0 || userData?.unreadForAdmin === true;
+const isOnline = userData?.online === true;
 
-    if (filter === "unread" && !hasUnread) return;
-
+if (filter === "unread" && !hasUnread) return;
+if (filter === "online" && !isOnline) return;
 const meta = chatMeta[sanitized] || {};
 const safeEmailFromId = desanitizeUserId(sanitized);
 const fallbackNameFromId = safeEmailFromId.includes("@")
@@ -2808,20 +2813,31 @@ if (removeImageBtn){
 }
   const btnAll    = document.getElementById("filterAll");
   const btnUnread = document.getElementById("filterUnread");
+  const btnOnline = document.getElementById("filterOnline");
+  
+btnAll?.addEventListener("click", ()=>{
+  currentFilterMode = "all";
+  btnAll.classList.add("active-filter");
+  btnUnread?.classList.remove("active-filter");
+  btnOnline?.classList.remove("active-filter");
+  scheduleRender();
+});
 
-  btnAll?.addEventListener("click", ()=>{
-    currentFilterMode = "all";
-    btnAll.classList.add("active-filter");
-    btnUnread?.classList.remove("active-filter");
-    scheduleRender();
-  });
+btnUnread?.addEventListener("click", ()=>{
+  currentFilterMode = "unread";
+  btnUnread.classList.add("active-filter");
+  btnAll?.classList.remove("active-filter");
+  btnOnline?.classList.remove("active-filter");
+  scheduleRender();
+});
 
-  btnUnread?.addEventListener("click", ()=>{
-    currentFilterMode = "unread";
-    btnUnread.classList.add("active-filter");
-    btnAll?.classList.remove("active-filter");
-    scheduleRender();
-  });
+btnOnline?.addEventListener("click", ()=>{
+  currentFilterMode = "online";
+  btnOnline.classList.add("active-filter");
+  btnAll?.classList.remove("active-filter");
+  btnUnread?.classList.remove("active-filter");
+  scheduleRender();
+});
 
   document.getElementById("searchUser")?.addEventListener("input", ()=> scheduleRender());
   document.getElementById("searchMessage")?.addEventListener("input", e=> filterMessages(e.target.value));
