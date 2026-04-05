@@ -1803,9 +1803,15 @@ function renderChats(chatGroup, today) {
     const div = document.createElement('div');
     div.className = 'message ' + (c.from === 'user' ? 'mine' : 'theirs');
 
-    const rawName = (c.from === 'user') ? (c.name || 'You') : (c.name || 'Admin');
-    const senderLabel = nameOnly(cleanDuplicateName(rawName));
-    const senderPhoto = c.photoURL || 'https://i.pravatar.cc/40';
+    const rawName = (c.from === 'user') ? (c.name || 'You') : 'Admin';
+
+     const senderLabel = (c.from === 'user')
+     ? nameOnly(cleanDuplicateName(rawName))
+     : 'Admin';
+
+const senderPhoto = (c.from === 'user')
+  ? (c.photoURL || 'https://i.pravatar.cc/40')
+  : 'https://i.imgur.com/qiZFOs9.png';
 
     // header bubble tanpa src (src diset via property biar aman)
 div.innerHTML = `
