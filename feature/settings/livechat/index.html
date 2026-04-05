@@ -1812,7 +1812,31 @@ function updateUserCounts(){
     onlineUsersElem.textContent = Object.values(users).filter(u=>u && u.online).length;
   });
 }
+function updateUnreadFilterBadge(){
+  const badge = document.getElementById("filterUnreadBadge");
+  if (!badge) return;
 
+  let totalUnread = 0;
+
+  allUsersData.forEach(([sanitized, userData]) => {
+    const unreadCount = Number(userData?.unreadCountForAdmin || 0);
+    const hasUnreadFlag = userData?.unreadForAdmin === true;
+
+    if (unreadCount > 0) {
+      totalUnread += unreadCount;
+    } else if (hasUnreadFlag) {
+      totalUnread += 1;
+    }
+  });
+
+  if (totalUnread > 0) {
+    badge.style.display = "inline-flex";
+    badge.textContent = totalUnread > 99 ? "99+" : totalUnread;
+  } else {
+    badge.style.display = "none";
+    badge.textContent = "0";
+  }
+}
 /* ======================= RENDER CHAT ======================= */
 function formatDateLabel(dateInput){
   const today = new Date();
