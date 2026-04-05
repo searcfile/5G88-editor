@@ -1166,6 +1166,12 @@ body{
   text-align:center;
   color:var(--colorbtn);
 }
+#filterUnread {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
   </style>
 </head>
 <body>
@@ -1176,16 +1182,19 @@ body{
       <h3>User List</h3>
       <input type="text" id="searchUser" placeholder="Search user..." />
 
-      <div class="top-filter-row">
-        <button id="filterAll" class="active-filter">All</button>
-        <button id="filterUnread">Unread</button>
+<div class="top-filter-row">
+  <button id="filterAll" class="active-filter">All</button>
 
+  <button id="filterUnread">
+    <span>Unread</span>
+    <span id="filterUnreadBadge" class="unread-badge" style="display:none;">0</span>
+  </button>
 
-        <div class="user-stats">
-          Total Users: <span id="totalUsers">0</span> |
-          Online: <span id="onlineUsers">0</span>
-        </div>
-      </div>
+  <div class="user-stats">
+    Total Users: <span id="totalUsers">0</span> |
+    Online: <span id="onlineUsers">0</span>
+  </div>
+</div>
     </div>
 
     <div id="userListBox" class="user-scroll-box"></div>
@@ -1591,6 +1600,8 @@ function scheduleRender(){
       currentFilterMode,
       document.getElementById("searchUser")?.value || ""
     );
+
+    updateUnreadFilterBadge();
   }, 80);
 }
 
@@ -2633,6 +2644,7 @@ window.onload = ()=>{
   });
   loadUserList();
   updateUserCounts();
+  updateUnreadFilterBadge();
 
   msgInput = document.getElementById("msg");
   sendBtn  = document.getElementById("sendBtn");
