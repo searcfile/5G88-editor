@@ -1172,6 +1172,24 @@ body{
   justify-content: center;
   gap: 3px;
 }
+.filter-unread-badge{
+  min-width: 16px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #ff2b2b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin-left: 2px;
+  box-shadow: none;
+}
   </style>
 </head>
 <body>
@@ -1185,10 +1203,10 @@ body{
 <div class="top-filter-row">
   <button id="filterAll" class="active-filter">All</button>
 
-  <button id="filterUnread">
-    <span>Unread</span>
-    <span id="filterUnreadBadge" class="unread-badge" style="display:none;">0</span>
-  </button>
+<button id="filterUnread">
+  <span>Unread</span>
+  <span id="filterUnreadBadge" class="filter-unread-badge" style="display:none;">0</span>
+</button>
 
   <div class="user-stats">
     Total Users: <span id="totalUsers">0</span> |
