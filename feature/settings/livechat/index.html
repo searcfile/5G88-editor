@@ -1852,7 +1852,7 @@ function updateUnreadFilterBadge(){
 
   if (totalUnread > 0) {
     badge.style.display = "inline-flex";
-    badge.textContent = totalUnread > 99 ? "99+" : totalUnread;
+    badge.textContent = `(${totalUnread > 99 ? "99+" : totalUnread})`;
   } else {
     badge.style.display = "none";
     badge.textContent = "0";
