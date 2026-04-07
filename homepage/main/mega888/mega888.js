@@ -723,29 +723,6 @@ document.getElementById("autoAddScoreBtn")?.addEventListener("click", () => {
   localStorage.setItem("autoAddScoreOnMega888", autoAddScoreOn ? "1" : "0");
   updateAutoAddScoreButtonUI();
 });
-// ===============================
-// TRACK TRANSACTION TO PARENT
-// ===============================
-function trackMega888Action(action, extra = {}) {
-  try {
-    const game =
-      document.getElementById("gameSelect")?.value ||
-      "MEGA888";
-
-    window.parent.postMessage({
-      type: "track-action",
-      action: action,
-      tabLabel: "MEGA888",
-      extra: {
-        game,
-        page: "mega888",
-        ...extra
-      }
-    }, "*");
-  } catch (err) {
-    console.error("trackMega888Action error:", err);
-  }
-}
 function generateLog() {
   const game = document.getElementById("gameSelect").value;
   const bet = parseFloat(document.getElementById("betSelect").value);
@@ -872,15 +849,6 @@ const savedData = {
 };
     localStorage.setItem("gameLogDataMega888", JSON.stringify(savedData));
   }, 50);
-    // ✅ TRACK CREATE LOG
-  trackMega888Action("CREATE", {
-    item: "GAME_LOG",
-    game,
-    bet: isNaN(bet) ? 0 : bet,
-    pecahan: isNaN(selectedPecahan) ? 0 : selectedPecahan,
-    freeGame: parseInt(document.getElementById('freeGameInput')?.value || '0', 10) || 0
-  });
-}
 }
 
 function addJackpot() {
@@ -1030,12 +998,6 @@ function addJackpot() {
 
   // Re-apply Free game selepas struktur row berubah
   applyFreeGame();
-
-  // ✅ TRACK JACKPOT
-  trackMega888Action("CREATE", {
-    item: "JACKPOT",
-    amount: jackpotAmount
-  });
 }
 function addManualSetScore() {
   const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
@@ -1084,13 +1046,7 @@ function addManualSetScore() {
   }
 
   document.getElementById("manualScoreInput").value = "";
-
-  // ✅ TRACK MANUAL SET SCORE
-  trackMega888Action("CREATE", {
-    item: "MANUAL_SET_SCORE",
-    amount: inputScore
-  });
-}
+  }
 function updateSelectPlaceholderColor(select) {
   if (!select) return;
 
@@ -1438,11 +1394,6 @@ function setRandomWin() {
   }, 50);
 
   showToast(`Win ${amount.toFixed(2)} Has change other rows`, "success");
-    // ✅ TRACK RANDOM WIN
-  trackMega888Action("CREATE", {
-    item: "SET_RANDOM_WIN",
-    amount: amount
-  });
 }
 function copyGameLogImage() {
   const gameLogTable = document.getElementById("gameLog");
@@ -1472,9 +1423,6 @@ function copyGameLogImage() {
 
       showToast("Image copied to clipboard", "success");
       return;
-      trackMega888Action("CREATE", {
-  item: "COPY_IMAGE"
-});
 
     } catch (err) {
       // Fallback: hantar base64 ke parent
