@@ -1781,6 +1781,21 @@ function applyTabVisibility(){
 function isTabAllowed(label){
   return !isFeatureHidden(label);
 }
+const APP_VERSION_STORAGE_KEY = "5g88_seen_app_version";
+
+function getAcceptedAppVersion() {
+  return (localStorage.getItem(APP_VERSION_STORAGE_KEY) || "").trim();
+}
+
+function renderSidebarVersion(versionText) {
+  const el = document.getElementById("sidebarVersionText");
+  if (!el) return;
+  el.textContent = versionText && String(versionText).trim() ? String(versionText).trim() : "-";
+}
+
+function refreshSidebarVersionFromStorage() {
+  renderSidebarVersion(getAcceptedAppVersion());
+}
 async function initAppUpdatePopup() {
   const modal = document.getElementById("appUpdateModal");
   const titleEl = document.getElementById("appUpdateTitle");
@@ -1817,6 +1832,7 @@ async function initAppUpdatePopup() {
 
 btnEl.onclick = function () {
   localStorage.setItem(STORAGE_KEY, latestVersion);
+  renderSidebarVersion(latestVersion);
   window.location.reload();
 };
     }
@@ -1835,7 +1851,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 updateChangePwVisibility();
 if (!checkLogin()) return;
-
+refreshSidebarVersionFromStorage();
 initAppUpdatePopup();
 
 applyTheme(getSavedTheme(), false);
