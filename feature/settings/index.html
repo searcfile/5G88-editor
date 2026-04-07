@@ -1111,6 +1111,20 @@ html, body {
     || firebase.initializeApp(loginFirebaseConfig, "loginApp");
 
   const loginAuth = loginApp.auth();
+db.ref("transactionSummary/byUser").on("value", snap => {
+  const users = snap.val() || {};
+  // render list kiri
+});
+
+db.ref("transactionSummary/byTab").on("value", snap => {
+  const tabs = snap.val() || {};
+  // render summary header/footer
+});
+
+db.ref("transactionLogs").limitToLast(200).on("value", snap => {
+  const logs = snap.val() || {};
+  // render history table kalau perlu
+});
 function syncAdminIdentityForLivechat() {
   const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
   if (!savedLoginUser) return;
