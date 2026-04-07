@@ -577,6 +577,7 @@ emoji-picker::part(search-input):focus {
   border-radius: 10px;
   border: 1px solid var(--border-input);
   background: var(--page-bg2);
+  cursor: pointer;
 }
 .image-preview-card{
   position: relative;
@@ -1379,11 +1380,21 @@ fileInputEl.addEventListener("change", async () => {
   await handleSelectedImageFile(file);
 });
 if (removeImageBtnEl) {
-  removeImageBtnEl.addEventListener("click", () => {
+  removeImageBtnEl.addEventListener("click", (e) => {
+    e.stopPropagation();
     clearSelectedImage(true);
   });
 }
+  
+if (imagePreviewEl) {
+  imagePreviewEl.addEventListener("click", (e) => {
+    e.stopPropagation();
 
+    if (!imagePreviewEl.src) return;
+    openImageLightbox(imagePreviewEl.src);
+  });
+}
+  
 sendBtnEl.addEventListener('click', () => sendMessage());
 sendBtnEl.disabled = true;
 forceOpenBottom = true;
