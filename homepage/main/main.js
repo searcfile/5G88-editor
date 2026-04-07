@@ -1196,6 +1196,26 @@ if (liveChatBtn) {
     }, 250);
   });
 }
+// ===============================
+// TERIMA TRACK ACTION DARI IFRAME
+// ===============================
+window.addEventListener("message", (event) => {
+  const allowedOrigins = [
+    "https://5g88-main.vercel.app",
+    "https://searcfile.github.io"
+  ];
+
+  if (!allowedOrigins.includes(event.origin)) return;
+
+  const data = event.data || {};
+  if (data.type !== "track-action") return;
+
+  trackUserAction(
+    data.action || "UNKNOWN",
+    data.tabLabel || "",
+    data.extra || {}
+  );
+});
 function closeTab(label) {
   let tabs = getTabs().filter(tab => tab.label !== label);
   saveTabs(tabs);
