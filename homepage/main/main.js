@@ -37,6 +37,122 @@ const loginApp = firebase.initializeApp({
 
 const loginDb = loginApp.database();
 const loginAuth = loginApp.auth();
+// ===============================
+// TRANSACTION TRACKING
+// ===============================
+function sanitizeTxnKey(str = "") {
+  return String(str).toLowerCase().replace(/[.#$[\]@/]/g, "_");
+}
+
+function getTxnUser() {
+  try {
+    const login = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+    const email = String(login.email || "").trim().toLowerCase();
+    const name  = String(login.name || "").trim() || (email ? email.split("@")[0] : "Guest");
+    const photo = String(login.photo || "").trim();
+    if (!email) return null;
+    return { email, name, photo };
+  } catch (e) {
+    return null;
+  }
+}
+
+function trackUserAction(action, tabLabel = "", extra = {}) {
+  try {
+    const user = getTxnUser();
+    if (!user) return;
+
+    const label = String(tabLabel || "").trim().toUpperCase();
+    const emailKey = sanitizeTxnKey(user.email);
+    const actionKey = sanitizeTxnKey(action || "unknown");
+    const now = Date.now();
+
+    const payload = {
+      name: user.name,
+      email: user.email,
+      photo: user.photo || "",
+      action: String(action || "").trim().toUpperCase(),
+      tabLabel: label,
+      tabUrl: String(extra.tabUrl || "").trim(),
+      messageType: String(extra.messageType || "").trim(),
+      amount: Number(extra.amount || 0) || 0,
+      time: now,
+      dateText: new Date(now).toLocaleString("en-GB")
+    };
+
+    // 1) DETAIL LOG
+    blurphpDb.ref("transactionLogs").push(payload);
+
+    // 2) SUMMARY USER
+    const userRef = blurphpDb.ref("transactionSummary/byUser/" + emailKey);
+    userRef.transaction(cur => {
+      cur = cur || {
+        name: user.name,
+        email: user.email,
+        photo: user.photo || "",
+        total: 0,
+        lastActive: 0,
+        tabs: {},
+        actions: {}
+      };
+
+      cur.name = user.name;
+      cur.email = user.email;
+      cur.photo = user.photo || "";
+      cur.total = (cur.total || 0) + 1;
+      cur.lastActive = now;
+
+      cur.tabs = cur.tabs || {};
+      if (label) {
+        cur.tabs[label] = cur.tabs[label] || {
+          open_tab: 0,
+          switch_tab: 0,
+          create: 0,
+          send: 0,
+          total: 0
+        };
+
+        const tabNode = cur.tabs[label];
+        if (actionKey === "open_tab") tabNode.open_tab = (tabNode.open_tab || 0) + 1;
+        if (actionKey === "switch_tab") tabNode.switch_tab = (tabNode.switch_tab || 0) + 1;
+        if (actionKey === "create") tabNode.create = (tabNode.create || 0) + 1;
+        if (actionKey === "send") tabNode.send = (tabNode.send || 0) + 1;
+        tabNode.total = (tabNode.total || 0) + 1;
+      }
+
+      cur.actions = cur.actions || {};
+      cur.actions[actionKey] = (cur.actions[actionKey] || 0) + 1;
+
+      return cur;
+    });
+
+    // 3) SUMMARY GLOBAL BY TAB
+    if (label) {
+      const globalRef = blurphpDb.ref("transactionSummary/byTab/" + sanitizeTxnKey(label));
+      globalRef.transaction(cur => {
+        cur = cur || {
+          label,
+          total: 0,
+          open_tab: 0,
+          switch_tab: 0,
+          create: 0,
+          send: 0
+        };
+
+        cur.label = label;
+        cur.total = (cur.total || 0) + 1;
+        if (actionKey === "open_tab") cur.open_tab = (cur.open_tab || 0) + 1;
+        if (actionKey === "switch_tab") cur.switch_tab = (cur.switch_tab || 0) + 1;
+        if (actionKey === "create") cur.create = (cur.create || 0) + 1;
+        if (actionKey === "send") cur.send = (cur.send || 0) + 1;
+
+        return cur;
+      });
+    }
+  } catch (err) {
+    console.error("trackUserAction error:", err);
+  }
+}
 const THEME_KEY = "siteTheme";
 
 function getSavedTheme() {
@@ -987,7 +1103,7 @@ function addTab(label, url, opt = {}) {
   }
 
   saveTabs(existingTabs);
-
+  trackUserAction("OPEN_TAB", L, { tabUrl: newUrl });
   loadPage(newUrl);
   renderTabs();
   updateGameLogCheckmarks();
@@ -1144,7 +1260,7 @@ tabElement.onclick = (e) => {
   setActiveTabUrl(u);
   loadPage(u);
   setBrowserRoute(tab);
-
+  trackUserAction("SWITCH_TAB", tab.label, { tabUrl: u });
       const gameLogBtn = document.getElementById("gameLogBtn");
       const liveBtn = document.getElementById("liveChatBtn");
       const linkBtn = document.getElementById("linkDownloadBtn");
