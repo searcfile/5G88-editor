@@ -19,7 +19,7 @@
   <meta name="twitter:title" content="Home Editor">
   <meta name="twitter:description" content="The 5G88 website provides an editing page with various available features and is completely free of charge, with no usage fees. This page is only available for major partnership agents and is strictly prohibited from being shared with other agents.">
   <meta name="twitter:image" content="https://5g88-main.vercel.app/logo-home/logo.png">
-  <meta http-equiv="Content-Security-Policy"
+<meta http-equiv="Content-Security-Policy"
 content="
   default-src 'self';
   img-src 'self' data: https://i.imgur.com https://*.googleusercontent.com;
@@ -31,7 +31,8 @@ content="
     https://accounts.google.com
     https://apis.google.com
     https://*.firebaseio.com
-    https://*.firebasedatabase.app;
+    https://*.firebasedatabase.app
+    https://challenges.cloudflare.com;
   style-src 'self' 'unsafe-inline';
   connect-src 'self'
     https://www.gstatic.com
@@ -43,16 +44,19 @@ content="
     https://www.googleapis.com
     https://identitytoolkit.googleapis.com
     https://securetoken.googleapis.com
-    https://apis.google.com;
+    https://apis.google.com
+    https://challenges.cloudflare.com;
   frame-src 'self'
     https://accounts.google.com
     https://searcfile.github.io
     https://logins-d615f.firebaseapp.com
-    https://logins-d615f.web.app;
+    https://logins-d615f.web.app
+    https://challenges.cloudflare.com;
   child-src 'self'
     https://accounts.google.com
     https://logins-d615f.firebaseapp.com
-    https://logins-d615f.web.app;
+    https://logins-d615f.web.app
+    https://challenges.cloudflare.com;
   base-uri 'self';
   form-action 'self' https://accounts.google.com;
 ">
@@ -155,6 +159,15 @@ content="
   <button type="button" id="createBtn" class="link-btn">Create username</button>
   <button type="button" id="forgotBtn" class="link-btn">Forgot password?</button>
 </div>
+  <div class="turnstile-wrap">
+  <div class="cf-turnstile"
+       data-sitekey="0x4AAAAAAC1xHeoFIKqZZywR"
+       data-theme="dark"
+       data-callback="onTurnstileSuccess"
+       data-expired-callback="onTurnstileExpired"
+       data-error-callback="onTurnstileError">
+  </div>
+</div>
       <button class="btn" id="btnUserpass">Login</button>
       <!-- (Opsional) Buat akaun baru -->
       <!-- <button type="button" class="btn ghost" onclick="createAccount()">Create Account</button> -->
@@ -162,6 +175,15 @@ content="
 
     <!-- Google Login Form -->
     <div id="form-google" class="form">
+        <div class="turnstile-wrap">
+    <div class="cf-turnstile"
+         data-sitekey="0x4AAAAAAC1xHeoFIKqZZywR"
+         data-theme="dark"
+         data-callback="onTurnstileGoogleSuccess"
+         data-expired-callback="onTurnstileGoogleExpired"
+         data-error-callback="onTurnstileGoogleError">
+    </div>
+  </div>
       <button class="btn" id="googleLoginBtn">Login with Google</button>
     </div>
 
@@ -229,6 +251,7 @@ content="
 </div>
 <audio id="livechatSound" src="https://5g88-main.vercel.app/main/audio/audio.wav" preload="auto"></audio>
 <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script src="../login/login.js"></script>
 </body>
 </html>
