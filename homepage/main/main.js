@@ -1815,10 +1815,32 @@ async function initAppUpdatePopup() {
       modal.style.display = "flex";
       modal.setAttribute("aria-hidden", "false");
 
-      btnEl.onclick = function () {
-        localStorage.setItem(STORAGE_KEY, latestVersion);
-        window.location.reload();
-      };
+      btnEl.onclick = async function () {
+  try {
+    // simpan version supaya popup tak keluar lagi
+    localStorage.setItem(STORAGE_KEY, latestVersion);
+
+    // buang login lama
+    localStorage.removeItem("gmailLogin");
+
+    // sign out Firebase
+    if (typeof loginAuth !== "undefined") {
+      await loginAuth.signOut();
+    }
+
+    // optional: clear session
+    sessionStorage.clear();
+
+    // redirect ke login
+    window.location.href = "/login";
+
+  } catch (err) {
+    console.error("Update logout error:", err);
+
+    // fallback kalau error → refresh saja
+    window.location.reload();
+  }
+};
     }
   } catch (err) {
     console.error("Version check failed:", err);
