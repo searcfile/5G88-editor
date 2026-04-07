@@ -38,102 +38,6 @@ const loginApp = firebase.initializeApp({
 const loginDb = loginApp.database();
 const loginAuth = loginApp.auth();
 const THEME_KEY = "siteTheme";
-// ===============================
-// TRANSACTION CENTER LOGGER
-// ===============================
-function txGetLogin() {
-  try {
-    return JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-  } catch (_) {
-    return {};
-  }
-}
-
-function txSanitizeEmail(email = "") {
-  return String(email).toLowerCase().replace(/[^a-z0-9]/g, "_");
-}
-
-function txDateKey(ms = Date.now()) {
-  const d = new Date(ms);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function txTimeText(ms = Date.now()) {
-  const d = new Date(ms);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mm = String(d.getMinutes()).padStart(2, "0");
-  const ss = String(d.getSeconds()).padStart(2, "0");
-  return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
-}
-
-function txInferCategory(tabLabel = "", group = "") {
-  const t = String(tabLabel || "").trim().toUpperCase();
-  const g = String(group || "").trim().toLowerCase();
-
-  if (g === "gamelog") return "gamelog";
-  if (g === "bank") return "bank";
-  if (g === "list") return "list";
-  if (t === "LIVE CHAT") return "livechat";
-
-  if (["MEGA888","918KISS","PUSSY888","EVO888","SCR888H5"].includes(t)) return "gamelog";
-  if (["MAYBANK","CIMB BANK","BANK ISLAM","RHB BANK","MAYBANK2U"].includes(t)) return "bank";
-  if (["FIND GAME","TIPS GAME","LOGO GAME","ITEM COLLECTION","LINK DOWNLOAD"].includes(t)) return "list";
-  if (t === "LIVE CHAT") return "livechat";
-
-  return "other";
-}
-
-function logTransactionActivity({
-  action = "",
-  tab = "",
-  category = "",
-  url = "",
-  route = "",
-  group = "",
-  detail = "",
-  amount = "",
-  note = "",
-  count = 1
-} = {}) {
-  try {
-    const login = txGetLogin();
-    if (!login?.email) return;
-
-    const now = Date.now();
-    const dateKey = txDateKey(now);
-
-    const payload = {
-      name: login.name || "",
-      email: String(login.email || "").toLowerCase(),
-      photo: login.photo || "",
-      action: String(action || "").trim(),
-      tab: String(tab || "").trim().toUpperCase(),
-      category: category || txInferCategory(tab, group),
-      url: url || "",
-      route: route || "",
-      group: group || "",
-      detail: detail || "",
-      amount: amount || "",
-      note: note || "",
-      count: Number(count || 1),
-      time: now,
-      timeText: txTimeText(now)
-    };
-
-    blurphpDb.ref(`activityLogs/${dateKey}`).push(payload);
-  } catch (err) {
-    console.error("logTransactionActivity error:", err);
-  }
-}
-
-// boleh dipakai oleh iframe / page lain juga
-window.logTransactionActivity = logTransactionActivity;
 
 function getSavedTheme() {
   const saved = localStorage.getItem(THEME_KEY);
@@ -1083,15 +987,7 @@ function addTab(label, url, opt = {}) {
   }
 
   saveTabs(existingTabs);
-logTransactionActivity({
-  action: "open_tab",
-  tab: L,
-  category: txInferCategory(L, group),
-  url: newUrl,
-  route: route,
-  group: group,
-  detail: "Open tab from main page"
-});
+
   loadPage(newUrl);
   renderTabs();
   updateGameLogCheckmarks();
@@ -1248,15 +1144,7 @@ tabElement.onclick = (e) => {
   setActiveTabUrl(u);
   loadPage(u);
   setBrowserRoute(tab);
-logTransactionActivity({
-  action: "switch_tab",
-  tab: tab.label,
-  category: txInferCategory(tab.label, tab.group || ""),
-  url: u,
-  route: tab.route || "",
-  group: tab.group || "",
-  detail: "Switch existing tab"
-});
+
       const gameLogBtn = document.getElementById("gameLogBtn");
       const liveBtn = document.getElementById("liveChatBtn");
       const linkBtn = document.getElementById("linkDownloadBtn");
@@ -1561,14 +1449,6 @@ window.addEventListener("load", () => {
   if (gameLinksBtnEl) gameLinksBtnEl.classList.remove("active-gamelog");
 
   if (match) {
-  logTransactionActivity({
-  action: "restore_tab",
-  tab: match.label,
-  url: match.url,
-  route: match.route || "",
-  group: match.group || "",
-  detail: "Tab restored on page load"
-});
     loadPage(match.url);
     updateGameLogCheckmarks();
     updateBankResitCheckmarks();
