@@ -44,7 +44,44 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
+let turnstileVerifiedUser = false;
+let turnstileVerifiedGoogle = false;
 
+function onTurnstileSuccess(token){
+  turnstileVerifiedUser = !!token;
+  const btn = document.getElementById('btnUserpass');
+  if (btn) btn.disabled = !turnstileVerifiedUser;
+}
+
+function onTurnstileExpired(){
+  turnstileVerifiedUser = false;
+  const btn = document.getElementById('btnUserpass');
+  if (btn) btn.disabled = true;
+}
+
+function onTurnstileError(){
+  turnstileVerifiedUser = false;
+  const btn = document.getElementById('btnUserpass');
+  if (btn) btn.disabled = true;
+}
+
+function onTurnstileGoogleSuccess(token){
+  turnstileVerifiedGoogle = !!token;
+  const btn = document.getElementById('googleLoginBtn');
+  if (btn) btn.disabled = !turnstileVerifiedGoogle;
+}
+
+function onTurnstileGoogleExpired(){
+  turnstileVerifiedGoogle = false;
+  const btn = document.getElementById('googleLoginBtn');
+  if (btn) btn.disabled = true;
+}
+
+function onTurnstileGoogleError(){
+  turnstileVerifiedGoogle = false;
+  const btn = document.getElementById('googleLoginBtn');
+  if (btn) btn.disabled = true;
+}
 // ====== HANYA EMAIL DOMAIN INI YANG DIIJINKAN ======
 const ALLOWED_GOOGLE_DOMAIN = 'b88gaming.page';
 
@@ -406,6 +443,11 @@ function setLoading(state, which='both'){
 }
 
 function signInWithGoogle(){
+  if (!turnstileVerifiedGoogle){
+    alert("Sila complete verification dulu.");
+    return;
+  }
+
   setLoading(true,'google');
   const provider = new firebase.auth.GoogleAuthProvider();
 
@@ -429,10 +471,19 @@ function signInWithGoogle(){
       finishLogin(user);
     })
     .catch(err => {
-      console.error("❌ Login Google gagal:", err);
-      alert("Login Google gagal. Coba lagi.");
-      setLoading(false,'google');
-    });
+  console.error("❌ Login Google gagal:", err);
+  alert("Login Google gagal. Coba lagi.");
+  setLoading(false,'google');
+
+  turnstileVerifiedGoogle = false;
+  const btn = document.getElementById('googleLoginBtn');
+  if (btn) btn.disabled = true;
+
+  if (window.turnstile) {
+    const widgetEl = document.querySelector('#form-google .cf-turnstile');
+    if (widgetEl) turnstile.reset(widgetEl);
+  }
+});
 }
 
 // --- helper hash (taruh sekali saja, di luar fungsi kalau belum ada) ---
@@ -449,6 +500,11 @@ async function loginWithUsername(){
 
   if (!uname || !pass){
     alert("Masukkan username dan password.");
+    return;
+  }
+
+  if (!turnstileVerifiedUser){
+    alert("Sila complete verification dulu.");
     return;
   }
 
@@ -474,11 +530,20 @@ async function loginWithUsername(){
     // 5️⃣ Simpan log & redirect
     await finishLogin({ email: pseudoEmail, displayName: uname, photoURL: "" });
 
-  }catch(err){
-    alert(err.message || "Login gagal. Coba lagi.");
-  }finally{
-    setLoading(false,'userpass');
+ }catch(err){
+  alert(err.message || "Login gagal. Coba lagi.");
+
+  turnstileVerifiedUser = false;
+  const btn = document.getElementById('btnUserpass');
+  if (btn) btn.disabled = true;
+
+  if (window.turnstile) {
+    const widgetEl = document.querySelector('#form-userpass .cf-turnstile');
+    if (widgetEl) turnstile.reset(widgetEl);
   }
+}finally{
+  setLoading(false,'userpass');
+}
 }
 // Optional createAccount (tetap sama)
 async function createAccount(){
