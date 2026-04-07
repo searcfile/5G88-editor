@@ -1561,6 +1561,14 @@ window.addEventListener("load", () => {
   if (gameLinksBtnEl) gameLinksBtnEl.classList.remove("active-gamelog");
 
   if (match) {
+  logTransactionActivity({
+  action: "restore_tab",
+  tab: match.label,
+  url: match.url,
+  route: match.route || "",
+  group: match.group || "",
+  detail: "Tab restored on page load"
+});
     loadPage(match.url);
     updateGameLogCheckmarks();
     updateBankResitCheckmarks();
