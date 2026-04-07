@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5G88 Transaction Center</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <style>
+    :root{
+      --bg:#060606;
+      --bg2:#0d0d0d;
+      --panel:#101010;
+      --panel2:#141414;
+      --line:rgba(255,215,80,.16);
+      --line2:rgba(255,255,255,.08);
+      --text:#f5f5f5;
+      --muted:#aaaaaa;
+      --gold:#d9aa32;
+      --gold2:#ffcf5c;
+      --green:#34c759;
+      --red:#ff5d5d;
+      --blue:#4da3ff;
+      --shadow:0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+      --radius-sm:12px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#050505 0%,#0a0a0a 100%);color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif}
+    body{min-height:100vh}
+
+    .page{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:16px;
+      padding:16px;
+      min-height:100vh;
+    }
+
+    .panel{
+      background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
+      border:1px solid var(--line2);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .sidebar{
+      display:flex;
+      flex-direction:column;
+      min-height:calc(100vh - 32px);
+      position:sticky;
+      top:16px;
+    }
+
+    .sidebar-head,
+    .main-head{
+      padding:16px;
+      border-bottom:1px solid var(--line2);
+      background:linear-gradient(180deg,rgba(255,215,80,.08),rgba(255,215,80,.02));
+    }
+
+    .title{
+      margin:0;
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:.3px;
+    }
+
+    .subtitle{
+      margin-top:6px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .sidebar-tools{
+      padding:12px 16px;
+      border-bottom:1px solid var(--line2);
+      display:grid;
+      gap:10px;
+      background:rgba(255,255,255,.01);
+    }
+
+    .input,
+    .select,
+    .date-input{
+      width:100%;
+      height:40px;
+      border-radius:12px;
+      border:1px solid var(--line2);
+      background:#0d0d0d;
+      color:var(--text);
+      padding:0 12px;
+      outline:none;
+      transition:.2s ease;
+    }
+
+    .input:focus,
+    .select:focus,
+    .date-input:focus{
+      border-color:rgba(255,207,92,.65);
+      box-shadow:0 0 0 3px rgba(255,207,92,.12);
+    }
+
+    .user-count-box{
+      padding:0 16px 10px;
+      border-bottom:1px solid var(--line2);
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .mini-card{
+      background:#0e0e0e;
+      border:1px solid var(--line2);
+      border-radius:12px;
+      padding:12px;
+    }
+
+    .mini-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+    .mini-value{font-size:20px;font-weight:800;margin-top:6px;color:var(--gold2)}
+
+    .user-list{
+      flex:1;
+      overflow:auto;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .user-item{
+      width:100%;
+      text-align:left;
+      border:1px solid var(--line2);
+      background:#0c0c0c;
+      color:var(--text);
+      border-radius:14px;
+      padding:12px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .user-item:hover{transform:translateY(-1px);border-color:rgba(255,207,92,.3)}
+    .user-item.active{border-color:rgba(255,207,92,.8);background:linear-gradient(180deg,rgba(255,215,80,.13),rgba(255,215,80,.04))}
+
+    .user-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .user-name{font-size:14px;font-weight:700;color:#fff}
+    .user-email{font-size:12px;color:var(--muted);margin-top:5px;word-break:break-all}
+    .user-badge{font-size:11px;padding:5px 8px;border-radius:999px;border:1px solid rgba(255,207,92,.2);background:rgba(255,207,92,.08);color:var(--gold2)}
+    .user-meta{margin-top:10px;display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted)}
+
+    .main{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .toolbar{
+      padding:14px 16px;
+      display:grid;
+      gap:14px;
+      border-bottom:1px solid var(--line2);
+      background:rgba(255,255,255,.01);
+    }
+
+    .top-row,
+    .sub-row,
+    .filter-row,
+    .summary-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+
+    .tab-btn,
+    .sub-btn,
+    .ghost-btn,
+    .action-btn{
+      border:none;
+      cursor:pointer;
+      color:var(--text);
+      background:#111;
+      border:1px solid var(--line2);
+      border-radius:12px;
+      padding:10px 14px;
+      font-weight:700;
+      transition:.18s ease;
+    }
+
+    .tab-btn:hover,.sub-btn:hover,.ghost-btn:hover,.action-btn:hover{border-color:rgba(255,207,92,.35)}
+    .tab-btn.active,.sub-btn.active{background:linear-gradient(180deg,rgba(255,215,80,.2),rgba(255,215,80,.06));border-color:rgba(255,207,92,.8);color:var(--gold2)}
+
+    .toolbar .spacer{flex:1}
+
+    .summary-grid{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:12px;
+      padding:14px 16px 0;
+    }
+
+    .stat{
+      border:1px solid var(--line2);
+      background:#0d0d0d;
+      border-radius:14px;
+      padding:14px;
+      min-width:0;
+    }
+    .stat-label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+    .stat-value{font-size:22px;font-weight:800;color:var(--gold2);margin-top:7px}
+
+    .table-wrap{padding:16px;overflow:auto}
+    table{width:100%;border-collapse:collapse;min-width:980px;background:#0c0c0c;border:1px solid var(--line2);border-radius:14px;overflow:hidden}
+    thead th{
+      position:sticky;top:0;z-index:1;
+      background:linear-gradient(180deg,#1a1a1a,#111);
+      color:#f3d37b;
+      font-size:12px;
+      text-align:left;
+      padding:14px 12px;
+      border-bottom:1px solid var(--line2);
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:12px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      font-size:13px;
+      color:#e9e9e9;
+      vertical-align:top;
+    }
+    tbody tr:hover{background:rgba(255,255,255,.02)}
+    .muted{color:var(--muted)}
+    .green{color:var(--green);font-weight:700}
+    .red{color:var(--red);font-weight:700}
+    .blue{color:var(--blue);font-weight:700}
+    .empty{
+      padding:48px 20px;
+      text-align:center;
+      color:var(--muted);
+      border:1px dashed rgba(255,255,255,.08);
+      border-radius:14px;
+      background:#0b0b0b;
+    }
+
+    .footer-note{padding:0 16px 16px;color:var(--muted);font-size:12px}
+    .scrollbar::-webkit-scrollbar,.user-list::-webkit-scrollbar,.table-wrap::-webkit-scrollbar{height:10px;width:10px}
+    .scrollbar::-webkit-scrollbar-thumb,.user-list::-webkit-scrollbar-thumb,.table-wrap::-webkit-scrollbar-thumb{background:rgba(255,207,92,.25);border-radius:999px}
+    .scrollbar::-webkit-scrollbar-track,.user-list::-webkit-scrollbar-track,.table-wrap::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+
+    @media (max-width: 1200px){
+      .summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    }
+    @media (max-width: 980px){
+      .page{grid-template-columns:1fr}
+      .sidebar{position:relative;top:0;min-height:auto}
+      .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width: 640px){
+      .summary-grid{grid-template-columns:1fr}
+      .user-count-box{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="panel sidebar">
+      <div class="sidebar-head">
+        <h1 class="title">Transaction Center</h1>
+        <div class="subtitle">Pilih user di sebelah kiri, lepas itu pilih kategori atas dan sub-halaman bawah untuk tengok aktiviti ikut user.</div>
+      </div>
+
+      <div class="sidebar-tools">
+        <input id="userSearchInput" class="input" type="text" placeholder="Search username / email..." />
+        <input id="dateInput" class="date-input" type="date" />
+      </div>
+
+      <div class="user-count-box">
+        <div class="mini-card">
+          <div class="mini-label">Total User</div>
+          <div class="mini-value" id="totalUserCount">0</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">Selected Date</div>
+          <div class="mini-value" id="selectedDateLabel" style="font-size:15px">-</div>
+        </div>
+      </div>
+
+      <div id="userList" class="user-list scrollbar"></div>
+    </aside>
+
+    <main class="panel main">
+      <div class="main-head">
+        <h2 class="title" id="mainTitle">User Activity Report</h2>
+        <div class="subtitle" id="mainSubtitle">Pilih satu user di sebelah kiri dulu.</div>
+      </div>
+
+      <div class="toolbar">
+        <div class="top-row" id="topCategoryRow"></div>
+        <div class="sub-row" id="subCategoryRow"></div>
+        <div class="filter-row">
+          <button id="refreshBtn" class="ghost-btn" type="button">Refresh</button>
+          <button id="todayBtn" class="ghost-btn" type="button">Today</button>
+          <button id="allUserSummaryBtn" class="ghost-btn" type="button">All User Summary</button>
+          <div class="spacer"></div>
+          <select id="actionFilter" class="select" style="max-width:220px;">
+            <option value="">All Action</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="summary-grid" id="summaryGrid">
+        <div class="stat"><div class="stat-label">Selected User</div><div class="stat-value" id="sumUser">-</div></div>
+        <div class="stat"><div class="stat-label">Category</div><div class="stat-value" id="sumCategory">-</div></div>
+        <div class="stat"><div class="stat-label">Sub Page</div><div class="stat-value" id="sumSub">-</div></div>
+        <div class="stat"><div class="stat-label">Total Action</div><div class="stat-value" id="sumTotal">0</div></div>
+        <div class="stat"><div class="stat-label">Last Activity</div><div class="stat-value" id="sumLast" style="font-size:15px">-</div></div>
+      </div>
+
+      <div class="table-wrap scrollbar">
+        <div id="tableHost"></div>
+      </div>
+
+      <div class="footer-note">
+        Page ini baca data dari Firebase path <b>activityLogs</b>. Untuk nampak data real, page-page lain seperti Mega888 / 918KISS / Bank Resit / Live Chat perlu hantar log action ke node itu juga.
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ===============================
+    // FIREBASE CONFIG
+    // ===============================
+    const blurphpApp = firebase.apps.find(app => app.name === 'blurphpTxApp') || firebase.initializeApp({
+      apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+      authDomain: "blurphp.firebaseapp.com",
+      databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "blurphp",
+      storageBucket: "blurphp.appspot.com",
+      messagingSenderId: "593904200464",
+      appId: "1:593904200464:web:cea7bc1360532c20d99395"
+    }, 'blurphpTxApp');
+
+    const db = blurphpApp.database();
+
+    // ===============================
+    // CONFIG CATEGORY + SUB TAB
+    // ===============================
+    const CATEGORY_MAP = {
+      gamelog: {
+        label: 'Game log',
+        subs: ['MEGA888','918KISS','EVO888','PUSSY888','SCR888H5']
+      },
+      bank: {
+        label: 'Bank resit',
+        subs: ['MAYBANK','CIMB BANK','BANK ISLAM','RHB BANK','MAYBANK2U']
+      },
+      list: {
+        label: 'List type',
+        subs: ['FIND GAME','TIPS GAME','LOGO GAME','ITEM COLLECTION','LINK DOWNLOAD']
+      },
+      livechat: {
+        label: 'Live chat',
+        subs: ['LIVE CHAT']
+      }
+    };
+
+    const ACTION_LABELS = {
+      change_game_log: 'Change Game Log',
+      copy_game_log: 'Copy Game Log',
+      set_win: 'Set Winnet',
+      add_support_amount: 'Add Support Amount',
+      add_jackpot: 'Add Jackpot',
+      set_free_game: 'Set Free Game',
+      send_message: 'Send Message',
+      send_image: 'Send Image',
+      open_tab: 'Open Tab',
+      switch_tab: 'Switch Tab',
+      create_receipt: 'Create Receipt',
+      copy_receipt: 'Copy Receipt',
+      blur_receipt: 'Blur Receipt',
+      copy_image: 'Copy Image',
+      search_game: 'Search Game',
+      use_filter: 'Use Filter'
+    };
+
+    // ===============================
+    // STATE
+    // ===============================
+    const state = {
+      selectedDate: getDateKey(new Date()),
+      selectedUser: null,
+      selectedCategory: 'gamelog',
+      selectedSub: 'MEGA888',
+      selectedAction: '',
+      allLogs: [],
+      allUsers: [],
+      categoryButtonsRendered: false
+    };
+
+    // ===============================
+    // HELPERS
+    // ===============================
+    function getDateKey(input){
+      const d = input instanceof Date ? input : new Date(input);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function fmtDateTime(ms){
+      if (!ms) return '-';
+      const d = new Date(Number(ms));
+      if (Number.isNaN(d.getTime())) return '-';
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      const ss = String(d.getSeconds()).padStart(2,'0');
+      return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
+    }
+
+    function safeLower(v){ return String(v || '').trim().toLowerCase(); }
+    function safeUpper(v){ return String(v || '').trim().toUpperCase(); }
+
+    function inferCategoryFromTab(tab){
+      const t = safeUpper(tab);
+      if (CATEGORY_MAP.gamelog.subs.includes(t)) return 'gamelog';
+      if (CATEGORY_MAP.bank.subs.includes(t)) return 'bank';
+      if (CATEGORY_MAP.list.subs.includes(t)) return 'list';
+      if (CATEGORY_MAP.livechat.subs.includes(t)) return 'livechat';
+      return 'other';
+    }
+
+    function getDisplayAction(action){
+      return ACTION_LABELS[action] || String(action || '-').replace(/_/g,' ').replace(/\b\w/g, s => s.toUpperCase());
+    }
+
+    function sanitizeUserKey(email){
+      return String(email || '').toLowerCase().replace(/[^a-z0-9]/g,'_');
+    }
+
+    function getCurrentSubList(){
+      return CATEGORY_MAP[state.selectedCategory]?.subs || [];
+    }
+
+    function escapeHtml(str){
+      return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    // ===============================
+    // RENDER CATEGORY BUTTONS
+    // ===============================
+    function renderCategoryButtons(){
+      const host = document.getElementById('topCategoryRow');
+      host.innerHTML = '';
+
+      Object.entries(CATEGORY_MAP).forEach(([key, cfg]) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'tab-btn' + (state.selectedCategory === key ? ' active' : '');
+        btn.textContent = cfg.label;
+        btn.onclick = () => {
+          state.selectedCategory = key;
+          state.selectedSub = cfg.subs[0] || '';
+          state.selectedAction = '';
+          renderCategoryButtons();
+          renderSubButtons();
+          buildActionFilter();
+          renderAll();
+        };
+        host.appendChild(btn);
+      });
+    }
+
+    function renderSubButtons(){
+      const host = document.getElementById('subCategoryRow');
+      host.innerHTML = '';
+
+      getCurrentSubList().forEach(sub => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sub-btn' + (state.selectedSub === sub ? ' active' : '');
+        btn.textContent = sub;
+        btn.onclick = () => {
+          state.selectedSub = sub;
+          state.selectedAction = '';
+          renderSubButtons();
+          buildActionFilter();
+          renderAll();
+        };
+        host.appendChild(btn);
+      });
+    }
+
+    // ===============================
+    // LOAD USERS + LOGS
+    // ===============================
+    async function loadLogsForDate(){
+      const snap = await db.ref('activityLogs/' + state.selectedDate).once('value');
+      const rows = [];
+
+      snap.forEach(child => {
+        const v = child.val() || {};
+        rows.push({
+          id: child.key,
+          name: v.name || '',
+          email: (v.email || '').toLowerCase(),
+          photo: v.photo || '',
+          action: v.action || '',
+          tab: safeUpper(v.tab || v.subTab || ''),
+          category: v.category || inferCategoryFromTab(v.tab || v.subTab || ''),
+          url: v.url || '',
+          route: v.route || '',
+          group: v.group || '',
+          sourcePage: v.sourcePage || '',
+          detail: v.detail || '',
+          amount: v.amount || '',
+          note: v.note || '',
+          count: Number(v.count || 1),
+          time: Number(v.time || Date.now()),
+          timeText: v.timeText || ''
+        });
+      });
+
+      rows.sort((a,b) => b.time - a.time);
+      state.allLogs = rows;
+      state.allUsers = buildUsersFromLogs(rows);
+    }
+
+    function buildUsersFromLogs(rows){
+      const map = new Map();
+      rows.forEach(row => {
+        const key = row.email || row.name || row.id;
+        if (!map.has(key)) {
+          map.set(key, {
+            key,
+            name: row.name || 'Unknown User',
+            email: row.email || '-',
+            totalLogs: 0,
+            lastTime: 0,
+            categories: new Set()
+          });
+        }
+        const u = map.get(key);
+        u.totalLogs += 1;
+        u.lastTime = Math.max(u.lastTime, Number(row.time || 0));
+        u.categories.add(row.category || inferCategoryFromTab(row.tab));
+      });
+
+      return Array.from(map.values()).sort((a,b) => b.lastTime - a.lastTime);
+    }
+
+    // ===============================
+    // FILTERS
+    // ===============================
+    function getSelectedUserLogs(){
+      if (!state.selectedUser) return [];
+      return state.allLogs.filter(x => (x.email || x.name) === state.selectedUser.key);
+    }
+
+    function getFilteredLogs(){
+      let rows = getSelectedUserLogs();
+      rows = rows.filter(x => safeUpper(x.tab) === safeUpper(state.selectedSub));
+      if (state.selectedAction) rows = rows.filter(x => safeLower(x.action) === safeLower(state.selectedAction));
+      return rows;
+    }
+
+    function buildActionFilter(){
+      const select = document.getElementById('actionFilter');
+      const logs = getSelectedUserLogs().filter(x => safeUpper(x.tab) === safeUpper(state.selectedSub));
+      const uniq = [...new Set(logs.map(x => safeLower(x.action)).filter(Boolean))];
+
+      select.innerHTML = '<option value="">All Action</option>';
+      uniq.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a;
+        opt.textContent = getDisplayAction(a);
+        if (safeLower(state.selectedAction) === a) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    // ===============================
+    // RENDER USER LIST
+    // ===============================
+    function renderUserList(){
+      const host = document.getElementById('userList');
+      const search = safeLower(document.getElementById('userSearchInput').value);
+      let users = state.allUsers.slice();
+
+      if (search) {
+        users = users.filter(u => safeLower(u.name).includes(search) || safeLower(u.email).includes(search));
+      }
+
+      document.getElementById('totalUserCount').textContent = state.allUsers.length;
+      document.getElementById('selectedDateLabel').textContent = state.selectedDate;
+
+      if (!users.length) {
+        host.innerHTML = '<div class="empty">No user activity for selected date.</div>';
+        return;
+      }
+
+      host.innerHTML = '';
+      users.forEach(u => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'user-item' + (state.selectedUser && state.selectedUser.key === u.key ? ' active' : '');
+        btn.innerHTML = `
+          <div class="user-top">
+            <div class="user-name">${escapeHtml(u.name || 'Unknown User')}</div>
+            <div class="user-badge">${u.totalLogs} log</div>
+          </div>
+          <div class="user-email">${escapeHtml(u.email || '-')}</div>
+          <div class="user-meta">
+            <span>${u.categories.size} category</span>
+            <span>${escapeHtml(fmtDateTime(u.lastTime))}</span>
+          </div>
+        `;
+        btn.onclick = () => {
+          state.selectedUser = u;
+          renderUserList();
+          buildActionFilter();
+          renderAll();
+        };
+        host.appendChild(btn);
+      });
+    }
+
+    // ===============================
+    // SUMMARY
+    // ===============================
+    function renderSummary(){
+      const rows = getFilteredLogs();
+      const last = rows[0]?.time || 0;
+      document.getElementById('sumUser').textContent = state.selectedUser?.name || '-';
+      document.getElementById('sumCategory').textContent = CATEGORY_MAP[state.selectedCategory]?.label || '-';
+      document.getElementById('sumSub').textContent = state.selectedSub || '-';
+      document.getElementById('sumTotal').textContent = String(rows.length || 0);
+      document.getElementById('sumLast').textContent = last ? fmtDateTime(last) : '-';
+
+      document.getElementById('mainTitle').textContent = state.selectedUser
+        ? `Transaction Report - ${state.selectedUser.name}`
+        : 'User Activity Report';
+
+      document.getElementById('mainSubtitle').textContent = state.selectedUser
+        ? `Showing data for ${state.selectedUser.email || state.selectedUser.name} | ${CATEGORY_MAP[state.selectedCategory]?.label || '-'} > ${state.selectedSub}`
+        : 'Pilih satu user di sebelah kiri dulu.';
+    }
+
+    // ===============================
+    // TABLE
+    // ===============================
+    function renderTable(){
+      const host = document.getElementById('tableHost');
+      if (!state.selectedUser) {
+        host.innerHTML = '<div class="empty">Pilih user di sebelah kiri dulu baru data table akan tampil di sini.</div>';
+        return;
+      }
+
+      const rows = getFilteredLogs();
+      if (!rows.length) {
+        host.innerHTML = '<div class="empty">Tak ada data untuk user ini dalam sub page yang dipilih.</div>';
+        return;
+      }
+
+      const grouped = new Map();
+      rows.forEach(r => {
+        const key = safeLower(r.action || 'unknown');
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(r);
+      });
+
+      const groupRows = Array.from(grouped.entries()).map(([action, list], index) => {
+        const latest = list.slice().sort((a,b) => b.time - a.time)[0];
+        const totalCount = list.reduce((n,x) => n + (Number(x.count || 1) || 1), 0);
+        const notes = [...new Set(list.map(x => x.note || x.detail || '').filter(Boolean))].slice(0,3).join(' | ');
+        return {
+          no:index+1,
+          action,
+          actionLabel:getDisplayAction(action),
+          total:totalCount,
+          rawLogs:list.length,
+          lastTime:latest?.time || 0,
+          latest,
+          notes
+        };
+      }).sort((a,b) => b.lastTime - a.lastTime);
+
+      const rowsHtml = groupRows.map(r => {
+        const latest = r.latest || {};
+        return `
+          <tr>
+            <td>${r.no}</td>
+            <td><span class="blue">${escapeHtml(r.actionLabel)}</span></td>
+            <td class="green">${r.total}</td>
+            <td>${r.rawLogs}</td>
+            <td>${escapeHtml(fmtDateTime(r.lastTime))}</td>
+            <td>${escapeHtml(latest.url || latest.route || latest.sourcePage || '-')}</td>
+            <td>${escapeHtml(latest.detail || latest.note || latest.amount || '-')}</td>
+            <td class="muted">${escapeHtml(r.notes || '-')}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const detailHtml = rows.map((r, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${escapeHtml(getDisplayAction(r.action))}</td>
+          <td>${escapeHtml(r.tab || '-')}</td>
+          <td>${escapeHtml(fmtDateTime(r.time))}</td>
+          <td>${escapeHtml(r.url || r.route || '-')}</td>
+          <td>${escapeHtml(r.detail || r.note || r.amount || '-')}</td>
+          <td class="muted">${escapeHtml(r.timeText || '-')}</td>
+        </tr>
+      `).join('');
+
+      host.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th style="width:70px">No</th>
+              <th>Action</th>
+              <th style="width:120px">Total</th>
+              <th style="width:120px">Raw Log</th>
+              <th style="width:180px">Last Activity</th>
+              <th>Latest URL / Route</th>
+              <th>Latest Detail</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+        <div style="height:14px"></div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:70px">No</th>
+              <th>Action Detail</th>
+              <th style="width:140px">Sub Page</th>
+              <th style="width:180px">Time</th>
+              <th>URL / Route</th>
+              <th>Detail / Amount</th>
+              <th style="width:180px">Saved TimeText</th>
+            </tr>
+          </thead>
+          <tbody>${detailHtml}</tbody>
+        </table>
+      `;
+    }
+
+    // ===============================
+    // ALL USER SUMMARY MODE
+    // ===============================
+    function openAllUserSummary(){
+      const host = document.getElementById('tableHost');
+      const filtered = state.allLogs.filter(x => safeUpper(x.tab) === safeUpper(state.selectedSub));
+
+      if (!filtered.length) {
+        host.innerHTML = '<div class="empty">Tak ada data untuk semua user dalam sub page ini.</div>';
+        return;
+      }
+
+      const byUser = new Map();
+      filtered.forEach(r => {
+        const key = r.email || r.name || r.id;
+        if (!byUser.has(key)) {
+          byUser.set(key, {
+            name: r.name || 'Unknown User',
+            email: r.email || '-',
+            total: 0,
+            actions: {},
+            lastTime: 0
+          });
+        }
+        const u = byUser.get(key);
+        u.total += Number(r.count || 1) || 1;
+        u.lastTime = Math.max(u.lastTime, Number(r.time || 0));
+        const act = safeLower(r.action || 'unknown');
+        u.actions[act] = (u.actions[act] || 0) + (Number(r.count || 1) || 1);
+      });
+
+      const rows = Array.from(byUser.values()).sort((a,b) => b.lastTime - a.lastTime);
+      host.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th style="width:70px">No</th>
+              <th>User</th>
+              <th>Email</th>
+              <th style="width:120px">Total</th>
+              <th>Action Breakdown</th>
+              <th style="width:180px">Last Activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((u, i) => `
+              <tr>
+                <td>${i + 1}</td>
+                <td>${escapeHtml(u.name)}</td>
+                <td>${escapeHtml(u.email)}</td>
+                <td class="green">${u.total}</td>
+                <td>${Object.entries(u.actions).map(([k,v]) => `<div><span class="blue">${escapeHtml(getDisplayAction(k))}</span>: ${v}</div>`).join('')}</td>
+                <td>${escapeHtml(fmtDateTime(u.lastTime))}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById('mainTitle').textContent = `All User Summary - ${state.selectedSub}`;
+      document.getElementById('mainSubtitle').textContent = `Summary semua user untuk ${CATEGORY_MAP[state.selectedCategory]?.label || '-'} > ${state.selectedSub}`;
+    }
+
+    // ===============================
+    // MAIN RENDER
+    // ===============================
+    function renderAll(){
+      renderSummary();
+      renderTable();
+    }
+
+    async function refreshData(){
+      await loadLogsForDate();
+
+      if (!state.selectedUser && state.allUsers.length) {
+        state.selectedUser = state.allUsers[0];
+      } else if (state.selectedUser) {
+        const match = state.allUsers.find(u => u.key === state.selectedUser.key);
+        state.selectedUser = match || state.allUsers[0] || null;
+      }
+
+      renderUserList();
+      renderCategoryButtons();
+      renderSubButtons();
+      buildActionFilter();
+      renderAll();
+    }
+
+    // ===============================
+    // DEMO LOG HELPER
+    // ===============================
+    // Pakai helper ini di page lain untuk simpan log ke activityLogs.
+    window.logTransactionActivity = async function({
+      name = '',
+      email = '',
+      action = '',
+      tab = '',
+      category = '',
+      url = '',
+      route = '',
+      detail = '',
+      amount = '',
+      note = '',
+      count = 1
+    } = {}){
+      const now = Date.now();
+      const dateKey = getDateKey(now);
+      const payload = {
+        name,
+        email: String(email || '').toLowerCase(),
+        action,
+        tab: safeUpper(tab),
+        category: category || inferCategoryFromTab(tab),
+        url,
+        route,
+        detail,
+        amount,
+        note,
+        count: Number(count || 1),
+        time: now,
+        timeText: fmtDateTime(now)
+      };
+      await db.ref('activityLogs/' + dateKey).push(payload);
+    };
+
+    // ===============================
+    // EVENTS
+    // ===============================
+    document.getElementById('userSearchInput').addEventListener('input', renderUserList);
+
+    document.getElementById('actionFilter').addEventListener('change', (e) => {
+      state.selectedAction = e.target.value || '';
+      renderAll();
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', refreshData);
+
+    document.getElementById('todayBtn').addEventListener('click', () => {
+      state.selectedDate = getDateKey(new Date());
+      document.getElementById('dateInput').value = state.selectedDate;
+      refreshData();
+    });
+
+    document.getElementById('allUserSummaryBtn').addEventListener('click', () => {
+      openAllUserSummary();
+    });
+
+    document.getElementById('dateInput').addEventListener('change', (e) => {
+      state.selectedDate = e.target.value || getDateKey(new Date());
+      refreshData();
+    });
+
+    // ===============================
+    // INIT
+    // ===============================
+    (function init(){
+      document.getElementById('dateInput').value = state.selectedDate;
+      renderCategoryButtons();
+      renderSubButtons();
+      refreshData();
+    })();
+  </script>
+</body>
+</html>
