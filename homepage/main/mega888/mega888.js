@@ -1,3 +1,14 @@
+const blurphpApp = firebase.initializeApp({
+  apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+  authDomain: "blurphp.firebaseapp.com",
+  databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "blurphp",
+  storageBucket: "blurphp.appspot.com",
+  messagingSenderId: "593904200464",
+  appId: "1:593904200464:web:cea7bc1360532c20d99395"
+}, "blurphpMega888"); // nama unik supaya tak clash
+
+const blurphpDb = blurphpApp.database();
 let hiddenRow = null;
 let lastWinRowIndex = -1; 
 const MAX_FREE_GAME_ROWS = 10;
@@ -251,6 +262,74 @@ function updateAutoAddScoreButtonUI() {
   }
 }
   let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
+// ===============================
+// TRANSACTION LOGGER - MEGA888
+// tambah selepas jackpotInsertedMap
+// ===============================
+function txMegaGetLogin() {
+  try {
+    return JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  } catch (_) {
+    return {};
+  }
+}
+
+function txMegaDateKey(ms = Date.now()) {
+  const d = new Date(ms);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function txMegaDateTime(ms = Date.now()) {
+  const d = new Date(ms);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  const ss = String(d.getSeconds()).padStart(2, "0");
+  return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
+}
+
+function logMega888Activity(action, extra = {}) {
+  try {
+    const login = txMegaGetLogin();
+    if (!login?.email) return;
+
+    if (typeof blurphpDb === "undefined" || !blurphpDb) {
+      console.warn("blurphpDb not found in MEGA888 page");
+      return;
+    }
+
+    const now = Date.now();
+    const payload = {
+      name: login.name || "",
+      email: String(login.email || "").toLowerCase(),
+      photo: login.photo || "",
+      action: action || "",
+      tab: "MEGA888",
+      category: "gamelog",
+      group: "gamelog",
+      url: location.pathname,
+      route: location.pathname,
+      detail: extra.detail || "",
+      amount: extra.amount || "",
+      note: extra.note || "",
+      game: document.getElementById("gameSelect")?.value || "",
+      bet: document.getElementById("betSelect")?.value || "",
+      pecahan: document.getElementById("pecahanSelect")?.value || "",
+      count: Number(extra.count || 1),
+      time: now,
+      timeText: txMegaDateTime(now)
+    };
+
+    blurphpDb.ref("activityLogs/" + txMegaDateKey(now)).push(payload);
+  } catch (err) {
+    console.error("logMega888Activity error:", err);
+  }
+}
 function saveCurrentSelectionOnly() {
   if (isRestoringSelection) return;
 
@@ -708,6 +787,12 @@ function applyFreeGame() {
 // tombol Set Free Game
 document.getElementById('setFreeGameBtn').addEventListener('click', function(){
   applyFreeGame();
+
+  logMega888Activity("set_free_game", {
+    detail: "User applied free game",
+    amount: document.getElementById("freeGameInput")?.value || "",
+    note: `FreeGameCount=${document.getElementById("freeGameInput")?.value || 0}`
+  });
 });
 
 // tombol AUTO Free Game
@@ -716,12 +801,22 @@ autoBtn.addEventListener('click', () => {
   autoFreeGameOn = !autoFreeGameOn;
   localStorage.setItem('autoFreeGameOnMega888', autoFreeGameOn ? '1' : '0');
   updateAutoFreeGameButtonUI();
+
+  logMega888Activity("toggle_auto_free_game", {
+    detail: autoFreeGameOn ? "AUTO Free Game ON" : "AUTO Free Game OFF",
+    note: `Status=${autoFreeGameOn ? "ON" : "OFF"}`
+  });
 });
 // ✅ tombol AUTO AddScore
 document.getElementById("autoAddScoreBtn")?.addEventListener("click", () => {
   autoAddScoreOn = !autoAddScoreOn;
   localStorage.setItem("autoAddScoreOnMega888", autoAddScoreOn ? "1" : "0");
   updateAutoAddScoreButtonUI();
+
+  logMega888Activity("toggle_auto_add_score", {
+    detail: autoAddScoreOn ? "AUTO Add Score ON" : "AUTO Add Score OFF",
+    note: `Status=${autoAddScoreOn ? "ON" : "OFF"}`
+  });
 });
 function generateLog() {
   const game = document.getElementById("gameSelect").value;
@@ -848,6 +943,11 @@ const savedData = {
   logs: tbody.innerHTML
 };
     localStorage.setItem("gameLogDataMega888", JSON.stringify(savedData));
+    logMega888Activity("change_game_log", {
+  detail: "User generated / changed game log",
+  note: `Game=${game || "-"}, Bet=${bet || "-"}, Win=${selectedPecahan || "-"}, FreeGame=${freeGameCount}`,
+  amount: String(manualScore || "")
+});
   }, 50);
 }
 
@@ -998,6 +1098,12 @@ function addJackpot() {
 
   // Re-apply Free game selepas struktur row berubah
   applyFreeGame();
+
+  logMega888Activity("add_jackpot", {
+    detail: "User added jackpot",
+    amount: jackpotAmount.toFixed(2),
+    note: `Game=${currentGame || "-"}`
+  });
 }
 function addManualSetScore() {
   const inputScore = parseFloat(document.getElementById("manualScoreInput").value);
@@ -1044,7 +1150,10 @@ function addManualSetScore() {
     const lastRow = allRows[allRows.length - 1];
     lastRow.remove();
   }
-
+  logMega888Activity("set_manual_score", {
+    detail: "User added manual set score",
+    amount: inputScore.toFixed(2)
+  });
   document.getElementById("manualScoreInput").value = "";
   }
 function updateSelectPlaceholderColor(select) {
@@ -1126,6 +1235,9 @@ function resetLog() {
   // reset state lain
   lastWinRowIndex = null;
   manualWinAmount = 0;
+    logMega888Activity("reset_log", {
+    detail: "User reset MEGA888 log"
+  });
 }
 
 document.getElementById("pecahanSelect").addEventListener("change", function () {
@@ -1392,7 +1504,11 @@ function setRandomWin() {
       localStorage.setItem("gameLogDataMega888", JSON.stringify(data));
     } catch (e) {}
   }, 50);
-
+  logMega888Activity("set_win", {
+    detail: "User set random win",
+    amount: amount.toFixed(2),
+    note: `RowIndex=${pick}`
+  });
   showToast(`Win ${amount.toFixed(2)} Has change other rows`, "success");
 }
 function copyGameLogImage() {
@@ -1420,7 +1536,9 @@ function copyGameLogImage() {
           } catch (err) { reject(err); }
         }, "image/png");
       });
-
+     logMega888Activity("copy_game_log", {
+  detail: "User copied game log image to clipboard"
+});
       showToast("Image copied to clipboard", "success");
       return;
 
@@ -1431,6 +1549,9 @@ function copyGameLogImage() {
         { action: "copy-image-base64", base64: dataURL },
         "https://5g88-main.vercel.app/"
       );
+      logMega888Activity("copy_game_log", {
+  detail: "User copied game log image via parent fallback"
+});
       showToast("Image sent to parent (fallback)", "info");
       // (Opsional) console.error(err);
     }
