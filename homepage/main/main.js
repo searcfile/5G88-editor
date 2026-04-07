@@ -1781,6 +1781,49 @@ function applyTabVisibility(){
 function isTabAllowed(label){
   return !isFeatureHidden(label);
 }
+async function initAppUpdatePopup() {
+  const modal = document.getElementById("appUpdateModal");
+  const titleEl = document.getElementById("appUpdateTitle");
+  const msgEl = document.getElementById("appUpdateMessage");
+  const btnEl = document.getElementById("appUpdateBtn");
+
+  if (!modal || !titleEl || !msgEl || !btnEl) return;
+
+  const STORAGE_KEY = "5g88_seen_app_version";
+
+  try {
+    const res = await fetch(`/version.json?t=${Date.now()}`, {
+      cache: "no-store"
+    });
+
+    if (!res.ok) return;
+
+    const data = await res.json();
+    const latestVersion = String(data.version || "").trim();
+    const latestTitle = String(data.title || "Update Available").trim();
+    const latestMessage = String(
+      data.message || `A new version ${latestVersion} is available. Would you like to update?`
+    ).trim();
+
+    if (!latestVersion) return;
+
+    const seenVersion = localStorage.getItem(STORAGE_KEY) || "";
+
+    if (seenVersion !== latestVersion) {
+      titleEl.textContent = latestTitle;
+      msgEl.textContent = latestMessage;
+      modal.style.display = "flex";
+      modal.setAttribute("aria-hidden", "false");
+
+      btnEl.onclick = function () {
+        localStorage.setItem(STORAGE_KEY, latestVersion);
+        window.location.reload();
+      };
+    }
+  } catch (err) {
+    console.error("Version check failed:", err);
+  }
+}
 // ⬇️ GANTI seluruh blok ini
 document.addEventListener("DOMContentLoaded", async () => {
   initSidebarSearch();
@@ -1790,9 +1833,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     cleanUrl();
   }
 
-  updateChangePwVisibility();
-  if (!checkLogin()) return;
-  
+updateChangePwVisibility();
+if (!checkLogin()) return;
+
+initAppUpdatePopup();
+
 applyTheme(getSavedTheme(), false);
 const themeToggleBtn = document.getElementById("themeToggleBtn");
 if (themeToggleBtn) {
