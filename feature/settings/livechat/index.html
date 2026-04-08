@@ -2783,17 +2783,37 @@ if (msgInput){
   msgInput.addEventListener("input", updateSendButtonState);
 
   msgInput.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !(e.shiftKey || e.ctrlKey)) {
+    if (e.key !== "Enter") return;
+
+    // ✅ Ctrl + Enter = manual newline
+    if (e.ctrlKey) {
       e.preventDefault();
 
-      const text = msgInput.value.trim();
+      const start = msgInput.selectionStart ?? msgInput.value.length;
+      const end = msgInput.selectionEnd ?? msgInput.value.length;
+      const value = msgInput.value;
 
-      if (!selectedUserId) return;
-      if (isUploadingImage) return;
-      if (!text && !pendingImageUrl) return;
+      msgInput.value = value.slice(0, start) + "\n" + value.slice(end);
+      msgInput.setSelectionRange(start + 1, start + 1);
 
-      sendMessage();
+      autoResizeMsgBox();
+      updateSendButtonState();
+      return;
     }
+
+    // ✅ Shift + Enter = newline biasa
+    if (e.shiftKey) return;
+
+    // ✅ Enter sahaja = send
+    e.preventDefault();
+
+    const text = msgInput.value.trim();
+
+    if (!selectedUserId) return;
+    if (isUploadingImage) return;
+    if (!text && !pendingImageUrl) return;
+
+    sendMessage();
   });
 }
 
