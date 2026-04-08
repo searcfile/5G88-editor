@@ -51,7 +51,9 @@ let userHasInteractedForAudio = false;
 function initLivechatLoopAudio() {
   if (livechatLoopAudio) return livechatLoopAudio;
 
-  livechatLoopAudio = new Audio("/main/audio/audio.wav"); // tukar ikut path sound kau
+  const existing = document.getElementById("notifSound");
+  livechatLoopAudio = existing || new Audio("/main/audio/audio.wav");
+
   livechatLoopAudio.loop = true;
   livechatLoopAudio.preload = "auto";
 
@@ -59,43 +61,56 @@ function initLivechatLoopAudio() {
 }
 
 function unlockLivechatAudio() {
-  if (userHasInteractedForAudio) return;
-
+  const firstUnlock = !userHasInteractedForAudio;
   userHasInteractedForAudio = true;
 
   const audio = initLivechatLoopAudio();
   if (!audio) return;
 
-  try {
-    const oldMuted = audio.muted;
-    const oldVolume = audio.volume;
+  if (firstUnlock) {
+    try {
+      const oldMuted = audio.muted;
+      const oldVolume = audio.volume;
 
-    audio.muted = true;
-    audio.volume = 0;
+      audio.muted = true;
+      audio.volume = 0;
 
-    const p = audio.play();
-    if (p && typeof p.then === "function") {
-      p.then(() => {
+      const p = audio.play();
+      if (p && typeof p.then === "function") {
+        p.then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.muted = oldMuted;
+          audio.volume = oldVolume;
+
+          if (livechatUnreadCount > 0 && !isLivechatTabActive()) {
+            startLivechatLoopSound();
+          }
+        }).catch(() => {
+          audio.muted = oldMuted;
+          audio.volume = oldVolume;
+        });
+      } else {
         audio.pause();
         audio.currentTime = 0;
         audio.muted = oldMuted;
         audio.volume = oldVolume;
-      }).catch(() => {
-        audio.muted = oldMuted;
-        audio.volume = oldVolume;
-      });
-    } else {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.muted = oldMuted;
-      audio.volume = oldVolume;
+
+        if (livechatUnreadCount > 0 && !isLivechatTabActive()) {
+          startLivechatLoopSound();
+        }
+      }
+    } catch (_) {}
+  } else {
+    if (livechatUnreadCount > 0 && !isLivechatTabActive()) {
+      startLivechatLoopSound();
     }
-  } catch (_) {}
+  }
 }
 
 ["pointerdown", "mousedown", "touchstart", "click", "keydown"].forEach(evt => {
-  window.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true, capture: true });
-  document.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true, capture: true });
+  window.addEventListener(evt, unlockLivechatAudio, { passive: true, capture: true });
+  document.addEventListener(evt, unlockLivechatAudio, { passive: true, capture: true });
 });
 function bindIframeInteractionUnlock(iframe) {
   if (!iframe) return;
@@ -109,20 +124,13 @@ function bindIframeInteractionUnlock(iframe) {
       if (doc._livechatAudioUnlockBound) return;
       doc._livechatAudioUnlockBound = true;
 
-      const onceUnlock = () => {
+      const triggerUnlock = () => {
         unlockLivechatAudio();
-
-        ["pointerdown", "mousedown", "touchstart", "click", "keydown"].forEach(evt => {
-          try { doc.removeEventListener(evt, onceUnlock, true); } catch (_) {}
-          try { win.removeEventListener(evt, onceUnlock, true); } catch (_) {}
-        });
-
-        doc._livechatAudioUnlockBound = false;
       };
 
       ["pointerdown", "mousedown", "touchstart", "click", "keydown"].forEach(evt => {
-        doc.addEventListener(evt, onceUnlock, true);
-        win.addEventListener(evt, onceUnlock, true);
+        doc.addEventListener(evt, triggerUnlock, true);
+        win.addEventListener(evt, triggerUnlock, true);
       });
     } catch (err) {
       console.warn("Gagal bind interaction iframe:", err);
@@ -149,6 +157,16 @@ function startLivechatLoopSound() {
     livechatLoopPlaying = true;
   }).catch(() => {
     livechatLoopPlaying = false;
+
+    setTimeout(() => {
+      if (userHasInteractedForAudio && livechatUnreadCount > 0 && !isLivechatTabActive()) {
+        const a = initLivechatLoopAudio();
+        if (!a) return;
+        a.play().then(() => {
+          livechatLoopPlaying = true;
+        }).catch(() => {});
+      }
+    }, 120);
   });
 }
 
