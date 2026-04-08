@@ -68,7 +68,38 @@ function unlockLivechatAudio() {
   window.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true });
   document.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true });
 });
+function bindIframeInteractionUnlock(iframe) {
+  if (!iframe) return;
 
+  function attach() {
+    try {
+      const doc = iframe.contentWindow?.document;
+      if (!doc) return;
+
+      if (doc._livechatAudioUnlockBound) return;
+      doc._livechatAudioUnlockBound = true;
+
+      const onceUnlock = () => {
+        unlockLivechatAudio();
+
+        ["click", "keydown", "touchstart", "mousedown", "pointerdown"].forEach(evt => {
+          doc.removeEventListener(evt, onceUnlock, { passive: true });
+        });
+
+        doc._livechatAudioUnlockBound = false;
+      };
+
+      ["click", "keydown", "touchstart", "mousedown", "pointerdown"].forEach(evt => {
+        doc.addEventListener(evt, onceUnlock, { passive: true });
+      });
+    } catch (err) {
+      console.warn("Gagal bind interaction iframe:", err);
+    }
+  }
+
+  iframe.addEventListener("load", attach);
+  attach();
+}
 function startLivechatLoopSound() {
   if (!userHasInteractedForAudio) return;
   if (isLivechatTabActive()) return;
@@ -939,6 +970,7 @@ document.addEventListener("click", () => closeAllDropdowns());
 
 const pageFrame = document.getElementById("pageFrame");
 if (pageFrame) {
+  bindIframeInteractionUnlock(pageFrame);
   pageFrame.addEventListener("load", () => {
     try {
       pageFrame.contentWindow.document.addEventListener("click", closeAllDropdowns);
