@@ -2476,7 +2476,7 @@ async function handleSelectedImageFile(file){
     return;
   }
 
-  if (file.size > 5 * 1024 * 1024) {
+  if (file.size > 25 * 1024 * 1024) {
     alert("❌ Image too large (max 5MB)");
     clearSelectedImage();
     return;
@@ -2753,7 +2753,7 @@ if (msgInput) {
         const file = item.getAsFile();
         if (!file) return;
 
-        if (file.size > 5 * 1024 * 1024) {
+        if (file.size > 25 * 1024 * 1024) {
           alert("❌ Image too large (max 5MB)");
           e.preventDefault();
           return;
