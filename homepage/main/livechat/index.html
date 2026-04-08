@@ -1091,13 +1091,15 @@ window.addEventListener("beforeunload", () => {
     nr.off();
     nr.on("value", (snapshot) => {
       const notif = snapshot.val();
-      if (notif && notif.unread) {
-        playNotificationSound();
-        notifyUnread();
-        setTimeout(() => { nr.child("unread").set(false); }, 2000);
-      } else {
-        notifyRead();
-      }
+if (notif && notif.unread) {
+  if (shouldPlayIframeSound()) {
+    playNotificationSound();
+  }
+  notifyUnread();
+  setTimeout(() => { nr.child("unread").set(false); }, 2000);
+} else {
+  notifyRead();
+}
     });
   }
 }
@@ -1161,7 +1163,15 @@ window.addEventListener("message", (e) => {
   
 
 let userHasInteracted = false;
+function isLivechatActuallyOpen() {
+  return document.visibilityState === "visible" && document.hasFocus();
+}
 
+function shouldPlayIframeSound() {
+  // Kalau livechat dibuka dalam iframe/tab aktif,
+  // biar main page saja uruskan bunyi supaya tak double.
+  return false;
+}
 function cleanDuplicateName(name) {
   const parts = name.trim().split(/\s+/);
   const half = parts.length / 2;
@@ -1744,12 +1754,14 @@ function listenToChat() {
     const latestTime = chatArray[chatArray.length - 1]?.time || 0;
     localStorage.setItem(lastSeenKey, String(latestTime));
 
-    if (latestAdminMsgTime > lastSeenTime) {
-      playNotificationSound();
-      notifyUnread();
-    } else {
-      notifyRead();
-    }
+if (latestAdminMsgTime > lastSeenTime) {
+  if (shouldPlayIframeSound()) {
+    playNotificationSound();
+  }
+  notifyUnread();
+} else {
+  notifyRead();
+}
 
     renderChats(pastChats, today);
     renderChats(todayChats, today);
