@@ -874,6 +874,8 @@ if (pageFrame) {
 
       setTimeout(() => sendThemeToIframe(), 120);
       setTimeout(() => sendThemeToIframe(), 500);
+      setTimeout(() => notifyLivechatPanelStateToIframe(), 200);
+      setTimeout(() => notifyLivechatPanelStateToIframe(), 700);
     }
   });
 }
@@ -992,6 +994,23 @@ function setActiveTabUrl(url){
 
 function getActiveTabUrl(){
   return normUrl(localStorage.getItem(getActiveTabStorageKey()) || "");
+}
+function notifyLivechatPanelStateToIframe() {
+  const frame = document.getElementById("pageFrame");
+  if (!frame || !frame.contentWindow) return;
+
+  const origin = getChildOriginFromSrc(frame.src);
+  if (!origin) return;
+
+  const activeUrl = String(getActiveTabUrl() || "").toLowerCase();
+  const isLivechatActive = activeUrl.includes("/main/livechat");
+
+  try {
+    frame.contentWindow.postMessage(
+      { action: isLivechatActive ? "panel-open" : "panel-close" },
+      origin
+    );
+  } catch (_) {}
 }
 function isLivechatTabActive() {
   const activeUrl = String(getActiveTabUrl() || "").toLowerCase();
@@ -1396,9 +1415,12 @@ function loadPage(url) {
 
   // Load URL
 frame.src = url;
-setActiveTabUrl(url);          // ✅ simpan active url
+setActiveTabUrl(url);
 closeSidebar();
-applyActiveTabFromStorage(); 
+applyActiveTabFromStorage();
+
+setTimeout(() => notifyLivechatPanelStateToIframe(), 150);
+setTimeout(() => notifyLivechatPanelStateToIframe(), 500);
 }
 
   // Ceklis GameLog Dropdown
