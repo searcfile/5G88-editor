@@ -1401,9 +1401,93 @@ let livechatTitleTimer = null;
 let livechatTitleIndex = 0;
 let livechatUnreadActive = false;
 let livechatUnreadCount = 0;
+let livechatLoopAudio = null;
+let livechatLoopPlaying = false;
+let userHasInteractedForAudio = false;
+
+function unlockLivechatAudio() {
+  if (userHasInteractedForAudio) return;
+  userHasInteractedForAudio = true;
+  initLivechatLoopAudio();
+}
+
+function initLivechatLoopAudio() {
+  if (livechatLoopAudio) return livechatLoopAudio;
+
+  const el = document.getElementById("notifSound");
+  if (el) {
+    livechatLoopAudio = el;
+  } else {
+    livechatLoopAudio = new Audio("/main/audio/audio.wav");
+  }
+
+  livechatLoopAudio.loop = true;
+  livechatLoopAudio.preload = "auto";
+  return livechatLoopAudio;
+}
+
+["click", "keydown", "touchstart", "mousedown", "pointerdown"].forEach(evt => {
+  window.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true });
+  document.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true });
+});
+
+function isAdminLivechatTabOpen() {
+  const activeUrl = pageFrame?.src || "";
+  return String(activeUrl).toLowerCase().includes("livechat");
+}
+
+function startLivechatLoopSound() {
+  if (!userHasInteractedForAudio) return;
+  if (isAdminLivechatTabOpen()) return;
+
+  const audio = initLivechatLoopAudio();
+  if (!audio) return;
+
+  audio.loop = true;
+
+  if (!audio.paused && livechatLoopPlaying) return;
+
+  audio.currentTime = 0;
+  audio.play().then(() => {
+    livechatLoopPlaying = true;
+  }).catch(() => {
+    livechatLoopPlaying = false;
+  });
+}
+
+function stopLivechatLoopSound() {
+  const audio = initLivechatLoopAudio();
+  if (!audio) return;
+
+  audio.pause();
+  audio.currentTime = 0;
+  livechatLoopPlaying = false;
+}
+
+function syncAdminLivechatAlertState(unreadCount = 0) {
+  const count = Number(unreadCount || 0);
+
+  livechatUnreadCount = count;
+  livechatUnreadActive = count > 0;
+
+  if (count > 0 && !isAdminLivechatTabOpen()) {
+    startLivechatTitleAlert(count);
+    startLivechatLoopSound();
+  } else {
+    stopLivechatTitleAlert(false);
+    stopLivechatLoopSound();
+  }
+}
 function startLivechatTitleAlert(unreadCount = 0) {
   livechatUnreadActive = true;
   livechatUnreadCount = Number(unreadCount || 0);
+
+  const label = livechatUnreadCount === 1 ? "New Message" : "New Messages";
+
+  if (document.hidden) {
+    document.title = `🔔 You Have (${livechatUnreadCount}) ${label}!`;
+    return;
+  }
 
   if (livechatTitleTimer) return;
 
@@ -1411,8 +1495,8 @@ function startLivechatTitleAlert(unreadCount = 0) {
   livechatTitleTimer = setInterval(() => {
     if (!livechatUnreadActive) return;
 
-    const label = livechatUnreadCount === 1 ? "New Message" : "New Messages";
-    const text = `   🔔 You Have (${livechatUnreadCount}) ${label}!   `;
+    const currentLabel = livechatUnreadCount === 1 ? "New Message" : "New Messages";
+    const text = `   🔔 You Have (${livechatUnreadCount}) ${currentLabel}!   `;
     const rotated = text.slice(livechatTitleIndex) + text.slice(0, livechatTitleIndex);
 
     document.title = rotated;
@@ -1420,9 +1504,12 @@ function startLivechatTitleAlert(unreadCount = 0) {
   }, 220);
 }
 
-function stopLivechatTitleAlert() {
+function stopLivechatTitleAlert(resetUnread = true) {
   livechatUnreadActive = false;
-  livechatUnreadCount = 0;
+
+  if (resetUnread) {
+    livechatUnreadCount = 0;
+  }
 
   if (livechatTitleTimer) {
     clearInterval(livechatTitleTimer);
@@ -1431,6 +1518,33 @@ function stopLivechatTitleAlert() {
 
   document.title = DEFAULT_PAGE_TITLE;
 }
+document.addEventListener("visibilitychange", () => {
+  if (!livechatUnreadActive || livechatUnreadCount <= 0) return;
+
+  const label = livechatUnreadCount === 1 ? "New Message" : "New Messages";
+
+  if (document.hidden) {
+    if (livechatTitleTimer) {
+      clearInterval(livechatTitleTimer);
+      livechatTitleTimer = null;
+    }
+
+    document.title = `🔔 You Have (${livechatUnreadCount}) ${label}!`;
+    return;
+  }
+
+  if (!document.hidden) {
+    if (livechatTitleTimer) {
+      clearInterval(livechatTitleTimer);
+      livechatTitleTimer = null;
+    }
+
+    startLivechatTitleAlert(livechatUnreadCount);
+    if (!isAdminLivechatTabOpen()) {
+      startLivechatLoopSound();
+    }
+  }
+});
 function setLivechatBadgeCount(count) {
   const badge = document.getElementById("livechatDot");
   if (!badge) return;
@@ -1454,19 +1568,13 @@ db.ref("users").on("value", (snapshot) => {
   });
 
   if (totalUnread > lastHeaderUnreadTotal) {
-    playNotif();
+    unlockLivechatAudio();
   }
 
   lastHeaderUnreadTotal = totalUnread;
 
-  // ✅ selalu ikut total sebenar, walaupun tab livechat tengah buka
   setLivechatBadgeCount(totalUnread);
-
-  if (totalUnread > 0) {
-    startLivechatTitleAlert(totalUnread);
-  } else {
-    stopLivechatTitleAlert();
-  }
+  syncAdminLivechatAlertState(totalUnread);
 });
 function ensureHeaderChatTracker(userId) {
   if (!userId) return;
@@ -1750,6 +1858,15 @@ if (settingsBtn) {
 
 function loadPage(url) {
   pageFrame.src = url;
+  setTimeout(() => {
+  if (isAdminLivechatTabOpen()) {
+    stopLivechatLoopSound();
+    stopLivechatTitleAlert(false);
+  } else if (livechatUnreadCount > 0) {
+    startLivechatTitleAlert(livechatUnreadCount);
+    startLivechatLoopSound();
+  }
+}, 150);
   localStorage.setItem(getCurrentUserStorageKey("activeTabUrl"), url);
   closeSidebar();
 
