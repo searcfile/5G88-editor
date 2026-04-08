@@ -1490,6 +1490,9 @@ async function handleSelectedImageFile(file){
 
   if (imagePreviewWrapEl) imagePreviewWrapEl.hidden = false;
 
+  if (msgInputEl) {
+  msgInputEl.focus({ preventScroll: true });
+  }
   const reader = new FileReader();
   reader.onload = function(e){
     if (uploadToken !== currentImageUploadToken) return;
@@ -1515,12 +1518,16 @@ async function handleSelectedImageFile(file){
     alert("❌ Upload image gagal. Sila cuba lagi.");
     clearSelectedImage(true);
     return;
-  } finally {
-    if (uploadToken === currentImageUploadToken) {
-      setImageUploadLoading(false);
-      refreshSend();
+} finally {
+  if (uploadToken === currentImageUploadToken) {
+    setImageUploadLoading(false);
+    refreshSend();
+
+    if (msgInputEl) {
+      msgInputEl.focus({ preventScroll: true });
     }
   }
+}
 }
 async function sendMessage() {
   if (!currentActiveId) return;
