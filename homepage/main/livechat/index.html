@@ -1163,14 +1163,13 @@ window.addEventListener("message", (e) => {
   
 
 let userHasInteracted = false;
+
 function isLivechatActuallyOpen() {
   return document.visibilityState === "visible" && document.hasFocus();
 }
 
 function shouldPlayIframeSound() {
-  // Kalau livechat dibuka dalam iframe/tab aktif,
-  // biar main page saja uruskan bunyi supaya tak double.
-  return false;
+  return isLivechatActuallyOpen();
 }
 function cleanDuplicateName(name) {
   const parts = name.trim().split(/\s+/);
