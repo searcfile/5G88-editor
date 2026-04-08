@@ -39,6 +39,39 @@ const loginDb = loginApp.database();
 const loginAuth = loginApp.auth();
 const THEME_KEY = "siteTheme";
 
+const DEFAULT_PAGE_TITLE = "Back Office Editor 5G88";
+let livechatTitleTimer = null;
+let livechatTitleText = "   🔔You Have New Message!   ";
+let livechatTitleIndex = 0;
+let livechatUnreadActive = false;
+function startLivechatTitleAlert() {
+  livechatUnreadActive = true;
+
+  if (livechatTitleTimer) return;
+
+  livechatTitleIndex = 0;
+  livechatTitleTimer = setInterval(() => {
+    if (!livechatUnreadActive) return;
+
+    const text = livechatTitleText;
+    const rotated =
+      text.slice(livechatTitleIndex) + text.slice(0, livechatTitleIndex);
+
+    document.title = rotated;
+    livechatTitleIndex = (livechatTitleIndex + 1) % text.length;
+  }, 220);
+}
+
+function stopLivechatTitleAlert() {
+  livechatUnreadActive = false;
+
+  if (livechatTitleTimer) {
+    clearInterval(livechatTitleTimer);
+    livechatTitleTimer = null;
+  }
+
+  document.title = DEFAULT_PAGE_TITLE;
+}
 function getSavedTheme() {
   const saved = localStorage.getItem(THEME_KEY);
   return saved === "dark" ? "dark" : "light";
@@ -1535,15 +1568,17 @@ function initLivechatNotifListener(userIdParam) {
     });
 
     const livechatDot = document.getElementById("livechatDot");
-    if (livechatDot) {
-      if (unreadCount > 0) {
-        livechatDot.style.display = "flex";
-        livechatDot.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
-      } else {
-        livechatDot.style.display = "none";
-        livechatDot.textContent = "";
-      }
-    }
+if (livechatDot) {
+  if (unreadCount > 0) {
+    livechatDot.style.display = "flex";
+    livechatDot.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+    startLivechatTitleAlert();
+  } else {
+    livechatDot.style.display = "none";
+    livechatDot.textContent = "";
+    stopLivechatTitleAlert();
+  }
+}
 
     if (window.updateFloatingFabLivechatDot) {
       window.updateFloatingFabLivechatDot(unreadCount);
@@ -1572,6 +1607,17 @@ function markLivechatAsRead() {
     if (Object.keys(updates).length) {
       chatRef.update(updates).catch(()=>{});
     }
+    stopLivechatTitleAlert();
+
+const livechatDot = document.getElementById("livechatDot");
+if (livechatDot) {
+  livechatDot.style.display = "none";
+  livechatDot.textContent = "";
+}
+
+if (window.updateFloatingFabLivechatDot) {
+  window.updateFloatingFabLivechatDot(0);
+}
   });
 }
 // === GLOBAL CUSTOM TABS (BLURPHP) ==========================
@@ -2023,15 +2069,17 @@ if (timestamp > lastNotifTime) {
       }
     });
 
-    if (livechatDot) {
-      if (unreadCount > 0) {
-        livechatDot.style.display = "flex";
-        livechatDot.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
-      } else {
-        livechatDot.style.display = "none";
-        livechatDot.textContent = "";
-      }
-    }
+if (livechatDot) {
+  if (unreadCount > 0) {
+    livechatDot.style.display = "flex";
+    livechatDot.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+    startLivechatTitleAlert();
+  } else {
+    livechatDot.style.display = "none";
+    livechatDot.textContent = "";
+    stopLivechatTitleAlert();
+  }
+}
 
     if (window.updateFloatingFabLivechatDot) {
       window.updateFloatingFabLivechatDot(unreadCount);
