@@ -1336,7 +1336,15 @@ msgInputEl.setSelectionRange(pos, pos);
   });
 }
 msgInputEl.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
+  if (e.key === 'Enter') {
+
+    // ✅ Ctrl + Enter = newline
+    if (e.ctrlKey) return;
+
+    // ✅ Shift + Enter = newline (biar default)
+    if (e.shiftKey) return;
+
+    // ❌ selain itu = send
     e.preventDefault();
 
     if (isUploadingImage) return;
