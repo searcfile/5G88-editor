@@ -993,6 +993,10 @@ function setActiveTabUrl(url){
 function getActiveTabUrl(){
   return normUrl(localStorage.getItem(getActiveTabStorageKey()) || "");
 }
+function isLivechatTabActive() {
+  const activeUrl = String(getActiveTabUrl() || "").toLowerCase();
+  return activeUrl.includes("/main/livechat");
+}
 function applyActiveTabFromStorage(){
   const activeUrl = getActiveTabUrl();
   document.querySelectorAll(".tab").forEach(el=>{
@@ -2089,10 +2093,16 @@ if (livechatDot) {
     }
   });
 
-  if (notifSound && userHasInteracted && typeof notifSound.play === "function") {
-    notifSound.currentTime = 0;
-    notifSound.play().catch(() => {});
-  }
+if (
+  notifSound &&
+  userHasInteracted &&
+  typeof notifSound.play === "function" &&
+  !isLivechatTabActive()
+) {
+  notifSound.pause();
+  notifSound.currentTime = 0;
+  notifSound.play().catch(() => {});
+}
 }
 });
 
