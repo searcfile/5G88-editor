@@ -60,20 +60,50 @@ function initLivechatLoopAudio() {
 
 function unlockLivechatAudio() {
   if (userHasInteractedForAudio) return;
+
   userHasInteractedForAudio = true;
-  initLivechatLoopAudio();
+
+  const audio = initLivechatLoopAudio();
+  if (!audio) return;
+
+  try {
+    const oldMuted = audio.muted;
+    const oldVolume = audio.volume;
+
+    audio.muted = true;
+    audio.volume = 0;
+
+    const p = audio.play();
+    if (p && typeof p.then === "function") {
+      p.then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = oldMuted;
+        audio.volume = oldVolume;
+      }).catch(() => {
+        audio.muted = oldMuted;
+        audio.volume = oldVolume;
+      });
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.muted = oldMuted;
+      audio.volume = oldVolume;
+    }
+  } catch (_) {}
 }
 
-["click", "keydown", "touchstart", "mousedown", "pointerdown"].forEach(evt => {
-  window.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true });
-  document.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true });
+["pointerdown", "mousedown", "touchstart", "click", "keydown"].forEach(evt => {
+  window.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true, capture: true });
+  document.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true, capture: true });
 });
 function bindIframeInteractionUnlock(iframe) {
   if (!iframe) return;
 
   function attach() {
     try {
-      const doc = iframe.contentWindow?.document;
+      const win = iframe.contentWindow;
+      const doc = win?.document;
       if (!doc) return;
 
       if (doc._livechatAudioUnlockBound) return;
@@ -82,15 +112,17 @@ function bindIframeInteractionUnlock(iframe) {
       const onceUnlock = () => {
         unlockLivechatAudio();
 
-        ["click", "keydown", "touchstart", "mousedown", "pointerdown"].forEach(evt => {
-          doc.removeEventListener(evt, onceUnlock, { passive: true });
+        ["pointerdown", "mousedown", "touchstart", "click", "keydown"].forEach(evt => {
+          try { doc.removeEventListener(evt, onceUnlock, true); } catch (_) {}
+          try { win.removeEventListener(evt, onceUnlock, true); } catch (_) {}
         });
 
         doc._livechatAudioUnlockBound = false;
       };
 
-      ["click", "keydown", "touchstart", "mousedown", "pointerdown"].forEach(evt => {
-        doc.addEventListener(evt, onceUnlock, { passive: true });
+      ["pointerdown", "mousedown", "touchstart", "click", "keydown"].forEach(evt => {
+        doc.addEventListener(evt, onceUnlock, true);
+        win.addEventListener(evt, onceUnlock, true);
       });
     } catch (err) {
       console.warn("Gagal bind interaction iframe:", err);
