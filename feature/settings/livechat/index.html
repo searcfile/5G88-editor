@@ -960,6 +960,7 @@ body{
   border-radius: 10px;
   border: 1px solid #424242;
   background: #141414;
+  cursor: pointer;
 }
 .image-preview-card{
   position: relative;
@@ -2800,9 +2801,22 @@ if (fileInput){
   });
 }
 
-if (removeImageBtn){
-  removeImageBtn.addEventListener("click", () => {
+if (removeImageBtn) {
+  removeImageBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     clearSelectedImage(true);
+  });
+}
+if (imagePreview) {
+  imagePreview.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    if (isUploadingImage) return;
+
+    const previewSrc = pendingImageUrl || imagePreview.src;
+    if (!previewSrc) return;
+
+    openImageLightbox(previewSrc);
   });
 }
   const btnAll    = document.getElementById("filterAll");
