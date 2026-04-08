@@ -41,29 +41,32 @@ const THEME_KEY = "siteTheme";
 
 const DEFAULT_PAGE_TITLE = "Back Office Editor 5G88";
 let livechatTitleTimer = null;
-let livechatTitleText = "   🔔You Have New Message!   ";
 let livechatTitleIndex = 0;
 let livechatUnreadActive = false;
-function startLivechatTitleAlert() {
+let livechatUnreadCount = 0;
+function startLivechatTitleAlert(unreadCount = 0) {
   livechatUnreadActive = true;
+  livechatUnreadCount = Number(unreadCount || 0);
 
-  if (livechatTitleTimer) return;
+  if (!livechatTitleTimer) {
+    livechatTitleIndex = 0;
 
-  livechatTitleIndex = 0;
-  livechatTitleTimer = setInterval(() => {
-    if (!livechatUnreadActive) return;
+    livechatTitleTimer = setInterval(() => {
+      if (!livechatUnreadActive) return;
 
-    const text = livechatTitleText;
-    const rotated =
-      text.slice(livechatTitleIndex) + text.slice(0, livechatTitleIndex);
+      const text = `   🔔 You Have (${livechatUnreadCount}) New Message!   `;
+      const rotated =
+        text.slice(livechatTitleIndex) + text.slice(0, livechatTitleIndex);
 
-    document.title = rotated;
-    livechatTitleIndex = (livechatTitleIndex + 1) % text.length;
-  }, 220);
+      document.title = rotated;
+      livechatTitleIndex = (livechatTitleIndex + 1) % text.length;
+    }, 220);
+  }
 }
 
 function stopLivechatTitleAlert() {
   livechatUnreadActive = false;
+  livechatUnreadCount = 0;
 
   if (livechatTitleTimer) {
     clearInterval(livechatTitleTimer);
@@ -1572,7 +1575,7 @@ if (livechatDot) {
   if (unreadCount > 0) {
     livechatDot.style.display = "flex";
     livechatDot.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
-    startLivechatTitleAlert();
+    startLivechatTitleAlert(unreadCount);
   } else {
     livechatDot.style.display = "none";
     livechatDot.textContent = "";
@@ -2073,7 +2076,7 @@ if (livechatDot) {
   if (unreadCount > 0) {
     livechatDot.style.display = "flex";
     livechatDot.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
-    startLivechatTitleAlert();
+    startLivechatTitleAlert(unreadCount);
   } else {
     livechatDot.style.display = "none";
     livechatDot.textContent = "";
