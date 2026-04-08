@@ -58,11 +58,15 @@ function initLivechatLoopAudio() {
   return livechatLoopAudio;
 }
 
-["click", "keydown", "touchstart", "mousedown"].forEach(evt => {
-  window.addEventListener(evt, () => {
-    userHasInteractedForAudio = true;
-    initLivechatLoopAudio();
-  }, { once: true, passive: true });
+function unlockLivechatAudio() {
+  if (userHasInteractedForAudio) return;
+  userHasInteractedForAudio = true;
+  initLivechatLoopAudio();
+}
+
+["click", "keydown", "touchstart", "mousedown", "pointerdown"].forEach(evt => {
+  window.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true });
+  document.addEventListener(evt, unlockLivechatAudio, { once: true, passive: true });
 });
 
 function startLivechatLoopSound() {
