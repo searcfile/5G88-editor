@@ -1157,19 +1157,23 @@ window.addEventListener("message", (e) => {
   }
 
   // opsional status dari parent
-  if (data.action === "panel-open")  notifyRead();
-  if (data.action === "panel-close") {/* no-op */}
+if (data.action === "panel-open") {
+  livechatPanelOpen = true;
+  notifyRead();
+}
+
+if (data.action === "panel-close") {
+  livechatPanelOpen = false;
+}
 });
   
 
 let userHasInteracted = false;
 
-function isLivechatActuallyOpen() {
-  return document.visibilityState === "visible";
-}
+let livechatPanelOpen = false;
 
 function shouldPlayIframeSound() {
-  return isLivechatActuallyOpen();
+  return livechatPanelOpen && document.visibilityState === "visible";
 }
 function cleanDuplicateName(name) {
   const parts = name.trim().split(/\s+/);
