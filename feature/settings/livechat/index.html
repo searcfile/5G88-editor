@@ -173,24 +173,43 @@ body {
 .chat-box::-webkit-scrollbar-track {
   background: transparent;
 }
-.msg-header {
+.msg-row {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
-  margin-bottom: 4px;
-  font-weight: bold;
+  width: 100%;
 }
-.msg-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    margin-right: 6px;
-    object-fit: cover;
-    border: 1px solid white;
-    background-color: black;
+
+.msg-row-mine {
+  justify-content: flex-end;
+}
+
+.msg-row-theirs {
+  justify-content: flex-start;
+}
+
+.msg-avatar-outside {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid white;
+  background-color: black;
+  flex-shrink: 0;
+}
+
+.msg-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 /* ===== Message Bubble ===== */
 .message {
+  width: 100%;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+.mine .msg-bubble-wrap {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -198,7 +217,6 @@ body {
   max-width: 75%;
   min-width: 60px;
   padding: 10px 12px;
-  margin: 8px 0;
   border-radius: 18px;
   line-height: 1.4;
   box-sizing: border-box;
@@ -206,36 +224,37 @@ body {
   white-space: normal;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   gap: 6px;
+  background: #15523E;
+  color: rgb(255, 255, 255, 65);
+  border-top-right-radius: 0px;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
-.mine {
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: 6px;
-    background: #15523E;
-    color: rgb(255, 255, 255, 65);
-    border-top-right-radius: 0px;
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+.theirs .msg-bubble-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  max-width: 75%;
+  min-width: 60px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  line-height: 1.4;
+  box-sizing: border-box;
+  word-break: break-word;
+  white-space: normal;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  gap: 6px;
+  background: #15523E;
+  color: rgb(255, 255, 255, 65);
+  border-top-left-radius: 0px;
+  border-top-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
-
-.theirs {
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
-    margin-right: auto;
-    margin-left: 6px;
-    background: #15523E;
-    color: rgb(255, 255, 255, 65);
-    border-top-left-radius: 0px;
-    border-top-right-radius: 12px;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-}
-.mine::after {
+.mine .msg-bubble-wrap::after {
   content: "";
   position: absolute;
   right: -6px;
@@ -246,7 +265,7 @@ body {
   clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
-.theirs::after {
+.theirs .msg-bubble-wrap::after {
   content: "";
   position: absolute;
   left: -6px;
@@ -1998,19 +2017,16 @@ function renderChatMessages(messages){
     const senderName = formatUserName(rawName);
     const avatarURL = msg.photoURL || (isUser ? "https://i.pravatar.cc/40" : "https://i.imgur.com/UhV9EWa.png");
 
-let html = `
-  <div class="msg-header">
-    <img src="${avatarURL}" alt="Avatar" class="msg-avatar">
-    <div class="msg-info">${senderName}</div>
-  </div>
+let bubbleHtml = `
+  <div class="msg-info">${senderName}</div>
 `;
 
 if (msg.text) {
-  html += `<div class="msg-text">${msg.text}</div>`;
+  bubbleHtml += `<div class="msg-text">${msg.text}</div>`;
 }
 
 if (msg.image) {
-  html += `
+  bubbleHtml += `
     <div class="chat-image-wrap" data-image="${msg.image}">
       <img src="${msg.image}" alt="Preview" class="chat-image-thumb">
       <div class="chat-image-overlay">◉ Preview</div>
@@ -2019,9 +2035,20 @@ if (msg.image) {
 }
 
 if (timeStr) {
-  html += `<small class="msg-time">${timeStr}</small>`;
+  bubbleHtml += `<small class="msg-time">${timeStr}</small>`;
 }
-    div.innerHTML = html;
+
+div.innerHTML = `
+  <div class="msg-row ${msg.from === "admin" ? "msg-row-mine" : "msg-row-theirs"}">
+    ${msg.from !== "admin" ? `<img src="${avatarURL}" alt="Avatar" class="msg-avatar-outside">` : ""}
+    
+    <div class="msg-bubble-wrap">
+      ${bubbleHtml}
+    </div>
+
+    ${msg.from === "admin" ? `<img src="${avatarURL}" alt="Avatar" class="msg-avatar-outside">` : ""}
+  </div>
+`;
 
 const thumb = div.querySelector(".chat-image-wrap");
 if (thumb) {
