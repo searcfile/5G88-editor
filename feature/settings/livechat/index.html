@@ -1884,6 +1884,10 @@ function normalizeChatMessage(key, raw){
     raw.fileUrl ??
     "";
 
+  const images = Array.isArray(raw.images)
+    ? raw.images.filter(Boolean)
+    : [];
+
   const from =
     raw.from ??
     raw.sender ??
@@ -1910,9 +1914,8 @@ function normalizeChatMessage(key, raw){
     raw.avatarUrl ??
     "";
 
-  // kalau langsung tak ada data penting, anggap bukan message valid
   const hasUsefulData =
-    !!from || !!text || !!image || !!time || !!name || !!email;
+    !!from || !!text || !!image || !!images.length || !!time || !!name || !!email;
 
   if (!hasUsefulData) return null;
 
@@ -1924,6 +1927,7 @@ function normalizeChatMessage(key, raw){
     photoURL,
     text: String(text || ""),
     image: image || "",
+    images,
     time
   };
 }
@@ -2106,7 +2110,6 @@ function renderChatMessages(messages){
 
   const shouldForceBottom = forceScrollToBottom || justOpenedChat;
 
-  // sembunyikan sekejap masa buka chat baru supaya tak nampak lompat dari atas ke bawah
   if (shouldForceBottom) {
     chatBox.style.visibility = "hidden";
   }
@@ -2147,57 +2150,56 @@ function renderChatMessages(messages){
     const senderName = formatUserName(rawName);
     const avatarURL = msg.photoURL || (isUser ? "https://i.pravatar.cc/40" : "https://i.imgur.com/UhV9EWa.png");
 
-let bubbleHtml = `
-  <div class="msg-info">${senderName}</div>
-`;
+    let bubbleHtml = `
+      <div class="msg-info">${senderName}</div>
+    `;
 
-if (msg.text) {
-  bubbleHtml += `<div class="msg-text">${msg.text}</div>`;
-}
+    if (msg.text) {
+      bubbleHtml += `<div class="msg-text">${msg.text}</div>`;
+    }
 
-const imageList = Array.isArray(msg.images) && msg.images.length
-  ? msg.images
-  : (msg.image ? [msg.image] : []);
+    const imageList = Array.isArray(msg.images) && msg.images.length
+      ? msg.images
+      : (msg.image ? [msg.image] : []);
 
-if (imageList.length) {
-  bubbleHtml += `<div class="chat-image-group">`;
+    if (imageList.length) {
+      bubbleHtml += `<div class="chat-image-group">`;
 
-  imageList.forEach(imgUrl => {
-    bubbleHtml += `
-      <div class="chat-image-wrap" data-image="${imgUrl}">
-        <img src="${imgUrl}" alt="Preview" class="chat-image-thumb">
-        <div class="chat-image-overlay">◉ Preview</div>
+      imageList.forEach(imgUrl => {
+        bubbleHtml += `
+          <div class="chat-image-wrap" data-image="${imgUrl}">
+            <img src="${imgUrl}" alt="Preview" class="chat-image-thumb">
+            <div class="chat-image-overlay">◉ Preview</div>
+          </div>
+        `;
+      });
+
+      bubbleHtml += `</div>`;
+    }
+
+    if (timeStr) {
+      bubbleHtml += `<small class="msg-time">${timeStr}</small>`;
+    }
+
+    div.innerHTML = `
+      <div class="msg-row ${msg.from === "admin" ? "msg-row-mine" : "msg-row-theirs"}">
+        ${msg.from !== "admin" ? `<img src="${avatarURL}" alt="Avatar" class="msg-avatar-outside">` : ""}
+        
+        <div class="msg-bubble-wrap">
+          ${bubbleHtml}
+        </div>
+
+        ${msg.from === "admin" ? `<img src="${avatarURL}" alt="Avatar" class="msg-avatar-outside">` : ""}
       </div>
     `;
-  });
 
-  bubbleHtml += `</div>`;
-}
+    div.querySelectorAll(".chat-image-wrap").forEach(thumb => {
+      thumb.addEventListener("click", () => {
+        openImageLightbox(thumb.dataset.image);
+      });
+    });
 
-if (timeStr) {
-  bubbleHtml += `<small class="msg-time">${timeStr}</small>`;
-}
-
-div.innerHTML = `
-  <div class="msg-row ${msg.from === "admin" ? "msg-row-mine" : "msg-row-theirs"}">
-    ${msg.from !== "admin" ? `<img src="${avatarURL}" alt="Avatar" class="msg-avatar-outside">` : ""}
-    
-    <div class="msg-bubble-wrap">
-      ${bubbleHtml}
-    </div>
-
-    ${msg.from === "admin" ? `<img src="${avatarURL}" alt="Avatar" class="msg-avatar-outside">` : ""}
-  </div>
-`;
-
-const thumb = div.querySelector(".chat-image-wrap");
-if (thumb) {
-  thumb.addEventListener("click", () => {
-    openImageLightbox(thumb.dataset.image);
-  });
-}
-
-chatBox.appendChild(div);
+    chatBox.appendChild(div);
   });
 
   const jumpBottom = () => {
@@ -2693,9 +2695,6 @@ async function uploadImageToCloudinary(file, uploadToken){
 
   const data = await res.json();
 
-  if (uploadToken !== currentImageUploadToken) {
-    return null;
-  }
 
   if (!res.ok || !data.secure_url) {
     throw new Error(data?.error?.message || "Upload failed");
@@ -2718,7 +2717,7 @@ async function handleSelectedImageFile(file){
   }
 
   const localId = "img_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
-  const uploadToken = ++currentImageUploadToken;
+  const uploadToken = currentImageUploadToken;
 
   const preview = await new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -2836,7 +2835,8 @@ async function sendMessage() {
 
   const text = (msgInput?.value || "").trim();
 
-  if (pendingImages.some(item => item.uploading)) {
+  const stillUploading = pendingImages.some(item => item.uploading);
+  if (stillUploading) {
     alert("⏳ Please wait, image still uploading.");
     return;
   }
@@ -2858,7 +2858,7 @@ async function sendMessage() {
       photoURL: admin.photoURL || "https://i.imgur.com/qiZFOs9.png",
       text: text || null,
       image: readyImages[0] || null,
-      images: readyImages.length ? readyImages : null,
+      images: readyImages,
       time,
       readByUser: false,
       deliveredAt: null,
@@ -2872,6 +2872,7 @@ async function sendMessage() {
 
     clearSelectedImage(true);
     updateSendButtonState();
+    forceScrollToBottom = true;
   } catch (err) {
     console.error("Send message failed:", err);
     alert("❌ Failed to send message.");
@@ -3086,7 +3087,6 @@ if (msgInput){
   msgInput.addEventListener("keydown", e => {
     if (e.key !== "Enter") return;
 
-    // ✅ Ctrl + Enter = manual newline
     if (e.ctrlKey) {
       e.preventDefault();
 
@@ -3102,17 +3102,16 @@ if (msgInput){
       return;
     }
 
-    // ✅ Shift + Enter = newline biasa
     if (e.shiftKey) return;
 
-    // ✅ Enter sahaja = send
     e.preventDefault();
 
     const text = msgInput.value.trim();
+    const hasReadyImages = pendingImages.some(item => !!item.uploadedUrl);
 
     if (!selectedUserId) return;
     if (isUploadingImage) return;
-    if (!text && !pendingImageUrl) return;
+    if (!text && !hasReadyImages) return;
 
     sendMessage();
   });
@@ -3135,24 +3134,7 @@ if (fileInput){
   });
 }
 
-if (removeImageBtn) {
-  removeImageBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    clearSelectedImage(true);
-  });
-}
-if (imagePreview) {
-  imagePreview.addEventListener("click", (e) => {
-    e.stopPropagation();
 
-    if (isUploadingImage) return;
-
-    const previewSrc = pendingImageUrl || imagePreview.src;
-    if (!previewSrc) return;
-
-    openImageLightbox(previewSrc);
-  });
-}
   const btnAll    = document.getElementById("filterAll");
   const btnUnread = document.getElementById("filterUnread");
   const btnOnline = document.getElementById("filterOnline");
