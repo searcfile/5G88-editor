@@ -6,6 +6,8 @@
     --page-bg2:#1f1f1f;
     --name:#1668dc;
     --blur:rgba(255,255,255,0.25);
+    --icon:rgba(255, 255, 255, 0.45);
+    --icon-focus: rgba(255,255,255,0.75);
 
     --blue: #1668dc;
     --blue-hover: #3c89e8;
@@ -26,7 +28,9 @@
     --page-bg2:#ffffff;
     --name:#1668dc;
     --blur:#00000063;
-
+    --icon:rgba(0, 0, 0, 0.45);
+    --icon-focus: #000000;
+        
     --blue: #1668dc;
     --blue-hover: #3c89e8;
     --blue-active: #1554ad;
@@ -387,7 +391,7 @@ input:hover:not(:focus){
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  color: rgba(255,255,255,0.45);
+  color: var(--icon);
   z-index: 2;
 }
 
@@ -406,7 +410,7 @@ input:hover:not(:focus){
 }
 /* kalau mahu icon ikut focus */
 .field:focus-within .field-icon{
-  color: rgba(255,255,255,0.75);
+  color: var(--icon-focus);
 }
 .tab-image{
   display: flex;
