@@ -173,7 +173,22 @@ body {
 .chat-box::-webkit-scrollbar-track {
   background: transparent;
 }
-
+.msg-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+.msg-avatar {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid white;
+  background-color: #000;
+  flex-shrink: 0;
+}
 /* ===== Message Bubble ===== */
 .message {
   position: relative;
@@ -191,7 +206,6 @@ body {
   white-space: normal;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   gap: 6px;
-  overflow: visible;
 }
 
 .mine {
@@ -269,6 +283,11 @@ body {
     color: rgb(255, 255, 255, 65);
     white-space: pre-wrap;
     word-break: break-word;
+}
+.msg-info {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(255, 255, 255, 85);
 }
 .send-box {
   display: flex;
@@ -1979,21 +1998,18 @@ function renderChatMessages(messages){
     const senderName = formatUserName(rawName);
     const avatarURL = msg.photoURL || (isUser ? "https://i.pravatar.cc/40" : "https://i.imgur.com/UhV9EWa.png");
 
-    let html = `
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-        <img src="${avatarURL}" alt="Avatar"
-             style="width:24px;height:24px;object-fit:cover;border-radius:50%;border:1px solid white;margin-right:6px;background-color:#000;">
-        <div>
-          ${senderName}
-          ${timeStr ? `<small class="msg-time">${timeStr}</small>` : ``}
-        </div>
-      </div>`;
+let html = `
+  <div class="msg-header">
+    <img src="${avatarURL}" alt="Avatar" class="msg-avatar">
+    <div class="msg-info">${senderName}</div>
+  </div>
+`;
 
-    if (msg.text) {
-      html += `<div class="msg-text">${msg.text}</div>`;
-    }
+if (msg.text) {
+  html += `<div class="msg-text">${msg.text}</div>`;
+}
 
-    if (msg.image) {
+if (msg.image) {
   html += `
     <div class="chat-image-wrap" data-image="${msg.image}">
       <img src="${msg.image}" alt="Preview" class="chat-image-thumb">
@@ -2002,6 +2018,9 @@ function renderChatMessages(messages){
   `;
 }
 
+if (timeStr) {
+  html += `<small class="msg-time">${timeStr}</small>`;
+}
     div.innerHTML = html;
 
 const thumb = div.querySelector(".chat-image-wrap");
