@@ -382,6 +382,40 @@ function getBrowserName(){
   if (/Safari\//i.test(ua)) return "Safari";
   return "Unknown";
 }
+async function deactivatePreviousGuest(){
+  try{
+    const oldGuestUid = localStorage.getItem("guest.uid");
+    if (!oldGuestUid) return;
+
+    const oldGuestKey = sanitizeKey(oldGuestUid);
+
+    // tandakan guest lama offline
+    await db.ref("users/" + oldGuestKey).update({
+      online: false,
+      lastSeen: Date.now()
+    }).catch(()=>{});
+
+    // optional fallback kalau kau ada simpan guest presence di node lain
+    await db.ref("guest_online/" + oldGuestKey).update({
+      online: false,
+      lastSeen: Date.now()
+    }).catch(()=>{});
+
+  }catch(err){
+    console.log("deactivatePreviousGuest error:", err);
+  }
+
+  try {
+    if (auth.currentUser && auth.currentUser.isAnonymous) {
+      await auth.signOut();
+    }
+  } catch(err){
+    console.log("anonymous signOut error:", err);
+  }
+
+  try { localStorage.removeItem("guest.uid"); } catch {}
+  try { localStorage.removeItem("guest.name"); } catch {}
+}
 async function finishLogin(userLike){
   const email = userLike.email;
   const name  = userLike.displayName || email.split('@')[0];
@@ -393,7 +427,8 @@ const fpId = await initFingerprint();
 const deviceId = fpId || getFallbackDeviceId();
 const deviceSource = fpId ? "fingerprintjs" : "fallback";
 const browser  = getBrowserName();
-
+await deactivatePreviousGuest();
+  
   db.ref("logins/blocked_users/" + emailKey).once("value").then(async snap=>{
     const isBlocked = snap.val();
     if (isBlocked === true){
@@ -615,29 +650,41 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("googleLoginBtn")?.addEventListener("click", signInWithGoogle);
   document.getElementById('eyeBtn')?.addEventListener('click', togglePassword);
 
-  setTimeout(async () => {
-    try{
+setTimeout(async () => {
+  try{
+    let gl = null;
+    try { gl = JSON.parse(localStorage.getItem("gmailLogin") || "null"); } catch {}
+
+    if (!gl?.email) {
       await ensureGuestAuth();
-
-      if (!lcLoaded && lcFrame) {
-        lcFrame.src = LC_URL;
-        lcFrame.addEventListener("load", async () => {
-          lcLoaded = true;
-          await ensureGuestAuth();
-          postIdentityToChat();
-          setTimeout(postIdentityToChat, 300);
-
-          requestLivechatUnreadCount();
-          setTimeout(requestLivechatUnreadCount, 500);
-          setTimeout(requestLivechatUnreadCount, 1200);
-        }, { once:true });
-      } else {
-        requestLivechatUnreadCount();
-      }
-    }catch(err){
-      console.log("Livechat preload failed:", err);
     }
-  }, 600);
+
+    if (!lcLoaded && lcFrame) {
+      lcFrame.src = LC_URL;
+      lcFrame.addEventListener("load", async () => {
+        lcLoaded = true;
+
+        let gl2 = null;
+        try { gl2 = JSON.parse(localStorage.getItem("gmailLogin") || "null"); } catch {}
+
+        if (!gl2?.email) {
+          await ensureGuestAuth();
+        }
+
+        postIdentityToChat();
+        setTimeout(postIdentityToChat, 300);
+
+        requestLivechatUnreadCount();
+        setTimeout(requestLivechatUnreadCount, 500);
+        setTimeout(requestLivechatUnreadCount, 1200);
+      }, { once:true });
+    } else {
+      requestLivechatUnreadCount();
+    }
+  }catch(err){
+    console.log("Livechat preload failed:", err);
+  }
+}, 600);
 });
   // ====== CONFIG ======
   const LC_ICON_OPEN = "M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z";
@@ -965,9 +1012,13 @@ window.addEventListener("message", (e) => {
 (function loginPageGuard(){
   const path = location.pathname;
   if (!path.startsWith("/login")) return;
+
   let gl = null;
   try { gl = JSON.parse(localStorage.getItem("gmailLogin") || "null"); } catch {}
+
   if (gl?.email){
+    try { localStorage.removeItem("guest.uid"); } catch {}
+    try { localStorage.removeItem("guest.name"); } catch {}
     location.replace("/main");
   }
 })();
