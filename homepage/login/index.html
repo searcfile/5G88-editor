@@ -233,20 +233,22 @@ content="
 </div>
 <!-- Live Chat floating widget -->
 <div class="lc-wrap" id="lcWrap">
-<button class="lc-btn" id="lcToggle" aria-label="Open live chat" aria-expanded="false" type="button">
-  <svg id="lcIcon" class="lc-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-    <path id="lcIconPath" fill="currentColor"
-      d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10S6.486 2 12 2zm0-2C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z">
-    </path>
-  </svg>
-  <span class="lc-dot" id="lcDot"></span>
-</button>
+  <button class="lc-btn" id="lcToggle" aria-label="Open live chat" aria-expanded="false" type="button">
+    <svg id="lcIcon" class="lc-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path id="lcIconPath" fill="currentColor"
+        d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10S6.486 2 12 2zm0-2C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-.001 5.75c.69 0 1.251.56 1.251 1.25s-.561 1.25-1.251 1.25-1.249-.56-1.249-1.25.559-1.25 1.249-1.25zm2.001 12.25h-4v-1c.484-.179 1-.201 1-.735v-4.467c0-.534-.516-.618-1-.797v-1h3v6.265c0 .535.517.558 1 .735v.999z">
+      </path>
+    </svg>
+
+    <span class="lc-badge" id="lcBadge">0</span>
+  </button>
+
   <div class="lc-panel" id="lcPanel" aria-hidden="true">
-  <iframe id="lcFrame" class="lc-iframe"
-        title="Live Chat"
-        sandbox="allow-scripts allow-same-origin allow-popups"
-        referrerpolicy="no-referrer">
-  </iframe>
+    <iframe id="lcFrame" class="lc-iframe"
+      title="Live Chat"
+      sandbox="allow-scripts allow-same-origin allow-popups"
+      referrerpolicy="no-referrer">
+    </iframe>
   </div>
 </div>
 <audio id="livechatSound" src="https://5g88-main.vercel.app/main/audio/audio.wav" preload="auto"></audio>
