@@ -127,21 +127,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   background: transparent;
 }
 .message {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: fit-content;
-  max-width: 75%;
-  min-width: 60px;
-  padding: 10px 12px;
+  width: 100%;
   margin: 8px 0;
-  border-radius: 18px;
-  line-height: 1.4;
   box-sizing: border-box;
-  word-break: break-word;
-  white-space: normal;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-  gap: 6px;
 }
 
 .msg-time {
@@ -156,34 +144,50 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   color: rgb(255, 255, 255, 85);
 }
 
-.mine {
+.mine .msg-bubble-wrap {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: fit-content;
-  margin-left: auto;
-  margin-right: 6px;
-  background:#15523E;
+  max-width: 75%;
+  min-width: 60px;
+  padding: 10px 12px;
+  background: #15523E;
   color: #000;
-  border-top-right-radius: 0px;
+  border-top-right-radius: 0;
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
+  line-height: 1.4;
+  box-sizing: border-box;
+  word-break: break-word;
+  white-space: normal;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  gap: 6px;
 }
 
-.theirs {
+.theirs .msg-bubble-wrap {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: fit-content;
-  margin-right: auto;
-  margin-left: 6px;
-  background:#15523E;
+  max-width: 75%;
+  min-width: 60px;
+  padding: 10px 12px;
+  background: #15523E;
   color: #000;
-  border-top-left-radius: 0px;
+  border-top-left-radius: 0;
   border-top-right-radius: 12px;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
+  line-height: 1.4;
+  box-sizing: border-box;
+  word-break: break-word;
+  white-space: normal;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  gap: 6px;
 }
-.mine::after {
+.mine .msg-bubble-wrap::after {
   content: "";
   position: absolute;
   right: -6px;
@@ -194,7 +198,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
-.theirs::after {
+.theirs .msg-bubble-wrap::after {
   content: "";
   position: absolute;
   left: -6px;
@@ -327,12 +331,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   opacity: 0.5;
   cursor: not-allowed;
 }
-.msg-header {
+.msg-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  margin-bottom: 4px;
-  font-weight: bold;
+  width: 100%;
+}
+
+.mine-row {
+  justify-content: flex-end;
+}
+
+.their-row {
+  justify-content: flex-start;
 }
 .msg-info {
   font-size: 14px;
@@ -436,14 +447,30 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 }
 #searchChat:hover{border:1px solid var(--blue-hover);}
 #searchChat:focus{border:1px solid var(--blue);}   
-.msg-avatar {
+.msg-avatar-outside {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  margin-right: 6px;
   object-fit: cover;
   border: 1px solid white;
-background-color:black;
+  background-color: black;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.msg-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mine .msg-time {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.theirs .msg-time {
+  align-self: flex-start;
+  text-align: left;
 }
 #startMessage {
   transition: opacity 0.5s ease;
@@ -2016,52 +2043,47 @@ const senderPhoto = (c.from === 'user')
   : 'https://i.imgur.com/qiZFOs9.png';
 
     // header bubble tanpa src (src diset via property biar aman)
-div.innerHTML = `
-  <div class="msg-header">
-    <img class="msg-avatar" alt="user" />
-    <span class="msg-info">${escapeHTML(senderLabel)}</span>
-  </div>
+let bubbleHtml = `
+  <div class="msg-info">${escapeHTML(senderLabel)}</div>
 `;
 
-    // set avatar via property (hindari attribute injection)
-    const avatarEl = div.querySelector('.msg-avatar');
-    if (avatarEl) avatarEl.src = senderPhoto;
-
-    // konten: text atau image
 if (typeof c.text === 'string' && c.text.trim() !== '') {
-  const p = document.createElement('p');
-  p.className = 'msg-text';
-  p.innerHTML = escapeHTML(c.text).replace(/\n/g, '<br>');
-  div.appendChild(p);
+  bubbleHtml += `
+    <p class="msg-text">${escapeHTML(c.text).replace(/\n/g, '<br>')}</p>
+  `;
 }
 
 if (c.image) {
-  const wrap = document.createElement('div');
-  wrap.className = 'chat-image-wrap';
-  wrap.title = 'Preview';
+  bubbleHtml += `
+    <div class="chat-image-wrap" data-image="${escapeHTML(c.image)}" title="Preview">
+      <img src="${escapeHTML(c.image)}" class="chat-image-thumb" alt="Preview">
+      <div class="chat-image-overlay">◉ Preview</div>
+    </div>
+  `;
+}
 
-  const img = document.createElement('img');
-  img.className = 'chat-image-thumb';
-  img.alt = 'Preview';
-  img.src = c.image;
+bubbleHtml += `
+  <div class="msg-time">${timeFormatted}</div>
+`;
 
-  const overlay = document.createElement('div');
-  overlay.className = 'chat-image-overlay';
-  overlay.textContent = '◉ Preview';
+div.innerHTML = `
+  <div class="msg-row ${c.from === 'user' ? 'mine-row' : 'their-row'}">
+    ${c.from !== 'user' ? `<img class="msg-avatar-outside" alt="user" src="${escapeHTML(senderPhoto)}">` : ''}
+    
+    <div class="msg-bubble-wrap">
+      ${bubbleHtml}
+    </div>
 
-  wrap.appendChild(img);
-  wrap.appendChild(overlay);
-  div.appendChild(wrap);
+    ${c.from === 'user' ? `<img class="msg-avatar-outside" alt="user" src="${escapeHTML(senderPhoto)}">` : ''}
+  </div>
+`;
 
-  wrap.addEventListener('click', () => {
+const thumb = div.querySelector(".chat-image-wrap");
+if (thumb) {
+  thumb.addEventListener("click", () => {
     openImageLightbox(c.image);
   });
 }
-
-const timeEl = document.createElement('div');
-timeEl.className = 'msg-time';
-timeEl.textContent = timeFormatted;
-div.appendChild(timeEl);
 
     chatBox.appendChild(div);
   });
