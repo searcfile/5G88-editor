@@ -1379,6 +1379,37 @@ function bindAdminHeaderPresence(){
     }
   });
 }
+function forceEmojiSearchInputWhite() {
+  const picker = document.getElementById("emojiPicker");
+  if (!picker) return;
+
+  const applyStyles = () => {
+    const root = picker.shadowRoot;
+    if (!root) return;
+
+    const searchInput = root.querySelector('input.search');
+    if (!searchInput) return;
+
+    searchInput.style.color = "#ffffff";
+    searchInput.style.webkitTextFillColor = "#ffffff";
+    searchInput.style.caretColor = "#ffffff";
+    searchInput.style.background = "#0b0b0b";
+    searchInput.style.opacity = "1";
+    searchInput.style.textShadow = "0 0 0 #ffffff";
+  };
+
+  // cuba terus
+  applyStyles();
+
+  // kalau component belum siap render, tunggu sekejap
+  setTimeout(applyStyles, 100);
+  setTimeout(applyStyles, 300);
+  setTimeout(applyStyles, 700);
+
+  // bila picker dibuka lagi, paksa lagi
+  picker.addEventListener("click", applyStyles);
+  picker.addEventListener("emoji-click", applyStyles);
+}
 // PATCH START: initChatWithUserData universal
 function initChatWithUserData() {
   if (chatInitialized) return;
@@ -1434,10 +1465,15 @@ bindUserTyping();
   
 refreshSend();
 if (emojiBtn && emojiPickerWrap && emojiPicker && msgInputEl) {
-  emojiBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    emojiPickerWrap.hidden = !emojiPickerWrap.hidden;
-  });
+emojiBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  emojiPickerWrap.hidden = !emojiPickerWrap.hidden;
+
+  if (!emojiPickerWrap.hidden) {
+    forceEmojiSearchInputWhite();
+  }
+  forceEmojiSearchInputWhite();
+});
 
   emojiPicker.addEventListener("emoji-click", (event) => {
     const emoji = event.detail?.unicode || "";
