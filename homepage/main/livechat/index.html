@@ -70,6 +70,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   background: linear-gradient(to right,#1668dc, #c5ff4a);
   padding: 12px 18px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   border-bottom: 1px solid #fff3;
@@ -100,7 +101,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   font-size: 14px;
   color: #ffffff;
 }
+@media (max-width: 600px){
+  .search-wrapper{
+    width: 100%;
+  }
 
+  .search-input-wrap{
+    width: 100%;
+    max-width: 100%;
+  }
+
+  #searchChat{
+    width: 100%;
+  }
+}
   .chat-box {
   flex-grow: 1;
   overflow-y: auto;
@@ -402,6 +416,17 @@ align-items: flex-start;
     width: 100%;
   }
 }
+@media (max-width: 600px){
+  .chat-header{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-wrapper{
+    width: 100%;
+    margin-top: 8px;
+  }
+}
 .chat-wrapper {
   background: white;
   max-width: 640px;
@@ -421,12 +446,13 @@ align-items: flex-start;
   flex-grow: 1;
   display: flex;
   justify-content: flex-end;
+  width: 100%;
 }
 
 .search-input-wrap {
   position: relative;
   width: 100%;
-  max-width: 300px;
+  max-width: 100%; /* 🔥 penting */
 }
 
 .search-icon {
