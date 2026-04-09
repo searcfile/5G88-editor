@@ -157,7 +157,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 }
 
 .mine {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: fit-content;
   margin-left: auto;
   margin-right: 6px;
@@ -170,7 +171,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 }
 
 .theirs {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: fit-content;
   margin-right: auto;
   margin-left: 6px;
@@ -201,6 +203,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   height: 12px;
   background: inherit;
   clip-path: polygon(100% 0, 100% 100%, 0 0);
+}
+.mine .msg-time {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.theirs .msg-time {
+  align-self: flex-start;
+  text-align: left;
 }
 .send-box {
   display: flex;
