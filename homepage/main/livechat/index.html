@@ -250,7 +250,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   outline: none;
   resize: none;
   background: transparent;
-  color: rgba(255,255,255,0.88);
+  color: var(--page-text);
   font-family: 'Segoe UI', sans-serif;
   overflow-y: auto;
 }
@@ -720,14 +720,16 @@ emoji-picker::part(container) {
 .image-add-plus{
   font-size: 36px;
   line-height: 1;
-  color: #bfbfbf;
+  color: var(--page-text);
   transform: translateY(-1px);
 }
 
 .image-add-card:hover .image-add-plus{
-  color: #ffffff;
+  color: var(--blue-hover);
 }
-
+.image-add-card:active .image-add-plus{
+  color: var(--blue-active);
+}
 .remove-image-btn{
   position: absolute;
   top: 4px;
@@ -744,6 +746,7 @@ emoji-picker::part(container) {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .remove-image-btn:hover{
@@ -753,14 +756,14 @@ emoji-picker::part(container) {
 .global-upload-status{
   width: 100%;
   min-height: 36px;
-  border-radius: 10px;
+  border-radius: 6px;
   background: rgba(0,0,0,0.35);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
-  color: #fff;
+  color: var(--page-text);
   font-size: 12px;
   padding: 8px 10px;
   box-sizing: border-box;
