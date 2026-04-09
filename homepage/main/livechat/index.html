@@ -1227,6 +1227,32 @@ function getOrCreateLocalGuestId(){
   }
   return id;
 }
+function makeGuestDisplayNameFromId(id) {
+  const raw = String(id || "").trim();
+  if (!raw) return "Guest-User";
+
+  const clean = raw.replace(/^g_/i, "").replace(/[^a-zA-Z0-9]/g, "");
+  const shortCode = (clean.slice(-5) || "USER").toUpperCase();
+
+  return "Guest-" + shortCode;
+}
+
+function ensureGuestDisplayName() {
+  if (!currentIsGuest) return localStorage.getItem("username") || "User";
+
+  let username = (localStorage.getItem("username") || "").trim();
+
+  if (!username || !/^Guest-/i.test(username)) {
+    username = makeGuestDisplayNameFromId(currentActiveId);
+    localStorage.setItem("username", username);
+  }
+
+  if (!localStorage.getItem("userphoto")) {
+    localStorage.setItem("userphoto", "");
+  }
+
+  return username;
+}
 function markAdminSeenInDB(){
   if (!currentActiveId) return;
 
@@ -1273,13 +1299,7 @@ async function ensureGuestLocalIdentity(){
     }
   }
 
-  // default nama/foto & lanjut init
-  if (!localStorage.getItem("username")){
-    const code = (currentActiveId || '').slice(-5).toUpperCase();
-    localStorage.setItem("username", `Guest-${code}`);
-  }
-  if (!localStorage.getItem("userphoto")) localStorage.setItem("userphoto", "");
-
+  ensureGuestDisplayName();
   writeUserProfile();
   bindPresenceAndNotif();
   initChatWithUserData();
@@ -1342,19 +1362,27 @@ if (notif && notif.unread) {
     });
   }
 }
-  function writeUserProfile(){
+function writeUserProfile(){
   const upath = getUserPath();
   if (!upath) return;
+
+  const finalName = currentIsGuest
+    ? ensureGuestDisplayName()
+    : (localStorage.getItem("username") || "User");
+
   const data = {
-    name:     localStorage.getItem("username") || (currentIsGuest ? "Guest" : "User"),
-    email:    currentUserEmail || null,
-    photoURL: localStorage.getItem("userphoto") || null
+    name: finalName,
+    email: currentUserEmail || null,
+    photoURL: localStorage.getItem("userphoto") || null,
+    isGuest: !!currentIsGuest,
+    online: true,
+    lastLoginTime: Date.now()
   };
+
   db.ref(upath).update(data).catch(()=>{});
 }
 // ===== parent origins yang diizinkan =====
 const ALLOWED_PARENTS = [
-  "https://5g88-login.vercel.app",
   "https://5g88-main.vercel.app"
 ];
 
@@ -1372,7 +1400,12 @@ window.addEventListener("message", (e) => {
   if (data.type === "user-login" && data.user){
     const { name, email, photo, uid, isGuest } = data.user;
 
-    localStorage.setItem("username", name || (isGuest ? "Guest" : "User"));
+    if (name) {
+      localStorage.setItem("username", name);
+    } else {
+      localStorage.removeItem("username");
+    }
+
     localStorage.setItem("userphoto", photo || "");
 
     if (isGuest && uid) {
@@ -1380,6 +1413,8 @@ window.addEventListener("message", (e) => {
       currentActiveId  = String(uid);          // gunakan UID guest
       currentUserEmail = null;
       localStorage.removeItem("useremail");
+       ensureGuestDisplayName();
+      
     } else if (email) {
       currentIsGuest   = false;
       currentUserEmail = email;
@@ -2444,10 +2479,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           localStorage.removeItem("useremail");
           currentActiveId = id;
 
-          if (!localStorage.getItem("username")) {
-            localStorage.setItem("username", "Guest-" + id.slice(-5).toUpperCase());
-          }
-
+          ensureGuestDisplayName();
           writeUserProfile();
           bindPresenceAndNotif();
           initChatWithUserData();
