@@ -316,17 +316,28 @@ input:hover:not(:focus){
   pointer-events:none;
   flex:0 0 auto;
 }
-.lc-dot{
+.lc-badge{
   position:absolute;
-  top:8px;
-  right:8px;
-  width:8px;
-  height:8px;
-  background:#d50000;
-  border-radius:50%;
+  top:-6px;
+  right:-6px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
   display:none;
+  align-items:center;
+  justify-content:center;
+  background:#d50000;
+  color:#fff;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  line-height:18px;
+  box-shadow:0 0 0 2px var(--page-bg);
+  pointer-events:none;
 }
-
+.lc-badge.show{
+  display:flex;
+}
 .lc-panel{
   position:absolute;
   right:0;
