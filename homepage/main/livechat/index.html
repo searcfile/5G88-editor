@@ -835,7 +835,26 @@ emoji-picker::part(container) {
 .chat-image-wrap:hover .chat-image-overlay{
   opacity: 1;
 }
+@media (max-width: 600px){
+  .chat-image-group{
+    grid-template-columns: repeat(2, minmax(0, 120px));
+    width: max-content;
+    max-width: 100%;
+  }
 
+  .chat-image-wrap{
+    width: 120px;
+  }
+
+  .chat-image-thumb{
+    height: 96px;
+  }
+
+  .mine .msg-bubble-wrap,
+  .theirs .msg-bubble-wrap{
+    max-width: min(85%, 252px);
+  }
+}
 .image-lightbox{
   position: fixed;
   inset: 0;
