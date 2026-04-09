@@ -889,6 +889,7 @@ let pendingImageFile = null;
 let pendingImageUrl = "";
 let isUploadingImage = false;
 let currentImageUploadToken = 0;
+let hideBottomBtnTimer = null;
 
 let msgInputEl = null;
 let sendBtnEl = null;
@@ -1310,6 +1311,23 @@ imageUploadTextEl = document.getElementById('imageUploadText');
   const typingEl    = document.getElementById('typingStatus');
 
  if (!msgInputEl || !sendBtnEl || !fileInputEl || !searchInput || !chatBox) return;
+  const toBottomBtn = document.getElementById("toBottomBtn");
+
+chatBox.addEventListener("scroll", () => {
+  handleChatScrollAutoButton(chatBox);
+});
+
+if (toBottomBtn) {
+  toBottomBtn.addEventListener("click", () => {
+    chatBox.scrollTo({
+      top: chatBox.scrollHeight,
+      behavior: "smooth"
+    });
+
+    toBottomBtn.classList.remove("show");
+    clearTimeout(hideBottomBtnTimer);
+  });
+}
 
 chatInitialized = true;
 updateAdminHeader("Admin", "https://i.imgur.com/qiZFOs9.png");
@@ -1435,6 +1453,38 @@ sendBtnEl.addEventListener('click', () => sendMessage());
 sendBtnEl.disabled = true;
 forceOpenBottom = true;
 listenToChat();
+}
+function showBottomBtnWhileScrolling(chatBox){
+  const toBottomBtn = document.getElementById("toBottomBtn");
+  if (!chatBox || !toBottomBtn) return;
+
+  if (isAtBottom(chatBox)) {
+    toBottomBtn.classList.remove("show");
+    clearTimeout(hideBottomBtnTimer);
+    return;
+  }
+
+  toBottomBtn.classList.add("show");
+
+  clearTimeout(hideBottomBtnTimer);
+  hideBottomBtnTimer = setTimeout(() => {
+    if (!isAtBottom(chatBox)) {
+      toBottomBtn.classList.remove("show");
+    }
+  }, 1200);
+}
+
+function handleChatScrollAutoButton(chatBox){
+  const toBottomBtn = document.getElementById("toBottomBtn");
+  if (!chatBox || !toBottomBtn) return;
+
+  if (isAtBottom(chatBox)) {
+    toBottomBtn.classList.remove("show");
+    clearTimeout(hideBottomBtnTimer);
+    return;
+  }
+
+  showBottomBtnWhileScrolling(chatBox);
 }
 function refreshSend(){
   const text = (msgInputEl?.value || "").trim();
@@ -1780,6 +1830,9 @@ if (latestAdminMsgTime > lastSeenTime) {
         instant: firstPaint
       });
 
+      if (!mustForce && !isAtBottom(chatBox)) {
+      showBottomBtnWhileScrolling(chatBox);
+     }
       if (firstPaint) {
         requestAnimationFrame(() => {
           chatBox.style.visibility = "visible";
