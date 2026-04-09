@@ -2482,12 +2482,17 @@ const label = `${displayName} (${email})`;
     userLabel.style.fontWeight = hasUnread ? "bold" : "normal";
     userDiv.appendChild(userLabel);
 
-    userDiv.onclick = ()=>{
-      clearSelectedImage(true);
-      justOpenedChat = true;
-      forceScrollToBottom = true;
-      activeUserIdSanitized = sanitized;
-      selectedUserId = sanitized;
+  userDiv.onclick = ()=>{
+  clearSelectedImage(true);
+  if (msgInput) {
+    msgInput.value = "";
+    autoResizeMsgBox();
+  }
+  updateSendButtonState();
+  justOpenedChat = true;
+  forceScrollToBottom = true;
+  activeUserIdSanitized = sanitized;
+  selectedUserId = sanitized;
 
 const selectedUserName =
   displayName ||
