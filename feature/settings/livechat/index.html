@@ -1609,7 +1609,11 @@ function showEmptyState(){
   if (statusEl) statusEl.textContent = "Offline";
   if (msgEl) msgEl.value = "";
   if (searchMsg) searchMsg.value = "";
-
+  
+  clearSelectedImage(true);
+  updateSendButtonState();
+  if (typeof autoResizeMsgBox === "function") autoResizeMsgBox();
+  
   if (activeChatRef && activeChatValueHandler) {
     activeChatRef.off("value", activeChatValueHandler);
   }
