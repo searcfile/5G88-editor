@@ -1878,34 +1878,7 @@ function formatUserName(name){
   if (words.length === 2 && words[0] === words[1]) return words[0];
   return name;
 }
-function isGuestLikeUser(name, email = "", fallbackId = ""){
-  const n = String(name || "").trim();
-  const e = String(email || "").trim().toLowerCase();
-  const id = String(fallbackId || "").trim();
 
-  // kalau email local guest
-  if (e.endsWith("@5a88.local") || e.endsWith("@5g88.local")) return true;
-
-  // kalau nama nampak macam random code
-  const source = n || id;
-  const looksRandomCode =
-    source.length >= 8 &&
-    !source.includes(" ") &&
-    /[a-z]/i.test(source) &&
-    /\d/.test(source);
-
-  return looksRandomCode;
-}
-
-function makeGuestName(name = "", email = "", fallbackId = ""){
-  const source =
-    String(name || "").trim() ||
-    String(email || "").trim().split("@")[0] ||
-    String(fallbackId || "").trim() ||
-    "guest";
-
-  return "Guest-" + source.slice(0, 6);
-}
 function getLabelParts(id, data){
   const tryEmailFromId = desanitizeUserId(id);
   const email = (data?.email || "").trim() || (tryEmailFromId.includes("@") ? tryEmailFromId : "");
@@ -2473,19 +2446,10 @@ const mergedIdentity = {
   photoURL: (meta.identity?.photoURL || userData?.photoURL || "")
 };
 
-let displayName = mergedIdentity.name || fallbackNameFromId;
+const displayName = mergedIdentity.name || fallbackNameFromId;
 const email = mergedIdentity.email || safeEmailFromId;
 const photoURL = mergedIdentity.photoURL || "";
-
-const isGuestUser = isGuestLikeUser(displayName, email, sanitized);
-
-if (isGuestUser) {
-  displayName = makeGuestName(displayName, email, sanitized);
-}
-
-const label = isGuestUser
-  ? displayName
-  : (email ? `${displayName} (${email})` : displayName);
+const label = `${displayName} (${email})`;
     if (q && !label.toLowerCase().includes(q)) return;
 
     const loginTs   = getLoginTimeFromUser(userData);
