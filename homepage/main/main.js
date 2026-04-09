@@ -1017,6 +1017,12 @@ gameLinksBtn?.addEventListener("click", (e) => {
 
 // Klik di luar -> tutup semua dropdown
 document.addEventListener("click", () => closeAllDropdowns());
+const refreshHeaderBtn = document.getElementById("refreshHeaderBtn");
+
+refreshHeaderBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  refreshCurrentPage();
+});
 
 const pageFrame = document.getElementById("pageFrame");
 if (pageFrame) {
@@ -1585,7 +1591,23 @@ applyActiveTabFromStorage();
 setTimeout(() => notifyLivechatPanelStateToIframe(), 150);
 setTimeout(() => notifyLivechatPanelStateToIframe(), 500);
 }
+function refreshCurrentPage() {
+  const btn = document.getElementById("refreshHeaderBtn");
+  const frame = document.getElementById("pageFrame");
+  if (!frame) return;
 
+  if (btn) {
+    btn.classList.remove("spin");
+    void btn.offsetWidth;
+    btn.classList.add("spin");
+    setTimeout(() => btn.classList.remove("spin"), 850);
+  }
+
+  const currentUrl = frame.src || getActiveTabUrl?.() || "";
+  if (!currentUrl) return;
+
+  loadPage(currentUrl);
+}
   // Ceklis GameLog Dropdown
 function updateGameLogCheckmarks() {
   const tabs = getTabs();
