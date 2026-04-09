@@ -150,9 +150,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   position: relative;
   display: flex;
   flex-direction: column;
-  width: fit-content;
-  max-width: 75%;
-  min-width: 60px;
+width: auto;
+max-width: min(75%, 356px);
+min-width: 60px;
+align-items: flex-start;
   padding: 10px 12px;
   background: #15523E;
   color: #000;
@@ -171,9 +172,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   position: relative;
   display: flex;
   flex-direction: column;
-  width: fit-content;
-  max-width: 75%;
-  min-width: 60px;
+width: auto;
+max-width: min(75%, 356px);
+min-width: 60px;
+align-items: flex-start;
   padding: 10px 12px;
   background: #15523E;
   color: #000;
@@ -774,10 +776,12 @@ emoji-picker::part(container) {
 }
 
 .chat-image-group{
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 170px));
   gap: 8px;
   margin-top: 6px;
+  width: max-content;
+  max-width: 100%;
 }
 
 .upload-spinner{
@@ -794,7 +798,7 @@ emoji-picker::part(container) {
 }
 .chat-image-wrap{
   position: relative;
-  display: inline-block;
+  display: block;
   width: 170px;
   max-width: 100%;
   border-radius: 6px;
@@ -806,8 +810,7 @@ emoji-picker::part(container) {
 
 .chat-image-thumb{
   display: block;
-  width: 170px;
-  max-width: 100%;
+  width: 100%;
   height: 130px;
   object-fit: contain;
   object-position: center;
