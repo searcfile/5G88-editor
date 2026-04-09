@@ -582,15 +582,23 @@ emoji-picker::part(search-input) {
   border-radius: 10px;
   padding: 6px 10px;
   outline: none;
-  background: #0b0b0b;
+  background: #0b0b0b !important;
   color: #ffffff !important;
-  caret-color: #ffffff;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  opacity: 1 !important;
   transition: all 0.2s ease;
 }
-input.search:focus{border:1px solid black;}
-emoji-picker::part(search-input)::placeholder {
-  color: rgba(255,255,255,0.4);
+emoji-picker {
+  color-scheme: dark;
 }
+
+emoji-picker::part(search-input)::placeholder {
+  color: rgba(255,255,255,0.55) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.55) !important;
+}
+input.search:focus{border:1px solid black;}
+
 
 emoji-picker::part(search-input):focus {
   border: 1px solid #1668dc;
@@ -618,6 +626,13 @@ emoji-picker::part(emoji-list),
 emoji-picker::part(content),
 emoji-picker::part(container) {
   background: #000 !important;
+}
+@media (max-width: 600px){
+  emoji-picker::part(search-input) {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+  }
 }
 @media (max-width: 600px){
   .emoji-picker-wrap{
