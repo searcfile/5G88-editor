@@ -128,11 +128,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 }
 .message {
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
   width: fit-content;
   max-width: 75%;
   min-width: 60px;
-  padding: 10px 12px 20px 12px;
+  padding: 10px 12px;
   margin: 8px 0;
   border-radius: 18px;
   line-height: 1.4;
@@ -140,11 +141,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   word-break: break-word;
   white-space: normal;
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  gap: 6px;
 }
+
 .msg-time {
-  position: absolute;
-  right: 10px;
-  bottom: 6px;
+  position: static;
+  align-self: flex-end;
+  display: block;
+  margin-top: 2px;
   font-size: 10px;
   line-height: 1;
   white-space: nowrap;
