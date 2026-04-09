@@ -176,26 +176,23 @@ body {
 
 /* ===== Message Bubble ===== */
 .message {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: fit-content;
-  max-width: 75%;
-  min-width: 60px;
-  padding: 10px 12px;
-  margin: 8px 0;
-  border-radius: 18px;
-  line-height: 1.4;
-  box-sizing: border-box;
-  word-break: break-word;
-  white-space: normal;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-  gap: 6px;
+    position: relative;
+    display: inline-block;
+    width: fit-content;
+    max-width: 75%;
+    min-width: 60px;
+    padding: 10px 12px 20px 12px;
+    margin: 8px 0;
+    border-radius: 18px;
+    line-height: 1.4;
+    box-sizing: border-box;
+    word-break: break-word;
+    white-space: normal;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 .mine {
-    display: flex;
-    flex-direction: column;
+    display: block;
     width: fit-content;
     margin-left: auto;
     margin-right: 6px;
@@ -208,8 +205,7 @@ body {
 }
 
 .theirs {
-    display: flex;
-    flex-direction: column;
+    display: block;
     width: fit-content;
     margin-right: auto;
     margin-left: 6px;
@@ -249,26 +245,6 @@ body {
     color: rgb(255, 255, 255, 65);
     white-space: pre-wrap;
     word-break: break-word;
-}
-.msg-time {
-  position: static;
-  align-self: flex-end;
-  display: block;
-  margin-top: 2px;
-  font-size: 10px;
-  line-height: 1;
-  white-space: nowrap;
-  opacity: 0.75;
-  color: rgb(255, 255, 255, 85);
-}
-.mine .msg-time {
-  align-self: flex-end;
-  text-align: right;
-}
-
-.theirs .msg-time {
-  align-self: flex-start;
-  text-align: left;
 }
 .send-box {
   display: flex;
@@ -386,6 +362,16 @@ body {
 .send-main-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.msg-time {
+    position: absolute;
+    right: 10px;
+    bottom: 6px;
+    font-size: 10px;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0.75;
+    color: rgb(255, 255, 255, 85);
 }
 /* ===== User List ===== */
 .user-item {
