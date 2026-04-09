@@ -1878,23 +1878,57 @@ function formatUserName(name){
   if (words.length === 2 && words[0] === words[1]) return words[0];
   return name;
 }
+function makeGuestNameFromSanitized(sanitized) {
+  const raw = String(sanitized || "").trim();
+  if (!raw) return "Guest-USER";
 
-function getLabelParts(id, data){
-  const tryEmailFromId = desanitizeUserId(id);
-  const email = (data?.email || "").trim() || (tryEmailFromId.includes("@") ? tryEmailFromId : "");
+  const clean = raw.replace(/^g_/i, "").replace(/[^a-zA-Z0-9]/g, "");
+  const shortCode = (clean.slice(-5) || "USER").toUpperCase();
 
-  const rawName  = (data?.name || "").trim();
-  const photoURL = data?.photoURL || "";
+  return "Guest-" + shortCode;
+}
 
-  let displayName = rawName || (email ? email.split("@")[0] : "");
-  displayName = dedupeName(displayName);
+function getSafeDisplayName(sanitized, userData = {}, metaIdentity = {}) {
+  const rawName = String(
+    metaIdentity?.name ||
+    userData?.name ||
+    userData?.displayName ||
+    ""
+  ).trim();
 
-  if (!displayName){
-    const code = String(id).slice(-5).toUpperCase();
-    displayName = `Guest-${code}`;
+  const rawEmail = String(
+    metaIdentity?.email ||
+    userData?.email ||
+    ""
+  ).trim();
+
+  // 1. kalau memang sudah ada Guest-xxxx atau nama biasa
+  if (rawName) {
+    return dedupeName(rawName);
   }
 
+  // 2. kalau email guest.local
+  if (rawEmail && /@guest\.local$/i.test(rawEmail)) {
+    const left = rawEmail.split("@")[0].replace(/^guest-/i, "");
+    return "Guest-" + (left || "USER");
+  }
+
+  // 3. kalau tiada email sebenar / id guest Firebase / g_xxx
+  if (!rawEmail || !rawEmail.includes("@") || /^g_/i.test(String(sanitized || ""))) {
+    return makeGuestNameFromSanitized(sanitized);
+  }
+
+  // 4. fallback user biasa
+  return dedupeName(rawEmail.split("@")[0]);
+}
+function getLabelParts(id, data){
+  const tryEmailFromId = desanitizeUserId(id);
+  const email = String((data?.email || "").trim() || (tryEmailFromId.includes("@") ? tryEmailFromId : ""));
+  const photoURL = data?.photoURL || "";
+
+  const displayName = getSafeDisplayName(id, data, {});
   const label = email ? `${displayName} (${email})` : displayName;
+
   return { displayName, email, photoURL, label };
 }
 function normalizeChatMessage(key, raw){
@@ -2181,10 +2215,11 @@ function renderChatMessages(messages){
 
     const timeStr = hasValidTime ? formatDateTimeMY(msg.time) : "";
     const isUser = msg.from !== "admin";
-    const rawName = isUser
-      ? (msg.name || msg.email || "User")
-      : (msg.name || "Admin");
-    const senderName = formatUserName(rawName);
+const rawName = isUser
+  ? getSafeDisplayName(activeUserIdSanitized, { name: msg.name, email: msg.email }, {})
+  : (msg.name || "Admin");
+
+const senderName = formatUserName(rawName);
     const avatarURL = msg.photoURL || (isUser ? "https://i.pravatar.cc/40" : "https://i.imgur.com/UhV9EWa.png");
 
     let bubbleHtml = `
@@ -2431,25 +2466,17 @@ if (filter === "unread" && !hasUnread) return;
 if (filter === "online" && !isOnline) return;
 const meta = chatMeta[sanitized] || {};
 const safeEmailFromId = desanitizeUserId(sanitized);
-const fallbackNameFromId = safeEmailFromId.includes("@")
-  ? safeEmailFromId.split("@")[0]
-  : sanitized;
 
 const mergedIdentity = {
-  name: (
-    meta.identity?.name &&
-    meta.identity.name.trim()
-  )
-    ? meta.identity.name.trim()
-    : fallbackNameFromId,
-  email: (meta.identity?.email || userData?.email || safeEmailFromId),
+  name: String(meta.identity?.name || userData?.name || userData?.displayName || "").trim(),
+  email: String(meta.identity?.email || userData?.email || (safeEmailFromId.includes("@") ? safeEmailFromId : "")).trim(),
   photoURL: (meta.identity?.photoURL || userData?.photoURL || "")
 };
 
-const displayName = mergedIdentity.name || fallbackNameFromId;
-const email = mergedIdentity.email || safeEmailFromId;
+const displayName = getSafeDisplayName(sanitized, userData, meta.identity || {});
+const email = mergedIdentity.email || "";
 const photoURL = mergedIdentity.photoURL || "";
-const label = `${displayName} (${email})`;
+const label = email ? `${displayName} (${email})` : displayName;
     if (q && !label.toLowerCase().includes(q)) return;
 
     const loginTs   = getLoginTimeFromUser(userData);
@@ -2499,10 +2526,7 @@ const label = `${displayName} (${email})`;
   activeUserIdSanitized = sanitized;
   selectedUserId = sanitized;
 
-const selectedUserName =
-  displayName ||
-  fallbackNameFromId ||
-  "User";
+const selectedUserName = displayName || "User";
       showChatDetail();
 const selectedUserPhoto =
   meta.identity?.photoURL ||
