@@ -728,12 +728,6 @@ function closeLiveChat() {
   lcPanel.classList.remove("active");
   lcPanel.setAttribute("aria-hidden", "true");
   updateLiveChatButton(false);
-  try {
-  const savedUnread = Number(localStorage.getItem("login.livechatUnreadCount") || 0);
-  if (savedUnread > 0) {
-    renderLivechatBadge(savedUnread);
-  }
-} catch {}
 }
 
 // ===== CREATE ACCOUNT POPUP =====
@@ -907,6 +901,12 @@ document.addEventListener("click", (e) => {
   }
 });
 updateLiveChatButton(false);
+try {
+  const savedUnread = Number(localStorage.getItem("login.livechatUnreadCount") || 0);
+  if (savedUnread > 0) {
+    renderLivechatBadge(savedUnread);
+  }
+} catch {}
 document.getElementById("username")?.addEventListener("blur", () => {
   if (lcPanel.classList.contains("active")) {
     postIdentityToChat();
