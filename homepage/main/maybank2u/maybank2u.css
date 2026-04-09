@@ -459,3 +459,29 @@ input[type="number"]{
 input::placeholder{
   color: var(--blur);
 }
+/* ================= SCROLLBAR GLOBAL ================= */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 6px; /* nipis */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #555 transparent;
+}
