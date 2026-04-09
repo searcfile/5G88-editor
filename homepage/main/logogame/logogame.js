@@ -1106,14 +1106,14 @@ async function copyImageToClipboard(imageUrl, parentElement) {
     notice.className = 'copy-notice';
 
     if (type === "success") {
-      notice.style.background = '#ffd400';
-      notice.style.color = '#000';
+      notice.style.background = '#1668dc';
+      notice.style.color = '#ffffff';
     } else if (type === "error") {
       notice.style.background = '#ff4d4f';
       notice.style.color = '#fff';
     } else {
-      notice.style.background = '#ffd400';
-      notice.style.color = '#000';
+      notice.style.background = '#1668dc';
+      notice.style.color = '#ffffff';
     }
 
     parentElement.appendChild(notice);
@@ -1137,7 +1137,7 @@ async function copyImageToClipboard(imageUrl, parentElement) {
     const item = new ClipboardItem({ [blob.type]: blob });
     await navigator.clipboard.write([item]);
 
-    showNotice("✅ Image Copied!", "success");
+    showNotice("Image Copied!", "success");
     return;
   } catch (err) {
     console.warn("Direct child copy failed:", err);
@@ -1150,7 +1150,7 @@ async function copyImageToClipboard(imageUrl, parentElement) {
         { action: "copy-image", url: imageUrl },
         "https://5g88-main.vercel.app"
       );
-      showNotice("📨 Sending copy request...", "info");
+      showNotice("Sending copy request...", "info");
       return;
     } catch (err) {
       console.error("PostMessage fallback failed:", err);
