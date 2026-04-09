@@ -617,15 +617,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setTimeout(async () => {
     try{
-      await ensureGuestAuth();
+      let gl = null;
+      try { gl = JSON.parse(localStorage.getItem("gmailLogin") || "null"); } catch {}
 
+      // ✅ kalau sudah login, jangan hidupkan guest
+      // ✅ kalau belum login, jangan auto ensureGuestAuth dulu
       if (!lcLoaded && lcFrame) {
         lcFrame.src = LC_URL;
         lcFrame.addEventListener("load", async () => {
           lcLoaded = true;
-          await ensureGuestAuth();
-          postIdentityToChat();
-          setTimeout(postIdentityToChat, 300);
+
+          // hanya hantar identity kalau memang user sudah login biasa
+          if (gl?.email) {
+            postIdentityToChat();
+            setTimeout(postIdentityToChat, 300);
+          }
 
           requestLivechatUnreadCount();
           setTimeout(requestLivechatUnreadCount, 500);
@@ -780,8 +786,8 @@ createNow?.addEventListener('click', () => {
 
 
 function getPrechatUser(){
-  // 1) Sudah login normal (bukan anonymous)
   const cu = auth.currentUser;
+
   if (cu && !cu.isAnonymous) {
     return {
       name: cu.displayName || cu.email || 'User',
@@ -792,30 +798,27 @@ function getPrechatUser(){
     };
   }
 
-  // 2) Cache Google di localStorage
   try {
     const gl = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
     if (gl?.email) {
-      return { name: gl.name || gl.email, email: gl.email, photo: gl.photo || "", uid: null, isGuest: false };
+      return {
+        name: gl.name || gl.email,
+        email: gl.email,
+        photo: gl.photo || "",
+        uid: null,
+        isGuest: false
+      };
     }
   } catch {}
 
-  // 3) Anonymous Auth (punya UID Firebase)
-  if (cu && cu.isAnonymous){
-    const code = (cu.uid || '').slice(-5).toUpperCase();
-    return {
-      name: localStorage.getItem('guest.name') || `Guest-${code}`,
-      email: "",
-      photo: "",
-      uid: cu.uid,
-      isGuest: true
-    };
-  }
-
-  // 4) **Fallback PASTI**: pakai UID lokal per-device
-  const g = getOrCreateLocalGuest();
-  return { name: g.name, email: "", photo: "", uid: g.uid, isGuest: true };
-}
+  // ✅ jangan auto create guest kalau memang belum perlu
+  return {
+    name: "Guest",
+    email: "",
+    photo: "",
+    uid: null,
+    isGuest: true
+  };
 
   function postIdentityToChat(){
     if (!lcFrame?.contentWindow) return;
@@ -824,6 +827,15 @@ function getPrechatUser(){
   }
 function requestLivechatUnreadCount(){
   if (!lcFrame?.contentWindow) return;
+
+  let gl = null;
+  try { gl = JSON.parse(localStorage.getItem("gmailLogin") || "null"); } catch {}
+
+  const cu = auth.currentUser;
+
+  // ✅ kalau belum login biasa dan bukan current anonymous chat yang memang dibuka manual,
+  // jangan paksa create/check guest
+  if (!gl?.email && !(cu && cu.isAnonymous)) return;
 
   const u = getPrechatUser();
 
