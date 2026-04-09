@@ -2681,12 +2681,21 @@ function renderSelectedImages(){
     card.className = "image-preview-card";
 
     card.innerHTML = `
-      <img src="${item.preview}" class="image-preview" alt="Preview">
+      <img src="${item.preview}" class="image-preview" alt="Preview" title="Click to preview">
       <button type="button" class="remove-image-btn" title="Remove image">×</button>
     `;
 
+    const previewImg = card.querySelector(".image-preview");
     const removeBtn = card.querySelector(".remove-image-btn");
-    removeBtn.addEventListener("click", () => {
+
+    // ✅ klik gambar pending untuk preview besar
+    previewImg.addEventListener("click", () => {
+      openImageLightbox(item.preview || item.uploadedUrl || "");
+    });
+
+    // ✅ buang gambar
+    removeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       removeSelectedImage(item.id);
     });
 
