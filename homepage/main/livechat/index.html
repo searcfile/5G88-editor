@@ -101,14 +101,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   color: #ffffff;
 }
 
-  #searchChat {
-    flex-grow: 1;
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: none;
-    font-size: 14px;
-  }
-
   .chat-box {
   flex-grow: 1;
   overflow-y: auto;
@@ -380,7 +372,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
     width: 100%;
   }
 }
-  .chat-wrapper {
+.chat-wrapper {
   background: white;
   max-width: 640px;
   margin: 1rem auto 5px auto;
@@ -395,22 +387,38 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   position: relative;
 }
 
-
-
 .search-wrapper {
   flex-grow: 1;
   display: flex;
   justify-content: flex-end;
 }
 
+.search-input-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 15px;
+  height: 15px;
+  transform: translateY(-50%);
+  color: var(--blur);
+  pointer-events: none;
+}
+
 #searchChat {
-  padding: 8px 12px;
+  width: 100%;
+  padding: 8px 12px 8px 36px;
   font-size: 14px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  min-width: 200px;
-  max-width: 300px;
+  box-sizing: border-box;
 }
+
 .msg-avatar {
   width: 24px;
   height: 24px;
@@ -787,9 +795,14 @@ emoji-picker::part(search-input):focus {
           <small id="typingStatus" style="font-size: 12px; font-weight: normal; color: white;">Offline</small>
         </div>
       </div>
-      <div class="search-wrapper">
-        <input type="text" id="searchChat" placeholder="🔍 Search messages..." />
-      </div>
+<div class="search-wrapper">
+  <div class="search-input-wrap">
+    <svg class="search-icon" viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M15.97 17.031c-1.479 1.238-3.384 1.985-5.461 1.985-4.697 0-8.509-3.812-8.509-8.508S5.812 2 10.509 2c4.695 0 8.508 3.812 8.508 8.508 0 2.078-.747 3.984-1.985 5.461l4.749 4.75c.146.146.219.338.219.531 0 .587-.537.75-.75.75-.192 0-.384-.073-.531-.22zm-5.461-13.53c-3.868 0-7.007 3.14-7.007 7.007s3.139 7.007 7.007 7.007c3.866 0 7.007-3.14 7.007-7.007s-3.141-7.007-7.007-7.007z" fill="currentColor"/>
+    </svg>
+    <input type="text" id="searchChat" placeholder="Search messages..." />
+  </div>
+</div>
     </div>
 
 <div class="chat-box" id="chatBox">
