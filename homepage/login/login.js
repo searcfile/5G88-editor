@@ -626,9 +626,11 @@ const lcWrap   = document.getElementById("lcWrap");
 const lcToggle = document.getElementById("lcToggle");
 const lcPanel  = document.getElementById("lcPanel");
 const lcFrame  = document.getElementById("lcFrame");
-const lcDot    = document.getElementById("lcDot");
+const lcBadge  = document.getElementById("lcBadge");
 const lcIcon   = document.getElementById("lcIcon");
 const lcIconPath = document.getElementById("lcIconPath");
+
+let lcUnreadCount = 0;
 let lcLoaded = false;
 let lcPinnedOpen = false;     // buka sebab klik
 let lcHovering = false;       // mouse sedang atas button/panel
@@ -648,6 +650,21 @@ function updateLiveChatButton(isOpen){
     lcToggle.setAttribute("aria-label", "Open live chat");
     lcToggle.setAttribute("aria-expanded", "false");
   }
+}
+function renderLivechatBadge(count){
+  if (!lcBadge) return;
+
+  const safeCount = Math.max(0, Number(count) || 0);
+  lcUnreadCount = safeCount;
+
+  if (safeCount <= 0){
+    lcBadge.textContent = "0";
+    lcBadge.classList.remove("show");
+    return;
+  }
+
+  lcBadge.textContent = safeCount > 99 ? "99+" : String(safeCount);
+  lcBadge.classList.add("show");
 }
 async function openLiveChat() {
   if (!lcPanel || !lcToggle) return;
@@ -857,21 +874,33 @@ window.addEventListener("message", (e) => {
   if (e.origin !== LC_ORIGIN) return;
   const data = e.data || {};
 
-if (data.action === "show-livechat-notif") {
-  if (lcDot) lcDot.style.display = "inline-block";
+  if (data.action === "livechat-unread-count") {
+    renderLivechatBadge(data.count || 0);
 
-  // 🔊 bunyi notif
-  const now = Date.now();
-  if (livechatSound && now - lastSoundTime > 1500) {
-    livechatSound.currentTime = 0;
-    livechatSound.play().catch((err) => {
-      console.log("Autoplay sound blocked:", err);
-    });
-    lastSoundTime = now;
+    const now = Date.now();
+    if ((Number(data.count) || 0) > 0 && livechatSound && now - lastSoundTime > 1500) {
+      livechatSound.currentTime = 0;
+      livechatSound.play().catch((err) => {
+        console.log("Autoplay sound blocked:", err);
+      });
+      lastSoundTime = now;
+    }
+    return;
   }
 
-  return;
-}
+  if (data.action === "show-livechat-notif") {
+    renderLivechatBadge(Math.max(1, lcUnreadCount + 1));
+
+    const now = Date.now();
+    if (livechatSound && now - lastSoundTime > 1500) {
+      livechatSound.currentTime = 0;
+      livechatSound.play().catch((err) => {
+        console.log("Autoplay sound blocked:", err);
+      });
+      lastSoundTime = now;
+    }
+    return;
+  }
 
   if (data.action === "hide-livechat-notif") {
     const isManualOpen =
@@ -880,7 +909,7 @@ if (data.action === "show-livechat-notif") {
       lcPanel.classList.contains("active");
 
     if (isManualOpen) {
-      if (lcDot) lcDot.style.display = "none";
+      renderLivechatBadge(0);
     }
     return;
   }
