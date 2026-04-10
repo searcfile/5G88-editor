@@ -288,7 +288,13 @@ input:hover:not(:focus){
   }
 }
 /* === Forgot Password UI === */
-.forgot-row{ width:100%; display:flex; justify-content:space-between; margin:6px 0 10px;align-items:center;transition: all 0.2s;margin-top:-20px; }
+.forgot-row{
+  width:100%;
+  max-width:300px;        /* sama dengan input & button */
+  margin:6px auto 10px;
+  display:flex;
+  gap:10px;               /* jarak antara 2 button */
+}
 .link-btn{ background:transparent; border:0; color:var(--page-text); font-size:12px; cursor:pointer; text-decoration:underline; padding:0; }
 .link-btn:hover{ color:var(--blue-hover); }.link-btn:active{ color:var(--blue-active); }
 
