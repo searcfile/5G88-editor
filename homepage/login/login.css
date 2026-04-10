@@ -295,7 +295,19 @@ input:hover:not(:focus){
   display:flex;
   gap:10px;               /* jarak antara 2 button */
 }
-.link-btn{ background:transparent; border:0; color:var(--page-text); font-size:12px; cursor:pointer; text-decoration:underline; padding:0; }
+.link-btn{
+  flex:1;                 /* bagi 2 button sama besar */
+  text-align:center;
+  background:transparent;
+  border:1px solid var(--border-input);
+  color:var(--page-text);
+  font-size:12px;
+  cursor:pointer;
+  text-decoration:none;
+  padding:6px 0;
+  border-radius:6px;
+  transition:.2s;
+}
 .link-btn:hover{ color:var(--blue-hover); }.link-btn:active{ color:var(--blue-active); }
 
 .err-msg{ color:#d50000; font-size:12px; margin-top:6px; }
