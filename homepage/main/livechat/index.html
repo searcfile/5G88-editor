@@ -1157,7 +1157,51 @@ function getUserTypingPath(){
 
 let userTypingTimer = null;
 let userPresenceHeartbeat = null;
+let userConnectedRef = null;
+let userRefForPresence = null;
 
+function stopUserPresence(forceOffline = true){
+  try {
+    clearInterval(userPresenceHeartbeat);
+    userPresenceHeartbeat = null;
+  } catch {}
+
+  try {
+    clearTimeout(userTypingTimer);
+    userTypingTimer = null;
+  } catch {}
+
+  try {
+    if (userConnectedRef) {
+      userConnectedRef.off();
+      userConnectedRef = null;
+    }
+  } catch {}
+
+  try {
+    if (userRefForPresence) {
+      userRefForPresence.onDisconnect().cancel();
+      userRefForPresence = null;
+    }
+  } catch {}
+
+  const userPath = getUserPath();
+  const typingPath = getUserTypingPath();
+
+  if (typingPath) {
+    db.ref(typingPath).set(false).catch(()=>{});
+  }
+
+  if (forceOffline && userPath) {
+    db.ref(userPath).update({
+      online: false,
+      typing: false,
+      lastLoginTime: Date.now()
+    }).catch(()=>{});
+  }
+
+  presenceBoundFor = null;
+}
 function touchUserPresence(extra = {}) {
   const userPath = getUserPath();
   if (!userPath) return;
@@ -1336,41 +1380,36 @@ async function ensureGuestLocalIdentity(){
   
 function bindPresenceAndNotif(){
   if (!currentActiveId) return;
-  if (presenceBoundFor === currentActiveId) return;      // jangan dobel
-  presenceBoundFor = currentActiveId;
+  if (presenceBoundFor === currentActiveId) return;
 
   const userPath  = getUserPath();
   const notifPath = getNotifPath();
   if (!userPath) return;
 
-  const connectedRef = firebase.database().ref(".info/connected");
-  const userRef      = firebase.database().ref(userPath);
+  // stop listener/heartbeat lama dulu
+  stopUserPresence(false);
 
-  // pastikan tidak dobel listener
-  connectedRef.off();
-  userRef.off();
+  presenceBoundFor = currentActiveId;
 
-connectedRef.on("value", (snap) => {
-  if (snap.val() === true) {
-    touchUserPresence({ typing: false });
-    userRef.onDisconnect().update({ online: false, typing: false, lastLoginTime: Date.now() });
+  userConnectedRef = firebase.database().ref(".info/connected");
+  userRefForPresence = firebase.database().ref(userPath);
 
-    clearInterval(userPresenceHeartbeat);
-    userPresenceHeartbeat = setInterval(() => {
-      touchUserPresence();
-    }, 10000);
-  }
-});
+  userConnectedRef.on("value", (snap) => {
+    if (snap.val() === true) {
+      touchUserPresence({ typing: false });
 
-  // update offline saat tab ditutup
-window.addEventListener("beforeunload", () => {
-  clearInterval(userPresenceHeartbeat);
-  firebase.database().ref(userPath).update({
-    online: false,
-    typing: false,
-    lastLoginTime: Date.now()
+      userRefForPresence.onDisconnect().update({
+        online: false,
+        typing: false,
+        lastLoginTime: Date.now()
+      });
+
+      clearInterval(userPresenceHeartbeat);
+      userPresenceHeartbeat = setInterval(() => {
+        touchUserPresence();
+      }, 10000);
+    }
   });
-});
 
   // notifikasi admin -> user
   if (notifPath){
@@ -1378,15 +1417,15 @@ window.addEventListener("beforeunload", () => {
     nr.off();
     nr.on("value", (snapshot) => {
       const notif = snapshot.val();
-if (notif && notif.unread) {
-  if (shouldPlayIframeSound()) {
-    playNotificationSound();
-  }
-  notifyUnread();
-  setTimeout(() => { nr.child("unread").set(false); }, 2000);
-} else {
-  notifyRead();
-}
+      if (notif && notif.unread) {
+        if (shouldPlayIframeSound()) {
+          playNotificationSound();
+        }
+        notifyUnread();
+        setTimeout(() => { nr.child("unread").set(false); }, 2000);
+      } else {
+        notifyRead();
+      }
     });
   }
 }
@@ -1457,33 +1496,22 @@ window.addEventListener("message", (e) => {
     initChatWithUserData();
     notifyRead();
   }
- if (data.type === "livechat-panel-closed") {
-    const userPath = getUserPath();
-    const typingPath = getUserTypingPath();
-
-    if (typingPath) {
-      db.ref(typingPath).set(false).catch(()=>{});
-    }
-
-    if (userPath) {
-      db.ref(userPath).update({
-        online: false,
-        typing: false,
-        lastLoginTime: Date.now()
-      }).catch(()=>{});
-    }
-
-    livechatPanelOpen = false;
-    return;
-  }
+if (data.type === "livechat-panel-closed") {
+  livechatPanelOpen = false;
+  stopUserPresence(true);
+  return;
+}
   // opsional status dari parent
 if (data.action === "panel-open") {
   livechatPanelOpen = true;
+  bindPresenceAndNotif();
+  writeUserProfile();
   notifyRead();
 }
 
 if (data.action === "panel-close") {
   livechatPanelOpen = false;
+  stopUserPresence(true);
 }
 });
   
@@ -2487,7 +2515,9 @@ function playNotificationSound() {
     audio.play().catch(e => console.warn("🔇 Audio autoplay blocked:", e));
   }
 }
-
+window.addEventListener("beforeunload", () => {
+  stopUserPresence(true);
+});
 window.addEventListener("DOMContentLoaded", async () => {
   const sendBoxEl = document.querySelector('.send-box');
 
@@ -2526,16 +2556,22 @@ window.addEventListener("DOMContentLoaded", async () => {
           currentActiveId = id;
 
           ensureGuestDisplayName();
-          writeUserProfile();
-          bindPresenceAndNotif();
-          initChatWithUserData();
+initChatWithUserData();
+
+if (livechatPanelOpen) {
+  writeUserProfile();
+  bindPresenceAndNotif();
+}
         }
       }, 2500);
     } else {
       // sudah ada ID dari email/parent → langsung jalan
-      writeUserProfile();
-      bindPresenceAndNotif();
-      initChatWithUserData();
+     initChatWithUserData();
+
+if (livechatPanelOpen) {
+  writeUserProfile();
+  bindPresenceAndNotif();
+}
     }
   } else {
     if (!currentActiveId) {
