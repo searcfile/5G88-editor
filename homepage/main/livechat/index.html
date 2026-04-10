@@ -1279,9 +1279,25 @@ function markAdminSeenInDB(){
   });
 }
 async function ensureGuestLocalIdentity(){
-  console.warn("Guest mode disabled");
-  return;
-}
+  try{
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    if (!auth.currentUser) await auth.signInAnonymously();
+    const u = auth.currentUser;
+    if (!u) throw new Error('no-user');
+    currentIsGuest = true;
+    currentUserEmail = null;
+    currentActiveId = String(u.uid);
+  }catch(e){
+    // Fallback TANPA Auth → tetap bikin ID unik per device
+    if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed'){
+      console.warn('Anonymous disabled — using local guest id');
+      currentIsGuest   = true;
+      currentUserEmail = null;
+      currentActiveId  = getOrCreateLocalGuestId();
+    } else {
+      throw e;
+    }
+  }
 
   ensureGuestDisplayName();
   writeUserProfile();
@@ -1292,10 +1308,6 @@ async function ensureGuestLocalIdentity(){
   
 function bindPresenceAndNotif(){
   if (!currentActiveId) return;
-    if (currentIsGuest) {
-    console.warn("Blocked guest presence:", currentActiveId);
-    return;
-  }
   if (presenceBoundFor === currentActiveId) return;      // jangan dobel
   presenceBoundFor = currentActiveId;
 
@@ -1353,10 +1365,7 @@ if (notif && notif.unread) {
 function writeUserProfile(){
   const upath = getUserPath();
   if (!upath) return;
-  if (currentIsGuest) {
-    console.warn("Blocked guest writeUserProfile:", currentActiveId);
-    return;
-  }
+
   const finalName = currentIsGuest
     ? ensureGuestDisplayName()
     : (localStorage.getItem("username") || "User");
@@ -1399,9 +1408,12 @@ window.addEventListener("message", (e) => {
 
     localStorage.setItem("userphoto", photo || "");
 
-if (isGuest && uid) {
-  console.warn("Guest payload ignored");
-  return;
+    if (isGuest && uid) {
+      currentIsGuest   = true;
+      currentActiveId  = String(uid);          // gunakan UID guest
+      currentUserEmail = null;
+      localStorage.removeItem("useremail");
+       ensureGuestDisplayName();
       
     } else if (email) {
       currentIsGuest   = false;
