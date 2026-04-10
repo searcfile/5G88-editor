@@ -1457,7 +1457,25 @@ window.addEventListener("message", (e) => {
     initChatWithUserData();
     notifyRead();
   }
+ if (data.type === "livechat-panel-closed") {
+    const userPath = getUserPath();
+    const typingPath = getUserTypingPath();
 
+    if (typingPath) {
+      db.ref(typingPath).set(false).catch(()=>{});
+    }
+
+    if (userPath) {
+      db.ref(userPath).update({
+        online: false,
+        typing: false,
+        lastLoginTime: Date.now()
+      }).catch(()=>{});
+    }
+
+    livechatPanelOpen = false;
+    return;
+  }
   // opsional status dari parent
 if (data.action === "panel-open") {
   livechatPanelOpen = true;
