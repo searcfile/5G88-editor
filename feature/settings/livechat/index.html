@@ -2290,6 +2290,12 @@ const senderName = formatUserName(rawName);
 }
 
 function seedUnreadFlagOnce(sid){
+  chatMeta[sid] = chatMeta[sid] || {};
+
+  // ✅ jangan seed berkali-kali untuk user sama
+  if (chatMeta[sid].seeded) return;
+  chatMeta[sid].seeded = true;
+
   db.ref(`users/${sid}/unreadForAdmin`).once("value").then(s=>{
     const hasFlag = s.val() === true;
 
@@ -2304,12 +2310,10 @@ function seedUnreadFlagOnce(sid){
         const unreadCount = list.filter(m => m && m.from === "user" && m.readByAdmin !== true).length;
         const hasUnread = unreadCount > 0;
 
-        if (hasUnread || hasFlag){
-          return db.ref(`users/${sid}`).update({
-            unreadForAdmin: hasUnread,
-            unreadCountForAdmin: unreadCount
-          }).catch(()=>{});
-        }
+        return db.ref(`users/${sid}`).update({
+          unreadForAdmin: hasUnread || hasFlag,
+          unreadCountForAdmin: unreadCount
+        }).catch(()=>{});
       });
   }).catch(()=>{});
 }
@@ -2331,8 +2335,12 @@ function ensureChatMetaListener(sanitized){
 
     // ✅ detect message lama vs baru
     const wasBooted = !!chatMeta[sanitized].booted;
-    if(!wasBooted) chatMeta[sanitized].booted = true;
 
+// ✅ event pertama cuma bootstrap data lama, jangan kira unread / bunyi
+if (!wasBooted) {
+  chatMeta[sanitized].booted = true;
+  return;
+}
 // identity user sahaja, jangan ambil admin
 if (m.from === "user" && (m.name || m.email || m.photoURL)) {
   chatMeta[sanitized].identity = {
@@ -3261,8 +3269,13 @@ db.ref("users").on("child_added", snap=>{
 
   allUsersData.sort((a,b)=> (b[2]||0)-(a[2]||0));
   ensureChatMetaListener(sanitized);
+
+// ✅ seed unread hanya masa initial load
+if (!initialUserListLoaded) {
   seedUnreadFlagOnce(sanitized);
-  scheduleRender();
+}
+
+scheduleRender();
 });
 
 db.ref("users").on("child_changed", snap=>{
