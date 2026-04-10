@@ -2072,7 +2072,34 @@ function makeActivityTime(lastChatTime, userData){
   const loginTime = getLoginTimeFromUser(userData);
   return Math.max(Number(lastChatTime||0), loginTime);
 }
+const STALE_ONLINE_MS = 60000; // 60 saat
 
+function isUserStale(userData = {}) {
+  if (!userData || userData.online !== true) return false;
+
+  const last =
+    Number(userData.lastLoginTime || 0) ||
+    Number(userData.lastLoginAt || 0) ||
+    Number(userData.pageLoginTime || 0) ||
+    0;
+
+  if (!last) return false;
+
+  return (Date.now() - last) > STALE_ONLINE_MS;
+}
+
+function getSafeOnlineState(userData = {}) {
+  return userData?.online === true && !isUserStale(userData);
+}
+
+function cleanupStaleUserIfNeeded(sanitized, userData = {}) {
+  if (!sanitized || !isUserStale(userData)) return;
+
+  db.ref(`users/${sanitized}`).update({
+    online: false,
+    typing: false
+  }).catch(() => {});
+}
 /* ======================= COUNTERS ======================= */
 function updateUserCounts(){
   const totalUsersElem  = document.getElementById("totalUsers");
@@ -2081,8 +2108,11 @@ function updateUserCounts(){
 
   db.ref("users").on("value", snap=>{
     const users = snap.val() || {};
+    Object.entries(users).forEach(([sid, u]) => {
+  cleanupStaleUserIfNeeded(sid, u);
+});
     totalUsersElem.textContent = Object.keys(users).length;
-    onlineUsersElem.textContent = Object.values(users).filter(u=>u && u.online).length;
+    onlineUsersElem.textContent = Object.values(users).filter(u => getSafeOnlineState(u)).length;
   });
 }
 function updateUnreadFilterBadge(){
@@ -2460,7 +2490,8 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
   userList.forEach(([sanitized, userData])=>{
 const unreadCount = Number(userData?.unreadCountForAdmin || 0);
 const hasUnread = unreadCount > 0 || userData?.unreadForAdmin === true;
-const isOnline = userData?.online === true;
+cleanupStaleUserIfNeeded(sanitized, userData);
+const isOnline = getSafeOnlineState(userData);
 
 if (filter === "unread" && !hasUnread) return;
 if (filter === "online" && !isOnline) return;
@@ -2501,7 +2532,7 @@ const label = email ? `${displayName} (${email})` : displayName;
         </span>` : ""}
 
         <svg class="online-indicator" width="10" height="10" viewBox="0 0 24 24" fill="#00ff00"
-          style="margin-left:auto;display:${userData?.online ? "inline-block":"none"};">
+          style="margin-left:auto;display:${isOnline ? "inline-block":"none"};">
           <circle cx="12" cy="12" r="10"/>
         </svg>
       </div>
@@ -2564,6 +2595,9 @@ function loadUserList(){
 
   db.ref("users").once("value", snap=>{
     const users = snap.val() || {};
+    Object.entries(users).forEach(([sid, data]) => {
+  cleanupStaleUserIfNeeded(sid, data);
+});
     const entries = Object.entries(users);
 
     allUsersData = entries.map(([sanitized, data])=>{
@@ -3245,7 +3279,7 @@ btnOnline?.addEventListener("click", ()=>{
 db.ref("users").on("child_added", snap=>{
   const sanitized = snap.key;
   const data = snap.val() || {};
-
+  cleanupStaleUserIfNeeded(sanitized, data);
   unreadCountCache[sanitized] = Number(data?.unreadCountForAdmin || 0);
 
   const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
