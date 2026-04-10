@@ -93,14 +93,30 @@ function applyTurnstileTheme(){
 
   document.querySelectorAll('.cf-turnstile').forEach((el) => {
     try{
-      el.setAttribute('data-theme', currentTheme);
-      turnstile.reset(el);
+      const sitekey = el.getAttribute('data-sitekey');
+      const callback = el.getAttribute('data-callback');
+      const expiredCallback = el.getAttribute('data-expired-callback');
+      const errorCallback = el.getAttribute('data-error-callback');
+
+      // buang widget lama betul-betul
+      el.innerHTML = '';
+      el.removeAttribute('data-widget-id');
+
+      // render semula dengan theme baru
+      const widgetId = turnstile.render(el, {
+        sitekey: sitekey,
+        theme: currentTheme,
+        callback: window[callback],
+        'expired-callback': window[expiredCallback],
+        'error-callback': window[errorCallback]
+      });
+
+      el.setAttribute('data-widget-id', widgetId);
     }catch(err){
-      console.log('Turnstile theme reset failed:', err);
+      console.log('Turnstile theme rerender failed:', err);
     }
   });
 
-  // reset verification state sebab widget dirender semula
   turnstileVerifiedUser = false;
   turnstileVerifiedGoogle = false;
 
