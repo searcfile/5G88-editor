@@ -1878,7 +1878,15 @@ function formatUserName(name){
   if (words.length === 2 && words[0] === words[1]) return words[0];
   return name;
 }
+function makeGuestNameFromSanitized(sanitized) {
+  const raw = String(sanitized || "").trim();
+  if (!raw) return "Guest-USER";
 
+  const clean = raw.replace(/^g_/i, "").replace(/[^a-zA-Z0-9]/g, "");
+  const shortCode = (clean.slice(-5) || "USER").toUpperCase();
+
+  return "Guest-" + shortCode;
+}
 
 function getSafeDisplayName(sanitized, userData = {}, metaIdentity = {}) {
   const rawName = String(
@@ -1894,20 +1902,24 @@ function getSafeDisplayName(sanitized, userData = {}, metaIdentity = {}) {
     ""
   ).trim();
 
+  // 1. kalau memang sudah ada Guest-xxxx atau nama biasa
   if (rawName) {
     return dedupeName(rawName);
   }
 
-  if (rawEmail && rawEmail.includes("@")) {
-    return dedupeName(rawEmail.split("@")[0]);
+  // 2. kalau email guest.local
+  if (rawEmail && /@guest\.local$/i.test(rawEmail)) {
+    const left = rawEmail.split("@")[0].replace(/^guest-/i, "");
+    return "Guest-" + (left || "USER");
   }
 
-  const safeId = String(sanitized || "").trim();
-  if (safeId.includes("@")) {
-    return dedupeName(safeId.split("@")[0]);
+  // 3. kalau tiada email sebenar / id guest Firebase / g_xxx
+  if (!rawEmail || !rawEmail.includes("@") || /^g_/i.test(String(sanitized || ""))) {
+    return makeGuestNameFromSanitized(sanitized);
   }
 
-  return "Unknown User";
+  // 4. fallback user biasa
+  return dedupeName(rawEmail.split("@")[0]);
 }
 function getLabelParts(id, data){
   const tryEmailFromId = desanitizeUserId(id);
