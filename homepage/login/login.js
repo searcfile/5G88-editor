@@ -100,8 +100,51 @@ function showUnsupportedDomainPopup(email){
   showBlockedPopup({ email, displayName: email.split('@')[0] }, msg);
 }
   
+let ANON_STATE = localStorage.getItem('anon.state') || 'unknown';
 const sanitizeKey = (s) => String(s || '').replace(/[.$#[\]/]/g, "_");
 
+function getOrCreateLocalGuest() {
+  let uid = localStorage.getItem('guest.uid');
+  if (!uid) {
+    uid = 'g_' + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
+    localStorage.setItem('guest.uid', uid);
+  }
+  if (!localStorage.getItem('guest.name')) {
+    localStorage.setItem('guest.name', 'Guest-' + uid.slice(-5).toUpperCase());
+  }
+  return { uid, name: localStorage.getItem('guest.name') };
+}
+
+// --- Anonymous Auth + fallback lokal bila dinonaktifkan ---
+async function ensureGuestAuth(){
+  // kalau sudah tahu disabled, langsung pakai guest lokal (hindari call berulang & 400 di console)
+  if (ANON_STATE === 'disabled') return getOrCreateLocalGuest();
+
+  try{
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    if (!auth.currentUser) await auth.signInAnonymously();
+    const u = auth.currentUser;
+    if (u && u.isAnonymous){
+      const code = (u.uid || '').slice(-5).toUpperCase();
+      localStorage.setItem('guest.uid', u.uid);
+      localStorage.setItem('guest.name', `Guest-${code}`);
+      ANON_STATE = 'enabled';
+      localStorage.setItem('anon.state','enabled');
+      return { uid: u.uid, name: localStorage.getItem('guest.name') };
+    }
+  }catch(e){
+    // project ini Anonymous Auth OFF → set flag dan pakai guest lokal
+    if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed'){
+      ANON_STATE = 'disabled';
+      localStorage.setItem('anon.state','disabled');
+      return getOrCreateLocalGuest();
+    }
+    // error lain → fallback juga
+    return getOrCreateLocalGuest();
+  }
+  // jaga-jaga
+  return getOrCreateLocalGuest();
+}
 /* ===== Helpers (dipakai lintas fitur, diletak di awal agar siap pakai) ===== */
 const MAIN_PATH = "/main";
 const LOGIN_PATH = "/login"; 
@@ -468,36 +511,39 @@ async function loginWithUsername(){
   setLoading(true,'userpass');
 
   try{
+    // 1️⃣ Ambil akun dari RTDB
     const snap = await db.ref(`logins/user_accounts/${uname}`).get();
     if (!snap.exists()) throw new Error("Akun tidak ditemukan.");
     const acc = snap.val();
     if (acc.active === false) throw new Error("Akun dinonaktifkan.");
 
+    // 2️⃣ Hash password input dan cocokkan
     const inputHash = await sha256Hex(pass);
     if (inputHash !== acc.passwordHash) throw new Error("Password salah.");
 
+    // 3️⃣ Wajib: sign-in anonymous supaya rules 'auth != null' lolos
+    await ensureGuestAuth();
+
+    // 4️⃣ Ambil pseudo-email untuk sistem login
     const pseudoEmail = `${uname}@5g88.local`;
 
-    await finishLogin({
-      email: pseudoEmail,
-      displayName: uname,
-      photoURL: ""
-    });
+    // 5️⃣ Simpan log & redirect
+    await finishLogin({ email: pseudoEmail, displayName: uname, photoURL: "" });
 
-  }catch(err){
-    alert(err.message || "Login gagal. Coba lagi.");
+ }catch(err){
+  alert(err.message || "Login gagal. Coba lagi.");
 
-    turnstileVerifiedUser = false;
-    const btn = document.getElementById('btnUserpass');
-    if (btn) btn.disabled = true;
+  turnstileVerifiedUser = false;
+  const btn = document.getElementById('btnUserpass');
+  if (btn) btn.disabled = true;
 
-    if (window.turnstile) {
-      const widgetEl = document.querySelector('#form-userpass .cf-turnstile');
-      if (widgetEl) turnstile.reset(widgetEl);
-    }
-  }finally{
-    setLoading(false,'userpass');
+  if (window.turnstile) {
+    const widgetEl = document.querySelector('#form-userpass .cf-turnstile');
+    if (widgetEl) turnstile.reset(widgetEl);
   }
+}finally{
+  setLoading(false,'userpass');
+}
 }
 // Optional createAccount (tetap sama)
 async function createAccount(){
@@ -571,13 +617,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setTimeout(async () => {
     try{
-    
+      await ensureGuestAuth();
 
       if (!lcLoaded && lcFrame) {
         lcFrame.src = LC_URL;
         lcFrame.addEventListener("load", async () => {
           lcLoaded = true;
-         
+          await ensureGuestAuth();
           postIdentityToChat();
           setTimeout(postIdentityToChat, 300);
 
@@ -651,20 +697,17 @@ function renderLivechatBadge(count){
 async function openLiveChat() {
   if (!lcPanel || !lcToggle) return;
 
-  const u = getPrechatUser();
-  if (!u) {
-    alert("Please login first.");
-    return;
-  }
-
   lcPanel.classList.add("active");
   lcPanel.setAttribute("aria-hidden", "false");
   updateLiveChatButton(true);
 
+  await ensureGuestAuth();
+
   if (!lcLoaded) {
     lcFrame.src = LC_URL;
-    lcFrame.addEventListener("load", () => {
+    lcFrame.addEventListener("load", async () => {
       lcLoaded = true;
+      await ensureGuestAuth();
 
       postIdentityToChat();
       setTimeout(postIdentityToChat, 300);
@@ -737,51 +780,52 @@ createNow?.addEventListener('click', () => {
 
 
 function getPrechatUser(){
-  // 1) User login biasa
+  // 1) Sudah login normal (bukan anonymous)
   const cu = auth.currentUser;
-  if (cu && !cu.isAnonymous && cu.email) {
+  if (cu && !cu.isAnonymous) {
     return {
-      name: cu.displayName || cu.email.split('@')[0] || 'User',
-      email: cu.email,
+      name: cu.displayName || cu.email || 'User',
+      email: cu.email || '',
       photo: cu.photoURL || '',
       uid: null,
       isGuest: false
     };
   }
 
-  // 2) Cache login dari localStorage
+  // 2) Cache Google di localStorage
   try {
     const gl = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
     if (gl?.email) {
-      return {
-        name: gl.name || gl.email.split('@')[0] || 'User',
-        email: gl.email,
-        photo: gl.photo || "",
-        uid: null,
-        isGuest: false
-      };
+      return { name: gl.name || gl.email, email: gl.email, photo: gl.photo || "", uid: null, isGuest: false };
     }
   } catch {}
 
-  // 3) Kalau belum login, jangan cipta guest lagi
-  return null;
+  // 3) Anonymous Auth (punya UID Firebase)
+  if (cu && cu.isAnonymous){
+    const code = (cu.uid || '').slice(-5).toUpperCase();
+    return {
+      name: localStorage.getItem('guest.name') || `Guest-${code}`,
+      email: "",
+      photo: "",
+      uid: cu.uid,
+      isGuest: true
+    };
+  }
+
+  // 4) **Fallback PASTI**: pakai UID lokal per-device
+  const g = getOrCreateLocalGuest();
+  return { name: g.name, email: "", photo: "", uid: g.uid, isGuest: true };
 }
 
-function postIdentityToChat(){
-  if (!lcFrame?.contentWindow) return;
-  const u = getPrechatUser();
-  if (!u) return;
-
-  lcFrame.contentWindow.postMessage({
-    type: "user-login",
-    user: u
-  }, LC_ORIGIN);
-}
-
+  function postIdentityToChat(){
+    if (!lcFrame?.contentWindow) return;
+    const u = getPrechatUser();
+    lcFrame.contentWindow.postMessage({ type: "user-login", user: u }, LC_ORIGIN);
+  }
 function requestLivechatUnreadCount(){
   if (!lcFrame?.contentWindow) return;
+
   const u = getPrechatUser();
-  if (!u) return;
 
   lcFrame.contentWindow.postMessage({
     type: "request-livechat-unread-count",
