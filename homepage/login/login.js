@@ -828,49 +828,79 @@ createNow?.addEventListener('click', () => {
   // pastikan livechat terbuka
   openLiveChat();
 });
-  auth.onAuthStateChanged(() => {
-  if (lcPanel?.classList.contains("active")) {
-    postIdentityToChat();
+ auth.onAuthStateChanged(async (user) => {
+  // kalau logout / bertukar ke anonymous, pastikan cache login lama dibersihkan
+  if (!user || user.isAnonymous) {
+    localStorage.removeItem("gmailLogin");
+    localStorage.removeItem("useremail");
   }
+
+  try {
+    await ensureGuestAuth();
+  } catch (err) {
+    console.log("ensureGuestAuth after state change failed:", err);
+  }
+
+  // ✅ hantar identiti baru ke iframe walaupun panel tak active
+  postIdentityToChat();
+
+  // optional: update unread juga
+  requestLivechatUnreadCount();
 });
 
 
 function getPrechatUser(){
-  // 1) Sudah login normal (bukan anonymous)
   const cu = auth.currentUser;
+
+  // ✅ kalau ada gmailLogin, pastikan useremail memang masih ada
+  // kalau useremail sudah dibuang masa logout, jangan guna gmailLogin lama
+  try {
+    const gl = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+    const savedEmail = (localStorage.getItem("useremail") || "").trim();
+
+    if (gl?.email && savedEmail && gl.email === savedEmail) {
+      return {
+        name: gl.name || gl.email || "User",
+        email: gl.email,
+        photo: gl.photo || "",
+        uid: null,
+        isGuest: false
+      };
+    }
+  } catch {}
+
+  // ✅ currentUser normal
   if (cu && !cu.isAnonymous) {
     return {
-      name: cu.displayName || cu.email || 'User',
-      email: cu.email || '',
-      photo: cu.photoURL || '',
+      name: cu.displayName || cu.email || "User",
+      email: cu.email || "",
+      photo: cu.photoURL || "",
       uid: null,
       isGuest: false
     };
   }
 
-  // 2) Cache Google di localStorage
-  try {
-    const gl = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
-    if (gl?.email) {
-      return { name: gl.name || gl.email, email: gl.email, photo: gl.photo || "", uid: null, isGuest: false };
-    }
-  } catch {}
-
-  // 3) Anonymous Auth (punya UID Firebase)
+  // ✅ guest anonymous
   if (cu && cu.isAnonymous){
-    const code = (cu.uid || '').slice(-5).toUpperCase();
+    const localGuest = getOrCreateLocalGuest();
     return {
-      name: localStorage.getItem('guest.name') || `Guest-${code}`,
+      name: localStorage.getItem("guest.name") || localGuest.name,
       email: "",
       photo: "",
-      uid: cu.uid,
+      uid: localGuest.uid, // pakai local guest uid supaya konsisten
       isGuest: true
     };
   }
 
-  // 4) **Fallback PASTI**: pakai UID lokal per-device
+  // ✅ fallback guest lokal
   const g = getOrCreateLocalGuest();
-  return { name: g.name, email: "", photo: "", uid: g.uid, isGuest: true };
+  return {
+    name: g.name,
+    email: "",
+    photo: "",
+    uid: g.uid,
+    isGuest: true
+  };
 }
 
   function postIdentityToChat(){
