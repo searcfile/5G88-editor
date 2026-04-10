@@ -1878,57 +1878,23 @@ function formatUserName(name){
   if (words.length === 2 && words[0] === words[1]) return words[0];
   return name;
 }
-function makeGuestNameFromSanitized(sanitized) {
-  const raw = String(sanitized || "").trim();
-  if (!raw) return "Guest-USER";
 
-  const clean = raw.replace(/^g_/i, "").replace(/[^a-zA-Z0-9]/g, "");
-  const shortCode = (clean.slice(-5) || "USER").toUpperCase();
-
-  return "Guest-" + shortCode;
-}
-
-function getSafeDisplayName(sanitized, userData = {}, metaIdentity = {}) {
-  const rawName = String(
-    metaIdentity?.name ||
-    userData?.name ||
-    userData?.displayName ||
-    ""
-  ).trim();
-
-  const rawEmail = String(
-    metaIdentity?.email ||
-    userData?.email ||
-    ""
-  ).trim();
-
-  // 1. kalau memang sudah ada Guest-xxxx atau nama biasa
-  if (rawName) {
-    return dedupeName(rawName);
-  }
-
-  // 2. kalau email guest.local
-  if (rawEmail && /@guest\.local$/i.test(rawEmail)) {
-    const left = rawEmail.split("@")[0].replace(/^guest-/i, "");
-    return "Guest-" + (left || "USER");
-  }
-
-  // 3. kalau tiada email sebenar / id guest Firebase / g_xxx
-  if (!rawEmail || !rawEmail.includes("@") || /^g_/i.test(String(sanitized || ""))) {
-    return makeGuestNameFromSanitized(sanitized);
-  }
-
-  // 4. fallback user biasa
-  return dedupeName(rawEmail.split("@")[0]);
-}
 function getLabelParts(id, data){
   const tryEmailFromId = desanitizeUserId(id);
-  const email = String((data?.email || "").trim() || (tryEmailFromId.includes("@") ? tryEmailFromId : ""));
+  const email = (data?.email || "").trim() || (tryEmailFromId.includes("@") ? tryEmailFromId : "");
+
+  const rawName  = (data?.name || "").trim();
   const photoURL = data?.photoURL || "";
 
-  const displayName = getSafeDisplayName(id, data, {});
-  const label = email ? `${displayName} (${email})` : displayName;
+  let displayName = rawName || (email ? email.split("@")[0] : "");
+  displayName = dedupeName(displayName);
 
+  if (!displayName){
+    const code = String(id).slice(-5).toUpperCase();
+    displayName = `Guest-${code}`;
+  }
+
+  const label = email ? `${displayName} (${email})` : displayName;
   return { displayName, email, photoURL, label };
 }
 function normalizeChatMessage(key, raw){
@@ -2072,34 +2038,7 @@ function makeActivityTime(lastChatTime, userData){
   const loginTime = getLoginTimeFromUser(userData);
   return Math.max(Number(lastChatTime||0), loginTime);
 }
-const STALE_ONLINE_MS = 60000; // 60 saat
 
-function isUserStale(userData = {}) {
-  if (!userData || userData.online !== true) return false;
-
-  const last =
-    Number(userData.lastLoginTime || 0) ||
-    Number(userData.lastLoginAt || 0) ||
-    Number(userData.pageLoginTime || 0) ||
-    0;
-
-  if (!last) return false;
-
-  return (Date.now() - last) > STALE_ONLINE_MS;
-}
-
-function getSafeOnlineState(userData = {}) {
-  return userData?.online === true && !isUserStale(userData);
-}
-
-function cleanupStaleUserIfNeeded(sanitized, userData = {}) {
-  if (!sanitized || !isUserStale(userData)) return;
-
-  db.ref(`users/${sanitized}`).update({
-    online: false,
-    typing: false
-  }).catch(() => {});
-}
 /* ======================= COUNTERS ======================= */
 function updateUserCounts(){
   const totalUsersElem  = document.getElementById("totalUsers");
@@ -2108,11 +2047,8 @@ function updateUserCounts(){
 
   db.ref("users").on("value", snap=>{
     const users = snap.val() || {};
-    Object.entries(users).forEach(([sid, u]) => {
-  cleanupStaleUserIfNeeded(sid, u);
-});
     totalUsersElem.textContent = Object.keys(users).length;
-    onlineUsersElem.textContent = Object.values(users).filter(u => getSafeOnlineState(u)).length;
+    onlineUsersElem.textContent = Object.values(users).filter(u=>u && u.online).length;
   });
 }
 function updateUnreadFilterBadge(){
@@ -2245,11 +2181,10 @@ function renderChatMessages(messages){
 
     const timeStr = hasValidTime ? formatDateTimeMY(msg.time) : "";
     const isUser = msg.from !== "admin";
-const rawName = isUser
-  ? getSafeDisplayName(activeUserIdSanitized, { name: msg.name, email: msg.email }, {})
-  : (msg.name || "Admin");
-
-const senderName = formatUserName(rawName);
+    const rawName = isUser
+      ? (msg.name || msg.email || "User")
+      : (msg.name || "Admin");
+    const senderName = formatUserName(rawName);
     const avatarURL = msg.photoURL || (isUser ? "https://i.pravatar.cc/40" : "https://i.imgur.com/UhV9EWa.png");
 
     let bubbleHtml = `
@@ -2490,24 +2425,31 @@ function renderUserListFast(userList, filter="all", searchTerm=""){
   userList.forEach(([sanitized, userData])=>{
 const unreadCount = Number(userData?.unreadCountForAdmin || 0);
 const hasUnread = unreadCount > 0 || userData?.unreadForAdmin === true;
-cleanupStaleUserIfNeeded(sanitized, userData);
-const isOnline = getSafeOnlineState(userData);
+const isOnline = userData?.online === true;
 
 if (filter === "unread" && !hasUnread) return;
 if (filter === "online" && !isOnline) return;
 const meta = chatMeta[sanitized] || {};
 const safeEmailFromId = desanitizeUserId(sanitized);
+const fallbackNameFromId = safeEmailFromId.includes("@")
+  ? safeEmailFromId.split("@")[0]
+  : sanitized;
 
 const mergedIdentity = {
-  name: String(meta.identity?.name || userData?.name || userData?.displayName || "").trim(),
-  email: String(meta.identity?.email || userData?.email || (safeEmailFromId.includes("@") ? safeEmailFromId : "")).trim(),
+  name: (
+    meta.identity?.name &&
+    meta.identity.name.trim()
+  )
+    ? meta.identity.name.trim()
+    : fallbackNameFromId,
+  email: (meta.identity?.email || userData?.email || safeEmailFromId),
   photoURL: (meta.identity?.photoURL || userData?.photoURL || "")
 };
 
-const displayName = getSafeDisplayName(sanitized, userData, meta.identity || {});
-const email = mergedIdentity.email || "";
+const displayName = mergedIdentity.name || fallbackNameFromId;
+const email = mergedIdentity.email || safeEmailFromId;
 const photoURL = mergedIdentity.photoURL || "";
-const label = email ? `${displayName} (${email})` : displayName;
+const label = `${displayName} (${email})`;
     if (q && !label.toLowerCase().includes(q)) return;
 
     const loginTs   = getLoginTimeFromUser(userData);
@@ -2532,7 +2474,7 @@ const label = email ? `${displayName} (${email})` : displayName;
         </span>` : ""}
 
         <svg class="online-indicator" width="10" height="10" viewBox="0 0 24 24" fill="#00ff00"
-          style="margin-left:auto;display:${isOnline ? "inline-block":"none"};">
+          style="margin-left:auto;display:${userData?.online ? "inline-block":"none"};">
           <circle cx="12" cy="12" r="10"/>
         </svg>
       </div>
@@ -2557,7 +2499,10 @@ const label = email ? `${displayName} (${email})` : displayName;
   activeUserIdSanitized = sanitized;
   selectedUserId = sanitized;
 
-const selectedUserName = displayName || "User";
+const selectedUserName =
+  displayName ||
+  fallbackNameFromId ||
+  "User";
       showChatDetail();
 const selectedUserPhoto =
   meta.identity?.photoURL ||
@@ -2595,9 +2540,6 @@ function loadUserList(){
 
   db.ref("users").once("value", snap=>{
     const users = snap.val() || {};
-    Object.entries(users).forEach(([sid, data]) => {
-  cleanupStaleUserIfNeeded(sid, data);
-});
     const entries = Object.entries(users);
 
     allUsersData = entries.map(([sanitized, data])=>{
@@ -3279,7 +3221,7 @@ btnOnline?.addEventListener("click", ()=>{
 db.ref("users").on("child_added", snap=>{
   const sanitized = snap.key;
   const data = snap.val() || {};
-  cleanupStaleUserIfNeeded(sanitized, data);
+
   unreadCountCache[sanitized] = Number(data?.unreadCountForAdmin || 0);
 
   const lastChat = Number(data?.lastChatTime || chatMeta[sanitized]?.lastChatTime || 0);
