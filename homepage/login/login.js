@@ -161,33 +161,42 @@ function getOrCreateLocalGuest() {
 
 // --- Anonymous Auth + fallback lokal bila dinonaktifkan ---
 async function ensureGuestAuth(){
-  // kalau sudah tahu disabled, langsung pakai guest lokal (hindari call berulang & 400 di console)
-  if (ANON_STATE === 'disabled') return getOrCreateLocalGuest();
+  // sumber utama guest mesti localStorage, bukan UID anonymous Firebase
+  const localGuest = getOrCreateLocalGuest();
+
+  // kalau anon auth memang disabled, terus pakai guest lokal
+  if (ANON_STATE === 'disabled') return localGuest;
 
   try{
     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    if (!auth.currentUser) await auth.signInAnonymously();
+
+    if (!auth.currentUser) {
+      await auth.signInAnonymously();
+    }
+
     const u = auth.currentUser;
     if (u && u.isAnonymous){
-      const code = (u.uid || '').slice(-5).toUpperCase();
-      localStorage.setItem('guest.uid', u.uid);
-      localStorage.setItem('guest.name', `Guest-${code}`);
       ANON_STATE = 'enabled';
-      localStorage.setItem('anon.state','enabled');
-      return { uid: u.uid, name: localStorage.getItem('guest.name') };
+      localStorage.setItem('anon.state', 'enabled');
+
+      // ✅ JANGAN overwrite guest.uid / guest.name dengan u.uid
+      // guest lokal kekal sama walaupun anonymous UID berubah
+      localStorage.setItem('guest.uid', localGuest.uid);
+      localStorage.setItem('guest.name', localGuest.name);
+
+      return localGuest;
     }
   }catch(e){
-    // project ini Anonymous Auth OFF → set flag dan pakai guest lokal
     if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed'){
       ANON_STATE = 'disabled';
-      localStorage.setItem('anon.state','disabled');
-      return getOrCreateLocalGuest();
+      localStorage.setItem('anon.state', 'disabled');
+      return localGuest;
     }
-    // error lain → fallback juga
-    return getOrCreateLocalGuest();
+
+    return localGuest;
   }
-  // jaga-jaga
-  return getOrCreateLocalGuest();
+
+  return localGuest;
 }
 /* ===== Helpers (dipakai lintas fitur, diletak di awal agar siap pakai) ===== */
 const MAIN_PATH = "/main";
