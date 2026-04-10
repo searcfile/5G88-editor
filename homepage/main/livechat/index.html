@@ -1230,6 +1230,14 @@ function getOrCreateLocalGuestId(){
   }
   return id;
 }
+function getOrCreateLocalGuestName(id){
+  let name = (localStorage.getItem('guest.name') || '').trim();
+  if (!name) {
+    name = makeGuestDisplayNameFromId(id);
+    localStorage.setItem('guest.name', name);
+  }
+  return name;
+}
 function makeGuestDisplayNameFromId(id) {
   const raw = String(id || "").trim();
   if (!raw) return "Guest-User";
@@ -1243,18 +1251,21 @@ function makeGuestDisplayNameFromId(id) {
 function ensureGuestDisplayName() {
   if (!currentIsGuest) return localStorage.getItem("username") || "User";
 
-  let username = (localStorage.getItem("username") || "").trim();
+  const guestId = currentActiveId || getOrCreateLocalGuestId();
+  let guestName = (localStorage.getItem("guest.name") || "").trim();
 
-  if (!username || !/^Guest-/i.test(username)) {
-    username = makeGuestDisplayNameFromId(currentActiveId);
-    localStorage.setItem("username", username);
+  if (!guestName || !/^Guest-/i.test(guestName)) {
+    guestName = makeGuestDisplayNameFromId(guestId);
+    localStorage.setItem("guest.name", guestName);
   }
+
+  localStorage.setItem("username", guestName);
 
   if (!localStorage.getItem("userphoto")) {
     localStorage.setItem("userphoto", "");
   }
 
-  return username;
+  return guestName;
 }
 function markAdminSeenInDB(){
   if (!currentActiveId) return;
@@ -1282,21 +1293,35 @@ function markAdminSeenInDB(){
   });
 }
 async function ensureGuestLocalIdentity(){
+  const localGuestId = getOrCreateLocalGuestId();
+  const localGuestName = getOrCreateLocalGuestName(localGuestId);
+
   try{
     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    if (!auth.currentUser) await auth.signInAnonymously();
-    const u = auth.currentUser;
-    if (!u) throw new Error('no-user');
+
+    if (!auth.currentUser) {
+      await auth.signInAnonymously();
+    }
+
+    // ✅ Walaupun auth anonymous berjaya, tetap guna guest lokal
     currentIsGuest = true;
     currentUserEmail = null;
-    currentActiveId = String(u.uid);
+    currentActiveId = localGuestId;
+
+    localStorage.setItem("guest.uid", localGuestId);
+    localStorage.setItem("guest.name", localGuestName);
+    localStorage.setItem("username", localGuestName);
+
   }catch(e){
-    // Fallback TANPA Auth → tetap bikin ID unik per device
     if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed'){
       console.warn('Anonymous disabled — using local guest id');
       currentIsGuest   = true;
       currentUserEmail = null;
-      currentActiveId  = getOrCreateLocalGuestId();
+      currentActiveId  = localGuestId;
+
+      localStorage.setItem("guest.uid", localGuestId);
+      localStorage.setItem("guest.name", localGuestName);
+      localStorage.setItem("username", localGuestName);
     } else {
       throw e;
     }
