@@ -1121,7 +1121,6 @@ function escapeHTML(s){
 let chatInitialized = false;
 let currentUserEmail = null;
 let currentActiveId  = null;
-let currentIsGuest   = false;
 let presenceBoundFor = null;
 let forceOpenBottom = true;
 let hideBottomBtnTimer = null;
@@ -1137,8 +1136,8 @@ let imagePreviewWrapEl = null;
 let imagePreviewListEl = null;
 let imageUploadStatusEl = null;
 let imageUploadTextEl = null;
-const DEBUG_GUEST = true;
-
+const DEBUG_GUEST = false;
+  
 function dbg(...args){
   if (!DEBUG_GUEST) return;
   console.log("[LIVECHAT-DEBUG]", ...args);
@@ -1163,16 +1162,7 @@ let userPresenceHeartbeat = null;
 function touchUserPresence(extra = {}) {
   const userPath = getUserPath();
   if (!userPath) return;
-  dbg("touchUserPresence()", {
-    currentActiveId,
-    userPath,
-    extra,
-    visibility: document.visibilityState,
-    authCurrentUser: auth.currentUser ? {
-      uid: auth.currentUser.uid,
-      isAnonymous: auth.currentUser.isAnonymous
-    } : null
-  });
+
   db.ref(userPath).update({
     online: true,
     typing: false,
@@ -1233,40 +1223,6 @@ const CLOUDINARY_UPLOAD_PRESET = "chat_upload";
 const ADMIN_PRESENCE_PATH = "adminPresence/main";
 let adminPresenceBound = false;
 
-function getOrCreateLocalGuestId(){
-  let id = localStorage.getItem('guest.uid');
-  if (!id){
-    id = 'g_' + Array.from(crypto.getRandomValues(new Uint32Array(4))).join('');
-    localStorage.setItem('guest.uid', id);
-  }
-  return id;
-}
-function makeGuestDisplayNameFromId(id) {
-  const raw = String(id || "").trim();
-  if (!raw) return "Guest-User";
-
-  const clean = raw.replace(/^g_/i, "").replace(/[^a-zA-Z0-9]/g, "");
-  const shortCode = (clean.slice(-5) || "USER").toUpperCase();
-
-  return "Guest-" + shortCode;
-}
-
-function ensureGuestDisplayName() {
-  if (!currentIsGuest) return localStorage.getItem("username") || "User";
-
-  let username = (localStorage.getItem("username") || "").trim();
-
-  if (!username || !/^Guest-/i.test(username)) {
-    username = makeGuestDisplayNameFromId(currentActiveId);
-    localStorage.setItem("username", username);
-  }
-
-  if (!localStorage.getItem("userphoto")) {
-    localStorage.setItem("userphoto", "");
-  }
-
-  return username;
-}
 function markAdminSeenInDB(){
   if (!currentActiveId) return;
 
@@ -1292,58 +1248,7 @@ function markAdminSeenInDB(){
     }
   });
 }
-async function ensureGuestLocalIdentity(){
-    dbg("ensureGuestLocalIdentity() START", {
-    currentActiveId,
-    currentIsGuest,
-    currentUserEmail,
-    authCurrentUser: auth.currentUser ? {
-      uid: auth.currentUser.uid,
-      isAnonymous: auth.currentUser.isAnonymous
-    } : null,
-    guestUidLS: localStorage.getItem("guest.uid"),
-    guestNameLS: localStorage.getItem("guest.name"),
-    usernameLS: localStorage.getItem("username")
-  });
-  try{
-    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    if (!auth.currentUser) await auth.signInAnonymously();
-    const u = auth.currentUser;
-    if (!u) throw new Error('no-user');
-    currentIsGuest = true;
-    currentUserEmail = null;
-    currentActiveId = String(u.uid);
-        dbg("Guest identity from Firebase Anonymous Auth", {
-      uid: u.uid,
-      isAnonymous: u.isAnonymous
-    });
-  }catch(e){
-    // Fallback TANPA Auth → tetap bikin ID unik per device
-    if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed'){
-      console.warn('Anonymous disabled — using local guest id');
-      currentIsGuest   = true;
-      currentUserEmail = null;
-      currentActiveId  = getOrCreateLocalGuestId();
-            dbg("Guest identity from localStorage fallback", {
-        currentActiveId,
-        guestUidLS: localStorage.getItem("guest.uid"),
-        guestNameLS: localStorage.getItem("guest.name")
-      });
-    } else {
-      throw e;
-    }
-  }
-  dbg("ensureGuestLocalIdentity() FINAL", {
-    currentActiveId,
-    currentIsGuest,
-    currentUserEmail
-  });
-  ensureGuestDisplayName();
-  writeUserProfile();
-  bindPresenceAndNotif();
-  initChatWithUserData();
-  notifyRead();
-}
+
   
 function bindPresenceAndNotif(){
   if (!currentActiveId) return;
@@ -1353,16 +1258,7 @@ function bindPresenceAndNotif(){
   const userPath  = getUserPath();
   const notifPath = getNotifPath();
   if (!userPath) return;
-    dbg("bindPresenceAndNotif() BIND", {
-    currentActiveId,
-    userPath,
-    notifPath,
-    presenceBoundFor,
-    authCurrentUser: auth.currentUser ? {
-      uid: auth.currentUser.uid,
-      isAnonymous: auth.currentUser.isAnonymous
-    } : null
-  });
+
   const connectedRef = firebase.database().ref(".info/connected");
   const userRef      = firebase.database().ref(userPath);
 
@@ -1372,20 +1268,13 @@ function bindPresenceAndNotif(){
 
 connectedRef.on("value", (snap) => {
   if (snap.val() === true) {
-        dbg("connectedRef TRUE -> set online", {
-      currentActiveId,
-      userPath,
-      visibility: document.visibilityState
-    });
+
     touchUserPresence({ typing: false });
     userRef.onDisconnect().update({ online: false, typing: false, lastLoginTime: Date.now() });
 
     clearInterval(userPresenceHeartbeat);
     userPresenceHeartbeat = setInterval(() => {
-            dbg("Heartbeat touchUserPresence()", {
-        currentActiveId,
-        visibility: document.visibilityState
-      });
+
       touchUserPresence();
     }, 10000);
   }
@@ -1394,10 +1283,7 @@ connectedRef.on("value", (snap) => {
   // update offline saat tab ditutup
 window.addEventListener("beforeunload", () => {
   clearInterval(userPresenceHeartbeat);
-    dbg("beforeunload -> set offline", {
-    currentActiveId,
-    userPath
-  });
+
   firebase.database().ref(userPath).update({
     online: false,
     typing: false,
@@ -1425,34 +1311,18 @@ if (notif && notif.unread) {
 }
 function writeUserProfile(){
   const upath = getUserPath();
-  if (!upath) return;
+  if (!upath || !currentUserEmail || !currentActiveId) return;
 
-  const finalName = currentIsGuest
-    ? ensureGuestDisplayName()
-    : (localStorage.getItem("username") || "User");
+  const finalName = (localStorage.getItem("username") || currentUserEmail.split("@")[0] || "User").trim();
 
   const data = {
     name: finalName,
-    email: currentUserEmail || null,
-    photoURL: localStorage.getItem("userphoto") || null,
-    isGuest: !!currentIsGuest,
+    email: currentUserEmail,
+    photoURL: localStorage.getItem("userphoto") || "",
     online: true,
     lastLoginTime: Date.now()
   };
-  dbg("writeUserProfile() CALLED", {
-    upath,
-    currentActiveId,
-    currentIsGuest,
-    currentUserEmail,
-    data,
-    authCurrentUser: auth.currentUser ? {
-      uid: auth.currentUser.uid,
-      isAnonymous: auth.currentUser.isAnonymous
-    } : null,
-    guestUidLS: localStorage.getItem("guest.uid"),
-    guestNameLS: localStorage.getItem("guest.name"),
-    usernameLS: localStorage.getItem("username")
-  });
+
   db.ref(upath).update(data).catch(()=>{});
 }
 // ===== parent origins yang diizinkan =====
@@ -1471,59 +1341,29 @@ window.addEventListener("message", (e) => {
   if (!ALLOWED_PARENTS.includes(e.origin)) return;
 
   const data = e.data || {};
-    dbg("postMessage RECEIVED", {
-    origin: e.origin,
-    data
-  });
-  if (data.type === "user-login" && data.user){
-    const { name, email, photo, uid, isGuest } = data.user;
-    dbg("user-login payload", {
-      name, email, uid, isGuest, photo
-    });
-    
-    if (name) {
-      localStorage.setItem("username", name);
-    } else {
-      localStorage.removeItem("username");
-    }
+  
+if (data.type === "user-login" && data.user){
+  const { name, email, photo } = data.user;
 
-    localStorage.setItem("userphoto", photo || "");
+  if (!email) return;
 
-    if (isGuest && uid) {
-      currentIsGuest   = true;
-      currentActiveId  = String(uid);          // gunakan UID guest
-            dbg("postMessage set GUEST identity", {
-        currentActiveId,
-        currentIsGuest,
-        currentUserEmail
-      });
-      currentUserEmail = null;
-      localStorage.removeItem("useremail");
-       ensureGuestDisplayName();
-      
-    } else if (email) {
-      currentIsGuest   = false;
-      currentUserEmail = email;
-      currentActiveId  = sanitizeEmail(email); // email_sanitized
-            dbg("postMessage set REAL USER identity", {
-        currentActiveId,
-        currentIsGuest,
-        currentUserEmail
-      });
-      localStorage.setItem("useremail", email);
-    } else {
-      return; // identitas tak valid
-    }
-    dbg("About to init session from postMessage", {
-      currentActiveId,
-      currentIsGuest,
-      currentUserEmail
-    });
-    writeUserProfile(); 
-    bindPresenceAndNotif();
-    initChatWithUserData();
-    notifyRead();
+  if (name) {
+    localStorage.setItem("username", name);
+  } else {
+    localStorage.setItem("username", email.split("@")[0]);
   }
+
+  localStorage.setItem("userphoto", photo || "");
+  localStorage.setItem("useremail", email);
+
+  currentUserEmail = email;
+  currentActiveId  = sanitizeEmail(email);
+
+  writeUserProfile();
+  bindPresenceAndNotif();
+  initChatWithUserData();
+  notifyRead();
+}
 
   // opsional status dari parent
 if (data.action === "panel-open") {
@@ -2139,7 +1979,9 @@ async function sendMessage() {
 
   if (!msg && !readyImages.length) return;
 
-  const userName = localStorage.getItem("username") || (currentIsGuest ? "Guest" : "User");
+  const userName =
+  (localStorage.getItem("username") || "").trim() ||
+  (currentUserEmail ? currentUserEmail.split("@")[0] : "User");
   const userPhoto = localStorage.getItem("userphoto") || "";
   const time = Date.now();
 
@@ -2151,7 +1993,7 @@ async function sendMessage() {
     await chatRef.push({
       from: 'user',
       name: userName,
-      email: currentUserEmail || null,
+      email: currentUserEmail,
       photoURL: userPhoto || null,
       text: msg || null,
       image: readyImages[0] || null,
@@ -2537,7 +2379,7 @@ function playNotificationSound() {
   }
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
+window.addEventListener("DOMContentLoaded", () => {
   const sendBoxEl = document.querySelector('.send-box');
 
   function setFabOffset() {
@@ -2553,48 +2395,37 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.addEventListener('resize', setFabOffset);
   }
 
-  // 1) kalau sebelumnya sudah login email, pakai dulu
   const email = localStorage.getItem("useremail");
-  if (!currentActiveId && email) {
-    currentIsGuest = false;
+
+  if (email) {
     currentUserEmail = email;
     currentActiveId = sanitizeEmail(email);
+
+    if (!localStorage.getItem("username")) {
+      localStorage.setItem("username", email.split("@")[0]);
+    }
+
+    writeUserProfile();
+    bindPresenceAndNotif();
+    initChatWithUserData();
+    notifyRead();
+    return;
   }
 
   if (IS_EMBEDDED) {
     const target = getParentOrigin();
     window.parent.postMessage({ type: "request-login" }, target);
 
-    // 2) di iframe: tunggu parent. kalau 2.5s masih belum ada ID, pakai ID lokal
-    if (!currentActiveId) {
-      setTimeout(() => {
-        if (!currentActiveId) {
-          const id = getOrCreateLocalGuestId();
-          currentIsGuest = true;
-          localStorage.removeItem("useremail");
-          currentActiveId = id;
+    setTimeout(() => {
+      if (!currentActiveId) {
+        console.warn("Livechat: no login received from parent.");
+      }
+    }, 2500);
 
-          ensureGuestDisplayName();
-          writeUserProfile();
-          bindPresenceAndNotif();
-          initChatWithUserData();
-        }
-      }, 2500);
-    } else {
-      // sudah ada ID dari email/parent → langsung jalan
-      writeUserProfile();
-      bindPresenceAndNotif();
-      initChatWithUserData();
-    }
-  } else {
-    if (!currentActiveId) {
-      await ensureGuestLocalIdentity();
-    } else {
-      writeUserProfile();
-      bindPresenceAndNotif();
-      initChatWithUserData();
-    }
+    return;
   }
+
+  console.warn("Livechat: user not logged in.");
 });
 const imageLightbox = document.getElementById('imageLightbox');
 const lightboxImage = document.getElementById('lightboxImage');
