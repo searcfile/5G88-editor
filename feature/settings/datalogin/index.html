@@ -594,15 +594,27 @@ function getDeviceIdFromItem(it){
      '').toString().trim();
   return v;
 }
-function detectDeviceType(browser){
-  const b = (browser || '').toLowerCase();
+function detectDeviceType(item){
+  const direct = (item?.deviceType || '').toString().trim();
+  if (direct) return direct;
 
-  if (b.includes('android')) return 'Android';
-  if (b.includes('iphone') || b.includes('ios')) return 'iPhone';
-  if (b.includes('ipad')) return 'iPad';
-  if (b.includes('windows')) return 'Windows';
-  if (b.includes('mac')) return 'Mac';
-  if (b.includes('linux')) return 'Linux';
+  const ua = (item?.ua || item?.userAgent || '').toLowerCase();
+  const browser = (item?.browser || '').toLowerCase();
+
+  if (ua.includes('android')) return 'Android';
+  if (ua.includes('iphone') || ua.includes('ios')) return 'iPhone';
+  if (ua.includes('ipad')) return 'iPad';
+  if (ua.includes('ipod')) return 'iPod';
+  if (ua.includes('windows')) return 'Windows';
+  if (ua.includes('macintosh') || ua.includes('mac os x')) return 'Mac';
+  if (ua.includes('linux') && !ua.includes('android')) return 'Linux';
+
+  if (browser.includes('android')) return 'Android';
+  if (browser.includes('iphone') || browser.includes('ios')) return 'iPhone';
+  if (browser.includes('ipad')) return 'iPad';
+  if (browser.includes('windows')) return 'Windows';
+  if (browser.includes('mac')) return 'Mac';
+  if (browser.includes('linux')) return 'Linux';
 
   return 'Unknown';
 }
@@ -773,7 +785,7 @@ function forceLogoutUser(email){
 
 const deviceId = getDeviceIdFromItem(item);
 const browser  = (item.browser || '').toString().trim() || 'Unknown';
-const deviceType = detectDeviceType(browser);
+const deviceType = detectDeviceType(item);
 const deviceLabel = deviceId ? `${browser}_${deviceId}` : '-';
 const deviceSource = (item.deviceSource || item.fpSource || item.source || '').toString().trim() || '-';
 html += `
