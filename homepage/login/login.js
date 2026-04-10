@@ -117,8 +117,33 @@ function getOrCreateLocalGuest() {
 
 // --- Anonymous Auth + fallback lokal bila dinonaktifkan ---
 async function ensureGuestAuth(){
-  console.warn("Guest disabled from login page");
-  return null;
+  // kalau sudah tahu disabled, langsung pakai guest lokal (hindari call berulang & 400 di console)
+  if (ANON_STATE === 'disabled') return getOrCreateLocalGuest();
+
+  try{
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    if (!auth.currentUser) await auth.signInAnonymously();
+    const u = auth.currentUser;
+    if (u && u.isAnonymous){
+      const code = (u.uid || '').slice(-5).toUpperCase();
+      localStorage.setItem('guest.uid', u.uid);
+      localStorage.setItem('guest.name', `Guest-${code}`);
+      ANON_STATE = 'enabled';
+      localStorage.setItem('anon.state','enabled');
+      return { uid: u.uid, name: localStorage.getItem('guest.name') };
+    }
+  }catch(e){
+    // project ini Anonymous Auth OFF → set flag dan pakai guest lokal
+    if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed'){
+      ANON_STATE = 'disabled';
+      localStorage.setItem('anon.state','disabled');
+      return getOrCreateLocalGuest();
+    }
+    // error lain → fallback juga
+    return getOrCreateLocalGuest();
+  }
+  // jaga-jaga
+  return getOrCreateLocalGuest();
 }
 /* ===== Helpers (dipakai lintas fitur, diletak di awal agar siap pakai) ===== */
 const MAIN_PATH = "/main";
@@ -590,8 +615,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("googleLoginBtn")?.addEventListener("click", signInWithGoogle);
   document.getElementById('eyeBtn')?.addEventListener('click', togglePassword);
 
-setTimeout(async () => {
-  try{
+  setTimeout(async () => {
+    try{
+      await ensureGuestAuth();
 
       if (!lcLoaded && lcFrame) {
         lcFrame.src = LC_URL;
@@ -775,28 +801,27 @@ function getPrechatUser(){
   } catch {}
 
   // 3) Anonymous Auth (punya UID Firebase)
-if (cu && cu.isAnonymous){
-  return null; // ❌ jangan hantar guest
-}
-
-  // 4) **Fallback PASTI**: pakai UID lokal per-device
-return null; // ❌ block guest fallback
-
-function postIdentityToChat(){
-  if (!lcFrame?.contentWindow) return;
-
-  const u = getPrechatUser();
-
-  if (!u || u.isGuest) {
-    console.warn("Blocked sending guest to chat");
-    return;
+  if (cu && cu.isAnonymous){
+    const code = (cu.uid || '').slice(-5).toUpperCase();
+    return {
+      name: localStorage.getItem('guest.name') || `Guest-${code}`,
+      email: "",
+      photo: "",
+      uid: cu.uid,
+      isGuest: true
+    };
   }
 
-  lcFrame.contentWindow.postMessage({
-    type: "user-login",
-    user: u
-  }, LC_ORIGIN);
+  // 4) **Fallback PASTI**: pakai UID lokal per-device
+  const g = getOrCreateLocalGuest();
+  return { name: g.name, email: "", photo: "", uid: g.uid, isGuest: true };
 }
+
+  function postIdentityToChat(){
+    if (!lcFrame?.contentWindow) return;
+    const u = getPrechatUser();
+    lcFrame.contentWindow.postMessage({ type: "user-login", user: u }, LC_ORIGIN);
+  }
 function requestLivechatUnreadCount(){
   if (!lcFrame?.contentWindow) return;
 
