@@ -643,6 +643,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("googleLoginBtn")?.addEventListener("click", signInWithGoogle);
   document.getElementById('eyeBtn')?.addEventListener('click', togglePassword);
 
+    setTimeout(() => {
+    applyTurnstileTheme();
+  }, 300);
   setTimeout(async () => {
     try{
       await ensureGuestAuth();
@@ -1002,10 +1005,14 @@ window.addEventListener("message", (e) => {
 (function () {
   const THEME_KEY = "siteTheme";
 
-  function applyChildTheme(theme) {
-    document.body.classList.remove("light-theme", "dark-theme");
-    document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
-  }
+function applyChildTheme(theme) {
+  document.body.classList.remove("light-theme", "dark-theme");
+  document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+
+  setTimeout(() => {
+    applyTurnstileTheme();
+  }, 100);
+}
 
   applyChildTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
 
