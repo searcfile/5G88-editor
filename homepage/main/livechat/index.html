@@ -1159,8 +1159,11 @@ function touchUserPresence(extra = {}) {
   const userPath = getUserPath();
   if (!userPath) return;
 
+  const forceOffline = extra.online === false;
+  const isVisible = document.visibilityState === "visible";
+
   db.ref(userPath).update({
-    online: true,
+    online: forceOffline ? false : isVisible,
     typing: false,
     lastLoginTime: Date.now(),
     ...extra
@@ -1225,6 +1228,8 @@ function getOrCreateLocalGuestId(){
     id = 'g_' + Array.from(crypto.getRandomValues(new Uint32Array(4))).join('');
     localStorage.setItem('guest.uid', id);
   }
+
+  localStorage.setItem('guest.lastSeen', String(Date.now()));
   return id;
 }
 function makeGuestDisplayNameFromId(id) {
@@ -1279,6 +1284,15 @@ function markAdminSeenInDB(){
   });
 }
 async function ensureGuestLocalIdentity(){
+  const guestLastSeen = Number(localStorage.getItem("guest.lastSeen") || 0);
+  const guestMaxAge = 30 * 60 * 1000; // 30 minit
+
+  if (guestLastSeen && (Date.now() - guestLastSeen > guestMaxAge)) {
+    localStorage.removeItem("guest.uid");
+    localStorage.removeItem("username");
+  }
+
+  localStorage.setItem("guest.lastSeen", String(Date.now()));
   try{
     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     if (!auth.currentUser) await auth.signInAnonymously();
@@ -1324,12 +1338,19 @@ function bindPresenceAndNotif(){
 
 connectedRef.on("value", (snap) => {
   if (snap.val() === true) {
-    touchUserPresence({ typing: false });
-    userRef.onDisconnect().update({ online: false, typing: false, lastLoginTime: Date.now() });
+    touchUserPresence({ online: true, typing: false });
+
+    userRef.onDisconnect().update({
+      online: false,
+      typing: false,
+      lastLoginTime: Date.now()
+    });
 
     clearInterval(userPresenceHeartbeat);
     userPresenceHeartbeat = setInterval(() => {
-      touchUserPresence();
+      if (document.visibilityState === "visible") {
+        touchUserPresence({ online: true });
+      }
     }, 10000);
   }
 });
@@ -1343,7 +1364,28 @@ window.addEventListener("beforeunload", () => {
     lastLoginTime: Date.now()
   });
 });
+document.addEventListener("visibilitychange", () => {
+  if (!userPath) return;
 
+  if (document.visibilityState === "visible") {
+    touchUserPresence({ online: true, typing: false });
+  } else {
+    firebase.database().ref(userPath).update({
+      online: false,
+      typing: false,
+      lastLoginTime: Date.now()
+    }).catch(()=>{});
+  }
+});
+
+window.addEventListener("pagehide", () => {
+  clearInterval(userPresenceHeartbeat);
+  firebase.database().ref(userPath).update({
+    online: false,
+    typing: false,
+    lastLoginTime: Date.now()
+  }).catch(()=>{});
+});
   // notifikasi admin -> user
   if (notifPath){
     const nr = firebase.database().ref(notifPath);
@@ -1376,10 +1418,28 @@ function writeUserProfile(){
     photoURL: localStorage.getItem("userphoto") || null,
     isGuest: !!currentIsGuest,
     online: true,
+    typing: false,
     lastLoginTime: Date.now()
   };
 
-  db.ref(upath).update(data).catch(()=>{});
+  db.ref(upath).once("value").then((snap) => {
+    if (!snap.exists()) {
+      db.ref(upath).set(data).catch(()=>{});
+      return;
+    }
+
+    const old = snap.val() || {};
+
+    db.ref(upath).update({
+      name: old.name || data.name,
+      email: old.email || data.email,
+      photoURL: old.photoURL || data.photoURL,
+      isGuest: typeof old.isGuest === "boolean" ? old.isGuest : data.isGuest,
+      online: true,
+      typing: false,
+      lastLoginTime: Date.now()
+    }).catch(()=>{});
+  }).catch(()=>{});
 }
 // ===== parent origins yang diizinkan =====
 const ALLOWED_PARENTS = [
@@ -1415,19 +1475,26 @@ window.addEventListener("message", (e) => {
       localStorage.removeItem("useremail");
        ensureGuestDisplayName();
       
-    } else if (email) {
-      currentIsGuest   = false;
-      currentUserEmail = email;
-      currentActiveId  = sanitizeEmail(email); // email_sanitized
-      localStorage.setItem("useremail", email);
+} else if (email) {
+  currentIsGuest   = false;
+  currentUserEmail = email;
+  currentActiveId  = sanitizeEmail(email);
+  localStorage.setItem("useremail", email);
+
+  localStorage.removeItem("guest.uid");
+  localStorage.removeItem("guest.lastSeen");
     } else {
       return; // identitas tak valid
     }
 
-    writeUserProfile(); 
-    bindPresenceAndNotif();
-    initChatWithUserData();
-    notifyRead();
+writeUserProfile();
+
+if (presenceBoundFor !== currentActiveId) {
+  bindPresenceAndNotif();
+}
+
+initChatWithUserData();
+notifyRead();
   }
 
   // opsional status dari parent
