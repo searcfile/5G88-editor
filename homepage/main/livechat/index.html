@@ -1121,6 +1121,7 @@ function escapeHTML(s){
 let chatInitialized = false;
 let currentUserEmail = null;
 let currentActiveId  = null;
+let currentIsGuest   = false;
 let presenceBoundFor = null;
 let forceOpenBottom = true;
 let hideBottomBtnTimer = null;
@@ -1136,12 +1137,7 @@ let imagePreviewWrapEl = null;
 let imagePreviewListEl = null;
 let imageUploadStatusEl = null;
 let imageUploadTextEl = null;
-const DEBUG_GUEST = false;
-  
-function dbg(...args){
-  if (!DEBUG_GUEST) return;
-  console.log("[LIVECHAT-DEBUG]", ...args);
-}
+
 function sanitizeEmail(email){
   return String(email || "")
     .trim()
@@ -1223,6 +1219,40 @@ const CLOUDINARY_UPLOAD_PRESET = "chat_upload";
 const ADMIN_PRESENCE_PATH = "adminPresence/main";
 let adminPresenceBound = false;
 
+function getOrCreateLocalGuestId(){
+  let id = localStorage.getItem('guest.uid');
+  if (!id){
+    id = 'g_' + Array.from(crypto.getRandomValues(new Uint32Array(4))).join('');
+    localStorage.setItem('guest.uid', id);
+  }
+  return id;
+}
+function makeGuestDisplayNameFromId(id) {
+  const raw = String(id || "").trim();
+  if (!raw) return "Guest-User";
+
+  const clean = raw.replace(/^g_/i, "").replace(/[^a-zA-Z0-9]/g, "");
+  const shortCode = (clean.slice(-5) || "USER").toUpperCase();
+
+  return "Guest-" + shortCode;
+}
+
+function ensureGuestDisplayName() {
+  if (!currentIsGuest) return localStorage.getItem("username") || "User";
+
+  let username = (localStorage.getItem("username") || "").trim();
+
+  if (!username || !/^Guest-/i.test(username)) {
+    username = makeGuestDisplayNameFromId(currentActiveId);
+    localStorage.setItem("username", username);
+  }
+
+  if (!localStorage.getItem("userphoto")) {
+    localStorage.setItem("userphoto", "");
+  }
+
+  return username;
+}
 function markAdminSeenInDB(){
   if (!currentActiveId) return;
 
@@ -1248,10 +1278,24 @@ function markAdminSeenInDB(){
     }
   });
 }
+async function ensureGuestLocalIdentity(){
+  console.warn("Guest mode disabled");
+  return;
+}
 
+  ensureGuestDisplayName();
+  writeUserProfile();
+  bindPresenceAndNotif();
+  initChatWithUserData();
+  notifyRead();
+}
   
 function bindPresenceAndNotif(){
   if (!currentActiveId) return;
+    if (currentIsGuest) {
+    console.warn("Blocked guest presence:", currentActiveId);
+    return;
+  }
   if (presenceBoundFor === currentActiveId) return;      // jangan dobel
   presenceBoundFor = currentActiveId;
 
@@ -1268,13 +1312,11 @@ function bindPresenceAndNotif(){
 
 connectedRef.on("value", (snap) => {
   if (snap.val() === true) {
-
     touchUserPresence({ typing: false });
     userRef.onDisconnect().update({ online: false, typing: false, lastLoginTime: Date.now() });
 
     clearInterval(userPresenceHeartbeat);
     userPresenceHeartbeat = setInterval(() => {
-
       touchUserPresence();
     }, 10000);
   }
@@ -1283,7 +1325,6 @@ connectedRef.on("value", (snap) => {
   // update offline saat tab ditutup
 window.addEventListener("beforeunload", () => {
   clearInterval(userPresenceHeartbeat);
-
   firebase.database().ref(userPath).update({
     online: false,
     typing: false,
@@ -1311,14 +1352,20 @@ if (notif && notif.unread) {
 }
 function writeUserProfile(){
   const upath = getUserPath();
-  if (!upath || !currentUserEmail || !currentActiveId) return;
-
-  const finalName = (localStorage.getItem("username") || currentUserEmail.split("@")[0] || "User").trim();
+  if (!upath) return;
+  if (currentIsGuest) {
+    console.warn("Blocked guest writeUserProfile:", currentActiveId);
+    return;
+  }
+  const finalName = currentIsGuest
+    ? ensureGuestDisplayName()
+    : (localStorage.getItem("username") || "User");
 
   const data = {
     name: finalName,
-    email: currentUserEmail,
-    photoURL: localStorage.getItem("userphoto") || "",
+    email: currentUserEmail || null,
+    photoURL: localStorage.getItem("userphoto") || null,
+    isGuest: !!currentIsGuest,
     online: true,
     lastLoginTime: Date.now()
   };
@@ -1341,29 +1388,35 @@ window.addEventListener("message", (e) => {
   if (!ALLOWED_PARENTS.includes(e.origin)) return;
 
   const data = e.data || {};
-  
-if (data.type === "user-login" && data.user){
-  const { name, email, photo } = data.user;
+  if (data.type === "user-login" && data.user){
+    const { name, email, photo, uid, isGuest } = data.user;
 
-  if (!email) return;
+    if (name) {
+      localStorage.setItem("username", name);
+    } else {
+      localStorage.removeItem("username");
+    }
 
-  if (name) {
-    localStorage.setItem("username", name);
-  } else {
-    localStorage.setItem("username", email.split("@")[0]);
+    localStorage.setItem("userphoto", photo || "");
+
+if (isGuest && uid) {
+  console.warn("Guest payload ignored");
+  return;
+      
+    } else if (email) {
+      currentIsGuest   = false;
+      currentUserEmail = email;
+      currentActiveId  = sanitizeEmail(email); // email_sanitized
+      localStorage.setItem("useremail", email);
+    } else {
+      return; // identitas tak valid
+    }
+
+    writeUserProfile(); 
+    bindPresenceAndNotif();
+    initChatWithUserData();
+    notifyRead();
   }
-
-  localStorage.setItem("userphoto", photo || "");
-  localStorage.setItem("useremail", email);
-
-  currentUserEmail = email;
-  currentActiveId  = sanitizeEmail(email);
-
-  writeUserProfile();
-  bindPresenceAndNotif();
-  initChatWithUserData();
-  notifyRead();
-}
 
   // opsional status dari parent
 if (data.action === "panel-open") {
@@ -1979,9 +2032,7 @@ async function sendMessage() {
 
   if (!msg && !readyImages.length) return;
 
-  const userName =
-  (localStorage.getItem("username") || "").trim() ||
-  (currentUserEmail ? currentUserEmail.split("@")[0] : "User");
+  const userName = localStorage.getItem("username") || (currentIsGuest ? "Guest" : "User");
   const userPhoto = localStorage.getItem("userphoto") || "";
   const time = Date.now();
 
@@ -1993,7 +2044,7 @@ async function sendMessage() {
     await chatRef.push({
       from: 'user',
       name: userName,
-      email: currentUserEmail,
+      email: currentUserEmail || null,
       photoURL: userPhoto || null,
       text: msg || null,
       image: readyImages[0] || null,
@@ -2379,7 +2430,7 @@ function playNotificationSound() {
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   const sendBoxEl = document.querySelector('.send-box');
 
   function setFabOffset() {
@@ -2395,37 +2446,48 @@ window.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('resize', setFabOffset);
   }
 
+  // 1) kalau sebelumnya sudah login email, pakai dulu
   const email = localStorage.getItem("useremail");
-
-  if (email) {
+  if (!currentActiveId && email) {
+    currentIsGuest = false;
     currentUserEmail = email;
     currentActiveId = sanitizeEmail(email);
-
-    if (!localStorage.getItem("username")) {
-      localStorage.setItem("username", email.split("@")[0]);
-    }
-
-    writeUserProfile();
-    bindPresenceAndNotif();
-    initChatWithUserData();
-    notifyRead();
-    return;
   }
 
   if (IS_EMBEDDED) {
     const target = getParentOrigin();
     window.parent.postMessage({ type: "request-login" }, target);
 
-    setTimeout(() => {
-      if (!currentActiveId) {
-        console.warn("Livechat: no login received from parent.");
-      }
-    }, 2500);
+    // 2) di iframe: tunggu parent. kalau 2.5s masih belum ada ID, pakai ID lokal
+    if (!currentActiveId) {
+      setTimeout(() => {
+        if (!currentActiveId) {
+          const id = getOrCreateLocalGuestId();
+          currentIsGuest = true;
+          localStorage.removeItem("useremail");
+          currentActiveId = id;
 
-    return;
+          ensureGuestDisplayName();
+          writeUserProfile();
+          bindPresenceAndNotif();
+          initChatWithUserData();
+        }
+      }, 2500);
+    } else {
+      // sudah ada ID dari email/parent → langsung jalan
+      writeUserProfile();
+      bindPresenceAndNotif();
+      initChatWithUserData();
+    }
+  } else {
+    if (!currentActiveId) {
+      await ensureGuestLocalIdentity();
+    } else {
+      writeUserProfile();
+      bindPresenceAndNotif();
+      initChatWithUserData();
+    }
   }
-
-  console.warn("Livechat: user not logged in.");
 });
 const imageLightbox = document.getElementById('imageLightbox');
 const lightboxImage = document.getElementById('lightboxImage');
