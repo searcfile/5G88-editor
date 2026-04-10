@@ -1137,7 +1137,12 @@ let imagePreviewWrapEl = null;
 let imagePreviewListEl = null;
 let imageUploadStatusEl = null;
 let imageUploadTextEl = null;
+const DEBUG_GUEST = true;
 
+function dbg(...args){
+  if (!DEBUG_GUEST) return;
+  console.log("[LIVECHAT-DEBUG]", ...args);
+}
 function sanitizeEmail(email){
   return String(email || "")
     .trim()
@@ -1158,7 +1163,16 @@ let userPresenceHeartbeat = null;
 function touchUserPresence(extra = {}) {
   const userPath = getUserPath();
   if (!userPath) return;
-
+  dbg("touchUserPresence()", {
+    currentActiveId,
+    userPath,
+    extra,
+    visibility: document.visibilityState,
+    authCurrentUser: auth.currentUser ? {
+      uid: auth.currentUser.uid,
+      isAnonymous: auth.currentUser.isAnonymous
+    } : null
+  });
   db.ref(userPath).update({
     online: true,
     typing: false,
@@ -1279,6 +1293,18 @@ function markAdminSeenInDB(){
   });
 }
 async function ensureGuestLocalIdentity(){
+    dbg("ensureGuestLocalIdentity() START", {
+    currentActiveId,
+    currentIsGuest,
+    currentUserEmail,
+    authCurrentUser: auth.currentUser ? {
+      uid: auth.currentUser.uid,
+      isAnonymous: auth.currentUser.isAnonymous
+    } : null,
+    guestUidLS: localStorage.getItem("guest.uid"),
+    guestNameLS: localStorage.getItem("guest.name"),
+    usernameLS: localStorage.getItem("username")
+  });
   try{
     await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     if (!auth.currentUser) await auth.signInAnonymously();
@@ -1287,6 +1313,10 @@ async function ensureGuestLocalIdentity(){
     currentIsGuest = true;
     currentUserEmail = null;
     currentActiveId = String(u.uid);
+        dbg("Guest identity from Firebase Anonymous Auth", {
+      uid: u.uid,
+      isAnonymous: u.isAnonymous
+    });
   }catch(e){
     // Fallback TANPA Auth → tetap bikin ID unik per device
     if (e?.code === 'auth/admin-restricted-operation' || e?.code === 'auth/operation-not-allowed'){
@@ -1294,11 +1324,20 @@ async function ensureGuestLocalIdentity(){
       currentIsGuest   = true;
       currentUserEmail = null;
       currentActiveId  = getOrCreateLocalGuestId();
+            dbg("Guest identity from localStorage fallback", {
+        currentActiveId,
+        guestUidLS: localStorage.getItem("guest.uid"),
+        guestNameLS: localStorage.getItem("guest.name")
+      });
     } else {
       throw e;
     }
   }
-
+  dbg("ensureGuestLocalIdentity() FINAL", {
+    currentActiveId,
+    currentIsGuest,
+    currentUserEmail
+  });
   ensureGuestDisplayName();
   writeUserProfile();
   bindPresenceAndNotif();
@@ -1314,7 +1353,16 @@ function bindPresenceAndNotif(){
   const userPath  = getUserPath();
   const notifPath = getNotifPath();
   if (!userPath) return;
-
+    dbg("bindPresenceAndNotif() BIND", {
+    currentActiveId,
+    userPath,
+    notifPath,
+    presenceBoundFor,
+    authCurrentUser: auth.currentUser ? {
+      uid: auth.currentUser.uid,
+      isAnonymous: auth.currentUser.isAnonymous
+    } : null
+  });
   const connectedRef = firebase.database().ref(".info/connected");
   const userRef      = firebase.database().ref(userPath);
 
@@ -1324,11 +1372,20 @@ function bindPresenceAndNotif(){
 
 connectedRef.on("value", (snap) => {
   if (snap.val() === true) {
+        dbg("connectedRef TRUE -> set online", {
+      currentActiveId,
+      userPath,
+      visibility: document.visibilityState
+    });
     touchUserPresence({ typing: false });
     userRef.onDisconnect().update({ online: false, typing: false, lastLoginTime: Date.now() });
 
     clearInterval(userPresenceHeartbeat);
     userPresenceHeartbeat = setInterval(() => {
+            dbg("Heartbeat touchUserPresence()", {
+        currentActiveId,
+        visibility: document.visibilityState
+      });
       touchUserPresence();
     }, 10000);
   }
@@ -1337,6 +1394,10 @@ connectedRef.on("value", (snap) => {
   // update offline saat tab ditutup
 window.addEventListener("beforeunload", () => {
   clearInterval(userPresenceHeartbeat);
+    dbg("beforeunload -> set offline", {
+    currentActiveId,
+    userPath
+  });
   firebase.database().ref(userPath).update({
     online: false,
     typing: false,
@@ -1378,7 +1439,20 @@ function writeUserProfile(){
     online: true,
     lastLoginTime: Date.now()
   };
-
+  dbg("writeUserProfile() CALLED", {
+    upath,
+    currentActiveId,
+    currentIsGuest,
+    currentUserEmail,
+    data,
+    authCurrentUser: auth.currentUser ? {
+      uid: auth.currentUser.uid,
+      isAnonymous: auth.currentUser.isAnonymous
+    } : null,
+    guestUidLS: localStorage.getItem("guest.uid"),
+    guestNameLS: localStorage.getItem("guest.name"),
+    usernameLS: localStorage.getItem("username")
+  });
   db.ref(upath).update(data).catch(()=>{});
 }
 // ===== parent origins yang diizinkan =====
@@ -1397,9 +1471,16 @@ window.addEventListener("message", (e) => {
   if (!ALLOWED_PARENTS.includes(e.origin)) return;
 
   const data = e.data || {};
+    dbg("postMessage RECEIVED", {
+    origin: e.origin,
+    data
+  });
   if (data.type === "user-login" && data.user){
     const { name, email, photo, uid, isGuest } = data.user;
-
+    dbg("user-login payload", {
+      name, email, uid, isGuest, photo
+    });
+    
     if (name) {
       localStorage.setItem("username", name);
     } else {
@@ -1411,6 +1492,11 @@ window.addEventListener("message", (e) => {
     if (isGuest && uid) {
       currentIsGuest   = true;
       currentActiveId  = String(uid);          // gunakan UID guest
+            dbg("postMessage set GUEST identity", {
+        currentActiveId,
+        currentIsGuest,
+        currentUserEmail
+      });
       currentUserEmail = null;
       localStorage.removeItem("useremail");
        ensureGuestDisplayName();
@@ -1419,11 +1505,20 @@ window.addEventListener("message", (e) => {
       currentIsGuest   = false;
       currentUserEmail = email;
       currentActiveId  = sanitizeEmail(email); // email_sanitized
+            dbg("postMessage set REAL USER identity", {
+        currentActiveId,
+        currentIsGuest,
+        currentUserEmail
+      });
       localStorage.setItem("useremail", email);
     } else {
       return; // identitas tak valid
     }
-
+    dbg("About to init session from postMessage", {
+      currentActiveId,
+      currentIsGuest,
+      currentUserEmail
+    });
     writeUserProfile(); 
     bindPresenceAndNotif();
     initChatWithUserData();
