@@ -222,11 +222,13 @@ body.dark-theme{
 }
 
   /* Column widths (updated indices) */
-  .tbl th:nth-child(1), .tbl td:nth-child(1){ width:56px !important; text-align:center; }       /* No */
-  .tbl th:nth-child(8), .tbl td:nth-child(8){ width:170px !important; } /* Action */
-  .tbl th:nth-child(7), .tbl td:nth-child(7){ width:140px !important; } /* Status */
-  .tbl th:nth-child(6), .tbl td:nth-child(6){ width:160px !important; } /* Last login */
-  .tbl th:nth-child(5), .tbl td:nth-child(5){ width:120px !important; } /* Source */
+.tbl th:nth-child(1), .tbl td:nth-child(1){ width:56px !important; text-align:center; }   /* No */
+.tbl th:nth-child(4), .tbl td:nth-child(4){ width:110px !important; } /* Device */
+.tbl th:nth-child(5), .tbl td:nth-child(5){ width:170px !important; } /* Device ID */
+.tbl th:nth-child(6), .tbl td:nth-child(6){ width:120px !important; } /* Source */
+.tbl th:nth-child(7), .tbl td:nth-child(7){ width:160px !important; } /* Last login */
+.tbl th:nth-child(8), .tbl td:nth-child(8){ width:140px !important; } /* Status */
+.tbl th:nth-child(9), .tbl td:nth-child(9){ width:170px !important; } /* Action */
   text-align:left;
 }
   /* Status badge layout */
@@ -391,6 +393,7 @@ body.dark-theme{
             <th>No</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Device</th>
             <th>Device ID</th>
             <th>Source</th> 
             <th>Last login</th>
@@ -591,6 +594,18 @@ function getDeviceIdFromItem(it){
      '').toString().trim();
   return v;
 }
+function detectDeviceType(browser){
+  const b = (browser || '').toLowerCase();
+
+  if (b.includes('android')) return 'Android';
+  if (b.includes('iphone') || b.includes('ios')) return 'iPhone';
+  if (b.includes('ipad')) return 'iPad';
+  if (b.includes('windows')) return 'Windows';
+  if (b.includes('mac')) return 'Mac';
+  if (b.includes('linux')) return 'Linux';
+
+  return 'Unknown';
+}
 function normalizeDeviceId(v){
   v = (v || '').toString().trim();
   if (!v || v === '-' || v.toLowerCase() === 'unknown') return '';
@@ -758,13 +773,16 @@ function forceLogoutUser(email){
 
 const deviceId = getDeviceIdFromItem(item);
 const browser  = (item.browser || '').toString().trim() || 'Unknown';
+const deviceType = detectDeviceType(browser);
 const deviceLabel = deviceId ? `${browser}_${deviceId}` : '-';
 const deviceSource = (item.deviceSource || item.fpSource || item.source || '').toString().trim() || '-';
 html += `
   <tr data-email="${esc(email)}" data-device="${esc(deviceId || '')}">
     <td>${no}</td>
     <td title="${esc(name)}">${esc(name || '-')}</td>
-    <td title="${esc(email)}">${esc(email)}</td>
+<td title="${esc(email)}">${esc(email)}</td>
+
+<td title="${esc(deviceType)}">${esc(deviceType)}</td>
 
 <td class="deviceCell"
     title="Click to select this Device ID"
@@ -844,7 +862,7 @@ function startRealtime(){
     searchBtn.classList.remove('loading');
   }, (error) => {
     document.getElementById('loginTableBody').innerHTML =
-      `<tr><td colspan="8">Error: ${error.message}</td></tr>`;
+      `<tr><td colspan="9">Error: ${error.message}</td></tr>`;
     searchBtn.classList.remove('loading');
   });
 }
