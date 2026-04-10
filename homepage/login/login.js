@@ -83,7 +83,7 @@ function onTurnstileGoogleError(){
   if (btn) btn.disabled = true;
 }
 function getTurnstileTheme(){
-  return document.body.classList.contains('light-theme') ? 'dark' : 'light';
+  return 'light';
 }
 
 function applyTurnstileTheme(){
