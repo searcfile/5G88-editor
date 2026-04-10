@@ -435,6 +435,19 @@ function getBrowserName(){
   if (/Safari\//i.test(ua)) return "Safari";
   return "Unknown";
 }
+function getDeviceType(){
+  const ua = navigator.userAgent || "";
+
+  if (/Android/i.test(ua)) return "Android";
+  if (/iPhone/i.test(ua)) return "iPhone";
+  if (/iPad/i.test(ua)) return "iPad";
+  if (/iPod/i.test(ua)) return "iPod";
+  if (/Windows NT/i.test(ua)) return "Windows";
+  if (/Macintosh|Mac OS X/i.test(ua) && !/iPhone|iPad|iPod/i.test(ua)) return "Mac";
+  if (/Linux/i.test(ua) && !/Android/i.test(ua)) return "Linux";
+
+  return "Unknown";
+}
 async function finishLogin(userLike){
   const email = userLike.email;
   const name  = userLike.displayName || email.split('@')[0];
@@ -446,6 +459,7 @@ const fpId = await initFingerprint();
 const deviceId = fpId || getFallbackDeviceId();
 const deviceSource = fpId ? "fingerprintjs" : "fallback";
 const browser  = getBrowserName();
+const deviceType = getDeviceType();
 
   db.ref("logins/blocked_users/" + emailKey).once("value").then(async snap=>{
     const isBlocked = snap.val();
@@ -457,17 +471,17 @@ const browser  = getBrowserName();
     }
 
     // ✅ simpan sekali deviceId
-    db.ref("logins/" + emailKey).set({
-      name,
-      email,
-      loginAt: formatTimestamp(new Date()),
+db.ref("logins/" + emailKey).set({
+  name,
+  email,
+  loginAt: formatTimestamp(new Date()),
 
-      // ✅ NEW
-      deviceId,
-      deviceSource,
-      browser,
-      ua: navigator.userAgent || "",
-      tz: Intl.DateTimeFormat().resolvedOptions().timeZone || ""
+  deviceId,
+  deviceSource,
+  browser,
+  deviceType,
+  ua: navigator.userAgent || "",
+  tz: Intl.DateTimeFormat().resolvedOptions().timeZone || ""
     }).then(()=>{
       localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
 
