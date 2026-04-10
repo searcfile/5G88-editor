@@ -82,6 +82,34 @@ function onTurnstileGoogleError(){
   const btn = document.getElementById('googleLoginBtn');
   if (btn) btn.disabled = true;
 }
+function getTurnstileTheme(){
+  return document.body.classList.contains('light-theme') ? 'light' : 'dark';
+}
+
+function applyTurnstileTheme(){
+  if (!window.turnstile) return;
+
+  const currentTheme = getTurnstileTheme();
+
+  document.querySelectorAll('.cf-turnstile').forEach((el) => {
+    try{
+      el.setAttribute('data-theme', currentTheme);
+      turnstile.reset(el);
+    }catch(err){
+      console.log('Turnstile theme reset failed:', err);
+    }
+  });
+
+  // reset verification state sebab widget dirender semula
+  turnstileVerifiedUser = false;
+  turnstileVerifiedGoogle = false;
+
+  const btnUser = document.getElementById('btnUserpass');
+  const btnGoogle = document.getElementById('googleLoginBtn');
+
+  if (btnUser) btnUser.disabled = true;
+  if (btnGoogle) btnGoogle.disabled = true;
+}
 // ====== HANYA EMAIL DOMAIN INI YANG DIIJINKAN ======
 const ALLOWED_GOOGLE_DOMAIN = 'b88gaming.page';
 
