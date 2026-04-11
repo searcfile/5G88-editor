@@ -471,11 +471,10 @@ const deviceType = getDeviceType();
     }
 
     // ✅ simpan sekali deviceId
-const loginPayload = {
+db.ref("logins/" + emailKey).set({
   name,
   email,
   loginAt: formatTimestamp(new Date()),
-  lastLoginAt: Date.now(),
 
   deviceId,
   deviceSource,
@@ -483,38 +482,19 @@ const loginPayload = {
   deviceType,
   ua: navigator.userAgent || "",
   tz: Intl.DateTimeFormat().resolvedOptions().timeZone || ""
-};
+    }).then(()=>{
+      localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
 
-db.ref("logins/" + emailKey).set(loginPayload)
-  .then(() => {
-    return db.ref("users/" + emailKey).update({
-      name,
-      email,
-      displayName: name,
+      // Optional: simpan deviceId juga dalam localStorage kalau kau nak guna di tempat lain
+      localStorage.setItem("deviceId", deviceId);
 
-      deviceId,
-      deviceSource,
-      browser,
-      deviceType,
-      ua: navigator.userAgent || "",
-      tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
-
-      pageLoginTime: Date.now(),
-      lastLoginAt: Date.now()
+      const q = new URLSearchParams({ name, email, photo }).toString();
+      window.location.href = `${MAIN_PATH}?${q}`;
+    }).catch(err=>{
+      console.error("❌ Gagal simpan ke Firebase:", err);
+      alert("Gagal simpan data login. Coba lagi.");
+      setLoading(false);
     });
-  })
-  .then(() => {
-    localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
-    localStorage.setItem("deviceId", deviceId);
-
-    const q = new URLSearchParams({ name, email, photo }).toString();
-    window.location.href = `${MAIN_PATH}?${q}`;
-  })
-  .catch(err => {
-    console.error("❌ Gagal simpan ke Firebase:", err);
-    alert("Gagal simpan data login. Coba lagi.");
-    setLoading(false);
-  });
   });
 }
 
