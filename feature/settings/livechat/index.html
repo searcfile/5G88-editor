@@ -2168,39 +2168,14 @@ function formatLastSeenForList(ts){
   const d = new Date(ts);
   if (isNaN(d.getTime())) return "Offline";
 
-  const now = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  const ss = String(d.getSeconds()).padStart(2, "0");
 
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
-
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  const msgDay = new Date(d);
-  msgDay.setHours(0, 0, 0, 0);
-
-  const timeText = d.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true
-  });
-
-  if (msgDay.getTime() === today.getTime()) {
-    return `Offline • Last seen today at ${timeText}`;
-  }
-
-  if (msgDay.getTime() === yesterday.getTime()) {
-    return `Offline • Last seen yesterday at ${timeText}`;
-  }
-
-  const sameYear = d.getFullYear() === now.getFullYear();
-
-  const dateText = d.toLocaleDateString("en-GB", sameYear
-    ? { day: "numeric", month: "short" }
-    : { day: "numeric", month: "short", year: "numeric" }
-  );
-
-  return `Offline • Last seen ${dateText} at ${timeText}`;
+  return `Offline • Last online at ${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
 }
 
 function getUserListStatus(userData = {}){
