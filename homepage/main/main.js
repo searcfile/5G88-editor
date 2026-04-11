@@ -348,11 +348,7 @@ const TAB_ROUTE_MAP = {
 
     sessionStorage.setItem("justLoggedIn", "1");
 
-    if (openTab) {
-      sessionStorage.setItem("autoOpenTab", openTab);
-    } else {
-      sessionStorage.removeItem("autoOpenTab");
-    }
+    sessionStorage.removeItem("autoOpenTab");
 
     // penting: bila user dari query berbeza, reload sekali
     const appliedKey = "queryUserAppliedOnce";
@@ -372,28 +368,7 @@ const TAB_ROUTE_MAP = {
 })();
 (function autoOpenTabAfterQuery(){
   if (!location.pathname.startsWith("/main")) return;
-
-  const tab = (sessionStorage.getItem("autoOpenTab") || "").toLowerCase();
-  if (!tab) return;
-
-  function openIt() {
-    if (typeof addTab !== "function") return false;
-
-    if (tab === "livechat") {
-      addTab("Live Chat", "https://5g88-main.vercel.app/main/livechat");
-      sessionStorage.removeItem("autoOpenTab");
-      return true;
-    }
-
-    sessionStorage.removeItem("autoOpenTab");
-    return false;
-  }
-
-  if (!openIt()) {
-    window.addEventListener("load", () => {
-      setTimeout(openIt, 400);
-    }, { once: true });
-  }
+  sessionStorage.removeItem("autoOpenTab");
 })();
 (function(){
   const SESS_ROOT = 'singleSessions';
