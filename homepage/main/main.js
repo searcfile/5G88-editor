@@ -331,6 +331,9 @@ const TAB_ROUTE_MAP = {
     const photo = qs.get("photo") || "";
     const openTab = (qs.get("openTab") || "").toLowerCase();
 
+    const restoreTabsRaw = qs.get("restoreTabs") || "";
+    const restoreActiveTab = qs.get("restoreActiveTab") || "";
+
     if (!email) return;
 
     const decodedName  = decodeURIComponent(name || "");
@@ -348,9 +351,31 @@ const TAB_ROUTE_MAP = {
 
     sessionStorage.setItem("justLoggedIn", "1");
 
-    sessionStorage.removeItem("autoOpenTab");
+    if (restoreTabsRaw) {
+      try {
+        const parsedTabs = JSON.parse(decodeURIComponent(restoreTabsRaw));
+        if (Array.isArray(parsedTabs)) {
+          const suffix = decodedEmail.replace(/[^a-z0-9]/g, "_");
+          localStorage.setItem(`openTabs_${suffix}`, JSON.stringify(parsedTabs));
+        }
+      } catch (err) {
+        console.warn("[captureMainQuery] restoreTabs parse gagal:", err);
+      }
+    }
 
-    // penting: bila user dari query berbeza, reload sekali
+    if (restoreActiveTab) {
+      try {
+        const suffix = decodedEmail.replace(/[^a-z0-9]/g, "_");
+        localStorage.setItem(`activeTabUrl_${suffix}`, restoreActiveTab);
+      } catch (err) {
+        console.warn("[captureMainQuery] restoreActiveTab gagal:", err);
+      }
+    }
+
+    if (openTab) {
+      sessionStorage.setItem("autoOpenTab", openTab);
+    }
+
     const appliedKey = "queryUserAppliedOnce";
     const needReload =
       currentEmail !== decodedEmail &&
