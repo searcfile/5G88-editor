@@ -1156,8 +1156,6 @@ function initFingerprint(){
       const fp = await FingerprintJS.load();
       const res = await fp.get();
 
-      console.log("Fingerprint visitorId:", res?.visitorId || null);
-
       return res?.visitorId || null;
     }catch(e){
       console.warn("Fingerprint init failed:", e);
