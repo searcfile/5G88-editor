@@ -1114,6 +1114,7 @@ html {
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 <script>if (window.top === window.self) {window.location.replace("/main");}</script>
+<script src="https://openfpcdn.io/fingerprintjs/v4"></script>
 <script>
 const IS_EMBEDDED = window.top !== window.self;
 function escapeHTML(s){
@@ -1140,7 +1141,31 @@ let imagePreviewWrapEl = null;
 let imagePreviewListEl = null;
 let imageUploadStatusEl = null;
 let imageUploadTextEl = null;
+let FP_PROMISE = null;
 
+function initFingerprint(){
+  if (FP_PROMISE) return FP_PROMISE;
+
+  FP_PROMISE = (async () => {
+    try{
+      if (!window.FingerprintJS) return null;
+      const fp = await FingerprintJS.load();
+      const res = await fp.get();
+      return res?.visitorId || null;
+    }catch(e){
+      console.warn("Fingerprint init failed:", e);
+      return null;
+    }
+  })();
+
+  return FP_PROMISE;
+}
+
+async function getVisitorId(){
+  const fpId = await initFingerprint();
+  if (fpId) return fpId;
+  return getFallbackDeviceId();
+}
 function sanitizeEmail(email){
   return String(email || "")
     .trim()
@@ -1403,7 +1428,7 @@ async function ensureGuestLocalIdentity(){
   }
 
   ensureGuestDisplayName();
-  writeUserProfile();
+  await writeUserProfile();
   bindPresenceAndNotif();
   initChatWithUserData();
   notifyRead();
@@ -1460,7 +1485,7 @@ function bindPresenceAndNotif(){
     });
   }
 }
-function writeUserProfile(){
+async function writeUserProfile(){
   const upath = getUserPath();
   if (!upath) return;
 
@@ -1471,7 +1496,7 @@ function writeUserProfile(){
   const now = Date.now();
   const browser = getBrowserName();
   const deviceType = getDeviceType();
-  const deviceId = getFallbackDeviceId();
+  const deviceId = await getVisitorId();
 
   const data = {
     name: finalName,
@@ -2567,6 +2592,7 @@ window.addEventListener("beforeunload", () => {
   stopUserPresence(true);
 });
 window.addEventListener("DOMContentLoaded", async () => {
+  initFingerprint();
   const sendBoxEl = document.querySelector('.send-box');
 
   function setFabOffset() {
@@ -2625,7 +2651,7 @@ if (livechatPanelOpen) {
     if (!currentActiveId) {
       await ensureGuestLocalIdentity();
     } else {
-      writeUserProfile();
+      await writeUserProfile();
       bindPresenceAndNotif();
       initChatWithUserData();
     }
