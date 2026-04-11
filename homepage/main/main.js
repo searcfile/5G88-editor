@@ -353,7 +353,7 @@ const legacyTabs = localStorage.getItem("openTabs");
 const legacyActive = localStorage.getItem("activeTabUrl");
 const existingUserTabs = localStorage.getItem(userTabsKey);
 
-if ((!existingUserTabs || existingUserTabs === "[]") && legacyTabs && legacyTabs !== "[]") {
+if (existingUserTabs === null && legacyTabs && legacyTabs !== "[]") {
   localStorage.setItem(userTabsKey, legacyTabs);
 
   if (legacyActive) {
@@ -1189,10 +1189,12 @@ function getTabs() {
     const userKey = getTabsStorageKey();
     const userRaw = localStorage.getItem(userKey);
 
-    if (userRaw && userRaw !== "[]") {
-      return JSON.parse(userRaw);
+    // kalau key user memang sudah ada, walaupun "[]", ikut itu
+    if (userRaw !== null) {
+      return JSON.parse(userRaw || "[]");
     }
 
+    // fallback legacy hanya kalau key user belum pernah ada
     const legacyRaw = localStorage.getItem("openTabs");
     if (legacyRaw && legacyRaw !== "[]") {
       const parsed = JSON.parse(legacyRaw);
@@ -1215,10 +1217,12 @@ function getActiveTabUrl(){
   const userKey = getActiveTabStorageKey();
   const userVal = localStorage.getItem(userKey);
 
-  if (userVal) {
-    return normUrl(userVal);
+  // kalau key user memang sudah ada, walaupun kosong, ikut itu
+  if (userVal !== null) {
+    return normUrl(userVal || "");
   }
 
+  // fallback legacy hanya kalau key user belum pernah ada
   const legacyVal = localStorage.getItem("activeTabUrl");
   if (legacyVal) {
     localStorage.setItem(userKey, legacyVal);
