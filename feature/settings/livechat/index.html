@@ -1476,6 +1476,13 @@ body{
   flex-shrink:0;
   align-self:flex-start;
 }
+.user-email-line{
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.25;
+  word-break: break-word;
+}
   </style>
 </head>
 <body>
@@ -2625,8 +2632,8 @@ const mergedIdentity = {
 const displayName = getSafeDisplayName(sanitized, userData, meta.identity || {});
 const email = mergedIdentity.email || "";
 const photoURL = mergedIdentity.photoURL || "";
-const label = email ? `${displayName} (${email})` : displayName;
-    if (q && !label.toLowerCase().includes(q)) return;
+const label = email ? `${displayName} ${email}` : displayName;
+if (q && !label.toLowerCase().includes(q)) return;
 
 const lastChatTs =
   Number(userData?.lastChatTime || 0) ||
@@ -2673,9 +2680,10 @@ const onlineClass = statusInfo.className;
 
 userLabel.innerHTML = `
   <div class="user-top-row">
-    <div class="user-top-left">
-      <span class="label-text">${label}</span>
-    </div>
+<div class="user-top-left">
+  <span class="label-text">${displayName}</span>
+  ${email ? `<div class="user-email-line">Gmail : ${email}</div>` : ""}
+</div>
 
     <div class="user-top-right">
       ${hasUnread ? `
