@@ -2482,10 +2482,24 @@ const allowedOrigins = new Set([
 
   const data = e.data || {};
   
-  if (data.type === "open-user-main-tab" && data.url) {
-    window.open(data.url, "_blank", "noopener,noreferrer");
-    return;
+if (data.type === "open-user-main-tab" && data.url) {
+  console.log("[PARENT] open-user-main-tab received:", data.url);
+
+  try {
+    const a = document.createElement("a");
+    a.href = data.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  } catch (err) {
+    console.warn("[PARENT] anchor open failed, fallback redirect:", err);
+    window.location.href = data.url;
   }
+
+  return;
+}
   // 1) Handshake login
 if (data.type === "child-ready" || data.type === "request-login") {
   const payload = getLoginPayload();
