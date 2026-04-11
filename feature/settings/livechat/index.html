@@ -2486,6 +2486,18 @@ const label = email ? `${displayName} (${email})` : displayName;
     const loginTs   = getLoginTimeFromUser(userData);
     const loginText = formatDateTimeMY(loginTs);
 
+    const deviceTypeText =
+  userData?.deviceType ||
+  (userData?.ua && /Android/i.test(userData.ua) ? "Android" :
+   userData?.ua && /iPhone/i.test(userData.ua) ? "iPhone" :
+   userData?.ua && /iPad/i.test(userData.ua) ? "iPad" :
+   userData?.ua && /Windows/i.test(userData.ua) ? "Windows" :
+   userData?.ua && /Mac/i.test(userData.ua) ? "Mac" :
+   userData?.ua && /Linux/i.test(userData.ua) ? "Linux" :
+   "Unknown");
+
+const browserText = userData?.browser || "Unknown";
+const deviceIdText = userData?.deviceId || "-";
     const userDiv = document.createElement("div");
     userDiv.className = "user-item";
     if (sanitized === activeUserIdSanitized) userDiv.classList.add("active");
@@ -2510,9 +2522,10 @@ const label = email ? `${displayName} (${email})` : displayName;
         </svg>
       </div>
 
-      <div class="datetime-list">
-        Date time ${loginText}
-      </div>
+<div class="datetime-list">Device : ${deviceTypeText}</div>
+<div class="datetime-list">Browser : ${browserText}</div>
+<div class="datetime-list">Device ID : ${deviceIdText}</div>
+<div class="datetime-list">Date time ${loginText}</div>
     `;
 
     userLabel.style.fontWeight = hasUnread ? "bold" : "normal";
