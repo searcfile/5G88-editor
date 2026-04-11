@@ -2480,7 +2480,11 @@ window.addEventListener("message", async (e) => {
   if (!frame || e.source !== frame.contentWindow) return;
 
   const data = e.data || {};
-
+  
+  if (data.type === "open-user-main-tab" && data.url) {
+    window.open(data.url, "_blank", "noopener,noreferrer");
+    return;
+  }
   // 1) Handshake login
 if (data.type === "child-ready" || data.type === "request-login") {
   const payload = getLoginPayload();
