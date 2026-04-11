@@ -2518,10 +2518,10 @@ setInterval(updateDateTime, 1000);
 updateDateTime();
 // ✅ SATU handler postMessage gabungan (aman & rapi)
 window.addEventListener("message", async (e) => {
-const allowedOrigins = new Set([
-  "https://searcfile.github.io",
-  "https://5g88-main.vercel.app",
-]);
+  const allowedOrigins = new Set([
+    "https://searcfile.github.io",
+    "https://5g88-main.vercel.app",
+  ]);
   if (!allowedOrigins.has(e.origin)) {
     console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
     return;
@@ -2532,25 +2532,7 @@ const allowedOrigins = new Set([
   if (!frame || e.source !== frame.contentWindow) return;
 
   const data = e.data || {};
-  
-if (data.type === "open-user-main-tab" && data.url) {
-  console.log("[PARENT] open-user-main-tab received:", data.url);
 
-  try {
-    const a = document.createElement("a");
-    a.href = data.url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  } catch (err) {
-    console.warn("[PARENT] anchor open failed, fallback redirect:", err);
-    window.location.href = data.url;
-  }
-
-  return;
-}
   // 1) Handshake login
 if (data.type === "child-ready" || data.type === "request-login") {
   const payload = getLoginPayload();
