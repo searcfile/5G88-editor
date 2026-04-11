@@ -331,21 +331,43 @@ const TAB_ROUTE_MAP = {
     const photo = qs.get("photo") || "";
     const openTab = (qs.get("openTab") || "").toLowerCase();
 
-    if (email) {
-      localStorage.setItem("gmailLogin", JSON.stringify({
-        name: decodeURIComponent(name || ""),
-        email: decodeURIComponent(email).toLowerCase(),
-        photo: decodeURIComponent(photo || "")
-      }));
+    if (!email) return;
 
-      sessionStorage.setItem("justLoggedIn", "1");
+    const decodedName  = decodeURIComponent(name || "");
+    const decodedEmail = decodeURIComponent(email).toLowerCase();
+    const decodedPhoto = decodeURIComponent(photo || "");
 
-      if (openTab) {
-        sessionStorage.setItem("autoOpenTab", openTab);
-      }
+    const currentLogin = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+    const currentEmail = String(currentLogin.email || "").toLowerCase();
 
-      history.replaceState({}, document.title, location.pathname);
+    localStorage.setItem("gmailLogin", JSON.stringify({
+      name: decodedName,
+      email: decodedEmail,
+      photo: decodedPhoto
+    }));
+
+    sessionStorage.setItem("justLoggedIn", "1");
+
+    if (openTab) {
+      sessionStorage.setItem("autoOpenTab", openTab);
+    } else {
+      sessionStorage.removeItem("autoOpenTab");
     }
+
+    // penting: bila user dari query berbeza, reload sekali
+    const appliedKey = "queryUserAppliedOnce";
+    const needReload =
+      currentEmail !== decodedEmail &&
+      sessionStorage.getItem(appliedKey) !== "1";
+
+    if (needReload) {
+      sessionStorage.setItem(appliedKey, "1");
+      location.replace(location.pathname);
+      return;
+    }
+
+    sessionStorage.removeItem(appliedKey);
+    history.replaceState({}, document.title, location.pathname);
   } catch (_) {}
 })();
 (function autoOpenTabAfterQuery(){
@@ -363,6 +385,7 @@ const TAB_ROUTE_MAP = {
       return true;
     }
 
+    sessionStorage.removeItem("autoOpenTab");
     return false;
   }
 
