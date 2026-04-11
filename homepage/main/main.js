@@ -1677,20 +1677,16 @@ setTimeout(() => notifyLivechatPanelStateToIframe(), 500);
 }
 function refreshCurrentPage() {
   const btn = document.getElementById("refreshHeaderBtn");
-  const frame = document.getElementById("pageFrame");
-  if (!frame) return;
 
   if (btn) {
     btn.classList.remove("spin");
     void btn.offsetWidth;
     btn.classList.add("spin");
-    setTimeout(() => btn.classList.remove("spin"), 850);
   }
 
-  const currentUrl = frame.src || getActiveTabUrl?.() || "";
-  if (!currentUrl) return;
-
-  loadPage(currentUrl);
+  setTimeout(() => {
+    window.location.reload();
+  }, 180);
 }
   // Ceklis GameLog Dropdown
 function updateGameLogCheckmarks() {
