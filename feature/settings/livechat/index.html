@@ -565,9 +565,37 @@ body {
   border:1px solid #1668dc !important;
   color: #1668dc !important;
 }
-.online-indicator {
-  float: right;
-  margin-left: auto;
+.user-meta-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-top:4px;
+  width:100%;
+}
+
+.online-text{
+  color:#31d158;
+  font-size:12px;
+  font-weight:600;
+}
+
+.offline-text{
+  color:#a0a0a0;
+  font-size:12px;
+  font-weight:600;
+}
+
+.datetime-list{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--text-dim);
+}
+
+.user-meta-row .datetime-list{
+  margin-top:0;
+  margin-left:auto;
+  text-align:right;
 }
 #chatUserStatus {
   display: block;             /* ⬅️ Ganti jadi block agar tidak terlalu dipaksa horizontal */
@@ -2507,26 +2535,28 @@ const deviceIdText = userData?.deviceId || "-";
     userLabel.style.display = "block";
     userLabel.style.width = "100%";
 
-    userLabel.innerHTML = `
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;">
-        <span class="label-text">${label}</span>
+const onlineText = userData?.online ? "Online" : "Offline";
+const onlineClass = userData?.online ? "online-text" : "offline-text";
 
-        ${hasUnread ? `
-        <span class="unread-badge">
-        ${unreadCount > 99 ? "99+" : unreadCount}
-        </span>` : ""}
+userLabel.innerHTML = `
+  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;">
+    <span class="label-text">${label}</span>
 
-        <svg class="online-indicator" width="10" height="10" viewBox="0 0 24 24" fill="#00ff00"
-          style="margin-left:auto;display:${userData?.online ? "inline-block":"none"};">
-          <circle cx="12" cy="12" r="10"/>
-        </svg>
-      </div>
+    ${hasUnread ? `
+    <span class="unread-badge">
+    ${unreadCount > 99 ? "99+" : unreadCount}
+    </span>` : ""}
+  </div>
 
-<div class="datetime-list">Device : ${deviceTypeText}</div>
-<div class="datetime-list">Browser : ${browserText}</div>
-<div class="datetime-list">Device ID : ${deviceIdText}</div>
-<div class="datetime-list">Date time ${loginText}</div>
-    `;
+  <div class="user-meta-row">
+    <span class="${onlineClass}">${onlineText}</span>
+    <span class="datetime-list">Date time ${loginText}</span>
+  </div>
+
+  <div class="datetime-list">Device : ${deviceTypeText}</div>
+  <div class="datetime-list">Browser : ${browserText}</div>
+  <div class="datetime-list">Device ID : ${deviceIdText}</div>
+`;
 
     userLabel.style.fontWeight = hasUnread ? "bold" : "normal";
     userDiv.appendChild(userLabel);
