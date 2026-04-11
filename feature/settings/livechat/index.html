@@ -1426,26 +1426,55 @@ body{
   display: inline; 
   line-height: normal;
 }
-  .user-top-time{
-  font-size:12px;
-  color:var(--text-dim);
-  text-align:right;
-  line-height:1.2;
-  white-space:nowrap;
-}
-
-.user-meta-row{
+.user-top-row{
   display:flex;
   align-items:flex-start;
-  margin-top:6px;
+  justify-content:space-between;
+  gap:10px;
   width:100%;
 }
 
-.user-meta-row > span:first-child{
+.user-top-left{
   flex:1;
+  min-width:0;
+}
+
+.user-top-left .label-text{
+  display:block;
   min-width:0;
   white-space:normal;
   word-break:break-word;
+}
+
+.user-top-right{
+  margin-left:auto;
+  flex-shrink:0;
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+}
+
+.user-top-time{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  justify-content:flex-start;
+  text-align:right;
+  line-height:1.1;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.user-top-date,
+.user-top-clock{
+  display:block;
+  font-size:12px;
+  color:var(--text-dim);
+}
+
+.unread-badge{
+  flex-shrink:0;
+  align-self:flex-start;
 }
   </style>
 </head>
@@ -2633,14 +2662,19 @@ const onlineClass = statusInfo.className;
 
 userLabel.innerHTML = `
   <div class="user-top-row">
-    <span class="label-text">${label}</span>
+    <div class="user-top-left">
+      <span class="label-text">${label}</span>
+    </div>
 
     <div class="user-top-right">
       ${hasUnread ? `
       <span class="unread-badge">
-      ${unreadCount > 99 ? "99+" : unreadCount}
+        ${unreadCount > 99 ? "99+" : unreadCount}
       </span>` : ""}
-      <span class="user-top-time">${loginText}</span>
+      <span class="user-top-time">
+        <span class="user-top-date">${topDate}</span>
+        <span class="user-top-clock">${topTime}</span>
+      </span>
     </div>
   </div>
 
