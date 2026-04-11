@@ -2123,17 +2123,25 @@ function openSelectedUserMainPage() {
   const qs = new URLSearchParams({
     name: payload.name || "",
     email: payload.email || "",
-    photo: payload.photo || "",
-    openTab: "none"
+    photo: payload.photo || ""
   });
 
-  const finalUrl = `https://5g88-main.vercel.app/main?${qs.toString()}`;
+  const finalUrl = `${window.location.origin}/main?${qs.toString()}`;
 
   if (window.parent && window.parent !== window) {
-    window.parent.postMessage({
-      type: "open-user-main-tab",
-      url: finalUrl
-    }, "https://5g88-main.vercel.app");
+    try {
+      const parentOrigin = document.referrer
+        ? new URL(document.referrer).origin
+        : "*";
+
+      window.parent.postMessage({
+        type: "open-user-main-tab",
+        url: finalUrl
+      }, parentOrigin);
+    } catch (err) {
+      console.warn("postMessage to parent failed:", err);
+      window.open(finalUrl, "_blank", "noopener,noreferrer");
+    }
   } else {
     window.open(finalUrl, "_blank", "noopener,noreferrer");
   }
