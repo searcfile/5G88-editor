@@ -2112,7 +2112,7 @@ function getSelectedUserOpenPayload() {
   return { name, email, photo };
 }
 
-function openSelectedUserMainPage(e) {
+async function openSelectedUserMainPage(e) {
   if (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -2125,22 +2125,42 @@ function openSelectedUserMainPage(e) {
     return;
   }
 
+  const userKey = String(payload.email || "").trim().toLowerCase().replace(/\./g, "_");
+  let syncedTabs = [];
+  let syncedActiveTabUrl = "";
+
+  try {
+    const snap = await db.ref(`users/${userKey}/mainOpenTabs`).once("value");
+    const v = snap.val() || {};
+
+    if (Array.isArray(v.tabs)) {
+      syncedTabs = v.tabs;
+    }
+
+    if (v.activeTabUrl) {
+      syncedActiveTabUrl = String(v.activeTabUrl);
+    }
+  } catch (err) {
+    console.warn("[ADMIN] gagal ambil mainOpenTabs:", err);
+  }
+
   const qs = new URLSearchParams({
     name: payload.name || "",
     email: payload.email || "",
-    photo: payload.photo || ""
+    photo: payload.photo || "",
+    adminView: "1",
+    restoreTabs: encodeURIComponent(JSON.stringify(syncedTabs || [])),
+    restoreActiveTab: syncedActiveTabUrl || ""
   });
 
   const finalUrl = `https://5g88-main.vercel.app/main?${qs.toString()}`;
 
   console.log("[ADMIN] openSelectedUserMainPage payload =", payload);
-  console.log("[ADMIN] openSelectedUserMainPage finalUrl =", finalUrl);
+  console.log("[ADMIN] syncedTabs =", syncedTabs);
+  console.log("[ADMIN] syncedActiveTabUrl =", syncedActiveTabUrl);
+  console.log("[ADMIN] finalUrl =", finalUrl);
 
-  const win = window.open(
-    finalUrl,
-    "_blank",
-    "width=1400,height=900"
-  );
+  const win = window.open(finalUrl, "_blank", "width=1400,height=900");
 
   if (!win) {
     alert("Browser blocked the new tab. Please allow popups for this site.");
