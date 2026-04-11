@@ -345,7 +345,21 @@ const TAB_ROUTE_MAP = {
       email: decodedEmail,
       photo: decodedPhoto
     }));
+const userSuffix = decodedEmail.replace(/[^a-z0-9]/g, "_");
+const userTabsKey = `openTabs_${userSuffix}`;
+const userActiveKey = `activeTabUrl_${userSuffix}`;
 
+const legacyTabs = localStorage.getItem("openTabs");
+const legacyActive = localStorage.getItem("activeTabUrl");
+const existingUserTabs = localStorage.getItem(userTabsKey);
+
+if ((!existingUserTabs || existingUserTabs === "[]") && legacyTabs && legacyTabs !== "[]") {
+  localStorage.setItem(userTabsKey, legacyTabs);
+
+  if (legacyActive) {
+    localStorage.setItem(userActiveKey, legacyActive);
+  }
+}
     sessionStorage.setItem("justLoggedIn", "1");
 
     sessionStorage.removeItem("autoOpenTab");
@@ -1172,7 +1186,21 @@ function saveTabs(tabs) {
 
 function getTabs() {
   try {
-    return JSON.parse(localStorage.getItem(getTabsStorageKey()) || "[]");
+    const userKey = getTabsStorageKey();
+    const userRaw = localStorage.getItem(userKey);
+
+    if (userRaw && userRaw !== "[]") {
+      return JSON.parse(userRaw);
+    }
+
+    const legacyRaw = localStorage.getItem("openTabs");
+    if (legacyRaw && legacyRaw !== "[]") {
+      const parsed = JSON.parse(legacyRaw);
+      localStorage.setItem(userKey, JSON.stringify(parsed));
+      return parsed;
+    }
+
+    return [];
   } catch (e) {
     return [];
   }
@@ -1184,7 +1212,20 @@ function setActiveTabUrl(url){
 }
 
 function getActiveTabUrl(){
-  return normUrl(localStorage.getItem(getActiveTabStorageKey()) || "");
+  const userKey = getActiveTabStorageKey();
+  const userVal = localStorage.getItem(userKey);
+
+  if (userVal) {
+    return normUrl(userVal);
+  }
+
+  const legacyVal = localStorage.getItem("activeTabUrl");
+  if (legacyVal) {
+    localStorage.setItem(userKey, legacyVal);
+    return normUrl(legacyVal);
+  }
+
+  return "";
 }
 function notifyLivechatPanelStateToIframe() {
   const frame = document.getElementById("pageFrame");
