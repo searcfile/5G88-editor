@@ -2131,37 +2131,13 @@ function openSelectedUserMainPage() {
   console.log("[ADMIN] openSelectedUserMainPage payload =", payload);
   console.log("[ADMIN] openSelectedUserMainPage finalUrl =", finalUrl);
 
-  let opened = false;
-
-  function fallbackOpen() {
-    if (opened) return;
-    opened = true;
-    window.open(finalUrl, "_blank", "noopener,noreferrer");
-  }
-
-  // fallback: kalau parent tak respon dalam 800ms, buka sendiri
-  const fallbackTimer = setTimeout(() => {
-    fallbackOpen();
-  }, 800);
-
   if (window.parent && window.parent !== window) {
     window.parent.postMessage({
       type: "open-user-main-tab",
       url: finalUrl
     }, "*");
-
-    // optional: bila parent berjaya, nanti parent boleh balas ack
-    window.addEventListener("message", function onAck(e) {
-      const data = e.data || {};
-      if (data.type === "open-user-main-tab-ack") {
-        clearTimeout(fallbackTimer);
-        opened = true;
-        window.removeEventListener("message", onAck);
-      }
-    });
   } else {
-    clearTimeout(fallbackTimer);
-    fallbackOpen();
+    location.href = finalUrl;
   }
 }
 function normalizeChatMessage(key, raw){
