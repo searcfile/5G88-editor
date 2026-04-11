@@ -329,6 +329,7 @@ const TAB_ROUTE_MAP = {
     const name  = qs.get("name");
     const email = qs.get("email");
     const photo = qs.get("photo") || "";
+    const openTab = (qs.get("openTab") || "").toLowerCase();
 
     if (email) {
       localStorage.setItem("gmailLogin", JSON.stringify({
@@ -339,10 +340,37 @@ const TAB_ROUTE_MAP = {
 
       sessionStorage.setItem("justLoggedIn", "1");
 
-      // ✅ buang query tapi kekalkan path semasa, contoh /main/918kiss
+      if (openTab) {
+        sessionStorage.setItem("autoOpenTab", openTab);
+      }
+
       history.replaceState({}, document.title, location.pathname);
     }
   } catch (_) {}
+})();
+(function autoOpenTabAfterQuery(){
+  if (!location.pathname.startsWith("/main")) return;
+
+  const tab = (sessionStorage.getItem("autoOpenTab") || "").toLowerCase();
+  if (!tab) return;
+
+  function openIt() {
+    if (typeof addTab !== "function") return false;
+
+    if (tab === "livechat") {
+      addTab("Live Chat", "https://5g88-main.vercel.app/main/livechat");
+      sessionStorage.removeItem("autoOpenTab");
+      return true;
+    }
+
+    return false;
+  }
+
+  if (!openIt()) {
+    window.addEventListener("load", () => {
+      setTimeout(openIt, 400);
+    }, { once: true });
+  }
 })();
 (function(){
   const SESS_ROOT = 'singleSessions';
