@@ -2466,10 +2466,11 @@ setInterval(updateDateTime, 1000);
 updateDateTime();
 // ✅ SATU handler postMessage gabungan (aman & rapi)
 window.addEventListener("message", async (e) => {
-  const allowedOrigins = new Set([
-    "https://searcfile.github.io",
-    "https://5g88-main.vercel.app",
-  ]);
+const allowedOrigins = new Set([
+  "https://searcfile.github.io",
+  "https://5g88-main.vercel.app",
+  "https://feature-settings.vercel.app",
+]);
   if (!allowedOrigins.has(e.origin)) {
     console.warn("❌ Diterima dari origin tidak dibenarkan:", e.origin);
     return;
