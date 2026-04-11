@@ -2126,22 +2126,16 @@ function openSelectedUserMainPage() {
     photo: payload.photo || ""
   });
 
-  const finalUrl = `${window.location.origin}/main?${qs.toString()}`;
+  const finalUrl = `https://5g88-main.vercel.app/main?${qs.toString()}`;
+
+  console.log("[ADMIN] openSelectedUserMainPage payload =", payload);
+  console.log("[ADMIN] openSelectedUserMainPage finalUrl =", finalUrl);
 
   if (window.parent && window.parent !== window) {
-    try {
-      const parentOrigin = document.referrer
-        ? new URL(document.referrer).origin
-        : "*";
-
-      window.parent.postMessage({
-        type: "open-user-main-tab",
-        url: finalUrl
-      }, parentOrigin);
-    } catch (err) {
-      console.warn("postMessage to parent failed:", err);
-      window.open(finalUrl, "_blank", "noopener,noreferrer");
-    }
+    window.parent.postMessage({
+      type: "open-user-main-tab",
+      url: finalUrl
+    }, "*");
   } else {
     window.open(finalUrl, "_blank", "noopener,noreferrer");
   }
