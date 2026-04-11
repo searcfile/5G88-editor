@@ -1495,26 +1495,34 @@ body{
 }
 
 .open-user-main-btn{
-  width:1em;
-  height:1em;
+  height:32px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  border:1px solid rgba(255,255,255,.12);
+  border:1px solid var(--border2);
   border-radius:6px;
-  background:transparent;
-  color:red;
+  background:var(--backgroundbtn);
+  color:var(--colorbtn);
   cursor:pointer;
   flex:0 0 auto;
-  padding:0;
+  padding:0px 15px;
   transition:.18s ease;
-  font-size:14px;
+}
+
+.open-user-main-btn svg{
+  width:1em;
+  height:1em;
 }
 
 .open-user-main-btn:hover{
-  background:rgba(255,255,255,.08);
-  border-color:rgba(255,255,255,.24);
+  background:var(--hover);
+  color:#1668dc;
+  border-color:#1668dc;
   transform:translateY(-1px);
+}
+
+.open-user-main-btn:active{
+  transform:scale(0.95);
 }
 
 .open-user-main-btn:disabled{
