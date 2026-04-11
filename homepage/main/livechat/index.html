@@ -1148,9 +1148,16 @@ function initFingerprint(){
 
   FP_PROMISE = (async () => {
     try{
-      if (!window.FingerprintJS) return null;
+      if (!window.FingerprintJS) {
+        console.warn("FingerprintJS not loaded");
+        return null;
+      }
+
       const fp = await FingerprintJS.load();
       const res = await fp.get();
+
+      console.log("Fingerprint visitorId:", res?.visitorId || null);
+
       return res?.visitorId || null;
     }catch(e){
       console.warn("Fingerprint init failed:", e);
@@ -1162,9 +1169,20 @@ function initFingerprint(){
 }
 
 async function getVisitorId(){
+  const savedId = localStorage.getItem("deviceId");
+  if (savedId && !/^fb_/i.test(savedId)) {
+    return savedId;
+  }
+
   const fpId = await initFingerprint();
-  if (fpId) return fpId;
-  return getFallbackDeviceId();
+  if (fpId) {
+    localStorage.setItem("deviceId", fpId);
+    return fpId;
+  }
+
+  const fallbackId = getFallbackDeviceId();
+  localStorage.setItem("deviceId", fallbackId);
+  return fallbackId;
 }
 function sanitizeEmail(email){
   return String(email || "")
@@ -1533,7 +1551,7 @@ function getParentOrigin(){
 const PARENT_ORIGIN = getParentOrigin();
 
 // PATCH START: postMessage handler
-window.addEventListener("message", (e) => {
+window.addEventListener("message", async (e) => {
   if (!ALLOWED_PARENTS.includes(e.origin)) return;
 
   const data = e.data || {};
@@ -1564,10 +1582,10 @@ window.addEventListener("message", (e) => {
       return; // identitas tak valid
     }
 
-    writeUserProfile(); 
-    bindPresenceAndNotif();
-    initChatWithUserData();
-    notifyRead();
+await writeUserProfile(); 
+bindPresenceAndNotif();
+initChatWithUserData();
+notifyRead();
   }
 if (data.type === "livechat-panel-closed") {
   livechatPanelOpen = false;
