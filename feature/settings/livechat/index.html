@@ -2578,8 +2578,12 @@ const photoURL = mergedIdentity.photoURL || "";
 const label = email ? `${displayName} (${email})` : displayName;
     if (q && !label.toLowerCase().includes(q)) return;
 
-    const loginTs   = getLoginTimeFromUser(userData);
-    const loginText = formatDateTimeMY(loginTs);
+const lastChatTs =
+  Number(userData?.lastChatTime || 0) ||
+  Number(chatMeta[sanitized]?.lastChatTime || 0) ||
+  Number(getLoginTimeFromUser(userData) || 0);
+
+const loginText = formatDateTimeMY(lastChatTs);
 
     const deviceTypeText =
   userData?.deviceType ||
