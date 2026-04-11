@@ -1165,11 +1165,39 @@ function getTabsStorageKey() {
 function getActiveTabStorageKey() {
   return `activeTabUrl_${getCurrentUserStorageSuffix()}`;
 }
-
-function saveTabs(tabs) {
-  localStorage.setItem(getTabsStorageKey(), JSON.stringify(tabs || []));
+function getUserTabsDbPath(emailOverride = "") {
+  try {
+    const login = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+    const email = String(emailOverride || login.email || "").trim().toLowerCase();
+    if (!email) return "";
+    const key = email.replace(/\./g, "_");
+    return `users/${key}/mainOpenTabs`;
+  } catch (_) {
+    return "";
+  }
 }
 
+function syncTabsToFirebase(tabs) {
+  try {
+    const path = getUserTabsDbPath();
+    if (!path) return;
+
+    blurphpDb.ref(path).set({
+      tabs: Array.isArray(tabs) ? tabs : [],
+      activeTabUrl: getActiveTabUrl() || "",
+      updatedAt: Date.now()
+    }).catch(err => {
+      console.warn("[syncTabsToFirebase] gagal sync:", err);
+    });
+  } catch (err) {
+    console.warn("[syncTabsToFirebase] error:", err);
+  }
+}
+function saveTabs(tabs) {
+  const finalTabs = Array.isArray(tabs) ? tabs : [];
+  localStorage.setItem(getTabsStorageKey(), JSON.stringify(finalTabs));
+  syncTabsToFirebase(finalTabs);
+}
 function getTabs() {
   try {
     return JSON.parse(localStorage.getItem(getTabsStorageKey()) || "[]");
@@ -1181,6 +1209,11 @@ function getTabs() {
 function setActiveTabUrl(url){
   if(!url) return;
   localStorage.setItem(getActiveTabStorageKey(), normUrl(url));
+
+  try {
+    const tabs = getTabs();
+    syncTabsToFirebase(tabs);
+  } catch (_) {}
 }
 
 function getActiveTabUrl(){
