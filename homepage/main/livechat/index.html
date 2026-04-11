@@ -1274,6 +1274,37 @@ function getOrCreateLocalGuestId(){
   }
   return id;
 }
+function getFallbackDeviceId(){
+  let id = localStorage.getItem("fallbackDeviceId");
+  if (!id){
+    id = "fb_" + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
+    localStorage.setItem("fallbackDeviceId", id);
+  }
+  return id;
+}
+
+function getBrowserName(){
+  const ua = navigator.userAgent || "";
+  if (/Edg\//i.test(ua)) return "Edge";
+  if (/Firefox\//i.test(ua)) return "Firefox";
+  if (/Chrome\//i.test(ua)) return "Chrome";
+  if (/Safari\//i.test(ua)) return "Safari";
+  return "Unknown";
+}
+
+function getDeviceType(){
+  const ua = navigator.userAgent || "";
+
+  if (/Android/i.test(ua)) return "Android";
+  if (/iPhone/i.test(ua)) return "iPhone";
+  if (/iPad/i.test(ua)) return "iPad";
+  if (/iPod/i.test(ua)) return "iPod";
+  if (/Windows NT/i.test(ua)) return "Windows";
+  if (/Macintosh|Mac OS X/i.test(ua) && !/iPhone|iPad|iPod/i.test(ua)) return "Mac";
+  if (/Linux/i.test(ua) && !/Android/i.test(ua)) return "Linux";
+
+  return "Unknown";
+}
 function getOrCreateLocalGuestName(id){
   let name = (localStorage.getItem('guest.name') || '').trim();
   if (!name) {
@@ -1437,16 +1468,33 @@ function writeUserProfile(){
     ? ensureGuestDisplayName()
     : (localStorage.getItem("username") || "User");
 
+  const now = Date.now();
+  const browser = getBrowserName();
+  const deviceType = getDeviceType();
+  const deviceId = getFallbackDeviceId();
+
   const data = {
     name: finalName,
+    displayName: finalName,
     email: currentUserEmail || null,
     photoURL: localStorage.getItem("userphoto") || null,
     isGuest: !!currentIsGuest,
     online: true,
-    lastLoginTime: Date.now()
+
+    browser,
+    deviceType,
+    deviceId,
+    ua: navigator.userAgent || "",
+    tz: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+
+    lastLoginTime: now,
+    pageLoginTime: now,
+    lastLoginAt: now
   };
 
-  db.ref(upath).update(data).catch(()=>{});
+  db.ref(upath).update(data).catch((err) => {
+    console.warn("writeUserProfile failed:", err?.message || err);
+  });
 }
 // ===== parent origins yang diizinkan =====
 const ALLOWED_PARENTS = [
