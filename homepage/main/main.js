@@ -2519,7 +2519,6 @@ updateDateTime();
 // ✅ SATU handler postMessage gabungan (aman & rapi)
 window.addEventListener("message", async (e) => {
   const allowedOrigins = new Set([
-    "https://searcfile.github.io",
     "https://5g88-main.vercel.app",
   ]);
   if (!allowedOrigins.has(e.origin)) {
