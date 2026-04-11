@@ -585,7 +585,12 @@ body {
   font-size:12px;
   font-weight:600;
 }
-
+.typing-text{
+  color:#31d158;
+  font-size:12px;
+  font-weight:600;
+  font-style:italic;
+}
 .datetime-list{
   margin-top:4px;
   font-size:12px;
@@ -2104,7 +2109,73 @@ function makeActivityTime(lastChatTime, userData){
   const loginTime = getLoginTimeFromUser(userData);
   return Math.max(Number(lastChatTime||0), loginTime);
 }
+function formatLastSeenForList(ts){
+  if (!ts) return "Offline";
 
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return "Offline";
+
+  const now = new Date();
+
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const msgDay = new Date(d);
+  msgDay.setHours(0, 0, 0, 0);
+
+  const timeText = d.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
+
+  if (msgDay.getTime() === today.getTime()) {
+    return `Offline • Last seen today at ${timeText}`;
+  }
+
+  if (msgDay.getTime() === yesterday.getTime()) {
+    return `Offline • Last seen yesterday at ${timeText}`;
+  }
+
+  const sameYear = d.getFullYear() === now.getFullYear();
+
+  const dateText = d.toLocaleDateString("en-GB", sameYear
+    ? { day: "numeric", month: "short" }
+    : { day: "numeric", month: "short", year: "numeric" }
+  );
+
+  return `Offline • Last seen ${dateText} at ${timeText}`;
+}
+
+function getUserListStatus(userData = {}){
+  if (userData?.typing === true) {
+    return {
+      text: "Typing...",
+      className: "typing-text"
+    };
+  }
+
+  if (userData?.online === true) {
+    return {
+      text: "Online",
+      className: "online-text"
+    };
+  }
+
+  const lastSeenTs =
+    Number(userData?.lastLoginTime || 0) ||
+    Number(userData?.lastLoginAt || 0) ||
+    Number(userData?.pageLoginTime || 0) ||
+    0;
+
+  return {
+    text: formatLastSeenForList(lastSeenTs),
+    className: "offline-text"
+  };
+}
 /* ======================= COUNTERS ======================= */
 function updateUserCounts(){
   const totalUsersElem  = document.getElementById("totalUsers");
@@ -2535,8 +2606,9 @@ const deviceIdText = userData?.deviceId || "-";
     userLabel.style.display = "block";
     userLabel.style.width = "100%";
 
-const onlineText = userData?.online ? "Online" : "Offline";
-const onlineClass = userData?.online ? "online-text" : "offline-text";
+const statusInfo = getUserListStatus(userData);
+const onlineText = statusInfo.text;
+const onlineClass = statusInfo.className;
 
 userLabel.innerHTML = `
   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;">
