@@ -2633,7 +2633,18 @@ const lastChatTs =
   Number(chatMeta[sanitized]?.lastChatTime || 0) ||
   Number(getLoginTimeFromUser(userData) || 0);
 
-const loginText = formatDateTimeMY(lastChatTs);
+const topDate = lastChatTs
+  ? new Date(lastChatTs).toLocaleDateString("en-CA")
+  : "-";
+
+const topTime = lastChatTs
+  ? new Date(lastChatTs).toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    })
+  : "-";
 
     const deviceTypeText =
   userData?.deviceType ||
