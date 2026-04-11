@@ -2466,6 +2466,7 @@ setInterval(updateDateTime, 1000);
 updateDateTime();
 // ✅ SATU handler postMessage gabungan (aman & rapi)
 window.addEventListener("message", async (e) => {
+  console.log("[PARENT] message received:", e.origin, e.data);
 const allowedOrigins = new Set([
   "https://searcfile.github.io",
   "https://5g88-main.vercel.app",
