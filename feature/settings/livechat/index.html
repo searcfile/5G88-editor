@@ -2124,7 +2124,12 @@ function getSelectedUserOpenPayload() {
   return { name, email, photo };
 }
 
-function openSelectedUserMainPage() {
+function openSelectedUserMainPage(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
   const payload = getSelectedUserOpenPayload();
 
   if (!payload) {
@@ -2143,14 +2148,14 @@ function openSelectedUserMainPage() {
   console.log("[ADMIN] openSelectedUserMainPage payload =", payload);
   console.log("[ADMIN] openSelectedUserMainPage finalUrl =", finalUrl);
 
-  if (window.parent && window.parent !== window) {
-    window.parent.postMessage({
-      type: "open-user-main-tab",
-      url: finalUrl
-    }, "*");
-  } else {
-    location.href = finalUrl;
+  const win = window.open(finalUrl, "_blank");
+
+  if (!win) {
+    alert("Browser blocked the new tab. Please allow popups for this site.");
+    return;
   }
+
+  win.focus();
 }
 function normalizeChatMessage(key, raw){
   if (!raw || typeof raw !== "object") return null;
@@ -2838,7 +2843,9 @@ const selectedUserPhoto =
       if (nameEl) nameEl.textContent = selectedUserName;
 const openUserMainBtn = document.getElementById("openUserMainBtn");
 if (openUserMainBtn) {
-  openUserMainBtn.disabled = false;
+  openUserMainBtn.addEventListener("click", function(e) {
+    openSelectedUserMainPage(e);
+  });
 }
       const avatarImg = document.getElementById("chatUserAvatar");
       if (avatarImg){
