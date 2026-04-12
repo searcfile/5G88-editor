@@ -494,12 +494,13 @@
   align-items:stretch;
   gap:0;
   position:relative;
-  padding:3px;
-  min-width:220px;
+  padding:0 3px 3px;
+  min-width:0;
   max-width:330px;
   width:fit-content;
   overflow:visible;
   border-radius:7.5px;
+  box-sizing:border-box;
 }
 
 /* text */
@@ -526,7 +527,16 @@
   line-height:1.35;
   font-size:14px;
 }
-
+.bubble.media-only .caption{
+  display:block;
+  padding:7px 6px 5px 6px;
+  min-width:0;
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  line-height:1.35;
+  font-size:14px;
+}
   .bubble-time{
   position:static;
   display:inline-flex;
@@ -583,24 +593,28 @@
 }
 .image-wrap{
   position:relative;
-  border-radius:6px;
+  border-radius:7px;
   overflow:hidden;
   display:block;
-  width:100%;
-  min-width:214px;
+  width:auto;
   max-width:324px;
-  max-height:273px;
+  min-width:0;
+  height:auto;
+  max-height:none;
   background:transparent;
   margin:0;
   flex:0 0 auto;
+  line-height:0;
+  align-self:flex-start;
 }
 
 .image-wrap img{
   display:block;
-  width:100%;
+  width:auto;
+  max-width:324px;
   height:auto;
-  max-height:273px;
-  object-fit: contain;
+  max-height:420px;
+  object-fit:contain;
   vertical-align:top;
 }
 
