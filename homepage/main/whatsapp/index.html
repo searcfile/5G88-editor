@@ -327,16 +327,32 @@
     scroll-behavior:smooth;
   }
 
-  .chat-inner{
-    max-width:100%;
-    width:100%;
-    margin:0 auto;
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-    min-height:100%;
-    padding-bottom:40px;
-  }
+.chat-inner{
+  max-width:100%;
+  width:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  min-height:100%;
+  padding-bottom:40px;
+}
+
+.msg-row{
+  display:flex;
+  width:100%;
+  margin:2px 0;
+}
+
+.msg-row.mine{
+  justify-content:flex-end;
+  margin:2px 0;
+}
+
+.msg-row.their{
+  justify-content:flex-start;
+  margin:4px 0 6px;
+}
 
   .day-sep{
     align-self:center;
@@ -349,11 +365,6 @@
     box-shadow:0 1px 0 rgba(255,255,255,.04);
   }
 
-  .msg-row{
-    display:flex;
-    width:100%;
-    margin:1px 0;
-  }
 
   .msg-row.mine{justify-content:flex-end}
   .msg-row.their{justify-content:flex-start}
