@@ -25,20 +25,21 @@
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
+    html,body{
       margin:0;
       font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       color:var(--text);
       background:linear-gradient(180deg,#111b21 0 130px,#0b141a 130px 100%);
       overflow:hidden;
+      height:100vh;
     }
 
     .app{
       height:100vh;
       display:grid;
-      grid-template-columns: 380px 1fr;
+      grid-template-columns: 320px 1fr;
       gap:0;
+      overflow:hidden;
     }
 
     .sidebar{
@@ -47,7 +48,8 @@
       display:flex;
       flex-direction:column;
       min-width:320px;
-      overflow:hidden;
+      overflow-y:auto;
+      overflow-x:hidden;
     }
 
     .sidebar-header{
@@ -74,7 +76,8 @@
     }
 
     .sidebar-scroll{
-      overflow:auto;
+      overflow-y:auto;
+      overflow-x:hidden;
       padding:14px;
       display:flex;
       flex-direction:column;
@@ -165,6 +168,8 @@
       display:flex;
       flex-direction:column;
       min-width:0;
+      height:100%;
+      overflow:hidden;
     }
 
     .topbar{
@@ -224,6 +229,8 @@
     }
     .icon-btn:hover{background:#1e2a31;border-color:#2a3942}
     .icon-btn svg{width:21px;height:21px;fill:currentColor}
+
+    .hidden{display:none !important}
     .call-btn{
       width:auto;border-radius:999px;padding:0 14px;gap:10px;display:flex;align-items:center;background:transparent;border:1px solid #2e3d45;
     }
@@ -233,17 +240,28 @@
     .chat-area{
       flex:1;
       position:relative;
-      overflow:auto;
-      padding:20px 28px 30px;
+      overflow-y:auto;
+      overflow-x:hidden;
+      padding:20px 40px 80px;
       background:
         linear-gradient(rgba(11,20,26,.78),rgba(11,20,26,.78)),
         var(--chat-bg-image);
       background-size:var(--chat-bg-size);
       background-position:var(--chat-bg-position);
       background-repeat:no-repeat;
+      scroll-behavior:smooth;
     }
 
-    .chat-inner{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:2px}
+    .chat-inner{
+      max-width:1200px;
+      width:100%;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-height:100%;
+      padding-bottom:40px;
+    }
 
     .day-sep{
       align-self:center;
@@ -265,7 +283,9 @@
     .msg-row.their{justify-content:flex-start}
 
     .bubble{
-      max-width:min(55%, 420px);
+      max-width:420px;
+      width:fit-content;
+      min-width:92px;
       border-radius:8px;
       padding:8px 10px 18px;
       position:relative;
@@ -278,7 +298,47 @@
     .msg-row.mine .bubble{background:var(--mine);border-top-right-radius:0}
     .msg-row.their .bubble{background:var(--theirs);border-top-left-radius:0}
 
+    .msg-row.mine .bubble::after,
+    .msg-row.their .bubble::before{
+      content:"";
+      position:absolute;
+      top:0;
+      width:10px;
+      height:13px;
+      pointer-events:none;
+    }
+
+    .msg-row.mine .bubble::after{
+      right:-6px;
+      background:var(--mine);
+      clip-path:polygon(0 0, 100% 0, 0 100%);
+    }
+
+    .msg-row.their .bubble::before{
+      left:-6px;
+      background:var(--theirs);
+      clip-path:polygon(100% 0, 100% 100%, 0 0);
+    }
+
+    .msg-row.mine .bubble::after{
+      right:-10px;
+      background:linear-gradient(to top right, var(--mine) 0 50%, transparent 50% 100%);
+      clip-path:polygon(0 0, 0 100%, 100% 0);
+    }
+
+    .msg-row.their .bubble::before{
+      left:-10px;
+      background:linear-gradient(to top left, var(--theirs) 0 50%, transparent 50% 100%);
+      clip-path:polygon(100% 0, 100% 100%, 0 0);
+    }
+
     .bubble.media-only{padding:6px 6px 20px}
+
+    .bubble .bubble-text,
+    .bubble .caption{
+      padding-right:56px;
+      display:block;
+    }
 
     .bubble-time{
       position:absolute;
@@ -302,8 +362,8 @@
       border-radius:8px;
       overflow:hidden;
       display:inline-block;
-      min-width:220px;
-      max-width:340px;
+      width:100%;
+      max-width:100%;
       background:#0d1012;
     }
     .image-wrap img{
@@ -404,7 +464,7 @@
       .app{grid-template-columns:1fr}
       .sidebar{max-height:46vh;border-right:none;border-bottom:1px solid var(--line)}
       .profile-name{max-width:220px}
-      .bubble{max-width:84%}
+      .bubble{max-width:min(84vw, 400px)}
     }
   </style>
 </head>
@@ -540,7 +600,7 @@
 
     <main class="chat-shell">
       <div class="topbar">
-        <div class="profile">
+        <div class="profile" id="openProfileFromHeader" style="cursor:pointer;">
           <div class="avatar" id="avatarPreview">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5Zm0 2c-3.86 0-7 2.24-7 5v1h14v-1c0-2.76-3.14-5-7-5Z"/>
@@ -553,7 +613,7 @@
         </div>
 
         <div class="actions">
-          <button class="icon-btn" title="Edit">
+          <button class="icon-btn" id="openProfileModalBtn" title="Edit Profile">
             <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm2.92 2.33H5v-.92l8.06-8.06.92.92L5.92 19.58ZM20.71 7.04a1.003 1.003 0 0 0 0-1.42L18.37 3.3a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.84Z"/></svg>
           </button>
           <button class="call-btn" title="Video Call">
@@ -563,6 +623,35 @@
           <button class="icon-btn" title="Search">
             <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6ZM9.5 14A4.5 4.5 0 1 1 14 9.5 4.505 4.505 0 0 1 9.5 14Z"/></svg>
           </button>
+        </div>
+      </div>
+
+      <div class="hidden" id="profileModalBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;align-items:center;justify-content:center;padding:20px;">
+        <div id="profileModal" style="width:min(400px,100%);background:#111b21;border:1px solid #26353d;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.45);overflow:hidden;">
+          <div style="padding:16px 18px;border-bottom:1px solid #22313a;font-size:18px;font-weight:700;">Edit Profile</div>
+          <div style="padding:18px;display:grid;gap:14px;">
+            <div style="display:flex;justify-content:center;">
+              <div id="profileModalAvatar" style="width:110px;height:110px;border-radius:50%;background:#40515b center/cover no-repeat;overflow:hidden;display:grid;place-items:center;border:3px solid #22313a;"></div>
+            </div>
+            <div class="btn-row" style="justify-content:center;">
+              <button id="changeProfileBtn" class="ghost" type="button">Change Profile</button>
+              <button id="viewProfileBtn" class="ghost" type="button">View Profile</button>
+              <button id="deleteProfileBtn" class="ghost" type="button">Delete</button>
+            </div>
+            <input id="profileModalFile" type="file" accept="image/*" class="hidden" />
+            <div>
+              <label class="lbl">Change Name</label>
+              <input id="profileModalName" type="text" placeholder="Enter profile name" />
+            </div>
+            <div>
+              <label class="lbl">Status Text</label>
+              <input id="profileModalStatus" type="text" placeholder="Enter status text" />
+            </div>
+            <div class="btn-row" style="justify-content:flex-end;margin-top:6px;">
+              <button id="cancelProfileBtn" class="ghost" type="button">Cancel</button>
+              <button id="updateProfileBtn" type="button">Update</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -651,7 +740,19 @@
       importFile: $('importFile'),
       clearChatBtn: $('clearChatBtn'),
       chatList: $('chatList'),
-      chatArea: $('chatArea')
+      chatArea: $('chatArea'),
+      openProfileModalBtn: $('openProfileModalBtn'),
+      openProfileFromHeader: $('openProfileFromHeader'),
+      profileModalBackdrop: $('profileModalBackdrop'),
+      profileModalAvatar: $('profileModalAvatar'),
+      profileModalFile: $('profileModalFile'),
+      profileModalName: $('profileModalName'),
+      profileModalStatus: $('profileModalStatus'),
+      changeProfileBtn: $('changeProfileBtn'),
+      viewProfileBtn: $('viewProfileBtn'),
+      cancelProfileBtn: $('cancelProfileBtn'),
+      updateProfileBtn: $('updateProfileBtn'),
+      deleteProfileBtn: $('deleteProfileBtn')
     };
 
     function uid(){
@@ -730,15 +831,21 @@
       refs.chatNamePreview.textContent = state.profile.name || 'Untitled Chat';
       refs.chatStatusPreview.textContent = state.profile.status || '';
 
+      const avatarMarkup = `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5Zm0 2c-3.86 0-7 2.24-7 5v1h14v-1c0-2.76-3.14-5-7-5Z"/>
+        </svg>`;
+
       if (state.profile.avatar){
         refs.avatarPreview.style.backgroundImage = `url(${state.profile.avatar})`;
         refs.avatarPreview.innerHTML = '';
+        refs.profileModalAvatar.style.backgroundImage = `url(${state.profile.avatar})`;
+        refs.profileModalAvatar.innerHTML = '';
       } else {
         refs.avatarPreview.style.backgroundImage = 'none';
-        refs.avatarPreview.innerHTML = `
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5Zm0 2c-3.86 0-7 2.24-7 5v1h14v-1c0-2.76-3.14-5-7-5Z"/>
-          </svg>`;
+        refs.avatarPreview.innerHTML = avatarMarkup;
+        refs.profileModalAvatar.style.backgroundImage = 'none';
+        refs.profileModalAvatar.innerHTML = avatarMarkup;
       }
     }
 
@@ -946,6 +1053,20 @@
       renderChat();
     }
 
+    function openProfileModal(){
+      refs.profileModalName.value = state.profile.name || '';
+      refs.profileModalStatus.value = state.profile.status || '';
+      renderHeader();
+      refs.profileModalBackdrop.classList.remove('hidden');
+      refs.profileModalBackdrop.style.display = 'flex';
+    }
+
+    function closeProfileModal(){
+      refs.profileModalBackdrop.classList.add('hidden');
+      refs.profileModalBackdrop.style.display = 'none';
+      refs.profileModalFile.value = '';
+    }
+
     function bindEvents(){
       refs.chatName.addEventListener('input', () => {
         state.profile.name = refs.chatName.value;
@@ -968,6 +1089,40 @@
         state.profile.avatar = '';
         refs.avatarFile.value = '';
         saveAndRender();
+      });
+
+      refs.openProfileModalBtn.addEventListener('click', openProfileModal);
+      refs.openProfileFromHeader.addEventListener('click', openProfileModal);
+      refs.cancelProfileBtn.addEventListener('click', closeProfileModal);
+      refs.profileModalBackdrop.addEventListener('click', (e) => {
+        if (e.target === refs.profileModalBackdrop) closeProfileModal();
+      });
+      refs.changeProfileBtn.addEventListener('click', () => refs.profileModalFile.click());
+      refs.viewProfileBtn.addEventListener('click', () => {
+        if (!state.profile.avatar) return alert('Belum ada profile image bro.');
+        const win = window.open('');
+        if (!win) return;
+        win.document.write(`<title>View Profile</title><body style="margin:0;background:#0b141a;display:grid;place-items:center;min-height:100vh"><img src="${state.profile.avatar}" style="max-width:90vw;max-height:90vh;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.45)"></body>`);
+      });
+      refs.deleteProfileBtn.addEventListener('click', () => {
+        if (!state.profile.avatar) return alert('Belum ada gambar profile untuk dipadam bro.');
+        if (!confirm('Delete gambar profile ini?')) return;
+        state.profile.avatar = '';
+        refs.avatarFile.value = '';
+        refs.profileModalFile.value = '';
+        renderHeader();
+      });
+      refs.profileModalFile.addEventListener('change', async () => {
+        await onImagePicked(refs.profileModalFile, (base64) => {
+          state.profile.avatar = base64;
+          renderHeader();
+        }, 600, 0.94);
+      });
+      refs.updateProfileBtn.addEventListener('click', () => {
+        state.profile.name = refs.profileModalName.value.trim() || 'Untitled Chat';
+        state.profile.status = refs.profileModalStatus.value.trim();
+        saveAndRender();
+        closeProfileModal();
       });
 
       refs.addTextBtn.addEventListener('click', addTextMessage);
