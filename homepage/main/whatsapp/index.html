@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +9,7 @@
 <style>
   :root{
     --bg:#0b141a;
-    --panel:#0b0b0b;
+    --panel:#111b21;
     --panel-2:#202c33;
     --panel-3:#2a3942;
     --text:#e9edef;
@@ -90,8 +92,8 @@
   }
 
   .card{
-    background:#0b0b0b;
-    border:1px solid #424242;
+    background:var(--panel-2);
+    border:1px solid #2b3840;
     border-radius:14px;
     padding:14px;
     box-shadow:var(--shadow);
@@ -122,13 +124,12 @@
     width:100%;
     border:none;
     outline:none;
-    background:#141414;
-    color:rgba(255,255,255,.85);
-    padding:4px 11px;
-    border-radius:6px;
+    background:var(--input);
+    color:var(--text);
+    padding:11px 12px;
+    border-radius:10px;
     font-size:13px;
-    border:1px solid #424242;
-    height:32px;
+    border:1px solid #2d3b43;
   }
 
   textarea{
@@ -153,20 +154,18 @@
     border:none;
     outline:none;
     cursor:pointer;
-    background:#1668dc;
+    background:var(--accent);
     color:#fff;
-    padding:0px 15px;
-    border-radius:6px;
-    font-size:14px;
-    transition: all .2s ease;
-    height:32px;
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:700;
+    transition:.18s ease;
   }
 
-  button:hover{background:#3c89e8;}
-  button:active{background:#1554ad;}
-  .ghost{background:#141414;color:rgba(255,255,255,.85);border:1px solid #424242;}
-  .ghost:hover{color:#3c89e8; border:1px solid #3c89e8;}
-  .ghost:active{color:#1554ad; border:1px solid #1554ad;}
+  button:hover{filter:brightness(1.06)}
+  button:active{transform:translateY(1px)}
+  .ghost{background:#233138;color:#d7e1e5}
   .danger{background:#b42318}
   .full{width:100%}
 
@@ -389,14 +388,15 @@
   .msg-row.their{justify-content:flex-start}
 
   /* ===== WHATSAPP-LIKE BUBBLE ===== */
-/* TEXT bubble */
 .bubble{
-  display:inline-block;
+  display:inline-flex;
+  align-items:flex-end;
+  gap:6px;
   position:relative;
   max-width:min(420px, calc(100% - 24px));
+  width:fit-content;
   min-width:0;
-  width:auto;
-  padding:6px 54px 8px 9px; /* kanan besar supaya time masuk elok */
+  padding: 6px 7px 8px 9px;
   border-radius:7.5px;
   font-size:14px;
   line-height:1.3;
@@ -404,118 +404,19 @@
   word-break:break-word;
   box-shadow:0 1px 0 rgba(0,0,0,.28);
   vertical-align:top;
-  color:#FAFAFA;
-  box-sizing:border-box;
+  color: #FAFAFA;
 }
+
 .msg-row.mine .bubble{
   background:var(--mine);
-  margin-right:0;
+  margin-right:6px;
 }
 
 .msg-row.their .bubble{
   background:var(--theirs);
-  margin-left:0;
-}
-.msg-row.mine .bubble-wrap{
-  margin-right:6px;
-}
-
-.msg-row.their .bubble-wrap{
   margin-left:6px;
 }
-.bubble-wrap{
-  position:relative;
-  display:inline-block;
-  vertical-align:top;
-}
 
-.bubble-menu-btn{
-  position:absolute;
-  top:6px;
-  border:none;
-  padding:0;
-  display:grid;
-  place-items:center;
-  background:transparent;
-  color:#fafafa;
-  cursor:pointer;
-  opacity:0;
-  pointer-events:none;
-  transform:translateY(-2px);
-  transition:opacity .16s ease, transform .16s ease, background .16s ease;
-  z-index:6;
-}
-
-/* default */
-.msg-row.mine .bubble-menu-btn,
-.msg-row.their .bubble-menu-btn{
-  right:8px;
-}
-
-/* text bubble: bagi lebih pass ke kanan */
-.bubble-wrap.text-wrap .bubble-menu-btn{
-  right: 30px;
-}
-
-/* image bubble: kekalkan macam sekarang */
-.bubble-wrap.media-wrap .bubble-menu-btn{
-  right:8px;
-}
-
-.bubble-wrap:hover .bubble-menu-btn,
-.bubble-wrap.menu-open .bubble-menu-btn{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.bubble-menu-btn:hover{
-  color:#fff;
-}
-
-.bubble-menu-btn svg{
-  width:16px;
-  height:16px;
-  fill:currentColor;
-}
-
-.bubble-dropdown{
-  position:absolute;
-  top:32px;
-  right:10px;
-  min-width:130px;
-  background:#233138;
-  border:1px solid #31434d;
-  border-radius:10px;
-  box-shadow:0 10px 28px rgba(0,0,0,.35);
-  padding:6px;
-  display:none;
-  flex-direction:column;
-  gap:2px;
-  z-index:20;
-}
-
-.bubble-wrap.menu-open .bubble-dropdown{
-  display:flex;
-}
-
-.bubble-dropdown button{
-  width:100%;
-  background:transparent;
-  color:#e9edef;
-  text-align:left;
-  padding:9px 10px;
-  border-radius:8px;
-  font-size:14px;
-  font-weight:500;
-}
-
-.bubble-dropdown button:hover{
-  background:#2f3f48;
-}
-
-.bubble-dropdown .delete-action{
-  color:#ff8f8f;
-}
 /* default: semua bubble takda tail dulu */
 .msg-row.mine .bubble::after,
 .msg-row.their .bubble::before{
@@ -588,31 +489,31 @@
   border-bottom-left-radius:7.5px;
 }
 
-/* MEDIA bubble kekal asing */
 .bubble.media-only{
   display:flex;
   flex-direction:column;
   align-items:flex-start;
+  gap:0;
   position:relative;
-  width:auto;
-  min-width:0;
   padding:3px;
+  min-width:0;
+  width:auto;
   overflow:visible;
   border-radius:7.5px;
   box-sizing:border-box;
 }
 
+/* text */
 .bubble .bubble-text{
   display:block;
-  width:auto;          /* penting: buang width:100% */
   margin:0;
   padding:0;
   min-width:0;
   white-space:pre-wrap;
   word-break:break-word;
   overflow-wrap:anywhere;
-  letter-spacing:0.16px;
-  font-weight:400;
+  letter-spacing: 0.16px;
+  font-weight: 400;
 }
 
 /* caption */
@@ -636,14 +537,14 @@
   line-height:1.35;
   font-size:14px;
 }
-/* time untuk text bubble pun buat absolute macam media */
-.bubble-time{
-  position:absolute;
-  right:7px;
-  bottom:6px;
+  .bubble-time{
+  position:static;
   display:inline-flex;
   align-items:center;
   gap:3px;
+  flex:0 0 auto;
+  align-self:flex-end;
+  margin-left:-2px;
   font-size:12px;
   line-height:1;
   white-space:nowrap;
@@ -651,8 +552,7 @@
   opacity:.95;
   letter-spacing:0;
   pointer-events:none;
-  margin-left:0;
-  transform:none;
+  transform:translateY(6px);
 }
 
 .msg-row.their .bubble-time{
@@ -943,32 +843,6 @@
     .profile-name{max-width:220px}
     .bubble{max-width:min(84vw, 400px)}
   }
-/* ================= SCROLLBAR GLOBAL ================= */
-
-/* Chrome, Edge, Safari */
-::-webkit-scrollbar {
-  width: 6px; /* nipis */
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 10px;
-  transition: all 0.25s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #777;
-}
-
-/* Firefox */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: #555 transparent;
-}
 </style>
 </head>
 <body>
@@ -1428,27 +1302,21 @@ function applyImageOrientation(root = document){
   node = document.createElement('div');
   node.className = `msg-row ${item.side === 'their' ? 'their' : 'mine'} ${groupClass}`;
 
-const bubbleWrap = document.createElement('div');
-bubbleWrap.className = 'bubble-wrap';
-
 const bubble = document.createElement('div');
 bubble.className = 'bubble';
 
 if (item.type === 'image') {
   bubble.classList.add('media-only');
-  bubbleWrap.classList.add('media-wrap');
-} else {
-  bubbleWrap.classList.add('text-wrap');
 }
 
-if (item.type === 'text') {
-  bubble.innerHTML = `
-    <div class="bubble-text">${escapeHtml(item.text || '')}</div>
-    <div class="bubble-time">
-      <span>${timeLabel(item.time)}</span>
-      ${item.side === 'mine' ? mineTicks() : ''}
-    </div>`;
-}
+  if (item.type === 'text') {
+    bubble.innerHTML = `
+      <div class="bubble-text">${escapeHtml(item.text || '')}</div>
+      <div class="bubble-time">
+        <span>${timeLabel(item.time)}</span>
+        ${item.side === 'mine' ? mineTicks() : ''}
+      </div>`;
+  }
 
 if (item.type === 'image') {
   bubble.innerHTML = `
@@ -1467,47 +1335,12 @@ if (item.type === 'image') {
         ${item.side === 'mine' ? mineTicks() : ''}
       </div>`;
 }
-const menuBtn = document.createElement('button');
-menuBtn.className = 'bubble-menu-btn';
-menuBtn.type = 'button';
-menuBtn.setAttribute('aria-label', 'More');
-menuBtn.innerHTML = `
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z"></path>
-  </svg>
-`;
 
-const dropdown = document.createElement('div');
-dropdown.className = 'bubble-dropdown';
-dropdown.innerHTML = `
-  <button type="button" class="edit-action">Edit</button>
-  <button type="button" class="delete-action">Delete</button>
-`;
-
-bubbleWrap.appendChild(bubble);
-bubbleWrap.appendChild(menuBtn);
-bubbleWrap.appendChild(dropdown);
-
-menuBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  toggleBubbleMenu(bubbleWrap);
-});
-
-dropdown.querySelector('.edit-action').addEventListener('click', (e) => {
-  e.stopPropagation();
-  closeBubbleMenus();
-  editBubbleAt(index);
-});
-
-dropdown.querySelector('.delete-action').addEventListener('click', (e) => {
-  e.stopPropagation();
-  closeBubbleMenus();
-  deleteBubbleAt(index);
-});
-  node.appendChild(bubbleWrap);
+  node.appendChild(bubble);
 }
         
         node.dataset.index = index;
+        node.addEventListener('click', () => openEditMenu(index));
         refs.chatList.appendChild(node);
       });
 
@@ -1588,66 +1421,73 @@ dropdown.querySelector('.delete-action').addEventListener('click', (e) => {
       if (removeBtn) removeBtn.onclick = clearPendingImage;
     }
 
-function closeBubbleMenus(){
-  document.querySelectorAll('.bubble-wrap.menu-open').forEach(el => {
-    el.classList.remove('menu-open');
-  });
-}
+    function openEditMenu(index){
+      const item = state.messages[index];
+      if (!item) return;
 
-function toggleBubbleMenu(wrapEl){
-  const isOpen = wrapEl.classList.contains('menu-open');
-  closeBubbleMenus();
-  if (!isOpen) wrapEl.classList.add('menu-open');
-}
+      if (item.type === 'date') {
+        const next = prompt('Edit date separator:', item.label || '');
+        if (next === null) return;
+        if (!next.trim()) {
+          if (confirm('Delete separator ini?')) {
+            state.messages.splice(index, 1);
+            saveAndRender();
+          }
+          return;
+        }
+        item.label = next.trim();
+        saveAndRender();
+        return;
+      }
 
-function deleteBubbleAt(index){
-  const item = state.messages[index];
-  if (!item) return;
-  if (!confirm('Delete bubble ini?')) return;
-  state.messages.splice(index, 1);
-  saveAndRender();
-}
+      const action = prompt('Type: edit / delete / cancel', 'edit');
+      if (!action) return;
+      const val = action.trim().toLowerCase();
+      if (val === 'delete') {
+        if (confirm('Delete bubble ini?')) {
+          state.messages.splice(index, 1);
+          saveAndRender();
+        }
+        return;
+      }
+      if (val !== 'edit') return;
 
-function editBubbleAt(index){
-  const item = state.messages[index];
-  if (!item) return;
+      if (item.type === 'text') {
+        const nextText = prompt('Edit message text:', item.text || '');
+        if (nextText === null) return;
+        const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
+        if (nextTime === null) return;
+        const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
+        if (nextSide === null) return;
+        item.text = nextText;
+        item.time = nextTime;
+        item.side = nextSide === 'their' ? 'their' : 'mine';
+        saveAndRender();
+        return;
+      }
 
-  if (item.type === 'date') {
-    const next = prompt('Edit date separator:', item.label || '');
-    if (next === null) return;
-    if (!next.trim()) return;
-    item.label = next.trim();
-    saveAndRender();
-    return;
-  }
-
-  if (item.type === 'text') {
-    const nextText = prompt('Edit message text:', item.text || '');
-    if (nextText === null) return;
-    item.text = nextText;
-    saveAndRender();
-    return;
-  }
-
-  if (item.type === 'image') {
-    const nextCaption = prompt('Edit caption:', item.caption || '');
-    if (nextCaption === null) return;
-    item.caption = nextCaption;
-    saveAndRender();
-  }
-}
+      if (item.type === 'image') {
+        const nextCaption = prompt('Edit caption:', item.caption || '');
+        if (nextCaption === null) return;
+        const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
+        if (nextTime === null) return;
+        const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
+        if (nextSide === null) return;
+        const nextForward = prompt('Show forward icon? yes / no', item.showForward ? 'yes' : 'no');
+        if (nextForward === null) return;
+        item.caption = nextCaption;
+        item.time = nextTime;
+        item.side = nextSide === 'their' ? 'their' : 'mine';
+        item.showForward = nextForward.toLowerCase() === 'yes';
+        saveAndRender();
+      }
+    }
 
     function saveAndRender(){
       saveState();
       renderHeader();
       applyTheme();
       renderChat();
-
-      document.addEventListener('click', (e) => {
-  if (!e.target.closest('.bubble-wrap')) {
-    closeBubbleMenus();
-  }
-});
     }
 
     function openProfileModal(){
