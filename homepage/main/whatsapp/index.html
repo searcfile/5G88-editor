@@ -313,20 +313,20 @@
   .msg-row.mine{justify-content:flex-end}
   .msg-row.their{justify-content:flex-start}
 
-  .bubble{
-    max-width:min(420px, calc(100% - 24px));
-    width:inline-block;
-    min-width:0;
-    border-radius:7.5px;
-    padding:6px 8px 6px;
-    position:relative;
-    line-height:1.35;
-    font-size:14px;
-    white-space:pre-wrap;
-    word-break:break-word;
-    box-shadow:0 1px 0 rgba(0,0,0,.28);
-    isolation:isolate;
-  }
+.bubble{
+  display:inline-block;
+  max-width:min(420px, calc(100% - 24px));
+  width:fit-content;
+  min-width:0;
+  border-radius:7.5px;
+  padding:6px 8px 16px; /* ruang bawah untuk time */
+  position:relative;
+  line-height:1.35;
+  font-size:14px;
+  white-space:pre-wrap;
+  word-break:break-word;
+  box-shadow:0 1px 0 rgba(0,0,0,.28);
+}
 
   .msg-row.mine .bubble{
     background:var(--mine);
@@ -366,25 +366,25 @@
     padding:6px;
   }
 
-  .bubble .bubble-text,
-  .bubble .caption{
-    display:inline;
-    padding-right:0;
-  }
+ .bubble .bubble-text,
+.bubble .caption{
+  display:block;
+  padding-right:0;
+}
 
-  .bubble-time{
-    display:inline-flex;
-    align-items:flex-end;
-    gap:4px;
-    font-size:11px;
-    color:#c6d0d4;
-    opacity:.95;
-    white-space:nowrap;
-    line-height:1;
-    margin-left:8px;
-    vertical-align:bottom;
-    position:static;
-  }
+.bubble-time{
+  position:absolute;
+  right:6px;
+  bottom:2px;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  font-size:10.5px;
+  color:#c6d0d4;
+  opacity:.9;
+  white-space:nowrap;
+  line-height:1;
+}
 
   .msg-row.their .bubble-time{
     color:#aeb8bc;
@@ -396,11 +396,10 @@
     transform:translateY(.5px);
   }
 
-  .double-check svg{
-    width:16px;
-    height:16px;
-    fill:#7ad1ff;
-  }
+.double-check svg{
+  width:14px;
+  height:14px;
+}
 
   .image-wrap{
     position:relative;
