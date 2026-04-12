@@ -168,30 +168,30 @@
     }
 
     .resizer{
-  width:6px;
-  cursor:col-resize;
-  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.04));
-  position:relative;
-  z-index:3;
-  flex:0 0 6px;
-}
-.resizer:hover{
-  background:rgba(255,255,255,0.1);
-}
-.resizer::after{
-  content:"";
-  position:absolute;
-  top:0;
-  bottom:0;
-  left:2px;
-  width:2px;
-  background:rgba(134,150,160,.35);
-}
-.resizer:hover::after{
-  background:rgba(0,168,132,.95);
-}
+      width:6px;
+      cursor:col-resize;
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.04));
+      position:relative;
+      z-index:3;
+      flex:0 0 6px;
+    }
+    .resizer:hover{
+      background:rgba(255,255,255,0.1);
+    }
+    .resizer::after{
+      content:"";
+      position:absolute;
+      top:0;
+      bottom:0;
+      left:2px;
+      width:2px;
+      background:rgba(134,150,160,.35);
+    }
+    .resizer:hover::after{
+      background:rgba(0,168,132,.95);
+    }
 
-.chat-shell{
+    .chat-shell{
       background:var(--bg);
       display:flex;
       flex-direction:column;
@@ -313,21 +313,33 @@
     .msg-row.mine{justify-content:flex-end}
     .msg-row.their{justify-content:flex-start}
 
+    /* UPGRADE BUBBLE */
     .bubble{
       max-width:min(420px, calc(100% - 24px));
       width:fit-content;
-      min-width:92px;
-      border-radius:8px;
-      padding:8px 10px 18px;
+      min-width:60px;
+      border-radius:7.5px;
+      padding:6px 8px 18px;
       position:relative;
       line-height:1.35;
       font-size:14px;
       white-space:pre-wrap;
       word-break:break-word;
       box-shadow:0 1px 0 rgba(0,0,0,.28);
+      isolation:isolate;
     }
-    .msg-row.mine .bubble{background:var(--mine);border-top-right-radius:0}
-    .msg-row.their .bubble{background:var(--theirs);border-top-left-radius:0}
+
+    .msg-row.mine .bubble{
+      background:var(--mine);
+      border-top-right-radius:0;
+      margin-right:6px;
+    }
+
+    .msg-row.their .bubble{
+      background:var(--theirs);
+      border-top-left-radius:0;
+      margin-left:6px;
+    }
 
     .msg-row.mine .bubble::after,
     .msg-row.their .bubble::before{
@@ -351,19 +363,9 @@
       clip-path:polygon(100% 0, 100% 100%, 0 0);
     }
 
-    .msg-row.mine .bubble::after{
-      right:-10px;
-      background:linear-gradient(to top right, var(--mine) 0 50%, transparent 50% 100%);
-      clip-path:polygon(0 0, 0 100%, 100% 0);
+    .bubble.media-only{
+      padding:6px 6px 20px;
     }
-
-    .msg-row.their .bubble::before{
-      left:-10px;
-      background:linear-gradient(to top left, var(--theirs) 0 50%, transparent 50% 100%);
-      clip-path:polygon(100% 0, 100% 100%, 0 0);
-    }
-
-    .bubble.media-only{padding:6px 6px 20px}
 
     .bubble .bubble-text,
     .bubble .caption{
@@ -373,20 +375,33 @@
 
     .bubble-time{
       position:absolute;
-      right:10px;
-      bottom:4px;
+      right:8px;
+      bottom:3px;
       display:flex;
       align-items:center;
       gap:4px;
-      font-size:12px;
+      font-size:11px;
       color:#c6d0d4;
       opacity:.95;
       white-space:nowrap;
+      line-height:1;
     }
-    .msg-row.their .bubble-time{color:#aeb8bc}
 
-    .double-check{display:inline-flex;align-items:center}
-    .double-check svg{width:16px;height:16px;fill:#7ad1ff}
+    .msg-row.their .bubble-time{
+      color:#aeb8bc;
+    }
+
+    .double-check{
+      display:inline-flex;
+      align-items:center;
+      transform:translateY(.5px);
+    }
+
+    .double-check svg{
+      width:16px;
+      height:16px;
+      fill:#7ad1ff;
+    }
 
     .image-wrap{
       position:relative;
@@ -397,6 +412,7 @@
       max-width:100%;
       background:#0d1012;
     }
+
     .image-wrap img{
       display:block;
       width:100%;
@@ -684,7 +700,7 @@
 
   <script>
     const STORAGE_KEY = 'waDesktopBuilder.v1';
-const SIDEBAR_KEY = 'sidebarWidth';
+    const SIDEBAR_KEY = 'sidebarWidth';
 
     const defaultState = {
       profile: {
@@ -713,7 +729,7 @@ const SIDEBAR_KEY = 'sidebarWidth';
 
     let state = loadState();
     let pendingImageBase64 = '';
-let sidebarWidth = localStorage.getItem(SIDEBAR_KEY) ? parseInt(localStorage.getItem(SIDEBAR_KEY), 10) : 320;
+    let sidebarWidth = localStorage.getItem(SIDEBAR_KEY) ? parseInt(localStorage.getItem(SIDEBAR_KEY), 10) : 320;
 
     const $ = (id) => document.getElementById(id);
 
@@ -926,6 +942,7 @@ let sidebarWidth = localStorage.getItem(SIDEBAR_KEY) ? parseInt(localStorage.get
         node.addEventListener('click', () => openEditMenu(index));
         refs.chatList.appendChild(node);
       });
+
       requestAnimationFrame(() => {
         refs.chatArea.scrollTop = refs.chatArea.scrollHeight;
       });
@@ -1088,59 +1105,59 @@ let sidebarWidth = localStorage.getItem(SIDEBAR_KEY) ? parseInt(localStorage.get
     }
 
     function initResizer(){
-  const resizer = document.getElementById('resizer');
-  const app = document.querySelector('.app');
-  if (!resizer || !app) return;
+      const resizer = document.getElementById('resizer');
+      const app = document.querySelector('.app');
+      if (!resizer || !app) return;
 
-  const MIN_LEFT = 180;
-  const MAX_LEFT = 1400;
-  const MIN_RIGHT = 180;
-  let isDown = false;
+      const MIN_LEFT = 180;
+      const MAX_LEFT = 1400;
+      const MIN_RIGHT = 180;
+      let isDown = false;
 
-  const clampWidth = (rawX) => {
-    const total = app.clientWidth || window.innerWidth || document.documentElement.clientWidth || 0;
-    const maxByViewport = Math.max(MIN_LEFT, total - 6 - MIN_RIGHT);
-    return Math.max(MIN_LEFT, Math.min(Math.min(MAX_LEFT, maxByViewport), rawX));
-  };
+      const clampWidth = (rawX) => {
+        const total = app.clientWidth || window.innerWidth || document.documentElement.clientWidth || 0;
+        const maxByViewport = Math.max(MIN_LEFT, total - 6 - MIN_RIGHT);
+        return Math.max(MIN_LEFT, Math.min(Math.min(MAX_LEFT, maxByViewport), rawX));
+      };
 
-  const apply = () => {
-    app.style.gridTemplateColumns = `${sidebarWidth}px 6px minmax(0, 1fr)`;
-  };
+      const apply = () => {
+        app.style.gridTemplateColumns = `${sidebarWidth}px 6px minmax(0, 1fr)`;
+      };
 
-  resizer.addEventListener('mousedown', (e)=>{
-    e.preventDefault();
-    isDown = true;
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-  });
+      resizer.addEventListener('mousedown', (e)=>{
+        e.preventDefault();
+        isDown = true;
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+      });
 
-  window.addEventListener('mousemove', (e)=>{
-    if(!isDown) return;
-    const rect = app.getBoundingClientRect();
-    const localX = e.clientX - rect.left;
-    sidebarWidth = clampWidth(localX);
-    apply();
-  });
+      window.addEventListener('mousemove', (e)=>{
+        if(!isDown) return;
+        const rect = app.getBoundingClientRect();
+        const localX = e.clientX - rect.left;
+        sidebarWidth = clampWidth(localX);
+        apply();
+      });
 
-  window.addEventListener('mouseup', ()=>{
-    if(!isDown) return;
-    isDown = false;
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-    localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
-  });
+      window.addEventListener('mouseup', ()=>{
+        if(!isDown) return;
+        isDown = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
+      });
 
-  window.addEventListener('resize', ()=>{
-    sidebarWidth = clampWidth(sidebarWidth);
-    apply();
-    localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
-  });
+      window.addEventListener('resize', ()=>{
+        sidebarWidth = clampWidth(sidebarWidth);
+        apply();
+        localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
+      });
 
-  sidebarWidth = clampWidth(sidebarWidth);
-  apply();
-}
+      sidebarWidth = clampWidth(sidebarWidth);
+      apply();
+    }
 
-function bindEvents(){
+    function bindEvents(){
       if (refs.chatName) {
         refs.chatName.addEventListener('input', () => {
           state.profile.name = refs.chatName.value;
@@ -1175,14 +1192,17 @@ function bindEvents(){
       if (refs.openProfileModalBtn) refs.openProfileModalBtn.addEventListener('click', openProfileModal);
       if (refs.openProfileFromHeader) refs.openProfileFromHeader.addEventListener('click', openProfileModal);
       if (refs.cancelProfileBtn) refs.cancelProfileBtn.addEventListener('click', closeProfileModal);
+
       if (refs.profileModalBackdrop) {
         refs.profileModalBackdrop.addEventListener('click', (e) => {
           if (e.target === refs.profileModalBackdrop) closeProfileModal();
         });
       }
+
       if (refs.changeProfileBtn && refs.profileModalFile) {
         refs.changeProfileBtn.addEventListener('click', () => refs.profileModalFile.click());
       }
+
       if (refs.viewProfileBtn) {
         refs.viewProfileBtn.addEventListener('click', () => {
           if (!state.profile.avatar) return alert('Belum ada profile image bro.');
@@ -1191,6 +1211,7 @@ function bindEvents(){
           win.document.write(`<title>View Profile</title><body style="margin:0;background:#0b141a;display:grid;place-items:center;min-height:100vh"><img src="${state.profile.avatar}" style="max-width:90vw;max-height:90vh;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.45)"></body>`);
         });
       }
+
       if (refs.deleteProfileBtn) {
         refs.deleteProfileBtn.addEventListener('click', () => {
           if (!state.profile.avatar) return alert('Belum ada gambar profile untuk dipadam bro.');
@@ -1198,9 +1219,10 @@ function bindEvents(){
           state.profile.avatar = '';
           if (refs.avatarFile) refs.avatarFile.value = '';
           if (refs.profileModalFile) refs.profileModalFile.value = '';
-          renderHeader();
+          saveAndRender();
         });
       }
+
       if (refs.profileModalFile) {
         refs.profileModalFile.addEventListener('change', async () => {
           await onImagePicked(refs.profileModalFile, (base64) => {
@@ -1209,6 +1231,7 @@ function bindEvents(){
           }, 600, 0.94);
         });
       }
+
       if (refs.updateProfileBtn) {
         refs.updateProfileBtn.addEventListener('click', () => {
           state.profile.name = refs.profileModalName?.value.trim() || 'Untitled Chat';
@@ -1219,6 +1242,7 @@ function bindEvents(){
       }
 
       if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
+
       if (refs.clearInputsBtn) {
         refs.clearInputsBtn.addEventListener('click', () => {
           if (refs.msgText) refs.msgText.value = '';
@@ -1244,6 +1268,7 @@ function bindEvents(){
           saveAndRender();
         });
       }
+
       if (refs.theirColor) {
         refs.theirColor.addEventListener('input', () => {
           state.theme.theirColor = refs.theirColor.value;
@@ -1276,11 +1301,13 @@ function bindEvents(){
         });
       }
 
-      if (refs.undoBtn) refs.undoBtn.addEventListener('click', () => {
-        if (!state.messages.length) return;
-        state.messages.pop();
-        saveAndRender();
-      });
+      if (refs.undoBtn) {
+        refs.undoBtn.addEventListener('click', () => {
+          if (!state.messages.length) return;
+          state.messages.pop();
+          saveAndRender();
+        });
+      }
 
       if (refs.clearChatBtn) {
         refs.clearChatBtn.addEventListener('click', () => {
@@ -1290,40 +1317,47 @@ function bindEvents(){
         });
       }
 
-      if (refs.exportBtn) refs.exportBtn.addEventListener('click', () => {
-        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'whatsapp-chat-builder-data.json';
-        a.click();
-        URL.revokeObjectURL(url);
-      });
+      if (refs.exportBtn) {
+        refs.exportBtn.addEventListener('click', () => {
+          const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'whatsapp-chat-builder-data.json';
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      }
 
-      if (refs.importBtn && refs.importFile) refs.importBtn.addEventListener('click', () => refs.importFile.click());
-      if (refs.importFile) refs.importFile.addEventListener('change', async () => {
-        const file = refs.importFile.files?.[0];
-        if (!file) return;
-        try {
-          const text = await file.text();
-          const parsed = JSON.parse(text);
-          if (!parsed || typeof parsed !== 'object') throw new Error('Invalid');
-          state = {
-            profile: { ...defaultState.profile, ...(parsed.profile || {}) },
-            theme: { ...defaultState.theme, ...(parsed.theme || {}) },
-            messages: Array.isArray(parsed.messages) ? parsed.messages : []
-          };
-          saveAndRender();
-          refs.importFile.value = '';
-        } catch (err) {
-          console.error(err);
-          alert('Import gagal. Pastikan file JSON betul.');
-        }
-      });
+      if (refs.importBtn && refs.importFile) {
+        refs.importBtn.addEventListener('click', () => refs.importFile.click());
+      }
+
+      if (refs.importFile) {
+        refs.importFile.addEventListener('change', async () => {
+          const file = refs.importFile.files?.[0];
+          if (!file) return;
+          try {
+            const text = await file.text();
+            const parsed = JSON.parse(text);
+            if (!parsed || typeof parsed !== 'object') throw new Error('Invalid');
+            state = {
+              profile: { ...defaultState.profile, ...(parsed.profile || {}) },
+              theme: { ...defaultState.theme, ...(parsed.theme || {}) },
+              messages: Array.isArray(parsed.messages) ? parsed.messages : []
+            };
+            saveAndRender();
+            refs.importFile.value = '';
+          } catch (err) {
+            console.error(err);
+            alert('Import gagal. Pastikan file JSON betul.');
+          }
+        });
+      }
     }
 
     bindEvents();
-initResizer();
+    initResizer();
     saveAndRender();
   </script>
 </body>
