@@ -606,11 +606,9 @@
 .forward-badge{
   position:absolute;
   top:50%;
-  left:-14px;
-  right:auto;
   transform:translateY(-50%);
-  width:28px;
-  height:28px;
+  width:26px;
+  height:26px;
   border-radius:50%;
   background:rgba(17,27,33,.92);
   display:grid;
@@ -621,11 +619,21 @@
 }
 
   .forward-badge svg{
-    width:15px;
-    height:15px;
+    width:20px;
+    height:20px;
     fill:#fff;
   }
+/* mine → icon di tengah kiri */
+.msg-row.mine .forward-badge{
+  left:-14px;
+  right:auto;
+}
 
+/* their → icon di tengah kanan */
+.msg-row.their .forward-badge{
+  right:-14px;
+  left:auto;
+}
 .composer{
   min-height:72px;
    background:
