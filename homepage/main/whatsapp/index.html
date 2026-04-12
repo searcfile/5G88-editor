@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhatsApp Style Chat Builder</title>
-  <style>
+<style>
   :root{
     --bg:#0b141a;
     --panel:#111b21;
@@ -25,6 +25,7 @@
   }
 
   *{box-sizing:border-box}
+
   html,body{
     margin:0;
     font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -37,7 +38,7 @@
   .app{
     height:100vh;
     display:grid;
-    grid-template-columns: 320px 6px 1fr;
+    grid-template-columns:320px 6px 1fr;
     gap:0;
     overflow:hidden;
   }
@@ -141,19 +142,25 @@
     font-size:12px;
   }
 
-  .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
   button{
     border:none;
     outline:none;
     cursor:pointer;
     background:var(--accent);
-    color:white;
+    color:#fff;
     padding:10px 14px;
     border-radius:10px;
     font-size:13px;
     font-weight:700;
     transition:.18s ease;
   }
+
   button:hover{filter:brightness(1.06)}
   button:active{transform:translateY(1px)}
   .ghost{background:#233138;color:#d7e1e5}
@@ -175,9 +182,11 @@
     z-index:3;
     flex:0 0 6px;
   }
+
   .resizer:hover{
     background:rgba(255,255,255,0.1);
   }
+
   .resizer::after{
     content:"";
     position:absolute;
@@ -187,6 +196,7 @@
     width:2px;
     background:rgba(134,150,160,.35);
   }
+
   .resizer:hover::after{
     background:rgba(0,168,132,.95);
   }
@@ -232,9 +242,14 @@
     box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
   }
 
-  .avatar svg{width:24px;height:24px;fill:#f6a4b8}
+  .avatar svg{
+    width:24px;
+    height:24px;
+    fill:#f6a4b8;
+  }
 
   .profile-text{min-width:0}
+
   .profile-name{
     font-size:18px;
     font-weight:600;
@@ -243,26 +258,55 @@
     text-overflow:ellipsis;
     max-width:420px;
   }
+
   .profile-sub{
     font-size:12px;
     color:var(--muted);
     margin-top:2px;
   }
 
-  .actions{display:flex;align-items:center;gap:8px}
+  .actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
   .icon-btn{
-    width:40px;height:40px;border-radius:50%;
-    display:grid;place-items:center;
-    background:transparent;border:1px solid transparent;color:#dce5e8;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:transparent;
+    border:1px solid transparent;
+    color:#dce5e8;
     padding:0;
   }
-  .icon-btn:hover{background:#1e2a31;border-color:#2a3942}
-  .icon-btn svg{width:21px;height:21px;fill:currentColor}
+
+  .icon-btn:hover{
+    background:#1e2a31;
+    border-color:#2a3942;
+  }
+
+  .icon-btn svg{
+    width:21px;
+    height:21px;
+    fill:currentColor;
+  }
 
   .hidden{display:none !important}
+
   .call-btn{
-    width:auto;border-radius:999px;padding:0 14px;gap:10px;display:flex;align-items:center;background:transparent;border:1px solid #2e3d45;
+    width:auto;
+    border-radius:999px;
+    padding:0 14px;
+    gap:10px;
+    display:flex;
+    align-items:center;
+    background:transparent;
+    border:1px solid #2e3d45;
   }
+
   .call-btn svg{width:18px;height:18px}
   .call-btn .chev{width:14px;height:14px;opacity:.9}
 
@@ -310,23 +354,26 @@
     width:100%;
     margin:1px 0;
   }
+
   .msg-row.mine{justify-content:flex-end}
   .msg-row.their{justify-content:flex-start}
 
-.bubble{
-  display:inline-block;
-  max-width:min(420px, calc(100% - 24px));
-  width:fit-content;
-  min-width:70px;
-  border-radius:7.5px;
-  padding:6px 8px 16px; /* ruang bawah untuk time */
-  position:relative;
-  line-height:1.35;
-  font-size:14px;
-  white-space:pre-wrap;
-  word-break:break-word;
-  box-shadow:0 1px 0 rgba(0,0,0,.28);
-}
+  /* ===== WHATSAPP-LIKE BUBBLE ===== */
+  .bubble{
+    display:inline-block;
+    position:relative;
+    max-width:min(420px, calc(100% - 24px));
+    width:fit-content;
+    min-width:0;
+    padding:6px 8px 11px;
+    border-radius:7.5px;
+    font-size:14px;
+    line-height:1.34;
+    white-space:pre-wrap;
+    word-break:break-word;
+    box-shadow:0 1px 0 rgba(0,0,0,.28);
+    vertical-align:top;
+  }
 
   .msg-row.mine .bubble{
     background:var(--mine);
@@ -340,13 +387,14 @@
     margin-left:6px;
   }
 
+  /* tail */
   .msg-row.mine .bubble::after,
   .msg-row.their .bubble::before{
     content:"";
     position:absolute;
     top:0;
-    width:10px;
-    height:12px;
+    width:8px;
+    height:13px;
     pointer-events:none;
   }
 
@@ -363,28 +411,36 @@
   }
 
   .bubble.media-only{
-    padding:6px;
+    padding:6px 6px 18px;
   }
 
- .bubble .bubble-text,
-.bubble .caption{
-  display:block;
-  padding-right:0;
-}
+  .bubble .bubble-text{
+    display:block;
+    margin:0;
+    padding:0;
+  }
 
-.bubble-time{
-  position:absolute;
-  right:6px;
-  bottom:2px;
-  display:flex;
-  align-items:center;
-  gap:3px;
-  font-size:10.5px;
-  color:#c6d0d4;
-  opacity:.9;
-  white-space:nowrap;
-  line-height:1;
-}
+  .bubble .caption{
+    display:block;
+    margin-top:6px;
+    padding:0;
+  }
+
+  .bubble-time{
+    position:absolute;
+    right:7px;
+    bottom:3px;
+    display:inline-flex;
+    align-items:center;
+    gap:3px;
+    font-size:11px;
+    line-height:1;
+    white-space:nowrap;
+    color:#c7d1d5;
+    opacity:.95;
+    letter-spacing:0;
+    pointer-events:none;
+  }
 
   .msg-row.their .bubble-time{
     color:#aeb8bc;
@@ -393,13 +449,14 @@
   .double-check{
     display:inline-flex;
     align-items:center;
-    transform:translateY(.5px);
+    transform:translateY(.2px);
   }
 
-.double-check svg{
-  width:14px;
-  height:14px;
-}
+  .double-check svg{
+    width:14px;
+    height:14px;
+    fill:#7ad1ff;
+  }
 
   .image-wrap{
     position:relative;
@@ -432,10 +489,11 @@
     box-shadow:0 6px 14px rgba(0,0,0,.28);
     backdrop-filter:blur(4px);
   }
-  .forward-badge svg{width:15px;height:15px;fill:#fff}
 
-  .caption{
-    margin-top:8px;
+  .forward-badge svg{
+    width:15px;
+    height:15px;
+    fill:#fff;
   }
 
   .composer{
@@ -447,13 +505,29 @@
     padding:12px 18px;
     border-top:1px solid rgba(255,255,255,.03);
   }
+
   .composer-btn{
-    width:36px;height:36px;border-radius:50%;padding:0;
-    background:transparent;color:#d6e0e4;border:1px solid transparent;
-    display:grid;place-items:center;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    padding:0;
+    background:transparent;
+    color:#d6e0e4;
+    border:1px solid transparent;
+    display:grid;
+    place-items:center;
   }
-  .composer-btn:hover{background:#1d2a31;border-color:#2b3840}
-  .composer-btn svg{width:22px;height:22px;fill:currentColor}
+
+  .composer-btn:hover{
+    background:#1d2a31;
+    border-color:#2b3840;
+  }
+
+  .composer-btn svg{
+    width:22px;
+    height:22px;
+    fill:currentColor;
+  }
 
   .composer-input{
     flex:1;
@@ -474,6 +548,7 @@
     gap:8px;
     margin-top:10px;
   }
+
   .thumb{
     position:relative;
     border-radius:10px;
@@ -482,22 +557,53 @@
     border:1px solid #2d3b43;
     aspect-ratio:1/1;
   }
-  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
   .thumb button{
-    position:absolute;right:6px;top:6px;width:24px;height:24px;border-radius:50%;padding:0;background:rgba(0,0,0,.6)
+    position:absolute;
+    right:6px;
+    top:6px;
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    padding:0;
+    background:rgba(0,0,0,.6);
   }
 
   .small{font-size:11px;color:var(--muted)}
+
   .switch{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    background:#1d2a31;border:1px solid #2d3b43;padding:10px 12px;border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:#1d2a31;
+    border:1px solid #2d3b43;
+    padding:10px 12px;
+    border-radius:10px;
   }
+
   .switch input{accent-color:var(--accent)}
 
-  .footer-tools{display:flex;gap:10px;flex-wrap:wrap}
+  .footer-tools{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
 
   ::-webkit-scrollbar{width:10px;height:10px}
-  ::-webkit-scrollbar-thumb{background:#33424a;border-radius:999px;border:2px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-thumb{
+    background:#33424a;
+    border-radius:999px;
+    border:2px solid transparent;
+    background-clip:content-box;
+  }
   ::-webkit-scrollbar-track{background:transparent}
 
   @media (max-width: 1100px){
