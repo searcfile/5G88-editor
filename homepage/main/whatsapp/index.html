@@ -527,56 +527,82 @@
     fill:#fff;
   }
 
-  .composer{
-    min-height:72px;
-        background:
-      linear-gradient(rgba(11,20,26,.78),rgba(11,20,26,.78)),
-      var(--chat-bg-image);
-    background-size:var(--chat-bg-size);
-    background-position:var(--chat-bg-position);
-    background-repeat:no-repeat;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:12px 18px;
+.composer{
+  min-height:72px;
+  background:
+    linear-gradient(rgba(11,20,26,.78),rgba(11,20,26,.78)),
+    var(--chat-bg-image);
+  background-size:var(--chat-bg-size);
+  background-position:var(--chat-bg-position);
+  background-repeat:no-repeat;
+  display:flex;
+  align-items:center;
+  padding:10px 16px;
+}
 
-  }
+.composer-bar{
+  flex:1;
+  min-width:0;
+  height:50px;
+  border-radius:999px;
+  background:#202c33;
+  border:1px solid #2b3942;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:0 10px;
+  box-shadow:0 1px 0 rgba(0,0,0,.18);
+}
 
-  .composer-btn{
-    width:36px;
-    height:36px;
-    border-radius:50%;
-    padding:0;
-    background:transparent;
-    color:#d6e0e4;
-    border:1px solid transparent;
-    display:grid;
-    place-items:center;
-  }
+.composer-btn{
+  width:36px;
+  height:36px;
+  min-width:36px;
+  border-radius:50%;
+  padding:0;
+  background:transparent;
+  color:#d6e0e4;
+  border:1px solid transparent;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+}
 
-  .composer-btn:hover{
-    background:#1d2a31;
-    border-color:#2b3840;
-  }
+.composer-btn:hover{
+  background:#1d2a31;
+  border-color:#2b3840;
+}
 
-  .composer-btn svg{
-    width:22px;
-    height:22px;
-    fill:currentColor;
-  }
+.composer-btn svg{
+  width:22px;
+  height:22px;
+  fill:currentColor;
+}
 
-  .composer-input{
-    flex:1;
-    height:44px;
-    border-radius:999px;
-    background:#202c33;
-    border:1px solid #2b3942;
-    display:flex;
-    align-items:center;
-    padding:0 14px;
-    color:#9aacb5;
-    font-size:16px;
-  }
+.composer-input{
+  flex:1;
+  min-width:0;
+  height:100%;
+  display:flex;
+  align-items:center;
+  padding:0 8px;
+  color:#9aacb5;
+  font-size:16px;
+  background:transparent;
+  border:none;
+  border-radius:0;
+}
+
+.composer-input span{
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.composer-bar .composer-btn.mic-btn{
+  margin-left:auto;
+}
 
   .thumb-list{
     display:grid;
@@ -823,18 +849,25 @@
         <div class="chat-inner" id="chatList"></div>
       </div>
 
-      <div class="composer">
-        <button class="composer-btn" title="Add">
-          <svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2Z"/></svg>
-        </button>
-        <button class="composer-btn" title="Emoji">
-          <svg viewBox="0 0 24 24"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10Zm-3-9a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H9Zm-.5-3A1.5 1.5 0 1 0 8.5 7a1.5 1.5 0 0 0 0 3Zm7 0A1.5 1.5 0 1 0 15.5 7a1.5 1.5 0 0 0 0 3Z"/></svg>
-        </button>
-        <div class="composer-input">Type a message</div>
-        <button class="composer-btn" title="Mic">
-          <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a1 1 0 1 0-2 0 3 3 0 1 1-6 0 1 1 0 1 0-2 0 5 5 0 0 0 4 4.9V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-4.1A5 5 0 0 0 17 11Z"/></svg>
-        </button>
-      </div>
+<div class="composer">
+  <div class="composer-bar">
+    <button class="composer-btn" title="Add">
+      <svg viewBox="0 0 24 24"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2Z"/></svg>
+    </button>
+
+    <button class="composer-btn" title="Emoji">
+      <svg viewBox="0 0 24 24"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10Zm-3-9a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H9Zm-.5-3A1.5 1.5 0 1 0 8.5 7a1.5 1.5 0 0 0 0 3Zm7 0A1.5 1.5 0 1 0 15.5 7a1.5 1.5 0 0 0 0 3Z"/></svg>
+    </button>
+
+    <div class="composer-input">
+      <span>Type a message</span>
+    </div>
+
+    <button class="composer-btn mic-btn" title="Mic">
+      <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a1 1 0 1 0-2 0 3 3 0 1 1-6 0 1 1 0 1 0-2 0 5 5 0 0 0 4 4.9V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-4.1A5 5 0 0 0 17 11Z"/></svg>
+    </button>
+  </div>
+</div>
     </main>
   </div>
 
