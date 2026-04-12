@@ -494,11 +494,11 @@
   align-items:stretch;
   gap:0;
   position:relative;
-  padding:3px 3px 22px;
-  min-width:220px;
-  max-width:330px;
+  padding:3px 3px 22px;   /* buang ruang atas kiri kanan */
+  min-width:0;
+  max-width:324px;
   width:fit-content;
-  overflow:visible;
+  overflow:hidden;    /* penting supaya image ikut radius bubble */
   border-radius:7.5px;
 }
 
@@ -583,24 +583,26 @@
 }
 .image-wrap{
   position:relative;
-  border-radius:6px;
-  overflow:hidden;
   display:block;
   width:100%;
-  min-width:214px;
+  min-width:0;
   max-width:324px;
-  max-height:273px;
-  background:transparent;
+  height:auto;        /* jangan pakai fixed height */
+  max-height:none;    /* buang limit potong */
   margin:0;
+  background:transparent;
+  border-radius:inherit;
+  overflow:hidden;
   flex:0 0 auto;
 }
 
 .image-wrap img{
   display:block;
   width:100%;
-  height:auto;
-  max-height:273px;
-  object-fit:cover;
+  height:auto;        /* auto ikut nisbah asal */
+  max-height:none;    /* jangan potong */
+  object-fit:contain; /* tunjuk full image */
+  object-position:center top;
 }
 
 .forward-badge{
