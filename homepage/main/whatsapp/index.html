@@ -391,37 +391,84 @@
 
 .msg-row.mine .bubble{
   background:var(--mine);
-  border-top-right-radius:0;
   margin-right:6px;
 }
 
 .msg-row.their .bubble{
   background:var(--theirs);
-  border-top-left-radius:0;
   margin-left:6px;
 }
 
-/* tail */
+/* default: semua bubble takda tail dulu */
 .msg-row.mine .bubble::after,
 .msg-row.their .bubble::before{
+  content:none;
+}
+
+/* tail hanya pada single atau bubble terakhir dalam group */
+.msg-row.mine.single .bubble::after,
+.msg-row.mine.group-end .bubble::after{
   content:"";
   position:absolute;
   top:0;
+  right:-6px;
   width:8px;
   height:12px;
   pointer-events:none;
-}
-
-.msg-row.mine .bubble::after{
-  right:-6px;
   background:var(--mine);
   clip-path:polygon(0 0, 100% 0, 0 100%);
 }
 
-.msg-row.their .bubble::before{
+.msg-row.their.single .bubble::before,
+.msg-row.their.group-end .bubble::before{
+  content:"";
+  position:absolute;
+  top:0;
   left:-6px;
+  width:8px;
+  height:12px;
+  pointer-events:none;
   background:var(--theirs);
   clip-path:polygon(100% 0, 100% 100%, 0 0);
+}
+.msg-row.mine.single .bubble{
+  border-top-right-radius:0;
+  border-bottom-right-radius:7.5px;
+}
+
+.msg-row.mine.group-start .bubble{
+  border-top-right-radius:7.5px;
+  border-bottom-right-radius:7.5px;
+}
+
+.msg-row.mine.group-mid .bubble{
+  border-top-right-radius:7.5px;
+  border-bottom-right-radius:7.5px;
+}
+
+.msg-row.mine.group-end .bubble{
+  border-top-right-radius:7.5px;
+  border-bottom-right-radius:0;
+}
+
+.msg-row.their.single .bubble{
+  border-top-left-radius:0;
+  border-bottom-left-radius:7.5px;
+}
+
+.msg-row.their.group-start .bubble{
+  border-top-left-radius:7.5px;
+  border-bottom-left-radius:7.5px;
+}
+
+.msg-row.their.group-mid .bubble{
+  border-top-left-radius:7.5px;
+  border-bottom-left-radius:7.5px;
+}
+
+.msg-row.their.group-end .bubble{
+  border-top-left-radius:7.5px;
+  border-bottom-left-radius:0;
 }
 
   .bubble.media-only{
