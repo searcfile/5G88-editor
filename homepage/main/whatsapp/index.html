@@ -416,7 +416,95 @@
   background:var(--theirs);
   margin-left:6px;
 }
+.bubble-wrap{
+  position:relative;
+  display:inline-flex;
+  align-items:flex-start;
+}
 
+.bubble-menu-btn{
+  position:absolute;
+  top:6px;
+  width:22px;
+  height:22px;
+  border:none;
+  border-radius:50%;
+  padding:0;
+  display:grid;
+  place-items:center;
+  background:rgba(11,20,26,.55);
+  color:#e9edef;
+  cursor:pointer;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-2px);
+  transition:opacity .16s ease, transform .16s ease, background .16s ease;
+  z-index:6;
+}
+
+.msg-row.mine .bubble-menu-btn{
+  right:8px;
+}
+
+.msg-row.their .bubble-menu-btn{
+  right:8px;
+}
+
+.bubble-wrap:hover .bubble-menu-btn,
+.bubble-wrap.menu-open .bubble-menu-btn{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+.bubble-menu-btn:hover{
+  background:rgba(32,44,51,.92);
+}
+
+.bubble-menu-btn svg{
+  width:16px;
+  height:16px;
+  fill:currentColor;
+}
+
+.bubble-dropdown{
+  position:absolute;
+  top:32px;
+  right:8px;
+  min-width:130px;
+  background:#233138;
+  border:1px solid #31434d;
+  border-radius:10px;
+  box-shadow:0 10px 28px rgba(0,0,0,.35);
+  padding:6px;
+  display:none;
+  flex-direction:column;
+  gap:2px;
+  z-index:20;
+}
+
+.bubble-wrap.menu-open .bubble-dropdown{
+  display:flex;
+}
+
+.bubble-dropdown button{
+  width:100%;
+  background:transparent;
+  color:#e9edef;
+  text-align:left;
+  padding:9px 10px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:500;
+}
+
+.bubble-dropdown button:hover{
+  background:#2f3f48;
+}
+
+.bubble-dropdown .delete-action{
+  color:#ff8f8f;
+}
 /* default: semua bubble takda tail dulu */
 .msg-row.mine .bubble::after,
 .msg-row.their .bubble::before{
@@ -1302,6 +1390,9 @@ function applyImageOrientation(root = document){
   node = document.createElement('div');
   node.className = `msg-row ${item.side === 'their' ? 'their' : 'mine'} ${groupClass}`;
 
+const bubbleWrap = document.createElement('div');
+bubbleWrap.className = 'bubble-wrap';
+
 const bubble = document.createElement('div');
 bubble.className = 'bubble';
 
@@ -1309,14 +1400,14 @@ if (item.type === 'image') {
   bubble.classList.add('media-only');
 }
 
-  if (item.type === 'text') {
-    bubble.innerHTML = `
-      <div class="bubble-text">${escapeHtml(item.text || '')}</div>
-      <div class="bubble-time">
-        <span>${timeLabel(item.time)}</span>
-        ${item.side === 'mine' ? mineTicks() : ''}
-      </div>`;
-  }
+if (item.type === 'text') {
+  bubble.innerHTML = `
+    <div class="bubble-text">${escapeHtml(item.text || '')}</div>
+    <div class="bubble-time">
+      <span>${timeLabel(item.time)}</span>
+      ${item.side === 'mine' ? mineTicks() : ''}
+    </div>`;
+}
 
 if (item.type === 'image') {
   bubble.innerHTML = `
@@ -1335,12 +1426,47 @@ if (item.type === 'image') {
         ${item.side === 'mine' ? mineTicks() : ''}
       </div>`;
 }
+const menuBtn = document.createElement('button');
+menuBtn.className = 'bubble-menu-btn';
+menuBtn.type = 'button';
+menuBtn.setAttribute('aria-label', 'More');
+menuBtn.innerHTML = `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M7 10l5 5 5-5z"></path>
+  </svg>
+`;
 
-  node.appendChild(bubble);
+const dropdown = document.createElement('div');
+dropdown.className = 'bubble-dropdown';
+dropdown.innerHTML = `
+  <button type="button" class="edit-action">Edit</button>
+  <button type="button" class="delete-action">Delete</button>
+`;
+
+bubbleWrap.appendChild(bubble);
+bubbleWrap.appendChild(menuBtn);
+bubbleWrap.appendChild(dropdown);
+
+menuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleBubbleMenu(bubbleWrap);
+});
+
+dropdown.querySelector('.edit-action').addEventListener('click', (e) => {
+  e.stopPropagation();
+  closeBubbleMenus();
+  editBubbleAt(index);
+});
+
+dropdown.querySelector('.delete-action').addEventListener('click', (e) => {
+  e.stopPropagation();
+  closeBubbleMenus();
+  deleteBubbleAt(index);
+});
+  node.appendChild(bubbleWrap);
 }
         
         node.dataset.index = index;
-        node.addEventListener('click', () => openEditMenu(index));
         refs.chatList.appendChild(node);
       });
 
@@ -1421,73 +1547,66 @@ if (item.type === 'image') {
       if (removeBtn) removeBtn.onclick = clearPendingImage;
     }
 
-    function openEditMenu(index){
-      const item = state.messages[index];
-      if (!item) return;
+function closeBubbleMenus(){
+  document.querySelectorAll('.bubble-wrap.menu-open').forEach(el => {
+    el.classList.remove('menu-open');
+  });
+}
 
-      if (item.type === 'date') {
-        const next = prompt('Edit date separator:', item.label || '');
-        if (next === null) return;
-        if (!next.trim()) {
-          if (confirm('Delete separator ini?')) {
-            state.messages.splice(index, 1);
-            saveAndRender();
-          }
-          return;
-        }
-        item.label = next.trim();
-        saveAndRender();
-        return;
-      }
+function toggleBubbleMenu(wrapEl){
+  const isOpen = wrapEl.classList.contains('menu-open');
+  closeBubbleMenus();
+  if (!isOpen) wrapEl.classList.add('menu-open');
+}
 
-      const action = prompt('Type: edit / delete / cancel', 'edit');
-      if (!action) return;
-      const val = action.trim().toLowerCase();
-      if (val === 'delete') {
-        if (confirm('Delete bubble ini?')) {
-          state.messages.splice(index, 1);
-          saveAndRender();
-        }
-        return;
-      }
-      if (val !== 'edit') return;
+function deleteBubbleAt(index){
+  const item = state.messages[index];
+  if (!item) return;
+  if (!confirm('Delete bubble ini?')) return;
+  state.messages.splice(index, 1);
+  saveAndRender();
+}
 
-      if (item.type === 'text') {
-        const nextText = prompt('Edit message text:', item.text || '');
-        if (nextText === null) return;
-        const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
-        if (nextTime === null) return;
-        const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
-        if (nextSide === null) return;
-        item.text = nextText;
-        item.time = nextTime;
-        item.side = nextSide === 'their' ? 'their' : 'mine';
-        saveAndRender();
-        return;
-      }
+function editBubbleAt(index){
+  const item = state.messages[index];
+  if (!item) return;
 
-      if (item.type === 'image') {
-        const nextCaption = prompt('Edit caption:', item.caption || '');
-        if (nextCaption === null) return;
-        const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
-        if (nextTime === null) return;
-        const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
-        if (nextSide === null) return;
-        const nextForward = prompt('Show forward icon? yes / no', item.showForward ? 'yes' : 'no');
-        if (nextForward === null) return;
-        item.caption = nextCaption;
-        item.time = nextTime;
-        item.side = nextSide === 'their' ? 'their' : 'mine';
-        item.showForward = nextForward.toLowerCase() === 'yes';
-        saveAndRender();
-      }
-    }
+  if (item.type === 'date') {
+    const next = prompt('Edit date separator:', item.label || '');
+    if (next === null) return;
+    if (!next.trim()) return;
+    item.label = next.trim();
+    saveAndRender();
+    return;
+  }
+
+  if (item.type === 'text') {
+    const nextText = prompt('Edit message text:', item.text || '');
+    if (nextText === null) return;
+    item.text = nextText;
+    saveAndRender();
+    return;
+  }
+
+  if (item.type === 'image') {
+    const nextCaption = prompt('Edit caption:', item.caption || '');
+    if (nextCaption === null) return;
+    item.caption = nextCaption;
+    saveAndRender();
+  }
+}
 
     function saveAndRender(){
       saveState();
       renderHeader();
       applyTheme();
       renderChat();
+
+      document.addEventListener('click', (e) => {
+  if (!e.target.closest('.bubble-wrap')) {
+    closeBubbleMenus();
+  }
+});
     }
 
     function openProfileModal(){
