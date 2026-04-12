@@ -488,10 +488,11 @@
 }
 
 .bubble.media-only{
-  display:inline-flex;
+  display:flex;
   flex-direction:column;
   align-items:stretch;
   gap:0;
+  position:relative;
   padding:6px 6px 20px;
   max-width:min(420px, calc(100% - 24px));
   overflow:hidden;
@@ -513,8 +514,8 @@
 /* caption */
 .bubble .caption{
   display:block;
-  margin:6px 0 0;
-  padding:0 42px 0 2px;
+  margin:8px 0 0;
+  padding:0 46px 0 2px;
   min-width:0;
   white-space:pre-wrap;
   word-break:break-word;
@@ -556,10 +557,7 @@
   fill:#7ad1ff;
 }
 /* image bubble kekal style bawah kanan */
-.bubble.media-only{
-  display:inline-block;
-  padding:6px 6px 18px;
-}
+
 .msg-row.mine .bubble.media-only{
   background:var(--mine);
 }
@@ -575,6 +573,9 @@
   transform:none;
   font-size:12px;
   line-height:1;
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
 }
 .image-wrap{
   position:relative;
@@ -585,6 +586,7 @@
   max-width:100%;
   background:#0d1012;
   margin:0;
+  flex:0 0 auto;
 }
 
   .image-wrap img{
@@ -1196,9 +1198,12 @@
   node = document.createElement('div');
   node.className = `msg-row ${item.side === 'their' ? 'their' : 'mine'} ${groupClass}`;
 
-  const bubble = document.createElement('div');
-  bubble.className = 'bubble';
-  if (item.type === 'image' && !item.caption) bubble.classList.add('media-only');
+const bubble = document.createElement('div');
+bubble.className = 'bubble';
+
+if (item.type === 'image') {
+  bubble.classList.add('media-only');
+}
 
   if (item.type === 'text') {
     bubble.innerHTML = `
