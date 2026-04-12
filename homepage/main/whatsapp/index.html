@@ -5,28 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhatsApp Style Chat Builder</title>
 <style>
-:root{
-  --bg:#0b141a;
-  --panel:#111b21;
-  --panel-2:#202c33;
-  --panel-3:#2a3942;
-  --text:#e9edef;
-  --muted:#8696a0;
-  --line:#222d34;
-  --mine:#005c4b;
-  --theirs:#202c33;
-  --accent:#00a884;
-  --soft:#0f1c22;
-  --input:#202c33;
-  --shadow:0 12px 30px rgba(0,0,0,.35);
-
-  /* upgrade background whatsapp tone */
-  --chat-bg-base:#0a1014;
-  --chat-bg-tint:rgba(11,20,26,.965);
-  --chat-bg-image:url('https://static.whatsapp.net/rsrc.php/v4/y1/r/a3pd-CgpXeU.png');
-  --chat-bg-size:412px;
-  --chat-bg-position:top left;
-}
+  :root{
+    --bg:#0b141a;
+    --panel:#111b21;
+    --panel-2:#202c33;
+    --panel-3:#2a3942;
+    --text:#e9edef;
+    --muted:#8696a0;
+    --line:#222d34;
+    --mine:#005c4b;
+    --theirs:#202c33;
+    --accent:#00a884;
+    --soft:#0f1c22;
+    --input:#202c33;
+    --shadow:0 12px 30px rgba(0,0,0,.35);
+    --chat-bg-size:cover;
+    --chat-bg-position:center;
+    --chat-bg-image:url('https://static.whatsapp.net/rsrc.php/v4/y1/r/a3pd-CgpXeU.png');
+  }
 
   *{box-sizing:border-box}
 
@@ -325,15 +321,16 @@
   position:relative;
   overflow-y:auto;
   overflow-x:hidden;
-  padding:20px 15px 0;
+  padding:20px 15px 0px;
 
-  background-color:var(--chat-bg-base);
-  background-image:
-    linear-gradient(var(--chat-bg-tint), var(--chat-bg-tint)),
-    var(--chat-bg-image);
-  background-repeat:repeat, repeat;
-  background-size:auto, var(--chat-bg-size);
-  background-position:0 0, var(--chat-bg-position);
+  background:
+    linear-gradient(rgba(11,20,26,0.92), rgba(11,20,26,0.92)),
+    url('https://static.whatsapp.net/rsrc.php/v4/y1/r/a3pd-CgpXeU.png');
+
+  background-color:#0b141a;
+  background-repeat:repeat;
+  background-size:350px;
+  background-position:top left;
 
   scroll-behavior:smooth;
 }
@@ -604,17 +601,16 @@
 
 .composer{
   min-height:72px;
+   background:
+    linear-gradient(rgba(11,20,26,0.92), rgba(11,20,26,0.92)),
+    url('https://static.whatsapp.net/rsrc.php/v4/y1/r/a3pd-CgpXeU.png');
+  background-size:350px;
+  background-position:top left;
   display:flex;
   align-items:center;
   padding:10px 16px;
-
-  background-color:var(--chat-bg-base);
-  background-image:
-    linear-gradient(var(--chat-bg-tint), var(--chat-bg-tint)),
-    var(--chat-bg-image);
-  background-repeat:repeat, repeat;
-  background-size:auto, var(--chat-bg-size);
-  background-position:0 0, var(--chat-bg-position);
+  background-color:#0b141a;
+  background-repeat:repeat;
 }
 
 .composer-bar{
