@@ -37,7 +37,7 @@
     .app{
       height:100vh;
       display:grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 320px 6px 1fr;
       gap:0;
       overflow:hidden;
     }
@@ -47,9 +47,11 @@
       border-right:1px solid #0d1418;
       display:flex;
       flex-direction:column;
-      min-width:320px;
+      min-width:0;
+      width:100%;
       overflow-y:auto;
       overflow-x:hidden;
+      position:relative;
     }
 
     .sidebar-header{
@@ -76,9 +78,11 @@
     }
 
     .sidebar-scroll{
+      flex:1;
+      min-height:0;
       overflow-y:auto;
       overflow-x:hidden;
-      padding:14px;
+      padding:14px 14px 14px 8px;
       display:flex;
       flex-direction:column;
       gap:14px;
@@ -163,11 +167,36 @@
       line-height:1.5;
     }
 
-    .chat-shell{
+    .resizer{
+  width:6px;
+  cursor:col-resize;
+  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.04));
+  position:relative;
+  z-index:3;
+  flex:0 0 6px;
+}
+.resizer:hover{
+  background:rgba(255,255,255,0.1);
+}
+.resizer::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:2px;
+  width:2px;
+  background:rgba(134,150,160,.35);
+}
+.resizer:hover::after{
+  background:rgba(0,168,132,.95);
+}
+
+.chat-shell{
       background:var(--bg);
       display:flex;
       flex-direction:column;
       min-width:0;
+      width:100%;
       height:100%;
       overflow:hidden;
     }
@@ -239,10 +268,12 @@
 
     .chat-area{
       flex:1;
+      min-width:0;
+      min-height:0;
       position:relative;
       overflow-y:auto;
       overflow-x:hidden;
-      padding:20px 40px 80px;
+      padding:20px 16px 80px;
       background:
         linear-gradient(rgba(11,20,26,.78),rgba(11,20,26,.78)),
         var(--chat-bg-image);
@@ -253,7 +284,7 @@
     }
 
     .chat-inner{
-      max-width:1200px;
+      max-width:100%;
       width:100%;
       margin:0 auto;
       display:flex;
@@ -283,7 +314,7 @@
     .msg-row.their{justify-content:flex-start}
 
     .bubble{
-      max-width:420px;
+      max-width:min(420px, calc(100% - 24px));
       width:fit-content;
       min-width:92px;
       border-radius:8px;
@@ -457,11 +488,12 @@
     ::-webkit-scrollbar-track{background:transparent}
 
     @media (max-width: 1100px){
-      .app{grid-template-columns:340px 1fr}
+      .app{grid-template-columns:320px 6px 1fr}
       .profile-name{max-width:250px}
     }
     @media (max-width: 900px){
       .app{grid-template-columns:1fr}
+      .resizer{display:none}
       .sidebar{max-height:46vh;border-right:none;border-bottom:1px solid var(--line)}
       .profile-name{max-width:220px}
       .bubble{max-width:min(84vw, 400px)}
@@ -471,33 +503,7 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="sidebar-header">
-        <h2>WhatsApp Desktop Chat Builder</h2>
-        <p>Semua setting, chat, gambar, wallpaper, nama, masa, dan susunan mesej disimpan ke localStorage.</p>
-      </div>
-
       <div class="sidebar-scroll">
-        <section class="card">
-          <h3>Header / Profile</h3>
-          <div class="grid1">
-            <div>
-              <label class="lbl">Chat Name</label>
-              <input id="chatName" type="text" placeholder="Contoh: KL0114 B20 TIPU" />
-            </div>
-            <div>
-              <label class="lbl">Status Text</label>
-              <input id="chatStatus" type="text" placeholder="last seen today at 5:37 AM" />
-            </div>
-            <div>
-              <label class="lbl">Avatar Image</label>
-              <input id="avatarFile" type="file" accept="image/*" />
-            </div>
-            <div class="btn-row">
-              <button id="removeAvatarBtn" class="ghost">Remove Avatar</button>
-            </div>
-          </div>
-        </section>
-
         <section class="card">
           <h3>Add Text Bubble</h3>
           <div class="grid2">
@@ -598,6 +604,8 @@
       </div>
     </aside>
 
+    <div class="resizer" id="resizer"></div>
+
     <main class="chat-shell">
       <div class="topbar">
         <div class="profile" id="openProfileFromHeader" style="cursor:pointer;">
@@ -676,6 +684,7 @@
 
   <script>
     const STORAGE_KEY = 'waDesktopBuilder.v1';
+const SIDEBAR_KEY = 'sidebarWidth';
 
     const defaultState = {
       profile: {
@@ -704,6 +713,7 @@
 
     let state = loadState();
     let pendingImageBase64 = '';
+let sidebarWidth = localStorage.getItem(SIDEBAR_KEY) ? parseInt(localStorage.getItem(SIDEBAR_KEY), 10) : 320;
 
     const $ = (id) => document.getElementById(id);
 
@@ -826,10 +836,10 @@
     }
 
     function renderHeader(){
-      refs.chatName.value = state.profile.name || '';
-      refs.chatStatus.value = state.profile.status || '';
-      refs.chatNamePreview.textContent = state.profile.name || 'Untitled Chat';
-      refs.chatStatusPreview.textContent = state.profile.status || '';
+      if (refs.chatName) refs.chatName.value = state.profile.name || '';
+      if (refs.chatStatus) refs.chatStatus.value = state.profile.status || '';
+      if (refs.chatNamePreview) refs.chatNamePreview.textContent = state.profile.name || 'Untitled Chat';
+      if (refs.chatStatusPreview) refs.chatStatusPreview.textContent = state.profile.status || '';
 
       const avatarMarkup = `
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -837,15 +847,23 @@
         </svg>`;
 
       if (state.profile.avatar){
-        refs.avatarPreview.style.backgroundImage = `url(${state.profile.avatar})`;
-        refs.avatarPreview.innerHTML = '';
-        refs.profileModalAvatar.style.backgroundImage = `url(${state.profile.avatar})`;
-        refs.profileModalAvatar.innerHTML = '';
+        if (refs.avatarPreview) {
+          refs.avatarPreview.style.backgroundImage = `url(${state.profile.avatar})`;
+          refs.avatarPreview.innerHTML = '';
+        }
+        if (refs.profileModalAvatar) {
+          refs.profileModalAvatar.style.backgroundImage = `url(${state.profile.avatar})`;
+          refs.profileModalAvatar.innerHTML = '';
+        }
       } else {
-        refs.avatarPreview.style.backgroundImage = 'none';
-        refs.avatarPreview.innerHTML = avatarMarkup;
-        refs.profileModalAvatar.style.backgroundImage = 'none';
-        refs.profileModalAvatar.innerHTML = avatarMarkup;
+        if (refs.avatarPreview) {
+          refs.avatarPreview.style.backgroundImage = 'none';
+          refs.avatarPreview.innerHTML = avatarMarkup;
+        }
+        if (refs.profileModalAvatar) {
+          refs.profileModalAvatar.style.backgroundImage = 'none';
+          refs.profileModalAvatar.innerHTML = avatarMarkup;
+        }
       }
     }
 
@@ -1054,134 +1072,225 @@
     }
 
     function openProfileModal(){
-      refs.profileModalName.value = state.profile.name || '';
-      refs.profileModalStatus.value = state.profile.status || '';
+      if (refs.profileModalName) refs.profileModalName.value = state.profile.name || '';
+      if (refs.profileModalStatus) refs.profileModalStatus.value = state.profile.status || '';
       renderHeader();
+      if (!refs.profileModalBackdrop) return;
       refs.profileModalBackdrop.classList.remove('hidden');
       refs.profileModalBackdrop.style.display = 'flex';
     }
 
     function closeProfileModal(){
+      if (!refs.profileModalBackdrop) return;
       refs.profileModalBackdrop.classList.add('hidden');
       refs.profileModalBackdrop.style.display = 'none';
-      refs.profileModalFile.value = '';
+      if (refs.profileModalFile) refs.profileModalFile.value = '';
     }
 
-    function bindEvents(){
-      refs.chatName.addEventListener('input', () => {
-        state.profile.name = refs.chatName.value;
-        saveAndRender();
-      });
+    function initResizer(){
+  const resizer = document.getElementById('resizer');
+  const app = document.querySelector('.app');
+  if (!resizer || !app) return;
 
-      refs.chatStatus.addEventListener('input', () => {
-        state.profile.status = refs.chatStatus.value;
-        saveAndRender();
-      });
+  const MIN_LEFT = 180;
+  const MAX_LEFT = 1400;
+  const MIN_RIGHT = 180;
+  let isDown = false;
 
-      refs.avatarFile.addEventListener('change', async () => {
-        await onImagePicked(refs.avatarFile, (base64) => {
-          state.profile.avatar = base64;
+  const clampWidth = (rawX) => {
+    const total = app.clientWidth || window.innerWidth || document.documentElement.clientWidth || 0;
+    const maxByViewport = Math.max(MIN_LEFT, total - 6 - MIN_RIGHT);
+    return Math.max(MIN_LEFT, Math.min(Math.min(MAX_LEFT, maxByViewport), rawX));
+  };
+
+  const apply = () => {
+    app.style.gridTemplateColumns = `${sidebarWidth}px 6px minmax(0, 1fr)`;
+  };
+
+  resizer.addEventListener('mousedown', (e)=>{
+    e.preventDefault();
+    isDown = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  });
+
+  window.addEventListener('mousemove', (e)=>{
+    if(!isDown) return;
+    const rect = app.getBoundingClientRect();
+    const localX = e.clientX - rect.left;
+    sidebarWidth = clampWidth(localX);
+    apply();
+  });
+
+  window.addEventListener('mouseup', ()=>{
+    if(!isDown) return;
+    isDown = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
+  });
+
+  window.addEventListener('resize', ()=>{
+    sidebarWidth = clampWidth(sidebarWidth);
+    apply();
+    localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
+  });
+
+  sidebarWidth = clampWidth(sidebarWidth);
+  apply();
+}
+
+function bindEvents(){
+      if (refs.chatName) {
+        refs.chatName.addEventListener('input', () => {
+          state.profile.name = refs.chatName.value;
           saveAndRender();
-        }, 400, 0.92);
-      });
+        });
+      }
 
-      refs.removeAvatarBtn.addEventListener('click', () => {
-        state.profile.avatar = '';
-        refs.avatarFile.value = '';
-        saveAndRender();
-      });
+      if (refs.chatStatus) {
+        refs.chatStatus.addEventListener('input', () => {
+          state.profile.status = refs.chatStatus.value;
+          saveAndRender();
+        });
+      }
 
-      refs.openProfileModalBtn.addEventListener('click', openProfileModal);
-      refs.openProfileFromHeader.addEventListener('click', openProfileModal);
-      refs.cancelProfileBtn.addEventListener('click', closeProfileModal);
-      refs.profileModalBackdrop.addEventListener('click', (e) => {
-        if (e.target === refs.profileModalBackdrop) closeProfileModal();
-      });
-      refs.changeProfileBtn.addEventListener('click', () => refs.profileModalFile.click());
-      refs.viewProfileBtn.addEventListener('click', () => {
-        if (!state.profile.avatar) return alert('Belum ada profile image bro.');
-        const win = window.open('');
-        if (!win) return;
-        win.document.write(`<title>View Profile</title><body style="margin:0;background:#0b141a;display:grid;place-items:center;min-height:100vh"><img src="${state.profile.avatar}" style="max-width:90vw;max-height:90vh;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.45)"></body>`);
-      });
-      refs.deleteProfileBtn.addEventListener('click', () => {
-        if (!state.profile.avatar) return alert('Belum ada gambar profile untuk dipadam bro.');
-        if (!confirm('Delete gambar profile ini?')) return;
-        state.profile.avatar = '';
-        refs.avatarFile.value = '';
-        refs.profileModalFile.value = '';
-        renderHeader();
-      });
-      refs.profileModalFile.addEventListener('change', async () => {
-        await onImagePicked(refs.profileModalFile, (base64) => {
-          state.profile.avatar = base64;
+      if (refs.avatarFile) {
+        refs.avatarFile.addEventListener('change', async () => {
+          await onImagePicked(refs.avatarFile, (base64) => {
+            state.profile.avatar = base64;
+            saveAndRender();
+          }, 400, 0.92);
+        });
+      }
+
+      if (refs.removeAvatarBtn) {
+        refs.removeAvatarBtn.addEventListener('click', () => {
+          state.profile.avatar = '';
+          if (refs.avatarFile) refs.avatarFile.value = '';
+          saveAndRender();
+        });
+      }
+
+      if (refs.openProfileModalBtn) refs.openProfileModalBtn.addEventListener('click', openProfileModal);
+      if (refs.openProfileFromHeader) refs.openProfileFromHeader.addEventListener('click', openProfileModal);
+      if (refs.cancelProfileBtn) refs.cancelProfileBtn.addEventListener('click', closeProfileModal);
+      if (refs.profileModalBackdrop) {
+        refs.profileModalBackdrop.addEventListener('click', (e) => {
+          if (e.target === refs.profileModalBackdrop) closeProfileModal();
+        });
+      }
+      if (refs.changeProfileBtn && refs.profileModalFile) {
+        refs.changeProfileBtn.addEventListener('click', () => refs.profileModalFile.click());
+      }
+      if (refs.viewProfileBtn) {
+        refs.viewProfileBtn.addEventListener('click', () => {
+          if (!state.profile.avatar) return alert('Belum ada profile image bro.');
+          const win = window.open('');
+          if (!win) return;
+          win.document.write(`<title>View Profile</title><body style="margin:0;background:#0b141a;display:grid;place-items:center;min-height:100vh"><img src="${state.profile.avatar}" style="max-width:90vw;max-height:90vh;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.45)"></body>`);
+        });
+      }
+      if (refs.deleteProfileBtn) {
+        refs.deleteProfileBtn.addEventListener('click', () => {
+          if (!state.profile.avatar) return alert('Belum ada gambar profile untuk dipadam bro.');
+          if (!confirm('Delete gambar profile ini?')) return;
+          state.profile.avatar = '';
+          if (refs.avatarFile) refs.avatarFile.value = '';
+          if (refs.profileModalFile) refs.profileModalFile.value = '';
           renderHeader();
-        }, 600, 0.94);
-      });
-      refs.updateProfileBtn.addEventListener('click', () => {
-        state.profile.name = refs.profileModalName.value.trim() || 'Untitled Chat';
-        state.profile.status = refs.profileModalStatus.value.trim();
-        saveAndRender();
-        closeProfileModal();
-      });
-
-      refs.addTextBtn.addEventListener('click', addTextMessage);
-      refs.clearInputsBtn.addEventListener('click', () => {
-        refs.msgText.value = '';
-        refs.msgDateLabel.value = '';
-      });
-
-      refs.imgFile.addEventListener('change', async () => {
-        await onImagePicked(refs.imgFile, (base64) => {
-          pendingImageBase64 = base64;
-          previewPendingImage(base64);
-        }, 1400, 0.9);
-      });
-
-      refs.addImageBtn.addEventListener('click', addImageMessage);
-      refs.clearImageInputBtn.addEventListener('click', clearPendingImage);
-
-      refs.mineColor.addEventListener('input', () => {
-        state.theme.mineColor = refs.mineColor.value;
-        saveAndRender();
-      });
-      refs.theirColor.addEventListener('input', () => {
-        state.theme.theirColor = refs.theirColor.value;
-        saveAndRender();
-      });
-
-      refs.wallpaperFile.addEventListener('change', async () => {
-        await onImagePicked(refs.wallpaperFile, (base64) => {
-          state.theme.wallpaper = base64;
+        });
+      }
+      if (refs.profileModalFile) {
+        refs.profileModalFile.addEventListener('change', async () => {
+          await onImagePicked(refs.profileModalFile, (base64) => {
+            state.profile.avatar = base64;
+            renderHeader();
+          }, 600, 0.94);
+        });
+      }
+      if (refs.updateProfileBtn) {
+        refs.updateProfileBtn.addEventListener('click', () => {
+          state.profile.name = refs.profileModalName?.value.trim() || 'Untitled Chat';
+          state.profile.status = refs.profileModalStatus?.value.trim() || '';
           saveAndRender();
-        }, 1600, 0.88);
-      });
+          closeProfileModal();
+        });
+      }
 
-      refs.removeWallpaperBtn.addEventListener('click', () => {
-        state.theme.wallpaper = '';
-        refs.wallpaperFile.value = '';
-        saveAndRender();
-      });
+      if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
+      if (refs.clearInputsBtn) {
+        refs.clearInputsBtn.addEventListener('click', () => {
+          if (refs.msgText) refs.msgText.value = '';
+          if (refs.msgDateLabel) refs.msgDateLabel.value = '';
+        });
+      }
 
-      refs.resetThemeBtn.addEventListener('click', () => {
-        state.theme.mineColor = defaultState.theme.mineColor;
-        state.theme.theirColor = defaultState.theme.theirColor;
-        saveAndRender();
-      });
+      if (refs.imgFile) {
+        refs.imgFile.addEventListener('change', async () => {
+          await onImagePicked(refs.imgFile, (base64) => {
+            pendingImageBase64 = base64;
+            previewPendingImage(base64);
+          }, 1400, 0.9);
+        });
+      }
 
-      refs.undoBtn.addEventListener('click', () => {
+      if (refs.addImageBtn) refs.addImageBtn.addEventListener('click', addImageMessage);
+      if (refs.clearImageInputBtn) refs.clearImageInputBtn.addEventListener('click', clearPendingImage);
+
+      if (refs.mineColor) {
+        refs.mineColor.addEventListener('input', () => {
+          state.theme.mineColor = refs.mineColor.value;
+          saveAndRender();
+        });
+      }
+      if (refs.theirColor) {
+        refs.theirColor.addEventListener('input', () => {
+          state.theme.theirColor = refs.theirColor.value;
+          saveAndRender();
+        });
+      }
+
+      if (refs.wallpaperFile) {
+        refs.wallpaperFile.addEventListener('change', async () => {
+          await onImagePicked(refs.wallpaperFile, (base64) => {
+            state.theme.wallpaper = base64;
+            saveAndRender();
+          }, 1600, 0.88);
+        });
+      }
+
+      if (refs.removeWallpaperBtn) {
+        refs.removeWallpaperBtn.addEventListener('click', () => {
+          state.theme.wallpaper = '';
+          if (refs.wallpaperFile) refs.wallpaperFile.value = '';
+          saveAndRender();
+        });
+      }
+
+      if (refs.resetThemeBtn) {
+        refs.resetThemeBtn.addEventListener('click', () => {
+          state.theme.mineColor = defaultState.theme.mineColor;
+          state.theme.theirColor = defaultState.theme.theirColor;
+          saveAndRender();
+        });
+      }
+
+      if (refs.undoBtn) refs.undoBtn.addEventListener('click', () => {
         if (!state.messages.length) return;
         state.messages.pop();
         saveAndRender();
       });
 
-      refs.clearChatBtn.addEventListener('click', () => {
-        if (!confirm('Clear semua chat?')) return;
-        state.messages = [];
-        saveAndRender();
-      });
+      if (refs.clearChatBtn) {
+        refs.clearChatBtn.addEventListener('click', () => {
+          if (!confirm('Clear semua chat?')) return;
+          state.messages = [];
+          saveAndRender();
+        });
+      }
 
-      refs.exportBtn.addEventListener('click', () => {
+      if (refs.exportBtn) refs.exportBtn.addEventListener('click', () => {
         const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1191,8 +1300,8 @@
         URL.revokeObjectURL(url);
       });
 
-      refs.importBtn.addEventListener('click', () => refs.importFile.click());
-      refs.importFile.addEventListener('change', async () => {
+      if (refs.importBtn && refs.importFile) refs.importBtn.addEventListener('click', () => refs.importFile.click());
+      if (refs.importFile) refs.importFile.addEventListener('change', async () => {
         const file = refs.importFile.files?.[0];
         if (!file) return;
         try {
@@ -1214,6 +1323,7 @@
     }
 
     bindEvents();
+initResizer();
     saveAndRender();
   </script>
 </body>
