@@ -1136,24 +1136,6 @@
   node.appendChild(bubble);
 }
 
-          if (item.type === 'image') {
-            bubble.innerHTML = `
-              <div class="image-wrap">
-                <img src="${item.image}" alt="chat image" />
-                ${item.showForward ? `<div class="forward-badge" title="Forward">
-                  <svg viewBox="0 0 24 24"><path d="m14 4 8 8-8 8-1.41-1.41L18.17 13H3v-2h15.17l-5.58-5.59L14 4Z"/></svg>
-                </div>` : ''}
-              </div>
-              ${item.caption ? `<div class="caption">${escapeHtml(item.caption)}</div>` : ''}
-              <div class="bubble-time">
-                <span>${timeLabel(item.time)}</span>
-                ${item.side === 'mine' ? mineTicks() : ''}
-              </div>`;
-          }
-
-          node.appendChild(bubble);
-        }
-
         node.dataset.index = index;
         node.addEventListener('click', () => openEditMenu(index));
         refs.chatList.appendChild(node);
