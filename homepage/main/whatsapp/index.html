@@ -497,7 +497,6 @@
   padding:3px;
   min-width:0;
   width:auto;
-  max-width:246px;
   overflow:visible;
   border-radius:7.5px;
   box-sizing:border-box;
@@ -598,11 +597,8 @@
   border-radius:6px;
   overflow:hidden;
   display:block;
-  width:100%;
-  max-width:240px;
   min-width:0;
   height:auto;
-  max-height:none;
   background:transparent;
   margin:0;
   flex:0 0 auto;
@@ -614,12 +610,50 @@
   display:block;
   width:100%;
   height:auto;
-  max-width:none;
-  max-height:420px;
   object-fit:contain;
   vertical-align:top;
 }
+/* portrait */
+.bubble.media-only.is-portrait{
+  max-width:246px;
+}
+.image-wrap.is-portrait{
+  width:240px;
+  max-width:240px;
+}
+.image-wrap.is-portrait img{
+  width:240px;
+  max-width:240px;
+  max-height:420px;
+}
 
+/* landscape */
+.bubble.media-only.is-landscape{
+  max-width:276px;
+}
+.image-wrap.is-landscape{
+  width:270px;
+  max-width:270px;
+}
+.image-wrap.is-landscape img{
+  width:270px;
+  max-width:270px;
+  max-height:220px;
+}
+
+/* square */
+.bubble.media-only.is-square{
+  max-width:246px;
+}
+.image-wrap.is-square{
+  width:240px;
+  max-width:240px;
+}
+.image-wrap.is-square img{
+  width:240px;
+  max-width:240px;
+  max-height:240px;
+}
 .forward-badge{
   position:absolute;
   top:50%;
@@ -1148,7 +1182,43 @@
         .replaceAll('"','&quot;')
         .replaceAll("'",'&#039;');
     }
+function applyImageOrientation(root = document){
+  const imgs = root.querySelectorAll('.image-wrap img');
 
+  imgs.forEach((img) => {
+    const wrap = img.closest('.image-wrap');
+    const bubble = img.closest('.bubble.media-only');
+    if (!wrap || !bubble) return;
+
+    const setOrientation = () => {
+      wrap.classList.remove('is-portrait', 'is-landscape', 'is-square');
+      bubble.classList.remove('is-portrait', 'is-landscape', 'is-square');
+
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      if (!w || !h) return;
+
+      const ratio = w / h;
+
+      if (ratio > 1.15) {
+        wrap.classList.add('is-landscape');
+        bubble.classList.add('is-landscape');
+      } else if (ratio < 0.9) {
+        wrap.classList.add('is-portrait');
+        bubble.classList.add('is-portrait');
+      } else {
+        wrap.classList.add('is-square');
+        bubble.classList.add('is-square');
+      }
+    };
+
+    if (img.complete) {
+      setOrientation();
+    } else {
+      img.addEventListener('load', setOrientation, { once: true });
+    }
+  });
+}
     function renderHeader(){
       if (refs.chatName) refs.chatName.value = state.profile.name || '';
       if (refs.chatStatus) refs.chatStatus.value = state.profile.status || '';
@@ -1271,8 +1341,9 @@ if (item.type === 'image') {
       });
 
       requestAnimationFrame(() => {
-        refs.chatArea.scrollTop = refs.chatArea.scrollHeight;
-      });
+  applyImageOrientation(refs.chatList);
+  refs.chatArea.scrollTop = refs.chatArea.scrollHeight;
+});
     }
 
     function mineTicks(){
