@@ -405,9 +405,9 @@
   content:none;
 }
 
-/* tail hanya pada single atau bubble terakhir dalam group */
+/* tail hanya pada single atau bubble pertama dalam group */
 .msg-row.mine.single .bubble::after,
-.msg-row.mine.group-end .bubble::after{
+.msg-row.mine.group-start .bubble::after{
   content:"";
   position:absolute;
   top:0;
@@ -420,7 +420,7 @@
 }
 
 .msg-row.their.single .bubble::before,
-.msg-row.their.group-end .bubble::before{
+.msg-row.their.group-start .bubble::before{
   content:"";
   position:absolute;
   top:0;
@@ -437,7 +437,7 @@
 }
 
 .msg-row.mine.group-start .bubble{
-  border-top-right-radius:7.5px;
+  border-top-right-radius:0;
   border-bottom-right-radius:7.5px;
 }
 
@@ -448,7 +448,7 @@
 
 .msg-row.mine.group-end .bubble{
   border-top-right-radius:7.5px;
-  border-bottom-right-radius:0;
+  border-bottom-right-radius:7.5px;
 }
 
 .msg-row.their.single .bubble{
@@ -457,7 +457,7 @@
 }
 
 .msg-row.their.group-start .bubble{
-  border-top-left-radius:7.5px;
+  border-top-left-radius:0;
   border-bottom-left-radius:7.5px;
 }
 
@@ -468,7 +468,7 @@
 
 .msg-row.their.group-end .bubble{
   border-top-left-radius:7.5px;
-  border-bottom-left-radius:0;
+  border-bottom-left-radius:7.5px;
 }
 
   .bubble.media-only{
