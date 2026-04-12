@@ -696,21 +696,23 @@
 
 .bubble-actions{
   position:absolute;
-  top:50%;
-  transform:translateY(-50%);
   z-index:8;
   opacity:0;
   visibility:hidden;
   pointer-events:none;
-  transition:opacity .16s ease, transform .16s ease, visibility .16s ease;
+  transition:opacity .16s ease, visibility .16s ease;
 }
 
 .msg-row.mine .bubble-actions{
   left:-34px;
+  top:calc(50% - 36px);
+  transform:none;
 }
 
 .msg-row.their .bubble-actions{
   right:-34px;
+  top:calc(50% - 36px);
+  transform:none;
 }
 
 .msg-row:hover .bubble-actions,
