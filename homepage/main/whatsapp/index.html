@@ -704,13 +704,15 @@
 }
 
 .msg-row.mine .bubble-actions{
-  left:-34px;
+  left:auto;
+  right:calc(100% + 8px);
   top:calc(50% - 36px);
   transform:none;
 }
 
 .msg-row.their .bubble-actions{
-  right:-34px;
+  right:auto;
+  left:calc(100% + 8px);
   top:calc(50% - 36px);
   transform:none;
 }
@@ -1440,13 +1442,14 @@ function applyImageOrientation(root = document){
     groupClass = 'group-end';
   }
 
-  node = document.createElement('div');
-  node.className = `msg-row ${item.side === 'their' ? 'their' : 'mine'} ${groupClass}`;
+node = document.createElement('div');
+node.className = `msg-row ${item.side === 'their' ? 'their' : 'mine'} ${groupClass}`;
 
 const bubble = document.createElement('div');
 bubble.className = 'bubble';
 
-node.insertAdjacentHTML('beforeend', bubbleActionsTemplate(index));
+bubble.insertAdjacentHTML('beforeend', bubbleActionsTemplate(index));
+
 if (item.type === 'image') {
   bubble.classList.add('media-only');
 }
