@@ -689,6 +689,115 @@
   right:-30px;
   left:auto;
 }
+/* ===== bubble hover action ===== */
+.msg-row{
+  position:relative;
+}
+
+.bubble-actions{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:8;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .16s ease, transform .16s ease, visibility .16s ease;
+}
+
+.msg-row.mine .bubble-actions{
+  left:-34px;
+}
+
+.msg-row.their .bubble-actions{
+  right:-34px;
+}
+
+.msg-row:hover .bubble-actions,
+.msg-row.menu-open .bubble-actions{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+.bubble-action-toggle{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:none;
+  cursor:pointer;
+  background:rgba(17,27,33,.92);
+  box-shadow:0 6px 14px rgba(0,0,0,.28);
+  backdrop-filter:blur(4px);
+  color:rgba(255,255,255,.72);
+}
+
+.bubble-action-toggle:hover{
+  background:rgba(32,44,51,.98);
+  color:#fff;
+}
+
+.bubble-action-toggle svg{
+  width:18px;
+  height:18px;
+  fill:currentColor;
+}
+
+.bubble-action-menu{
+  position:absolute;
+  top:calc(100% + 8px);
+  min-width:120px;
+  background:#202c33;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  box-shadow:0 14px 28px rgba(0,0,0,.35);
+  padding:6px;
+  display:none;
+}
+
+.msg-row.mine .bubble-action-menu{
+  left:0;
+}
+
+.msg-row.their .bubble-action-menu{
+  right:0;
+}
+
+.bubble-actions.open .bubble-action-menu{
+  display:block;
+}
+
+.bubble-action-item{
+  width:100%;
+  height:34px;
+  border-radius:8px;
+  border:none;
+  background:transparent;
+  color:#e9edef;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.bubble-action-item:hover{
+  background:#2a3942;
+}
+
+.bubble-action-item.delete{
+  color:#ff8d8d;
+}
+
+.bubble-action-item svg{
+  width:16px;
+  height:16px;
+  fill:currentColor;
+}
 .composer{
   min-height:72px;
    background:
@@ -1187,6 +1296,35 @@
         .replaceAll('"','&quot;')
         .replaceAll("'",'&#039;');
     }
+function bubbleActionSvg(){
+  return `
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z"/>
+    </svg>
+  `;
+}
+
+function bubbleActionsTemplate(index){
+  return `
+    <div class="bubble-actions" data-index="${index}">
+      <button type="button" class="bubble-action-toggle" title="Open menu" aria-label="Open menu">
+        ${bubbleActionSvg()}
+      </button>
+
+      <div class="bubble-action-menu">
+        <button type="button" class="bubble-action-item edit" data-action="edit" data-index="${index}">
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm2.92 2.33H5v-.92l8.06-8.06.92.92L5.92 19.58ZM20.71 7.04a1.003 1.003 0 0 0 0-1.42L18.37 3.3a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.84Z"/></svg>
+          <span>Edit</span>
+        </button>
+
+        <button type="button" class="bubble-action-item delete" data-action="delete" data-index="${index}">
+          <svg viewBox="0 0 24 24"><path d="M9 3V4H4V6H5V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V6H20V4H15V3H9ZM7 6H17V19H7V6ZM9 8V17H11V8H9ZM13 8V17H15V8H13Z"/></svg>
+          <span>Delete</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
 function applyImageOrientation(root = document){
   const imgs = root.querySelectorAll('.image-wrap img');
 
@@ -1306,6 +1444,7 @@ function applyImageOrientation(root = document){
 const bubble = document.createElement('div');
 bubble.className = 'bubble';
 
+node.insertAdjacentHTML('beforeend', bubbleActionsTemplate(index));
 if (item.type === 'image') {
   bubble.classList.add('media-only');
 }
@@ -1422,68 +1561,84 @@ if (item.type === 'image') {
       if (removeBtn) removeBtn.onclick = clearPendingImage;
     }
 
-    function openEditMenu(index){
-      const item = state.messages[index];
-      if (!item) return;
+function openEditMenu(index){
+  const row = refs.chatList.querySelector(`.bubble-actions[data-index="${index}"]`);
+  if (!row) return;
 
-      if (item.type === 'date') {
-        const next = prompt('Edit date separator:', item.label || '');
-        if (next === null) return;
-        if (!next.trim()) {
-          if (confirm('Delete separator ini?')) {
-            state.messages.splice(index, 1);
-            saveAndRender();
-          }
-          return;
-        }
-        item.label = next.trim();
-        saveAndRender();
-        return;
-      }
+  document.querySelectorAll('.bubble-actions.open').forEach(el => {
+    if (el !== row) el.classList.remove('open');
+  });
 
-      const action = prompt('Type: edit / delete / cancel', 'edit');
-      if (!action) return;
-      const val = action.trim().toLowerCase();
-      if (val === 'delete') {
-        if (confirm('Delete bubble ini?')) {
-          state.messages.splice(index, 1);
-          saveAndRender();
-        }
-        return;
-      }
-      if (val !== 'edit') return;
+  row.classList.toggle('open');
 
-      if (item.type === 'text') {
-        const nextText = prompt('Edit message text:', item.text || '');
-        if (nextText === null) return;
-        const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
-        if (nextTime === null) return;
-        const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
-        if (nextSide === null) return;
-        item.text = nextText;
-        item.time = nextTime;
-        item.side = nextSide === 'their' ? 'their' : 'mine';
-        saveAndRender();
-        return;
-      }
+  const msgRow = row.closest('.msg-row');
+  if (msgRow) {
+    document.querySelectorAll('.msg-row.menu-open').forEach(el => {
+      if (el !== msgRow) el.classList.remove('menu-open');
+    });
+    msgRow.classList.toggle('menu-open', row.classList.contains('open'));
+  }
+}
+function editMessageAt(index){
+  const item = state.messages[index];
+  if (!item) return;
 
-      if (item.type === 'image') {
-        const nextCaption = prompt('Edit caption:', item.caption || '');
-        if (nextCaption === null) return;
-        const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
-        if (nextTime === null) return;
-        const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
-        if (nextSide === null) return;
-        const nextForward = prompt('Show forward icon? yes / no', item.showForward ? 'yes' : 'no');
-        if (nextForward === null) return;
-        item.caption = nextCaption;
-        item.time = nextTime;
-        item.side = nextSide === 'their' ? 'their' : 'mine';
-        item.showForward = nextForward.toLowerCase() === 'yes';
-        saveAndRender();
-      }
-    }
+  if (item.type === 'date') {
+    const next = prompt('Edit date separator:', item.label || '');
+    if (next === null) return;
+    if (!next.trim()) return;
+    item.label = next.trim();
+    saveAndRender();
+    return;
+  }
 
+  if (item.type === 'text') {
+    const nextText = prompt('Edit message text:', item.text || '');
+    if (nextText === null) return;
+
+    const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
+    if (nextTime === null) return;
+
+    const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
+    if (nextSide === null) return;
+
+    item.text = nextText;
+    item.time = nextTime;
+    item.side = nextSide === 'their' ? 'their' : 'mine';
+    saveAndRender();
+    return;
+  }
+
+  if (item.type === 'image') {
+    const nextCaption = prompt('Edit caption:', item.caption || '');
+    if (nextCaption === null) return;
+
+    const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
+    if (nextTime === null) return;
+
+    const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
+    if (nextSide === null) return;
+
+    const nextForward = prompt('Show forward icon? yes / no', item.showForward ? 'yes' : 'no');
+    if (nextForward === null) return;
+
+    item.caption = nextCaption;
+    item.time = nextTime;
+    item.side = nextSide === 'their' ? 'their' : 'mine';
+    item.showForward = nextForward.toLowerCase() === 'yes';
+    saveAndRender();
+  }
+}
+function deleteMessageAt(index){
+  const item = state.messages[index];
+  if (!item) return;
+
+  const label = item.type === 'date' ? 'separator' : 'bubble';
+  if (!confirm(`Delete ${label} ini?`)) return;
+
+  state.messages.splice(index, 1);
+  saveAndRender();
+}
     function saveAndRender(){
       saveState();
       renderHeader();
@@ -1664,6 +1819,40 @@ if (item.type === 'image') {
 
       if (refs.addImageBtn) refs.addImageBtn.addEventListener('click', addImageMessage);
       if (refs.clearImageInputBtn) refs.clearImageInputBtn.addEventListener('click', clearPendingImage);
+      /* LETAK SINI BRO */
+refs.chatList.addEventListener('click', (e) => {
+  const toggle = e.target.closest('.bubble-action-toggle');
+  if (toggle) {
+    e.stopPropagation();
+    const wrap = toggle.closest('.bubble-actions');
+    if (!wrap) return;
+    const index = Number(wrap.dataset.index);
+    openEditMenu(index);
+    return;
+  }
+
+  const actionBtn = e.target.closest('.bubble-action-item');
+  if (actionBtn) {
+    e.stopPropagation();
+    const index = Number(actionBtn.dataset.index);
+    const action = actionBtn.dataset.action;
+
+    if (action === 'edit') {
+      editMessageAt(index);
+      return;
+    }
+
+    if (action === 'delete') {
+      deleteMessageAt(index);
+      return;
+    }
+  }
+});
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.bubble-actions.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.msg-row.menu-open').forEach(el => el.classList.remove('menu-open'));
+});
 
       if (refs.mineColor) {
         refs.mineColor.addEventListener('input', () => {
