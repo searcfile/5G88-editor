@@ -439,12 +439,20 @@
   z-index:6;
 }
 
-.msg-row.mine .bubble-menu-btn{
-  right:13px;
+/* default */
+.msg-row.mine .bubble-menu-btn,
+.msg-row.their .bubble-menu-btn{
+  right:8px;
 }
 
-.msg-row.their .bubble-menu-btn{
-  right:7px;
+/* text bubble: bagi lebih pass ke kanan */
+.bubble-wrap.text-wrap .bubble-menu-btn{
+  right:-3px;
+}
+
+/* image bubble: kekalkan macam sekarang */
+.bubble-wrap.media-wrap .bubble-menu-btn{
+  right:8px;
 }
 
 .bubble-wrap:hover .bubble-menu-btn,
@@ -1394,6 +1402,9 @@ bubble.className = 'bubble';
 
 if (item.type === 'image') {
   bubble.classList.add('media-only');
+  bubbleWrap.classList.add('media-wrap');
+} else {
+  bubbleWrap.classList.add('text-wrap');
 }
 
 if (item.type === 'text') {
