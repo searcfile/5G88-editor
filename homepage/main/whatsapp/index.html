@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1201,9 +1202,14 @@ function applyImageOrientation(root = document){
       const h = img.naturalHeight || img.height;
       if (!w || !h) return;
 
-      if (h <= 630) {
+      const ratio = w / h;
+
+      if (ratio > 1.15) {
         wrap.classList.add('is-landscape');
         bubble.classList.add('is-landscape');
+      } else if (ratio < 0.9) {
+        wrap.classList.add('is-portrait');
+        bubble.classList.add('is-portrait');
       } else {
         wrap.classList.add('is-square');
         bubble.classList.add('is-square');
@@ -1758,3 +1764,4 @@ if (item.type === 'image') {
   </script>
 </body>
 </html>
+
