@@ -1078,22 +1078,63 @@
           node.className = 'day-sep';
           node.textContent = item.label || '';
           node.title = 'Click to edit / delete';
-        } else {
-          node = document.createElement('div');
-          node.className = `msg-row ${item.side === 'their' ? 'their' : 'mine'}`;
+} else {
+  const prev = state.messages[index - 1];
+  const next = state.messages[index + 1];
 
-          const bubble = document.createElement('div');
-          bubble.className = 'bubble';
-          if (item.type === 'image' && !item.caption) bubble.classList.add('media-only');
+  const prevSameSide =
+    prev &&
+    prev.type !== 'date' &&
+    prev.side === item.side;
 
-          if (item.type === 'text') {
-            bubble.innerHTML = `
-              <div class="bubble-text">${escapeHtml(item.text || '')}</div>
-              <div class="bubble-time">
-                <span>${timeLabel(item.time)}</span>
-                ${item.side === 'mine' ? mineTicks() : ''}
-              </div>`;
-          }
+  const nextSameSide =
+    next &&
+    next.type !== 'date' &&
+    next.side === item.side;
+
+  let groupClass = 'single';
+
+  if (!prevSameSide && nextSameSide) {
+    groupClass = 'group-start';
+  } else if (prevSameSide && nextSameSide) {
+    groupClass = 'group-mid';
+  } else if (prevSameSide && !nextSameSide) {
+    groupClass = 'group-end';
+  }
+
+  node = document.createElement('div');
+  node.className = `msg-row ${item.side === 'their' ? 'their' : 'mine'} ${groupClass}`;
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  if (item.type === 'image' && !item.caption) bubble.classList.add('media-only');
+
+  if (item.type === 'text') {
+    bubble.innerHTML = `
+      <div class="bubble-text">${escapeHtml(item.text || '')}</div>
+      <div class="bubble-time">
+        <span>${timeLabel(item.time)}</span>
+        ${item.side === 'mine' ? mineTicks() : ''}
+      </div>`;
+  }
+
+  if (item.type === 'image') {
+    bubble.innerHTML = `
+      <div class="image-wrap">
+        <img src="${item.image}" alt="chat image" />
+        ${item.showForward ? `<div class="forward-badge" title="Forward">
+          <svg viewBox="0 0 24 24"><path d="m14 4 8 8-8 8-1.41-1.41L18.17 13H3v-2h15.17l-5.58-5.59L14 4Z"/></svg>
+        </div>` : ''}
+      </div>
+      ${item.caption ? `<div class="caption">${escapeHtml(item.caption)}</div>` : ''}
+      <div class="bubble-time">
+        <span>${timeLabel(item.time)}</span>
+        ${item.side === 'mine' ? mineTicks() : ''}
+      </div>`;
+  }
+
+  node.appendChild(bubble);
+}
 
           if (item.type === 'image') {
             bubble.innerHTML = `
