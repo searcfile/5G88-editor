@@ -359,105 +359,125 @@
   .msg-row.their{justify-content:flex-start}
 
   /* ===== WHATSAPP-LIKE BUBBLE ===== */
-  .bubble{
-    display:inline-block;
-    position:relative;
-    max-width:min(420px, calc(100% - 24px));
-    width:fit-content;
-    min-width:0;
-    padding:6px 8px 11px;
-    border-radius:7.5px;
-    font-size:14px;
-    line-height:1.34;
-    white-space:normal;
-    word-break:break-word;
-    box-shadow:0 1px 0 rgba(0,0,0,.28);
-    vertical-align:top;
-  }
+.bubble{
+  display:inline-flex;
+  align-items:flex-end;
+  gap:6px;
+  position:relative;
+  max-width:min(420px, calc(100% - 24px));
+  width:fit-content;
+  min-width:0;
+  padding:6px 8px 7px;
+  border-radius:7.5px;
+  font-size:14px;
+  line-height:1.3;
+  white-space:normal;
+  word-break:break-word;
+  box-shadow:0 1px 0 rgba(0,0,0,.28);
+  vertical-align:top;
+}
 
-  .msg-row.mine .bubble{
-    background:var(--mine);
-    border-top-right-radius:0;
-    margin-right:6px;
-  }
+.msg-row.mine .bubble{
+  background:var(--mine);
+  border-top-right-radius:0;
+  margin-right:6px;
+}
 
-  .msg-row.their .bubble{
-    background:var(--theirs);
-    border-top-left-radius:0;
-    margin-left:6px;
-  }
+.msg-row.their .bubble{
+  background:var(--theirs);
+  border-top-left-radius:0;
+  margin-left:6px;
+}
 
-  /* tail */
-  .msg-row.mine .bubble::after,
-  .msg-row.their .bubble::before{
-    content:"";
-    position:absolute;
-    top:0;
-    width:8px;
-    height:13px;
-    pointer-events:none;
-  }
+/* tail */
+.msg-row.mine .bubble::after,
+.msg-row.their .bubble::before{
+  content:"";
+  position:absolute;
+  top:0;
+  width:8px;
+  height:12px;
+  pointer-events:none;
+}
 
-  .msg-row.mine .bubble::after{
-    right:-6px;
-    background:var(--mine);
-    clip-path:polygon(0 0, 100% 0, 0 100%);
-  }
+.msg-row.mine .bubble::after{
+  right:-6px;
+  background:var(--mine);
+  clip-path:polygon(0 0, 100% 0, 0 100%);
+}
 
-  .msg-row.their .bubble::before{
-    left:-6px;
-    background:var(--theirs);
-    clip-path:polygon(100% 0, 100% 100%, 0 0);
-  }
+.msg-row.their .bubble::before{
+  left:-6px;
+  background:var(--theirs);
+  clip-path:polygon(100% 0, 100% 100%, 0 0);
+}
 
   .bubble.media-only{
     padding:6px 6px 18px;
   }
 
-  .bubble .bubble-text{
-    display:block;
-    margin:0;
-    padding:0;
-  }
+/* text */
+.bubble .bubble-text{
+  display:block;
+  margin:0;
+  padding:0;
+  min-width:0;
+}
 
-  .bubble .caption{
-    display:block;
-    margin-top:6px;
-    padding:0;
-  }
+/* caption */
+.bubble .caption{
+  display:block;
+  margin-top:6px;
+  padding:0;
+  min-width:0;
+}
 
   .bubble-time{
-    position:absolute;
-    right:7px;
-    bottom:3px;
-    display:inline-flex;
-    align-items:center;
-    gap:3px;
-    font-size:11px;
-    line-height:1;
-    white-space:nowrap;
-    color:#c7d1d5;
-    opacity:.95;
-    letter-spacing:0;
-    pointer-events:none;
-  }
+  position:static;
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  flex:0 0 auto;
+  align-self:flex-end;
+  margin-left:6px;
+  font-size:11px;
+  line-height:1;
+  white-space:nowrap;
+  color:#c7d1d5;
+  opacity:.95;
+  letter-spacing:0;
+  pointer-events:none;
+  transform:translateY(2px);
+}
 
-  .msg-row.their .bubble-time{
-    color:#aeb8bc;
-  }
+.msg-row.their .bubble-time{
+  color:#aeb8bc;
+}
 
-  .double-check{
-    display:inline-flex;
-    align-items:center;
-    transform:translateY(.2px);
-  }
+.double-check{
+  display:inline-flex;
+  align-items:center;
+  transform:translateY(.2px);
+}
 
-  .double-check svg{
-    width:14px;
-    height:14px;
-    fill:#7ad1ff;
-  }
+.double-check svg{
+  width:14px;
+  height:14px;
+  fill:#7ad1ff;
+}
+/* image bubble kekal style bawah kanan */
+.bubble.media-only{
+  display:inline-block;
+  padding:6px 6px 18px;
+}
 
+.bubble.media-only .bubble-time{
+  position:absolute;
+  right:7px;
+  bottom:3px;
+  margin-left:0;
+  transform:none;
+}
   .image-wrap{
     position:relative;
     border-radius:8px;
