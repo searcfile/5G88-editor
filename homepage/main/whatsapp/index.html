@@ -6,6 +6,10 @@
   <title>WhatsApp Style Chat Builder</title>
 <style>
   :root{
+    --mine-text:#FAFAFA;
+--their-text:#FAFAFA;
+--mine-time:rgba(255,255,255,.60);
+--their-time:rgba(255,255,255,.60);
     --bg:#0b141a;
     --panel:#0b0b0b;
     --panel-2:#242626;
@@ -626,12 +630,12 @@
 
 .msg-row.mine .bubble{
   background:var(--mine);
-  
+  color:var(--mine-text);
 }
 
 .msg-row.their .bubble{
   background:var(--theirs);
-
+  color:var(--their-text);
 }
 
 /* default: semua bubble takda tail dulu */
@@ -771,6 +775,15 @@
   line-height:1.35;
   font-size:14px;
 }
+.msg-row.mine .bubble .bubble-text,
+.msg-row.mine .bubble .caption{
+  color:var(--mine-text);
+}
+
+.msg-row.their .bubble .bubble-text,
+.msg-row.their .bubble .caption{
+  color:var(--their-text);
+}
 .bubble.media-only .caption{
   display:block;
   padding:7px 4px 5px 6px;
@@ -798,7 +811,13 @@
   pointer-events:none;
   transform:none;
 }
+.msg-row.mine .bubble-time{
+  color:var(--mine-time);
+}
 
+.msg-row.their .bubble-time{
+  color:var(--their-time);
+}
 .double-check{
   display:inline-flex;
   align-items:center;
@@ -1424,18 +1443,36 @@
           <div class="hint">Gambar disimpan dalam localStorage sebagai base64. Untuk fail yang terlalu besar, resize dulu supaya storage tidak cepat penuh.</div>
         </section>
 
-        <section class="card">
-          <h3>Wallpaper / Theme</h3>
-          <div class="grid2">
-            <div>
-              <label class="lbl">Mine Bubble</label>
-              <input id="mineColor" type="color" value="#144D37" />
-            </div>
-            <div>
-              <label class="lbl">Their Bubble</label>
-              <input id="theirColor" type="color" value="#242626" />
-            </div>
-          </div>
+<section class="card">
+<div class="grid2">
+  <div>
+    <label class="lbl">Mine Bubble</label>
+    <input id="mineColor" type="color" value="#144D37" />
+
+    <div style="margin-top:10px">
+      <label class="lbl">Mine Text</label>
+      <div class="side-toggle" id="mineTextToneToggle">
+        <button type="button" class="side-toggle-btn active" data-tone="light">Light</button>
+        <button type="button" class="side-toggle-btn" data-tone="dark">Dark</button>
+      </div>
+      <input type="hidden" id="mineTextTone" value="light" />
+    </div>
+  </div>
+
+  <div>
+    <label class="lbl">Their Bubble</label>
+    <input id="theirColor" type="color" value="#242626" />
+
+    <div style="margin-top:10px">
+      <label class="lbl">Their Text</label>
+      <div class="side-toggle" id="theirTextToneToggle">
+        <button type="button" class="side-toggle-btn active" data-tone="light">Light</button>
+        <button type="button" class="side-toggle-btn" data-tone="dark">Dark</button>
+      </div>
+      <input type="hidden" id="theirTextTone" value="light" />
+    </div>
+  </div>
+</div>
 <div style="margin-top:10px">
   <label class="lbl">Custom Wallpaper</label>
 
@@ -1669,10 +1706,12 @@
         avatar: ''
       },
       theme: {
-        mineColor: '#144D37',
-        theirColor: '#242626',
-        wallpaper: ''
-      },
+  mineColor: '#144D37',
+  theirColor: '#242626',
+  mineTextTone: 'light',
+  theirTextTone: 'light',
+  wallpaper: ''
+},
       messages: [
         { id: uid(), type: 'text', side: 'mine', time: '04:29', text: 'ini resit wang tak ada masuk ya' },
         { id: uid(), type: 'date', label: '1/17/2026' },
@@ -1718,6 +1757,8 @@
       imgPreviewList: $('imgPreviewList'),
       mineColor: $('mineColor'),
       theirColor: $('theirColor'),
+      mineTextTone: $('mineTextTone'),
+      theirTextTone: $('theirTextTone'),
       wallpaperFile: $('wallpaperFile'),
       removeWallpaperBtn: $('removeWallpaperBtn'),
       resetThemeBtn: $('resetThemeBtn'),
@@ -1783,6 +1824,35 @@ imgSideToggleBtns.forEach(btn => {
     btn.classList.add('active');
     refs.imgSide.value = btn.dataset.side;
     saveFormDraft();
+  });
+});
+const mineTextToneToggleBtns = document.querySelectorAll('#mineTextToneToggle .side-toggle-btn');
+mineTextToneToggleBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    mineTextToneToggleBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (refs.mineTextTone) {
+      refs.mineTextTone.value = btn.dataset.tone;
+    }
+
+    state.theme.mineTextTone = btn.dataset.tone;
+    saveAndRender();
+  });
+});
+
+const theirTextToneToggleBtns = document.querySelectorAll('#theirTextToneToggle .side-toggle-btn');
+theirTextToneToggleBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    theirTextToneToggleBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (refs.theirTextTone) {
+      refs.theirTextTone.value = btn.dataset.tone;
+    }
+
+    state.theme.theirTextTone = btn.dataset.tone;
+    saveAndRender();
   });
 });
 const imgFileName = document.getElementById('imgFileName');
@@ -2251,16 +2321,47 @@ function applyImageOrientation(root = document){
       }
     }
 
-    function applyTheme(){
-      document.documentElement.style.setProperty('--mine', state.theme.mineColor || '#144D37');
-      document.documentElement.style.setProperty('--theirs', state.theme.theirColor || '#242626');
-      refs.mineColor.value = state.theme.mineColor || '#144D37';
-      refs.theirColor.value = state.theme.theirColor || '#242626';
-      document.documentElement.style.setProperty('--chat-bg-image', state.theme.wallpaper ? `url(${state.theme.wallpaper})` : defaultState.theme.wallpaper ? `url(${defaultState.theme.wallpaper})` : getComputedStyle(document.documentElement).getPropertyValue('--chat-bg-image'));
-      if (!state.theme.wallpaper) {
-        document.documentElement.style.setProperty('--chat-bg-image', `url('https://static.whatsapp.net/rsrc.php/v4/y1/r/a3pd-CgpXeU.png')`);
-      }
-    }
+function applyTheme(){
+  const mineBubble = state.theme.mineColor || '#144D37';
+  const theirBubble = state.theme.theirColor || '#242626';
+
+  const mineTextTone = state.theme.mineTextTone || 'light';
+  const theirTextTone = state.theme.theirTextTone || 'light';
+
+  const mineTextColor = mineTextTone === 'dark' ? '#111b21' : '#FAFAFA';
+  const theirTextColor = theirTextTone === 'dark' ? '#111b21' : '#FAFAFA';
+
+  const mineTimeColor = mineTextTone === 'dark' ? 'rgba(17,27,33,.72)' : 'rgba(255,255,255,.60)';
+  const theirTimeColor = theirTextTone === 'dark' ? 'rgba(17,27,33,.72)' : 'rgba(255,255,255,.60)';
+
+  document.documentElement.style.setProperty('--mine', mineBubble);
+  document.documentElement.style.setProperty('--theirs', theirBubble);
+
+  document.documentElement.style.setProperty('--mine-text', mineTextColor);
+  document.documentElement.style.setProperty('--their-text', theirTextColor);
+  document.documentElement.style.setProperty('--mine-time', mineTimeColor);
+  document.documentElement.style.setProperty('--their-time', theirTimeColor);
+
+  if (refs.mineColor) refs.mineColor.value = mineBubble;
+  if (refs.theirColor) refs.theirColor.value = theirBubble;
+  if (refs.mineTextTone) refs.mineTextTone.value = mineTextTone;
+  if (refs.theirTextTone) refs.theirTextTone.value = theirTextTone;
+
+  mineTextToneToggleBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tone === mineTextTone);
+  });
+
+  theirTextToneToggleBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tone === theirTextTone);
+  });
+
+  document.documentElement.style.setProperty(
+    '--chat-bg-image',
+    state.theme.wallpaper
+      ? `url(${state.theme.wallpaper})`
+      : `url('https://static.whatsapp.net/rsrc.php/v4/y1/r/a3pd-CgpXeU.png')`
+  );
+}
 
 function renderChat(){
   refs.chatList.innerHTML = '';
@@ -3208,13 +3309,15 @@ if (refs.removeWallpaperBtn) {
   });
 }
 
-      if (refs.resetThemeBtn) {
-        refs.resetThemeBtn.addEventListener('click', () => {
-          state.theme.mineColor = defaultState.theme.mineColor;
-          state.theme.theirColor = defaultState.theme.theirColor;
-          saveAndRender();
-        });
-      }
+if (refs.resetThemeBtn) {
+  refs.resetThemeBtn.addEventListener('click', () => {
+    state.theme.mineColor = defaultState.theme.mineColor;
+    state.theme.theirColor = defaultState.theme.theirColor;
+    state.theme.mineTextTone = defaultState.theme.mineTextTone;
+    state.theme.theirTextTone = defaultState.theme.theirTextTone;
+    saveAndRender();
+  });
+}
 
       if (refs.undoBtn) {
         refs.undoBtn.addEventListener('click', () => {
