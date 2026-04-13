@@ -149,6 +149,37 @@
     gap:10px;
     flex-wrap:wrap;
   }
+.side-toggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+}
+
+.side-toggle-btn{
+  flex:1;
+  height:32px;
+  padding:0 14px;
+  border:1px solid #424242;
+  border-radius:6px;
+  background:#141414;
+  color:rgba(255,255,255,.85);
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+
+.side-toggle-btn:hover{
+  border-color:#00a884;
+  color:#fff;
+}
+
+.side-toggle-btn.active{
+  background:#1668dc;
+  border-color:#1668dc;
+  color:#fff;
+}
 
   button{
     border:none;
@@ -1267,13 +1298,16 @@
         <section class="card">
           <h3>Add Image Bubble</h3>
           <div class="grid2">
-            <div>
-              <label class="lbl">Bubble Side</label>
-              <select id="imgSide">
-                <option value="mine">Mine</option>
-                <option value="their">Their</option>
-              </select>
-            </div>
+<div>
+  <label class="lbl">Bubble Side</label>
+
+  <div class="side-toggle" id="msgSideToggle">
+    <button type="button" class="side-toggle-btn active" data-side="mine">Mine</button>
+    <button type="button" class="side-toggle-btn" data-side="their">Their</button>
+  </div>
+
+  <input type="hidden" id="msgSide" value="mine" />
+</div>
             <div>
               <label class="lbl">Time</label>
               <input id="imgTime" type="time" value="13:11" />
@@ -1628,7 +1662,15 @@ confirmBoxYesBtn: $('confirmBoxYesBtn'),
       profilePreviewImage: $('profilePreviewImage'),
       closeProfilePreviewBtn: $('closeProfilePreviewBtn')
     };
+const msgSideToggleBtns = document.querySelectorAll('#msgSideToggle .side-toggle-btn');
 
+msgSideToggleBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    msgSideToggleBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    refs.msgSide.value = btn.dataset.side;
+  });
+});
     function uid(){
       return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
     }
