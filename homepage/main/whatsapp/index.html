@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1064,6 +1062,96 @@
     grid-template-columns:1fr;
   }
 }
+.day-sep{
+  position:relative;
+  cursor:pointer;
+}
+
+.day-sep-menu{
+  position:absolute;
+  top:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  min-width:150px;
+  background:#161717;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:4px;
+  box-shadow:0 12px 16px -4px rgb(10 10 10 / .1);
+  display:none;
+  flex-direction:column;
+  gap:4px;
+  z-index:25;
+}
+
+.day-sep.menu-open .day-sep-menu{
+  display:flex;
+}
+
+.day-sep-menu button{
+  all:unset;
+  box-sizing:border-box;
+  width:100%;
+  height:36px;
+  margin:0;
+  padding:0 12px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  font-size:14px;
+  line-height:1;
+  color:#e9edef;
+  cursor:pointer;
+}
+
+.day-sep-menu button:hover{
+  background:#202c33;
+}
+
+.day-sep-menu .delete-btn:hover{
+  color:#fa99a4;
+  background:rgba(250,153,164,.12);
+}
+
+.confirm-box-modal{
+  width:min(380px,100%);
+  background:#111b21;
+  border:1px solid #26353d;
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+.confirm-box-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 18px;
+  border-bottom:1px solid #22313a;
+}
+
+.confirm-box-title{
+  font-size:18px;
+  font-weight:700;
+  color:#e9edef;
+}
+
+.confirm-box-body{
+  padding:18px;
+  color:#cfd8dc;
+  line-height:1.6;
+  font-size:14px;
+}
+
+.confirm-box-foot{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding:0 18px 18px;
+}
 </style>
 </head>
 <body>
@@ -1270,6 +1358,53 @@
     </div>
   </div>
 </div>
+
+<div class="hidden" id="dateSepEditBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;align-items:center;justify-content:center;padding:20px;">
+  <div class="msg-edit-modal" style="width:min(380px,100%);">
+    <div class="msg-edit-head">
+      <div class="msg-edit-title">Edit Date Separator</div>
+      <button id="closeDateSepEditBtn" type="button" class="msg-edit-x" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="msg-edit-body">
+      <div class="msg-edit-field">
+        <label class="lbl" for="dateSepEditInput">Date Label</label>
+        <input id="dateSepEditInput" type="text" placeholder="Contoh: 1/17/2026" />
+      </div>
+    </div>
+
+    <div class="msg-edit-foot">
+      <button id="cancelDateSepEditBtn" type="button" class="ghost">Cancel</button>
+      <button id="saveDateSepEditBtn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="hidden" id="confirmBoxBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80;align-items:center;justify-content:center;padding:20px;">
+  <div class="confirm-box-modal">
+    <div class="confirm-box-head">
+      <div class="confirm-box-title" id="confirmBoxTitle">Confirm</div>
+      <button id="closeConfirmBoxBtn" type="button" class="msg-edit-x" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="confirm-box-body" id="confirmBoxMessage">
+      Are you sure?
+    </div>
+
+    <div class="confirm-box-foot">
+      <button id="confirmBoxNoBtn" type="button" class="ghost">No</button>
+      <button id="confirmBoxYesBtn" type="button" class="danger">Yes</button>
+    </div>
+  </div>
+</div>
       
       <div class="chat-area" id="chatArea">
         <div class="chat-inner" id="chatList"></div>
@@ -1385,7 +1520,19 @@
       msgEditSide: $('msgEditSide'),
       closeMsgEditBtn: $('closeMsgEditBtn'),
       cancelMsgEditBtn: $('cancelMsgEditBtn'),
-      saveMsgEditBtn: $('saveMsgEditBtn')
+      saveMsgEditBtn: $('saveMsgEditBtn'),
+dateSepEditBackdrop: $('dateSepEditBackdrop'),
+dateSepEditInput: $('dateSepEditInput'),
+closeDateSepEditBtn: $('closeDateSepEditBtn'),
+cancelDateSepEditBtn: $('cancelDateSepEditBtn'),
+saveDateSepEditBtn: $('saveDateSepEditBtn'),
+
+confirmBoxBackdrop: $('confirmBoxBackdrop'),
+confirmBoxTitle: $('confirmBoxTitle'),
+confirmBoxMessage: $('confirmBoxMessage'),
+closeConfirmBoxBtn: $('closeConfirmBoxBtn'),
+confirmBoxNoBtn: $('confirmBoxNoBtn'),
+confirmBoxYesBtn: $('confirmBoxYesBtn')
     };
 
     function uid(){
@@ -1543,37 +1690,55 @@ function renderChat(){
   state.messages.forEach((item, index) => {
     let node;
 
-    if (item.type === 'date') {
-      node = document.createElement('div');
-      node.className = 'day-sep';
-      node.textContent = item.label || '';
-      node.title = 'Click to edit / delete';
+if (item.type === 'date') {
+  node = document.createElement('div');
+  node.className = 'day-sep';
+  node.textContent = item.label || '';
+  node.title = 'Click to edit / delete';
 
-      node.addEventListener('click', (e) => {
-        e.stopPropagation();
+  const menu = document.createElement('div');
+  menu.className = 'day-sep-menu';
+  menu.innerHTML = `
+    <button type="button" class="edit-btn">
+      <span>Edit</span>
+    </button>
+    <button type="button" class="delete-btn">
+      <span>Delete</span>
+    </button>
+  `;
 
-        const action = prompt('Type: edit / delete / cancel', 'edit');
-        if (!action) return;
+  node.appendChild(menu);
 
-        const val = action.trim().toLowerCase();
+  node.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.querySelectorAll('.day-sep.menu-open').forEach(el => {
+      if (el !== node) el.classList.remove('menu-open');
+    });
+    node.classList.toggle('menu-open');
+  });
 
-        if (val === 'delete') {
-          if (confirm('Delete separator ini?')) {
-            state.messages.splice(index, 1);
-            saveAndRender();
-          }
-          return;
-        }
+  const editBtn = menu.querySelector('.edit-btn');
+  const deleteBtn = menu.querySelector('.delete-btn');
 
-        if (val !== 'edit') return;
+  if (editBtn) {
+    editBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      node.classList.remove('menu-open');
+      openDateSepEditModal(index);
+    });
+  }
 
-        const next = prompt('Edit date separator:', item.label || '');
-        if (next === null) return;
-        if (!next.trim()) return;
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      node.classList.remove('menu-open');
 
-        item.label = next.trim();
+      openConfirmBox('Delete separator ini?', () => {
+        state.messages.splice(index, 1);
         saveAndRender();
-      });
+      }, 'Delete Separator');
+    });
+  }
 
     } else {
       const prev = state.messages[index - 1];
@@ -1724,17 +1889,17 @@ if (editBtn) {
   });
 }
 
-      if (deleteBtn) {
-        deleteBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          bubble.classList.remove('menu-open');
+if (deleteBtn) {
+  deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    bubble.classList.remove('menu-open');
 
-          if (confirm('Delete bubble ini?')) {
-            state.messages.splice(index, 1);
-            saveAndRender();
-          }
-        });
-      }
+    openConfirmBox('Delete bubble ini?', () => {
+      state.messages.splice(index, 1);
+      saveAndRender();
+    }, 'Delete Bubble');
+  });
+}
 
       bubble.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1871,8 +2036,12 @@ function openEditMenu(index){
       renderHeader();
       applyTheme();
       renderChat();
-      document.addEventListener('click', () => {
+document.addEventListener('click', () => {
   document.querySelectorAll('.bubble.menu-open').forEach(el => {
+    el.classList.remove('menu-open');
+  });
+
+  document.querySelectorAll('.day-sep.menu-open').forEach(el => {
     el.classList.remove('menu-open');
   });
 });
@@ -1935,6 +2104,27 @@ function saveMsgEditModal(){
 
   saveAndRender();
   closeMsgEditModal();
+}
+function openConfirmBox(message, onYes, title = 'Confirm'){
+  confirmYesHandler = typeof onYes === 'function' ? onYes : null;
+
+  refs.confirmBoxTitle.textContent = title;
+  refs.confirmBoxMessage.textContent = message;
+
+  refs.confirmBoxBackdrop.classList.remove('hidden');
+  refs.confirmBoxBackdrop.style.display = 'flex';
+}
+
+function closeConfirmBox(){
+  confirmYesHandler = null;
+  refs.confirmBoxBackdrop.classList.add('hidden');
+  refs.confirmBoxBackdrop.style.display = 'none';
+}
+
+function runConfirmYes(){
+  const handler = confirmYesHandler;
+  closeConfirmBox();
+  if (handler) handler();
 }
     function initResizer(){
       const resizer = document.getElementById('resizer');
@@ -2083,7 +2273,58 @@ if (refs.cancelMsgEditBtn) {
 if (refs.saveMsgEditBtn) {
   refs.saveMsgEditBtn.addEventListener('click', saveMsgEditModal);
 }
+if (refs.closeDateSepEditBtn) {
+  refs.closeDateSepEditBtn.addEventListener('click', closeDateSepEditModal);
+}
 
+if (refs.cancelDateSepEditBtn) {
+  refs.cancelDateSepEditBtn.addEventListener('click', closeDateSepEditModal);
+}
+
+if (refs.saveDateSepEditBtn) {
+  refs.saveDateSepEditBtn.addEventListener('click', saveDateSepEditModal);
+}
+
+if (refs.dateSepEditBackdrop) {
+  refs.dateSepEditBackdrop.addEventListener('click', (e) => {
+    if (e.target === refs.dateSepEditBackdrop) {
+      closeDateSepEditModal();
+    }
+  });
+}
+
+if (refs.dateSepEditInput) {
+  refs.dateSepEditInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveDateSepEditModal();
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeDateSepEditModal();
+    }
+  });
+}
+
+if (refs.closeConfirmBoxBtn) {
+  refs.closeConfirmBoxBtn.addEventListener('click', closeConfirmBox);
+}
+
+if (refs.confirmBoxNoBtn) {
+  refs.confirmBoxNoBtn.addEventListener('click', closeConfirmBox);
+}
+
+if (refs.confirmBoxYesBtn) {
+  refs.confirmBoxYesBtn.addEventListener('click', runConfirmYes);
+}
+
+if (refs.confirmBoxBackdrop) {
+  refs.confirmBoxBackdrop.addEventListener('click', (e) => {
+    if (e.target === refs.confirmBoxBackdrop) {
+      closeConfirmBox();
+    }
+  });
+}
 if (refs.msgEditBackdrop) {
   refs.msgEditBackdrop.addEventListener('click', (e) => {
     if (e.target === refs.msgEditBackdrop) {
