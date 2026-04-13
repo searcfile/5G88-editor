@@ -2036,15 +2036,6 @@ function openEditMenu(index){
       renderHeader();
       applyTheme();
       renderChat();
-document.addEventListener('click', () => {
-  document.querySelectorAll('.bubble.menu-open').forEach(el => {
-    el.classList.remove('menu-open');
-  });
-
-  document.querySelectorAll('.day-sep.menu-open').forEach(el => {
-    el.classList.remove('menu-open');
-  });
-});
     }
 
     function openProfileModal(){
@@ -2063,7 +2054,9 @@ document.addEventListener('click', () => {
       if (refs.profileModalFile) refs.profileModalFile.value = '';
     }
 let editingMessageIndex = -1;
-
+let editingDateSepIndex = -1;
+let confirmYesHandler = null;
+    
 function openMsgEditModal(index){
   const item = state.messages[index];
   if (!item || item.type !== 'text') return;
@@ -2104,6 +2097,43 @@ function saveMsgEditModal(){
 
   saveAndRender();
   closeMsgEditModal();
+}
+function openDateSepEditModal(index){
+  const item = state.messages[index];
+  if (!item || item.type !== 'date') return;
+
+  editingDateSepIndex = index;
+
+  refs.dateSepEditInput.value = item.label || '';
+
+  refs.dateSepEditBackdrop.classList.remove('hidden');
+  refs.dateSepEditBackdrop.style.display = 'flex';
+
+  setTimeout(() => {
+    refs.dateSepEditInput.focus();
+    refs.dateSepEditInput.select();
+  }, 10);
+}
+
+function closeDateSepEditModal(){
+  editingDateSepIndex = -1;
+  if (!refs.dateSepEditBackdrop) return;
+  refs.dateSepEditBackdrop.classList.add('hidden');
+  refs.dateSepEditBackdrop.style.display = 'none';
+}
+
+function saveDateSepEditModal(){
+  if (editingDateSepIndex < 0) return;
+
+  const item = state.messages[editingDateSepIndex];
+  if (!item || item.type !== 'date') return;
+
+  const nextLabel = (refs.dateSepEditInput.value || '').trim();
+  if (!nextLabel) return;
+
+  item.label = nextLabel;
+  saveAndRender();
+  closeDateSepEditModal();
 }
 function openConfirmBox(message, onYes, title = 'Confirm'){
   confirmYesHandler = typeof onYes === 'function' ? onYes : null;
@@ -2481,6 +2511,10 @@ if (refs.confirmBoxBackdrop) {
     }
 document.addEventListener('click', () => {
   document.querySelectorAll('.bubble.menu-open').forEach(el => {
+    el.classList.remove('menu-open');
+  });
+
+  document.querySelectorAll('.day-sep.menu-open').forEach(el => {
     el.classList.remove('menu-open');
   });
 });
