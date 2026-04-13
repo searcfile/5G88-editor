@@ -482,19 +482,50 @@ db.ref("logins/" + emailKey).set({
   deviceType,
   ua: navigator.userAgent || "",
   tz: Intl.DateTimeFormat().resolvedOptions().timeZone || ""
-    }).then(()=>{
-      localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
+}).then(async ()=>{
 
-      // Optional: simpan deviceId juga dalam localStorage kalau kau nak guna di tempat lain
-      localStorage.setItem("deviceId", deviceId);
+  // ✅ sync juga ke blurphp/users supaya admin livechat boleh baca
+  try {
+    const blurphpApp = firebase.apps.find(app => app.name === "blurphpSync")
+      || firebase.initializeApp({
+        apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+        authDomain: "blurphp.firebaseapp.com",
+        databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "blurphp",
+        storageBucket: "blurphp.appspot.com",
+        messagingSenderId: "593904200464",
+        appId: "1:593904200464:web:cea7bc1360532c20d99395"
+      }, "blurphpSync");
 
-      const q = new URLSearchParams({ name, email, photo }).toString();
-      window.location.href = `${MAIN_PATH}?${q}`;
-    }).catch(err=>{
-      console.error("❌ Gagal simpan ke Firebase:", err);
-      alert("Gagal simpan data login. Coba lagi.");
-      setLoading(false);
+    const blurphpDb = blurphpApp.database();
+
+    await blurphpDb.ref("users/" + emailKey).update({
+      name,
+      email,
+      deviceId,
+      deviceSource,
+      browser,
+      deviceType,
+      ua: navigator.userAgent || "",
+      lastLoginTime: Date.now(),
+      online: true
     });
+  } catch (err) {
+    console.warn("❌ Sync device info ke blurphp/users gagal:", err);
+  }
+
+  localStorage.setItem("gmailLogin", JSON.stringify({ name, email, photo }));
+
+  // Optional: simpan deviceId juga dalam localStorage kalau kau nak guna di tempat lain
+  localStorage.setItem("deviceId", deviceId);
+
+  const q = new URLSearchParams({ name, email, photo }).toString();
+  window.location.href = `${MAIN_PATH}?${q}`;
+}).catch(err=>{
+  console.error("❌ Gagal simpan ke Firebase:", err);
+  alert("Gagal simpan data login. Coba lagi.");
+  setLoading(false);
+});
   });
 }
 
