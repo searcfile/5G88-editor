@@ -1348,7 +1348,53 @@
 #profileModalAvatar{
   cursor:pointer;
 }
+.msg-edit-image-preview-wrap{
+  position:relative;
+  width:100%;
+  min-height:160px;
+  border-radius:12px;
+  overflow:hidden;
+  background:#0f1114;
+  border:1px solid #26353d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
+.msg-edit-image-preview-wrap.hidden{
+  display:none;
+}
+
+.msg-edit-image-preview-wrap img{
+  display:block;
+  max-width:100%;
+  max-height:320px;
+  width:auto;
+  height:auto;
+}
+
+.msg-edit-remove-image{
+  all:unset;
+  box-sizing:border-box;
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(0,0,0,.65);
+  color:#fff;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+  z-index:2;
+}
+
+.msg-edit-remove-image:hover{
+  background:#b42318;
+}
 </style>
 </head>
 <body>
@@ -1579,12 +1625,44 @@
       </button>
     </div>
 
-    <div class="msg-edit-body">
-      <div class="msg-edit-field">
-        <label class="lbl" for="msgEditText">Message Text</label>
-        <textarea id="msgEditText" placeholder="Edit text message..."></textarea>
-      </div>
+<div class="msg-edit-body">
+  <div id="msgEditTextSection" class="msg-edit-field">
+  <label class="lbl" for="msgEditText">Message Text</label>
+  <textarea id="msgEditText" placeholder="Edit text message."></textarea>
+</div>
+      
+<div id="msgEditImageSection" class="msg-edit-field hidden">
+  <label class="lbl">Edit Media</label>
 
+  <div id="msgEditImagePreviewWrap" class="msg-edit-image-preview-wrap">
+    <button id="msgEditRemoveImageBtn" type="button" class="msg-edit-remove-image" aria-label="Remove image">×</button>
+    <img id="msgEditImagePreview" alt="Preview" />
+  </div>
+
+  <div class="file-upload-row" style="margin-top:10px;">
+    <label class="file-upload-btn" for="msgEditImageFile">Upload Image</label>
+    <button type="button" id="msgEditPasteBtn" class="ghost">Paste Image</button>
+    <input id="msgEditImageFile" type="file" accept="image/*" class="file-upload-input" />
+  </div>
+
+  <div id="msgEditPasteBox" class="paste-box" tabindex="0" style="margin-top:10px;">
+    Click here and press Ctrl + V to paste image
+  </div>
+
+  <div style="margin-top:12px;">
+    <label class="lbl" for="msgEditCaption">Caption</label>
+    <textarea id="msgEditCaption" placeholder="Edit image caption."></textarea>
+  </div>
+
+  <div style="margin-top:10px;">
+    <label class="lbl" for="msgEditShowForward">Forward Icon</label>
+    <div class="switch">
+      <span>Show forward icon on image</span>
+      <input id="msgEditShowForward" type="checkbox" />
+    </div>
+  </div>
+</div>
+      
       <div class="msg-edit-grid">
         <div class="msg-edit-field">
           <label class="lbl" for="msgEditTime">Time</label>
@@ -1794,6 +1872,16 @@
       closeMsgEditBtn: $('closeMsgEditBtn'),
       cancelMsgEditBtn: $('cancelMsgEditBtn'),
       saveMsgEditBtn: $('saveMsgEditBtn'),
+msgEditTextSection: $('msgEditTextSection'),
+msgEditImageSection: $('msgEditImageSection'),
+msgEditImagePreviewWrap: $('msgEditImagePreviewWrap'),
+msgEditImagePreview: $('msgEditImagePreview'),
+msgEditImageFile: $('msgEditImageFile'),
+msgEditPasteBtn: $('msgEditPasteBtn'),
+msgEditPasteBox: $('msgEditPasteBox'),
+msgEditCaption: $('msgEditCaption'),
+msgEditShowForward: $('msgEditShowForward'),
+msgEditRemoveImageBtn: $('msgEditRemoveImageBtn'),
 dateSepEditBackdrop: $('dateSepEditBackdrop'),
 dateSepEditInput: $('dateSepEditInput'),
 closeDateSepEditBtn: $('closeDateSepEditBtn'),
@@ -2570,28 +2658,10 @@ if (editBtn) {
       return;
     }
 
-    if (currentItem.type === 'image') {
-      const nextCaption = prompt('Edit caption:', currentItem.caption || '');
-      if (nextCaption === null) return;
-
-      const nextTime = prompt('Edit time (HH:MM):', currentItem.time || '00:00');
-      if (nextTime === null) return;
-
-      const nextSide = prompt('Edit side: mine / their', currentItem.side || 'mine');
-      if (nextSide === null) return;
-
-      const nextForward = prompt(
-        'Show forward icon? yes / no',
-        currentItem.showForward ? 'yes' : 'no'
-      );
-      if (nextForward === null) return;
-
-      currentItem.caption = nextCaption;
-      currentItem.time = nextTime;
-      currentItem.side = nextSide === 'their' ? 'their' : 'mine';
-      currentItem.showForward = nextForward.toLowerCase() === 'yes';
-      saveAndRender();
-    }
+if (currentItem.type === 'image') {
+  openMsgEditModal(index);
+  return;
+}
   });
 }
 
@@ -2784,6 +2854,9 @@ function openEditMenu(index){
     }
 let editingMessageIndex = -1;
 let editingDateSepIndex = -1;
+let editingMessageType = '';
+let pendingEditImageBase64 = '';
+let removeEditingImage = false;
 let confirmYesHandler = null;
 const profilePreviewState = {
   scale: 1,
@@ -2800,44 +2873,119 @@ const profilePreviewState = {
 };  
 function openMsgEditModal(index){
   const item = state.messages[index];
-  if (!item || item.type !== 'text') return;
+  if (!item || (item.type !== 'text' && item.type !== 'image')) return;
 
   editingMessageIndex = index;
+  editingMessageType = item.type;
+  pendingEditImageBase64 = '';
+  removeEditingImage = false;
 
-  refs.msgEditText.value = item.text || '';
-  refs.msgEditTime.value = item.time || '00:00';
-  refs.msgEditSide.value = item.side === 'their' ? 'their' : 'mine';
+  if (refs.msgEditTime) refs.msgEditTime.value = item.time || '00:00';
+  if (refs.msgEditSide) refs.msgEditSide.value = item.side === 'their' ? 'their' : 'mine';
+
+  if (refs.msgEditTextSection) {
+    refs.msgEditTextSection.classList.toggle('hidden', item.type !== 'text');
+  }
+  if (refs.msgEditImageSection) {
+    refs.msgEditImageSection.classList.toggle('hidden', item.type !== 'image');
+  }
+
+  if (item.type === 'text') {
+    if (refs.msgEditText) refs.msgEditText.value = item.text || '';
+  }
+
+  if (item.type === 'image') {
+    if (refs.msgEditCaption) refs.msgEditCaption.value = item.caption || '';
+    if (refs.msgEditShowForward) refs.msgEditShowForward.checked = !!item.showForward;
+
+    if (refs.msgEditImagePreview) {
+      refs.msgEditImagePreview.src = item.image || '';
+    }
+
+    if (refs.msgEditImagePreviewWrap) {
+      refs.msgEditImagePreviewWrap.classList.toggle('hidden', !item.image);
+    }
+  }
 
   refs.msgEditBackdrop.classList.remove('hidden');
   refs.msgEditBackdrop.style.display = 'flex';
 
   setTimeout(() => {
-    refs.msgEditText.focus();
-    refs.msgEditText.setSelectionRange(
-      refs.msgEditText.value.length,
-      refs.msgEditText.value.length
-    );
+    if (item.type === 'text' && refs.msgEditText) {
+      refs.msgEditText.focus();
+      refs.msgEditText.setSelectionRange(
+        refs.msgEditText.value.length,
+        refs.msgEditText.value.length
+      );
+    }
+
+    if (item.type === 'image' && refs.msgEditCaption) {
+      refs.msgEditCaption.focus();
+      refs.msgEditCaption.setSelectionRange(
+        refs.msgEditCaption.value.length,
+        refs.msgEditCaption.value.length
+      );
+    }
   }, 10);
 }
 function closeMsgEditModal(){
   editingMessageIndex = -1;
+  editingMessageType = '';
+  pendingEditImageBase64 = '';
+  removeEditingImage = false;
+
+  if (refs.msgEditText) refs.msgEditText.value = '';
+  if (refs.msgEditCaption) refs.msgEditCaption.value = '';
+  if (refs.msgEditShowForward) refs.msgEditShowForward.checked = false;
+  if (refs.msgEditImageFile) refs.msgEditImageFile.value = '';
+
+  if (refs.msgEditImagePreview) refs.msgEditImagePreview.src = '';
+  if (refs.msgEditImagePreviewWrap) refs.msgEditImagePreviewWrap.classList.add('hidden');
+
   if (!refs.msgEditBackdrop) return;
   refs.msgEditBackdrop.classList.add('hidden');
   refs.msgEditBackdrop.style.display = 'none';
 }
+function updateMsgEditImagePreview(src){
+  if (!refs.msgEditImagePreview || !refs.msgEditImagePreviewWrap) return;
 
+  if (src) {
+    refs.msgEditImagePreview.src = src;
+    refs.msgEditImagePreviewWrap.classList.remove('hidden');
+  } else {
+    refs.msgEditImagePreview.src = '';
+    refs.msgEditImagePreviewWrap.classList.add('hidden');
+  }
+}
 function saveMsgEditModal(){
   if (editingMessageIndex < 0) return;
 
   const item = state.messages[editingMessageIndex];
-  if (!item || item.type !== 'text') return;
+  if (!item) return;
 
-  item.text = refs.msgEditText.value;
   item.time = refs.msgEditTime.value || '00:00';
   item.side = refs.msgEditSide.value === 'their' ? 'their' : 'mine';
 
-  saveAndRender();
-  closeMsgEditModal();
+  if (editingMessageType === 'text' && item.type === 'text') {
+    item.text = refs.msgEditText.value;
+    saveAndRender();
+    closeMsgEditModal();
+    return;
+  }
+
+  if (editingMessageType === 'image' && item.type === 'image') {
+    item.caption = refs.msgEditCaption.value || '';
+    item.showForward = !!refs.msgEditShowForward.checked;
+
+    if (removeEditingImage) {
+      item.image = '';
+    } else if (pendingEditImageBase64) {
+      item.image = pendingEditImageBase64;
+    }
+
+    saveAndRender();
+    closeMsgEditModal();
+  }
 }
 function openDateSepEditModal(index){
   const item = state.messages[index];
@@ -3295,6 +3443,56 @@ if (refs.imgPasteBox) {
 
   refs.imgPasteBox.addEventListener('click', () => {
     refs.imgPasteBox.focus();
+  });
+}
+if (refs.msgEditImageFile) {
+  refs.msgEditImageFile.addEventListener('change', async () => {
+    const file = refs.msgEditImageFile.files?.[0];
+    if (!file) return;
+
+    try {
+      pendingEditImageBase64 = await resizeImageToDataURL(file, 1200, 0.9);
+      removeEditingImage = false;
+      updateMsgEditImagePreview(pendingEditImageBase64);
+    } catch (err) {
+      console.error(err);
+      alert('Gagal baca image.');
+    }
+  });
+}
+
+if (refs.msgEditRemoveImageBtn) {
+  refs.msgEditRemoveImageBtn.addEventListener('click', () => {
+    pendingEditImageBase64 = '';
+    removeEditingImage = true;
+    if (refs.msgEditImageFile) refs.msgEditImageFile.value = '';
+    updateMsgEditImagePreview('');
+  });
+}
+
+if (refs.msgEditPasteBox) {
+  refs.msgEditPasteBox.addEventListener('paste', async (e) => {
+    const items = Array.from(e.clipboardData?.items || []);
+    const imageItem = items.find(item => item.type.startsWith('image/'));
+    if (!imageItem) return;
+
+    const file = imageItem.getAsFile();
+    if (!file) return;
+
+    try {
+      pendingEditImageBase64 = await resizeImageToDataURL(file, 1200, 0.9);
+      removeEditingImage = false;
+      updateMsgEditImagePreview(pendingEditImageBase64);
+    } catch (err) {
+      console.error(err);
+      alert('Gagal paste image.');
+    }
+  });
+}
+
+if (refs.msgEditPasteBtn && refs.msgEditPasteBox) {
+  refs.msgEditPasteBtn.addEventListener('click', () => {
+    refs.msgEditPasteBox.focus();
   });
 }
       if (refs.addImageBtn) refs.addImageBtn.addEventListener('click', addImageMessage);
