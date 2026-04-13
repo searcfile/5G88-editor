@@ -2078,6 +2078,13 @@ function getLabelParts(id, data){
 
   return { displayName, email, photoURL, label };
 }
+function getDeviceInfoParts(userData = {}) {
+  return {
+    deviceTypeText: userData?.deviceType || "Unknown",
+    browserText: userData?.browser || "Unknown",
+    deviceIdText: userData?.deviceId || "-"
+  };
+}
 function getSelectedUserOpenPayload() {
   if (!activeUserIdSanitized) return null;
 
@@ -2786,7 +2793,14 @@ const topTime = lastChatTs
    userData?.ua && /Linux/i.test(userData.ua) ? "Linux" :
    "Unknown");
 
-const browserText = userData?.browser || "Unknown";
+const browserText =
+  userData?.browser ||
+  (userData?.ua && /Edg\//i.test(userData.ua) ? "Edge" :
+   userData?.ua && /Firefox\//i.test(userData.ua) ? "Firefox" :
+   userData?.ua && /Chrome\//i.test(userData.ua) ? "Chrome" :
+   userData?.ua && /Safari\//i.test(userData.ua) ? "Safari" :
+   "Unknown");
+
 const deviceIdText = userData?.deviceId || "-";
     const userDiv = document.createElement("div");
     userDiv.className = "user-item";
