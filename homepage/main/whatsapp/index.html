@@ -986,6 +986,84 @@
     .profile-name{max-width:220px}
     .bubble{max-width:min(84vw, 400px)}
   }
+.msg-edit-modal{
+  width:min(460px, 100%);
+  background:#111b21;
+  border:1px solid #26353d;
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+.msg-edit-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 18px;
+  border-bottom:1px solid #22313a;
+}
+
+.msg-edit-title{
+  font-size:18px;
+  font-weight:700;
+  color:#e9edef;
+}
+
+.msg-edit-x{
+  all:unset;
+  box-sizing:border-box;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  color:#cfd8dc;
+  transition:background .18s ease, color .18s ease;
+}
+
+.msg-edit-x:hover{
+  background:#202c33;
+  color:#fff;
+}
+
+.msg-edit-x svg{
+  width:20px;
+  height:20px;
+  display:block;
+}
+
+.msg-edit-body{
+  padding:18px;
+  display:grid;
+  gap:14px;
+}
+
+.msg-edit-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.msg-edit-field textarea{
+  min-height:130px;
+  resize:vertical;
+  padding:10px 11px;
+}
+
+.msg-edit-foot{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding:0 18px 18px;
+}
+
+@media (max-width: 640px){
+  .msg-edit-grid{
+    grid-template-columns:1fr;
+  }
+}
 </style>
 </head>
 <body>
@@ -1129,6 +1207,46 @@
             <div style="display:flex;justify-content:center;">
               <div id="profileModalAvatar" style="width:110px;height:110px;border-radius:50%;background:#40515b center/cover no-repeat;overflow:hidden;display:grid;place-items:center;border:3px solid #22313a;"></div>
             </div>
+            <div class="hidden" id="msgEditBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;align-items:center;justify-content:center;padding:20px;">
+  <div id="msgEditModal" class="msg-edit-modal">
+    <div class="msg-edit-head">
+      <div class="msg-edit-title">Edit Message</div>
+
+      <button id="closeMsgEditBtn" type="button" class="msg-edit-x" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="msg-edit-body">
+      <div class="msg-edit-field">
+        <label class="lbl" for="msgEditText">Message Text</label>
+        <textarea id="msgEditText" placeholder="Edit text message..."></textarea>
+      </div>
+
+      <div class="msg-edit-grid">
+        <div class="msg-edit-field">
+          <label class="lbl" for="msgEditTime">Time</label>
+          <input id="msgEditTime" type="time" />
+        </div>
+
+        <div class="msg-edit-field">
+          <label class="lbl" for="msgEditSide">Bubble Side</label>
+          <select id="msgEditSide">
+            <option value="mine">Mine</option>
+            <option value="their">Their</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="msg-edit-foot">
+      <button id="cancelMsgEditBtn" type="button" class="ghost">Cancel</button>
+      <button id="saveMsgEditBtn" type="button">Save</button>
+    </div>
+  </div>
+</div>
             <div class="btn-row" style="justify-content:center;">
               <button id="changeProfileBtn" class="ghost" type="button">Change Profile</button>
               <button id="viewProfileBtn" class="ghost" type="button">View Profile</button>
@@ -1257,7 +1375,15 @@
       viewProfileBtn: $('viewProfileBtn'),
       cancelProfileBtn: $('cancelProfileBtn'),
       updateProfileBtn: $('updateProfileBtn'),
-      deleteProfileBtn: $('deleteProfileBtn')
+      deleteProfileBtn: $('deleteProfileBtn'),
+      msgEditBackdrop: $('msgEditBackdrop'),
+      msgEditModal: $('msgEditModal'),
+      msgEditText: $('msgEditText'),
+      msgEditTime: $('msgEditTime'),
+      msgEditSide: $('msgEditSide'),
+      closeMsgEditBtn: $('closeMsgEditBtn'),
+      cancelMsgEditBtn: $('cancelMsgEditBtn'),
+      saveMsgEditBtn: $('saveMsgEditBtn')
     };
 
     function uid(){
@@ -1708,67 +1834,47 @@ bubbleActions.innerHTML = `
       if (removeBtn) removeBtn.onclick = clearPendingImage;
     }
 
-    function openEditMenu(index){
-      const item = state.messages[index];
-      if (!item) return;
+function openEditMenu(index){
+  const item = state.messages[index];
+  if (!item) return;
 
-      if (item.type === 'date') {
-        const next = prompt('Edit date separator:', item.label || '');
-        if (next === null) return;
-        if (!next.trim()) {
-          if (confirm('Delete separator ini?')) {
-            state.messages.splice(index, 1);
-            saveAndRender();
-          }
-          return;
-        }
-        item.label = next.trim();
-        saveAndRender();
-        return;
-      }
-
-      const action = prompt('Type: edit / delete / cancel', 'edit');
-      if (!action) return;
-      const val = action.trim().toLowerCase();
-      if (val === 'delete') {
-        if (confirm('Delete bubble ini?')) {
-          state.messages.splice(index, 1);
-          saveAndRender();
-        }
-        return;
-      }
-      if (val !== 'edit') return;
-
-      if (item.type === 'text') {
-        const nextText = prompt('Edit message text:', item.text || '');
-        if (nextText === null) return;
-        const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
-        if (nextTime === null) return;
-        const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
-        if (nextSide === null) return;
-        item.text = nextText;
-        item.time = nextTime;
-        item.side = nextSide === 'their' ? 'their' : 'mine';
-        saveAndRender();
-        return;
-      }
-
-      if (item.type === 'image') {
-        const nextCaption = prompt('Edit caption:', item.caption || '');
-        if (nextCaption === null) return;
-        const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
-        if (nextTime === null) return;
-        const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
-        if (nextSide === null) return;
-        const nextForward = prompt('Show forward icon? yes / no', item.showForward ? 'yes' : 'no');
-        if (nextForward === null) return;
-        item.caption = nextCaption;
-        item.time = nextTime;
-        item.side = nextSide === 'their' ? 'their' : 'mine';
-        item.showForward = nextForward.toLowerCase() === 'yes';
+  if (item.type === 'date') {
+    const next = prompt('Edit date separator:', item.label || '');
+    if (next === null) return;
+    if (!next.trim()) {
+      if (confirm('Delete separator ini?')) {
+        state.messages.splice(index, 1);
         saveAndRender();
       }
+      return;
     }
+    item.label = next.trim();
+    saveAndRender();
+    return;
+  }
+
+  if (item.type === 'text') {
+    openMsgEditModal(index);
+    return;
+  }
+
+  if (item.type === 'image') {
+    const nextCaption = prompt('Edit caption:', item.caption || '');
+    if (nextCaption === null) return;
+    const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
+    if (nextTime === null) return;
+    const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
+    if (nextSide === null) return;
+    const nextForward = prompt('Show forward icon? yes / no', item.showForward ? 'yes' : 'no');
+    if (nextForward === null) return;
+
+    item.caption = nextCaption;
+    item.time = nextTime;
+    item.side = nextSide === 'their' ? 'their' : 'mine';
+    item.showForward = nextForward.toLowerCase() === 'yes';
+    saveAndRender();
+  }
+}
 
     function saveAndRender(){
       saveState();
@@ -1797,7 +1903,26 @@ bubbleActions.innerHTML = `
       refs.profileModalBackdrop.style.display = 'none';
       if (refs.profileModalFile) refs.profileModalFile.value = '';
     }
+function closeMsgEditModal(){
+  editingMessageIndex = -1;
+  if (!refs.msgEditBackdrop) return;
+  refs.msgEditBackdrop.classList.add('hidden');
+  refs.msgEditBackdrop.style.display = 'none';
+}
 
+function saveMsgEditModal(){
+  if (editingMessageIndex < 0) return;
+
+  const item = state.messages[editingMessageIndex];
+  if (!item || item.type !== 'text') return;
+
+  item.text = refs.msgEditText.value;
+  item.time = refs.msgEditTime.value || '00:00';
+  item.side = refs.msgEditSide.value === 'their' ? 'their' : 'mine';
+
+  saveAndRender();
+  closeMsgEditModal();
+}
     function initResizer(){
       const resizer = document.getElementById('resizer');
       const app = document.querySelector('.app');
@@ -1934,7 +2059,57 @@ bubbleActions.innerHTML = `
           closeProfileModal();
         });
       }
+if (refs.closeMsgEditBtn) {
+  refs.closeMsgEditBtn.addEventListener('click', closeMsgEditModal);
+}
 
+if (refs.cancelMsgEditBtn) {
+  refs.cancelMsgEditBtn.addEventListener('click', closeMsgEditModal);
+}
+
+if (refs.saveMsgEditBtn) {
+  refs.saveMsgEditBtn.addEventListener('click', saveMsgEditModal);
+}
+
+if (refs.msgEditBackdrop) {
+  refs.msgEditBackdrop.addEventListener('click', (e) => {
+    if (e.target === refs.msgEditBackdrop) {
+      closeMsgEditModal();
+    }
+  });
+}
+
+if (refs.msgEditText) {
+  refs.msgEditText.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      saveMsgEditModal();
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMsgEditModal();
+    }
+  });
+}
+
+if (refs.msgEditTime) {
+  refs.msgEditTime.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMsgEditModal();
+    }
+  });
+}
+
+if (refs.msgEditSide) {
+  refs.msgEditSide.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMsgEditModal();
+    }
+  });
+}
       if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
 
       if (refs.clearInputsBtn) {
