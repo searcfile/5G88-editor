@@ -178,7 +178,29 @@
   line-height:1.3;
   word-break:break-word;
 }
+.paste-box{
+  width:100%;
+  min-height:52px;
+  border:1px dashed #424242;
+  border-radius:8px;
+  background:#141414;
+  color:var(--muted);
+  font-size:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:12px;
+  cursor:text;
+  transition:all .2s ease;
+}
 
+.paste-box:hover,
+.paste-box:focus{
+  border-color:#00a884;
+  color:#fff;
+  outline:none;
+}
   .btn-row{
     display:flex;
     gap:10px;
@@ -1378,8 +1400,13 @@
     <label for="imgFile" class="file-upload-btn">Choose Image</label>
     <span id="imgFileName" class="file-upload-name">No file chosen</span>
   </div>
-
   <input id="imgFile" type="file" accept="image/*" class="file-upload-input" />
+</div>
+<div style="margin-top:10px">
+  <label class="lbl">Paste Image</label>
+  <div id="imgPasteBox" class="paste-box" tabindex="0">
+    Click here and press <b>Ctrl + V</b> to paste image
+  </div>
 </div>
           <div style="margin-top:10px">
             <label class="lbl">Caption (optional)</label>
@@ -1683,6 +1710,7 @@
       imgTimeInput: $('imgTimeInput'),
       imgNowBtn: $('imgNowBtn'),
       imgFile: $('imgFile'),
+      imgPasteBox: $('imgPasteBox'),
       imgCaption: $('imgCaption'),
       showForwardIcon: $('showForwardIcon'),
       addImageBtn: $('addImageBtn'),
@@ -1802,19 +1830,21 @@ if (refs.wallpaperFile && wallpaperFileName) {
       return JSON.parse(JSON.stringify(obj));
     }
 function saveFormDraft(){
-  const draft = {
-    msgSide: refs.msgSide?.value || 'mine',
-    msgTime: refs.msgTime?.value || '',
-    msgTimeInput: refs.msgTimeInput?.value || '',
-    msgText: refs.msgText?.value || '',
-    msgDateLabel: refs.msgDateLabel?.value || '',
+const draft = {
+  msgSide: refs.msgSide?.value || 'mine',
+  msgTime: refs.msgTime?.value || '',
+  msgTimeInput: refs.msgTimeInput?.value || '',
+  msgText: refs.msgText?.value || '',
+  msgDateLabel: refs.msgDateLabel?.value || '',
 
-    imgSide: refs.imgSide?.value || 'mine',
-    imgTime: refs.imgTime?.value || '',
-    imgTimeInput: refs.imgTimeInput?.value || '',
-    imgCaption: refs.imgCaption?.value || '',
-    showForwardIcon: !!refs.showForwardIcon?.checked
-  };
+  imgSide: refs.imgSide?.value || 'mine',
+  imgTime: refs.imgTime?.value || '',
+  imgTimeInput: refs.imgTimeInput?.value || '',
+  imgCaption: refs.imgCaption?.value || '',
+  showForwardIcon: !!refs.showForwardIcon?.checked,
+  pendingImageBase64: pendingImageBase64 || '',
+  imgFileName: imgFileName?.textContent || 'No file chosen'
+};
 
   localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify(draft));
 }
@@ -1844,6 +1874,15 @@ function applyFormDraft(){
   if (refs.imgTimeInput) refs.imgTimeInput.value = draft.imgTimeInput || '';
   if (refs.imgCaption) refs.imgCaption.value = draft.imgCaption || '';
   if (refs.showForwardIcon) refs.showForwardIcon.checked = !!draft.showForwardIcon;
+  pendingImageBase64 = draft.pendingImageBase64 || '';
+
+if (pendingImageBase64) {
+  previewPendingImage(pendingImageBase64);
+}
+
+if (imgFileName) {
+  imgFileName.textContent = draft.imgFileName || 'No file chosen';
+}
 
   msgSideToggleBtns.forEach(b => b.classList.remove('active'));
   document.querySelector(`#msgSideToggle .side-toggle-btn[data-side="${refs.msgSide?.value || 'mine'}"]`)?.classList.add('active');
@@ -2509,8 +2548,7 @@ function clearPendingImage(){
     imgFileName.textContent = 'No file chosen';
   }
 
-  if (refs.imgTimeInput) refs.imgTimeInput.value = '01:11 PM';
-  if (refs.imgTime) refs.imgTime.value = '13:11';
+  saveFormDraft();
 }
 
     async function onImagePicked(inputEl, callback, maxWidth = 1200, quality = 0.9){
@@ -2534,7 +2572,24 @@ function clearPendingImage(){
       const removeBtn = $('removePendingThumb');
       if (removeBtn) removeBtn.onclick = clearPendingImage;
     }
+async function handlePastedImage(file){
+  if (!file) return;
 
+  try {
+    const base64 = await resizeImageToDataURL(file, 1400, 0.9);
+    pendingImageBase64 = base64;
+    previewPendingImage(base64);
+
+    if (imgFileName) {
+      imgFileName.textContent = 'Pasted image';
+    }
+
+    saveFormDraft();
+  } catch (err) {
+    console.error(err);
+    alert('Gagal paste gambar bro.');
+  }
+}
 function openEditMenu(index){
   const item = state.messages[index];
   if (!item) return;
@@ -3092,7 +3147,28 @@ if (refs.clearInputsBtn) {
           }, 1400, 0.9);
         });
       }
+if (refs.imgPasteBox) {
+  refs.imgPasteBox.addEventListener('paste', async (e) => {
+    const items = e.clipboardData?.items || [];
+    let imageFile = null;
 
+    for (const item of items) {
+      if (item.type && item.type.startsWith('image/')) {
+        imageFile = item.getAsFile();
+        break;
+      }
+    }
+
+    if (!imageFile) return;
+
+    e.preventDefault();
+    await handlePastedImage(imageFile);
+  });
+
+  refs.imgPasteBox.addEventListener('click', () => {
+    refs.imgPasteBox.focus();
+  });
+}
       if (refs.addImageBtn) refs.addImageBtn.addEventListener('click', addImageMessage);
       if (refs.clearImageInputBtn) refs.clearImageInputBtn.addEventListener('click', clearPendingImage);
 
