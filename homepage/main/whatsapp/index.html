@@ -389,24 +389,24 @@
 
   /* ===== WHATSAPP-LIKE BUBBLE ===== */
 .bubble{
-  display:inline-flex;
-  align-items:flex-end;
-  gap:6px;
   position:relative;
+  display:inline-block;
   max-width:min(420px, calc(100% - 24px));
   width:fit-content;
   min-width:0;
-  padding: 6px 7px 8px 9px;
+  padding:6px 7px 7px 9px;
   border-radius:7.5px;
   font-size:14px;
   line-height:1.25;
-  white-space:pre-wrap;
-  word-break:break-word;
   box-shadow:0 1px 0 rgba(0,0,0,.28);
   vertical-align:top;
-  color: #FAFAFA;
-  letter-spacing: 0.16px;
+  color:#FAFAFA;
+  letter-spacing:.16px;
+  white-space:normal;
+  word-break:break-word;
+  overflow:visible;
 }
+
 .bubble{
   overflow:visible;
 }
@@ -624,18 +624,30 @@
 }
 
 /* text */
+/* text bubble */
 .bubble .bubble-text{
   display:block;
   margin:0;
-  padding:0;
   min-width:0;
   white-space:pre-wrap;
   word-break:break-word;
   overflow-wrap:anywhere;
-  letter-spacing: 0.16px;
-  font-weight: 400;
+  letter-spacing:.16px;
+  font-weight:400;
+  line-height:1.25;
+  padding-right:62px; /* ruang khas untuk time */
 }
-
+/* kalau mesej pendek sangat */
+.bubble .bubble-text:only-child{
+  min-height:18px;
+}
+.bubble-time .time-text{
+  display:inline-block;
+  transform:translateY(.2px);
+}
+.bubble.media-only .caption{
+  padding:7px 54px 5px 6px;
+}
 /* caption */
 .bubble .caption{
   display:block;
@@ -657,22 +669,22 @@
   line-height:1.35;
   font-size:14px;
 }
-  .bubble-time{
-  position:static;
+.bubble-time{
+  position:absolute;
+  right:8px;
+  bottom:4px;
   display:inline-flex;
   align-items:center;
   gap:3px;
-  flex:0 0 auto;
-  align-self:flex-end;
-  margin-left:-2px;
-  font-size:12px;
+  margin:0;
+  font-size:11px;
   line-height:1;
   white-space:nowrap;
   color:#ffffff99;
   opacity:.95;
   letter-spacing:0;
   pointer-events:none;
-  transform:translateY(6px);
+  transform:none;
 }
 
 .double-check{
@@ -1456,15 +1468,15 @@ function renderChat(){
         bubble.classList.add('media-only');
       }
 
-      if (item.type === 'text') {
-        bubble.innerHTML = `
-          <div class="bubble-text">${escapeHtml(item.text || '')}</div>
-          <div class="bubble-time">
-            <span>${timeLabel(item.time)}</span>
-            ${item.side === 'mine' ? mineTicks() : ''}
-          </div>
-        `;
-      }
+if (item.type === 'text') {
+  bubble.innerHTML = `
+    <div class="bubble-text">${escapeHtml(item.text || '')}</div>
+    <div class="bubble-time">
+      <span class="time-text">${timeLabel(item.time)}</span>
+      ${item.side === 'mine' ? mineTicks() : ''}
+    </div>
+  `;
+}
 
       if (item.type === 'image') {
         bubble.innerHTML = `
