@@ -184,6 +184,23 @@
     gap:10px;
     flex-wrap:wrap;
   }
+.time-input-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+}
+
+.time-input-row input{
+  flex:1;
+  min-width:0;
+}
+
+.now-btn{
+  flex:0 0 auto;
+  min-width:58px;
+  padding:0 15px;
+}
 .side-toggle{
   display:flex;
   align-items:center;
@@ -1309,10 +1326,13 @@
             
 <div>
   <label class="lbl">Time</label>
-  <input id="msgTimeInput" type="text" placeholder="05:37 AM" value="05:37 AM" />
+  <div class="time-input-row">
+    <input id="msgTimeInput" type="text" placeholder="05:37 AM" value="05:37 AM" />
+    <button type="button" id="msgNowBtn" class="ghost now-btn">Now</button>
+  </div>
   <input type="hidden" id="msgTime" value="05:37" />
 </div>
-          </div>
+</div>
           <div style="margin-top:10px">
             <label class="lbl">Message Text</label>
             <textarea id="msgText" placeholder="Taip mesej di sini..."></textarea>
@@ -1343,7 +1363,10 @@
             
 <div>
   <label class="lbl">Time</label>
-  <input id="imgTimeInput" type="text" placeholder="01:11 PM" value="01:11 PM" />
+  <div class="time-input-row">
+    <input id="imgTimeInput" type="text" placeholder="01:11 PM" value="01:11 PM" />
+    <button type="button" id="imgNowBtn" class="ghost now-btn">Now</button>
+  </div>
   <input type="hidden" id="imgTime" value="13:11" />
 </div>
 </div>
@@ -1649,6 +1672,7 @@
       msgSide: $('msgSide'),
       msgTime: $('msgTime'),
       msgTimeInput: $('msgTimeInput'),
+      msgNowBtn: $('msgNowBtn'),
       msgText: $('msgText'),
       msgDateLabel: $('msgDateLabel'),
       addTextBtn: $('addTextBtn'),
@@ -1656,6 +1680,7 @@
       imgSide: $('imgSide'),
       imgTime: $('imgTime'),
       imgTimeInput: $('imgTimeInput'),
+      imgNowBtn: $('imgNowBtn'),
       imgFile: $('imgFile'),
       imgCaption: $('imgCaption'),
       showForwardIcon: $('showForwardIcon'),
@@ -1817,7 +1842,24 @@ function syncTimeInput(textInputEl, hiddenEl, fallback24){
 
   hiddenEl.value = fallback24 || '00:00';
 }
+function setNowTimeInput(textInputEl, hiddenEl){
+  if (!textInputEl || !hiddenEl) return;
 
+  const now = new Date();
+  const hour24 = now.getHours();
+  const minute = now.getMinutes();
+
+  const ampm = hour24 >= 12 ? 'PM' : 'AM';
+  let hour12 = hour24 % 12;
+  if (hour12 === 0) hour12 = 12;
+
+  const textValue = `${String(hour12).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${ampm}`;
+  const hiddenValue = `${String(hour24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+  textInputEl.value = textValue;
+  textInputEl.dataset.lastValid = textValue;
+  hiddenEl.value = hiddenValue;
+}
 function initCustomTimeInputs(){
   if (refs.msgTimeInput && refs.msgTime) {
     refs.msgTimeInput.dataset.lastValid = refs.msgTimeInput.value.trim().toUpperCase();
@@ -1835,8 +1877,6 @@ function initCustomTimeInputs(){
         refs.msgTimeInput.value = refs.msgTimeInput.value.trim().toUpperCase();
       }
     });
-
-    syncTimeInput(refs.msgTimeInput, refs.msgTime, '05:37');
   }
 
   if (refs.imgTimeInput && refs.imgTime) {
@@ -1855,11 +1895,23 @@ function initCustomTimeInputs(){
         refs.imgTimeInput.value = refs.imgTimeInput.value.trim().toUpperCase();
       }
     });
-
-    syncTimeInput(refs.imgTimeInput, refs.imgTime, '13:11');
   }
-}
 
+  if (refs.msgNowBtn) {
+    refs.msgNowBtn.addEventListener('click', () => {
+      setNowTimeInput(refs.msgTimeInput, refs.msgTime);
+    });
+  }
+
+  if (refs.imgNowBtn) {
+    refs.imgNowBtn.addEventListener('click', () => {
+      setNowTimeInput(refs.imgTimeInput, refs.imgTime);
+    });
+  }
+
+  syncTimeInput(refs.msgTimeInput, refs.msgTime, '05:37');
+  syncTimeInput(refs.imgTimeInput, refs.imgTime, '13:11');
+}
     function readFileAsDataURL(file){
       return new Promise((resolve, reject)=>{
         const reader = new FileReader();
