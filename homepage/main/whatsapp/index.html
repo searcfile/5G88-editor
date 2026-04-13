@@ -413,13 +413,16 @@
 
 .bubble-actions{
   position:absolute;
-  top:-31px;
-  right:-8px;
+  top:-6px;
+  right:-6px;
   z-index:20;
   opacity:0;
   pointer-events:none;
-  transform:translateY(-2px);
-  transition:opacity .18s ease, transform .18s ease;
+  transform:none;
+  transition:opacity .18s ease;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
 }
 
 .msg-row:hover .bubble-actions,
@@ -432,20 +435,32 @@
 .bubble-action-toggle{
   all:unset;
   box-sizing:border-box;
-  border:none;
-  display:grid;
-  place-items:center;
+  width:24px;
+  height:24px;
+  min-width:24px;
+  min-height:24px;
+  padding:0;
+  margin:0;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   background:transparent;
   color:rgba(255,255,255,.85);
   cursor:pointer;
-  box-shadow:0 2px 8px rgba(0,0,0,.24);
+  line-height:1;
 }
 
 .bubble-action-toggle svg{
   width:16px;
   height:16px;
-  fill:currentColor;
+  min-width:16px;
+  min-height:16px;
   display:block;
+  flex:0 0 16px;
+  fill:currentColor;
+  margin:0;
+  padding:0;
 }
 
 .bubble-menu{
@@ -514,7 +529,7 @@
 
 .bubble-menu .delete-btn:hover{
   color:#fa99a4;
-  background:#fa99a4;
+  background:rgba(250,153,164,.12);
 }
 
 .msg-row.mine .bubble{
