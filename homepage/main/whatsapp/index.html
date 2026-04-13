@@ -3224,13 +3224,14 @@ if (refs.removeWallpaperBtn) {
         });
       }
 
-      if (refs.clearChatBtn) {
-        refs.clearChatBtn.addEventListener('click', () => {
-          if (!confirm('Clear semua chat?')) return;
-          state.messages = [];
-          saveAndRender();
-        });
-      }
+if (refs.clearChatBtn) {
+  refs.clearChatBtn.addEventListener('click', () => {
+    openConfirmBox('Clear semua chat?', () => {
+      state.messages = [];
+      saveAndRender();
+    }, 'Clear Chat');
+  });
+}
 
       if (refs.exportBtn) {
         refs.exportBtn.addEventListener('click', () => {
