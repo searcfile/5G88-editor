@@ -138,11 +138,45 @@
     font-family:inherit;
   }
 
-  input[type="file"]{
-    width:100%;
-    color:var(--muted);
-    font-size:12px;
-  }
+.file-upload-input{
+  display:none;
+}
+
+.file-upload-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  min-height:32px;
+}
+
+.file-upload-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:32px;
+  padding:0 14px;
+  border:1px solid #424242;
+  border-radius:6px;
+  background:#141414;
+  color:rgba(255,255,255,.85);
+  font-size:14px;
+  cursor:pointer;
+  transition:all .2s ease;
+  user-select:none;
+}
+
+.file-upload-btn:hover{
+  border-color:#00a884;
+  color:#fff;
+}
+
+.file-upload-name{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.3;
+  word-break:break-word;
+}
 
   .btn-row{
     display:flex;
@@ -1347,10 +1381,16 @@
               <input id="imgTime" type="time" value="13:11" />
             </div>
           </div>
-          <div style="margin-top:10px">
-            <label class="lbl">Image File</label>
-            <input id="imgFile" type="file" accept="image/*" />
-          </div>
+<div style="margin-top:10px">
+  <label class="lbl">Image File</label>
+
+  <div class="file-upload-row">
+    <label for="imgFile" class="file-upload-btn">Choose Image</label>
+    <span id="imgFileName" class="file-upload-name">No file chosen</span>
+  </div>
+
+  <input id="imgFile" type="file" accept="image/*" class="file-upload-input" />
+</div>
           <div style="margin-top:10px">
             <label class="lbl">Caption (optional)</label>
             <textarea id="imgCaption" placeholder="Contoh: 3in1"></textarea>
@@ -1379,10 +1419,16 @@
               <input id="theirColor" type="color" value="#242626" />
             </div>
           </div>
-          <div style="margin-top:10px">
-            <label class="lbl">Custom Wallpaper</label>
-            <input id="wallpaperFile" type="file" accept="image/*" />
-          </div>
+<div style="margin-top:10px">
+  <label class="lbl">Custom Wallpaper</label>
+
+  <div class="file-upload-row">
+    <label for="wallpaperFile" class="file-upload-btn">Choose Wallpaper</label>
+    <span id="wallpaperFileName" class="file-upload-name">No file chosen</span>
+  </div>
+
+  <input id="wallpaperFile" type="file" accept="image/*" class="file-upload-input" />
+</div>
           <div class="btn-row" style="margin-top:12px">
             <button id="removeWallpaperBtn" class="ghost">Remove Wallpaper</button>
             <button id="resetThemeBtn" class="ghost">Reset Bubble Colors</button>
@@ -1714,6 +1760,24 @@ imgSideToggleBtns.forEach(btn => {
     refs.imgSide.value = btn.dataset.side;
   });
 });
+const imgFileName = document.getElementById('imgFileName');
+const wallpaperFileName = document.getElementById('wallpaperFileName');
+
+if (refs.imgFile && imgFileName) {
+  refs.imgFile.addEventListener('change', () => {
+    imgFileName.textContent = refs.imgFile.files && refs.imgFile.files[0]
+      ? refs.imgFile.files[0].name
+      : 'No file chosen';
+  });
+}
+
+if (refs.wallpaperFile && wallpaperFileName) {
+  refs.wallpaperFile.addEventListener('change', () => {
+    wallpaperFileName.textContent = refs.wallpaperFile.files && refs.wallpaperFile.files[0]
+      ? refs.wallpaperFile.files[0].name
+      : 'No file chosen';
+  });
+}
     function uid(){
       return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
     }
