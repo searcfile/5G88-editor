@@ -1373,9 +1373,9 @@ function applyImageOrientation(root = document){
 
     function applyTheme(){
       document.documentElement.style.setProperty('--mine', state.theme.mineColor || '#144D37');
-      document.documentElement.style.setProperty('--theirs', state.theme.theirColor || '#202c33');
+      document.documentElement.style.setProperty('--theirs', state.theme.theirColor || '#242626');
       refs.mineColor.value = state.theme.mineColor || '#144D37';
-      refs.theirColor.value = state.theme.theirColor || '#202c33';
+      refs.theirColor.value = state.theme.theirColor || '#242626';
       document.documentElement.style.setProperty('--chat-bg-image', state.theme.wallpaper ? `url(${state.theme.wallpaper})` : defaultState.theme.wallpaper ? `url(${defaultState.theme.wallpaper})` : getComputedStyle(document.documentElement).getPropertyValue('--chat-bg-image'));
       if (!state.theme.wallpaper) {
         document.documentElement.style.setProperty('--chat-bg-image', `url('https://static.whatsapp.net/rsrc.php/v4/y1/r/a3pd-CgpXeU.png')`);
