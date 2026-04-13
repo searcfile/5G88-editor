@@ -1260,6 +1260,37 @@
 #profileModalAvatar{
   cursor:pointer;
 }
+.side-toggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+}
+
+.side-toggle-btn{
+  flex:1;
+  height:32px;
+  padding:0 14px;
+  border:1px solid #424242;
+  border-radius:6px;
+  background:#141414;
+  color:rgba(255,255,255,.85);
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+
+.side-toggle-btn:hover{
+  border-color:#00a884;
+  color:#fff;
+}
+
+.side-toggle-btn.active{
+  background:#1668dc;
+  border-color:#1668dc;
+  color:#fff;
+}
 </style>
 </head>
 <body>
@@ -1301,13 +1332,16 @@
         <section class="card">
           <h3>Add Image Bubble</h3>
           <div class="grid2">
-            <div>
-              <label class="lbl">Bubble Side</label>
-              <select id="imgSide">
-                <option value="mine">Mine</option>
-                <option value="their">Their</option>
-              </select>
-            </div>
+<div>
+  <label class="lbl">Bubble Side</label>
+
+  <div class="side-toggle" id="imgSideToggle">
+    <button type="button" class="side-toggle-btn active" data-side="mine">Mine</button>
+    <button type="button" class="side-toggle-btn" data-side="their">Their</button>
+  </div>
+
+  <input type="hidden" id="imgSide" value="mine" />
+</div>
             <div>
               <label class="lbl">Time</label>
               <input id="imgTime" type="time" value="13:11" />
@@ -1669,6 +1703,15 @@ msgSideToggleBtns.forEach(btn => {
     msgSideToggleBtns.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     refs.msgSide.value = btn.dataset.side;
+  });
+});
+const imgSideToggleBtns = document.querySelectorAll('#imgSideToggle .side-toggle-btn');
+
+imgSideToggleBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    imgSideToggleBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    refs.imgSide.value = btn.dataset.side;
   });
 });
     function uid(){
