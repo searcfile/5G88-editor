@@ -1804,14 +1804,14 @@ if (refs.wallpaperFile && wallpaperFileName) {
 function saveFormDraft(){
   const draft = {
     msgSide: refs.msgSide?.value || 'mine',
-    msgTime: refs.msgTime?.value || '05:37',
-    msgTimeInput: refs.msgTimeInput?.value || '05:37 AM',
+    msgTime: refs.msgTime?.value || '',
+    msgTimeInput: refs.msgTimeInput?.value || '',
     msgText: refs.msgText?.value || '',
     msgDateLabel: refs.msgDateLabel?.value || '',
 
     imgSide: refs.imgSide?.value || 'mine',
-    imgTime: refs.imgTime?.value || '13:11',
-    imgTimeInput: refs.imgTimeInput?.value || '01:11 PM',
+    imgTime: refs.imgTime?.value || '',
+    imgTimeInput: refs.imgTimeInput?.value || '',
     imgCaption: refs.imgCaption?.value || '',
     showForwardIcon: !!refs.showForwardIcon?.checked
   };
@@ -1834,14 +1834,14 @@ function applyFormDraft(){
   if (!draft) return;
 
   if (refs.msgSide) refs.msgSide.value = draft.msgSide || 'mine';
-  if (refs.msgTime) refs.msgTime.value = draft.msgTime || '05:37';
-  if (refs.msgTimeInput) refs.msgTimeInput.value = draft.msgTimeInput || '05:37 AM';
+  if (refs.msgTime) refs.msgTime.value = draft.msgTime || '';
+  if (refs.msgTimeInput) refs.msgTimeInput.value = draft.msgTimeInput || '';
   if (refs.msgText) refs.msgText.value = draft.msgText || '';
   if (refs.msgDateLabel) refs.msgDateLabel.value = draft.msgDateLabel || '';
 
   if (refs.imgSide) refs.imgSide.value = draft.imgSide || 'mine';
-  if (refs.imgTime) refs.imgTime.value = draft.imgTime || '13:11';
-  if (refs.imgTimeInput) refs.imgTimeInput.value = draft.imgTimeInput || '01:11 PM';
+  if (refs.imgTime) refs.imgTime.value = draft.imgTime || '';
+  if (refs.imgTimeInput) refs.imgTimeInput.value = draft.imgTimeInput || '';
   if (refs.imgCaption) refs.imgCaption.value = draft.imgCaption || '';
   if (refs.showForwardIcon) refs.showForwardIcon.checked = !!draft.showForwardIcon;
 
@@ -1881,18 +1881,25 @@ function parseTime12To24(value){
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 }
 
-function syncTimeInput(textInputEl, hiddenEl, fallback24){
+function syncTimeInput(textInputEl, hiddenEl, fallback24 = ''){
   if (!textInputEl || !hiddenEl) return;
 
-  const parsed = parseTime12To24(textInputEl.value);
+  const raw = String(textInputEl.value || '').trim();
 
-  if (parsed) {
-    hiddenEl.value = parsed;
-    textInputEl.dataset.lastValid = textInputEl.value.trim().toUpperCase();
+  if (!raw) {
+    hiddenEl.value = '';
     return;
   }
 
-  hiddenEl.value = fallback24 || '00:00';
+  const parsed = parseTime12To24(raw);
+
+  if (parsed) {
+    hiddenEl.value = parsed;
+    textInputEl.dataset.lastValid = raw.toUpperCase();
+    return;
+  }
+
+  hiddenEl.value = fallback24 || '';
 }
 function setNowTimeInput(textInputEl, hiddenEl){
   if (!textInputEl || !hiddenEl) return;
@@ -1917,16 +1924,29 @@ function initCustomTimeInputs(){
     refs.msgTimeInput.dataset.lastValid = refs.msgTimeInput.value.trim().toUpperCase();
 
     refs.msgTimeInput.addEventListener('input', () => {
-      syncTimeInput(refs.msgTimeInput, refs.msgTime, '05:37');
+      syncTimeInput(refs.msgTimeInput, refs.msgTime, '');
     });
 
 refs.msgTimeInput.addEventListener('blur', () => {
-  const parsed = parseTime12To24(refs.msgTimeInput.value);
+  const raw = refs.msgTimeInput.value.trim();
+
+  if (!raw) {
+    refs.msgTimeInput.value = '';
+    refs.msgTime.value = '';
+    refs.msgTimeInput.dataset.lastValid = '';
+    saveFormDraft();
+    return;
+  }
+
+  const parsed = parseTime12To24(raw);
+
   if (!parsed) {
-    refs.msgTimeInput.value = refs.msgTimeInput.dataset.lastValid || '05:37 AM';
-    refs.msgTime.value = '05:37';
+    refs.msgTimeInput.value = refs.msgTimeInput.dataset.lastValid || '';
+    refs.msgTime.value = refs.msgTimeInput.value
+      ? parseTime12To24(refs.msgTimeInput.value) || ''
+      : '';
   } else {
-    refs.msgTimeInput.value = refs.msgTimeInput.value.trim().toUpperCase();
+    refs.msgTimeInput.value = raw.toUpperCase();
     refs.msgTime.value = parsed;
     refs.msgTimeInput.dataset.lastValid = refs.msgTimeInput.value;
   }
@@ -1939,16 +1959,29 @@ refs.msgTimeInput.addEventListener('blur', () => {
     refs.imgTimeInput.dataset.lastValid = refs.imgTimeInput.value.trim().toUpperCase();
 
     refs.imgTimeInput.addEventListener('input', () => {
-      syncTimeInput(refs.imgTimeInput, refs.imgTime, '13:11');
+      syncTimeInput(refs.imgTimeInput, refs.imgTime, '');
     });
 
 refs.imgTimeInput.addEventListener('blur', () => {
-  const parsed = parseTime12To24(refs.imgTimeInput.value);
+  const raw = refs.imgTimeInput.value.trim();
+
+  if (!raw) {
+    refs.imgTimeInput.value = '';
+    refs.imgTime.value = '';
+    refs.imgTimeInput.dataset.lastValid = '';
+    saveFormDraft();
+    return;
+  }
+
+  const parsed = parseTime12To24(raw);
+
   if (!parsed) {
-    refs.imgTimeInput.value = refs.imgTimeInput.dataset.lastValid || '01:11 PM';
-    refs.imgTime.value = '13:11';
+    refs.imgTimeInput.value = refs.imgTimeInput.dataset.lastValid || '';
+    refs.imgTime.value = refs.imgTimeInput.value
+      ? parseTime12To24(refs.imgTimeInput.value) || ''
+      : '';
   } else {
-    refs.imgTimeInput.value = refs.imgTimeInput.value.trim().toUpperCase();
+    refs.imgTimeInput.value = raw.toUpperCase();
     refs.imgTime.value = parsed;
     refs.imgTimeInput.dataset.lastValid = refs.imgTimeInput.value;
   }
