@@ -2553,89 +2553,9 @@ function closeProfilePreviewModal(){
     refs.profilePreviewImage.src = '';
   }
 }
-function resetProfilePreviewTransform(){
-  profilePreviewState.scale = 1;
-  profilePreviewState.offsetX = 0;
-  profilePreviewState.offsetY = 0;
-  applyProfilePreviewTransform();
-}
 
-function applyProfilePreviewTransform(){
-  if (!refs.profilePreviewImage) return;
 
-  refs.profilePreviewImage.style.transform =
-    `translate(-50%, -50%) translate(${profilePreviewState.offsetX}px, ${profilePreviewState.offsetY}px) scale(${profilePreviewState.scale})`;
-}
 
-function clampProfilePreviewOffsets(){
-  if (!refs.profilePreviewViewport || !refs.profilePreviewImage) return;
-
-  const viewportRect = refs.profilePreviewViewport.getBoundingClientRect();
-  const img = refs.profilePreviewImage;
-
-  const naturalW = img.naturalWidth || viewportRect.width;
-  const naturalH = img.naturalHeight || viewportRect.height;
-
-  if (!naturalW || !naturalH) return;
-
-  const fitScale = Math.min(
-    viewportRect.width / naturalW,
-    viewportRect.height / naturalH
-  );
-
-  const renderedW = naturalW * fitScale * profilePreviewState.scale;
-  const renderedH = naturalH * fitScale * profilePreviewState.scale;
-
-  const maxX = Math.max(0, (renderedW - viewportRect.width) / 2);
-  const maxY = Math.max(0, (renderedH - viewportRect.height) / 2);
-
-  profilePreviewState.offsetX = Math.max(-maxX, Math.min(maxX, profilePreviewState.offsetX));
-  profilePreviewState.offsetY = Math.max(-maxY, Math.min(maxY, profilePreviewState.offsetY));
-}
-
-function zoomProfilePreview(delta, clientX, clientY){
-  if (!refs.profilePreviewViewport) return;
-
-  const oldScale = profilePreviewState.scale;
-  const zoomStep = delta > 0 ? 1.15 : 0.87;
-  let nextScale = oldScale * zoomStep;
-
-  nextScale = Math.max(profilePreviewState.minScale, Math.min(profilePreviewState.maxScale, nextScale));
-  profilePreviewState.scale = nextScale;
-
-  clampProfilePreviewOffsets();
-  applyProfilePreviewTransform();
-}
-
-function startProfilePreviewDrag(clientX, clientY){
-  if (profilePreviewState.scale <= 1) return;
-
-  profilePreviewState.dragging = true;
-  profilePreviewState.startX = clientX;
-  profilePreviewState.startY = clientY;
-  profilePreviewState.startOffsetX = profilePreviewState.offsetX;
-  profilePreviewState.startOffsetY = profilePreviewState.offsetY;
-
-  refs.profilePreviewViewport?.classList.add('dragging');
-}
-
-function moveProfilePreviewDrag(clientX, clientY){
-  if (!profilePreviewState.dragging) return;
-
-  const dx = clientX - profilePreviewState.startX;
-  const dy = clientY - profilePreviewState.startY;
-
-  profilePreviewState.offsetX = profilePreviewState.startOffsetX + dx;
-  profilePreviewState.offsetY = profilePreviewState.startOffsetY + dy;
-
-  clampProfilePreviewOffsets();
-  applyProfilePreviewTransform();
-}
-
-function endProfilePreviewDrag(){
-  profilePreviewState.dragging = false;
-  refs.profilePreviewViewport?.classList.remove('dragging');
-}
     function initResizer(){
       const resizer = document.getElementById('resizer');
       const app = document.querySelector('.app');
@@ -2929,46 +2849,7 @@ if (refs.confirmBoxBackdrop) {
     }
   });
 }
-if (refs.closeProfilePreviewBtn) {
-  refs.closeProfilePreviewBtn.addEventListener('click', closeProfilePreviewModal);
-}
 
-if (refs.profilePreviewBackdrop) {
-  refs.profilePreviewBackdrop.addEventListener('click', (e) => {
-    if (e.target === refs.profilePreviewBackdrop) {
-      closeProfilePreviewModal();
-    }
-  });
-}
-if (refs.profilePreviewViewport) {
-  refs.profilePreviewViewport.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    zoomProfilePreview(e.deltaY < 0 ? 1 : -1, e.clientX, e.clientY);
-  }, { passive: false });
-
-  refs.profilePreviewViewport.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    startProfilePreviewDrag(e.clientX, e.clientY);
-  });
-}
-if (refs.profilePreviewViewport) {
-  refs.profilePreviewViewport.addEventListener('dblclick', () => {
-    resetProfilePreviewTransform();
-  });
-}
-window.addEventListener('mousemove', (e) => {
-  moveProfilePreviewDrag(e.clientX, e.clientY);
-});
-
-window.addEventListener('mouseup', () => {
-  endProfilePreviewDrag();
-});
-
-if (refs.profilePreviewImage) {
-  refs.profilePreviewImage.addEventListener('dragstart', (e) => {
-    e.preventDefault();
-  });
-}
       if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
 
       if (refs.clearInputsBtn) {
