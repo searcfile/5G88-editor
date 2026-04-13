@@ -276,7 +276,15 @@
   .ghost{background:#233138;color:#d7e1e5}
   .danger{background:#b42318}
   .full{width:100%}
+  #previewWallpaperBtn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+  pointer-events:none;
+}
 
+#previewWallpaperBtn:disabled:hover{
+  filter:none;
+}
   .hint{
     margin-top:8px;
     font-size:11px;
@@ -1474,7 +1482,7 @@
 
   <div class="file-upload-row">
     <label for="wallpaperFile" class="file-upload-btn">Choose Wallpaper</label>
-    <span id="wallpaperFileName" class="file-upload-name">No file chosen</span>
+    <button type="button" id="previewWallpaperBtn" class="ghost" disabled>No Image</button>
   </div>
 
   <input id="wallpaperFile" type="file" accept="image/*" class="file-upload-input" />
@@ -1756,6 +1764,7 @@
       mineTextTone: $('mineTextTone'),
       theirTextTone: $('theirTextTone'),
       wallpaperFile: $('wallpaperFile'),
+      previewWallpaperBtn: $('previewWallpaperBtn'),
       removeWallpaperBtn: $('removeWallpaperBtn'),
       resetThemeBtn: $('resetThemeBtn'),
       undoBtn: $('undoBtn'),
@@ -1852,7 +1861,6 @@ theirTextToneToggleBtns.forEach(btn => {
   });
 });
 const imgFileName = document.getElementById('imgFileName');
-const wallpaperFileName = document.getElementById('wallpaperFileName');
 
 if (refs.imgFile && imgFileName) {
   refs.imgFile.addEventListener('change', () => {
@@ -1861,15 +1869,32 @@ if (refs.imgFile && imgFileName) {
       : 'No file chosen';
   });
 }
+function updateWallpaperPreviewButton(){
+  if (!refs.previewWallpaperBtn) return;
 
-if (refs.wallpaperFile && wallpaperFileName) {
-  refs.wallpaperFile.addEventListener('change', () => {
-    wallpaperFileName.textContent = refs.wallpaperFile.files && refs.wallpaperFile.files[0]
-      ? refs.wallpaperFile.files[0].name
-      : 'No file chosen';
+  const hasWallpaper = !!(state.theme && state.theme.wallpaper);
+
+  refs.previewWallpaperBtn.textContent = hasWallpaper ? 'Preview Image' : 'No Image';
+  refs.previewWallpaperBtn.disabled = !hasWallpaper;
+}
+if (refs.previewWallpaperBtn) {
+  refs.previewWallpaperBtn.addEventListener('click', () => {
+    if (!state.theme?.wallpaper) return;
+
+    if (refs.profilePreviewImage) {
+      refs.profilePreviewImage.src = state.theme.wallpaper;
+    }
+
+    if (refs.profilePreviewBackdrop) {
+      refs.profilePreviewBackdrop.classList.remove('hidden');
+    }
+
+    requestAnimationFrame(() => {
+      resetProfilePreviewTransform();
+    });
   });
 }
-    function uid(){
+  function uid(){
       return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
     }
 
@@ -2357,6 +2382,8 @@ function applyTheme(){
       ? `url(${state.theme.wallpaper})`
       : `url('https://static.whatsapp.net/rsrc.php/v4/y1/r/a3pd-CgpXeU.png')`
   );
+
+  updateWallpaperPreviewButton();
 }
 
 function renderChat(){
@@ -3296,11 +3323,6 @@ if (refs.removeWallpaperBtn) {
   refs.removeWallpaperBtn.addEventListener('click', () => {
     state.theme.wallpaper = '';
     if (refs.wallpaperFile) refs.wallpaperFile.value = '';
-
-    if (wallpaperFileName) {
-      wallpaperFileName.textContent = 'No file chosen';
-    }
-
     saveAndRender();
   });
 }
