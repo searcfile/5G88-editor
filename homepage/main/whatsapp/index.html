@@ -2938,7 +2938,40 @@ document.addEventListener('click', () => {
     el.classList.remove('menu-open');
   });
 });
-    bindEvents();
+bindEvents();
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+
+  // Close confirm box (priority paling atas)
+  if (refs.confirmBoxBackdrop && !refs.confirmBoxBackdrop.classList.contains('hidden')) {
+    closeConfirmBox();
+    return;
+  }
+
+  // Close preview image modal
+  if (refs.profilePreviewBackdrop && !refs.profilePreviewBackdrop.classList.contains('hidden')) {
+    closeProfilePreviewModal();
+    return;
+  }
+
+  // Close edit message modal
+  if (refs.msgEditBackdrop && !refs.msgEditBackdrop.classList.contains('hidden')) {
+    closeMsgEditModal();
+    return;
+  }
+
+  // Close date separator modal
+  if (refs.dateSepEditBackdrop && !refs.dateSepEditBackdrop.classList.contains('hidden')) {
+    closeDateSepEditModal();
+    return;
+  }
+
+  // Close profile modal (kalau ada)
+  if (refs.profileModalBackdrop && !refs.profileModalBackdrop.classList.contains('hidden')) {
+    closeProfileModal();
+    return;
+  }
+});
     initResizer();
     saveAndRender();
   </script>
