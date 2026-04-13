@@ -1633,6 +1633,7 @@
   <script>
     const STORAGE_KEY = 'waDesktopBuilder.v1';
     const SIDEBAR_KEY = 'sidebarWidth';
+    const FORM_DRAFT_KEY = 'waDesktopBuilder.formDraft.v1';
 
     const defaultState = {
       profile: {
@@ -1743,6 +1744,7 @@ msgSideToggleBtns.forEach(btn => {
     msgSideToggleBtns.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     refs.msgSide.value = btn.dataset.side;
+    saveFormDraft();
   });
 });
 const imgSideToggleBtns = document.querySelectorAll('#imgSideToggle .side-toggle-btn');
@@ -1752,6 +1754,7 @@ imgSideToggleBtns.forEach(btn => {
     imgSideToggleBtns.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     refs.imgSide.value = btn.dataset.side;
+    saveFormDraft();
   });
 });
 const imgFileName = document.getElementById('imgFileName');
@@ -1798,7 +1801,56 @@ if (refs.wallpaperFile && wallpaperFileName) {
     function structuredClone(obj){
       return JSON.parse(JSON.stringify(obj));
     }
+function saveFormDraft(){
+  const draft = {
+    msgSide: refs.msgSide?.value || 'mine',
+    msgTime: refs.msgTime?.value || '05:37',
+    msgTimeInput: refs.msgTimeInput?.value || '05:37 AM',
+    msgText: refs.msgText?.value || '',
+    msgDateLabel: refs.msgDateLabel?.value || '',
 
+    imgSide: refs.imgSide?.value || 'mine',
+    imgTime: refs.imgTime?.value || '13:11',
+    imgTimeInput: refs.imgTimeInput?.value || '01:11 PM',
+    imgCaption: refs.imgCaption?.value || '',
+    showForwardIcon: !!refs.showForwardIcon?.checked
+  };
+
+  localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify(draft));
+}
+
+function loadFormDraft(){
+  try {
+    const raw = localStorage.getItem(FORM_DRAFT_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function applyFormDraft(){
+  const draft = loadFormDraft();
+  if (!draft) return;
+
+  if (refs.msgSide) refs.msgSide.value = draft.msgSide || 'mine';
+  if (refs.msgTime) refs.msgTime.value = draft.msgTime || '05:37';
+  if (refs.msgTimeInput) refs.msgTimeInput.value = draft.msgTimeInput || '05:37 AM';
+  if (refs.msgText) refs.msgText.value = draft.msgText || '';
+  if (refs.msgDateLabel) refs.msgDateLabel.value = draft.msgDateLabel || '';
+
+  if (refs.imgSide) refs.imgSide.value = draft.imgSide || 'mine';
+  if (refs.imgTime) refs.imgTime.value = draft.imgTime || '13:11';
+  if (refs.imgTimeInput) refs.imgTimeInput.value = draft.imgTimeInput || '01:11 PM';
+  if (refs.imgCaption) refs.imgCaption.value = draft.imgCaption || '';
+  if (refs.showForwardIcon) refs.showForwardIcon.checked = !!draft.showForwardIcon;
+
+  msgSideToggleBtns.forEach(b => b.classList.remove('active'));
+  document.querySelector(`#msgSideToggle .side-toggle-btn[data-side="${refs.msgSide?.value || 'mine'}"]`)?.classList.add('active');
+
+  imgSideToggleBtns.forEach(b => b.classList.remove('active'));
+  document.querySelector(`#imgSideToggle .side-toggle-btn[data-side="${refs.imgSide?.value || 'mine'}"]`)?.classList.add('active');
+}
     function timeLabel(v){
       if (!v) return '';
       const [hh, mm] = String(v).split(':').map(Number);
@@ -1868,15 +1920,19 @@ function initCustomTimeInputs(){
       syncTimeInput(refs.msgTimeInput, refs.msgTime, '05:37');
     });
 
-    refs.msgTimeInput.addEventListener('blur', () => {
-      const parsed = parseTime12To24(refs.msgTimeInput.value);
-      if (!parsed) {
-        refs.msgTimeInput.value = refs.msgTimeInput.dataset.lastValid || '05:37 AM';
-        refs.msgTime.value = '05:37';
-      } else {
-        refs.msgTimeInput.value = refs.msgTimeInput.value.trim().toUpperCase();
-      }
-    });
+refs.msgTimeInput.addEventListener('blur', () => {
+  const parsed = parseTime12To24(refs.msgTimeInput.value);
+  if (!parsed) {
+    refs.msgTimeInput.value = refs.msgTimeInput.dataset.lastValid || '05:37 AM';
+    refs.msgTime.value = '05:37';
+  } else {
+    refs.msgTimeInput.value = refs.msgTimeInput.value.trim().toUpperCase();
+    refs.msgTime.value = parsed;
+    refs.msgTimeInput.dataset.lastValid = refs.msgTimeInput.value;
+  }
+
+  saveFormDraft();
+});
   }
 
   if (refs.imgTimeInput && refs.imgTime) {
@@ -1886,28 +1942,34 @@ function initCustomTimeInputs(){
       syncTimeInput(refs.imgTimeInput, refs.imgTime, '13:11');
     });
 
-    refs.imgTimeInput.addEventListener('blur', () => {
-      const parsed = parseTime12To24(refs.imgTimeInput.value);
-      if (!parsed) {
-        refs.imgTimeInput.value = refs.imgTimeInput.dataset.lastValid || '01:11 PM';
-        refs.imgTime.value = '13:11';
-      } else {
-        refs.imgTimeInput.value = refs.imgTimeInput.value.trim().toUpperCase();
-      }
-    });
+refs.imgTimeInput.addEventListener('blur', () => {
+  const parsed = parseTime12To24(refs.imgTimeInput.value);
+  if (!parsed) {
+    refs.imgTimeInput.value = refs.imgTimeInput.dataset.lastValid || '01:11 PM';
+    refs.imgTime.value = '13:11';
+  } else {
+    refs.imgTimeInput.value = refs.imgTimeInput.value.trim().toUpperCase();
+    refs.imgTime.value = parsed;
+    refs.imgTimeInput.dataset.lastValid = refs.imgTimeInput.value;
   }
 
-  if (refs.msgNowBtn) {
-    refs.msgNowBtn.addEventListener('click', () => {
-      setNowTimeInput(refs.msgTimeInput, refs.msgTime);
-    });
+  saveFormDraft();
+});
   }
 
-  if (refs.imgNowBtn) {
-    refs.imgNowBtn.addEventListener('click', () => {
-      setNowTimeInput(refs.imgTimeInput, refs.imgTime);
-    });
-  }
+if (refs.msgNowBtn) {
+  refs.msgNowBtn.addEventListener('click', () => {
+    setNowTimeInput(refs.msgTimeInput, refs.msgTime);
+    saveFormDraft();
+  });
+}
+
+if (refs.imgNowBtn) {
+  refs.imgNowBtn.addEventListener('click', () => {
+    setNowTimeInput(refs.imgTimeInput, refs.imgTime);
+    saveFormDraft();
+  });
+}
 
   syncTimeInput(refs.msgTimeInput, refs.msgTime, '05:37');
   syncTimeInput(refs.imgTimeInput, refs.imgTime, '13:11');
@@ -2951,7 +3013,30 @@ if (refs.confirmBoxBackdrop) {
   });
 }
 
-      if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
+if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
+if (refs.msgTimeInput) {
+  refs.msgTimeInput.addEventListener('input', saveFormDraft);
+}
+
+if (refs.msgText) {
+  refs.msgText.addEventListener('input', saveFormDraft);
+}
+
+if (refs.msgDateLabel) {
+  refs.msgDateLabel.addEventListener('input', saveFormDraft);
+}
+
+if (refs.imgTimeInput) {
+  refs.imgTimeInput.addEventListener('input', saveFormDraft);
+}
+
+if (refs.imgCaption) {
+  refs.imgCaption.addEventListener('input', saveFormDraft);
+}
+
+if (refs.showForwardIcon) {
+  refs.showForwardIcon.addEventListener('change', saveFormDraft);
+}
 
 if (refs.clearInputsBtn) {
   refs.clearInputsBtn.addEventListener('click', () => {
@@ -3086,6 +3171,7 @@ document.addEventListener('click', () => {
   });
 });
 bindEvents();
+applyFormDraft();
 initCustomTimeInputs();
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
