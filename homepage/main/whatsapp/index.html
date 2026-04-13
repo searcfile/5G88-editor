@@ -750,18 +750,14 @@
 
 .bubble-action-menu{
   position:absolute;
-  top:calc(100% + 6px);
-  min-width:170px;
-  background:#111b21;
+  top:calc(100% + 4px);
+  min-width:92px;
+  background:#202c33;
   border:1px solid rgba(255,255,255,.08);
-  border-radius:16px;
-  box-shadow:0 14px 34px rgba(0,0,0,.42);
-  padding:6px 0;
+  border-radius:8px;
+  box-shadow:0 10px 20px rgba(0,0,0,.28);
+  padding:4px;
   display:none;
-  overflow:hidden;
-}
-.bubble-actions.open .bubble-action-menu{
-  display:block;
 }
 
 .msg-row.mine .bubble-action-menu{
@@ -781,42 +777,31 @@
 
 .bubble-action-item{
   width:100%;
-  height:44px;
-  min-height:44px;
+  min-height:28px;
+  border-radius:6px;
   border:none;
-  border-radius:0;
   background:transparent;
   color:#e9edef;
   display:flex;
   align-items:center;
-  gap:14px;
-  padding:0 16px;
-  font-size:14px;
-  font-weight:500;
+  gap:6px;
+  padding:6px 8px;
+  font-size:12px;
   cursor:pointer;
-  text-align:left;
-  box-shadow:none;
 }
 
 .bubble-action-item:hover{
-  background:rgba(255,255,255,.06);
+  background:#2a3942;
 }
 
 .bubble-action-item.delete{
-  color:#ff6b6b;
+  color:#ff8d8d;
 }
 
 .bubble-action-item svg{
-  width:20px;
-  height:20px;
-  min-width:20px;
+  width:16px;
+  height:16px;
   fill:currentColor;
-  opacity:.95;
-}
-.bubble-action-sep{
-  height:1px;
-  margin:4px 0;
-  background:rgba(255,255,255,.08);
 }
 .composer{
   min-height:72px;
@@ -1337,11 +1322,9 @@ function bubbleActionsTemplate(index){
           <span>Edit</span>
         </button>
 
-        <div class="bubble-action-sep"></div>
-
         <button type="button" class="bubble-action-item delete" data-action="delete" data-index="${index}">
           <svg viewBox="0 0 24 24"><path d="M9 3V4H4V6H5V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V6H20V4H15V3H9ZM7 6H17V19H7V6ZM9 8V17H11V8H9ZM13 8V17H15V8H13Z"/></svg>
-          <span>Hapus</span>
+          <span>Delete</span>
         </button>
       </div>
     </div>
