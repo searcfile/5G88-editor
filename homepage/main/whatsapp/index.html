@@ -1207,7 +1207,30 @@
             <div style="display:flex;justify-content:center;">
               <div id="profileModalAvatar" style="width:110px;height:110px;border-radius:50%;background:#40515b center/cover no-repeat;overflow:hidden;display:grid;place-items:center;border:3px solid #22313a;"></div>
             </div>
-            <div class="hidden" id="msgEditBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;align-items:center;justify-content:center;padding:20px;">
+  
+            <div class="btn-row" style="justify-content:center;">
+              <button id="changeProfileBtn" class="ghost" type="button">Change Profile</button>
+              <button id="viewProfileBtn" class="ghost" type="button">View Profile</button>
+              <button id="deleteProfileBtn" class="ghost" type="button">Delete</button>
+            </div>
+            <input id="profileModalFile" type="file" accept="image/*" class="hidden" />
+            <div>
+              <label class="lbl">Change Name</label>
+              <input id="profileModalName" type="text" placeholder="Enter profile name" />
+            </div>
+            <div>
+              <label class="lbl">Status Text</label>
+              <input id="profileModalStatus" type="text" placeholder="Enter status text" />
+            </div>
+            <div class="btn-row" style="justify-content:flex-end;margin-top:6px;">
+              <button id="cancelProfileBtn" class="ghost" type="button">Cancel</button>
+              <button id="updateProfileBtn" type="button">Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+          <div class="hidden" id="msgEditBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;align-items:center;justify-content:center;padding:20px;">
   <div id="msgEditModal" class="msg-edit-modal">
     <div class="msg-edit-head">
       <div class="msg-edit-title">Edit Message</div>
@@ -1247,28 +1270,7 @@
     </div>
   </div>
 </div>
-            <div class="btn-row" style="justify-content:center;">
-              <button id="changeProfileBtn" class="ghost" type="button">Change Profile</button>
-              <button id="viewProfileBtn" class="ghost" type="button">View Profile</button>
-              <button id="deleteProfileBtn" class="ghost" type="button">Delete</button>
-            </div>
-            <input id="profileModalFile" type="file" accept="image/*" class="hidden" />
-            <div>
-              <label class="lbl">Change Name</label>
-              <input id="profileModalName" type="text" placeholder="Enter profile name" />
-            </div>
-            <div>
-              <label class="lbl">Status Text</label>
-              <input id="profileModalStatus" type="text" placeholder="Enter status text" />
-            </div>
-            <div class="btn-row" style="justify-content:flex-end;margin-top:6px;">
-              <button id="cancelProfileBtn" class="ghost" type="button">Cancel</button>
-              <button id="updateProfileBtn" type="button">Update</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      
       <div class="chat-area" id="chatArea">
         <div class="chat-inner" id="chatList"></div>
       </div>
@@ -1684,55 +1686,43 @@ bubbleActions.innerHTML = `
         });
       }
 
-      if (editBtn) {
-        editBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          bubble.classList.remove('menu-open');
+if (editBtn) {
+  editBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    bubble.classList.remove('menu-open');
 
-          const currentItem = state.messages[index];
-          if (!currentItem) return;
+    const currentItem = state.messages[index];
+    if (!currentItem) return;
 
-          if (currentItem.type === 'text') {
-            const nextText = prompt('Edit message text:', currentItem.text || '');
-            if (nextText === null) return;
+    if (currentItem.type === 'text') {
+      openMsgEditModal(index);
+      return;
+    }
 
-            const nextTime = prompt('Edit time (HH:MM):', currentItem.time || '00:00');
-            if (nextTime === null) return;
+    if (currentItem.type === 'image') {
+      const nextCaption = prompt('Edit caption:', currentItem.caption || '');
+      if (nextCaption === null) return;
 
-            const nextSide = prompt('Edit side: mine / their', currentItem.side || 'mine');
-            if (nextSide === null) return;
+      const nextTime = prompt('Edit time (HH:MM):', currentItem.time || '00:00');
+      if (nextTime === null) return;
 
-            currentItem.text = nextText;
-            currentItem.time = nextTime;
-            currentItem.side = nextSide === 'their' ? 'their' : 'mine';
-            saveAndRender();
-            return;
-          }
+      const nextSide = prompt('Edit side: mine / their', currentItem.side || 'mine');
+      if (nextSide === null) return;
 
-          if (currentItem.type === 'image') {
-            const nextCaption = prompt('Edit caption:', currentItem.caption || '');
-            if (nextCaption === null) return;
+      const nextForward = prompt(
+        'Show forward icon? yes / no',
+        currentItem.showForward ? 'yes' : 'no'
+      );
+      if (nextForward === null) return;
 
-            const nextTime = prompt('Edit time (HH:MM):', currentItem.time || '00:00');
-            if (nextTime === null) return;
-
-            const nextSide = prompt('Edit side: mine / their', currentItem.side || 'mine');
-            if (nextSide === null) return;
-
-            const nextForward = prompt(
-              'Show forward icon? yes / no',
-              currentItem.showForward ? 'yes' : 'no'
-            );
-            if (nextForward === null) return;
-
-            currentItem.caption = nextCaption;
-            currentItem.time = nextTime;
-            currentItem.side = nextSide === 'their' ? 'their' : 'mine';
-            currentItem.showForward = nextForward.toLowerCase() === 'yes';
-            saveAndRender();
-          }
-        });
-      }
+      currentItem.caption = nextCaption;
+      currentItem.time = nextTime;
+      currentItem.side = nextSide === 'their' ? 'their' : 'mine';
+      currentItem.showForward = nextForward.toLowerCase() === 'yes';
+      saveAndRender();
+    }
+  });
+}
 
       if (deleteBtn) {
         deleteBtn.addEventListener('click', (e) => {
@@ -1903,6 +1893,29 @@ function openEditMenu(index){
       refs.profileModalBackdrop.style.display = 'none';
       if (refs.profileModalFile) refs.profileModalFile.value = '';
     }
+let editingMessageIndex = -1;
+
+function openMsgEditModal(index){
+  const item = state.messages[index];
+  if (!item || item.type !== 'text') return;
+
+  editingMessageIndex = index;
+
+  refs.msgEditText.value = item.text || '';
+  refs.msgEditTime.value = item.time || '00:00';
+  refs.msgEditSide.value = item.side === 'their' ? 'their' : 'mine';
+
+  refs.msgEditBackdrop.classList.remove('hidden');
+  refs.msgEditBackdrop.style.display = 'flex';
+
+  setTimeout(() => {
+    refs.msgEditText.focus();
+    refs.msgEditText.setSelectionRange(
+      refs.msgEditText.value.length,
+      refs.msgEditText.value.length
+    );
+  }, 10);
+}
 function closeMsgEditModal(){
   editingMessageIndex = -1;
   if (!refs.msgEditBackdrop) return;
