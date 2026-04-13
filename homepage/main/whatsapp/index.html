@@ -481,19 +481,34 @@
   all:unset;
   box-sizing:border-box;
   width:100%;
-  min-height:36px;
+  height:32px;
+  min-height:32px;
   margin:0;
-  padding:0 10px;
-  border-radius:12px;
+  padding:0px 12px 0px 0px;
+  border-radius:8px;
   display:flex;
   align-items:center;
   justify-content:flex-start;
-  font-size:14px;
+  gap:8px;
+  font-size:13px;
   line-height:1;
   color:#e9edef;
   cursor:pointer;
 }
 
+.bubble-menu button svg{
+  width:18px;
+  height:18px;
+  flex:0 0 18px;
+  fill:currentColor;
+  display:block;
+  padding:0px 8px;
+}
+
+.bubble-menu button span{
+  display:block;
+  line-height:1;
+}
 .bubble-menu button:hover{
   background:#202c33;
 }
@@ -1468,19 +1483,31 @@ function renderChat(){
         `;
       }
 
-      const bubbleActions = document.createElement('div');
-      bubbleActions.className = 'bubble-actions';
-      bubbleActions.innerHTML = `
-        <button type="button" class="bubble-action-toggle" title="Message actions">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z"></path>
-          </svg>
-        </button>
-        <div class="bubble-menu">
-          <button type="button" class="edit-btn">Edit</button>
-          <button type="button" class="delete-btn">Delete</button>
-        </div>
-      `;
+const bubbleActions = document.createElement('div');
+bubbleActions.className = 'bubble-actions';
+bubbleActions.innerHTML = `
+  <button type="button" class="bubble-action-toggle" title="Message actions">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z"></path>
+    </svg>
+  </button>
+
+  <div class="bubble-menu">
+    <button type="button" class="edit-btn">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path d="M5 18.9999H6.4L16.2 9.22494L14.775 7.79994L5 17.5999V18.9999ZM4 20.9999C3.71667 20.9999 3.47917 20.9041 3.2875 20.7124C3.09583 20.5208 3 20.2833 3 19.9999V17.5749C3 17.3083 3.05 17.0541 3.15 16.8124C3.25 16.5708 3.39167 16.3583 3.575 16.1749L16.2 3.57494C16.3833 3.39161 16.6 3.24994 16.85 3.14994C17.1 3.04994 17.3583 2.99994 17.625 2.99994C17.8917 2.99994 18.1458 3.04994 18.3875 3.14994C18.6292 3.24994 18.85 3.39994 19.05 3.59994L20.425 4.99994C20.625 5.18327 20.7708 5.39577 20.8625 5.63744C20.9542 5.87911 21 6.13327 21 6.39994C21 6.64994 20.9542 6.89994 20.8625 7.14994C20.7708 7.39994 20.625 7.62494 20.425 7.82494L7.825 20.4249C7.64167 20.6083 7.42917 20.7499 7.1875 20.8499C6.94583 20.9499 6.69167 20.9999 6.425 20.9999H4Z"></path>
+      </svg>
+      <span>Edit</span>
+    </button>
+
+    <button type="button" class="delete-btn">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path d="M7 21C6.45 21 5.97917 20.8042 5.5875 20.4125C5.19583 20.0208 5 19.55 5 19V6C4.71667 6 4.47917 5.90417 4.2875 5.7125C4.09583 5.52083 4 5.28333 4 5C4 4.71667 4.09583 4.47917 4.2875 4.2875C4.47917 4.09583 4.71667 4 5 4H9C9 3.71667 9.09583 3.47917 9.2875 3.2875C9.47917 3.09583 9.71667 3 10 3H14C14.2833 3 14.5208 3.09583 14.7125 3.2875C14.9042 3.47917 15 3.71667 15 4H19C19.2833 4 19.5208 4.09583 19.7125 4.2875C19.9042 4.47917 20 4.71667 20 5C20 5.28333 19.9042 5.52083 19.7125 5.7125C19.5208 5.90417 19.2833 6 19 6V19C19 19.55 18.8042 20.0208 18.4125 20.4125C18.0208 20.8042 17.55 21 17 21H7ZM17 6H7V19H17V6ZM10 17C10.2833 17 10.5208 16.9042 10.7125 16.7125C10.9042 16.5208 11 16.2833 11 16V9C11 8.71667 10.9042 8.47917 10.7125 8.2875C10.5208 8.09583 10.2833 8 10 8C9.71667 8 9.47917 8.09583 9.2875 8.2875C9.09583 8.47917 9 8.71667 9 9V16C9 16.2833 9.09583 16.5208 9.2875 16.7125C9.47917 16.9042 9.71667 17 10 17ZM14 17C14.2833 17 14.5208 16.9042 14.7125 16.7125C14.9042 16.5208 15 16.2833 15 16V9C15 8.71667 14.9042 8.47917 14.7125 8.2875C14.5208 8.09583 14.2833 8 14 8C13.7167 8 13.4792 8.09583 13.2875 8.2875C13.0958 8.47917 13 8.71667 13 9V16C13 16.2833 13.0958 16.5208 13.2875 16.7125C13.4792 16.9042 13.7167 17 14 17Z"></path>
+      </svg>
+      <span>Delete</span>
+    </button>
+  </div>
+`;
       bubble.appendChild(bubbleActions);
 
       const toggleBtn = bubble.querySelector('.bubble-action-toggle');
