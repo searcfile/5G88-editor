@@ -2273,6 +2273,46 @@ if (refs.cancelMsgEditBtn) {
 if (refs.saveMsgEditBtn) {
   refs.saveMsgEditBtn.addEventListener('click', saveMsgEditModal);
 }
+
+if (refs.msgEditBackdrop) {
+  refs.msgEditBackdrop.addEventListener('click', (e) => {
+    if (e.target === refs.msgEditBackdrop) {
+      closeMsgEditModal();
+    }
+  });
+}
+
+if (refs.msgEditText) {
+  refs.msgEditText.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      saveMsgEditModal();
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMsgEditModal();
+    }
+  });
+}
+
+if (refs.msgEditTime) {
+  refs.msgEditTime.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMsgEditModal();
+    }
+  });
+}
+
+if (refs.msgEditSide) {
+  refs.msgEditSide.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMsgEditModal();
+    }
+  });
+}
 if (refs.closeDateSepEditBtn) {
   refs.closeDateSepEditBtn.addEventListener('click', closeDateSepEditModal);
 }
@@ -2322,45 +2362,6 @@ if (refs.confirmBoxBackdrop) {
   refs.confirmBoxBackdrop.addEventListener('click', (e) => {
     if (e.target === refs.confirmBoxBackdrop) {
       closeConfirmBox();
-    }
-  });
-}
-if (refs.msgEditBackdrop) {
-  refs.msgEditBackdrop.addEventListener('click', (e) => {
-    if (e.target === refs.msgEditBackdrop) {
-      closeMsgEditModal();
-    }
-  });
-}
-
-if (refs.msgEditText) {
-  refs.msgEditText.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      saveMsgEditModal();
-    }
-
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      closeMsgEditModal();
-    }
-  });
-}
-
-if (refs.msgEditTime) {
-  refs.msgEditTime.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      closeMsgEditModal();
-    }
-  });
-}
-
-if (refs.msgEditSide) {
-  refs.msgEditSide.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      closeMsgEditModal();
     }
   });
 }
