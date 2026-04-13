@@ -1269,13 +1269,16 @@
         <section class="card">
           <h3>Add Text Bubble</h3>
           <div class="grid2">
-            <div>
-              <label class="lbl">Bubble Side</label>
-              <select id="msgSide">
-                <option value="mine">Mine</option>
-                <option value="their">Their</option>
-              </select>
-            </div>
+<div>
+  <label class="lbl">Bubble Side</label>
+
+  <div class="side-toggle" id="msgSideToggle">
+    <button type="button" class="side-toggle-btn active" data-side="mine">Mine</button>
+    <button type="button" class="side-toggle-btn" data-side="their">Their</button>
+  </div>
+
+  <input type="hidden" id="msgSide" value="mine" />
+</div>
             <div>
               <label class="lbl">Time</label>
               <input id="msgTime" type="time" value="05:37" />
