@@ -8,8 +8,8 @@
   :root{
     --mine-text:#FAFAFA;
 --their-text:#FAFAFA;
---mine-time:rgba(255,255,255,.60);
---their-time:rgba(255,255,255,.60);
+--mine-time:#00000099;
+--their-time:#00000099;
     --bg:#0b141a;
     --panel:#0b0b0b;
     --panel-2:#242626;
@@ -2328,11 +2328,11 @@ function applyTheme(){
   const mineTextTone = state.theme.mineTextTone || 'light';
   const theirTextTone = state.theme.theirTextTone || 'light';
 
-  const mineTextColor = mineTextTone === 'dark' ? '#111b21' : '#FAFAFA';
-  const theirTextColor = theirTextTone === 'dark' ? '#111b21' : '#FAFAFA';
+  const mineTextColor = mineTextTone === 'dark' ? '#0a0a0a' : '#FAFAFA';
+  const theirTextColor = theirTextTone === 'dark' ? '#0a0a0a' : '#FAFAFA';
 
-  const mineTimeColor = mineTextTone === 'dark' ? 'rgba(17,27,33,.72)' : 'rgba(255,255,255,.60)';
-  const theirTimeColor = theirTextTone === 'dark' ? 'rgba(17,27,33,.72)' : 'rgba(255,255,255,.60)';
+  const mineTimeColor = mineTextTone === 'dark' ? 'rgba(17,27,33,.72)' : '#00000099';
+  const theirTimeColor = theirTextTone === 'dark' ? 'rgba(17,27,33,.72)' : '#00000099';
 
   document.documentElement.style.setProperty('--mine', mineBubble);
   document.documentElement.style.setProperty('--theirs', theirBubble);
