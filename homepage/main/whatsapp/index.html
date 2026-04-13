@@ -2307,11 +2307,15 @@ if (deleteBtn) {
       saveAndRender();
     }
 
-    function clearPendingImage(){
-      pendingImageBase64 = '';
-      refs.imgFile.value = '';
-      refs.imgPreviewList.innerHTML = '';
-    }
+function clearPendingImage(){
+  pendingImageBase64 = '';
+  refs.imgFile.value = '';
+  refs.imgPreviewList.innerHTML = '';
+
+  if (imgFileName) {
+    imgFileName.textContent = 'No file chosen';
+  }
+}
 
     async function onImagePicked(inputEl, callback, maxWidth = 1200, quality = 0.9){
       const file = inputEl.files?.[0];
@@ -3009,13 +3013,18 @@ if (refs.profilePreviewImage) {
         });
       }
 
-      if (refs.removeWallpaperBtn) {
-        refs.removeWallpaperBtn.addEventListener('click', () => {
-          state.theme.wallpaper = '';
-          if (refs.wallpaperFile) refs.wallpaperFile.value = '';
-          saveAndRender();
-        });
-      }
+if (refs.removeWallpaperBtn) {
+  refs.removeWallpaperBtn.addEventListener('click', () => {
+    state.theme.wallpaper = '';
+    if (refs.wallpaperFile) refs.wallpaperFile.value = '';
+
+    if (wallpaperFileName) {
+      wallpaperFileName.textContent = 'No file chosen';
+    }
+
+    saveAndRender();
+  });
+}
 
       if (refs.resetThemeBtn) {
         refs.resetThemeBtn.addEventListener('click', () => {
