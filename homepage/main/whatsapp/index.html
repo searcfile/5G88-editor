@@ -892,16 +892,16 @@
   line-height:0;
   align-self:flex-start;
 }
-.bubble.media-only .image-wrap::after{
+.bubble.media-only:not(:has(.caption)) .image-wrap::after{
   content:"";
   position:absolute;
   left:0;
   right:0;
   bottom:0;
-  height:42px;
+  height:28px;
   pointer-events:none;
   z-index:2;
- background: linear-gradient(to top, rgba(11, 20, 26, 0.5), rgba(11, 20, 26, 0));
+  background: linear-gradient(to top, rgba(11, 20, 26, 0.5), rgba(11, 20, 26, 0));
 }
 .image-wrap img{
   display:block;
