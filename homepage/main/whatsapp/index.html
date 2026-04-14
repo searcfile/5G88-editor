@@ -136,7 +136,8 @@
     border:1px solid #424242;
     height:32px;
   }
-
+  input:hover{border:1px solid #3c89e8;}
+  input:focus{border:1px solid #1554ad;}
   textarea{
     min-height:90px;
     resize:vertical;
@@ -150,7 +151,7 @@
 .file-upload-row{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
   flex-wrap:wrap;
   min-height:32px;
 }
@@ -160,7 +161,7 @@
   align-items:center;
   justify-content:center;
   height:32px;
-  padding:0 14px;
+  padding:0 15px;
   border:1px solid #424242;
   border-radius:6px;
   background:#141414;
@@ -172,10 +173,13 @@
 }
 
 .file-upload-btn:hover{
-  border-color:#00a884;
-  color:#fff;
+  border-color:#3c89e8;
+  color:#3c89e8;
 }
-
+.file-upload-btn:active{
+  border-color:#1554ad;
+  color:#1554ad;
+}
 .file-upload-name{
   font-size:13px;
   color:var(--muted);
@@ -186,10 +190,10 @@
   width:100%;
   min-height:52px;
   border:1px dashed #424242;
-  border-radius:8px;
+  border-radius:6px;
   background:#141414;
   color:var(--muted);
-  font-size:13px;
+  font-size:14px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -199,9 +203,13 @@
   transition:all .2s ease;
 }
 
-.paste-box:hover,
+.paste-box:hover{
+  border-color:#3c89e8;
+  color:#fff;
+  outline:none;
+}
 .paste-box:focus{
-  border-color:#00a884;
+  border-color:#1668dc;
   color:#fff;
   outline:none;
 }
@@ -225,7 +233,15 @@
 .now-btn{
   flex:0 0 auto;
   min-width:58px;
-  padding:0 15px;
+    border:1px solid transparent;
+    cursor:pointer;
+    background:#1668dc;
+    color:#fff;
+    padding:0px 15px;
+    border-radius:6px;
+    font-size:14px;
+    transition: all .2s ease;
+    height:32px
 }
 .side-toggle{
   display:flex;
@@ -1477,7 +1493,7 @@ body.has-custom-wallpaper .chat-shell{
   <label class="lbl">Time</label>
   <div class="time-input-row">
     <input id="msgTimeInput" type="text" placeholder="Input Time" />
-    <button type="button" id="msgNowBtn" class="ghost now-btn">Now</button>
+    <button type="button" id="msgNowBtn" class="now-btn">Now</button>
   </div>
   <input type="hidden" id="msgTime" />
 </div>
@@ -1514,7 +1530,7 @@ body.has-custom-wallpaper .chat-shell{
   <label class="lbl">Time</label>
   <div class="time-input-row">
     <input id="imgTimeInput" type="text" placeholder="Input Time" />
-    <button type="button" id="imgNowBtn" class="ghost now-btn">Now</button>
+    <button type="button" id="imgNowBtn" class="now-btn">Now</button>
   </div>
   <input type="hidden" id="imgTime" />
 </div>
