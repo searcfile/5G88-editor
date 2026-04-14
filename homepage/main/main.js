@@ -1269,6 +1269,30 @@ function isLivechatTabActive() {
   const activeUrl = String(getActiveTabUrl() || "").toLowerCase();
   return activeUrl.includes("/main/livechat");
 }
+const FLOATING_LIVECHAT_HIDE_TABS = new Set([
+  "WHATSAPP"
+]);
+
+const FLOATING_LIVECHAT_HIDE_URLS = [
+  "whatsapp"
+];
+
+function updateFloatingLivechatVisibility() {
+  const liveBtn = document.getElementById("floatingLivechatBtn");
+  if (!liveBtn) return;
+
+  const activeTabEl = document.querySelector(".tab.active-tab");
+  const activeLabel = String(activeTabEl?.dataset?.label || "")
+    .trim()
+    .toUpperCase();
+
+  const activeUrl = String(getActiveTabUrl() || "").toLowerCase();
+
+  const hideByLabel = FLOATING_LIVECHAT_HIDE_TABS.has(activeLabel);
+  const hideByUrl = FLOATING_LIVECHAT_HIDE_URLS.some(key => activeUrl.includes(key));
+
+  liveBtn.style.display = (hideByLabel || hideByUrl) ? "none" : "flex";
+}
 function applyActiveTabFromStorage(){
   const activeUrl = getActiveTabUrl();
   document.querySelectorAll(".tab").forEach(el=>{
@@ -1306,7 +1330,7 @@ function addTab(label, url, opt = {}) {
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
   updateEmptyState();
-
+  updateFloatingLivechatVisibility();
   setHeaderActiveByGroup(group, L);
 
   const liveBtn = document.getElementById("liveChatBtn");
@@ -1400,7 +1424,7 @@ function closeTab(label) {
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
   updateEmptyState();
-
+  updateFloatingLivechatVisibility();
   const gameLogBtn = document.getElementById("gameLogBtn");
   const liveBtn = document.getElementById("liveChatBtn");
   const linkBtn = document.getElementById("linkDownloadBtn");
@@ -1482,6 +1506,7 @@ tabElement.onclick = (e) => {
       }
 
       applyActiveTabFromStorage(); // ✅ update highlight
+      updateFloatingLivechatVisibility();
     };
     
 const title = document.createElement("span");
@@ -1671,6 +1696,7 @@ frame.src = url;
 setActiveTabUrl(url);
 closeSidebar();
 applyActiveTabFromStorage();
+updateFloatingLivechatVisibility();
 
 setTimeout(() => notifyLivechatPanelStateToIframe(), 150);
 setTimeout(() => notifyLivechatPanelStateToIframe(), 500);
@@ -1758,6 +1784,8 @@ window.addEventListener("load", () => {
   updateEmptyState();
   updateGameLogCheckmarks();
   updateGameLinksCheckmarks();
+  updateFloatingLivechatVisibility();
+  }, 100);
   const activeUrl = getActiveTabUrl();
   const match = tabs.find(tab => normUrl(tab.url) === activeUrl);
 
