@@ -1174,20 +1174,6 @@ body.has-custom-wallpaper .chat-shell{
   }
 
   .small{font-size:11px;color:var(--muted)}
-
-  .switch{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    background:#1d2a31;
-    border:1px solid #2d3b43;
-    padding:10px 12px;
-    border-radius:10px;
-  }
-
-  .switch input{accent-color:var(--accent)}
-
   .footer-tools{
     display:flex;
     gap:10px;
@@ -1617,10 +1603,7 @@ body.has-custom-wallpaper .chat-shell{
             <label class="lbl">Caption (optional)</label>
             <textarea id="imgCaption" placeholder="Type your caption..."></textarea>
           </div>
-          <div class="switch" style="margin-top:10px">
-            <span>Show forward icon on image</span>
-            <input id="showForwardIcon" type="checkbox" checked />
-          </div>
+
           <div id="imgPreviewList" class="thumb-list"></div>
           <div style="margin-top:12px" class="btn-row">
             <button id="addImageBtn" class="btn-h1">Create Image</button>
@@ -1787,14 +1770,6 @@ body.has-custom-wallpaper .chat-shell{
   <div style="margin-top:12px;">
     <label class="lbl" for="msgEditCaption">Caption</label>
     <textarea id="msgEditCaption" placeholder="Edit image caption."></textarea>
-  </div>
-
-  <div style="margin-top:10px;">
-    <label class="lbl" for="msgEditShowForward">Forward Icon</label>
-    <div class="switch">
-      <span>Show forward icon on image</span>
-      <input id="msgEditShowForward" type="checkbox" />
-    </div>
   </div>
 </div>
       
@@ -1968,7 +1943,6 @@ body.has-custom-wallpaper .chat-shell{
       imgFile: $('imgFile'),
       imgPasteBox: $('imgPasteBox'),
       imgCaption: $('imgCaption'),
-      showForwardIcon: $('showForwardIcon'),
       addImageBtn: $('addImageBtn'),
       clearImageInputBtn: $('clearImageInputBtn'),
       imgPreviewList: $('imgPreviewList'),
@@ -2015,7 +1989,6 @@ msgEditImageFile: $('msgEditImageFile'),
 msgEditPasteBtn: $('msgEditPasteBtn'),
 msgEditPasteBox: $('msgEditPasteBox'),
 msgEditCaption: $('msgEditCaption'),
-msgEditShowForward: $('msgEditShowForward'),
 msgEditRemoveImageBtn: $('msgEditRemoveImageBtn'),
 dateSepEditBackdrop: $('dateSepEditBackdrop'),
 dateSepEditInput: $('dateSepEditInput'),
@@ -2159,7 +2132,6 @@ const draft = {
   imgTime: refs.imgTime?.value || '',
   imgTimeInput: refs.imgTimeInput?.value || '',
   imgCaption: refs.imgCaption?.value || '',
-  showForwardIcon: !!refs.showForwardIcon?.checked,
   pendingImageBase64: pendingImageBase64 || '',
   imgFileName: imgFileName?.textContent || 'No file chosen'
 };
@@ -2191,7 +2163,6 @@ function applyFormDraft(){
   if (refs.imgTime) refs.imgTime.value = draft.imgTime || '';
   if (refs.imgTimeInput) refs.imgTimeInput.value = draft.imgTimeInput || '';
   if (refs.imgCaption) refs.imgCaption.value = draft.imgCaption || '';
-  if (refs.showForwardIcon) refs.showForwardIcon.checked = !!draft.showForwardIcon;
   pendingImageBase64 = draft.pendingImageBase64 || '';
 
 if (pendingImageBase64) {
@@ -2721,12 +2692,11 @@ if (item.type === 'text') {
 
       if (item.type === 'image') {
         bubble.innerHTML = `
-          ${item.showForward ? `
-            <div class="forward-badge" title="Forward">
-              <svg viewBox="0 0 24 24">
-                <path fill="currentColor" d="M19.175 11L15.3 7.12505C15.1 6.92505 15 6.68755 15 6.41255C15 6.13755 15.1 5.90005 15.3 5.70005C15.5 5.51672 15.7375 5.42505 16.0125 5.42505C16.2875 5.42505 16.5167 5.51672 16.7 5.70005L21.3 10.3C21.4 10.4 21.4708 10.5084 21.5125 10.625C21.5542 10.7417 21.575 10.8667 21.575 11C21.575 11.1334 21.5542 11.2584 21.5125 11.375C21.4708 11.4917 21.4 11.6 21.3 11.7L16.7 16.3C16.5 16.5 16.2667 16.5959 16 16.5875C15.7333 16.5792 15.5 16.4834 15.3 16.3C15.1 16.1 14.9958 15.8667 14.9875 15.6C14.9792 15.3334 15.075 15.1 15.275 14.9L19.175 11ZM13.175 12H7C6.16667 12 5.45833 12.2917 4.875 12.875C4.29167 13.4584 4 14.1667 4 15V18C4 18.2834 3.90417 18.5209 3.7125 18.7125C3.52083 18.9042 3.28333 19 3 19C2.71667 19 2.47917 18.9042 2.2875 18.7125C2.09583 18.5209 2 18.2834 2 18V15C2 13.6167 2.4875 12.4375 3.4625 11.4625C4.4375 10.4875 5.61667 10 7 10H13.175L10.3 7.12505C10.1 6.92505 10 6.68755 10 6.41255C10 6.13755 10.1 5.90005 10.3 5.70005C10.5 5.51672 10.7375 5.42505 11.0125 5.42505C11.2875 5.42505 11.5167 5.51672 11.7 5.70005L16.3 10.3C16.4 10.4 16.4708 10.5084 16.5125 10.625C16.5542 10.7417 16.575 10.8667 16.575 11C16.575 11.1334 16.5542 11.2584 16.5125 11.375C16.4708 11.4917 16.4 11.6 16.3 11.7L11.7 16.3C11.5 16.5 11.2667 16.5959 11 16.5875C10.7333 16.5792 10.5 16.4834 10.3 16.3C10.1 16.1 9.99583 15.8667 9.9875 15.6C9.97917 15.3334 10.075 15.1 10.275 14.9L13.175 12Z"/>
-              </svg>
-            </div>
+<div class="forward-badge" title="Forward">
+  <svg viewBox="0 0 24 24">
+    <path fill="currentColor" d="M19.175 11L15.3 7.12505C15.1 6.92505 15 6.68755 15 6.41255C15 6.13755 15.1 5.90005 15.3 5.70005C15.5 5.51672 15.7375 5.42505 16.0125 5.42505C16.2875 5.42505 16.5167 5.51672 16.7 5.70005L21.3 10.3C21.4 10.4 21.4708 10.5084 21.5125 10.625C21.5542 10.7417 21.575 10.8667 21.575 11C21.575 11.1334 21.5542 11.2584 21.5125 11.375C21.4708 11.4917 21.4 11.6 21.3 11.7L16.7 16.3C16.5 16.5 16.2667 16.5959 16 16.5875C15.7333 16.5792 15.5 16.4834 15.3 16.3C15.1 16.1 14.9958 15.8667 14.9875 15.6C14.9792 15.3334 15.075 15.1 15.275 14.9L19.175 11ZM13.175 12H7C6.16667 12 5.45833 12.2917 4.875 12.875C4.29167 13.4584 4 14.1667 4 15V18C4 18.2834 3.90417 18.5209 3.7125 18.7125C3.52083 18.9042 3.28333 19 3 19C2.71667 19 2.47917 18.9042 2.2875 18.7125C2.09583 18.5209 2 18.2834 2 18V15C2 13.6167 2.4875 12.4375 3.4625 11.4625C4.4375 10.4875 5.61667 10 7 10H13.175L10.3 7.12505C10.1 6.92505 10 6.68755 10 6.41255C10 6.13755 10.1 5.90005 10.3 5.70005C10.5 5.51672 10.7375 5.42505 11.0125 5.42505C11.2875 5.42505 11.5167 5.51672 11.7 5.70005L16.3 10.3C16.4 10.4 16.4708 10.5084 16.5125 10.625C16.5542 10.7417 16.575 10.8667 16.575 11C16.575 11.1334 16.5542 11.2584 16.5125 11.375C16.4708 11.4917 16.4 11.6 16.3 11.7L11.7 16.3C11.5 16.5 11.2667 16.5959 11 16.5875C10.7333 16.5792 10.5 16.4834 10.3 16.3C10.1 16.1 9.99583 15.8667 9.9875 15.6C9.97917 15.3334 10.075 15.1 10.275 14.9L13.175 12Z"/>
+  </svg>
+</div>
           ` : ''}
 
           <div class="image-wrap">
@@ -2881,7 +2851,7 @@ if (deleteBtn) {
         time: refs.imgTime.value || '00:00',
         image: pendingImageBase64,
         caption: refs.imgCaption.value.trim(),
-        showForward: !!refs.showForwardIcon.checked
+        showForward: true
       });
       clearPendingImage();
       refs.imgCaption.value = '';
@@ -2970,13 +2940,10 @@ function openEditMenu(index){
     if (nextTime === null) return;
     const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
     if (nextSide === null) return;
-    const nextForward = prompt('Show forward icon? yes / no', item.showForward ? 'yes' : 'no');
-    if (nextForward === null) return;
-
     item.caption = nextCaption;
     item.time = nextTime;
     item.side = nextSide === 'their' ? 'their' : 'mine';
-    item.showForward = nextForward.toLowerCase() === 'yes';
+    item.showForward = true;
     saveAndRender();
   }
 }
@@ -3047,7 +3014,6 @@ function openMsgEditModal(index){
 
   if (item.type === 'image') {
     if (refs.msgEditCaption) refs.msgEditCaption.value = item.caption || '';
-    if (refs.msgEditShowForward) refs.msgEditShowForward.checked = !!item.showForward;
 
     if (refs.msgEditImagePreview) {
       refs.msgEditImagePreview.src = item.image || '';
@@ -3087,7 +3053,6 @@ function closeMsgEditModal(){
 
   if (refs.msgEditText) refs.msgEditText.value = '';
   if (refs.msgEditCaption) refs.msgEditCaption.value = '';
-  if (refs.msgEditShowForward) refs.msgEditShowForward.checked = false;
   if (refs.msgEditImageFile) refs.msgEditImageFile.value = '';
 
   if (refs.msgEditImagePreview) refs.msgEditImagePreview.src = '';
@@ -3126,7 +3091,7 @@ function saveMsgEditModal(){
 
   if (editingMessageType === 'image' && item.type === 'image') {
     item.caption = refs.msgEditCaption.value || '';
-    item.showForward = !!refs.msgEditShowForward.checked;
+    item.showForward = true;
 
     if (removeEditingImage) {
       item.image = '';
@@ -3591,10 +3556,6 @@ if (refs.imgTimeInput) {
 
 if (refs.imgCaption) {
   refs.imgCaption.addEventListener('input', saveFormDraft);
-}
-
-if (refs.showForwardIcon) {
-  refs.showForwardIcon.addEventListener('change', saveFormDraft);
 }
 
 if (refs.clearInputsBtn) {
