@@ -1,0 +1,4052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp Bukti Chat</title>
+<style>
+  :root{
+    --mine-text:#FAFAFA;
+--their-text:#FAFAFA;
+--mine-time:#ffffff99;
+--their-time:#ffffff99;
+    --bg:#0b141a;
+    --panel-2:#242626;
+    --panel-3:#2a3942;
+    --text:#e9edef;
+    --muted:rgb(255 255 255 / 65%);
+    --line:#222d34;
+    --mine:#144D37;
+    --theirs:#242626;
+    --accent:#00a884;
+    --soft:#0f1c22;
+    --input:#202c33;
+    --shadow:0 12px 30px rgba(0,0,0,.35);
+    --chat-bg-size:cover;
+    --chat-bg-position:center;
+    --chat-bg-image:url('https://i.imgur.com/HsuUqfq.png');
+    --topbar:10, 10, 10;
+
+    --page-bg: #000;
+    --panel:#0b0b0b;
+    --page-text: rgba(255,255,255,0.85);
+    --page-input: #141414;
+    --border-input:#424242;
+    --page-bg2:#1f1f1f;
+    --name:#1668dc;
+    --blur:rgba(255,255,255,0.25);
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+    --xclose-hover:#ffffff;
+    --xclose-hover-active:rgba(255,255,255,0.25);
+  }
+
+  body.light-theme{
+    --page-bg: #ffffff;
+    --panel:#ffffff;
+    --page-text: rgba(0,0,0,0.88);
+    --page-input: #ffffff;
+    --border-input:#d9d9d9;
+    --page-bg2:#ffffff;
+    --name:#1668dc;
+    --blur:rgba(0,0,0,0.25);
+    --muted:rgb(0 0 0 / 65%);
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+    --xclose-hover:#000000;
+    --xclose-hover-active:rgba(0,0,0,0.25);
+  }
+
+  *{box-sizing:border-box}
+
+  html,body{
+    margin:0;
+    font-family: Roboto Variable, Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu, Cantarell, Fira Sans, sans-serif;
+    color:var(--page-text);
+    background:var(--page-bg);
+    overflow:hidden;
+    height:100vh;
+  }
+
+  .app{
+    height:100vh;
+    display:grid;
+    grid-template-columns:320px 1px 1fr;
+    gap:0;
+    overflow:hidden;
+  }
+:focus{
+  outline: none;
+  border-color: #1668dc;
+  box-shadow:
+    0 0 0 2px rgba(22, 104, 220, 0.25),
+    0 2px 6px rgba(22, 104, 220, 0.15);
+}
+input::placeholder{color:var(--blur);}
+.sidebar{
+  background:var(--panel);
+  border-right:1px solid var(--border-input);
+  display:flex;
+  flex-direction:column;
+  min-width:565px;
+  width:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
+  position:relative;
+  
+  container-type:inline-size;
+  container-name:sidebar;
+}
+
+  .sidebar-header{
+    padding:18px 18px 14px;
+    border-bottom:1px solid var(--line);
+    background:rgba(17,27,33,.96);
+    position:sticky;
+    top:0;
+    z-index:3;
+  }
+
+  .sidebar-header h2{
+    margin:0 0 6px;
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+
+  .sidebar-header p{
+    margin:0;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.45;
+  }
+
+  .sidebar-scroll{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding:14px 14px 14px 8px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border-input);
+    border-radius:14px;
+    padding:14px;
+    box-shadow:var(--shadow);
+  }
+
+  .card h3{
+    margin:0 0 12px;
+    font-size:13px;
+    color:var(--page-text);
+    letter-spacing:.2px;
+  }
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .grid1{display:grid;grid-template-columns:1fr;gap:10px}
+
+
+  label.lbl{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    margin:0 0 6px;
+  }
+input[type="color"]{
+    width:100%;
+    border:none;
+    outline:none;
+    background:var(--page-input);
+    color:var(--page-text);
+    padding:4px 11px;
+    border-radius:6px;
+    font-size:14px;
+    border:1px solid var(--page-input);
+    height:32px;
+    transition:all .3s ease;
+    cursor:pointer;
+  }
+  input[type="text"],
+  input[type="time"],
+  textarea,
+  select{
+    width:100%;
+    border:none;
+    outline:none;
+    background:var(--page-input);
+    color:var(--page-text);
+    padding:4px 11px;
+    border-radius:6px;
+    font-size:14px;
+    border:1px solid var(--border-input);
+    height:32px;
+    transition:all .3s ease;
+  }
+  input:hover{border:1px solid #3c89e8;}
+  input:focus{border:1px solid #1668dc;}
+  textarea:hover{border:1px solid #3c89e8;}
+  textarea:focus{border:1px solid #1668dc;}
+  textarea{
+    min-height:90px;
+    resize:vertical;
+    font-family:inherit;
+  }
+
+.file-upload-input{
+  display:none;
+}
+
+.file-upload-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  min-height:32px;
+}
+
+.file-upload-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:32px;
+  padding:0 15px;
+  border:1px solid var(--border-input);
+  border-radius:6px;
+  background:var(--page-input);
+  color:var(--page-text);
+  font-size:14px;
+  cursor:pointer;
+  transition:all .3s ease;
+  user-select:none;
+}
+
+.file-upload-btn:hover{
+  border-color:#3c89e8;
+  color:#3c89e8;
+}
+.file-upload-btn:active{
+  border-color:#1554ad;
+  color:#1554ad;
+}
+.file-upload-name{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.3;
+  word-break:break-word;
+}
+.paste-box{
+  width:100%;
+  min-height:52px;
+  border:1px dashed var(--border-input);
+  border-radius:6px;
+  background:var(--border-input);
+  color:var(--page-text);
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:12px;
+  cursor:text;
+  transition:all .3s ease;
+}
+
+.paste-box:hover{
+  border-color:#3c89e8;
+  color:#3c89e8;
+  outline:none;
+}
+.paste-box:focus{
+  border-color:#1668dc;
+  color:#1668dc;
+  outline:none;
+}
+  .btn-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+.time-input-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+}
+
+.time-input-row input{
+  flex:1;
+  min-width:0;
+}
+
+.now-btn{
+  flex:0 0 auto;
+  min-width:58px;
+    border:1px solid transparent;
+    cursor:pointer;
+    background:#1668dc;
+    color:#fff;
+    padding:0px 15px;
+    border-radius:6px;
+    font-size:14px;
+    transition:all .3s ease;
+    height:32px
+}
+.now-btn:hover{background:#3c89e8;}
+.now-btn:active{background:#1554ad;}
+.side-toggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+}
+
+.side-toggle-btn{
+  flex:1;
+  height:32px;
+  padding:0 14px;
+  border:1px solid var(--border-input);
+  border-radius:6px;
+  background:var(--page-input);
+  color:var(--page-text);
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .3s ease;
+}
+
+.side-toggle-btn:hover{
+  border-color:#3c89e8;
+  color:#3c89e8;
+}
+
+.side-toggle-btn.active{
+  border-color:#1668dc;
+  color:#1668dc;
+}
+.set-profile{
+  width:min(400px,100%);
+  background:var(--panel);
+  border:1px solid var(--border-input);
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.set-profile-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 18px;
+  border-bottom:1px solid var(--border-input);
+}
+
+.set-profile-title{
+  font-size:18px;
+  font-weight:700;
+  color:var(--page-text);
+}
+.set-profile-img{
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: none center center / cover no-repeat rgb(243 243 243);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border-input);
+}
+ .btn-h1{
+    border:1px solid transparent;
+    cursor:pointer;
+    background:#1668dc;
+    color:#fff;
+    padding:0px 15px;
+    border-radius:6px;
+    font-size:14px;
+    transition:all .3s ease;
+    height:32px
+  }
+  .ghost{
+    border:1px solid var(--border-input);
+    cursor:pointer;
+    background:var(--page-input);
+    color:var(--page-text);
+    padding:0px 15px;
+    border-radius:6px;
+    font-size:14px;
+    transition:all .3s ease;
+    height:32px
+  }
+  .danger{
+    border:1px solid transparent;
+    cursor:pointer;
+    background:#b42318;
+    color:#fff;
+    padding:0px 15px;
+    border-radius:6px;
+    font-size:14px;
+    transition:all .3s ease;
+    height:32px
+  }
+  .danger:hover{background:#d52f22}
+  .danger:active{background:#851910}
+.wallpaperpreviewbtn {
+    border: 1px solid var(--border-input);
+    cursor: pointer;
+    background: transparent;
+    color: var(--page-text);
+    padding: 0px 20px;
+    border-radius: 6px;
+    font-size: 12px;
+    transition: all .3s ease;
+    height: 22px;
+}
+  .wallpaperpreviewbtn:hover{border:1px solid #3c89e8;color:#3c89e8;}
+  .wallpaperpreviewbtn:active{border:1px solid #1554ad;color:#1554ad;}
+  .btn-h1:hover{background:#3c89e8;}
+  .btn-h1:active{background:#1554ad;}
+  .ghost:hover{border:1px solid #3c89e8;color:#3c89e8;}
+  .ghost:active{border:1px solid #1554ad;color:#1554ad;}
+  .full{width:100%}
+  #previewWallpaperBtn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+#previewWallpaperBtn:disabled:hover{
+  filter:none;
+}
+  .hint{
+    margin-top:8px;
+    font-size:11px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+
+  .resizer{
+    width:1px;
+    cursor:col-resize;
+    background:rgba(255,255,255,0.1);
+    position:relative;
+    z-index:3;
+    flex:0 0 6px;
+  }
+
+  .resizer:hover{
+    background:rgba(255,255,255,0.10);
+  }
+
+  .resizer::after{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:1px;
+    width:1px;
+    background:rgba(255,255,255,0.1);
+  }
+
+  .resizer:hover::after{
+    background:rgba(255,255,255,0.1);
+  }
+
+.chat-shell{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background-color:#161717;
+  background-image:var(--chat-bg-image);
+  background-position:left top;
+  transition:background-size 0.2s ease, background-position 0.2s ease;
+}
+body.has-default-wallpaper .chat-shell{
+  background-color:#161717;
+  background-image:
+    linear-gradient(rgba(11,15,18,.90), rgba(11,15,18,.90)),
+    linear-gradient(rgb(217 138 27 / 38%), rgb(217 138 27 / 38%)),
+    var(--chat-bg-image);
+  background-size:auto, auto, 550px 1000px;
+  background-position:left top, left top, left top;
+  background-repeat:repeat, repeat, repeat;
+}
+body.has-custom-wallpaper .chat-shell{
+  background-color:#161717;
+  background-image:var(--chat-bg-image);
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+  .topbar{
+    height:64px;
+    background:#161717;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    box-shadow: 0 1px 4px rgba(var(--topbar),.12);
+    z-index:2;
+    color:#fafafa;
+  }
+
+  .profile{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+  }
+
+  .avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:#141414 center/cover no-repeat;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    flex:0 0 auto;
+    outline: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .avatar svg{
+    width:24px;
+    height:24px;
+    fill:#fafafa;
+  }
+
+  .profile-text{min-width:0}
+
+  .profile-name{
+    font-size:16px;
+    font-weight:bold;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:420px;
+    color:#fafafa;
+  }
+
+  .profile-sub{
+    font-size:13px;
+    color:#ffffff99;
+    margin-top:2px;
+  }
+
+  .actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .icon-btn{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:transparent;
+    border:1px solid transparent;
+    color:#fafafa;
+    padding:0;
+    cursor: pointer;
+  }
+
+  .icon-btn:hover{
+    background:rgba(255,255,255,0.1);
+  }
+
+  .icon-btn svg{
+    width:24px;
+    height:24px;
+    fill:currentColor;
+  }
+
+  .hidden{display:none !important}
+
+  .call-btn{
+    width:auto;
+    height:40px;
+    border-radius:999px;
+    padding: 8px 16px;
+    gap:10px;
+    display:flex;
+    align-items:center;
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.1);
+    color:#fafafa;
+    margin: 0px 8px;
+  }
+
+  .call-btn svg{width:20px;height:20px}
+  .call-btn .chev{width:24px;height:24px;opacity:.9}
+
+.chat-area{
+  flex:1;
+  min-width:0;
+  min-height:0;
+  position:relative;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:20px 20px 0px;
+  background:transparent;
+  scroll-behavior:smooth;
+}
+
+.chat-inner{
+  max-width:100%;
+  width:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  min-height:100%;
+  padding-bottom:10px;
+}
+
+.msg-row{
+  display:flex;
+  width:100%;
+  margin:1px 0;
+}
+
+.msg-row.mine{
+  justify-content:flex-end;
+  margin:1px 0;
+}
+
+.msg-row.their{
+  justify-content:flex-start;
+  margin:1px 0;
+}
+
+/* row terakhir dalam satu group bagi jarak bawah */
+.msg-row.mine.group-end,
+.msg-row.mine.single,
+.msg-row.their.group-end,
+.msg-row.their.single{
+  margin-bottom:12px;
+}
+
+.day-sep{
+  align-self:center;
+  position:relative;
+  cursor:pointer;
+  background:#1D1F1F;
+  color:rgba(255,255,255,.6);
+  font-size:12px;
+  padding:4px 12px;
+  border-radius:6px;
+  margin-bottom:12px;
+  box-shadow:0 0 1px 1px #0000000f, 0 1px #0000000d;
+}
+  /* ===== WHATSAPP-LIKE BUBBLE ===== */
+.bubble{
+  position:relative;
+  display:inline-block;
+  max-width:min(60%, calc(100% - 24px));
+  width:fit-content;
+  min-width:0;
+  padding:6px 7px 8px 9px;
+  border-radius:7.5px;
+  font-size:14px;
+  line-height:1.25;
+  box-shadow:0 1px 0 rgba(0,0,0,.28);
+  vertical-align:top;
+  color:#FAFAFA;
+  letter-spacing:.16px;
+  white-space:normal;
+  word-break:break-word;
+  overflow:visible;
+}
+  .bubble.media-only{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:0;
+  position:relative;
+  padding:3px;
+  min-width:0;
+  width:auto;
+  overflow:visible;
+  border-radius:7.5px;
+  box-sizing:border-box;
+    overflow:hidden;
+}
+
+.bubble-actions{
+  position:absolute;
+  top:0;
+  right:2px;
+  z-index:20;
+  opacity:0;
+  pointer-events:none;
+  transform:none;
+  transition:opacity .18s ease;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+}
+
+.msg-row:hover .bubble-actions,
+.bubble.menu-open .bubble-actions{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+.bubble-action-toggle{
+  all:unset;
+  box-sizing:border-box;
+  width:24px;
+  height:24px;
+  padding:0;
+  margin:0;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  color: rgba(255, 255, 255, 0.65);
+  cursor:pointer;
+  line-height:1;
+}
+
+.bubble-action-toggle svg{
+  width:16px;
+  height:16px;
+  display:block;
+  flex:0 0 16px;
+  fill:currentColor;
+  margin:0;
+  padding:0;
+    filter:
+    drop-shadow(0 1px 1px rgba(0,0,0,0.7))
+    drop-shadow(0 0 2px rgba(0,0,0,0.4));
+}
+
+.bubble-menu{
+  position:absolute;
+  top:calc(45% + 6px);
+  min-width:150px;
+  background:#161717;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:4px;
+  box-shadow:0 12px 16px -4px rgb(10 10 10 / .1);
+  display:none;
+  flex-direction:column;
+  gap:4px;
+}
+/* mine: bubble di kanan, jadi menu buka ke kiri */
+.msg-row.mine .bubble-menu{
+  right:0;
+  left:auto;
+  transform:none;
+}
+/* their: bubble di kiri, jadi menu buka ikut icon */
+.msg-row.their .bubble-menu{
+  left:0;
+  right:auto;
+  transform:none;
+}
+.bubble.menu-open .bubble-menu{
+  display:flex;
+}
+
+.bubble-menu button{
+  all:unset;
+  box-sizing:border-box;
+  width:100%;
+  height:36px;
+  margin:0;
+  padding:0 12px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  font-size:14px;
+  line-height:1;
+  color:#e9edef;
+  cursor:pointer;
+}
+
+.bubble-menu button svg{
+  width:18px;
+  height:18px;
+  flex:0 0 18px;
+  fill:currentColor;
+  display:block;
+}
+
+.bubble-menu button span{
+  display:block;
+  line-height:1;
+}
+.bubble-menu button:hover{
+  background:#202c33;
+}
+
+.bubble-menu .delete-btn:hover{
+  color:#fa99a4;
+  background:rgba(250,153,164,.12);
+}
+
+.msg-row.mine .bubble{
+  background:var(--mine);
+  color:var(--mine-text);
+}
+
+.msg-row.their .bubble{
+  background:var(--theirs);
+  color:var(--their-text);
+}
+
+/* default: semua bubble takda tail dulu */
+.msg-row.mine .bubble::after,
+.msg-row.their .bubble::before{
+  content:none;
+}
+
+/* tail hanya pada single atau bubble pertama dalam group */
+.msg-row.mine.single .bubble::after,
+.msg-row.mine.group-start .bubble::after{
+  content:"";
+  position:absolute;
+  top:0;
+  right:-6px;
+  width:8px;
+  height:12px;
+  pointer-events:none;
+  background:var(--mine);
+  clip-path:polygon(0 0, 100% 0, 0 100%);
+}
+
+.msg-row.their.single .bubble::before,
+.msg-row.their.group-start .bubble::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-6px;
+  width:8px;
+  height:12px;
+  pointer-events:none;
+  background:var(--theirs);
+  clip-path:polygon(100% 0, 100% 100%, 0 0);
+}
+.msg-row.mine.single .bubble{
+  border-top-right-radius:0;
+  border-bottom-right-radius:7.5px;
+}
+
+.msg-row.mine.group-start .bubble{
+  border-top-right-radius:0;
+  border-bottom-right-radius:7.5px;
+}
+
+.msg-row.mine.group-mid .bubble{
+  border-top-right-radius:7.5px;
+  border-bottom-right-radius:7.5px;
+}
+
+.msg-row.mine.group-end .bubble{
+  border-top-right-radius:7.5px;
+  border-bottom-right-radius:7.5px;
+}
+
+.msg-row.their.single .bubble{
+  border-top-left-radius:0;
+  border-bottom-left-radius:7.5px;
+}
+
+.msg-row.their.group-start .bubble{
+  border-top-left-radius:0;
+  border-bottom-left-radius:7.5px;
+}
+
+.msg-row.their.group-mid .bubble{
+  border-top-left-radius:7.5px;
+  border-bottom-left-radius:7.5px;
+}
+
+.msg-row.their.group-end .bubble{
+  border-top-left-radius:7.5px;
+  border-bottom-left-radius:7.5px;
+}
+
+.bubble.media-only{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:0;
+  position:relative;
+  padding:3px;
+  min-width:0;
+  width:auto;
+  overflow:visible;
+  border-radius:7.5px;
+  box-sizing:border-box;
+    box-shadow:
+    0 2px 4px rgba(0,0,0,.3),
+    0 10px 18px rgba(0,0,0,.4);
+}
+
+/* text */
+/* text bubble */
+.bubble .bubble-text{
+  display:block;
+  margin:0;
+  min-width:0;
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  letter-spacing:.16px;
+  font-weight:400;
+  line-height:1.25;
+}
+/* ===== MINE (ada ✓✓) ===== */
+.msg-row.mine .bubble .bubble-text::after{
+  content:"";
+  display:inline-block;
+  width:73px;
+  height:1px;
+}
+
+.msg-row.their .bubble .bubble-text::after{
+  content:"";
+  display:inline-block;
+  width:53px;
+  height:1px;
+}
+
+
+/* kalau mesej pendek sangat */
+.bubble .bubble-text:only-child{
+  min-height:18px;
+}
+.bubble-time .time-text{
+  display:inline-block;
+  transform:translateY(.2px);
+}
+.bubble.media-only .caption{
+  padding:7px 54px 5px 6px;
+}
+/* caption */
+.bubble .caption{
+  display:block;
+  padding:7px 4px 5px 6px;
+  min-width:0;
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  line-height:1.35;
+  font-size:14px;
+}
+.msg-row.mine .bubble .bubble-text,
+.msg-row.mine .bubble .caption{
+  color:var(--mine-text);
+}
+
+.msg-row.their .bubble .bubble-text,
+.msg-row.their .bubble .caption{
+  color:var(--their-text);
+}
+.bubble.media-only .caption{
+  display:block;
+  padding:7px 4px 5px 6px;
+  min-width:0;
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  line-height:1.35;
+  font-size:14px;
+}
+.bubble-time{
+  position:absolute;
+  right:7px;
+  bottom:3px;
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  margin:0;
+  font-size:12px;
+  line-height:1;
+  white-space:nowrap;
+  color:#ffffff99;
+  opacity:.95;
+  letter-spacing:0;
+  pointer-events:none;
+  transform:none;
+  z-index:3;
+}
+
+.msg-row.mine .bubble-time{
+  color:var(--mine-time);
+}
+
+.msg-row.their .bubble-time{
+  color:var(--their-time);
+}
+.double-check{
+  display:inline-flex;
+  align-items:center;
+  transform:translateY(.2px);
+}
+
+.double-check svg{
+  width:16px;
+  height:11px;
+  fill:#53bdeb;
+}
+/* image bubble kekal style bawah kanan */
+
+.msg-row.mine .bubble.media-only{
+  background:var(--mine);
+}
+
+.msg-row.their .bubble.media-only{
+  background:var(--theirs);
+}
+.bubble.media-only .bubble-time{
+  position:absolute;
+  right:8px;
+  bottom:6px;
+  margin-left:0;
+  transform:none;
+  font-size:12px;
+  line-height:1;
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  color:#fff;
+}
+.image-wrap{
+  position:relative;
+  border-radius:6px;
+  overflow:hidden;
+  display:block;
+  min-width:0;
+  height:auto;
+  background:transparent;
+  margin:0;
+  flex:0 0 auto;
+  line-height:0;
+  align-self:flex-start;
+  width:100%;
+  object-fit:contain;
+  vertical-align:top;
+  cursor:pointer;
+}
+.bubble.media-only:not(:has(.caption)) .image-wrap::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:28px;
+  pointer-events:none;
+  z-index:2;
+  background: linear-gradient(to top, rgba(11, 20, 26, 0.5), rgba(11, 20, 26, 0));
+}
+/* portrait */
+.bubble.media-only.is-portrait{
+  max-width:246px;
+}
+.image-wrap.is-portrait{
+  width:240px;
+  max-width:240px;
+}
+.image-wrap.is-portrait img{
+  width:240px;
+  max-width:240px;
+  max-height:420px;
+}
+
+/* landscape */
+.bubble.media-only.is-landscape{
+  max-width:346px;
+}
+
+.image-wrap.is-landscape{
+  width:100%;
+  max-width:336px;
+}
+
+.image-wrap.is-landscape img{
+  width:100%;
+  max-width:336px;
+  height:auto;
+  max-height:330px;
+}
+
+/* square */
+.bubble.media-only.is-square{
+  max-width:246px;
+}
+.image-wrap.is-square{
+  width:240px;
+  max-width:240px;
+}
+.image-wrap.is-square img{
+  width:240px;
+  max-width:240px;
+  max-height:240px;
+}
+.forward-badge{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:#161717;
+  display:grid;
+  place-items:center;
+  box-shadow:0 6px 14px rgba(0,0,0,.28);
+  backdrop-filter:blur(4px);
+  z-index:4;
+}
+
+  .forward-badge svg{
+    width:20px;
+    height:20px;
+    fill:rgba(255,255,255,0.6);
+  }
+/* mine → icon di tengah kiri */
+.msg-row.mine .forward-badge{
+  left:-30px;
+  right:auto;
+}
+
+.msg-row.their .forward-badge{
+  right:-30px;
+  left:auto;
+}
+.composer{
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  padding:0 10px 16px;
+
+  background:transparent;
+}
+
+.composer-bar{
+  flex:1;
+  min-width:0;
+  height:50px;
+  border-radius:999px;
+  background:#242626;
+  border:1px solid #00000000;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:0 10px;
+  box-shadow: 0 1px 6px #0000001f;
+}
+
+.composer-btn{
+  width:36px;
+  height:36px;
+  min-width:36px;
+  border-radius:50%;
+  padding:0;
+  background:transparent;
+  color:#fafafa;
+  border:1px solid transparent;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+}
+
+.composer-btn:hover{
+  background:#00a884;
+  border-color:#000;
+}
+
+.composer-btn svg{
+  width:24px;
+  height:24px;
+  fill:currentColor;
+}
+
+.composer-input{
+  flex:1;
+  min-width:0;
+  height:100%;
+  display:flex;
+  align-items:center;
+  padding:0 8px;
+  color:#9aacb5;
+  font-size:16px;
+  background:transparent;
+  border:none;
+  border-radius:0;
+}
+
+.composer-input span{
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-weight: 500;
+  color: rgb(255, 255, 255, 0.6);
+  font-size: 15px;
+}
+
+.composer-bar .composer-btn.mic-btn{
+  margin-left:auto;
+}
+
+  .thumb-list{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+    margin-top:10px;
+  }
+
+  .thumb{
+    position:relative;
+    border-radius:10px;
+    overflow:hidden;
+    background:#0b141a;
+    border:1px solid #2d3b43;
+    aspect-ratio:1/1;
+  }
+
+  .thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .thumb button{
+    position:absolute;
+    right:6px;
+    top:6px;
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    padding:0;
+    background:rgba(0,0,0,.6);
+  }
+
+  .small{font-size:11px;color:var(--muted)}
+.footer-tools{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.footer-tools button{
+  flex:1 1 auto;     /* 🔥 auto isi ruang */
+  min-width:120px;   /* 🔥 control bila dia turun baris */
+}
+
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{
+    background:#555;
+    border-radius:999px;
+    border:2px solid transparent;
+    background-clip:content-box;
+  }
+  ::-webkit-scrollbar-track{background:transparent}
+
+  @media (max-width: 1100px){
+    .app{grid-template-columns:320px 1px 1fr}
+    .profile-name{max-width:250px}
+  }
+
+  @media (max-width: 900px){
+    .app{grid-template-columns:1fr}
+    .resizer{display:none}
+    .sidebar{max-height:46vh;border-right:none;border-bottom:1px solid var(--line)}
+    .profile-name{max-width:220px}
+    .bubble{max-width:min(84vw, 400px)}
+  }
+.msg-edit-modal{
+  width:min(460px, 100%);
+  background:var(--panel);
+  border:1px solid var(--border-input);
+  border-radius:10px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+.msg-edit-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 18px;
+  border-bottom:1px solid var(--border-input);
+}
+
+.msg-edit-title{
+  font-size:18px;
+  font-weight:700;
+  color:var(--page-text);
+}
+
+.msg-edit-x{
+  all:unset;
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  color:var(--muted);
+  transition:all .3s ease;
+  border:none;
+}
+
+.msg-edit-x:hover{
+  color:var(--xclose-hover);
+}
+.msg-edit-x:active{
+  color:var(--xclose-hover-active);
+}
+.msg-edit-x svg{
+  width:20px;
+  height:20px;
+  display:block;
+}
+
+.msg-edit-body{
+  padding:18px;
+  display:grid;
+  gap:14px;
+}
+
+.msg-edit-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.msg-edit-field textarea{
+  min-height:130px;
+  resize:vertical;
+  padding:10px 11px;
+}
+
+.msg-edit-foot{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding:0 18px 18px;
+}
+
+@media (max-width: 640px){
+  .msg-edit-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+.day-sep-menu{
+  position:absolute;
+  top:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  min-width:150px;
+  background:#161717;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px;
+  padding:4px;
+  box-shadow:0 12px 16px -4px rgb(10 10 10 / .1);
+  display:none;
+  flex-direction:column;
+  gap:4px;
+  z-index:25;
+}
+
+.day-sep.menu-open .day-sep-menu{
+  display:flex;
+}
+
+.day-sep-menu button{
+  all:unset;
+  box-sizing:border-box;
+  width:100%;
+  height:36px;
+  margin:0;
+  padding:0 12px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  font-size:14px;
+  line-height:1;
+  color:#e9edef;
+  transition: all 0.2s ease;
+  cursor:pointer;
+}
+
+.day-sep-menu button:hover{
+  background:#202c33;
+}
+
+.day-sep-menu .delete-btn:hover{
+  color:#fa99a4;
+  background:rgba(250,153,164,.12);
+}
+
+.confirm-box-modal{
+  width:min(380px,100%);
+  background:var(--panel);
+  border:1px solid var(--border-input);
+  border-radius:10px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+.confirm-box-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 18px;
+  border-bottom:1px solid var(--border-input);
+}
+
+.confirm-box-title{
+  font-size:18px;
+  font-weight:700;
+  color:var(--page-text);
+}
+
+.confirm-box-body{
+  padding:18px;
+  color:var(--muted);
+  line-height:1.6;
+  font-size:14px;
+}
+
+.confirm-box-foot{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  padding:0 18px 18px;
+}
+.profile-preview-modal{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.profile-preview-viewport{
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.1);
+  border-radius:0;
+  border:none;
+  box-shadow:none;
+  overflow:hidden;
+  position:relative;
+  cursor:grab;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.profile-preview-viewport.dragging{
+  cursor:grabbing;
+}
+
+.profile-preview-viewport img{
+  position:absolute;
+  top:50%;
+  left:50%;
+  max-width:none;
+  max-height:none;
+  width:auto;
+  height:auto;
+  user-select:none;
+  -webkit-user-drag:none;
+  transform:translate(-50%, -50%) translate(0px, 0px) scale(1);
+  transform-origin:center center;
+  will-change:transform;
+  cursor:inherit;
+}
+
+.profile-preview-close{
+  all:unset;
+  box-sizing:border-box;
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:transparent;
+  border:1px solid transparent;
+  color:rgba(255,255,255,0.85);
+  cursor:pointer;
+  z-index:5;
+  transition: all 0.2s ease;
+}
+
+.profile-preview-close:hover{
+  background:rgba(255,0,0,0.9);
+}
+
+.profile-preview-close svg{
+  width:20px;
+  height:20px;
+  display:block;
+}
+
+#profileModalAvatar{
+  cursor:pointer;
+}
+.msg-edit-image-preview-wrap{
+  position:relative;
+  width:100%;
+  min-height:160px;
+  border-radius:12px;
+  overflow:hidden;
+  background:#0f1114;
+  border:1px solid #26353d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.msg-edit-image-preview-wrap.hidden{
+  display:none;
+}
+
+.msg-edit-image-preview-wrap img{
+  display:block;
+  max-width:100%;
+  max-height:320px;
+  width:auto;
+  height:auto;
+}
+
+.msg-edit-remove-image{
+  all:unset;
+  box-sizing:border-box;
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(0,0,0,.65);
+  color:#fff;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+  z-index:2;
+}
+
+.msg-edit-remove-image:hover{
+  background:#b42318;
+}
+@container sidebar (max-width: 300px){
+  .grid2{
+    grid-template-columns:1fr !important;
+  }
+
+  .side-toggle{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    width:100%;
+  }
+
+  .side-toggle .side-toggle-btn{
+    width:100%;
+    min-width:0;
+  }
+
+  .time-input-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 70px;
+    gap:8px;
+    width:100%;
+    align-items:center;
+  }
+
+  .time-input-row input{
+    width:100%;
+    min-width:0;
+  }
+
+  .time-input-row .now-btn{
+    width:70px;
+    min-width:70px;
+    padding:0;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar-scroll">
+        <section class="card">
+          <h3>Message</h3>
+          <div class="grid2">
+<div>
+  <div class="side-toggle" id="msgSideToggle">
+    <button type="button" class="side-toggle-btn active" data-side="mine">Mine</button>
+    <button type="button" class="side-toggle-btn" data-side="their">Their</button>
+  </div>
+  <input type="hidden" id="msgSide" value="mine" />
+</div>
+            
+<div>
+  <div class="time-input-row">
+    <input id="msgTimeInput" type="text" placeholder="Input Time" />
+    <button type="button" id="msgNowBtn" class="now-btn">Now</button>
+  </div>
+  <input type="hidden" id="msgTime" />
+</div>
+</div>
+          <div style="margin-top:10px">
+            <label class="lbl">Message Text</label>
+            <textarea id="msgText" placeholder="Type your message..."></textarea>
+          </div>
+          <div style="margin-top:10px">
+            <label class="lbl">Message Date</label>
+            <input id="msgDateLabel" type="text" placeholder="Input Date" />
+          </div>
+          <div style="margin-top:12px" class="btn-row">
+            <button id="addTextBtn" class="btn-h1">Create Message</button>
+            <button id="clearInputsBtn" class="ghost">Clear Message</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Image + Caption</h3>
+          <div class="grid2">
+<div>
+  <div class="side-toggle" id="imgSideToggle">
+    <button type="button" class="side-toggle-btn active" data-side="mine">Mine</button>
+    <button type="button" class="side-toggle-btn" data-side="their">Their</button>
+  </div>
+  <input type="hidden" id="imgSide" value="mine" />
+</div>
+            
+<div>
+  <div class="time-input-row">
+    <input id="imgTimeInput" type="text" placeholder="Input Time" />
+    <button type="button" id="imgNowBtn" class="now-btn">Now</button>
+  </div>
+  <input type="hidden" id="imgTime" />
+</div>
+</div>
+          
+<div style="margin-top:10px">
+  <label class="lbl">Image File</label>
+
+  <div class="file-upload-row">
+    <label for="imgFile" class="file-upload-btn">Upload Image</label>
+    <span id="imgFileName" class="file-upload-name">No file image</span>
+  </div>
+  <input id="imgFile" type="file" accept="image/*" class="file-upload-input" />
+</div>
+<div style="margin-top:10px">
+  <label class="lbl">Paste Image</label>
+  <div id="imgPasteBox" class="paste-box" tabindex="0">
+    Click here and press Ctrl + V to paste image
+  </div>
+</div>
+          <div style="margin-top:10px">
+            <label class="lbl">Caption (optional)</label>
+            <textarea id="imgCaption" placeholder="Type your caption..."></textarea>
+          </div>
+
+          <div id="imgPreviewList" class="thumb-list"></div>
+          <div style="margin-top:12px" class="btn-row">
+            <button id="addImageBtn" class="btn-h1">Create Image</button>
+            <button id="clearImageInputBtn" class="ghost">Clear Image</button>
+          </div>
+        </section>
+
+<section class="card">
+<div class="grid2">
+  <div>
+    <label class="lbl">Mine Bubble</label>
+    <input id="mineColor" type="color" value="#144D37" />
+
+    <div style="margin-top:10px">
+      <label class="lbl">Mine Text</label>
+      <div class="side-toggle" id="mineTextToneToggle">
+        <button type="button" class="side-toggle-btn active" data-tone="light">Light</button>
+        <button type="button" class="side-toggle-btn" data-tone="dark">Dark</button>
+      </div>
+      <input type="hidden" id="mineTextTone" value="light" />
+    </div>
+  </div>
+
+  <div>
+    <label class="lbl">Their Bubble</label>
+    <input id="theirColor" type="color" value="#242626" />
+
+    <div style="margin-top:10px">
+      <label class="lbl">Their Text</label>
+      <div class="side-toggle" id="theirTextToneToggle">
+        <button type="button" class="side-toggle-btn active" data-tone="light">Light</button>
+        <button type="button" class="side-toggle-btn" data-tone="dark">Dark</button>
+      </div>
+      <input type="hidden" id="theirTextTone" value="light" />
+    </div>
+  </div>
+</div>
+<div style="margin-top:10px">
+  <label class="lbl">Custom Wallpaper</label>
+
+  <div class="file-upload-row">
+    <label for="wallpaperFile" class="file-upload-btn">Upload Wallpaper</label>
+    <button type="button" id="previewWallpaperBtn" class="wallpaperpreviewbtn" disabled>No Image</button>
+  </div>
+
+  <input id="wallpaperFile" type="file" accept="image/*" class="file-upload-input" />
+</div>
+          <div class="btn-row" style="margin-top:12px">
+            <button id="removeWallpaperBtn" class="ghost">Remove Wallpaper</button>
+            <button id="resetThemeBtn" class="ghost">Reset Bubble Colors</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Manage Chat</h3>
+          <div class="footer-tools">
+            <button id="undoBtn" class="ghost">Undo Last</button>
+            <button id="exportBtn" class="ghost">Export JSON</button>
+            <button id="importBtn" class="ghost">Import JSON</button>
+            <button id="resetDefaultBtn" class="ghost">Reset Default</button>
+            <button id="clearChatBtn" class="danger">Clear All Chat</button>
+          </div>
+          <input id="importFile" type="file" accept="application/json" style="display:none" />
+          <div class="hint">Klik bubble dalam chat untuk edit atau delete.</div>
+        </section>
+      </div>
+    </aside>
+
+    <div class="resizer" id="resizer"></div>
+
+    <main class="chat-shell">
+      <div class="topbar">
+        <div class="profile" id="openProfileFromHeader" style="cursor:pointer;">
+          <div class="avatar" id="avatarPreview">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5Zm0 2c-3.86 0-7 2.24-7 5v1h14v-1c0-2.76-3.14-5-7-5Z"/>
+            </svg>
+          </div>
+          <div class="profile-text">
+            <div class="profile-name" id="chatNamePreview">KL0114 B20 TIPU</div>
+            <div class="profile-sub" id="chatStatusPreview"></div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="icon-btn" id="openProfileModalBtn" title="Edit Profile">
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm2.92 2.33H5v-.92l8.06-8.06.92.92L5.92 19.58ZM20.71 7.04a1.003 1.003 0 0 0 0-1.42L18.37 3.3a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.84Z"/></svg>
+          </button>
+          <button class="call-btn" title="Video Call">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 20C3.45 20 2.97917 19.8042 2.5875 19.4125C2.19583 19.0208 2 18.55 2 18V6C2 5.45 2.19583 4.97917 2.5875 4.5875C2.97917 4.19583 3.45 4 4 4H16C16.55 4 17.0208 4.19583 17.4125 4.5875C17.8042 4.97917 18 5.45 18 6V10.5L21.15 7.35C21.3167 7.18333 21.5 7.14167 21.7 7.225C21.9 7.30833 22 7.46667 22 7.7V16.3C22 16.5333 21.9 16.6917 21.7 16.775C21.5 16.8583 21.3167 16.8167 21.15 16.65L18 13.5V18C18 18.55 17.8042 19.0208 17.4125 19.4125C17.0208 19.8042 16.55 20 16 20H4ZM4 18H16V6H4V18Z"/></svg>
+            <svg class="chev" viewBox="0 0 24 24"><path fill="currentColor" d="M11.475 14.475L7.85001 10.85C7.80001 10.8 7.76251 10.7458 7.73751 10.6875C7.71251 10.6292 7.70001 10.5667 7.70001 10.5C7.70001 10.3667 7.74585 10.25 7.83751 10.15C7.92918 10.05 8.05001 10 8.20001 10H15.8C15.95 10 16.0708 10.05 16.1625 10.15C16.2542 10.25 16.3 10.3667 16.3 10.5C16.3 10.5333 16.25 10.65 16.15 10.85L12.525 14.475C12.4417 14.5583 12.3583 14.6167 12.275 14.65C12.1917 14.6833 12.1 14.7 12 14.7C11.9 14.7 11.8083 14.6833 11.725 14.65C11.6417 14.6167 11.5583 14.5583 11.475 14.475Z"/></svg>
+          </button>
+          <button class="icon-btn" title="Search">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6ZM9.5 14A4.5 4.5 0 1 1 14 9.5 4.505 4.505 0 0 1 9.5 14Z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="hidden" id="profileModalBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;align-items:center;justify-content:center;padding:20px;">
+        <div id="profileModal" class="set-profile">
+  <div class="set-profile-header">
+  <div class="set-profile-title">Edit Profile</div>
+  <button id="closeProfileModalBtn" type="button" class="msg-edit-x" aria-label="Close">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/>
+    </svg>
+  </button>
+</div>
+          <div style="padding:18px;display:grid;gap:14px;">
+            <div style="display:flex;justify-content:center;">
+              <div id="profileModalAvatar" class="set-profile-img"></div>
+            </div>
+  
+            <div class="btn-row" style="justify-content:center;">
+              <button id="changeProfileBtn" class="ghost" type="button">Change Profile</button>
+              <button id="viewProfileBtn" class="ghost" type="button">View Profile</button>
+              <button id="deleteProfileBtn" class="ghost" type="button">Delete</button>
+            </div>
+            <input id="profileModalFile" type="file" accept="image/*" class="hidden" />
+            <div>
+              <label class="lbl">Change Name</label>
+              <input id="profileModalName" type="text" placeholder="Enter profile name" />
+            </div>
+            <div>
+              <label class="lbl">Status Text</label>
+              <input id="profileModalStatus" type="text" placeholder="Enter status text" />
+            </div>
+            <div class="btn-row" style="justify-content:flex-end;margin-top:6px;">
+              <button id="cancelProfileBtn" class="ghost" type="button">Cancel</button>
+              <button id="updateProfileBtn" class="btn-h1" type="button">Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+          <div class="hidden" id="msgEditBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;align-items:center;justify-content:center;padding:20px;">
+  <div id="msgEditModal" class="msg-edit-modal">
+    <div class="msg-edit-head">
+      <div class="msg-edit-title">Edit Message</div>
+
+      <button id="closeMsgEditBtn" type="button" class="msg-edit-x" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/>
+        </svg>
+      </button>
+    </div>
+
+<div class="msg-edit-body">
+  <div id="msgEditTextSection" class="msg-edit-field">
+  <label class="lbl" for="msgEditText">Message Text</label>
+  <textarea id="msgEditText" placeholder="Edit text message."></textarea>
+</div>
+      
+<div id="msgEditImageSection" class="msg-edit-field hidden">
+  <label class="lbl">Edit Media</label>
+
+  <div id="msgEditImagePreviewWrap" class="msg-edit-image-preview-wrap">
+    <button id="msgEditRemoveImageBtn" type="button" class="msg-edit-remove-image" aria-label="Remove image">×</button>
+    <img id="msgEditImagePreview" alt="Preview" />
+  </div>
+
+  <div class="file-upload-row" style="margin-top:10px;">
+    <label class="file-upload-btn" for="msgEditImageFile">Upload Image</label>
+    <button type="button" id="msgEditPasteBtn" class="ghost">Paste Image</button>
+    <input id="msgEditImageFile" type="file" accept="image/*" class="file-upload-input" />
+  </div>
+
+  <div id="msgEditPasteBox" class="paste-box" tabindex="0" style="margin-top:10px;">
+    Click here and press Ctrl + V to paste image
+  </div>
+
+  <div style="margin-top:12px;">
+    <label class="lbl" for="msgEditCaption">Caption</label>
+    <textarea id="msgEditCaption" placeholder="Edit image caption."></textarea>
+  </div>
+</div>
+      
+      <div class="msg-edit-grid">
+        <div class="msg-edit-field">
+          <label class="lbl" for="msgEditTime">Time</label>
+          <input id="msgEditTime" type="time" />
+        </div>
+
+        <div class="msg-edit-field">
+          <label class="lbl" for="msgEditSide">Bubble Side</label>
+          <select id="msgEditSide">
+            <option value="mine">Mine</option>
+            <option value="their">Their</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="msg-edit-foot">
+      <button id="cancelMsgEditBtn" type="button" class="ghost">Cancel</button>
+      <button id="saveMsgEditBtn" class="btn-h1" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="hidden" id="dateSepEditBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;align-items:center;justify-content:center;padding:20px;">
+  <div class="msg-edit-modal" style="width:min(380px,100%);">
+    <div class="msg-edit-head">
+      <div class="msg-edit-title">Edit Date Separator</div>
+      <button id="closeDateSepEditBtn" type="button" class="msg-edit-x" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="msg-edit-body">
+      <div class="msg-edit-field">
+        <label class="lbl" for="dateSepEditInput">Date Label</label>
+        <input id="dateSepEditInput" type="text" placeholder="Contoh: 1/17/2026" />
+      </div>
+    </div>
+
+    <div class="msg-edit-foot">
+      <button id="cancelDateSepEditBtn" type="button" class="ghost">Cancel</button>
+      <button id="saveDateSepEditBtn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="hidden" id="confirmBoxBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80;align-items:center;justify-content:center;padding:20px;">
+  <div class="confirm-box-modal">
+    <div class="confirm-box-head">
+      <div class="confirm-box-title" id="confirmBoxTitle">Confirm</div>
+      <button id="closeConfirmBoxBtn" type="button" class="msg-edit-x" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="confirm-box-body" id="confirmBoxMessage">
+      Are you sure?
+    </div>
+
+    <div class="confirm-box-foot">
+      <button id="confirmBoxNoBtn" type="button" class="ghost">No</button>
+      <button id="confirmBoxYesBtn" type="button" class="danger">Yes</button>
+    </div>
+  </div>
+</div>
+      
+<div class="hidden" id="profilePreviewBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:90;align-items:center;justify-content:center;padding:0;">
+  <div class="profile-preview-modal">
+    <button id="closeProfilePreviewBtn" type="button" class="profile-preview-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/>
+      </svg>
+    </button>
+
+    <div id="profilePreviewViewport" class="profile-preview-viewport">
+      <img id="profilePreviewImage" src="" alt="Profile preview" />
+    </div>
+  </div>
+</div>
+      
+      <div class="chat-area" id="chatArea">
+        <div class="chat-inner" id="chatList"></div>
+      </div>
+
+<div class="composer">
+  <div class="composer-bar">
+    <button class="composer-btn" title="Add">
+      <svg viewBox="0 0 24 24"><path d="M11 13H5.5C4.94772 13 4.5 12.5523 4.5 12C4.5 11.4477 4.94772 11 5.5 11H11V5.5C11 4.94772 11.4477 4.5 12 4.5C12.5523 4.5 13 4.94772 13 5.5V11H18.5C19.0523 11 19.5 11.4477 19.5 12C19.5 12.5523 19.0523 13 18.5 13H13V18.5C13 19.0523 12.5523 19.5 12 19.5C11.4477 19.5 11 19.0523 11 18.5V13Z"/></svg>
+    </button>
+
+    <button class="composer-btn" title="Emoji">
+      <svg viewBox="0 0 24 24"><path d="M8.49893 10.2521C9.32736 10.2521 9.99893 9.5805 9.99893 8.75208C9.99893 7.92365 9.32736 7.25208 8.49893 7.25208C7.6705 7.25208 6.99893 7.92365 6.99893 8.75208C6.99893 9.5805 7.6705 10.2521 8.49893 10.2521Z" fill="currentColor"></path>
+      <path d="M17.0011 8.75208C17.0011 9.5805 16.3295 10.2521 15.5011 10.2521C14.6726 10.2521 14.0011 9.5805 14.0011 8.75208C14.0011 7.92365 14.6726 7.25208 15.5011 7.25208C16.3295 7.25208 17.0011 7.92365 17.0011 8.75208Z" fill="currentColor"></path>
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M16.8221 19.9799C15.5379 21.2537 13.8087 21.9781 12 22H9.27273C5.25611 22 2 18.7439 2 14.7273V9.27273C2 5.25611 5.25611 2 9.27273 2H14.7273C18.7439 2 22 5.25611 22 9.27273V11.8141C22 13.7532 21.2256 15.612 19.8489 16.9776L16.8221 19.9799ZM14.7273 4H9.27273C6.36068 4 4 6.36068 4 9.27273V14.7273C4 17.6393 6.36068 20 9.27273 20H11.3331C11.722 19.8971 12.0081 19.5417 12.0058 19.1204L11.9935 16.8564C11.9933 16.8201 11.9935 16.784 11.9941 16.7479C11.0454 16.7473 10.159 16.514 9.33502 16.0479C8.51002 15.5812 7.84752 14.9479 7.34752 14.1479C7.24752 13.9479 7.25585 13.7479 7.37252 13.5479C7.48919 13.3479 7.66419 13.2479 7.89752 13.2479L13.5939 13.2479C14.4494 12.481 15.5811 12.016 16.8216 12.0208L19.0806 12.0296C19.5817 12.0315 19.9889 11.6259 19.9889 11.1248V9.07648H19.9964C19.8932 6.25535 17.5736 4 14.7273 4ZM14.0057 19.1095C14.0066 19.2605 13.9959 19.4089 13.9744 19.5537C14.5044 19.3124 14.9926 18.9776 15.4136 18.5599L18.4405 15.5576C18.8989 15.1029 19.2653 14.5726 19.5274 13.996C19.3793 14.0187 19.2275 14.0301 19.0729 14.0295L16.8138 14.0208C15.252 14.0147 13.985 15.2837 13.9935 16.8455L14.0057 19.1095Z" fill="currentColor"></path>
+      </svg>
+    </button>
+
+    <div class="composer-input">
+      <span>Type a message</span>
+    </div>
+
+    <button class="composer-btn mic-btn" title="Mic">
+      <svg viewBox="0 0 24 24"><path d="M12 14C11.1667 14 10.4583 13.7083 9.875 13.125C9.29167 12.5417 9 11.8333 9 11V5C9 4.16667 9.29167 3.45833 9.875 2.875C10.4583 2.29167 11.1667 2 12 2C12.8333 2 13.5417 2.29167 14.125 2.875C14.7083 3.45833 15 4.16667 15 5V11C15 11.8333 14.7083 12.5417 14.125 13.125C13.5417 13.7083 12.8333 14 12 14ZM12 21C11.4477 21 11 20.5523 11 20V17.925C9.26667 17.6917 7.83333 16.9167 6.7 15.6C5.78727 14.5396 5.24207 13.3387 5.06441 11.9973C4.9919 11.4498 5.44772 11 6 11C6.55228 11 6.98782 11.4518 7.0905 11.9945C7.27271 12.9574 7.73004 13.805 8.4625 14.5375C9.4375 15.5125 10.6167 16 12 16C13.3833 16 14.5625 15.5125 15.5375 14.5375C16.27 13.805 16.7273 12.9574 16.9095 11.9945C17.0122 11.4518 17.4477 11 18 11C18.5523 11 19.0081 11.4498 18.9356 11.9973C18.7579 13.3387 18.2127 14.5396 17.3 15.6C16.1667 16.9167 14.7333 17.6917 13 17.925V20C13 20.5523 12.5523 21 12 21ZM12 12C12.2833 12 12.5208 11.9042 12.7125 11.7125C12.9042 11.5208 13 11.2833 13 11V5C13 4.71667 12.9042 4.47917 12.7125 4.2875C12.5208 4.09583 12.2833 4 12 4C11.7167 4 11.4792 4.09583 11.2875 4.2875C11.0958 4.47917 11 4.71667 11 5V11C11 11.2833 11.0958 11.5208 11.2875 11.7125C11.4792 11.9042 11.7167 12 12 12Z"/></svg>
+    </button>
+  </div>
+</div>
+    </main>
+  </div>
+  <script>if (window.top === window.self) {window.location.replace("/main");}</script>
+  <script>
+    const STORAGE_KEY = 'waDesktopBuilder.v1';
+    const SIDEBAR_KEY = 'sidebarWidth';
+    const FORM_DRAFT_KEY = 'waDesktopBuilder.formDraft.v1';
+
+    const defaultState = {
+      profile: {
+        name: 'VVIP',
+        status: 'online',
+        avatar: ''
+      },
+      theme: {
+  mineColor: '#144D37',
+  theirColor: '#242626',
+  mineTextTone: 'light',
+  theirTextTone: 'light',
+  wallpaper: ''
+},
+      messages: [
+        { id: uid(), type: 'date', label: 'Today' },
+        { id: uid(), type: 'text', side: 'their', time: '04:28', text: 'Hallo amoi tolong withdrawal' },
+        { id: uid(), type: 'text', side: 'mine', time: '04:29', text: 'Ok abang tunggu sekejap ya amoi tolong cucikan' },
+        { id: uid(), type: 'text', side: 'their', time: '04:29', text: 'Baik amoii ong ong mari sudah😍' },
+        { id: uid(), type: 'text', side: 'mine', time: '04:29', text: 'Iya abang Ong Ong abang sudah mari ya😊' },
+        { id: uid(), type: 'text', side: 'mine', time: '04:30', text: 'Bole tolong recommand kawan abang mari main juga ya abang' },
+        { id: uid(), type: 'text', side: 'their', time: '04:31', text: 'Baik yah amoi, nasib abang main dekat company amoi ada ong punya' },
+        { id: uid(), type: 'text', side: 'mine', time: '04:31', text: 'Hahaha tqtq abang sudah join dengan amoi sini ya🫡' },
+        { id: uid(), type: 'text', side: 'mine', time: '04:31', text: 'Harap abang selalu ong ong main dengan amoi sini ya😘' },
+        { id: uid(), type: 'text', side: 'their', time: '04:31', text: 'Baik amoi Thanks' },
+        { id: uid(), type: 'text', side: 'mine', time: '13:12', text: "You're most welcome abang🫡" },
+      ]
+    };
+
+    let state = loadState();
+    let pendingImageBase64 = '';
+    let sidebarWidth = localStorage.getItem(SIDEBAR_KEY) ? parseInt(localStorage.getItem(SIDEBAR_KEY), 10) : 320;
+    const $ = (id) => document.getElementById(id);
+
+    const refs = {
+
+      chatNamePreview: $('chatNamePreview'),
+      chatStatusPreview: $('chatStatusPreview'),
+      avatarPreview: $('avatarPreview'),
+      msgSide: $('msgSide'),
+      msgTime: $('msgTime'),
+      msgTimeInput: $('msgTimeInput'),
+      msgNowBtn: $('msgNowBtn'),
+      msgText: $('msgText'),
+      msgDateLabel: $('msgDateLabel'),
+      addTextBtn: $('addTextBtn'),
+      clearInputsBtn: $('clearInputsBtn'),
+      imgSide: $('imgSide'),
+      imgTime: $('imgTime'),
+      imgTimeInput: $('imgTimeInput'),
+      imgNowBtn: $('imgNowBtn'),
+      imgFile: $('imgFile'),
+      imgPasteBox: $('imgPasteBox'),
+      imgCaption: $('imgCaption'),
+      addImageBtn: $('addImageBtn'),
+      clearImageInputBtn: $('clearImageInputBtn'),
+      imgPreviewList: $('imgPreviewList'),
+      mineColor: $('mineColor'),
+      theirColor: $('theirColor'),
+      mineTextTone: $('mineTextTone'),
+      theirTextTone: $('theirTextTone'),
+      wallpaperFile: $('wallpaperFile'),
+      previewWallpaperBtn: $('previewWallpaperBtn'),
+      removeWallpaperBtn: $('removeWallpaperBtn'),
+      resetThemeBtn: $('resetThemeBtn'),
+undoBtn: $('undoBtn'),
+exportBtn: $('exportBtn'),
+importBtn: $('importBtn'),
+resetDefaultBtn: $('resetDefaultBtn'),
+importFile: $('importFile'),
+clearChatBtn: $('clearChatBtn'),
+      chatList: $('chatList'),
+      chatArea: $('chatArea'),
+      openProfileModalBtn: $('openProfileModalBtn'),
+      openProfileFromHeader: $('openProfileFromHeader'),
+      profileModalBackdrop: $('profileModalBackdrop'),
+      profileModalAvatar: $('profileModalAvatar'),
+      profileModalFile: $('profileModalFile'),
+      profileModalName: $('profileModalName'),
+      profileModalStatus: $('profileModalStatus'),
+      changeProfileBtn: $('changeProfileBtn'),
+      viewProfileBtn: $('viewProfileBtn'),
+      cancelProfileBtn: $('cancelProfileBtn'),
+      closeProfileModalBtn: $('closeProfileModalBtn'),
+      updateProfileBtn: $('updateProfileBtn'),
+      deleteProfileBtn: $('deleteProfileBtn'),
+      msgEditBackdrop: $('msgEditBackdrop'),
+      msgEditModal: $('msgEditModal'),
+      msgEditText: $('msgEditText'),
+      msgEditTime: $('msgEditTime'),
+      msgEditSide: $('msgEditSide'),
+      closeMsgEditBtn: $('closeMsgEditBtn'),
+      cancelMsgEditBtn: $('cancelMsgEditBtn'),
+      saveMsgEditBtn: $('saveMsgEditBtn'),
+msgEditTextSection: $('msgEditTextSection'),
+msgEditImageSection: $('msgEditImageSection'),
+msgEditImagePreviewWrap: $('msgEditImagePreviewWrap'),
+msgEditImagePreview: $('msgEditImagePreview'),
+msgEditImageFile: $('msgEditImageFile'),
+msgEditPasteBtn: $('msgEditPasteBtn'),
+msgEditPasteBox: $('msgEditPasteBox'),
+msgEditCaption: $('msgEditCaption'),
+msgEditRemoveImageBtn: $('msgEditRemoveImageBtn'),
+dateSepEditBackdrop: $('dateSepEditBackdrop'),
+dateSepEditInput: $('dateSepEditInput'),
+closeDateSepEditBtn: $('closeDateSepEditBtn'),
+cancelDateSepEditBtn: $('cancelDateSepEditBtn'),
+saveDateSepEditBtn: $('saveDateSepEditBtn'),
+
+confirmBoxBackdrop: $('confirmBoxBackdrop'),
+confirmBoxTitle: $('confirmBoxTitle'),
+confirmBoxMessage: $('confirmBoxMessage'),
+closeConfirmBoxBtn: $('closeConfirmBoxBtn'),
+confirmBoxNoBtn: $('confirmBoxNoBtn'),
+confirmBoxYesBtn: $('confirmBoxYesBtn'),
+      profilePreviewBackdrop: $('profilePreviewBackdrop'),
+      profilePreviewViewport: $('profilePreviewViewport'),
+      profilePreviewImage: $('profilePreviewImage'),
+      closeProfilePreviewBtn: $('closeProfilePreviewBtn')
+    };
+const msgSideToggleBtns = document.querySelectorAll('#msgSideToggle .side-toggle-btn');
+
+msgSideToggleBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    msgSideToggleBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    refs.msgSide.value = btn.dataset.side;
+    saveFormDraft();
+  });
+});
+const imgSideToggleBtns = document.querySelectorAll('#imgSideToggle .side-toggle-btn');
+
+imgSideToggleBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    imgSideToggleBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    refs.imgSide.value = btn.dataset.side;
+    saveFormDraft();
+  });
+});
+const mineTextToneToggleBtns = document.querySelectorAll('#mineTextToneToggle .side-toggle-btn');
+mineTextToneToggleBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    mineTextToneToggleBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (refs.mineTextTone) {
+      refs.mineTextTone.value = btn.dataset.tone;
+    }
+
+    state.theme.mineTextTone = btn.dataset.tone;
+    saveAndRender();
+  });
+});
+
+const theirTextToneToggleBtns = document.querySelectorAll('#theirTextToneToggle .side-toggle-btn');
+theirTextToneToggleBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    theirTextToneToggleBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (refs.theirTextTone) {
+      refs.theirTextTone.value = btn.dataset.tone;
+    }
+
+    state.theme.theirTextTone = btn.dataset.tone;
+    saveAndRender();
+  });
+});
+const imgFileName = document.getElementById('imgFileName');
+
+if (refs.imgFile && imgFileName) {
+  refs.imgFile.addEventListener('change', () => {
+    imgFileName.textContent = refs.imgFile.files && refs.imgFile.files[0]
+      ? refs.imgFile.files[0].name
+      : 'No file chosen';
+  });
+}
+function updateWallpaperPreviewButton(){
+  if (!refs.previewWallpaperBtn) return;
+
+  const hasWallpaper = !!(state.theme && state.theme.wallpaper);
+
+  refs.previewWallpaperBtn.textContent = hasWallpaper ? 'Preview Image' : 'No Image';
+  refs.previewWallpaperBtn.disabled = !hasWallpaper;
+}
+
+if (refs.previewWallpaperBtn) {
+  refs.previewWallpaperBtn.addEventListener('click', () => {
+    if (!state.theme?.wallpaper) return;
+    if (!refs.profilePreviewBackdrop || !refs.profilePreviewImage) return;
+
+    refs.profilePreviewImage.src = state.theme.wallpaper;
+    refs.profilePreviewBackdrop.classList.remove('hidden');
+    refs.profilePreviewBackdrop.style.display = 'flex';
+
+    const doReset = () => {
+      resetProfilePreviewTransform();
+    };
+
+    if (refs.profilePreviewImage.complete) {
+      doReset();
+    } else {
+      refs.profilePreviewImage.onload = doReset;
+    }
+  });
+}
+  function uid(){
+      return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+    }
+
+    function loadState(){
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(defaultState);
+        const parsed = JSON.parse(raw);
+        return {
+          profile: { ...defaultState.profile, ...(parsed.profile || {}) },
+          theme: { ...defaultState.theme, ...(parsed.theme || {}) },
+          messages: Array.isArray(parsed.messages) ? parsed.messages : structuredClone(defaultState.messages)
+        };
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function structuredClone(obj){
+      return JSON.parse(JSON.stringify(obj));
+    }
+function saveFormDraft(){
+const draft = {
+  msgSide: refs.msgSide?.value || 'mine',
+  msgTime: refs.msgTime?.value || '',
+  msgTimeInput: refs.msgTimeInput?.value || '',
+  msgText: refs.msgText?.value || '',
+  msgDateLabel: refs.msgDateLabel?.value || '',
+
+  imgSide: refs.imgSide?.value || 'mine',
+  imgTime: refs.imgTime?.value || '',
+  imgTimeInput: refs.imgTimeInput?.value || '',
+  imgCaption: refs.imgCaption?.value || '',
+  pendingImageBase64: pendingImageBase64 || '',
+  imgFileName: imgFileName?.textContent || 'No file chosen'
+};
+
+  localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify(draft));
+}
+
+function loadFormDraft(){
+  try {
+    const raw = localStorage.getItem(FORM_DRAFT_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function applyFormDraft(){
+  const draft = loadFormDraft();
+  if (!draft) return;
+
+  if (refs.msgSide) refs.msgSide.value = draft.msgSide || 'mine';
+  if (refs.msgTime) refs.msgTime.value = draft.msgTime || '';
+  if (refs.msgTimeInput) refs.msgTimeInput.value = draft.msgTimeInput || '';
+  if (refs.msgText) refs.msgText.value = draft.msgText || '';
+  if (refs.msgDateLabel) refs.msgDateLabel.value = draft.msgDateLabel || '';
+
+  if (refs.imgSide) refs.imgSide.value = draft.imgSide || 'mine';
+  if (refs.imgTime) refs.imgTime.value = draft.imgTime || '';
+  if (refs.imgTimeInput) refs.imgTimeInput.value = draft.imgTimeInput || '';
+  if (refs.imgCaption) refs.imgCaption.value = draft.imgCaption || '';
+  pendingImageBase64 = draft.pendingImageBase64 || '';
+
+if (pendingImageBase64) {
+  previewPendingImage(pendingImageBase64);
+}
+
+if (imgFileName) {
+  imgFileName.textContent = draft.imgFileName || 'No file chosen';
+}
+
+  msgSideToggleBtns.forEach(b => b.classList.remove('active'));
+  document.querySelector(`#msgSideToggle .side-toggle-btn[data-side="${refs.msgSide?.value || 'mine'}"]`)?.classList.add('active');
+
+  imgSideToggleBtns.forEach(b => b.classList.remove('active'));
+  document.querySelector(`#imgSideToggle .side-toggle-btn[data-side="${refs.imgSide?.value || 'mine'}"]`)?.classList.add('active');
+}
+    function timeLabel(v){
+      if (!v) return '';
+      const [hh, mm] = String(v).split(':').map(Number);
+      if (Number.isNaN(hh) || Number.isNaN(mm)) return v;
+      const suffix = hh >= 12 ? 'PM' : 'AM';
+      const hour12 = hh % 12 || 12;
+      return `${hour12}:${String(mm).padStart(2,'0')} ${suffix}`;
+    }
+function parseTime12To24(value){
+  const raw = String(value || '').trim().toUpperCase();
+  const match = raw.match(/^(\d{1,2})[:.](\d{2})\s*(AM|PM)$/);
+
+  if (!match) return null;
+
+  let hour = parseInt(match[1], 10);
+  const minute = parseInt(match[2], 10);
+  const ampm = match[3];
+
+  if (hour < 1 || hour > 12) return null;
+  if (minute < 0 || minute > 59) return null;
+
+  if (ampm === 'AM') {
+    if (hour === 12) hour = 0;
+  } else {
+    if (hour !== 12) hour += 12;
+  }
+
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
+function syncTimeInput(textInputEl, hiddenEl, fallback24 = ''){
+  if (!textInputEl || !hiddenEl) return;
+
+  const raw = String(textInputEl.value || '').trim();
+
+  if (!raw) {
+    hiddenEl.value = '';
+    return;
+  }
+
+  const parsed = parseTime12To24(raw);
+
+  if (parsed) {
+    hiddenEl.value = parsed;
+    textInputEl.dataset.lastValid = raw.toUpperCase();
+    return;
+  }
+
+  hiddenEl.value = fallback24 || '';
+}
+function setNowTimeInput(textInputEl, hiddenEl){
+  if (!textInputEl || !hiddenEl) return;
+
+  const now = new Date();
+  const hour24 = now.getHours();
+  const minute = now.getMinutes();
+
+  const ampm = hour24 >= 12 ? 'PM' : 'AM';
+  let hour12 = hour24 % 12;
+  if (hour12 === 0) hour12 = 12;
+
+  const textValue = `${String(hour12).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${ampm}`;
+  const hiddenValue = `${String(hour24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+  textInputEl.value = textValue;
+  textInputEl.dataset.lastValid = textValue;
+  hiddenEl.value = hiddenValue;
+}
+function insertNewLineAtCursor(el){
+  if (!el) return;
+
+  const start = el.selectionStart ?? el.value.length;
+  const end = el.selectionEnd ?? el.value.length;
+  const value = el.value || '';
+
+  el.value = value.slice(0, start) + '\n' + value.slice(end);
+
+  const nextPos = start + 1;
+  el.selectionStart = nextPos;
+  el.selectionEnd = nextPos;
+
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}
+function initCustomTimeInputs(){
+  if (refs.msgTimeInput && refs.msgTime) {
+    refs.msgTimeInput.dataset.lastValid = refs.msgTimeInput.value.trim().toUpperCase();
+
+    refs.msgTimeInput.addEventListener('input', () => {
+      syncTimeInput(refs.msgTimeInput, refs.msgTime, '');
+    });
+
+refs.msgTimeInput.addEventListener('blur', () => {
+  const raw = refs.msgTimeInput.value.trim();
+
+  if (!raw) {
+    refs.msgTimeInput.value = '';
+    refs.msgTime.value = '';
+    refs.msgTimeInput.dataset.lastValid = '';
+    saveFormDraft();
+    return;
+  }
+
+  const parsed = parseTime12To24(raw);
+
+  if (!parsed) {
+    refs.msgTimeInput.value = refs.msgTimeInput.dataset.lastValid || '';
+    refs.msgTime.value = refs.msgTimeInput.value
+      ? parseTime12To24(refs.msgTimeInput.value) || ''
+      : '';
+  } else {
+    refs.msgTimeInput.value = raw.toUpperCase();
+    refs.msgTime.value = parsed;
+    refs.msgTimeInput.dataset.lastValid = refs.msgTimeInput.value;
+  }
+
+  saveFormDraft();
+});
+  }
+
+  if (refs.imgTimeInput && refs.imgTime) {
+    refs.imgTimeInput.dataset.lastValid = refs.imgTimeInput.value.trim().toUpperCase();
+
+    refs.imgTimeInput.addEventListener('input', () => {
+      syncTimeInput(refs.imgTimeInput, refs.imgTime, '');
+    });
+
+refs.imgTimeInput.addEventListener('blur', () => {
+  const raw = refs.imgTimeInput.value.trim();
+
+  if (!raw) {
+    refs.imgTimeInput.value = '';
+    refs.imgTime.value = '';
+    refs.imgTimeInput.dataset.lastValid = '';
+    saveFormDraft();
+    return;
+  }
+
+  const parsed = parseTime12To24(raw);
+
+  if (!parsed) {
+    refs.imgTimeInput.value = refs.imgTimeInput.dataset.lastValid || '';
+    refs.imgTime.value = refs.imgTimeInput.value
+      ? parseTime12To24(refs.imgTimeInput.value) || ''
+      : '';
+  } else {
+    refs.imgTimeInput.value = raw.toUpperCase();
+    refs.imgTime.value = parsed;
+    refs.imgTimeInput.dataset.lastValid = refs.imgTimeInput.value;
+  }
+
+  saveFormDraft();
+});
+  }
+
+if (refs.msgNowBtn) {
+  refs.msgNowBtn.addEventListener('click', () => {
+    setNowTimeInput(refs.msgTimeInput, refs.msgTime);
+    saveFormDraft();
+  });
+}
+
+if (refs.imgNowBtn) {
+  refs.imgNowBtn.addEventListener('click', () => {
+    setNowTimeInput(refs.imgTimeInput, refs.imgTime);
+    saveFormDraft();
+  });
+}
+
+  syncTimeInput(refs.msgTimeInput, refs.msgTime, '05:37');
+  syncTimeInput(refs.imgTimeInput, refs.imgTime, '13:11');
+}
+    function readFileAsDataURL(file){
+      return new Promise((resolve, reject)=>{
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function resizeImageToDataURL(file, maxWidth = 1200, quality = 0.9){
+      const raw = await readFileAsDataURL(file);
+      const img = new Image();
+      img.src = raw;
+      await img.decode();
+      const ratio = Math.min(1, maxWidth / img.width);
+      const w = Math.round(img.width * ratio);
+      const h = Math.round(img.height * ratio);
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      return canvas.toDataURL('image/jpeg', quality);
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+function resetProfilePreviewTransform(){
+  profilePreviewState.scale = 1;
+  profilePreviewState.offsetX = 0;
+  profilePreviewState.offsetY = 0;
+
+  if (!refs.profilePreviewViewport || !refs.profilePreviewImage) {
+    applyProfilePreviewTransform();
+    return;
+  }
+
+  const viewportRect = refs.profilePreviewViewport.getBoundingClientRect();
+  const img = refs.profilePreviewImage;
+
+  const naturalW = img.naturalWidth || 1;
+  const naturalH = img.naturalHeight || 1;
+
+  const fitScale = Math.min(
+    viewportRect.width / naturalW,
+    viewportRect.height / naturalH
+  );
+
+  profilePreviewState.baseScale = fitScale;
+  applyProfilePreviewTransform();
+}
+
+function applyProfilePreviewTransform(){
+  if (!refs.profilePreviewImage) return;
+
+  const baseScale = profilePreviewState.baseScale || 1;
+  const finalScale = baseScale * profilePreviewState.scale;
+
+  refs.profilePreviewImage.style.transform =
+    `translate(-50%, -50%) translate(${profilePreviewState.offsetX}px, ${profilePreviewState.offsetY}px) scale(${finalScale})`;
+}
+
+function clampProfilePreviewOffsets(){
+  if (!refs.profilePreviewViewport || !refs.profilePreviewImage) return;
+
+  const viewportRect = refs.profilePreviewViewport.getBoundingClientRect();
+  const img = refs.profilePreviewImage;
+
+  const naturalW = img.naturalWidth || viewportRect.width;
+  const naturalH = img.naturalHeight || viewportRect.height;
+
+  if (!naturalW || !naturalH) return;
+
+  const baseScale = profilePreviewState.baseScale || 1;
+
+  const renderedW = naturalW * baseScale * profilePreviewState.scale;
+  const renderedH = naturalH * baseScale * profilePreviewState.scale;
+
+  const maxX = Math.max(0, (renderedW - viewportRect.width) / 2);
+  const maxY = Math.max(0, (renderedH - viewportRect.height) / 2);
+
+  profilePreviewState.offsetX = Math.max(-maxX, Math.min(maxX, profilePreviewState.offsetX));
+  profilePreviewState.offsetY = Math.max(-maxY, Math.min(maxY, profilePreviewState.offsetY));
+}
+
+function zoomProfilePreview(direction){
+  const oldScale = profilePreviewState.scale;
+  const factor = direction > 0 ? 1.15 : 0.87;
+
+  let nextScale = oldScale * factor;
+  nextScale = Math.max(profilePreviewState.minScale, Math.min(profilePreviewState.maxScale, nextScale));
+
+  profilePreviewState.scale = nextScale;
+  clampProfilePreviewOffsets();
+  applyProfilePreviewTransform();
+}
+
+function startProfilePreviewDrag(clientX, clientY){
+  if (profilePreviewState.scale <= 1) return;
+
+  profilePreviewState.dragging = true;
+  profilePreviewState.startX = clientX;
+  profilePreviewState.startY = clientY;
+  profilePreviewState.startOffsetX = profilePreviewState.offsetX;
+  profilePreviewState.startOffsetY = profilePreviewState.offsetY;
+
+  if (refs.profilePreviewViewport) {
+    refs.profilePreviewViewport.classList.add('dragging');
+  }
+}
+
+function moveProfilePreviewDrag(clientX, clientY){
+  if (!profilePreviewState.dragging) return;
+
+  const dx = clientX - profilePreviewState.startX;
+  const dy = clientY - profilePreviewState.startY;
+
+  profilePreviewState.offsetX = profilePreviewState.startOffsetX + dx;
+  profilePreviewState.offsetY = profilePreviewState.startOffsetY + dy;
+
+  clampProfilePreviewOffsets();
+  applyProfilePreviewTransform();
+}
+
+function endProfilePreviewDrag(){
+  profilePreviewState.dragging = false;
+  if (refs.profilePreviewViewport) {
+    refs.profilePreviewViewport.classList.remove('dragging');
+  }
+}
+function applyImageOrientation(root = document){
+  const imgs = root.querySelectorAll('.image-wrap img');
+
+  imgs.forEach((img) => {
+    const wrap = img.closest('.image-wrap');
+    const bubble = img.closest('.bubble.media-only');
+    if (!wrap || !bubble) return;
+
+    const setOrientation = () => {
+      wrap.classList.remove('is-portrait', 'is-landscape', 'is-square');
+      bubble.classList.remove('is-portrait', 'is-landscape', 'is-square');
+
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      if (!w || !h) return;
+
+      const ratio = w / h;
+
+      if (ratio > 1.15) {
+        wrap.classList.add('is-landscape');
+        bubble.classList.add('is-landscape');
+      } else if (ratio < 0.9) {
+        wrap.classList.add('is-portrait');
+        bubble.classList.add('is-portrait');
+      } else {
+        wrap.classList.add('is-square');
+        bubble.classList.add('is-square');
+      }
+    };
+
+    if (img.complete) {
+      setOrientation();
+    } else {
+      img.addEventListener('load', setOrientation, { once: true });
+    }
+  });
+}
+    function renderHeader(){
+      if (refs.chatName) refs.chatName.value = state.profile.name || '';
+      if (refs.chatStatus) refs.chatStatus.value = state.profile.status || '';
+      if (refs.chatNamePreview) refs.chatNamePreview.textContent = state.profile.name || 'Untitled Chat';
+      if (refs.chatStatusPreview) refs.chatStatusPreview.textContent = state.profile.status || '';
+
+      const avatarMarkup = `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5Zm0 2c-3.86 0-7 2.24-7 5v1h14v-1c0-2.76-3.14-5-7-5Z"/>
+        </svg>`;
+
+      if (state.profile.avatar){
+        if (refs.avatarPreview) {
+          refs.avatarPreview.style.backgroundImage = `url(${state.profile.avatar})`;
+          refs.avatarPreview.innerHTML = '';
+        }
+        if (refs.profileModalAvatar) {
+          refs.profileModalAvatar.style.backgroundImage = `url(${state.profile.avatar})`;
+          refs.profileModalAvatar.innerHTML = '';
+        }
+      } else {
+        if (refs.avatarPreview) {
+          refs.avatarPreview.style.backgroundImage = 'none';
+          refs.avatarPreview.innerHTML = avatarMarkup;
+        }
+        if (refs.profileModalAvatar) {
+          refs.profileModalAvatar.style.backgroundImage = 'none';
+          refs.profileModalAvatar.innerHTML = avatarMarkup;
+        }
+      }
+    }
+
+function applyTheme(){
+  const mineBubble = state.theme.mineColor || '#144D37';
+  const theirBubble = state.theme.theirColor || '#242626';
+
+  const mineTextTone = state.theme.mineTextTone || 'light';
+  const theirTextTone = state.theme.theirTextTone || 'light';
+
+  const mineTextColor = mineTextTone === 'dark' ? '#0a0a0a' : '#FAFAFA';
+  const theirTextColor = theirTextTone === 'dark' ? '#0a0a0a' : '#FAFAFA';
+
+  const mineTimeColor = mineTextTone === 'dark' ? '#00000099' : '#ffffff99';
+  const theirTimeColor = theirTextTone === 'dark' ? '#00000099' : '#ffffff99';
+
+  document.documentElement.style.setProperty('--mine', mineBubble);
+  document.documentElement.style.setProperty('--theirs', theirBubble);
+
+  document.documentElement.style.setProperty('--mine-text', mineTextColor);
+  document.documentElement.style.setProperty('--their-text', theirTextColor);
+  document.documentElement.style.setProperty('--mine-time', mineTimeColor);
+  document.documentElement.style.setProperty('--their-time', theirTimeColor);
+
+  if (refs.mineColor) refs.mineColor.value = mineBubble;
+  if (refs.theirColor) refs.theirColor.value = theirBubble;
+  if (refs.mineTextTone) refs.mineTextTone.value = mineTextTone;
+  if (refs.theirTextTone) refs.theirTextTone.value = theirTextTone;
+
+  mineTextToneToggleBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tone === mineTextTone);
+  });
+
+  theirTextToneToggleBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tone === theirTextTone);
+  });
+
+const hasCustomWallpaper = !!(state.theme && state.theme.wallpaper);
+
+document.documentElement.style.setProperty(
+  '--chat-bg-image',
+  hasCustomWallpaper
+    ? `url(${state.theme.wallpaper})`
+    : `url('https://i.imgur.com/HsuUqfq.png')`
+);
+
+document.body.classList.toggle('has-custom-wallpaper', hasCustomWallpaper);
+document.body.classList.toggle('has-default-wallpaper', !hasCustomWallpaper);
+
+  updateWallpaperPreviewButton();
+}
+
+function renderChat(){
+  refs.chatList.innerHTML = '';
+
+  state.messages.forEach((item, index) => {
+    let node;
+
+if (item.type === 'date') {
+  node = document.createElement('div');
+  node.className = 'day-sep';
+  node.textContent = item.label || '';
+  node.title = 'Click to edit / delete';
+
+  const menu = document.createElement('div');
+  menu.className = 'day-sep-menu';
+  menu.innerHTML = `
+    <button type="button" class="edit-btn">
+      <span>Edit</span>
+    </button>
+    <button type="button" class="delete-btn">
+      <span>Delete</span>
+    </button>
+  `;
+
+  node.appendChild(menu);
+
+  node.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.querySelectorAll('.day-sep.menu-open').forEach(el => {
+      if (el !== node) el.classList.remove('menu-open');
+    });
+    node.classList.toggle('menu-open');
+  });
+
+  const editBtn = menu.querySelector('.edit-btn');
+  const deleteBtn = menu.querySelector('.delete-btn');
+
+  if (editBtn) {
+    editBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      node.classList.remove('menu-open');
+      openDateSepEditModal(index);
+    });
+  }
+
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      node.classList.remove('menu-open');
+
+      openConfirmBox('Delete separator ini?', () => {
+        state.messages.splice(index, 1);
+        saveAndRender();
+      }, 'Delete Separator');
+    });
+  }
+
+    } else {
+      const prev = state.messages[index - 1];
+      const next = state.messages[index + 1];
+
+      const prevSameSide =
+        prev &&
+        prev.type !== 'date' &&
+        prev.side === item.side;
+
+      const nextSameSide =
+        next &&
+        next.type !== 'date' &&
+        next.side === item.side;
+
+      let groupClass = 'single';
+
+      if (!prevSameSide && nextSameSide) {
+        groupClass = 'group-start';
+      } else if (prevSameSide && nextSameSide) {
+        groupClass = 'group-mid';
+      } else if (prevSameSide && !nextSameSide) {
+        groupClass = 'group-end';
+      }
+
+      node = document.createElement('div');
+      node.className = `msg-row ${item.side === 'their' ? 'their' : 'mine'} ${groupClass}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.dataset.index = index;
+
+      if (item.type === 'image') {
+        bubble.classList.add('media-only');
+      }
+
+if (item.type === 'text') {
+  bubble.innerHTML = `
+    <div class="bubble-text">${escapeHtml(item.text || '')}</div>
+    <div class="bubble-time">
+      <span class="time-text">${timeLabel(item.time)}</span>
+      ${item.side === 'mine' ? mineTicks() : ''}
+    </div>
+  `;
+}
+
+      if (item.type === 'image') {
+        bubble.innerHTML = `
+<div class="forward-badge" title="Forward">
+  <svg viewBox="0 0 24 24">
+    <path fill="currentColor" d="M19.175 11L15.3 7.12505C15.1 6.92505 15 6.68755 15 6.41255C15 6.13755 15.1 5.90005 15.3 5.70005C15.5 5.51672 15.7375 5.42505 16.0125 5.42505C16.2875 5.42505 16.5167 5.51672 16.7 5.70005L21.3 10.3C21.4 10.4 21.4708 10.5084 21.5125 10.625C21.5542 10.7417 21.575 10.8667 21.575 11C21.575 11.1334 21.5542 11.2584 21.5125 11.375C21.4708 11.4917 21.4 11.6 21.3 11.7L16.7 16.3C16.5 16.5 16.2667 16.5959 16 16.5875C15.7333 16.5792 15.5 16.4834 15.3 16.3C15.1 16.1 14.9958 15.8667 14.9875 15.6C14.9792 15.3334 15.075 15.1 15.275 14.9L19.175 11ZM13.175 12H7C6.16667 12 5.45833 12.2917 4.875 12.875C4.29167 13.4584 4 14.1667 4 15V18C4 18.2834 3.90417 18.5209 3.7125 18.7125C3.52083 18.9042 3.28333 19 3 19C2.71667 19 2.47917 18.9042 2.2875 18.7125C2.09583 18.5209 2 18.2834 2 18V15C2 13.6167 2.4875 12.4375 3.4625 11.4625C4.4375 10.4875 5.61667 10 7 10H13.175L10.3 7.12505C10.1 6.92505 10 6.68755 10 6.41255C10 6.13755 10.1 5.90005 10.3 5.70005C10.5 5.51672 10.7375 5.42505 11.0125 5.42505C11.2875 5.42505 11.5167 5.51672 11.7 5.70005L16.3 10.3C16.4 10.4 16.4708 10.5084 16.5125 10.625C16.5542 10.7417 16.575 10.8667 16.575 11C16.575 11.1334 16.5542 11.2584 16.5125 11.375C16.4708 11.4917 16.4 11.6 16.3 11.7L11.7 16.3C11.5 16.5 11.2667 16.5959 11 16.5875C10.7333 16.5792 10.5 16.4834 10.3 16.3C10.1 16.1 9.99583 15.8667 9.9875 15.6C9.97917 15.3334 10.075 15.1 10.275 14.9L13.175 12Z"/>
+  </svg>
+</div>
+
+
+          <div class="image-wrap">
+            <img src="${item.image}" alt="chat image" />
+          </div>
+
+          ${item.caption ? `<div class="caption">${escapeHtml(item.caption)}</div>` : ''}
+
+          <div class="bubble-time">
+            <span>${timeLabel(item.time)}</span>
+            ${item.side === 'mine' ? mineTicks() : ''}
+          </div>
+        `;
+      }
+if (item.type === 'image') {
+  const chatImg = bubble.querySelector('.image-wrap img');
+
+  if (chatImg) {
+    chatImg.style.cursor = 'pointer';
+
+    chatImg.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openChatImagePreviewModal(item.image);
+    });
+  }
+}
+const bubbleActions = document.createElement('div');
+bubbleActions.className = 'bubble-actions';
+bubbleActions.innerHTML = `
+  <button type="button" class="bubble-action-toggle" title="Message actions">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z"></path>
+    </svg>
+  </button>
+
+  <div class="bubble-menu">
+    <button type="button" class="edit-btn">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path d="M5 18.9999H6.4L16.2 9.22494L14.775 7.79994L5 17.5999V18.9999ZM4 20.9999C3.71667 20.9999 3.47917 20.9041 3.2875 20.7124C3.09583 20.5208 3 20.2833 3 19.9999V17.5749C3 17.3083 3.05 17.0541 3.15 16.8124C3.25 16.5708 3.39167 16.3583 3.575 16.1749L16.2 3.57494C16.3833 3.39161 16.6 3.24994 16.85 3.14994C17.1 3.04994 17.3583 2.99994 17.625 2.99994C17.8917 2.99994 18.1458 3.04994 18.3875 3.14994C18.6292 3.24994 18.85 3.39994 19.05 3.59994L20.425 4.99994C20.625 5.18327 20.7708 5.39577 20.8625 5.63744C20.9542 5.87911 21 6.13327 21 6.39994C21 6.64994 20.9542 6.89994 20.8625 7.14994C20.7708 7.39994 20.625 7.62494 20.425 7.82494L7.825 20.4249C7.64167 20.6083 7.42917 20.7499 7.1875 20.8499C6.94583 20.9499 6.69167 20.9999 6.425 20.9999H4Z"></path>
+      </svg>
+      <span>Edit</span>
+    </button>
+
+    <button type="button" class="delete-btn">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path d="M7 21C6.45 21 5.97917 20.8042 5.5875 20.4125C5.19583 20.0208 5 19.55 5 19V6C4.71667 6 4.47917 5.90417 4.2875 5.7125C4.09583 5.52083 4 5.28333 4 5C4 4.71667 4.09583 4.47917 4.2875 4.2875C4.47917 4.09583 4.71667 4 5 4H9C9 3.71667 9.09583 3.47917 9.2875 3.2875C9.47917 3.09583 9.71667 3 10 3H14C14.2833 3 14.5208 3.09583 14.7125 3.2875C14.9042 3.47917 15 3.71667 15 4H19C19.2833 4 19.5208 4.09583 19.7125 4.2875C19.9042 4.47917 20 4.71667 20 5C20 5.28333 19.9042 5.52083 19.7125 5.7125C19.5208 5.90417 19.2833 6 19 6V19C19 19.55 18.8042 20.0208 18.4125 20.4125C18.0208 20.8042 17.55 21 17 21H7ZM17 6H7V19H17V6ZM10 17C10.2833 17 10.5208 16.9042 10.7125 16.7125C10.9042 16.5208 11 16.2833 11 16V9C11 8.71667 10.9042 8.47917 10.7125 8.2875C10.5208 8.09583 10.2833 8 10 8C9.71667 8 9.47917 8.09583 9.2875 8.2875C9.09583 8.47917 9 8.71667 9 9V16C9 16.2833 9.09583 16.5208 9.2875 16.7125C9.47917 16.9042 9.71667 17 10 17ZM14 17C14.2833 17 14.5208 16.9042 14.7125 16.7125C14.9042 16.5208 15 16.2833 15 16V9C15 8.71667 14.9042 8.47917 14.7125 8.2875C14.5208 8.09583 14.2833 8 14 8C13.7167 8 13.4792 8.09583 13.2875 8.2875C13.0958 8.47917 13 8.71667 13 9V16C13 16.2833 13.0958 16.5208 13.2875 16.7125C13.4792 16.9042 13.7167 17 14 17Z"></path>
+      </svg>
+      <span>Delete</span>
+    </button>
+  </div>
+`;
+      bubble.appendChild(bubbleActions);
+
+      const toggleBtn = bubble.querySelector('.bubble-action-toggle');
+      const editBtn = bubble.querySelector('.edit-btn');
+      const deleteBtn = bubble.querySelector('.delete-btn');
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+
+          document.querySelectorAll('.bubble.menu-open').forEach(el => {
+            if (el !== bubble) el.classList.remove('menu-open');
+          });
+
+          bubble.classList.toggle('menu-open');
+        });
+      }
+
+if (editBtn) {
+  editBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    bubble.classList.remove('menu-open');
+
+    const currentItem = state.messages[index];
+    if (!currentItem) return;
+
+    if (currentItem.type === 'text') {
+      openMsgEditModal(index);
+      return;
+    }
+
+if (currentItem.type === 'image') {
+  openMsgEditModal(index);
+  return;
+}
+  });
+}
+
+if (deleteBtn) {
+  deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    bubble.classList.remove('menu-open');
+
+    openConfirmBox('Delete bubble ini?', () => {
+      state.messages.splice(index, 1);
+      saveAndRender();
+    }, 'Delete Bubble');
+  });
+}
+
+      bubble.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+
+      node.appendChild(bubble);
+    }
+
+    node.dataset.index = index;
+    refs.chatList.appendChild(node);
+  });
+
+  requestAnimationFrame(() => {
+    applyImageOrientation(refs.chatList);
+    refs.chatArea.scrollTop = refs.chatArea.scrollHeight;
+  });
+}
+
+    function mineTicks(){
+      return `<span class="double-check" aria-hidden="true">
+        <svg viewBox="0 0 16 11"><path d="M11.0714 0.652832C10.991 0.585124 10.8894 0.55127 10.7667 0.55127C10.6186 0.55127 10.4916 0.610514 10.3858 0.729004L4.19688 8.36523L1.79112 6.09277C1.7488 6.04622 1.69802 6.01025 1.63877 5.98486C1.57953 5.95947 1.51817 5.94678 1.45469 5.94678C1.32351 5.94678 1.20925 5.99544 1.11192 6.09277L0.800883 6.40381C0.707784 6.49268 0.661235 6.60482 0.661235 6.74023C0.661235 6.87565 0.707784 6.98991 0.800883 7.08301L3.79698 10.0791C3.94509 10.2145 4.11224 10.2822 4.29844 10.2822C4.40424 10.2822 4.5058 10.259 4.60313 10.2124C4.70046 10.1659 4.78086 10.1003 4.84434 10.0156L11.4903 1.59863C11.5623 1.5013 11.5982 1.40186 11.5982 1.30029C11.5982 1.14372 11.5348 1.01888 11.4078 0.925781L11.0714 0.652832ZM8.6212 8.32715C8.43077 8.20866 8.2488 8.09017 8.0753 7.97168C7.99489 7.89128 7.8891 7.85107 7.75791 7.85107C7.6098 7.85107 7.4892 7.90397 7.3961 8.00977L7.10411 8.33984C7.01947 8.43717 6.97715 8.54508 6.97715 8.66357C6.97715 8.79476 7.0237 8.90902 7.1168 9.00635L8.1959 10.0791C8.33132 10.2145 8.49636 10.2822 8.69102 10.2822C8.79681 10.2822 8.89838 10.259 8.99571 10.2124C9.09304 10.1659 9.17556 10.1003 9.24327 10.0156L15.8639 1.62402C15.9358 1.53939 15.9718 1.43994 15.9718 1.32568C15.9718 1.1818 15.9125 1.05697 15.794 0.951172L15.4386 0.678223C15.3582 0.610514 15.2587 0.57666 15.1402 0.57666C14.9964 0.57666 14.8715 0.635905 14.7657 0.754395L8.6212 8.32715Z"/></svg>
+      </span>`;
+    }
+
+    function addDateSeparator(label){
+      if (!label || !label.trim()) return;
+      state.messages.push({ id: uid(), type: 'date', label: label.trim() });
+    }
+
+    function addTextMessage(){
+      const text = refs.msgText.value.trim();
+      if (!text) return alert('Isi message text dulu bro.');
+      addDateSeparator(refs.msgDateLabel.value);
+      state.messages.push({
+        id: uid(),
+        type: 'text',
+        side: refs.msgSide.value,
+        time: refs.msgTime.value || '00:00',
+        text
+      });
+      refs.msgText.value = '';
+      refs.msgDateLabel.value = '';
+      saveAndRender();
+    }
+
+    function addImageMessage(){
+      if (!pendingImageBase64) return alert('Pilih gambar dulu bro.');
+      state.messages.push({
+        id: uid(),
+        type: 'image',
+        side: refs.imgSide.value,
+        time: refs.imgTime.value || '00:00',
+        image: pendingImageBase64,
+        caption: refs.imgCaption.value.trim(),
+        showForward: true
+      });
+      clearPendingImage();
+      refs.imgCaption.value = '';
+      saveAndRender();
+    }
+
+function clearPendingImage(){
+  pendingImageBase64 = '';
+  refs.imgFile.value = '';
+  refs.imgPreviewList.innerHTML = '';
+
+  if (imgFileName) {
+    imgFileName.textContent = 'No file chosen';
+  }
+
+  saveFormDraft();
+}
+
+    async function onImagePicked(inputEl, callback, maxWidth = 1200, quality = 0.9){
+      const file = inputEl.files?.[0];
+      if (!file) return;
+      try {
+        const base64 = await resizeImageToDataURL(file, maxWidth, quality);
+        callback(base64);
+      } catch (err) {
+        console.error(err);
+        alert('Gagal baca gambar.');
+      }
+    }
+
+    function previewPendingImage(base64){
+      refs.imgPreviewList.innerHTML = `
+        <div class="thumb">
+          <img src="${base64}" alt="preview" />
+          <button type="button" id="removePendingThumb">✕</button>
+        </div>`;
+      const removeBtn = $('removePendingThumb');
+      if (removeBtn) removeBtn.onclick = clearPendingImage;
+    }
+async function handlePastedImage(file){
+  if (!file) return;
+
+  try {
+    const base64 = await resizeImageToDataURL(file, 1400, 0.9);
+    pendingImageBase64 = base64;
+    previewPendingImage(base64);
+
+    if (imgFileName) {
+      imgFileName.textContent = 'Pasted image';
+    }
+
+    saveFormDraft();
+  } catch (err) {
+    console.error(err);
+    alert('Gagal paste gambar bro.');
+  }
+}
+function openEditMenu(index){
+  const item = state.messages[index];
+  if (!item) return;
+
+  if (item.type === 'date') {
+    const next = prompt('Edit date separator:', item.label || '');
+    if (next === null) return;
+    if (!next.trim()) {
+      if (confirm('Delete separator ini?')) {
+        state.messages.splice(index, 1);
+        saveAndRender();
+      }
+      return;
+    }
+    item.label = next.trim();
+    saveAndRender();
+    return;
+  }
+
+  if (item.type === 'text') {
+    openMsgEditModal(index);
+    return;
+  }
+
+  if (item.type === 'image') {
+    const nextCaption = prompt('Edit caption:', item.caption || '');
+    if (nextCaption === null) return;
+    const nextTime = prompt('Edit time (HH:MM):', item.time || '00:00');
+    if (nextTime === null) return;
+    const nextSide = prompt('Edit side: mine / their', item.side || 'mine');
+    if (nextSide === null) return;
+    item.caption = nextCaption;
+    item.time = nextTime;
+    item.side = nextSide === 'their' ? 'their' : 'mine';
+    item.showForward = true;
+    saveAndRender();
+  }
+}
+
+    function saveAndRender(){
+      saveState();
+      renderHeader();
+      applyTheme();
+      renderChat();
+    }
+function resetToDefault(){
+  openConfirmBox(
+    'Are you sure reset to default? All you data will be cleared if you reset to default!',
+    () => {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(SIDEBAR_KEY);
+      localStorage.removeItem(FORM_DRAFT_KEY);
+
+      state = structuredClone(defaultState);
+      pendingImageBase64 = '';
+      sidebarWidth = 320;
+
+      if (refs.importFile) refs.importFile.value = '';
+      if (refs.imgFile) refs.imgFile.value = '';
+      if (refs.wallpaperFile) refs.wallpaperFile.value = '';
+      if (refs.profileModalFile) refs.profileModalFile.value = '';
+      if (refs.msgEditImageFile) refs.msgEditImageFile.value = '';
+
+      clearPendingImage();
+
+      if (refs.msgText) refs.msgText.value = '';
+      if (refs.msgDateLabel) refs.msgDateLabel.value = '';
+      if (refs.msgTimeInput) refs.msgTimeInput.value = '';
+      if (refs.msgTime) refs.msgTime.value = '';
+      if (refs.imgCaption) refs.imgCaption.value = '';
+      if (refs.imgTimeInput) refs.imgTimeInput.value = '';
+      if (refs.imgTime) refs.imgTime.value = '';
+      if (imgFileName) imgFileName.textContent = 'No file chosen';
+
+      if (refs.msgSide) refs.msgSide.value = 'mine';
+      if (refs.imgSide) refs.imgSide.value = 'mine';
+
+      msgSideToggleBtns.forEach(b => b.classList.remove('active'));
+      document.querySelector('#msgSideToggle .side-toggle-btn[data-side="mine"]')?.classList.add('active');
+
+      imgSideToggleBtns.forEach(b => b.classList.remove('active'));
+      document.querySelector('#imgSideToggle .side-toggle-btn[data-side="mine"]')?.classList.add('active');
+
+      saveAndRender();
+      initResizer();
+    },
+    'Reset Default'
+  );
+}
+    function openProfileModal(){
+      if (refs.profileModalName) refs.profileModalName.value = state.profile.name || '';
+      if (refs.profileModalStatus) refs.profileModalStatus.value = state.profile.status || '';
+      renderHeader();
+      if (!refs.profileModalBackdrop) return;
+      refs.profileModalBackdrop.classList.remove('hidden');
+      refs.profileModalBackdrop.style.display = 'flex';
+    }
+
+    function closeProfileModal(){
+      if (!refs.profileModalBackdrop) return;
+      refs.profileModalBackdrop.classList.add('hidden');
+      refs.profileModalBackdrop.style.display = 'none';
+      if (refs.profileModalFile) refs.profileModalFile.value = '';
+    }
+let editingMessageIndex = -1;
+let editingDateSepIndex = -1;
+let editingMessageType = '';
+let pendingEditImageBase64 = '';
+let removeEditingImage = false;
+let confirmYesHandler = null;
+const profilePreviewState = {
+  scale: 1,
+  baseScale: 1,
+  minScale: 1,
+  maxScale: 6,
+  offsetX: 0,
+  offsetY: 0,
+  dragging: false,
+  startX: 0,
+  startY: 0,
+  startOffsetX: 0,
+  startOffsetY: 0
+};  
+function openMsgEditModal(index){
+  const item = state.messages[index];
+  if (!item || (item.type !== 'text' && item.type !== 'image')) return;
+
+  editingMessageIndex = index;
+  editingMessageType = item.type;
+  pendingEditImageBase64 = '';
+  removeEditingImage = false;
+
+  if (refs.msgEditTime) refs.msgEditTime.value = item.time || '00:00';
+  if (refs.msgEditSide) refs.msgEditSide.value = item.side === 'their' ? 'their' : 'mine';
+
+  if (refs.msgEditTextSection) {
+    refs.msgEditTextSection.classList.toggle('hidden', item.type !== 'text');
+  }
+  if (refs.msgEditImageSection) {
+    refs.msgEditImageSection.classList.toggle('hidden', item.type !== 'image');
+  }
+
+  if (item.type === 'text') {
+    if (refs.msgEditText) refs.msgEditText.value = item.text || '';
+  }
+
+  if (item.type === 'image') {
+    if (refs.msgEditCaption) refs.msgEditCaption.value = item.caption || '';
+
+    if (refs.msgEditImagePreview) {
+      refs.msgEditImagePreview.src = item.image || '';
+    }
+
+    if (refs.msgEditImagePreviewWrap) {
+      refs.msgEditImagePreviewWrap.classList.toggle('hidden', !item.image);
+    }
+  }
+
+  refs.msgEditBackdrop.classList.remove('hidden');
+  refs.msgEditBackdrop.style.display = 'flex';
+
+  setTimeout(() => {
+    if (item.type === 'text' && refs.msgEditText) {
+      refs.msgEditText.focus();
+      refs.msgEditText.setSelectionRange(
+        refs.msgEditText.value.length,
+        refs.msgEditText.value.length
+      );
+    }
+
+    if (item.type === 'image' && refs.msgEditCaption) {
+      refs.msgEditCaption.focus();
+      refs.msgEditCaption.setSelectionRange(
+        refs.msgEditCaption.value.length,
+        refs.msgEditCaption.value.length
+      );
+    }
+  }, 10);
+}
+function closeMsgEditModal(){
+  editingMessageIndex = -1;
+  editingMessageType = '';
+  pendingEditImageBase64 = '';
+  removeEditingImage = false;
+
+  if (refs.msgEditText) refs.msgEditText.value = '';
+  if (refs.msgEditCaption) refs.msgEditCaption.value = '';
+  if (refs.msgEditImageFile) refs.msgEditImageFile.value = '';
+
+  if (refs.msgEditImagePreview) refs.msgEditImagePreview.src = '';
+  if (refs.msgEditImagePreviewWrap) refs.msgEditImagePreviewWrap.classList.add('hidden');
+
+  if (!refs.msgEditBackdrop) return;
+  refs.msgEditBackdrop.classList.add('hidden');
+  refs.msgEditBackdrop.style.display = 'none';
+}
+function updateMsgEditImagePreview(src){
+  if (!refs.msgEditImagePreview || !refs.msgEditImagePreviewWrap) return;
+
+  if (src) {
+    refs.msgEditImagePreview.src = src;
+    refs.msgEditImagePreviewWrap.classList.remove('hidden');
+  } else {
+    refs.msgEditImagePreview.src = '';
+    refs.msgEditImagePreviewWrap.classList.add('hidden');
+  }
+}
+function saveMsgEditModal(){
+  if (editingMessageIndex < 0) return;
+
+  const item = state.messages[editingMessageIndex];
+  if (!item) return;
+
+  item.time = refs.msgEditTime.value || '00:00';
+  item.side = refs.msgEditSide.value === 'their' ? 'their' : 'mine';
+
+  if (editingMessageType === 'text' && item.type === 'text') {
+    item.text = refs.msgEditText.value;
+    saveAndRender();
+    closeMsgEditModal();
+    return;
+  }
+
+  if (editingMessageType === 'image' && item.type === 'image') {
+    item.caption = refs.msgEditCaption.value || '';
+    item.showForward = true;
+
+    if (removeEditingImage) {
+      item.image = '';
+    } else if (pendingEditImageBase64) {
+      item.image = pendingEditImageBase64;
+    }
+
+    saveAndRender();
+    closeMsgEditModal();
+  }
+}
+function openDateSepEditModal(index){
+  const item = state.messages[index];
+  if (!item || item.type !== 'date') return;
+
+  editingDateSepIndex = index;
+
+  refs.dateSepEditInput.value = item.label || '';
+
+  refs.dateSepEditBackdrop.classList.remove('hidden');
+  refs.dateSepEditBackdrop.style.display = 'flex';
+
+  setTimeout(() => {
+    refs.dateSepEditInput.focus();
+    refs.dateSepEditInput.select();
+  }, 10);
+}
+
+function closeDateSepEditModal(){
+  editingDateSepIndex = -1;
+  if (!refs.dateSepEditBackdrop) return;
+  refs.dateSepEditBackdrop.classList.add('hidden');
+  refs.dateSepEditBackdrop.style.display = 'none';
+}
+
+function saveDateSepEditModal(){
+  if (editingDateSepIndex < 0) return;
+
+  const item = state.messages[editingDateSepIndex];
+  if (!item || item.type !== 'date') return;
+
+  const nextLabel = (refs.dateSepEditInput.value || '').trim();
+  if (!nextLabel) return;
+
+  item.label = nextLabel;
+  saveAndRender();
+  closeDateSepEditModal();
+}
+function openConfirmBox(message, onYes, title = 'Confirm'){
+  confirmYesHandler = typeof onYes === 'function' ? onYes : null;
+
+  refs.confirmBoxTitle.textContent = title;
+  refs.confirmBoxMessage.textContent = message;
+
+  if (refs.confirmBoxNoBtn) {
+    refs.confirmBoxNoBtn.textContent = 'No';
+    refs.confirmBoxNoBtn.classList.remove('btn-h1', 'danger');
+    refs.confirmBoxNoBtn.classList.add('ghost');
+  }
+
+  if (refs.confirmBoxYesBtn) {
+    refs.confirmBoxYesBtn.textContent = 'Yes';
+    refs.confirmBoxYesBtn.style.display = '';
+    refs.confirmBoxYesBtn.classList.remove('btn-h1', 'ghost');
+    refs.confirmBoxYesBtn.classList.add('danger');
+  }
+
+  refs.confirmBoxBackdrop.classList.remove('hidden');
+  refs.confirmBoxBackdrop.style.display = 'flex';
+}
+function closeConfirmBox(){
+  confirmYesHandler = null;
+
+  if (refs.confirmBoxYesBtn) {
+    refs.confirmBoxYesBtn.style.display = '';
+    refs.confirmBoxYesBtn.textContent = 'Yes';
+  }
+
+  if (refs.confirmBoxNoBtn) {
+    refs.confirmBoxNoBtn.textContent = 'No';
+    refs.confirmBoxNoBtn.classList.remove('btn-h1');
+  }
+  refs.confirmBoxBackdrop.classList.add('hidden');
+  refs.confirmBoxBackdrop.style.display = 'none';
+}
+function runConfirmYes(){
+  const handler = confirmYesHandler;
+  closeConfirmBox();
+  if (handler) handler();
+}
+function showNoProfileMessage(){
+  openConfirmBox('No profile image.', null, 'No Profile');
+
+  // hide button YES
+  if (refs.confirmBoxYesBtn) {
+    refs.confirmBoxYesBtn.style.display = 'none';
+  }
+  if (refs.confirmBoxNoBtn) {
+    refs.confirmBoxNoBtn.textContent = 'OK';
+
+    // 🔥 buang class lama kalau ada
+    refs.confirmBoxNoBtn.classList.remove('ghost','danger');
+    refs.confirmBoxNoBtn.classList.add('btn-h1');
+  }
+}
+function openProfilePreviewModal(){
+  if (!state.profile.avatar) {
+    showNoProfileMessage();
+    return;
+  }
+
+  refs.profilePreviewImage.src = state.profile.avatar;
+  refs.profilePreviewBackdrop.classList.remove('hidden');
+  refs.profilePreviewBackdrop.style.display = 'flex';
+
+  const onLoad = () => {
+    resetProfilePreviewTransform();
+    refs.profilePreviewImage.removeEventListener('load', onLoad);
+  };
+
+  refs.profilePreviewImage.addEventListener('load', onLoad);
+
+  if (refs.profilePreviewImage.complete) {
+    resetProfilePreviewTransform();
+  }
+}
+function openChatImagePreviewModal(src){
+  if (!src) return;
+  if (!refs.profilePreviewBackdrop || !refs.profilePreviewImage) return;
+
+  refs.profilePreviewImage.src = src;
+  refs.profilePreviewBackdrop.classList.remove('hidden');
+  refs.profilePreviewBackdrop.style.display = 'flex';
+
+  const onLoad = () => {
+    resetProfilePreviewTransform();
+    refs.profilePreviewImage.removeEventListener('load', onLoad);
+  };
+
+  refs.profilePreviewImage.addEventListener('load', onLoad);
+
+  if (refs.profilePreviewImage.complete) {
+    resetProfilePreviewTransform();
+  }
+}
+function closeProfilePreviewModal(){
+  if (!refs.profilePreviewBackdrop) return;
+
+  refs.profilePreviewBackdrop.classList.add('hidden');
+  refs.profilePreviewBackdrop.style.display = 'none';
+
+  endProfilePreviewDrag();
+  resetProfilePreviewTransform();
+
+  if (refs.profilePreviewImage) {
+    refs.profilePreviewImage.src = '';
+  }
+}
+
+function initResizer(){
+  const resizer = document.getElementById('resizer');
+  const app = document.querySelector('.app');
+  if (!resizer || !app) return;
+
+  const MIN_LEFT = 565;
+  const MAX_LEFT = Infinity;
+  const MIN_RIGHT = 400;
+  let isDown = false;
+
+  const clampWidth = (rawX) => {
+    const total = app.clientWidth || window.innerWidth || document.documentElement.clientWidth || 0;
+    const maxByViewport = Math.max(MIN_LEFT, total - 1 - MIN_RIGHT);
+    return Math.max(MIN_LEFT, Math.min(Math.min(MAX_LEFT, maxByViewport), rawX));
+  };
+
+  const apply = () => {
+    app.style.gridTemplateColumns = `${sidebarWidth}px 1px minmax(0, 1fr)`;
+  };
+
+  resizer.addEventListener('mousedown', (e)=>{
+    e.preventDefault();
+    isDown = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  });
+
+  window.addEventListener('mousemove', (e)=>{
+    if(!isDown) return;
+    const rect = app.getBoundingClientRect();
+    const localX = e.clientX - rect.left;
+    sidebarWidth = clampWidth(localX);
+    apply();
+  });
+
+  window.addEventListener('mouseup', ()=>{
+    if(!isDown) return;
+    isDown = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
+  });
+
+  window.addEventListener('resize', ()=>{
+    sidebarWidth = clampWidth(sidebarWidth);
+    apply();
+    localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
+  });
+
+  sidebarWidth = clampWidth(sidebarWidth);
+  apply();
+}
+
+    function bindEvents(){
+      if (refs.chatName) {
+        refs.chatName.addEventListener('input', () => {
+          state.profile.name = refs.chatName.value;
+          saveAndRender();
+        });
+      }
+
+      if (refs.chatStatus) {
+        refs.chatStatus.addEventListener('input', () => {
+          state.profile.status = refs.chatStatus.value;
+          saveAndRender();
+        });
+      }
+
+      if (refs.avatarFile) {
+        refs.avatarFile.addEventListener('change', async () => {
+          await onImagePicked(refs.avatarFile, (base64) => {
+            state.profile.avatar = base64;
+            saveAndRender();
+          }, 400, 0.92);
+        });
+      }
+
+      if (refs.removeAvatarBtn) {
+        refs.removeAvatarBtn.addEventListener('click', () => {
+          state.profile.avatar = '';
+          if (refs.avatarFile) refs.avatarFile.value = '';
+          saveAndRender();
+        });
+      }
+
+      if (refs.openProfileModalBtn) refs.openProfileModalBtn.addEventListener('click', openProfileModal);
+      if (refs.openProfileFromHeader) refs.openProfileFromHeader.addEventListener('click', openProfileModal);
+      if (refs.cancelProfileBtn) refs.cancelProfileBtn.addEventListener('click', closeProfileModal);
+      if (refs.closeProfileModalBtn) refs.closeProfileModalBtn.addEventListener('click', closeProfileModal);
+
+      if (refs.profileModalBackdrop) {
+        refs.profileModalBackdrop.addEventListener('click', (e) => {
+          if (e.target === refs.profileModalBackdrop) closeProfileModal();
+        });
+      }
+
+      if (refs.changeProfileBtn && refs.profileModalFile) {
+        refs.changeProfileBtn.addEventListener('click', () => refs.profileModalFile.click());
+      }
+
+if (refs.viewProfileBtn) {
+  refs.viewProfileBtn.addEventListener('click', openProfilePreviewModal);
+}
+if (refs.profileModalAvatar) {
+  refs.profileModalAvatar.addEventListener('click', () => {
+    if (!state.profile.avatar) {
+      showNoProfileMessage();
+      return;
+    }
+    openProfilePreviewModal();
+  });
+}
+if (refs.closeProfilePreviewBtn) {
+  refs.closeProfilePreviewBtn.addEventListener('click', closeProfilePreviewModal);
+}
+
+if (refs.profilePreviewBackdrop) {
+  refs.profilePreviewBackdrop.addEventListener('click', (e) => {
+    if (e.target === refs.profilePreviewBackdrop) {
+      closeProfilePreviewModal();
+    }
+  });
+}
+
+if (refs.profilePreviewViewport) {
+  refs.profilePreviewViewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    zoomProfilePreview(e.deltaY < 0 ? 1 : -1);
+  }, { passive: false });
+
+  refs.profilePreviewViewport.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    startProfilePreviewDrag(e.clientX, e.clientY);
+  });
+
+  refs.profilePreviewViewport.addEventListener('dblclick', () => {
+    resetProfilePreviewTransform();
+  });
+}
+
+window.addEventListener('mousemove', (e) => {
+  moveProfilePreviewDrag(e.clientX, e.clientY);
+});
+
+window.addEventListener('mouseup', () => {
+  endProfilePreviewDrag();
+});
+
+if (refs.profilePreviewImage) {
+  refs.profilePreviewImage.addEventListener('dragstart', (e) => {
+    e.preventDefault();
+  });
+}
+if (refs.avatarPreview) {
+  refs.avatarPreview.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    if (!state.profile.avatar) {
+      showNoProfileMessage();
+      return;
+    }
+    openProfilePreviewModal();
+  });
+}
+if (refs.deleteProfileBtn) {
+  refs.deleteProfileBtn.addEventListener('click', () => {
+    if (!state.profile.avatar) {
+      alert('Belum ada gambar profile untuk dipadam bro.');
+      return;
+    }
+
+    openConfirmBox('Delete gambar profile ini?', () => {
+      state.profile.avatar = '';
+      if (refs.avatarFile) refs.avatarFile.value = '';
+      if (refs.profileModalFile) refs.profileModalFile.value = '';
+      closeProfilePreviewModal();
+      saveAndRender();
+    }, 'Delete Profile Image');
+  });
+}
+
+      if (refs.profileModalFile) {
+        refs.profileModalFile.addEventListener('change', async () => {
+          await onImagePicked(refs.profileModalFile, (base64) => {
+            state.profile.avatar = base64;
+            renderHeader();
+          }, 600, 0.94);
+        });
+      }
+
+      if (refs.updateProfileBtn) {
+        refs.updateProfileBtn.addEventListener('click', () => {
+          state.profile.name = refs.profileModalName?.value.trim() || 'Untitled Chat';
+          state.profile.status = refs.profileModalStatus?.value.trim() || '';
+          saveAndRender();
+          closeProfileModal();
+        });
+      }
+if (refs.closeMsgEditBtn) {
+  refs.closeMsgEditBtn.addEventListener('click', closeMsgEditModal);
+}
+
+if (refs.cancelMsgEditBtn) {
+  refs.cancelMsgEditBtn.addEventListener('click', closeMsgEditModal);
+}
+
+if (refs.saveMsgEditBtn) {
+  refs.saveMsgEditBtn.addEventListener('click', saveMsgEditModal);
+}
+
+if (refs.msgEditBackdrop) {
+  refs.msgEditBackdrop.addEventListener('click', (e) => {
+    if (e.target === refs.msgEditBackdrop) {
+      closeMsgEditModal();
+    }
+  });
+}
+
+if (refs.msgEditText) {
+  refs.msgEditText.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      saveMsgEditModal();
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMsgEditModal();
+    }
+  });
+}
+
+if (refs.msgEditTime) {
+  refs.msgEditTime.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMsgEditModal();
+    }
+  });
+}
+
+if (refs.msgEditSide) {
+  refs.msgEditSide.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeMsgEditModal();
+    }
+  });
+}
+if (refs.closeDateSepEditBtn) {
+  refs.closeDateSepEditBtn.addEventListener('click', closeDateSepEditModal);
+}
+
+if (refs.cancelDateSepEditBtn) {
+  refs.cancelDateSepEditBtn.addEventListener('click', closeDateSepEditModal);
+}
+
+if (refs.saveDateSepEditBtn) {
+  refs.saveDateSepEditBtn.addEventListener('click', saveDateSepEditModal);
+}
+
+if (refs.dateSepEditBackdrop) {
+  refs.dateSepEditBackdrop.addEventListener('click', (e) => {
+    if (e.target === refs.dateSepEditBackdrop) {
+      closeDateSepEditModal();
+    }
+  });
+}
+
+if (refs.dateSepEditInput) {
+  refs.dateSepEditInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveDateSepEditModal();
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeDateSepEditModal();
+    }
+  });
+}
+
+if (refs.closeConfirmBoxBtn) {
+  refs.closeConfirmBoxBtn.addEventListener('click', closeConfirmBox);
+}
+
+if (refs.confirmBoxNoBtn) {
+  refs.confirmBoxNoBtn.addEventListener('click', closeConfirmBox);
+}
+
+if (refs.confirmBoxYesBtn) {
+  refs.confirmBoxYesBtn.addEventListener('click', runConfirmYes);
+}
+
+if (refs.confirmBoxBackdrop) {
+  refs.confirmBoxBackdrop.addEventListener('click', (e) => {
+    if (e.target === refs.confirmBoxBackdrop) {
+      closeConfirmBox();
+    }
+  });
+}
+
+if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
+if (refs.msgText) {
+  refs.msgText.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      insertNewLineAtCursor(refs.msgText);
+      return;
+    }
+
+    if (e.shiftKey) {
+      return;
+    }
+
+    e.preventDefault();
+    addTextMessage();
+  });
+}
+
+if (refs.msgDateLabel) {
+  refs.msgDateLabel.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTextMessage();
+    }
+  });
+}
+
+if (refs.msgTimeInput) {
+  refs.msgTimeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTextMessage();
+    }
+  });
+}
+if (refs.msgTimeInput) {
+  refs.msgTimeInput.addEventListener('input', saveFormDraft);
+}
+
+if (refs.msgText) {
+  refs.msgText.addEventListener('input', saveFormDraft);
+}
+
+if (refs.msgDateLabel) {
+  refs.msgDateLabel.addEventListener('input', saveFormDraft);
+}
+
+if (refs.imgTimeInput) {
+  refs.imgTimeInput.addEventListener('input', saveFormDraft);
+}
+
+if (refs.imgCaption) {
+  refs.imgCaption.addEventListener('input', saveFormDraft);
+}
+
+if (refs.clearInputsBtn) {
+  refs.clearInputsBtn.addEventListener('click', () => {
+    if (refs.msgText) refs.msgText.value = '';
+    if (refs.msgDateLabel) refs.msgDateLabel.value = '';
+
+    if (refs.msgSide) refs.msgSide.value = 'mine';
+    msgSideToggleBtns.forEach(b => b.classList.remove('active'));
+    document.querySelector('#msgSideToggle .side-toggle-btn[data-side="mine"]')?.classList.add('active');
+
+    if (refs.msgTimeInput) refs.msgTimeInput.value = '05:37 AM';
+    if (refs.msgTime) refs.msgTime.value = '05:37';
+  });
+}
+      if (refs.imgFile) {
+        refs.imgFile.addEventListener('change', async () => {
+          await onImagePicked(refs.imgFile, (base64) => {
+            pendingImageBase64 = base64;
+            previewPendingImage(base64);
+          }, 1400, 0.9);
+        });
+      }
+if (refs.imgPasteBox) {
+  refs.imgPasteBox.addEventListener('paste', async (e) => {
+    const items = e.clipboardData?.items || [];
+    let imageFile = null;
+
+    for (const item of items) {
+      if (item.type && item.type.startsWith('image/')) {
+        imageFile = item.getAsFile();
+        break;
+      }
+    }
+
+    if (!imageFile) return;
+
+    e.preventDefault();
+    await handlePastedImage(imageFile);
+  });
+
+  refs.imgPasteBox.addEventListener('click', () => {
+    refs.imgPasteBox.focus();
+  });
+}
+if (refs.msgEditImageFile) {
+  refs.msgEditImageFile.addEventListener('change', async () => {
+    const file = refs.msgEditImageFile.files?.[0];
+    if (!file) return;
+
+    try {
+      pendingEditImageBase64 = await resizeImageToDataURL(file, 1200, 0.9);
+      removeEditingImage = false;
+      updateMsgEditImagePreview(pendingEditImageBase64);
+    } catch (err) {
+      console.error(err);
+      alert('Gagal baca image.');
+    }
+  });
+}
+
+if (refs.msgEditRemoveImageBtn) {
+  refs.msgEditRemoveImageBtn.addEventListener('click', () => {
+    pendingEditImageBase64 = '';
+    removeEditingImage = true;
+    if (refs.msgEditImageFile) refs.msgEditImageFile.value = '';
+    updateMsgEditImagePreview('');
+  });
+}
+
+if (refs.msgEditPasteBox) {
+  refs.msgEditPasteBox.addEventListener('paste', async (e) => {
+    const items = Array.from(e.clipboardData?.items || []);
+    const imageItem = items.find(item => item.type.startsWith('image/'));
+    if (!imageItem) return;
+
+    const file = imageItem.getAsFile();
+    if (!file) return;
+
+    try {
+      pendingEditImageBase64 = await resizeImageToDataURL(file, 1200, 0.9);
+      removeEditingImage = false;
+      updateMsgEditImagePreview(pendingEditImageBase64);
+    } catch (err) {
+      console.error(err);
+      alert('Gagal paste image.');
+    }
+  });
+}
+
+if (refs.msgEditPasteBtn && refs.msgEditPasteBox) {
+  refs.msgEditPasteBtn.addEventListener('click', () => {
+    refs.msgEditPasteBox.focus();
+  });
+}
+      if (refs.addImageBtn) refs.addImageBtn.addEventListener('click', addImageMessage);
+if (refs.imgCaption) {
+  refs.imgCaption.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      insertNewLineAtCursor(refs.imgCaption);
+      return;
+    }
+
+    if (e.shiftKey) {
+      return;
+    }
+
+    e.preventDefault();
+    addImageMessage();
+  });
+}
+
+if (refs.imgTimeInput) {
+  refs.imgTimeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addImageMessage();
+    }
+  });
+}
+      if (refs.clearImageInputBtn) refs.clearImageInputBtn.addEventListener('click', clearPendingImage);
+
+      if (refs.mineColor) {
+        refs.mineColor.addEventListener('input', () => {
+          state.theme.mineColor = refs.mineColor.value;
+          saveAndRender();
+        });
+      }
+
+      if (refs.theirColor) {
+        refs.theirColor.addEventListener('input', () => {
+          state.theme.theirColor = refs.theirColor.value;
+          saveAndRender();
+        });
+      }
+
+      if (refs.wallpaperFile) {
+        refs.wallpaperFile.addEventListener('change', async () => {
+          await onImagePicked(refs.wallpaperFile, (base64) => {
+            state.theme.wallpaper = base64;
+            saveAndRender();
+          }, 1600, 0.88);
+        });
+      }
+
+if (refs.removeWallpaperBtn) {
+  refs.removeWallpaperBtn.addEventListener('click', () => {
+    state.theme.wallpaper = '';
+    if (refs.wallpaperFile) refs.wallpaperFile.value = '';
+    saveAndRender();
+  });
+}
+
+if (refs.resetThemeBtn) {
+  refs.resetThemeBtn.addEventListener('click', () => {
+    state.theme.mineColor = defaultState.theme.mineColor;
+    state.theme.theirColor = defaultState.theme.theirColor;
+    state.theme.mineTextTone = defaultState.theme.mineTextTone;
+    state.theme.theirTextTone = defaultState.theme.theirTextTone;
+    saveAndRender();
+  });
+}
+
+      if (refs.undoBtn) {
+        refs.undoBtn.addEventListener('click', () => {
+          if (!state.messages.length) return;
+          state.messages.pop();
+          saveAndRender();
+        });
+      }
+if (refs.resetDefaultBtn) {
+  refs.resetDefaultBtn.addEventListener('click', resetToDefault);
+}
+      
+if (refs.clearChatBtn) {
+  refs.clearChatBtn.addEventListener('click', () => {
+    openConfirmBox('Clear all chat?', () => {
+      state.messages = [];
+      saveAndRender();
+    }, 'Clear Chat');
+  });
+}
+
+      if (refs.exportBtn) {
+        refs.exportBtn.addEventListener('click', () => {
+          const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'whatsapp-chat-builder-data.json';
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      }
+
+      if (refs.importBtn && refs.importFile) {
+        refs.importBtn.addEventListener('click', () => refs.importFile.click());
+      }
+
+      if (refs.importFile) {
+        refs.importFile.addEventListener('change', async () => {
+          const file = refs.importFile.files?.[0];
+          if (!file) return;
+          try {
+            const text = await file.text();
+            const parsed = JSON.parse(text);
+            if (!parsed || typeof parsed !== 'object') throw new Error('Invalid');
+            state = {
+              profile: { ...defaultState.profile, ...(parsed.profile || {}) },
+              theme: { ...defaultState.theme, ...(parsed.theme || {}) },
+              messages: Array.isArray(parsed.messages) ? parsed.messages : []
+            };
+            saveAndRender();
+            refs.importFile.value = '';
+          } catch (err) {
+            console.error(err);
+            alert('Import gagal. Pastikan file JSON betul.');
+          }
+        });
+      }
+    }
+document.addEventListener('click', () => {
+  document.querySelectorAll('.bubble.menu-open').forEach(el => {
+    el.classList.remove('menu-open');
+  });
+
+  document.querySelectorAll('.day-sep.menu-open').forEach(el => {
+    el.classList.remove('menu-open');
+  });
+});
+bindEvents();
+applyFormDraft();
+initCustomTimeInputs();
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+
+  // Close confirm box (priority paling atas)
+  if (refs.confirmBoxBackdrop && !refs.confirmBoxBackdrop.classList.contains('hidden')) {
+    closeConfirmBox();
+    return;
+  }
+
+  // Close preview image modal
+  if (refs.profilePreviewBackdrop && !refs.profilePreviewBackdrop.classList.contains('hidden')) {
+    closeProfilePreviewModal();
+    return;
+  }
+
+  // Close edit message modal
+  if (refs.msgEditBackdrop && !refs.msgEditBackdrop.classList.contains('hidden')) {
+    closeMsgEditModal();
+    return;
+  }
+
+  // Close date separator modal
+  if (refs.dateSepEditBackdrop && !refs.dateSepEditBackdrop.classList.contains('hidden')) {
+    closeDateSepEditModal();
+    return;
+  }
+
+  // Close profile modal (kalau ada)
+  if (refs.profileModalBackdrop && !refs.profileModalBackdrop.classList.contains('hidden')) {
+    closeProfileModal();
+    return;
+  }
+});
+    initResizer();
+    saveAndRender();
+    (function () {
+  const THEME_KEY = "siteTheme";
+
+  function applyChildTheme(theme) {
+    document.body.classList.remove("light-theme", "dark-theme");
+    document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+  }
+
+  applyChildTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+
+  window.addEventListener("message", function (e) {
+    const allowedOrigins = [
+      "https://5g88-main.vercel.app"
+    ];
+    if (!allowedOrigins.includes(e.origin)) return;
+
+    const data = e.data || {};
+    if (data.type === "theme-change") {
+      const theme = data.theme === "dark" ? "dark" : "light";
+      localStorage.setItem(THEME_KEY, theme);
+      applyChildTheme(theme);
+    }
+  });
+})();
+  </script>
+</body>
+</html>
