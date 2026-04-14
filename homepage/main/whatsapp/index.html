@@ -11,7 +11,6 @@
 --mine-time:#ffffff99;
 --their-time:#ffffff99;
     --bg:#0b141a;
-    --panel:#0b0b0b;
     --panel-2:#242626;
     --panel-3:#2a3942;
     --text:#e9edef;
@@ -27,6 +26,35 @@
     --chat-bg-position:center;
     --chat-bg-image:url('https://i.imgur.com/LuHHrMt.png');
     --topbar:10, 10, 10;
+
+    --page-bg: #000;
+    --panel:#0b0b0b;
+    --page-text: rgba(255,255,255,0.85);
+    --page-input: #141414;
+    --border-input:#424242;
+    --page-bg2:#1f1f1f;
+    --name:#1668dc;
+    --blur:rgba(255,255,255,0.25);
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+  }
+
+  body.light-theme{
+    --page-bg: #ffffff;
+    --panel:#ffffff;
+    --page-text: rgba(0,0,0,0.88);
+    --page-input: #ffffff;
+    --border-input:#d9d9d9;
+    --page-bg2:#ffffff;
+    --name:#1668dc;
+    --blur:rgba(0,0,0,0.25);
+    --muted:rgb(0 0 0 / 65%);
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
   }
 
   *{box-sizing:border-box}
@@ -34,8 +62,8 @@
   html,body{
     margin:0;
     font-family: Roboto Variable, Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu, Cantarell, Fira Sans, sans-serif;
-    color:var(--text);
-    background:linear-gradient(180deg,#111b21 0 130px,#0b141a 130px 100%);
+    color:var(--page-text);
+    background:var(--page-bg);
     overflow:hidden;
     height:100vh;
   }
@@ -58,7 +86,7 @@ select:focus{
 }
 .sidebar{
   background:var(--panel);
-  border-right:1px solid #0d1418;
+  border-right:1px solid var(--border-input);
   display:flex;
   flex-direction:column;
   min-width:565px;
@@ -106,8 +134,8 @@ select:focus{
   }
 
   .card{
-    background:#0b0b0b;
-    border:1px solid #424242;
+    background:var(--panel);
+    border:1px solid var(--border-input);
     border-radius:14px;
     padding:14px;
     box-shadow:var(--shadow);
@@ -116,7 +144,7 @@ select:focus{
   .card h3{
     margin:0 0 12px;
     font-size:13px;
-    color:rgba(255,255,255,.85);
+    color:var(--page-text);
     letter-spacing:.2px;
   }
 
@@ -3861,6 +3889,31 @@ document.addEventListener('keydown', (e) => {
 });
     initResizer();
     saveAndRender();
+    (function () {
+  const THEME_KEY = "siteTheme";
+
+  function applyChildTheme(theme) {
+    document.body.classList.remove("light-theme", "dark-theme");
+    document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+  }
+
+  applyChildTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+
+  window.addEventListener("message", function (e) {
+    const allowedOrigins = [
+      "https://5g88-main.vercel.app",
+      "https://searcfile.github.io"
+    ];
+    if (!allowedOrigins.includes(e.origin)) return;
+
+    const data = e.data || {};
+    if (data.type === "theme-change") {
+      const theme = data.theme === "dark" ? "dark" : "light";
+      localStorage.setItem(THEME_KEY, theme);
+      applyChildTheme(theme);
+    }
+  });
+})();
   </script>
 </body>
 </html>
