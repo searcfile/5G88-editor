@@ -71,18 +71,7 @@
     overflow:hidden;
     height:100vh;
   }
-.chat-shell,
-.chat-shell > *,
-.topbar,
-.profile,
-.profile-text,
-.actions,
-.chat-area,
-.chat-inner,
-.composer,
-.composer-bar{
-  min-width:0;
-}
+
   .app{
     height:100vh;
     display:grid;
@@ -539,16 +528,15 @@ body.has-custom-wallpaper .chat-shell{
 
   .profile-text{min-width:0}
 
-.profile-name{
-  font-size:16px;
-  font-weight:bold;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:220px;
-  min-width:0;
-  color:#fafafa;
-}
+  .profile-name{
+    font-size:16px;
+    font-weight:bold;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:420px;
+    color:#fafafa;
+  }
 
   .profile-sub{
     font-size:13px;
@@ -587,21 +575,19 @@ body.has-custom-wallpaper .chat-shell{
 
   .hidden{display:none !important}
 
-.call-btn{
-  width:auto;
-  min-width:40px;
-  height:40px;
-  border-radius:999px;
-  padding:8px 10px;
-  gap:6px;
-  display:flex;
-  align-items:center;
-  background:transparent;
-  border:1px solid rgba(255,255,255,0.1);
-  color:#fafafa;
-  margin:0 4px;
-  flex-shrink:1;
-}
+  .call-btn{
+    width:auto;
+    height:40px;
+    border-radius:999px;
+    padding: 8px 16px;
+    gap:10px;
+    display:flex;
+    align-items:center;
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.1);
+    color:#fafafa;
+    margin: 0px 8px;
+  }
 
   .call-btn svg{width:20px;height:20px}
   .call-btn .chev{width:24px;height:24px;opacity:.9}
@@ -3409,58 +3395,58 @@ function closeProfilePreviewModal(){
   }
 }
 
-    function initResizer(){
-      const resizer = document.getElementById('resizer');
-      const app = document.querySelector('.app');
-      if (!resizer || !app) return;
+function initResizer(){
+  const resizer = document.getElementById('resizer');
+  const app = document.querySelector('.app');
+  if (!resizer || !app) return;
 
-      const MIN_LEFT = 565;
-      const MAX_LEFT = 1400;
-      const MIN_RIGHT = 120;
-      let isDown = false;
+  const MIN_LEFT = 565;
+  const MAX_LEFT = Infinity;
+  const MIN_RIGHT = 120;
+  let isDown = false;
 
-      const clampWidth = (rawX) => {
-        const total = app.clientWidth || window.innerWidth || document.documentElement.clientWidth || 0;
-        const maxByViewport = Math.max(MIN_LEFT, total - 6 - MIN_RIGHT);
-        return Math.max(MIN_LEFT, Math.min(Math.min(MAX_LEFT, maxByViewport), rawX));
-      };
+  const clampWidth = (rawX) => {
+    const total = app.clientWidth || window.innerWidth || document.documentElement.clientWidth || 0;
+    const maxByViewport = Math.max(MIN_LEFT, total - 1 - MIN_RIGHT);
+    return Math.max(MIN_LEFT, Math.min(Math.min(MAX_LEFT, maxByViewport), rawX));
+  };
 
-      const apply = () => {
-        app.style.gridTemplateColumns = `${sidebarWidth}px 1px minmax(0, 1fr)`;
-      };
+  const apply = () => {
+    app.style.gridTemplateColumns = `${sidebarWidth}px 1px minmax(0, 1fr)`;
+  };
 
-      resizer.addEventListener('mousedown', (e)=>{
-        e.preventDefault();
-        isDown = true;
-        document.body.style.cursor = 'col-resize';
-        document.body.style.userSelect = 'none';
-      });
+  resizer.addEventListener('mousedown', (e)=>{
+    e.preventDefault();
+    isDown = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  });
 
-      window.addEventListener('mousemove', (e)=>{
-        if(!isDown) return;
-        const rect = app.getBoundingClientRect();
-        const localX = e.clientX - rect.left;
-        sidebarWidth = clampWidth(localX);
-        apply();
-      });
+  window.addEventListener('mousemove', (e)=>{
+    if(!isDown) return;
+    const rect = app.getBoundingClientRect();
+    const localX = e.clientX - rect.left;
+    sidebarWidth = clampWidth(localX);
+    apply();
+  });
 
-      window.addEventListener('mouseup', ()=>{
-        if(!isDown) return;
-        isDown = false;
-        document.body.style.cursor = '';
-        document.body.style.userSelect = '';
-        localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
-      });
+  window.addEventListener('mouseup', ()=>{
+    if(!isDown) return;
+    isDown = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
+  });
 
-      window.addEventListener('resize', ()=>{
-        sidebarWidth = clampWidth(sidebarWidth);
-        apply();
-        localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
-      });
+  window.addEventListener('resize', ()=>{
+    sidebarWidth = clampWidth(sidebarWidth);
+    apply();
+    localStorage.setItem(SIDEBAR_KEY, sidebarWidth);
+  });
 
-      sidebarWidth = clampWidth(sidebarWidth);
-      apply();
-    }
+  sidebarWidth = clampWidth(sidebarWidth);
+  apply();
+}
 
     function bindEvents(){
       if (refs.chatName) {
