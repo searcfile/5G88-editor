@@ -3256,10 +3256,22 @@ function openConfirmBox(message, onYes, title = 'Confirm'){
   refs.confirmBoxTitle.textContent = title;
   refs.confirmBoxMessage.textContent = message;
 
+  if (refs.confirmBoxNoBtn) {
+    refs.confirmBoxNoBtn.textContent = 'No';
+    refs.confirmBoxNoBtn.classList.remove('btn-h1', 'danger');
+    refs.confirmBoxNoBtn.classList.add('ghost');
+  }
+
+  if (refs.confirmBoxYesBtn) {
+    refs.confirmBoxYesBtn.textContent = 'Yes';
+    refs.confirmBoxYesBtn.style.display = '';
+    refs.confirmBoxYesBtn.classList.remove('btn-h1', 'ghost');
+    refs.confirmBoxYesBtn.classList.add('danger');
+  }
+
   refs.confirmBoxBackdrop.classList.remove('hidden');
   refs.confirmBoxBackdrop.style.display = 'flex';
 }
-
 function closeConfirmBox(){
   confirmYesHandler = null;
 
