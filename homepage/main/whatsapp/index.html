@@ -3089,6 +3089,16 @@ function openConfirmBox(message, onYes, title = 'Confirm'){
 
 function closeConfirmBox(){
   confirmYesHandler = null;
+
+  if (refs.confirmBoxYesBtn) {
+    refs.confirmBoxYesBtn.style.display = '';
+    refs.confirmBoxYesBtn.textContent = 'Yes';
+  }
+
+  if (refs.confirmBoxNoBtn) {
+    refs.confirmBoxNoBtn.textContent = 'No';
+  }
+
   refs.confirmBoxBackdrop.classList.add('hidden');
   refs.confirmBoxBackdrop.style.display = 'none';
 }
@@ -3098,9 +3108,20 @@ function runConfirmYes(){
   closeConfirmBox();
   if (handler) handler();
 }
+function showNoProfileMessage(){
+  openConfirmBox('No profile image.', null, 'No Profile');
+
+  if (refs.confirmBoxYesBtn) {
+    refs.confirmBoxYesBtn.style.display = 'none';
+  }
+
+  if (refs.confirmBoxNoBtn) {
+    refs.confirmBoxNoBtn.textContent = 'OK';
+  }
+}
 function openProfilePreviewModal(){
   if (!state.profile.avatar) {
-    alert('Belum ada profile image bro.');
+    showNoProfileMessage();
     return;
   }
 
@@ -3258,7 +3279,10 @@ if (refs.viewProfileBtn) {
 }
 if (refs.profileModalAvatar) {
   refs.profileModalAvatar.addEventListener('click', () => {
-    if (!state.profile.avatar) return;
+    if (!state.profile.avatar) {
+      showNoProfileMessage();
+      return;
+    }
     openProfilePreviewModal();
   });
 }
@@ -3306,7 +3330,11 @@ if (refs.profilePreviewImage) {
 if (refs.avatarPreview) {
   refs.avatarPreview.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (!state.profile.avatar) return;
+
+    if (!state.profile.avatar) {
+      showNoProfileMessage();
+      return;
+    }
     openProfilePreviewModal();
   });
 }
