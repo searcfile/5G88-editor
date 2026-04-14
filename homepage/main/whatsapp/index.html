@@ -39,6 +39,8 @@
     --blue: #1668dc;
     --blue-hover: #3c89e8;
     --blue-active: #1554ad;
+    --xclose-hover:#ffffff;
+    --xclose-hover-active:rgba(255,255,255,0.25);
   }
 
   body.light-theme{
@@ -55,6 +57,8 @@
     --blue: #1668dc;
     --blue-hover: #3c89e8;
     --blue-active: #1554ad;
+    --xclose-hover:#000000;
+    --xclose-hover-active:rgba(0,0,0,0.25);
   }
 
   *{box-sizing:border-box}
@@ -1268,9 +1272,9 @@ body.has-custom-wallpaper .chat-shell{
   }
 .msg-edit-modal{
   width:min(460px, 100%);
-  background:#111b21;
-  border:1px solid #26353d;
-  border-radius:18px;
+  background:#ar(--panel);
+  border:1px solid var(--border-input);
+  border-radius:10px;
   box-shadow:0 20px 60px rgba(0,0,0,.45);
   overflow:hidden;
 }
@@ -1281,33 +1285,32 @@ body.has-custom-wallpaper .chat-shell{
   justify-content:space-between;
   gap:12px;
   padding:16px 18px;
-  border-bottom:1px solid #22313a;
+  border-bottom:1px solid var(--border-input);
 }
 
 .msg-edit-title{
   font-size:18px;
   font-weight:700;
-  color:#e9edef;
+  color:var(--page-text);
 }
 
 .msg-edit-x{
   all:unset;
   box-sizing:border-box;
-  width:34px;
-  height:34px;
-  border-radius:50%;
   display:grid;
   place-items:center;
   cursor:pointer;
-  color:#cfd8dc;
-  transition:background .18s ease, color .18s ease;
+  color:var(--muted);
+  transition:all .3s ease;
+  border:none;
 }
 
 .msg-edit-x:hover{
-  background:#202c33;
-  color:#fff;
+  color:var(--xclose-hover);
 }
-
+.msg-edit-x:hover{
+  color:var(--xclose-hover-active);
+}
 .msg-edit-x svg{
   width:20px;
   height:20px;
@@ -1396,9 +1399,9 @@ body.has-custom-wallpaper .chat-shell{
 
 .confirm-box-modal{
   width:min(380px,100%);
-  background:#111b21;
-  border:1px solid #26353d;
-  border-radius:18px;
+  background:var(--panel);
+  border:1px solid var(--border-input);
+  border-radius:10px;
   box-shadow:0 20px 60px rgba(0,0,0,.45);
   overflow:hidden;
 }
@@ -1409,18 +1412,18 @@ body.has-custom-wallpaper .chat-shell{
   justify-content:space-between;
   gap:12px;
   padding:16px 18px;
-  border-bottom:1px solid #22313a;
+  border-bottom:1px solid var(--border-input);
 }
 
 .confirm-box-title{
   font-size:18px;
   font-weight:700;
-  color:#e9edef;
+  color:var(--page-text);
 }
 
 .confirm-box-body{
   padding:18px;
-  color:#cfd8dc;
+  color:var(--muted);
   line-height:1.6;
   font-size:14px;
 }
@@ -1428,7 +1431,7 @@ body.has-custom-wallpaper .chat-shell{
 .confirm-box-foot{
   display:flex;
   justify-content:flex-end;
-  gap:10px;
+  gap:8px;
   padding:0 18px 18px;
 }
 .profile-preview-modal{
