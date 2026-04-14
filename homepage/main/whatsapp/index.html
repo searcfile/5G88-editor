@@ -3686,7 +3686,7 @@ if (refs.confirmBoxBackdrop) {
 if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
 if (refs.msgText) {
   refs.msgText.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.ctrlKey) {
+    if (e.key === 'Enter' && !e.ctrlKey && !e.shiftKey) {
       e.preventDefault();
       addTextMessage();
     }
@@ -3826,7 +3826,7 @@ if (refs.msgEditPasteBtn && refs.msgEditPasteBox) {
       if (refs.addImageBtn) refs.addImageBtn.addEventListener('click', addImageMessage);
 if (refs.imgCaption) {
   refs.imgCaption.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.ctrlKey) {
+    if (e.key === 'Enter' && !e.ctrlKey && !e.shiftKey) {
       e.preventDefault();
       addImageMessage();
     }
