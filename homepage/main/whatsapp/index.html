@@ -340,10 +340,18 @@ input[type="color"]{
   overflow:hidden;
 }
 .set-profile-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
   padding:16px 18px;
   border-bottom:1px solid var(--border-input);
+}
+
+.set-profile-title{
   font-size:18px;
   font-weight:700;
+  color:var(--page-text);
 }
 .set-profile-img{
     width: 110px;
@@ -1772,7 +1780,14 @@ body.has-custom-wallpaper .chat-shell{
 
       <div class="hidden" id="profileModalBackdrop" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;align-items:center;justify-content:center;padding:20px;">
         <div id="profileModal" class="set-profile">
-          <div class="set-profile-header">Edit Profile</div>
+  <div class="set-profile-header">
+  <div class="set-profile-title">Edit Profile</div>
+  <button id="closeProfileModalBtn" type="button" class="msg-edit-x" aria-label="Close">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"/>
+    </svg>
+  </button>
+</div>
           <div style="padding:18px;display:grid;gap:14px;">
             <div style="display:flex;justify-content:center;">
               <div id="profileModalAvatar" class="set-profile-img"></div>
@@ -2041,6 +2056,7 @@ clearChatBtn: $('clearChatBtn'),
       changeProfileBtn: $('changeProfileBtn'),
       viewProfileBtn: $('viewProfileBtn'),
       cancelProfileBtn: $('cancelProfileBtn'),
+      closeProfileModalBtn: $('closeProfileModalBtn'),
       updateProfileBtn: $('updateProfileBtn'),
       deleteProfileBtn: $('deleteProfileBtn'),
       msgEditBackdrop: $('msgEditBackdrop'),
@@ -3452,6 +3468,7 @@ function closeProfilePreviewModal(){
       if (refs.openProfileModalBtn) refs.openProfileModalBtn.addEventListener('click', openProfileModal);
       if (refs.openProfileFromHeader) refs.openProfileFromHeader.addEventListener('click', openProfileModal);
       if (refs.cancelProfileBtn) refs.cancelProfileBtn.addEventListener('click', closeProfileModal);
+      if (refs.closeProfileModalBtn) refs.closeProfileModalBtn.addEventListener('click', closeProfileModal);
 
       if (refs.profileModalBackdrop) {
         refs.profileModalBackdrop.addEventListener('click', (e) => {
