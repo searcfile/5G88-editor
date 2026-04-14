@@ -3684,6 +3684,32 @@ if (refs.confirmBoxBackdrop) {
 }
 
 if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
+if (refs.msgText) {
+  refs.msgText.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      addTextMessage();
+    }
+  });
+}
+
+if (refs.msgDateLabel) {
+  refs.msgDateLabel.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTextMessage();
+    }
+  });
+}
+
+if (refs.msgTimeInput) {
+  refs.msgTimeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTextMessage();
+    }
+  });
+}
 if (refs.msgTimeInput) {
   refs.msgTimeInput.addEventListener('input', saveFormDraft);
 }
@@ -3798,6 +3824,23 @@ if (refs.msgEditPasteBtn && refs.msgEditPasteBox) {
   });
 }
       if (refs.addImageBtn) refs.addImageBtn.addEventListener('click', addImageMessage);
+      if (refs.imgCaption) {
+  refs.imgCaption.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      addImageMessage();
+    }
+  });
+}
+
+if (refs.imgTimeInput) {
+  refs.imgTimeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addImageMessage();
+    }
+  });
+}
       if (refs.clearImageInputBtn) refs.clearImageInputBtn.addEventListener('click', clearPendingImage);
 
       if (refs.mineColor) {
