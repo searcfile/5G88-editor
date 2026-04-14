@@ -2335,6 +2335,21 @@ function setNowTimeInput(textInputEl, hiddenEl){
   textInputEl.dataset.lastValid = textValue;
   hiddenEl.value = hiddenValue;
 }
+function insertNewLineAtCursor(el){
+  if (!el) return;
+
+  const start = el.selectionStart ?? el.value.length;
+  const end = el.selectionEnd ?? el.value.length;
+  const value = el.value || '';
+
+  el.value = value.slice(0, start) + '\n' + value.slice(end);
+
+  const nextPos = start + 1;
+  el.selectionStart = nextPos;
+  el.selectionEnd = nextPos;
+
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}
 function initCustomTimeInputs(){
   if (refs.msgTimeInput && refs.msgTime) {
     refs.msgTimeInput.dataset.lastValid = refs.msgTimeInput.value.trim().toUpperCase();
@@ -3687,10 +3702,20 @@ if (refs.confirmBoxBackdrop) {
 if (refs.addTextBtn) refs.addTextBtn.addEventListener('click', addTextMessage);
 if (refs.msgText) {
   refs.msgText.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.ctrlKey && !e.shiftKey) {
+    if (e.key !== 'Enter') return;
+
+    if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
-      addTextMessage();
+      insertNewLineAtCursor(refs.msgText);
+      return;
     }
+
+    if (e.shiftKey) {
+      return;
+    }
+
+    e.preventDefault();
+    addTextMessage();
   });
 }
 
@@ -3827,10 +3852,20 @@ if (refs.msgEditPasteBtn && refs.msgEditPasteBox) {
       if (refs.addImageBtn) refs.addImageBtn.addEventListener('click', addImageMessage);
 if (refs.imgCaption) {
   refs.imgCaption.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.ctrlKey && !e.shiftKey) {
+    if (e.key !== 'Enter') return;
+
+    if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
-      addImageMessage();
+      insertNewLineAtCursor(refs.imgCaption);
+      return;
     }
+
+    if (e.shiftKey) {
+      return;
+    }
+
+    e.preventDefault();
+    addImageMessage();
   });
 }
 
