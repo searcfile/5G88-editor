@@ -327,6 +327,8 @@
   height:100%;
   overflow:hidden;
   background-color:#161717;
+  background-image:var(--chat-bg-image);
+  background-position:left top;
   transition:background-size 0.2s ease, background-position 0.2s ease;
 }
 body.has-default-wallpaper .chat-shell{
@@ -339,7 +341,13 @@ body.has-default-wallpaper .chat-shell{
   background-position:left top, left top, left top;
   background-repeat:repeat, repeat, repeat;
 }
-
+body.has-custom-wallpaper .chat-shell{
+  background-color:#161717;
+  background-image:var(--chat-bg-image);
+  background-size:contain;
+  background-position:center top;
+  background-repeat:no-repeat;
+}
   .topbar{
     height:64px;
     background:#161717;
@@ -450,21 +458,12 @@ body.has-default-wallpaper .chat-shell{
   overflow-y:auto;
   overflow-x:hidden;
   padding:20px 15px 0px;
+
   background:transparent;
+
   scroll-behavior:smooth;
 }
-body.has-custom-wallpaper .chat-area::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
 
-  background-image:var(--chat-bg-image);
-  background-size:cover;
-  background-position:center top;
-  background-repeat:no-repeat;
-}
 .chat-inner{
   max-width:100%;
   width:100%;
@@ -474,9 +473,8 @@ body.has-custom-wallpaper .chat-area::before{
   gap:0;
   min-height:100%;
   padding-bottom:10px;
-  position:relative;
-  z-index:1;
 }
+
 .msg-row{
   display:flex;
   width:100%;
