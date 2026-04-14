@@ -674,6 +674,12 @@ function handleFloatingFabResponsive() {
   const fab = document.getElementById("floatingFabWrap");
   if (!fab) return;
 
+  if (shouldHideFloatingFabGroup()) {
+    fab.style.display = "none";
+    fab.classList.remove("open");
+    return;
+  }
+
   if (window.innerWidth <= 355) {
     fab.style.display = "none";
     fab.classList.remove("open");
@@ -681,7 +687,6 @@ function handleFloatingFabResponsive() {
     fab.style.display = "";
   }
 }
-
 window.addEventListener("resize", handleFloatingFabResponsive);
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1277,10 +1282,7 @@ const FLOATING_LIVECHAT_HIDE_URLS = [
   "whatsapp"
 ];
 
-function updateFloatingLivechatVisibility() {
-  const liveBtn = document.getElementById("floatingLivechatBtn");
-  if (!liveBtn) return;
-
+function shouldHideFloatingFabGroup() {
   const activeTabEl = document.querySelector(".tab.active-tab");
   const activeLabel = String(activeTabEl?.dataset?.label || "")
     .trim()
@@ -1291,7 +1293,27 @@ function updateFloatingLivechatVisibility() {
   const hideByLabel = FLOATING_LIVECHAT_HIDE_TABS.has(activeLabel);
   const hideByUrl = FLOATING_LIVECHAT_HIDE_URLS.some(key => activeUrl.includes(key));
 
-  liveBtn.style.display = (hideByLabel || hideByUrl) ? "none" : "flex";
+  return hideByLabel || hideByUrl;
+}
+
+function updateFloatingLivechatVisibility() {
+  const fabWrap = document.getElementById("floatingFabWrap");
+  if (!fabWrap) return;
+
+  const shouldHide = shouldHideFloatingFabGroup();
+
+  if (shouldHide) {
+    fabWrap.style.display = "none";
+    fabWrap.classList.remove("open");
+    return;
+  }
+
+  if (window.innerWidth <= 355) {
+    fabWrap.style.display = "none";
+    fabWrap.classList.remove("open");
+  } else {
+    fabWrap.style.display = "";
+  }
 }
 function applyActiveTabFromStorage(){
   const activeUrl = getActiveTabUrl();
