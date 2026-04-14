@@ -1778,15 +1778,18 @@ window.addEventListener("load", () => {
     });
     return;
   }
-  renderTabs();
-  applyTabVisibility();  // <-- opsional, double check awal
-  const tabs = getTabs();
-  updateEmptyState();
-  updateGameLogCheckmarks();
-  updateGameLinksCheckmarks();
+renderTabs();
+applyTabVisibility();  // <-- opsional, double check awal
+const tabs = getTabs();
+updateEmptyState();
+updateGameLogCheckmarks();
+updateGameLinksCheckmarks();
+
+setTimeout(() => {
   updateFloatingLivechatVisibility();
-  }, 100);
-  const activeUrl = getActiveTabUrl();
+}, 100);
+
+const activeUrl = getActiveTabUrl();
   const match = tabs.find(tab => normUrl(tab.url) === activeUrl);
 
   const liveBtn = document.getElementById("liveChatBtn");
