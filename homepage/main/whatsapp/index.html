@@ -891,6 +891,10 @@
   flex:0 0 auto;
   line-height:0;
   align-self:flex-start;
+  width:100%;
+  object-fit:contain;
+  vertical-align:top;
+  cursor:pointer;
 }
 .bubble.media-only:not(:has(.caption)) .image-wrap::after{
   content:"";
@@ -902,13 +906,6 @@
   pointer-events:none;
   z-index:2;
   background: linear-gradient(to top, rgba(11, 20, 26, 0.5), rgba(11, 20, 26, 0));
-}
-.image-wrap img{
-  display:block;
-  width:100%;
-  height:auto;
-  object-fit:contain;
-  vertical-align:top;
 }
 /* portrait */
 .bubble.media-only.is-portrait{
@@ -2630,7 +2627,18 @@ if (item.type === 'text') {
           </div>
         `;
       }
+if (item.type === 'image') {
+  const chatImg = bubble.querySelector('.image-wrap img');
 
+  if (chatImg) {
+    chatImg.style.cursor = 'pointer';
+
+    chatImg.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openChatImagePreviewModal(item.image);
+    });
+  }
+}
 const bubbleActions = document.createElement('div');
 bubbleActions.className = 'bubble-actions';
 bubbleActions.innerHTML = `
@@ -3095,7 +3103,25 @@ function openProfilePreviewModal(){
     resetProfilePreviewTransform();
   }
 }
+function openChatImagePreviewModal(src){
+  if (!src) return;
+  if (!refs.profilePreviewBackdrop || !refs.profilePreviewImage) return;
 
+  refs.profilePreviewImage.src = src;
+  refs.profilePreviewBackdrop.classList.remove('hidden');
+  refs.profilePreviewBackdrop.style.display = 'flex';
+
+  const onLoad = () => {
+    resetProfilePreviewTransform();
+    refs.profilePreviewImage.removeEventListener('load', onLoad);
+  };
+
+  refs.profilePreviewImage.addEventListener('load', onLoad);
+
+  if (refs.profilePreviewImage.complete) {
+    resetProfilePreviewTransform();
+  }
+}
 function closeProfilePreviewModal(){
   if (!refs.profilePreviewBackdrop) return;
 
