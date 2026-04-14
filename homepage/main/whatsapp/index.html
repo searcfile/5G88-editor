@@ -519,42 +519,24 @@
   white-space:normal;
   word-break:break-word;
   overflow:visible;
-    box-shadow:
-    0 2px 3px rgba(0,0,0,.25),
-    0 6px 12px rgba(0,0,0,.25);
+  overflow:hidden;
 }
-.bubble::after{
+.bubble::before{
   content:"";
   position:absolute;
-  left:10px;
-  right:10px;
-  bottom:-6px;
-  height:12px;
-
-  /* shadow bawah macam gambar kau */
-  background:linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.25),
-    rgba(0,0,0,0)
-  );
-
-  border-radius:50%;
-  filter:blur(4px);
-  z-index:-1;
-}
-.bubble.media-only::after{
-  left:15px;
-  right:15px;
-  bottom:-8px;
-  height:14px;
+  left:0;
+  right:0;
+  bottom:0;
+  height:38px;
+  pointer-events:none;
+  z-index:1;
 
   background:linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.35),
-    rgba(0,0,0,0)
+    to top,
+    rgba(0,0,0,.35) 0%,
+    rgba(0,0,0,.18) 45%,
+    rgba(0,0,0,0) 100%
   );
-
-  filter:blur(6px);
 }
 .bubble-actions{
   position:absolute;
@@ -857,6 +839,13 @@
   letter-spacing:0;
   pointer-events:none;
   transform:none;
+  z-index:2;
+}
+  .bubble .bubble-text,
+.bubble .caption,
+.image-wrap{
+  position:relative;
+  z-index:2;
 }
 .msg-row.mine .bubble-time{
   color:var(--mine-time);
