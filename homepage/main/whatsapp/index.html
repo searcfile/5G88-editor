@@ -3042,7 +3042,7 @@ function openEditMenu(index){
     }
 function resetToDefault(){
   openConfirmBox(
-    'Reset semua data balik ke default? Ini akan buang chat, wallpaper, profile, draft form, dan sidebar width yang disimpan.',
+    'Are you sure reset to default? All you data will be cleared if you reset to default!',
     () => {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(SIDEBAR_KEY);
@@ -3853,7 +3853,7 @@ if (refs.resetDefaultBtn) {
       
 if (refs.clearChatBtn) {
   refs.clearChatBtn.addEventListener('click', () => {
-    openConfirmBox('Clear semua chat?', () => {
+    openConfirmBox('Clear all chat?', () => {
       state.messages = [];
       saveAndRender();
     }, 'Clear Chat');
@@ -3957,8 +3957,7 @@ document.addEventListener('keydown', (e) => {
 
   window.addEventListener("message", function (e) {
     const allowedOrigins = [
-      "https://5g88-main.vercel.app",
-      "https://searcfile.github.io"
+      "https://5g88-main.vercel.app"
     ];
     if (!allowedOrigins.includes(e.origin)) return;
 
