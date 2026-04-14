@@ -519,9 +519,22 @@
   white-space:normal;
   word-break:break-word;
   overflow:visible;
-  overflow:hidden;
 }
-.bubble::before{
+  .bubble.media-only{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:0;
+  position:relative;
+  padding:3px;
+  min-width:0;
+  width:auto;
+  overflow:visible;
+  border-radius:7.5px;
+  box-sizing:border-box;
+    overflow:hidden;
+}
+.bubble.media-only::before{
   content:"";
   position:absolute;
   left:0;
@@ -529,14 +542,8 @@
   bottom:0;
   height:38px;
   pointer-events:none;
-  z-index:1;
-
-  background:linear-gradient(
-    to top,
-    rgba(0,0,0,.35) 0%,
-    rgba(0,0,0,.18) 45%,
-    rgba(0,0,0,0) 100%
-  );
+  z-index:2;
+  background: linear-gradient(to top, rgba(11, 20, 26, 0.5), rgba(11, 20, 26, 0));
 }
 .bubble-actions{
   position:absolute;
@@ -839,7 +846,7 @@
   letter-spacing:0;
   pointer-events:none;
   transform:none;
-  z-index:2;
+  z-index:3;
 }
   .bubble .bubble-text,
 .bubble .caption,
