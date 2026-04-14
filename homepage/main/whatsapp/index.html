@@ -1493,21 +1493,17 @@ body.has-custom-wallpaper .chat-shell{
     <aside class="sidebar">
       <div class="sidebar-scroll">
         <section class="card">
-          <h3>Add Text Bubble</h3>
+          <h3>Message</h3>
           <div class="grid2">
 <div>
-  <label class="lbl">Bubble Side</label>
-
   <div class="side-toggle" id="msgSideToggle">
     <button type="button" class="side-toggle-btn active" data-side="mine">Mine</button>
     <button type="button" class="side-toggle-btn" data-side="their">Their</button>
   </div>
-
   <input type="hidden" id="msgSide" value="mine" />
 </div>
             
 <div>
-  <label class="lbl">Time</label>
   <div class="time-input-row">
     <input id="msgTimeInput" type="text" placeholder="Input Time" />
     <button type="button" id="msgNowBtn" class="now-btn">Now</button>
@@ -1517,34 +1513,30 @@ body.has-custom-wallpaper .chat-shell{
 </div>
           <div style="margin-top:10px">
             <label class="lbl">Message Text</label>
-            <textarea id="msgText" placeholder="Taip mesej di sini..."></textarea>
+            <textarea id="msgText" placeholder="Type your message..."></textarea>
           </div>
           <div style="margin-top:10px">
-            <label class="lbl">Date Separator Label</label>
-            <input id="msgDateLabel" type="text" placeholder="Contoh: 1/17/2026 atau kosong jika tak mahu" />
+            <label class="lbl">Message Date</label>
+            <input id="msgDateLabel" type="text" placeholder="Input Date" />
           </div>
           <div style="margin-top:12px" class="btn-row">
-            <button id="addTextBtn" class="btn-h1">Add Text Bubble</button>
-            <button id="clearInputsBtn" class="ghost">Clear Inputs</button>
+            <button id="addTextBtn" class="btn-h1">Create Message</button>
+            <button id="clearInputsBtn" class="ghost">Clear Message</button>
           </div>
         </section>
 
         <section class="card">
-          <h3>Add Image Bubble</h3>
+          <h3>Image + Caption</h3>
           <div class="grid2">
 <div>
-  <label class="lbl">Bubble Side</label>
-
   <div class="side-toggle" id="imgSideToggle">
     <button type="button" class="side-toggle-btn active" data-side="mine">Mine</button>
     <button type="button" class="side-toggle-btn" data-side="their">Their</button>
   </div>
-
   <input type="hidden" id="imgSide" value="mine" />
 </div>
             
 <div>
-  <label class="lbl">Time</label>
   <div class="time-input-row">
     <input id="imgTimeInput" type="text" placeholder="Input Time" />
     <button type="button" id="imgNowBtn" class="now-btn">Now</button>
@@ -1565,12 +1557,12 @@ body.has-custom-wallpaper .chat-shell{
 <div style="margin-top:10px">
   <label class="lbl">Paste Image</label>
   <div id="imgPasteBox" class="paste-box" tabindex="0">
-    Click here and press <b>Ctrl + V</b> to paste image
+    Click here and press <b> Ctrl + V </b> to paste image
   </div>
 </div>
           <div style="margin-top:10px">
             <label class="lbl">Caption (optional)</label>
-            <textarea id="imgCaption" placeholder="Contoh: 3in1"></textarea>
+            <textarea id="imgCaption" placeholder="Type your caption..."></textarea>
           </div>
           <div class="switch" style="margin-top:10px">
             <span>Show forward icon on image</span>
@@ -1578,10 +1570,9 @@ body.has-custom-wallpaper .chat-shell{
           </div>
           <div id="imgPreviewList" class="thumb-list"></div>
           <div style="margin-top:12px" class="btn-row">
-            <button id="addImageBtn" class="btn-h1">Add Image Bubble</button>
+            <button id="addImageBtn" class="btn-h1">Create Image</button>
             <button id="clearImageInputBtn" class="ghost">Clear Image</button>
           </div>
-          <div class="hint">Gambar disimpan dalam localStorage sebagai base64. Untuk fail yang terlalu besar, resize dulu supaya storage tidak cepat penuh.</div>
         </section>
 
 <section class="card">
