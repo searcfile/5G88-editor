@@ -1498,29 +1498,40 @@ body.has-custom-wallpaper .chat-shell{
 .msg-edit-remove-image:hover{
   background:#b42318;
 }
-  @media (max-width: 640px){
+@media (max-width: 760px){
+  .grid2{
+    grid-template-columns:1fr !important;
+  }
+
   .side-toggle{
-    flex-wrap:wrap;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    width:100%;
   }
 
   .side-toggle .side-toggle-btn{
-    flex:1 1 calc(50% - 4px);
+    width:100%;
     min-width:0;
   }
 
   .time-input-row{
-    flex-wrap:wrap;
-    align-items:stretch;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 70px;
+    gap:8px;
+    width:100%;
+    align-items:center;
   }
 
   .time-input-row input{
-    flex:1 1 calc(100% - 70px);
+    width:100%;
     min-width:0;
   }
 
   .time-input-row .now-btn{
-    flex:0 0 70px;
+    width:70px;
     min-width:70px;
+    padding:0;
   }
 }
 </style>
