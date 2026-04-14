@@ -1666,6 +1666,7 @@ body.has-custom-wallpaper .chat-shell{
             <button id="undoBtn" class="ghost">Undo Last</button>
             <button id="exportBtn" class="ghost">Export JSON</button>
             <button id="importBtn" class="ghost">Import JSON</button>
+            <button id="resetDefaultBtn" class="ghost">Reset Default</button>
             <button id="clearChatBtn" class="danger">Clear All Chat</button>
           </div>
           <input id="importFile" type="file" accept="application/json" style="display:none" />
@@ -1957,11 +1958,12 @@ body.has-custom-wallpaper .chat-shell{
       previewWallpaperBtn: $('previewWallpaperBtn'),
       removeWallpaperBtn: $('removeWallpaperBtn'),
       resetThemeBtn: $('resetThemeBtn'),
-      undoBtn: $('undoBtn'),
-      exportBtn: $('exportBtn'),
-      importBtn: $('importBtn'),
-      importFile: $('importFile'),
-      clearChatBtn: $('clearChatBtn'),
+undoBtn: $('undoBtn'),
+exportBtn: $('exportBtn'),
+importBtn: $('importBtn'),
+resetDefaultBtn: $('resetDefaultBtn'),
+importFile: $('importFile'),
+clearChatBtn: $('clearChatBtn'),
       chatList: $('chatList'),
       chatArea: $('chatArea'),
       openProfileModalBtn: $('openProfileModalBtn'),
@@ -2957,7 +2959,50 @@ function openEditMenu(index){
       applyTheme();
       renderChat();
     }
+function resetToDefault(){
+  openConfirmBox(
+    'Reset semua data balik ke default? Ini akan buang chat, wallpaper, profile, draft form, dan sidebar width yang disimpan.',
+    () => {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(SIDEBAR_KEY);
+      localStorage.removeItem(FORM_DRAFT_KEY);
 
+      state = structuredClone(defaultState);
+      pendingImageBase64 = '';
+      sidebarWidth = 320;
+
+      if (refs.importFile) refs.importFile.value = '';
+      if (refs.imgFile) refs.imgFile.value = '';
+      if (refs.wallpaperFile) refs.wallpaperFile.value = '';
+      if (refs.profileModalFile) refs.profileModalFile.value = '';
+      if (refs.msgEditImageFile) refs.msgEditImageFile.value = '';
+
+      clearPendingImage();
+
+      if (refs.msgText) refs.msgText.value = '';
+      if (refs.msgDateLabel) refs.msgDateLabel.value = '';
+      if (refs.msgTimeInput) refs.msgTimeInput.value = '';
+      if (refs.msgTime) refs.msgTime.value = '';
+      if (refs.imgCaption) refs.imgCaption.value = '';
+      if (refs.imgTimeInput) refs.imgTimeInput.value = '';
+      if (refs.imgTime) refs.imgTime.value = '';
+      if (imgFileName) imgFileName.textContent = 'No file chosen';
+
+      if (refs.msgSide) refs.msgSide.value = 'mine';
+      if (refs.imgSide) refs.imgSide.value = 'mine';
+
+      msgSideToggleBtns.forEach(b => b.classList.remove('active'));
+      document.querySelector('#msgSideToggle .side-toggle-btn[data-side="mine"]')?.classList.add('active');
+
+      imgSideToggleBtns.forEach(b => b.classList.remove('active'));
+      document.querySelector('#imgSideToggle .side-toggle-btn[data-side="mine"]')?.classList.add('active');
+
+      saveAndRender();
+      initResizer();
+    },
+    'Reset Default'
+  );
+}
     function openProfileModal(){
       if (refs.profileModalName) refs.profileModalName.value = state.profile.name || '';
       if (refs.profileModalStatus) refs.profileModalStatus.value = state.profile.status || '';
@@ -3705,7 +3750,10 @@ if (refs.resetThemeBtn) {
           saveAndRender();
         });
       }
-
+if (refs.resetDefaultBtn) {
+  refs.resetDefaultBtn.addEventListener('click', resetToDefault);
+}
+      
 if (refs.clearChatBtn) {
   refs.clearChatBtn.addEventListener('click', () => {
     openConfirmBox('Clear semua chat?', () => {
