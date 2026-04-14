@@ -3270,12 +3270,11 @@ function closeConfirmBox(){
 
   if (refs.confirmBoxNoBtn) {
     refs.confirmBoxNoBtn.textContent = 'No';
+    refs.confirmBoxNoBtn.classList.remove('btn-h1');
   }
-
   refs.confirmBoxBackdrop.classList.add('hidden');
   refs.confirmBoxBackdrop.style.display = 'none';
 }
-
 function runConfirmYes(){
   const handler = confirmYesHandler;
   closeConfirmBox();
@@ -3284,12 +3283,16 @@ function runConfirmYes(){
 function showNoProfileMessage(){
   openConfirmBox('No profile image.', null, 'No Profile');
 
+  // hide button YES
   if (refs.confirmBoxYesBtn) {
     refs.confirmBoxYesBtn.style.display = 'none';
   }
-
   if (refs.confirmBoxNoBtn) {
     refs.confirmBoxNoBtn.textContent = 'OK';
+
+    // 🔥 buang class lama kalau ada
+    refs.confirmBoxNoBtn.classList.remove('ghost','danger');
+    refs.confirmBoxNoBtn.classList.add('btn-h1');
   }
 }
 function openProfilePreviewModal(){
