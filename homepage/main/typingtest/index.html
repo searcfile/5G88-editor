@@ -196,9 +196,48 @@
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
     .tab-btn{padding:0px 15px;border-radius:6px;border:1px solid transparent;background:transparent;color:rgba(255,255,255,0.85);cursor:pointer;font-size:14px;height:32px;transition: all.3s ease}
     .tab-btn:hover{color:#1668dc;}.tab-btn.active{color:#1668dc;}
-    .tab-content{display:none}
-    .tab-content.active{display:block}
+.tab-content{display:none}
+.tab-content.active{display:block}
 
+#tab-myhistory,
+#tab-mistakes{
+  max-height:480px;
+  overflow:auto;
+  padding-right:4px;
+}
+#tab-myhistory .history-table thead th,
+#tab-mistakes .mistake-table thead th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:#0d0d0d;
+}
+/* ================= SCROLLBAR GLOBAL ================= */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 6px; /* nipis */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #555 transparent;
+}
     .empty-box{padding:18px;text-align:center;color:var(--muted);border:1px dashed #2a2a2a;border-radius:16px;background:#0a0a0a}
 
     .result-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:18px;z-index:90}
