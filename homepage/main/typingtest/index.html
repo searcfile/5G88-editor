@@ -479,7 +479,52 @@ testSaved: false
     };
 
     let db = null;
+function getLastSessionStorageKey() {
+  return state.userKey ? `typingTestLastSession_${state.userKey}` : 'typingTestLastSession_guest';
+}
 
+function saveLastSessionToStorage() {
+  try {
+    const payload = {
+      history: state.history || [],
+      sessionMistakes: state.sessionMistakes || {},
+      secondSeries: state.secondSeries || [],
+      typedAt: Date.now(),
+      typedAtText: formatDateTime(Date.now())
+    };
+    localStorage.setItem(getLastSessionStorageKey(), JSON.stringify(payload));
+  } catch (err) {
+    console.warn('saveLastSessionToStorage failed:', err);
+  }
+}
+
+function loadLastSessionFromStorage() {
+  try {
+    const raw = localStorage.getItem(getLastSessionStorageKey());
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (err) {
+    console.warn('loadLastSessionFromStorage failed:', err);
+    return null;
+  }
+}
+
+function restoreLastSessionUI() {
+  const saved = loadLastSessionFromStorage();
+  if (!saved) return;
+
+  state.history = Array.isArray(saved.history) ? saved.history : [];
+  state.sessionMistakes = saved.sessionMistakes || {};
+  state.secondSeries = Array.isArray(saved.secondSeries) ? saved.secondSeries : [];
+
+  renderHistory();
+  renderMistakes();
+  drawLineChart(document.getElementById('wpmCanvas'), state.secondSeries);
+
+  if (saved.typedAtText) {
+    els.lastSavedLabel.textContent = `Last session • ${saved.typedAtText}`;
+  }
+}
     function sanitizeEmail(email=''){
       return String(email).trim().toLowerCase().replace(/\./g,'_');
     }
@@ -541,6 +586,7 @@ function setUser(user){
       );
 
   bindRealtime();
+restoreLastSessionUI();
 }
 
     function loadUserFromStorage(){
@@ -639,9 +685,15 @@ function setUser(user){
       els.lastSavedLabel.textContent = 'No result saved yet';
       if (full) buildPrompt();
       updateStats();
-      renderMistakes();
-      renderHistory();
-      drawLineChart(document.getElementById('wpmCanvas'), []);
+      const saved = loadLastSessionFromStorage();
+
+if (saved && !state.started && !state.finished) {
+  restoreLastSessionUI();
+} else {
+  renderMistakes();
+  renderHistory();
+  drawLineChart(document.getElementById('wpmCanvas'), []);
+}
       updateTestInfo();
     }
 
@@ -768,10 +820,11 @@ function setUser(user){
       els.typingInput.blur();
       els.testStatus.textContent = 'Test completed.';
       updateStats();
-      fillResultModal();
-      openResultModal();
-      saveResult(false);
-      updateTestInfo();
+fillResultModal();
+saveLastSessionToStorage();
+openResultModal();
+saveResult(false);
+updateTestInfo();
     }
 
     function getComputedStats(){
