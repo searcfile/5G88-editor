@@ -973,6 +973,22 @@ function getPromptTargetWordCount() {
 
   return Math.max(4, lines * wordsPerLine);
 }
+function appendMorePromptWords() {
+  const bank = WORD_BANK[state.language];
+  const extraWords = [];
+  const extraCount = getPromptTargetWordCount();
+
+  if (state.mode === 'quote') {
+    const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
+    const allWords = quote.trim().split(/\s+/);
+    state.promptWords.push(...allWords.slice(0, extraCount));
+  } else {
+    for (let i = 0; i < extraCount; i++) {
+      extraWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
+    }
+    state.promptWords.push(...extraWords);
+  }
+}
 function updateTypingSettingsUI() {
   const prompt = els.promptText;
   if (!prompt) return;
@@ -1153,15 +1169,23 @@ if (saved && !state.started && !state.finished) {
           }
         }
       }
-      state.currentWordIndex++;
-      state.currentInput = '';
-      if (state.currentWordIndex >= state.promptWords.length) {
-        finishTest();
-      } else {
-        renderPrompt();
-        updateStats();
-        renderMistakes();
-      }
+state.currentWordIndex++;
+state.currentInput = '';
+
+if (state.currentWordIndex >= state.promptWords.length) {
+  if (!state.finished && state.timeLeft > 0) {
+    appendMorePromptWords();
+    renderPrompt();
+    updateStats();
+    renderMistakes();
+  } else {
+    finishTest();
+  }
+} else {
+  renderPrompt();
+  updateStats();
+  renderMistakes();
+}
     }
 
     function finishTest(){
@@ -1786,7 +1810,10 @@ document.querySelectorAll('.duration-btn').forEach(btn => btn.addEventListener('
   state.duration = Number(btn.dataset.duration || 60);
   state.timeLeft = state.duration;
   saveTypingPrefsToStorage();
-  resetTest(true);
+  if (!state.promptWords.length) {
+    buildPrompt();
+  }
+  resetTest(false);
 }));
 
 els.languageSelect.addEventListener('change', () => {
@@ -1810,7 +1837,17 @@ if (typingSettingsBtn && typingSettingsPanel) {
     typingSettingsPanel.classList.toggle('hidden');
   });
 }
+document.addEventListener('click', (e) => {
+  if (!typingSettingsBtn || !typingSettingsPanel) return;
+  if (typingSettingsPanel.classList.contains('hidden')) return;
 
+  const clickedInsidePanel = typingSettingsPanel.contains(e.target);
+  const clickedButton = typingSettingsBtn.contains(e.target);
+
+  if (!clickedInsidePanel && !clickedButton) {
+    typingSettingsPanel.classList.add('hidden');
+  }
+});
 document.querySelectorAll('#fontFamilyOptions .ts-opt').forEach(btn => {
   btn.addEventListener('click', () => {
     state.fontFamily = btn.dataset.font || 'inter';
