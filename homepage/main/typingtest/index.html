@@ -29,7 +29,14 @@
     .app{width:100%;margin:0 auto;padding:15px 10px}
 
 .typing-settings-panel{
-  margin:0 0 16px 0;
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  z-index:100;
+  width:min(980px, calc(100vw - 40px));
+  max-height:70vh;
+  overflow:auto;
+  margin:0;
   padding:14px;
   background:linear-gradient(180deg,#0d0d0d,#101010);
   border:1px solid #1f1f1f;
@@ -179,6 +186,12 @@
 .toolbar-settings-btn:active{
   color:rgba(255,255,255,0.65);
 }
+.toolbar-settings-wrap{
+  position:relative;
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+}
     .select,.input{background:#141414;color:var(--text);border:1px solid #424242;border-radius:6px;padding:4px 11px;outline:none;transition: all .3s ease}
     .select:focus,.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,104,220,.22)}
     .btn{border:none;background:var(--primary);color:#fff;padding:0px 15px;border-radius:6px;cursor:pointer;transition:.18s ease;box-shadow:0 8px 20px rgba(22,104,220,.23);height:32px}
@@ -326,13 +339,23 @@ html {
       .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
       .result-main,.advanced-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
-    @media (max-width:760px){
-      .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .prompt-text{font-size:24px;min-height:150px}
-      .result-main,.advanced-grid{grid-template-columns:1fr}
-      .toolbar{align-items:flex-start}
-      .brand{padding:14px}
-    }
+@media (max-width:760px){
+  .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prompt-text{font-size:24px;min-height:150px}
+  .result-main,.advanced-grid{grid-template-columns:1fr}
+  .toolbar{align-items:flex-start}
+  .brand{padding:14px}
+
+  .typing-settings-panel{
+    width:min(95vw, 520px);
+    max-height:65vh;
+    right:0;
+  }
+
+  .typing-settings-row{
+    grid-template-columns:1fr;
+  }
+}
     .latest-row {
   background: rgba(22,104,220,0.1);
   border-left: 3px solid #1668dc;
@@ -341,64 +364,6 @@ html {
 </head>
 <body>
   <div class="app">
-<div id="typingSettingsPanel" class="typing-settings-panel hidden">
-  <div class="typing-settings-row">
-    <div class="typing-settings-label">Font Style</div>
-    <div class="typing-settings-options" id="fontFamilyOptions">
-      <button type="button" class="ts-opt active" data-font="inter">Inter</button>
-      <button type="button" class="ts-opt" data-font="arial">Arial</button>
-      <button type="button" class="ts-opt" data-font="georgia">Georgia</button>
-      <button type="button" class="ts-opt" data-font="monospace">Monospace</button>
-    </div>
-  </div>
-
-  <div class="typing-settings-row">
-    <div class="typing-settings-label">Font Size</div>
-    <div class="typing-settings-options" id="fontSizeOptions">
-      <button type="button" class="ts-opt" data-size="xs">XS</button>
-      <button type="button" class="ts-opt" data-size="sm">SM</button>
-      <button type="button" class="ts-opt active" data-size="md">MD</button>
-      <button type="button" class="ts-opt" data-size="lg">LG</button>
-      <button type="button" class="ts-opt" data-size="xl">XL</button>
-    </div>
-  </div>
-
-  <div class="typing-settings-row">
-    <div class="typing-settings-label">Line Count</div>
-    <div class="typing-settings-options line-count-grid" id="lineCountOptions">
-      <button type="button" class="ts-opt" data-lines="1">1</button>
-      <button type="button" class="ts-opt active" data-lines="2">2</button>
-      <button type="button" class="ts-opt" data-lines="3">3</button>
-      <button type="button" class="ts-opt" data-lines="4">4</button>
-      <button type="button" class="ts-opt" data-lines="5">5</button>
-      <button type="button" class="ts-opt" data-lines="6">6</button>
-      <button type="button" class="ts-opt" data-lines="7">7</button>
-      <button type="button" class="ts-opt" data-lines="8">8</button>
-      <button type="button" class="ts-opt" data-lines="9">9</button>
-      <button type="button" class="ts-opt" data-lines="10">10</button>
-      <button type="button" class="ts-opt" data-lines="11">11</button>
-      <button type="button" class="ts-opt" data-lines="12">12</button>
-      <button type="button" class="ts-opt" data-lines="13">13</button>
-      <button type="button" class="ts-opt" data-lines="14">14</button>
-      <button type="button" class="ts-opt" data-lines="15">15</button>
-      <button type="button" class="ts-opt" data-lines="16">16</button>
-      <button type="button" class="ts-opt" data-lines="17">17</button>
-      <button type="button" class="ts-opt" data-lines="18">18</button>
-      <button type="button" class="ts-opt" data-lines="19">19</button>
-      <button type="button" class="ts-opt" data-lines="20">20</button>
-      <button type="button" class="ts-opt" data-lines="21">21</button>
-      <button type="button" class="ts-opt" data-lines="22">22</button>
-      <button type="button" class="ts-opt" data-lines="23">23</button>
-      <button type="button" class="ts-opt" data-lines="24">24</button>
-      <button type="button" class="ts-opt" data-lines="25">25</button>
-      <button type="button" class="ts-opt" data-lines="26">26</button>
-      <button type="button" class="ts-opt" data-lines="27">27</button>
-      <button type="button" class="ts-opt" data-lines="28">28</button>
-      <button type="button" class="ts-opt" data-lines="29">29</button>
-      <button type="button" class="ts-opt" data-lines="30">30</button>
-    </div>
-  </div>
-</div>
     <div class="layout">
       <section class="panel left-panel">
 <div class="toolbar">
@@ -416,12 +381,73 @@ html {
     <button id="showResultBtn" class="btn ghost">Advanced Result</button>
   </div>
 
-  <button id="typingSettingsBtn" class="toolbar-settings-btn" type="button" aria-label="Typing settings">
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="3"></circle>
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 .33 1 1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.32.2.67.2 1s-.06.68-.2 1a1.65 1.65 0 0 0 .33 1.82z"></path>
-    </svg>
-  </button>
+  <div class="toolbar-settings-wrap">
+    <button id="typingSettingsBtn" class="toolbar-settings-btn" type="button" aria-label="Typing settings">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 .33 1 1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.32.2.67.2 1s-.06.68-.2 1a1.65 1.65 0 0 0 .33 1.82z"></path>
+      </svg>
+    </button>
+
+    <div id="typingSettingsPanel" class="typing-settings-panel hidden">
+      <div class="typing-settings-row">
+        <div class="typing-settings-label">Font Style</div>
+        <div class="typing-settings-options" id="fontFamilyOptions">
+          <button type="button" class="ts-opt active" data-font="inter">Inter</button>
+          <button type="button" class="ts-opt" data-font="arial">Arial</button>
+          <button type="button" class="ts-opt" data-font="georgia">Georgia</button>
+          <button type="button" class="ts-opt" data-font="monospace">Monospace</button>
+        </div>
+      </div>
+
+      <div class="typing-settings-row">
+        <div class="typing-settings-label">Font Size</div>
+        <div class="typing-settings-options" id="fontSizeOptions">
+          <button type="button" class="ts-opt" data-size="xs">XS</button>
+          <button type="button" class="ts-opt" data-size="sm">SM</button>
+          <button type="button" class="ts-opt active" data-size="md">MD</button>
+          <button type="button" class="ts-opt" data-size="lg">LG</button>
+          <button type="button" class="ts-opt" data-size="xl">XL</button>
+        </div>
+      </div>
+
+      <div class="typing-settings-row">
+        <div class="typing-settings-label">Line Count</div>
+        <div class="typing-settings-options line-count-grid" id="lineCountOptions">
+          <button type="button" class="ts-opt" data-lines="1">1</button>
+          <button type="button" class="ts-opt active" data-lines="2">2</button>
+          <button type="button" class="ts-opt" data-lines="3">3</button>
+          <button type="button" class="ts-opt" data-lines="4">4</button>
+          <button type="button" class="ts-opt" data-lines="5">5</button>
+          <button type="button" class="ts-opt" data-lines="6">6</button>
+          <button type="button" class="ts-opt" data-lines="7">7</button>
+          <button type="button" class="ts-opt" data-lines="8">8</button>
+          <button type="button" class="ts-opt" data-lines="9">9</button>
+          <button type="button" class="ts-opt" data-lines="10">10</button>
+          <button type="button" class="ts-opt" data-lines="11">11</button>
+          <button type="button" class="ts-opt" data-lines="12">12</button>
+          <button type="button" class="ts-opt" data-lines="13">13</button>
+          <button type="button" class="ts-opt" data-lines="14">14</button>
+          <button type="button" class="ts-opt" data-lines="15">15</button>
+          <button type="button" class="ts-opt" data-lines="16">16</button>
+          <button type="button" class="ts-opt" data-lines="17">17</button>
+          <button type="button" class="ts-opt" data-lines="18">18</button>
+          <button type="button" class="ts-opt" data-lines="19">19</button>
+          <button type="button" class="ts-opt" data-lines="20">20</button>
+          <button type="button" class="ts-opt" data-lines="21">21</button>
+          <button type="button" class="ts-opt" data-lines="22">22</button>
+          <button type="button" class="ts-opt" data-lines="23">23</button>
+          <button type="button" class="ts-opt" data-lines="24">24</button>
+          <button type="button" class="ts-opt" data-lines="25">25</button>
+          <button type="button" class="ts-opt" data-lines="26">26</button>
+          <button type="button" class="ts-opt" data-lines="27">27</button>
+          <button type="button" class="ts-opt" data-lines="28">28</button>
+          <button type="button" class="ts-opt" data-lines="29">29</button>
+          <button type="button" class="ts-opt" data-lines="30">30</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
         <div class="stats-grid">
