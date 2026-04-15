@@ -746,7 +746,7 @@
       updateStats();
       fillResultModal();
       openResultModal();
-      saveResult();
+      saveResult(false);
       updateTestInfo();
     }
 
@@ -872,70 +872,102 @@
       };
     }
 
-    async function saveResult(){
-      if (!state.dbReady || !state.userKey || state.saveLock || state.testSaved) return;
-      state.saveLock = true;
-      try {
-        const payload = getResultPayload();
-        const historyRef = db.ref(`typingTest/users/${state.userKey}/history`).push();
-        await historyRef.set(payload);
+async function saveResult(forceSave = false){
+  if (!state.dbReady) {
+    els.lastSavedLabel.textContent = 'Firebase not ready';
+    return false;
+  }
 
-        const userStatsRef = db.ref(`typingTest/users/${state.userKey}/stats`);
-        const snap = await userStatsRef.once('value');
-        const cur = snap.val() || {};
-        const totalTests = Number(cur.totalTests || 0) + 1;
-        const avgWpm = cur.avgWpm ? Math.round(((Number(cur.avgWpm) * Number(cur.totalTests || 0)) + payload.wpm) / totalTests) : payload.wpm;
-        const avgAcc = cur.avgAccuracy ? Math.round(((Number(cur.avgAccuracy) * Number(cur.totalTests || 0)) + payload.accuracy) / totalTests) : payload.accuracy;
-        const bestWpm = Math.max(Number(cur.bestWpm || 0), payload.wpm);
-        const bestAccuracy = Math.max(Number(cur.bestAccuracy || 0), payload.accuracy);
-        await userStatsRef.update({
-          bestWpm,
-          bestAccuracy,
-          avgWpm,
-          avgAccuracy: avgAcc,
-          totalTests,
-          lastTypingAt: payload.typedAt,
-          lastTypingText: payload.typedAtText,
-          lastDuration: payload.duration,
-          lastLanguage: payload.language,
-          updatedAt: firebase.database.ServerValue.TIMESTAMP
-        });
+  if (!state.userKey) {
+    els.lastSavedLabel.textContent = 'User login not detected';
+    return false;
+  }
 
-        await db.ref(`typingTest/users/${state.userKey}/profile`).update({
-          name: payload.user.name,
-          email: payload.user.email,
-          photo: payload.user.photo,
-          updatedAt: firebase.database.ServerValue.TIMESTAMP
-        });
+  if (state.saveLock) {
+    return false;
+  }
 
-        await db.ref(`typingTest/leaderboard/allTime/${state.userKey}`).set({
-          name: payload.user.name,
-          email: payload.user.email,
-          photo: payload.user.photo,
-          bestWpm,
-          bestAccuracy,
-          avgWpm,
-          avgAccuracy: avgAcc,
-          totalTests,
-          lastTypingAt: payload.typedAt,
-          lastTypingText: payload.typedAtText,
-          lastDuration: payload.duration,
-          lastLanguage: payload.language
-        });
+  if (state.testSaved && !forceSave) {
+    els.lastSavedLabel.textContent = 'Already saved';
+    return true;
+  }
 
-        state.totalTests = totalTests;
-        state.testSaved = true;
-        els.statTests.textContent = totalTests;
-        els.lastSavedLabel.textContent = `Saved • ${payload.typedAtText}`;
-        loadMyHistory();
-      } catch(err){
-        console.warn('saveResult failed:', err);
-        els.lastSavedLabel.textContent = 'Save failed';
-      } finally {
-        state.saveLock = false;
-      }
-    }
+  state.saveLock = true;
 
+  try {
+    const payload = getResultPayload();
+    const historyRef = db.ref(`typingTest/users/${state.userKey}/history`).push();
+    await historyRef.set(payload);
+
+    const userStatsRef = db.ref(`typingTest/users/${state.userKey}/stats`);
+    const snap = await userStatsRef.once('value');
+    const cur = snap.val() || {};
+
+    const prevTotalTests = Number(cur.totalTests || 0);
+    const shouldAddNewTest = !(forceSave && state.testSaved);
+    const totalTests = shouldAddNewTest ? (prevTotalTests + 1) : prevTotalTests;
+
+    const avgWpm = prevTotalTests > 0
+      ? Math.round(((Number(cur.avgWpm || 0) * prevTotalTests) + payload.wpm) / (shouldAddNewTest ? totalTests : prevTotalTests || 1))
+      : payload.wpm;
+
+    const avgAcc = prevTotalTests > 0
+      ? Math.round(((Number(cur.avgAccuracy || 0) * prevTotalTests) + payload.accuracy) / (shouldAddNewTest ? totalTests : prevTotalTests || 1))
+      : payload.accuracy;
+
+    const bestWpm = Math.max(Number(cur.bestWpm || 0), payload.wpm);
+    const bestAccuracy = Math.max(Number(cur.bestAccuracy || 0), payload.accuracy);
+
+    await userStatsRef.update({
+      bestWpm,
+      bestAccuracy,
+      avgWpm,
+      avgAccuracy: avgAcc,
+      totalTests,
+      lastTypingAt: payload.typedAt,
+      lastTypingText: payload.typedAtText,
+      lastDuration: payload.duration,
+      lastLanguage: payload.language,
+      updatedAt: firebase.database.ServerValue.TIMESTAMP
+    });
+
+    await db.ref(`typingTest/users/${state.userKey}/profile`).update({
+      name: payload.user.name,
+      email: payload.user.email,
+      photo: payload.user.photo || '',
+      updatedAt: firebase.database.ServerValue.TIMESTAMP
+    });
+
+    await db.ref(`typingTest/leaderboard/allTime/${state.userKey}`).set({
+      name: payload.user.name,
+      email: payload.user.email,
+      photo: payload.user.photo || '',
+      bestWpm,
+      bestAccuracy,
+      avgWpm,
+      avgAccuracy: avgAcc,
+      totalTests,
+      lastTypingAt: payload.typedAt,
+      lastTypingText: payload.typedAtText,
+      lastDuration: payload.duration,
+      lastLanguage: payload.language
+    });
+
+    state.totalTests = totalTests;
+    state.testSaved = true;
+    els.statTests.textContent = totalTests;
+    els.lastSavedLabel.textContent = `Saved • ${payload.typedAtText}`;
+
+    await loadMyHistory();
+    return true;
+  } catch(err){
+    console.warn('saveResult failed:', err);
+    els.lastSavedLabel.textContent = 'Save failed';
+    return false;
+  } finally {
+    state.saveLock = false;
+  }
+}
     function bindRealtime(){
       if (!state.dbReady || !state.userKey) return;
       bindPresence();
@@ -1124,7 +1156,13 @@ function renderLeaderboard() {
     els.typingInput.addEventListener('input', handleInput);
     els.showResultBtn.addEventListener('click', () => { fillResultModal(); openResultModal(); });
     els.closeResultBtn.addEventListener('click', closeResultModal);
-    els.saveAgainBtn.addEventListener('click', saveResult);
+    els.saveAgainBtn.addEventListener('click', async () => {
+  if (!state.testSaved) {
+    const ok = await saveResult(false);
+    if (!ok) return;
+  }
+  closeResultModal();
+});
     els.resultOverlay.addEventListener('click', (e) => { if (e.target === els.resultOverlay) closeResultModal(); });
     window.addEventListener('resize', () => {
       drawLineChart(document.getElementById('wpmCanvas'), state.secondSeries);
