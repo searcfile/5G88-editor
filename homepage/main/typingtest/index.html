@@ -423,6 +423,8 @@ presenceRef: null,
 myHistoryRef: null,
 leaderboardRef: null,
 presenceListRef: null,
+leaderboardChartPoints: [],
+leaderboardHoverIndex: -1,
 testSaved: false
     };
 
@@ -548,7 +550,28 @@ function restoreLastSessionUI() {
       return arr.length ? arr.reduce((a,b)=>a+b,0) / arr.length : 0;
     }
     function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+function getLeaderboardPointColor(value, min, max) {
+  if (max <= min) return '#7ee7a8';
 
+  const t = clamp((value - min) / (max - min), 0, 1);
+
+  let r, g, b;
+
+  // rendah = merah, tengah = kuning/oren, tinggi = hijau
+  if (t < 0.5) {
+    const k = t / 0.5;
+    r = 255;
+    g = Math.round(70 + (185 * k));
+    b = 80;
+  } else {
+    const k = (t - 0.5) / 0.5;
+    r = Math.round(255 - (130 * k));
+    g = 255;
+    b = Math.round(80 + (88 * k));
+  }
+
+  return `rgb(${r},${g},${b})`;
+}
     function initFirebase(){
       try {
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -1320,17 +1343,26 @@ function drawLineChart(canvas, data, mode = 'wpm'){
     ctx.stroke();
   }
 
-  if (!data || !data.length) return;
+  if (!data || !data.length) {
+    if (mode === 'leaderboard') state.leaderboardChartPoints = [];
+    return;
+  }
 
   const values = data.map(v => Number(v || 0));
   const max = Math.max(10, ...values);
+  const min = Math.min(...values);
 
-  ctx.beginPath();
-  values.forEach((v, i) => {
+  const points = values.map((v, i) => {
     const x = pad + (i / Math.max(1, values.length - 1)) * (width - pad * 2);
     const y = height - pad - (v / max) * (height - pad * 2);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
+    return { x, y, value: v, index: i };
+  });
+
+  // line
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    if (i === 0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
   });
 
   const lineColor = mode === 'leaderboard' ? '#7ee7a8' : '#1668dc';
@@ -1341,6 +1373,7 @@ function drawLineChart(canvas, data, mode = 'wpm'){
   ctx.lineCap = 'round';
   ctx.stroke();
 
+  // fill
   const gradient = ctx.createLinearGradient(0, pad, 0, height - pad);
   if (mode === 'leaderboard') {
     gradient.addColorStop(0, 'rgba(126,231,168,.30)');
@@ -1357,15 +1390,64 @@ function drawLineChart(canvas, data, mode = 'wpm'){
   ctx.fill();
 
   if (mode === 'leaderboard') {
-    values.forEach((v, i) => {
-      const x = pad + (i / Math.max(1, values.length - 1)) * (width - pad * 2);
-      const y = height - pad - (v / max) * (height - pad * 2);
+    state.leaderboardChartPoints = points.map((p, i) => ({
+      ...p,
+      r: 5.5 * ratio,
+      color: getLeaderboardPointColor(p.value, min, max),
+      row: state.leaderboard[i] || null
+    }));
+
+    state.leaderboardChartPoints.forEach((p, i) => {
+      const isHover = state.leaderboardHoverIndex === i;
 
       ctx.beginPath();
-      ctx.arc(x, y, 3.5 * ratio, 0, Math.PI * 2);
-      ctx.fillStyle = '#b8ffd1';
+      ctx.arc(p.x, p.y, isHover ? 6.8 * ratio : 4.2 * ratio, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
       ctx.fill();
+
+      ctx.lineWidth = 2 * ratio;
+      ctx.strokeStyle = 'rgba(255,255,255,.85)';
+      ctx.stroke();
     });
+
+    const hoverPoint = state.leaderboardChartPoints[state.leaderboardHoverIndex];
+    if (hoverPoint && hoverPoint.row) {
+      const row = hoverPoint.row;
+      const lines = [
+        row.name || row.email || 'User',
+        `Best WPM: ${Number(row.bestWpm || 0)}`,
+        `Best Acc: ${Number(row.bestAccuracy || 0)}%`,
+        `Tests: ${Number(row.totalTests || 0)}`,
+        `Last: ${row.lastTypingText || formatDateTime(row.lastTypingAt || 0)}`
+      ];
+
+      ctx.font = `${12 * ratio}px Arial`;
+      const padding = 10 * ratio;
+      const lineH = 16 * ratio;
+      const boxW = Math.max(...lines.map(t => ctx.measureText(t).width)) + padding * 2;
+      const boxH = lines.length * lineH + padding * 2;
+
+      let boxX = hoverPoint.x + 12 * ratio;
+      let boxY = hoverPoint.y - boxH - 12 * ratio;
+
+      if (boxX + boxW > width - pad) boxX = hoverPoint.x - boxW - 12 * ratio;
+      if (boxY < pad) boxY = hoverPoint.y + 12 * ratio;
+
+      ctx.fillStyle = 'rgba(8,10,12,.96)';
+      ctx.strokeStyle = 'rgba(255,255,255,.14)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(boxX, boxY, boxW, boxH, 10 * ratio);
+      ctx.fill();
+      ctx.stroke();
+
+      lines.forEach((line, idx) => {
+        ctx.fillStyle = idx === 0 ? '#ffffff' : 'rgba(255,255,255,.8)';
+        ctx.fillText(line, boxX + padding, boxY + padding + (idx + 1) * lineH - 4 * ratio);
+      });
+    }
+  } else {
+    state.leaderboardChartPoints = [];
   }
 }
 
@@ -1397,6 +1479,49 @@ function drawLineChart(canvas, data, mode = 'wpm'){
   closeResultModal();
 });
     els.resultOverlay.addEventListener('click', (e) => { if (e.target === els.resultOverlay) closeResultModal(); });
+const leaderboardCanvas = document.getElementById('wpmCanvas');
+
+if (leaderboardCanvas) {
+  leaderboardCanvas.addEventListener('mousemove', (e) => {
+    if (!state.leaderboardChartPoints.length) return;
+
+    const rect = leaderboardCanvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    const mx = (e.clientX - rect.left) * ratio;
+    const my = (e.clientY - rect.top) * ratio;
+
+    let found = -1;
+
+    state.leaderboardChartPoints.forEach((p, i) => {
+      const dx = mx - p.x;
+      const dy = my - p.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist <= (p.r + 8 * ratio)) {
+        found = i;
+      }
+    });
+
+    if (state.leaderboardHoverIndex !== found) {
+      state.leaderboardHoverIndex = found;
+      drawLineChart(
+        document.getElementById('wpmCanvas'),
+        state.leaderboard.map(x => Number(x.bestWpm || 0)),
+        'leaderboard'
+      );
+    }
+  });
+
+  leaderboardCanvas.addEventListener('mouseleave', () => {
+    if (state.leaderboardHoverIndex !== -1) {
+      state.leaderboardHoverIndex = -1;
+      drawLineChart(
+        document.getElementById('wpmCanvas'),
+        state.leaderboard.map(x => Number(x.bestWpm || 0)),
+        'leaderboard'
+      );
+    }
+  });
+}
 window.addEventListener('resize', () => {
   drawLineChart(
     document.getElementById('wpmCanvas'),
