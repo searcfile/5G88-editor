@@ -475,7 +475,7 @@ html {
       <aside class="panel right-panel">
         <div class="section-title">
           <h3>All Time Leaderboard</h3>
-          <span>Realtime from Firebase</span>
+          <span>All user</span>
         </div>
         <table class="leaderboard-table">
           <thead>
@@ -483,8 +483,8 @@ html {
               <th>#</th>
               <th>User</th>
               <th>Best WPM</th>
-              <th>Best Acc</th>
-              <th>Tests</th>
+              <th>Best Accuracy</th>
+              <th>Typing</th>
               <th>Last Typing</th>
             </tr>
           </thead>
@@ -888,7 +888,7 @@ function getLeaderboardPointColor(value, min, max) {
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         db = firebase.database();
         state.dbReady = true;
-        els.syncState.textContent = 'Realtime sync connected';
+        els.syncState.textContent = 'Total user online';
       } catch(err){
         console.warn('Firebase init failed:', err);
         els.syncState.textContent = 'Firebase config missing';
