@@ -1291,53 +1291,76 @@ if (saved && !state.started && !state.finished) {
       drawLineChart(document.getElementById('wpmCanvas'), state.secondSeries);
     }
 
-    function handleInput(e){
-      if (state.finished) return;
-      const value = e.target.value;
-      const prev = state.currentInput;
-      if (!state.started && value.length > 0) startTest();
+function handleInput(e){
+  if (state.finished) return;
 
-      if (value.length < prev.length) {
-        state.correctedChars += (prev.length - value.length);
-        state.correctedKeystrokes += (prev.length - value.length);
-      }
-      if (value.endsWith(' ')) {
-        finalizeCurrentWord(value.trimEnd());
-        e.target.value = '';
-        return;
-      }
+  const value = e.target.value;
+  const prev = state.currentInput;
 
-      state.currentInput = value;
-      compareCurrentWord(value, prev);
-      renderPrompt();
-      updateStats();
+  if (!state.started && value.length > 0) startTest();
+
+  if (value.length < prev.length) {
+    state.correctedChars += (prev.length - value.length);
+    state.correctedKeystrokes += (prev.length - value.length);
+  }
+
+  if (value.endsWith(' ')) {
+    const finalWord = value.trimEnd();
+
+    if (finalWord !== prev) {
+      compareCurrentWord(finalWord, prev);
+      pushWordAttempt(finalWord);
     }
 
-    function compareCurrentWord(nextValue, prevValue){
-      const word = state.promptWords[state.currentWordIndex] || '';
-      const maxLen = Math.max(nextValue.length, prevValue.length);
-      for (let i = prevValue.length; i < nextValue.length; i++) {
-        const typedChar = nextValue[i] || '';
-        const expectedChar = word[i] || '';
-        state.totalTyped++;
-        if (typedChar === expectedChar) {
-          state.correctTyped++;
-          pushHistory(typedChar, true);
-        } else {
-          state.wrongTyped++;
-          registerWrongChar(expectedChar || '(extra)', typedChar);
-          pushHistory(typedChar || '(blank)', false);
-        }
-      }
-      renderPrompt();
-      renderHistory();
-      renderMistakes();
-    }
+    finalizeCurrentWord(finalWord);
+    e.target.value = '';
+    return;
+  }
 
-    function pushHistory(char, ok){
-      state.history.push({ char, ok, at: Date.now() });
-      if (state.history.length > 300) state.history.shift();
+  state.currentInput = value;
+  compareCurrentWord(value, prev);
+  pushWordAttempt(value);
+  renderPrompt();
+  updateStats();
+}
+
+function compareCurrentWord(nextValue, prevValue){
+  const word = state.promptWords[state.currentWordIndex] || '';
+
+  for (let i = prevValue.length; i < nextValue.length; i++) {
+    const typedChar = nextValue[i] || '';
+    const expectedChar = word[i] || '';
+
+    state.totalTyped++;
+
+    if (typedChar === expectedChar) {
+      state.correctTyped++;
+    } else {
+      state.wrongTyped++;
+      registerWrongChar(expectedChar || '(extra)', typedChar);
     }
+  }
+
+  renderPrompt();
+  renderHistory();
+  renderMistakes();
+}
+
+function pushWordAttempt(typedWord){
+  const expectedWord = state.promptWords[state.currentWordIndex] || '';
+  const cleanTyped = String(typedWord || '');
+
+  state.history.push({
+    typed: cleanTyped,
+    expected: expectedWord,
+    ok: cleanTyped === expectedWord,
+    at: Date.now()
+  });
+
+  if (state.history.length > 120) {
+    state.history.shift();
+  }
+}
 
     function registerWrongChar(expected, typed){
       const key = expected || typed || '?';
@@ -1453,10 +1476,22 @@ updateTestInfo();
       els.statTests.textContent = state.totalTests || 0;
     }
 
-    function renderHistory(){
-      const items = state.history.slice(-120).map(item => `<span class="key-chip ${item.ok ? 'good' : 'bad'}">${escapeHtml(item.char)}</span>`).join('');
-      els.historyLetters.innerHTML = items || '<div class="empty-box" style="width:100%">No keystrokes yet</div>';
-    }
+function renderHistory(){
+  const items = state.history
+    .slice(-60)
+    .map(item => {
+      const text = item.typed ? item.typed : '∅';
+      const title = item.ok
+        ? `Typed: ${item.typed || '(empty)'}`
+        : `Typed: ${item.typed || '(empty)'} | Expected: ${item.expected || '-'}`;
+
+      return `<span class="key-chip ${item.ok ? 'good' : 'bad'}" title="${escapeHtml(title)}">${escapeHtml(text)}</span>`;
+    })
+    .join('');
+
+  els.historyLetters.innerHTML =
+    items || '<div class="empty-box" style="width:100%">No word attempts yet</div>';
+}
 
     function renderMistakes(){
       const rows = Object.entries(state.sessionMistakes)
