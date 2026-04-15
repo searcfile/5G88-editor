@@ -221,8 +221,8 @@
         <div class="mini-grid">
           <div class="mini-panel">
             <div class="section-title">
-              <h3>Live WPM Graph</h3>
-              <span>Per second during current test</span>
+             <h3>Leaderboard Mountain Chart</h3>
+             <span>Live best WPM of all users</span>
             </div>
             <div class="chart-wrap"><canvas id="wpmCanvas" class="canvas"></canvas></div>
           </div>
@@ -519,7 +519,11 @@ function restoreLastSessionUI() {
 
   renderHistory();
   renderMistakes();
-  drawLineChart(document.getElementById('wpmCanvas'), state.secondSeries);
+  drawLineChart(
+  document.getElementById('wpmCanvas'),
+  state.leaderboard.map(x => Number(x.bestWpm || 0)),
+  'leaderboard'
+);
 
   if (saved.typedAtText) {
     els.lastSavedLabel.textContent = `Last session • ${saved.typedAtText}`;
@@ -692,7 +696,11 @@ if (saved && !state.started && !state.finished) {
 } else {
   renderMistakes();
   renderHistory();
-  drawLineChart(document.getElementById('wpmCanvas'), []);
+  drawLineChart(
+    document.getElementById('wpmCanvas'),
+    state.leaderboard.map(x => Number(x.bestWpm || 0)),
+    'leaderboard'
+  );
 }
       updateTestInfo();
     }
@@ -1066,9 +1074,13 @@ function bindRealtime(){
       if ((b.bestAccuracy || 0) !== (a.bestAccuracy || 0)) return (b.bestAccuracy || 0) - (a.bestAccuracy || 0);
       return (b.lastTypingAt || 0) - (a.lastTypingAt || 0);
     });
-
-    state.leaderboard = rows;
-    renderLeaderboard();
+state.leaderboard = rows;
+renderLeaderboard();
+drawLineChart(
+  document.getElementById('wpmCanvas'),
+  state.leaderboard.map(x => Number(x.bestWpm || 0)),
+  'leaderboard'
+);
   });
 
   state.presenceListRef = db.ref('typingTest/presence');
@@ -1265,66 +1277,97 @@ function loadMyHistory() {
 
       console.log('My History rows final:', rows.length, rows);
 
-      els.myHistoryBody.innerHTML =
-        rows.map((row, i) => `
-           <tr class="${i === 0 ? 'latest-row' : ''}">
-          <tr>
-            <td>${escapeHtml(row.typedAtText || formatDateTime(row.typedAt || 0))}</td>
-            <td>${escapeHtml(capitalize(row.language || '-'))}</td>
-            <td>${Number(row.duration || 0)}s</td>
-            <td><strong>${Number(row.wpm || 0)}</strong></td>
-            <td>${Number(row.accuracy || 0)}%</td>
-          </tr>
-        `).join('') ||
-        '<tr><td colspan="5" class="muted">No history yet</td></tr>';
+els.myHistoryBody.innerHTML =
+  rows.map((row, i) => `
+    <tr class="${i === 0 ? 'latest-row' : ''}">
+      <td>${escapeHtml(row.typedAtText || formatDateTime(row.typedAt || 0))}</td>
+      <td>${escapeHtml(capitalize(row.language || '-'))}</td>
+      <td>${Number(row.duration || 0)}s</td>
+      <td><strong>${Number(row.wpm || 0)}</strong></td>
+      <td>${Number(row.accuracy || 0)}%</td>
+    </tr>
+  `).join('') ||
+  '<tr><td colspan="5" class="muted">No history yet</td></tr>';
     });
   } catch (err) {
     console.warn('loadMyHistory failed:', err);
   }
 }
-    function drawLineChart(canvas, data){
-      if (!canvas) return;
-      const ratio = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      const width = Math.max(300, Math.floor(rect.width * ratio));
-      const height = Math.max(180, Math.floor(rect.height * ratio));
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0,0,width,height);
-      const pad = 18 * ratio;
-      ctx.strokeStyle = 'rgba(255,255,255,.08)';
-      ctx.lineWidth = 1;
-      for (let i=0;i<4;i++){
-        const y = pad + ((height - pad*2) / 3) * i;
-        ctx.beginPath();
-        ctx.moveTo(pad, y);
-        ctx.lineTo(width - pad, y);
-        ctx.stroke();
-      }
-      if (!data.length) return;
-      const max = Math.max(10, ...data);
-      ctx.beginPath();
-      data.forEach((v, i) => {
-        const x = pad + (i / Math.max(1, data.length - 1)) * (width - pad*2);
-        const y = height - pad - (v / max) * (height - pad*2);
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = '#1668dc';
-      ctx.lineWidth = 3 * ratio;
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
-      ctx.stroke();
+function drawLineChart(canvas, data, mode = 'wpm'){
+  if (!canvas) return;
 
-      const gradient = ctx.createLinearGradient(0, pad, 0, height-pad);
-      gradient.addColorStop(0, 'rgba(22,104,220,.28)');
-      gradient.addColorStop(1, 'rgba(22,104,220,0)');
-      ctx.lineTo(width-pad, height-pad);
-      ctx.lineTo(pad, height-pad);
-      ctx.closePath();
-      ctx.fillStyle = gradient;
+  const ratio = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.max(300, Math.floor(rect.width * ratio));
+  const height = Math.max(180, Math.floor(rect.height * ratio));
+
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, width, height);
+
+  const pad = 18 * ratio;
+
+  // grid
+  ctx.strokeStyle = 'rgba(255,255,255,.08)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 4; i++) {
+    const y = pad + ((height - pad * 2) / 3) * i;
+    ctx.beginPath();
+    ctx.moveTo(pad, y);
+    ctx.lineTo(width - pad, y);
+    ctx.stroke();
+  }
+
+  if (!data || !data.length) return;
+
+  const values = data.map(v => Number(v || 0));
+  const max = Math.max(10, ...values);
+
+  ctx.beginPath();
+  values.forEach((v, i) => {
+    const x = pad + (i / Math.max(1, values.length - 1)) * (width - pad * 2);
+    const y = height - pad - (v / max) * (height - pad * 2);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  const lineColor = mode === 'leaderboard' ? '#7ee7a8' : '#1668dc';
+
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 3 * ratio;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  const gradient = ctx.createLinearGradient(0, pad, 0, height - pad);
+  if (mode === 'leaderboard') {
+    gradient.addColorStop(0, 'rgba(126,231,168,.30)');
+    gradient.addColorStop(1, 'rgba(126,231,168,0)');
+  } else {
+    gradient.addColorStop(0, 'rgba(22,104,220,.28)');
+    gradient.addColorStop(1, 'rgba(22,104,220,0)');
+  }
+
+  ctx.lineTo(width - pad, height - pad);
+  ctx.lineTo(pad, height - pad);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  if (mode === 'leaderboard') {
+    values.forEach((v, i) => {
+      const x = pad + (i / Math.max(1, values.length - 1)) * (width - pad * 2);
+      const y = height - pad - (v / max) * (height - pad * 2);
+
+      ctx.beginPath();
+      ctx.arc(x, y, 3.5 * ratio, 0, Math.PI * 2);
+      ctx.fillStyle = '#b8ffd1';
       ctx.fill();
-    }
+    });
+  }
+}
 
     function switchTab(name){
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === name));
@@ -1354,10 +1397,14 @@ function loadMyHistory() {
   closeResultModal();
 });
     els.resultOverlay.addEventListener('click', (e) => { if (e.target === els.resultOverlay) closeResultModal(); });
-    window.addEventListener('resize', () => {
-      drawLineChart(document.getElementById('wpmCanvas'), state.secondSeries);
-      drawLineChart(document.getElementById('resultCanvas'), state.secondSeries);
-    });
+window.addEventListener('resize', () => {
+  drawLineChart(
+    document.getElementById('wpmCanvas'),
+    state.leaderboard.map(x => Number(x.bestWpm || 0)),
+    'leaderboard'
+  );
+  drawLineChart(document.getElementById('resultCanvas'), state.secondSeries, 'wpm');
+});
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeResultModal();
       if (e.key === 'Tab' && document.activeElement !== els.typingInput) {
