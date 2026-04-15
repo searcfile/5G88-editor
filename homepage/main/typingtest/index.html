@@ -484,7 +484,33 @@ testSaved: false
 function getLastSessionStorageKey() {
   return state.userKey ? `typingTestLastSession_${state.userKey}` : 'typingTestLastSession_guest';
 }
+function getTypingPrefsStorageKey() {
+  return state.userKey ? `typingTestPrefs_${state.userKey}` : 'typingTestPrefs_guest';
+}
 
+function saveTypingPrefsToStorage() {
+  try {
+    const payload = {
+      language: state.language,
+      mode: state.mode,
+      duration: state.duration
+    };
+    localStorage.setItem(getTypingPrefsStorageKey(), JSON.stringify(payload));
+  } catch (err) {
+    console.warn('saveTypingPrefsToStorage failed:', err);
+  }
+}
+
+function loadTypingPrefsFromStorage() {
+  try {
+    const raw = localStorage.getItem(getTypingPrefsStorageKey());
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (err) {
+    console.warn('loadTypingPrefsFromStorage failed:', err);
+    return null;
+  }
+}
 function saveLastSessionToStorage() {
   try {
     const payload = {
@@ -492,8 +518,18 @@ function saveLastSessionToStorage() {
       sessionMistakes: state.sessionMistakes || {},
       secondSeries: state.secondSeries || [],
       typedAt: Date.now(),
-      typedAtText: formatDateTime(Date.now())
+      typedAtText: formatDateTime(Date.now()),
+
+      language: state.language,
+      mode: state.mode,
+      duration: state.duration,
+
+      result: getComputedStats(),
+      spaces: state.spaces,
+      promptWords: state.promptWords || [],
+      wordTimings: state.wordTimings || []
     };
+
     localStorage.setItem(getLastSessionStorageKey(), JSON.stringify(payload));
   } catch (err) {
     console.warn('saveLastSessionToStorage failed:', err);
@@ -513,23 +549,99 @@ function loadLastSessionFromStorage() {
 
 function restoreLastSessionUI() {
   const saved = loadLastSessionFromStorage();
-  if (!saved) return;
+  const prefs = loadTypingPrefsFromStorage();
+
+  if (prefs) {
+    state.language = prefs.language || 'english';
+    state.mode = prefs.mode || 'words';
+    state.duration = Number(prefs.duration || 60);
+    state.timeLeft = state.duration;
+
+    if (els.languageSelect) els.languageSelect.value = state.language;
+    if (els.modeSelect) els.modeSelect.value = state.mode;
+
+    document.querySelectorAll('.duration-btn').forEach(btn => {
+      btn.classList.toggle('active', Number(btn.dataset.duration || 0) === Number(state.duration));
+    });
+  }
+
+  if (!saved) {
+    buildPrompt();
+    updateTestInfo();
+    return;
+  }
 
   state.history = Array.isArray(saved.history) ? saved.history : [];
   state.sessionMistakes = saved.sessionMistakes || {};
   state.secondSeries = Array.isArray(saved.secondSeries) ? saved.secondSeries : [];
+  state.spaces = Number(saved.spaces || 0);
+  state.promptWords = Array.isArray(saved.promptWords) ? saved.promptWords : state.promptWords;
+  state.wordTimings = Array.isArray(saved.wordTimings) ? saved.wordTimings : [];
+
+  if (saved.language) state.language = saved.language;
+  if (saved.mode) state.mode = saved.mode;
+  if (saved.duration) {
+    state.duration = Number(saved.duration);
+    state.timeLeft = state.duration;
+  }
+
+  if (els.languageSelect) els.languageSelect.value = state.language;
+  if (els.modeSelect) els.modeSelect.value = state.mode;
+
+  document.querySelectorAll('.duration-btn').forEach(btn => {
+    btn.classList.toggle('active', Number(btn.dataset.duration || 0) === Number(state.duration));
+  });
+
+  if ((!state.promptWords || !state.promptWords.length)) {
+    buildPrompt();
+  } else {
+    renderPrompt();
+  }
 
   renderHistory();
   renderMistakes();
+
   drawLineChart(
-  document.getElementById('wpmCanvas'),
-  state.leaderboard.map(x => Number(x.bestWpm || 0)),
-  'leaderboard'
-);
+    document.getElementById('wpmCanvas'),
+    state.leaderboard.map(x => Number(x.bestWpm || 0)),
+    'leaderboard'
+  );
 
   if (saved.typedAtText) {
     els.lastSavedLabel.textContent = `Last session • ${saved.typedAtText}`;
   }
+
+  if (saved.result) {
+    const r = saved.result;
+
+    els.resultSubline.textContent = `${capitalize(state.language)} • ${state.duration}s • ${saved.typedAtText || ''}`;
+    els.resultWpm.textContent = r.wpm ?? 0;
+    els.resultAccuracy.textContent = `${r.accuracy ?? 100}%`;
+    els.resultRaw.textContent = r.rawWpm ?? 0;
+    els.resultConsistency.textContent = `${r.consistency ?? 0}%`;
+
+    els.advCorrectWords.textContent = r.correctWords ?? 0;
+    els.advWrongWords.textContent = r.wrongWords ?? 0;
+    els.advCorrectChars.textContent = r.correctChars ?? 0;
+    els.advWrongChars.textContent = r.wrongChars ?? 0;
+    els.advSpaces.textContent = saved.spaces ?? 0;
+
+    els.advTotalKeys.textContent = r.totalKeys ?? 0;
+    els.advCorrectKeys.textContent = r.correctKeys ?? 0;
+    els.advWrongKeys.textContent = r.wrongKeys ?? 0;
+    els.advCorrectedChars.textContent = r.correctedChars ?? 0;
+    els.advCorrectedKeys.textContent = r.correctedKeystrokes ?? 0;
+
+    els.advCpm.textContent = r.cpm ?? 0;
+    els.advCpmRaw.textContent = r.cpmRaw ?? 0;
+    els.advKpm.textContent = r.kpm ?? 0;
+    els.advKpmRaw.textContent = r.kpmRaw ?? 0;
+    els.advPace.textContent = r.pace ?? 0;
+
+    drawLineChart(document.getElementById('resultCanvas'), state.secondSeries, 'wpm');
+  }
+
+  updateTestInfo();
 }
     function sanitizeEmail(email=''){
       return String(email).trim().toLowerCase().replace(/\./g,'_');
@@ -611,7 +723,13 @@ function setUser(user){
           </text>
         </svg>`
       );
-
+const prefs = loadTypingPrefsFromStorage();
+if (prefs) {
+  state.language = prefs.language || state.language;
+  state.mode = prefs.mode || state.mode;
+  state.duration = Number(prefs.duration || state.duration);
+  state.timeLeft = state.duration;
+}
   bindRealtime();
 restoreLastSessionUI();
 }
@@ -1457,16 +1575,26 @@ function drawLineChart(canvas, data, mode = 'wpm'){
     }
 
     document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
-    document.querySelectorAll('.duration-btn').forEach(btn => btn.addEventListener('click', () => {
-      document.querySelectorAll('.duration-btn').forEach(x => x.classList.remove('active'));
-      btn.classList.add('active');
-      state.duration = Number(btn.dataset.duration || 60);
-      state.timeLeft = state.duration;
-      resetTest(true);
-    }));
+document.querySelectorAll('.duration-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.duration-btn').forEach(x => x.classList.remove('active'));
+  btn.classList.add('active');
+  state.duration = Number(btn.dataset.duration || 60);
+  state.timeLeft = state.duration;
+  saveTypingPrefsToStorage();
+  resetTest(true);
+}));
 
-    els.languageSelect.addEventListener('change', () => { state.language = els.languageSelect.value; resetTest(true); });
-    els.modeSelect.addEventListener('change', () => { state.mode = els.modeSelect.value; resetTest(true); });
+els.languageSelect.addEventListener('change', () => {
+  state.language = els.languageSelect.value;
+  saveTypingPrefsToStorage();
+  resetTest(true);
+});
+
+els.modeSelect.addEventListener('change', () => {
+  state.mode = els.modeSelect.value;
+  saveTypingPrefsToStorage();
+  resetTest(true);
+});
     els.restartBtn.addEventListener('click', () => resetTest(true));
     els.typingInput.addEventListener('input', handleInput);
     els.showResultBtn.addEventListener('click', () => { fillResultModal(); openResultModal(); });
