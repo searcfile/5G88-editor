@@ -987,30 +987,59 @@
       } catch(err){ console.warn('presence failed', err); }
     }
 
-    function renderLeaderboard(){
-      const rows = state.leaderboard.slice(0, 50).map((row, idx) => {
-        const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
-        return `
-          <tr>
-            <td><span class="rank-badge ${rankClass}">${idx + 1}</span></td>
-            <td>
-              <div class="lb-user">
-                <img src="${escapeHtml(row.photo || '')}" onerror="this.src='data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"60\" height=\"60\"><rect width=\"100%\" height=\"100%\" rx=\"30\" fill=\"#1668dc\"/><text x=\"50%\" y=\"54%\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"24\" font-family=\"Arial\" fill=\"#fff\">${(row.name || row.email || 'U').slice(0,1).toUpperCase()}</text></svg>')}'" alt="avatar">
-                <div style="min-width:0">
-                  <div class="name">${escapeHtml(row.name || '-')}</div>
-                  <div class="mail">${escapeHtml(row.email || '-')}</div>
-                </div>
-              </div>
-            </td>
-            <td><strong>${Number(row.bestWpm || 0)}</strong></td>
-            <td>${Number(row.bestAccuracy || 0)}%</td>
-            <td>${Number(row.totalTests || 0)}</td>
-            <td class="muted">${escapeHtml(row.lastTypingText || formatDateTime(row.lastTypingAt || 0))}</td>
-          </tr>`;
-      }).join('');
-      els.leaderboardBody.innerHTML = rows;
-      els.leaderboardEmpty.style.display = rows ? 'none' : 'block';
-    }
+function getAvatarFallbackSvg(label = 'U') {
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+      <rect width="100%" height="100%" rx="30" fill="#1668dc"/>
+      <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-size="24" font-family="Arial" fill="#fff">
+        ${String(label || 'U').slice(0, 1).toUpperCase()}
+      </text>
+    </svg>`
+  );
+}
+
+function getAvatarSrc(row) {
+  const raw = String(row?.photo || '').trim();
+  if (raw) return raw;
+  return getAvatarFallbackSvg(row?.name || row?.email || 'U');
+}
+
+function renderLeaderboard() {
+  const rows = state.leaderboard.slice(0, 50).map((row, idx) => {
+    const rankClass =
+      idx === 0 ? 'rank-1' :
+      idx === 1 ? 'rank-2' :
+      idx === 2 ? 'rank-3' : '';
+
+    const avatarSrc = getAvatarSrc(row);
+    const fallbackSrc = getAvatarFallbackSvg(row?.name || row?.email || 'U');
+
+    return `
+      <tr>
+        <td><span class="rank-badge ${rankClass}">${idx + 1}</span></td>
+        <td>
+          <div class="lb-user">
+            <img
+              src="${escapeHtml(avatarSrc)}"
+              onerror="this.onerror=null;this.src='${fallbackSrc}'"
+              alt="avatar"
+            >
+            <div style="min-width:0">
+              <div class="name">${escapeHtml(row.name || '-')}</div>
+              <div class="mail">${escapeHtml(row.email || '-')}</div>
+            </div>
+          </div>
+        </td>
+        <td><strong>${Number(row.bestWpm || 0)}</strong></td>
+        <td>${Number(row.bestAccuracy || 0)}%</td>
+        <td>${Number(row.totalTests || 0)}</td>
+        <td class="muted">${escapeHtml(row.lastTypingText || formatDateTime(row.lastTypingAt || 0))}</td>
+      </tr>`;
+  }).join('');
+
+  els.leaderboardBody.innerHTML = rows;
+  els.leaderboardEmpty.style.display = rows ? 'none' : 'block';
+}
 
     async function loadMyHistory(){
       if (!state.dbReady || !state.userKey) return;
