@@ -546,24 +546,58 @@ function loadLastSessionFromStorage() {
     return null;
   }
 }
+function fillResultModalFromSaved(saved) {
+  if (!saved || !saved.result) return false;
 
-function restoreLastSessionUI() {
+  const r = saved.result;
+
+  els.resultSubline.textContent = `${capitalize(saved.language || state.language || 'english')} • ${Number(saved.duration || state.duration || 60)}s • ${saved.typedAtText || ''}`;
+  els.resultWpm.textContent = r.wpm ?? 0;
+  els.resultAccuracy.textContent = `${r.accuracy ?? 100}%`;
+  els.resultRaw.textContent = r.rawWpm ?? 0;
+  els.resultConsistency.textContent = `${r.consistency ?? 0}%`;
+
+  els.advCorrectWords.textContent = r.correctWords ?? 0;
+  els.advWrongWords.textContent = r.wrongWords ?? 0;
+  els.advCorrectChars.textContent = r.correctChars ?? 0;
+  els.advWrongChars.textContent = r.wrongChars ?? 0;
+  els.advSpaces.textContent = saved.spaces ?? 0;
+
+  els.advTotalKeys.textContent = r.totalKeys ?? 0;
+  els.advCorrectKeys.textContent = r.correctKeys ?? 0;
+  els.advWrongKeys.textContent = r.wrongKeys ?? 0;
+  els.advCorrectedChars.textContent = r.correctedChars ?? 0;
+  els.advCorrectedKeys.textContent = r.correctedKeystrokes ?? 0;
+
+  els.advCpm.textContent = r.cpm ?? 0;
+  els.advCpmRaw.textContent = r.cpmRaw ?? 0;
+  els.advKpm.textContent = r.kpm ?? 0;
+  els.advKpmRaw.textContent = r.kpmRaw ?? 0;
+  els.advPace.textContent = r.pace ?? 0;
+
+  drawLineChart(document.getElementById('resultCanvas'), saved.secondSeries || [], 'wpm');
+  return true;
+}
+function restoreLastSessionUI(options = {}) {
+  const { applySavedPrefs = true } = options;
+
   const saved = loadLastSessionFromStorage();
   const prefs = loadTypingPrefsFromStorage();
 
-  if (prefs) {
+  // hanya apply prefs kalau memang diminta
+  if (applySavedPrefs && prefs) {
     state.language = prefs.language || 'english';
     state.mode = prefs.mode || 'words';
     state.duration = Number(prefs.duration || 60);
     state.timeLeft = state.duration;
-
-    if (els.languageSelect) els.languageSelect.value = state.language;
-    if (els.modeSelect) els.modeSelect.value = state.mode;
-
-    document.querySelectorAll('.duration-btn').forEach(btn => {
-      btn.classList.toggle('active', Number(btn.dataset.duration || 0) === Number(state.duration));
-    });
   }
+
+  if (els.languageSelect) els.languageSelect.value = state.language;
+  if (els.modeSelect) els.modeSelect.value = state.mode;
+
+  document.querySelectorAll('.duration-btn').forEach(btn => {
+    btn.classList.toggle('active', Number(btn.dataset.duration || 0) === Number(state.duration));
+  });
 
   if (!saved) {
     buildPrompt();
@@ -575,28 +609,6 @@ function restoreLastSessionUI() {
   state.sessionMistakes = saved.sessionMistakes || {};
   state.secondSeries = Array.isArray(saved.secondSeries) ? saved.secondSeries : [];
   state.spaces = Number(saved.spaces || 0);
-  state.promptWords = Array.isArray(saved.promptWords) ? saved.promptWords : state.promptWords;
-  state.wordTimings = Array.isArray(saved.wordTimings) ? saved.wordTimings : [];
-
-  if (saved.language) state.language = saved.language;
-  if (saved.mode) state.mode = saved.mode;
-  if (saved.duration) {
-    state.duration = Number(saved.duration);
-    state.timeLeft = state.duration;
-  }
-
-  if (els.languageSelect) els.languageSelect.value = state.language;
-  if (els.modeSelect) els.modeSelect.value = state.mode;
-
-  document.querySelectorAll('.duration-btn').forEach(btn => {
-    btn.classList.toggle('active', Number(btn.dataset.duration || 0) === Number(state.duration));
-  });
-
-  if ((!state.promptWords || !state.promptWords.length)) {
-    buildPrompt();
-  } else {
-    renderPrompt();
-  }
 
   renderHistory();
   renderMistakes();
@@ -611,35 +623,7 @@ function restoreLastSessionUI() {
     els.lastSavedLabel.textContent = `Last session • ${saved.typedAtText}`;
   }
 
-  if (saved.result) {
-    const r = saved.result;
-
-    els.resultSubline.textContent = `${capitalize(state.language)} • ${state.duration}s • ${saved.typedAtText || ''}`;
-    els.resultWpm.textContent = r.wpm ?? 0;
-    els.resultAccuracy.textContent = `${r.accuracy ?? 100}%`;
-    els.resultRaw.textContent = r.rawWpm ?? 0;
-    els.resultConsistency.textContent = `${r.consistency ?? 0}%`;
-
-    els.advCorrectWords.textContent = r.correctWords ?? 0;
-    els.advWrongWords.textContent = r.wrongWords ?? 0;
-    els.advCorrectChars.textContent = r.correctChars ?? 0;
-    els.advWrongChars.textContent = r.wrongChars ?? 0;
-    els.advSpaces.textContent = saved.spaces ?? 0;
-
-    els.advTotalKeys.textContent = r.totalKeys ?? 0;
-    els.advCorrectKeys.textContent = r.correctKeys ?? 0;
-    els.advWrongKeys.textContent = r.wrongKeys ?? 0;
-    els.advCorrectedChars.textContent = r.correctedChars ?? 0;
-    els.advCorrectedKeys.textContent = r.correctedKeystrokes ?? 0;
-
-    els.advCpm.textContent = r.cpm ?? 0;
-    els.advCpmRaw.textContent = r.cpmRaw ?? 0;
-    els.advKpm.textContent = r.kpm ?? 0;
-    els.advKpmRaw.textContent = r.kpmRaw ?? 0;
-    els.advPace.textContent = r.pace ?? 0;
-
-    drawLineChart(document.getElementById('resultCanvas'), state.secondSeries, 'wpm');
-  }
+  fillResultModalFromSaved(saved);
 
   updateTestInfo();
 }
@@ -730,8 +714,8 @@ if (prefs) {
   state.duration = Number(prefs.duration || state.duration);
   state.timeLeft = state.duration;
 }
-  bindRealtime();
-restoreLastSessionUI();
+bindRealtime();
+restoreLastSessionUI({ applySavedPrefs: true });
 }
 
     function loadUserFromStorage(){
@@ -830,10 +814,10 @@ restoreLastSessionUI();
       els.lastSavedLabel.textContent = 'No result saved yet';
       if (full) buildPrompt();
       updateStats();
-      const saved = loadLastSessionFromStorage();
+const saved = loadLastSessionFromStorage();
 
 if (saved && !state.started && !state.finished) {
-  restoreLastSessionUI();
+  restoreLastSessionUI({ applySavedPrefs: false });
 } else {
   renderMistakes();
   renderHistory();
@@ -1597,7 +1581,23 @@ els.modeSelect.addEventListener('change', () => {
 });
     els.restartBtn.addEventListener('click', () => resetTest(true));
     els.typingInput.addEventListener('input', handleInput);
-    els.showResultBtn.addEventListener('click', () => { fillResultModal(); openResultModal(); });
+els.showResultBtn.addEventListener('click', () => {
+  const hasCurrentResult =
+    state.finished ||
+    state.totalTyped > 0 ||
+    state.wordTimings.some(Boolean);
+
+  if (hasCurrentResult) {
+    fillResultModal();
+  } else {
+    const saved = loadLastSessionFromStorage();
+    if (!fillResultModalFromSaved(saved)) {
+      fillResultModal();
+    }
+  }
+
+  openResultModal();
+});
     els.closeResultBtn.addEventListener('click', closeResultModal);
     els.saveAgainBtn.addEventListener('click', async () => {
   if (!state.testSaved) {
