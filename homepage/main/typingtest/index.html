@@ -196,34 +196,75 @@
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
     .tab-btn{padding:0px 15px;border-radius:6px;border:1px solid transparent;background:transparent;color:rgba(255,255,255,0.85);cursor:pointer;font-size:14px;height:32px;transition: all.3s ease}
     .tab-btn:hover{color:#1668dc;}.tab-btn.active{color:#1668dc;}
-.tab-content{display:none}
-.tab-content.active{display:block}
+.tab-content{
+  display:none;
+  position:relative;
+}
+
+.tab-content.active{
+  display:block;
+  position:relative;
+  background:#0d0d0d;
+  border-radius:16px;
+}
 
 #tab-myhistory,
 #tab-mistakes{
   max-height:480px;
   overflow:auto;
   padding-right:4px;
+  position:relative;
+  background:#0d0d0d;
+  border-radius:16px;
 }
 
-/* title atas jangan ikut scroll */
+/* lapisan penutup atas supaya isi belakang tak tembus */
 #tab-myhistory .section-title,
 #tab-mistakes .section-title{
   position: sticky;
   top: 0;
-  z-index: 5;
-  background: #0d0d0d;
-  padding: 10px 0 8px;
-  margin-bottom: 0;
+  z-index: 20;
+  background:#0d0d0d;
+  padding:14px 12px 10px;
+  margin:0;
+  box-shadow:0 1px 0 #1a1a1a;
 }
 
-/* header table juga sticky, duduk bawah title */
+/* header table lekat di bawah title */
+#tab-myhistory .history-table thead,
+#tab-mistakes .mistake-table thead{
+  position:sticky;
+  top:58px;
+  z-index:19;
+}
+
 #tab-myhistory .history-table thead th,
 #tab-mistakes .mistake-table thead th{
-  position: sticky;
-  top: 52px;
-  z-index: 4;
-  background: #0d0d0d;
+  background:#0d0d0d;
+  box-shadow:0 1px 0 #1a1a1a;
+}
+
+/* isi table bagi jarak kemas */
+#tab-myhistory .history-table,
+#tab-mistakes .mistake-table{
+  background:#0d0d0d;
+}
+#tab-myhistory .section-title::before,
+#tab-mistakes .section-title::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:#0d0d0d;
+  z-index:-1;
+}
+
+#tab-myhistory .history-table thead::before,
+#tab-mistakes .mistake-table thead::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:#0d0d0d;
+  z-index:-1;
 }
 /* ================= SCROLLBAR GLOBAL ================= */
 
