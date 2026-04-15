@@ -205,12 +205,25 @@
   overflow:auto;
   padding-right:4px;
 }
+
+/* title atas jangan ikut scroll */
+#tab-myhistory .section-title,
+#tab-mistakes .section-title{
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #0d0d0d;
+  padding: 10px 0 8px;
+  margin-bottom: 0;
+}
+
+/* header table juga sticky, duduk bawah title */
 #tab-myhistory .history-table thead th,
 #tab-mistakes .mistake-table thead th{
-  position:sticky;
-  top:0;
-  z-index:2;
-  background:#0d0d0d;
+  position: sticky;
+  top: 52px;
+  z-index: 4;
+  background: #0d0d0d;
 }
 /* ================= SCROLLBAR GLOBAL ================= */
 
