@@ -918,41 +918,56 @@ function buildPrompt(){
   renderPrompt();
   updateTestInfo();
 }
-    function renderPrompt(){
-      const current = state.currentWordIndex;
-      const input = state.currentInput;
-      const html = state.promptWords.map((word, wordIndex) => {
-        let wordClass = 'word';
-        const wordHistory = state.wordTimings[wordIndex];
-        if (wordHistory?.done) wordClass += wordHistory.correct ? ' done correct-word' : ' done wrong-word';
-        const chars = word.split('').map((char, charIndex) => {
-          let cls = 'char';
-          if (wordIndex < current) {
-            const typed = wordHistory?.typed || '';
-            cls += typed[charIndex] === char ? ' correct' : ' wrong';
-          } else if (wordIndex === current) {
-            if (charIndex < input.length) {
-              cls += input[charIndex] === char ? ' correct' : ' wrong';
-            } else if (charIndex === input.length) {
-              cls += ' current';
-            } else {
-              cls += ' pending';
-            }
-          } else {
-            cls += ' pending';
-          }
-          return `<span class="${cls}">${escapeHtml(char)}</span>`;
-        }).join('');
+function renderPrompt(){
+  const current = state.currentWordIndex;
+  const input = state.currentInput;
+  const visibleCount = getVisiblePromptWordCount();
 
-        let extras = '';
-        if (wordIndex === current && input.length > word.length) {
-          extras = input.slice(word.length).split('').map(ch => `<span class="char extra">${escapeHtml(ch)}</span>`).join('');
-        }
-        return `<span class="${wordClass}">${chars}${extras}</span>`;
-      }).join(' ');
-      els.promptText.innerHTML = html;
-      updateTypingSettingsUI();
+  const startIndex = current;
+  const endIndex = Math.min(state.promptWords.length, startIndex + visibleCount);
+  const visibleWords = state.promptWords.slice(startIndex, endIndex);
+
+  const html = visibleWords.map((word, visibleIndex) => {
+    const realIndex = startIndex + visibleIndex;
+    let wordClass = 'word';
+    const wordHistory = state.wordTimings[realIndex];
+
+    if (wordHistory?.done) {
+      wordClass += wordHistory.correct ? ' done correct-word' : ' done wrong-word';
     }
+
+    const chars = word.split('').map((char, charIndex) => {
+      let cls = 'char';
+
+      if (realIndex < current) {
+        const typed = wordHistory?.typed || '';
+        cls += typed[charIndex] === char ? ' correct' : ' wrong';
+      } else if (realIndex === current) {
+        if (charIndex < input.length) {
+          cls += input[charIndex] === char ? ' correct' : ' wrong';
+        } else if (charIndex === input.length) {
+          cls += ' current';
+        } else {
+          cls += ' pending';
+        }
+      } else {
+        cls += ' pending';
+      }
+
+      return `<span class="${cls}">${escapeHtml(char)}</span>`;
+    }).join('');
+
+    let extras = '';
+    if (realIndex === current && input.length > word.length) {
+      extras = input.slice(word.length).split('').map(ch => `<span class="char extra">${escapeHtml(ch)}</span>`).join('');
+    }
+
+    return `<span class="${wordClass}">${chars}${extras}</span>`;
+  }).join(' ');
+
+  els.promptText.innerHTML = html;
+  updateTypingSettingsUI();
+}
 
     function updateTestInfo(){
       els.testInfoPill.textContent = `${state.started ? 'Running' : state.finished ? 'Finished' : 'Ready'} • ${capitalize(state.language)} • ${state.duration}s`;
@@ -960,7 +975,6 @@ function buildPrompt(){
     function capitalize(s=''){ return s.charAt(0).toUpperCase() + s.slice(1); }
 function getPromptTargetWordCount() {
   const lines = Math.max(1, Number(state.textLineCount || 2));
-
   const wordsPerLineMap = {
     xs: 12,
     sm: 10,
@@ -968,10 +982,11 @@ function getPromptTargetWordCount() {
     lg: 7,
     xl: 6
   };
-
   const wordsPerLine = wordsPerLineMap[state.fontSize] || 8;
-
   return Math.max(4, lines * wordsPerLine);
+}
+function getVisiblePromptWordCount() {
+  return Math.max(4, getPromptTargetWordCount());
 }
 function appendMorePromptWords() {
   const bank = WORD_BANK[state.language];
@@ -1172,19 +1187,19 @@ if (saved && !state.started && !state.finished) {
 state.currentWordIndex++;
 state.currentInput = '';
 
-if (state.currentWordIndex >= state.promptWords.length) {
-  if (!state.finished && state.timeLeft > 0) {
+if (!state.finished && state.timeLeft > 0) {
+  const visibleCount = getVisiblePromptWordCount();
+  const remainingWords = state.promptWords.length - state.currentWordIndex;
+
+  if (remainingWords < visibleCount) {
     appendMorePromptWords();
-    renderPrompt();
-    updateStats();
-    renderMistakes();
-  } else {
-    finishTest();
   }
-} else {
+
   renderPrompt();
   updateStats();
   renderMistakes();
+} else {
+  finishTest();
 }
     }
 
