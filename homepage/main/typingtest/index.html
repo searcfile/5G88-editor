@@ -1029,7 +1029,51 @@ function getAvatarFallbackSvg(label = 'U') {
     </svg>`
   );
 }
+function normalizeCompareName(value = '') {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+}
 
+function maskLeaderboardName(name = '') {
+  const raw = String(name || '').trim();
+  if (!raw) return '-';
+
+  if (raw.length <= 5) return raw;
+  if (raw.length <= 8) {
+    return raw.slice(0, 2) + '*'.repeat(Math.max(1, raw.length - 3)) + raw.slice(-1);
+  }
+
+  const first = raw.slice(0, 2);
+  const last = raw.slice(-3);
+  const stars = '*'.repeat(Math.max(3, raw.length - 5));
+  return first + stars + last;
+}
+
+function buildLeaderboardDisplayName(row) {
+  const rawName = String(row?.name || '').trim();
+  const email = String(row?.email || '').trim().toLowerCase();
+  const emailUser = email.includes('@') ? email.split('@')[0].trim() : '';
+  const safeEmailUser = emailUser || rawName || 'User';
+
+  // kalau name kosong, guna username email yang sudah disensor
+  if (!rawName) {
+    return maskLeaderboardName(safeEmailUser);
+  }
+
+  // compare name dengan username email
+  const normName = normalizeCompareName(rawName);
+  const normEmailUser = normalizeCompareName(emailUser);
+
+  // kalau sama, tampil satu saja, tak perlu dua kali
+  if (normName && normEmailUser && normName === normEmailUser) {
+    return maskLeaderboardName(rawName);
+  }
+
+  // kalau berbeza, tampil kedua-dua
+  return `${maskLeaderboardName(rawName)} ${maskLeaderboardName(safeEmailUser)}`;
+}
 function getAvatarSrc(row) {
   const raw = String(row?.photo || '').trim();
   if (raw) return raw;
@@ -1045,6 +1089,7 @@ function renderLeaderboard() {
 
     const avatarSrc = getAvatarSrc(row);
     const fallbackSrc = getAvatarFallbackSvg(row?.name || row?.email || 'U');
+    const displayName = buildLeaderboardDisplayName(row);
 
     return `
       <tr>
@@ -1057,8 +1102,7 @@ function renderLeaderboard() {
               alt="avatar"
             >
             <div style="min-width:0">
-              <div class="name">${escapeHtml(row.name || '-')}</div>
-              <div class="mail">${escapeHtml(row.email || '-')}</div>
+              <div class="name">${escapeHtml(displayName)}</div>
             </div>
           </div>
         </td>
