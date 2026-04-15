@@ -386,11 +386,37 @@ html {
       .result-main,.advanced-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
 @media (max-width:760px){
-  .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .prompt-text{font-size:24px;min-height:150px}
-  .result-main,.advanced-grid{grid-template-columns:1fr}
-  .toolbar{align-items:flex-start}
-  .brand{padding:14px}
+  .stats-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .prompt-text{
+    font-size:24px;
+    min-height:150px;
+  }
+
+  .result-main,
+  .advanced-grid{
+    grid-template-columns:1fr;
+  }
+
+  .toolbar{
+    align-items:flex-start;
+    gap:12px;
+  }
+
+  .toolbar-left{
+    flex:1 1 100%;
+  }
+
+  .toolbar-actions{
+    width:100%;
+    justify-content:flex-end;
+  }
+
+  .toolbar-settings-wrap{
+    position:relative;
+  }
 
   .typing-settings-panel{
     width:min(95vw, 520px);
