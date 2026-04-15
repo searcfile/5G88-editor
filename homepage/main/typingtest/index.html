@@ -39,26 +39,6 @@
   min-width:0;
   flex:1;
 }
-.brand-settings-btn{
-  background:transparent;
-  color:rgba(255,255,255,0.65);
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  transition: all .3s ease;
-  flex:0 0 auto;
-  border:none;
-}
-.brand-settings-btn svg{
-  width:24px;
-  height:24px;
-}
-.brand-settings-btn:hover{
-  color:#ffffff;
-}
-.brand-settings-btn:active{
-  color:rgba(255,255,255,0.85);
-}
 
 .typing-settings-panel{
   margin:0 0 16px 0;
@@ -185,6 +165,32 @@
 }
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
     .toolbar-left,.duration-wrap{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .toolbar-left{
+  min-width:0;
+  flex:1;
+}
+
+.toolbar-settings-btn{
+  background:transparent;
+  color:rgba(255,255,255,0.85);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:all .3s ease;
+  flex:0 0 auto;
+  padding:0;
+  border:none;
+}
+.toolbar-settings-btn svg{
+  width:24px;
+  height:24px;
+}
+.toolbar-settings-btn:hover{
+  color:#fff;
+}
+.toolbar-settings-btn:active{
+  color:rgba(255,255,255,0.65);
+}
     .select,.input{background:#141414;color:var(--text);border:1px solid #424242;border-radius:6px;padding:4px 11px;outline:none;transition: all .3s ease}
     .select:focus,.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,104,220,.22)}
     .btn{border:none;background:var(--primary);color:#fff;padding:0px 15px;border-radius:6px;cursor:pointer;transition:.18s ease;box-shadow:0 8px 20px rgba(22,104,220,.23);height:32px}
@@ -356,13 +362,6 @@ html {
       <h1>Typing Test Arena</h1>
       <p>Realtime leaderboard • all time ranking • detailed typing analytics</p>
     </div>
-
-    <button id="typingSettingsBtn" class="brand-settings-btn" type="button" aria-label="Typing settings">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 .33 1 1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.32.2.67.2 1s-.06.68-.2 1a1.65 1.65 0 0 0 .33 1.82z"></path>
-      </svg>
-    </button>
   </div>
 </div>
 <div id="typingSettingsPanel" class="typing-settings-panel hidden">
@@ -425,21 +424,28 @@ html {
 </div>
     <div class="layout">
       <section class="panel left-panel">
-        <div class="toolbar">
-          <div class="toolbar-left">
-            <select id="languageSelect" class="select">
-              <option value="english">English</option>
-              <option value="indonesia">Indonesia</option>
-              <option value="melayu">Melayu</option>
-            </select>
-            <select id="modeSelect" class="select">
-              <option value="words">Random Words</option>
-              <option value="quote">Paragraph</option>
-            </select>
-            <button id="restartBtn" class="btn ghost">Restart</button>
-            <button id="showResultBtn" class="btn ghost">Advanced Result</button>
-          </div>
-        </div>
+<div class="toolbar">
+  <div class="toolbar-left">
+    <select id="languageSelect" class="select">
+      <option value="english">English</option>
+      <option value="indonesia">Indonesia</option>
+      <option value="melayu">Melayu</option>
+    </select>
+    <select id="modeSelect" class="select">
+      <option value="words">Random Words</option>
+      <option value="quote">Paragraph</option>
+    </select>
+    <button id="restartBtn" class="btn ghost">Restart</button>
+    <button id="showResultBtn" class="btn ghost">Advanced Result</button>
+  </div>
+
+  <button id="typingSettingsBtn" class="toolbar-settings-btn" type="button" aria-label="Typing settings">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 .33 1 1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.32.2.67.2 1s-.06.68-.2 1a1.65 1.65 0 0 0 .33 1.82z"></path>
+    </svg>
+  </button>
+</div>
 
         <div class="stats-grid">
           <div class="stat"><div class="k">WPM</div><div class="v" id="statWpm">0</div></div>
