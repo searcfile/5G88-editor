@@ -29,6 +29,96 @@
     .app{max-width:1500px;margin:0 auto;padding:18px}
     .topbar{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;margin-bottom:16px}
     .brand{display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(180deg,#0a0a0a,#111);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+    .brand-main{
+  min-width:0;
+  flex:1;
+}
+
+.brand-settings-btn{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  border:1px solid #2a2a2a;
+  background:#111;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:.18s ease;
+  flex:0 0 auto;
+}
+.brand-settings-btn:hover{
+  background:var(--primary-hover);
+  border-color:var(--primary-hover);
+}
+.brand-settings-btn:active{
+  background:var(--primary-active);
+}
+
+.typing-settings-panel{
+  margin:0 0 16px 0;
+  padding:14px;
+  background:linear-gradient(180deg,#0d0d0d,#101010);
+  border:1px solid #1f1f1f;
+  border-radius:18px;
+  box-shadow:var(--shadow);
+}
+.typing-settings-panel.hidden{
+  display:none;
+}
+.typing-settings-row{
+  display:grid;
+  grid-template-columns:130px 1fr;
+  gap:12px;
+  align-items:flex-start;
+  margin-bottom:12px;
+}
+.typing-settings-row:last-child{
+  margin-bottom:0;
+}
+.typing-settings-label{
+  color:#d9e2ec;
+  font-weight:700;
+  padding-top:8px;
+}
+.typing-settings-options{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.line-count-grid{
+  display:grid;
+  grid-template-columns:repeat(10,minmax(0,1fr));
+  gap:8px;
+}
+.ts-opt{
+  min-width:44px;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid #2a2a2a;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+  transition:.18s ease;
+}
+.ts-opt:hover{
+  background:var(--primary-hover);
+  border-color:var(--primary-hover);
+}
+.ts-opt.active{
+  background:var(--primary);
+  border-color:var(--primary);
+}
+.prompt-text.font-inter{font-family:Inter,Segoe UI,Arial,sans-serif;}
+.prompt-text.font-arial{font-family:Arial,Helvetica,sans-serif;}
+.prompt-text.font-georgia{font-family:Georgia,'Times New Roman',serif;}
+.prompt-text.font-monospace{font-family:'Courier New',monospace;}
+
+.prompt-text.size-xs{font-size:22px;}
+.prompt-text.size-sm{font-size:27px;}
+.prompt-text.size-md{font-size:31px;}
+.prompt-text.size-lg{font-size:37px;}
+.prompt-text.size-xl{font-size:44px;}
     .logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--primary),#6aa6ff);display:grid;place-items:center;font-weight:800}
     .brand h1{margin:0;font-size:22px}
     .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
@@ -148,13 +238,21 @@
 <body>
   <div class="app">
     <div class="topbar">
-      <div class="brand">
-        <div class="logo">TT</div>
-        <div>
-          <h1>Typing Test Arena</h1>
-          <p>Realtime leaderboard • all time ranking • detailed typing analytics</p>
-        </div>
-      </div>
+<div class="brand">
+  <div class="logo">TT</div>
+
+  <div class="brand-main">
+    <h1>Typing Test Arena</h1>
+    <p>Realtime leaderboard • all time ranking • detailed typing analytics</p>
+  </div>
+
+  <button id="typingSettingsBtn" class="brand-settings-btn" type="button" aria-label="Typing settings">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 .33 1 1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.14.32.2.67.2 1s-.06.68-.2 1a1.65 1.65 0 0 0 .33 1.82z"></path>
+    </svg>
+  </button>
+</div>
       <div class="user-card">
         <img id="userAvatar" class="avatar" alt="avatar" />
         <div class="user-meta">
@@ -169,7 +267,64 @@
         </div>
       </div>
     </div>
+<div id="typingSettingsPanel" class="typing-settings-panel hidden">
+  <div class="typing-settings-row">
+    <div class="typing-settings-label">Font Style</div>
+    <div class="typing-settings-options" id="fontFamilyOptions">
+      <button type="button" class="ts-opt active" data-font="inter">Inter</button>
+      <button type="button" class="ts-opt" data-font="arial">Arial</button>
+      <button type="button" class="ts-opt" data-font="georgia">Georgia</button>
+      <button type="button" class="ts-opt" data-font="monospace">Monospace</button>
+    </div>
+  </div>
 
+  <div class="typing-settings-row">
+    <div class="typing-settings-label">Font Size</div>
+    <div class="typing-settings-options" id="fontSizeOptions">
+      <button type="button" class="ts-opt" data-size="xs">XS</button>
+      <button type="button" class="ts-opt" data-size="sm">SM</button>
+      <button type="button" class="ts-opt active" data-size="md">MD</button>
+      <button type="button" class="ts-opt" data-size="lg">LG</button>
+      <button type="button" class="ts-opt" data-size="xl">XL</button>
+    </div>
+  </div>
+
+  <div class="typing-settings-row">
+    <div class="typing-settings-label">Line Count</div>
+    <div class="typing-settings-options line-count-grid" id="lineCountOptions">
+      <button type="button" class="ts-opt" data-lines="1">1</button>
+      <button type="button" class="ts-opt active" data-lines="2">2</button>
+      <button type="button" class="ts-opt" data-lines="3">3</button>
+      <button type="button" class="ts-opt" data-lines="4">4</button>
+      <button type="button" class="ts-opt" data-lines="5">5</button>
+      <button type="button" class="ts-opt" data-lines="6">6</button>
+      <button type="button" class="ts-opt" data-lines="7">7</button>
+      <button type="button" class="ts-opt" data-lines="8">8</button>
+      <button type="button" class="ts-opt" data-lines="9">9</button>
+      <button type="button" class="ts-opt" data-lines="10">10</button>
+      <button type="button" class="ts-opt" data-lines="11">11</button>
+      <button type="button" class="ts-opt" data-lines="12">12</button>
+      <button type="button" class="ts-opt" data-lines="13">13</button>
+      <button type="button" class="ts-opt" data-lines="14">14</button>
+      <button type="button" class="ts-opt" data-lines="15">15</button>
+      <button type="button" class="ts-opt" data-lines="16">16</button>
+      <button type="button" class="ts-opt" data-lines="17">17</button>
+      <button type="button" class="ts-opt" data-lines="18">18</button>
+      <button type="button" class="ts-opt" data-lines="19">19</button>
+      <button type="button" class="ts-opt" data-lines="20">20</button>
+      <button type="button" class="ts-opt" data-lines="21">21</button>
+      <button type="button" class="ts-opt" data-lines="22">22</button>
+      <button type="button" class="ts-opt" data-lines="23">23</button>
+      <button type="button" class="ts-opt" data-lines="24">24</button>
+      <button type="button" class="ts-opt" data-lines="25">25</button>
+      <button type="button" class="ts-opt" data-lines="26">26</button>
+      <button type="button" class="ts-opt" data-lines="27">27</button>
+      <button type="button" class="ts-opt" data-lines="28">28</button>
+      <button type="button" class="ts-opt" data-lines="29">29</button>
+      <button type="button" class="ts-opt" data-lines="30">30</button>
+    </div>
+  </div>
+</div>
     <div class="layout">
       <section class="panel left-panel">
         <div class="toolbar">
@@ -391,9 +546,13 @@
     const state = {
       user: null,
       userKey: null,
-      language: 'english',
-      mode: 'words',
-      duration: 60,
+language: 'english',
+mode: 'words',
+duration: 60,
+textLineCount: 2,
+fontFamily: 'inter',
+fontSize: 'md',
+started: false,
       started: false,
       finished: false,
       startTs: 0,
@@ -490,11 +649,14 @@ function getTypingPrefsStorageKey() {
 
 function saveTypingPrefsToStorage() {
   try {
-    const payload = {
-      language: state.language,
-      mode: state.mode,
-      duration: state.duration
-    };
+const payload = {
+  language: state.language,
+  mode: state.mode,
+  duration: state.duration,
+  textLineCount: state.textLineCount,
+  fontFamily: state.fontFamily,
+  fontSize: state.fontSize
+};
     localStorage.setItem(getTypingPrefsStorageKey(), JSON.stringify(payload));
   } catch (err) {
     console.warn('saveTypingPrefsToStorage failed:', err);
@@ -598,7 +760,7 @@ function restoreLastSessionUI(options = {}) {
   document.querySelectorAll('.duration-btn').forEach(btn => {
     btn.classList.toggle('active', Number(btn.dataset.duration || 0) === Number(state.duration));
   });
-
+  updateTypingSettingsUI();
   if (!saved) {
     buildPrompt();
     updateTestInfo();
@@ -713,6 +875,9 @@ if (prefs) {
   state.mode = prefs.mode || state.mode;
   state.duration = Number(prefs.duration || state.duration);
   state.timeLeft = state.duration;
+  state.textLineCount = Number(prefs.textLineCount || state.textLineCount || 2);
+  state.fontFamily = prefs.fontFamily || state.fontFamily || 'inter';
+  state.fontSize = prefs.fontSize || state.fontSize || 'md';
 }
 bindRealtime();
 restoreLastSessionUI({ applySavedPrefs: true });
@@ -784,13 +949,50 @@ restoreLastSessionUI({ applySavedPrefs: true });
         return `<span class="${wordClass}">${chars}${extras}</span>`;
       }).join(' ');
       els.promptText.innerHTML = html;
+      updateTypingSettingsUI();
     }
 
     function updateTestInfo(){
       els.testInfoPill.textContent = `${state.started ? 'Running' : state.finished ? 'Finished' : 'Ready'} • ${capitalize(state.language)} • ${state.duration}s`;
     }
     function capitalize(s=''){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function updateTypingSettingsUI() {
+  const prompt = els.promptText;
+  if (!prompt) return;
 
+  prompt.classList.remove(
+    'font-inter','font-arial','font-georgia','font-monospace',
+    'size-xs','size-sm','size-md','size-lg','size-xl'
+  );
+
+  prompt.classList.add(`font-${state.fontFamily}`);
+  prompt.classList.add(`size-${state.fontSize}`);
+
+  const lineHeightPx = (() => {
+    switch (state.fontSize) {
+      case 'xs': return 22 * 1.9;
+      case 'sm': return 27 * 1.9;
+      case 'md': return 31 * 1.9;
+      case 'lg': return 37 * 1.9;
+      case 'xl': return 44 * 1.9;
+      default: return 31 * 1.9;
+    }
+  })();
+
+  prompt.style.minHeight = `${Math.max(1, state.textLineCount) * lineHeightPx}px`;
+
+  document.querySelectorAll('#fontFamilyOptions .ts-opt').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.font === state.fontFamily);
+  });
+
+  document.querySelectorAll('#fontSizeOptions .ts-opt').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.size === state.fontSize);
+  });
+
+  document.querySelectorAll('#lineCountOptions .ts-opt').forEach(btn => {
+    btn.classList.toggle('active', Number(btn.dataset.lines || 0) === Number(state.textLineCount));
+  });
+}
     function resetTest(full=true){
       clearInterval(state.timer);
       state.started = false;
@@ -1578,6 +1780,38 @@ els.modeSelect.addEventListener('change', () => {
   state.mode = els.modeSelect.value;
   saveTypingPrefsToStorage();
   resetTest(true);
+});
+const typingSettingsBtn = document.getElementById('typingSettingsBtn');
+const typingSettingsPanel = document.getElementById('typingSettingsPanel');
+
+if (typingSettingsBtn && typingSettingsPanel) {
+  typingSettingsBtn.addEventListener('click', () => {
+    typingSettingsPanel.classList.toggle('hidden');
+  });
+}
+
+document.querySelectorAll('#fontFamilyOptions .ts-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.fontFamily = btn.dataset.font || 'inter';
+    saveTypingPrefsToStorage();
+    updateTypingSettingsUI();
+  });
+});
+
+document.querySelectorAll('#fontSizeOptions .ts-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.fontSize = btn.dataset.size || 'md';
+    saveTypingPrefsToStorage();
+    updateTypingSettingsUI();
+  });
+});
+
+document.querySelectorAll('#lineCountOptions .ts-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.textLineCount = Number(btn.dataset.lines || 2);
+    saveTypingPrefsToStorage();
+    updateTypingSettingsUI();
+  });
 });
     els.restartBtn.addEventListener('click', () => resetTest(true));
     els.typingInput.addEventListener('input', handleInput);
