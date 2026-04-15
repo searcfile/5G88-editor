@@ -553,7 +553,6 @@ textLineCount: 2,
 fontFamily: 'inter',
 fontSize: 'md',
 started: false,
-      started: false,
       finished: false,
       startTs: 0,
       endTs: 0,
@@ -897,25 +896,27 @@ restoreLastSessionUI({ applySavedPrefs: true });
       }
     });
 
-    function buildPrompt(){
-      const bank = WORD_BANK[state.language];
-      const words = [];
-      if (state.mode === 'quote') {
-        const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
-        state.promptWords = quote.trim().split(/\s+/);
-      } else {
-        const targetCount = state.duration >= 120 ? 110 : state.duration >= 60 ? 80 : 40;
-        for (let i=0;i<targetCount;i++) {
-          words.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
-        }
-        state.promptWords = words;
-      }
-      state.currentWordIndex = 0;
-      state.currentInput = '';
-      renderPrompt();
-      updateTestInfo();
-    }
+function buildPrompt(){
+  const bank = WORD_BANK[state.language];
+  const words = [];
+  const targetCount = getPromptTargetWordCount();
 
+  if (state.mode === 'quote') {
+    const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
+    const allWords = quote.trim().split(/\s+/);
+    state.promptWords = allWords.slice(0, targetCount);
+  } else {
+    for (let i = 0; i < targetCount; i++) {
+      words.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
+    }
+    state.promptWords = words;
+  }
+
+  state.currentWordIndex = 0;
+  state.currentInput = '';
+  renderPrompt();
+  updateTestInfo();
+}
     function renderPrompt(){
       const current = state.currentWordIndex;
       const input = state.currentInput;
@@ -956,6 +957,21 @@ restoreLastSessionUI({ applySavedPrefs: true });
       els.testInfoPill.textContent = `${state.started ? 'Running' : state.finished ? 'Finished' : 'Ready'} • ${capitalize(state.language)} • ${state.duration}s`;
     }
     function capitalize(s=''){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function getPromptTargetWordCount() {
+  const lines = Math.max(1, Number(state.textLineCount || 2));
+
+  const wordsPerLineMap = {
+    xs: 12,
+    sm: 10,
+    md: 8,
+    lg: 7,
+    xl: 6
+  };
+
+  const wordsPerLine = wordsPerLineMap[state.fontSize] || 8;
+
+  return Math.max(4, lines * wordsPerLine);
+}
 function updateTypingSettingsUI() {
   const prompt = els.promptText;
   if (!prompt) return;
@@ -980,6 +996,8 @@ function updateTypingSettingsUI() {
   })();
 
   prompt.style.minHeight = `${Math.max(1, state.textLineCount) * lineHeightPx}px`;
+prompt.style.maxHeight = `${Math.max(1, state.textLineCount) * lineHeightPx}px`;
+prompt.style.overflow = 'hidden';
 
   document.querySelectorAll('#fontFamilyOptions .ts-opt').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.font === state.fontFamily);
@@ -1773,13 +1791,15 @@ document.querySelectorAll('.duration-btn').forEach(btn => btn.addEventListener('
 els.languageSelect.addEventListener('change', () => {
   state.language = els.languageSelect.value;
   saveTypingPrefsToStorage();
-  resetTest(true);
+  buildPrompt();
+  resetTest(false);
 });
 
 els.modeSelect.addEventListener('change', () => {
   state.mode = els.modeSelect.value;
   saveTypingPrefsToStorage();
-  resetTest(true);
+  buildPrompt();
+  resetTest(false);
 });
 const typingSettingsBtn = document.getElementById('typingSettingsBtn');
 const typingSettingsPanel = document.getElementById('typingSettingsPanel');
@@ -1802,7 +1822,9 @@ document.querySelectorAll('#fontSizeOptions .ts-opt').forEach(btn => {
   btn.addEventListener('click', () => {
     state.fontSize = btn.dataset.size || 'md';
     saveTypingPrefsToStorage();
+    buildPrompt();
     updateTypingSettingsUI();
+    resetTest(false);
   });
 });
 
@@ -1810,7 +1832,9 @@ document.querySelectorAll('#lineCountOptions .ts-opt').forEach(btn => {
   btn.addEventListener('click', () => {
     state.textLineCount = Number(btn.dataset.lines || 2);
     saveTypingPrefsToStorage();
+    buildPrompt();
     updateTypingSettingsUI();
+    resetTest(false);
   });
 });
     els.restartBtn.addEventListener('click', () => resetTest(true));
