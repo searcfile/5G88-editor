@@ -918,17 +918,18 @@ function buildPrompt(){
   renderPrompt();
   updateTestInfo();
 }
-function renderPrompt(){
+function renderPrompt() {
   const current = state.currentWordIndex;
   const input = state.currentInput;
   const visibleCount = getVisiblePromptWordCount();
 
-  const startIndex = current;
-  const endIndex = Math.min(state.promptWords.length, startIndex + visibleCount);
-  const visibleWords = state.promptWords.slice(startIndex, endIndex);
+  // tampil satu blok/page penuh, bukan gerak setiap word
+  const pageStart = Math.floor(current / visibleCount) * visibleCount;
+  const pageEnd = Math.min(state.promptWords.length, pageStart + visibleCount);
+  const visibleWords = state.promptWords.slice(pageStart, pageEnd);
 
   const html = visibleWords.map((word, visibleIndex) => {
-    const realIndex = startIndex + visibleIndex;
+    const realIndex = pageStart + visibleIndex;
     let wordClass = 'word';
     const wordHistory = state.wordTimings[realIndex];
 
@@ -959,7 +960,11 @@ function renderPrompt(){
 
     let extras = '';
     if (realIndex === current && input.length > word.length) {
-      extras = input.slice(word.length).split('').map(ch => `<span class="char extra">${escapeHtml(ch)}</span>`).join('');
+      extras = input
+        .slice(word.length)
+        .split('')
+        .map(ch => `<span class="char extra">${escapeHtml(ch)}</span>`)
+        .join('');
     }
 
     return `<span class="${wordClass}">${chars}${extras}</span>`;
