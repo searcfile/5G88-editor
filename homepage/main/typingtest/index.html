@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5G88 Typing Test</title>
+  <style>
+    :root{
+      --bg:#000;
+      --panel:#0b0b0b;
+      --panel-2:#101010;
+      --panel-3:#141414;
+      --text:#f3f5f7;
+      --muted:#9aa4b2;
+      --line:#1f1f1f;
+      --primary:#1668dc;
+      --primary-hover:#3c89e8;
+      --primary-active:#1554ad;
+      --danger:#ef4444;
+      --warning:#f59e0b;
+      --success:#22c55e;
+      --shadow:0 12px 35px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+    body{min-height:100vh}
+    button,input,select,textarea{font:inherit}
+    .app{max-width:1500px;margin:0 auto;padding:18px}
+    .topbar{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;margin-bottom:16px}
+    .brand{display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(180deg,#0a0a0a,#111);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+    .logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--primary),#6aa6ff);display:grid;place-items:center;font-weight:800}
+    .brand h1{margin:0;font-size:22px}
+    .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .user-card,.online-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:14px 16px;display:flex;align-items:center;gap:12px;min-width:240px}
+    .avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#1c1c1c;border:1px solid #222}
+    .user-meta strong,.online-card strong{display:block}
+    .user-meta span,.online-card span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+
+    .layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(360px,.9fr);gap:16px}
+    .panel{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .left-panel{padding:16px}
+    .right-panel{padding:14px}
+
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .toolbar-left,.toolbar-right,.duration-wrap{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .select,.input{background:var(--panel-3);color:var(--text);border:1px solid #252525;border-radius:14px;padding:12px 14px;outline:none;transition:.18s ease}
+    .select:focus,.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,104,220,.22)}
+    .btn{border:none;background:var(--primary);color:#fff;padding:11px 15px;border-radius:14px;font-weight:700;cursor:pointer;transition:.18s ease;box-shadow:0 8px 20px rgba(22,104,220,.23)}
+    .btn:hover{background:var(--primary-hover)}
+    .btn:active{background:var(--primary-active);transform:translateY(1px)}
+    .btn.ghost{background:#111;border:1px solid #232323;box-shadow:none}
+    .btn.ghost:hover{background:#171717;border-color:#2c2c2c}
+    .duration-btn{padding:10px 12px;border-radius:12px;border:1px solid #252525;background:#101010;color:var(--text);cursor:pointer;font-weight:700;transition:.18s ease}
+    .duration-btn:hover{border-color:var(--primary-hover);color:#fff}
+    .duration-btn.active{background:var(--primary);border-color:var(--primary);box-shadow:0 8px 20px rgba(22,104,220,.2)}
+
+    .stats-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}
+    .stat{background:#0f0f0f;border:1px solid #1d1d1d;border-radius:16px;padding:14px}
+    .stat .k{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .stat .v{font-size:28px;font-weight:800;margin-top:6px}
+
+    .prompt-card{padding:18px;background:#090909;border:1px solid #171717;border-radius:18px;position:relative;overflow:hidden}
+    .prompt-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(22,104,220,.08),transparent 30%);pointer-events:none}
+    .test-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .test-status{color:var(--muted);font-size:13px}
+    .prompt-text{line-height:1.9;font-size:31px;letter-spacing:.02em;word-break:break-word;min-height:180px}
+    .word{margin-right:.34em}
+    .char{position:relative}
+    .char.correct{color:#f5f5f5}
+    .char.wrong{color:#ff8c8c;background:rgba(239,68,68,.1);border-radius:4px}
+    .char.current{background:rgba(22,104,220,.22);border-radius:4px;box-shadow:inset 0 -2px 0 var(--primary)}
+    .char.extra{color:#ff7c7c;background:rgba(239,68,68,.12);border-radius:4px}
+    .char.pending{color:#5f6672}
+    .word.done.correct-word{border-bottom:2px solid rgba(34,197,94,.45)}
+    .word.done.wrong-word{border-bottom:2px solid rgba(239,68,68,.45)}
+
+    .typing-input{width:100%;margin-top:14px;background:var(--panel-3);border:1px solid #242424;border-radius:16px;color:#fff;padding:16px 18px;font-size:18px;outline:none;transition:.18s ease}
+    .typing-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(22,104,220,.22)}
+    .hint{display:flex;justify-content:space-between;gap:10px;margin-top:10px;color:var(--muted);font-size:12px}
+
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .section-title h3{margin:0;font-size:17px}
+    .section-title span{color:var(--muted);font-size:12px}
+    .leaderboard-table,.history-table,.mistake-table{width:100%;border-collapse:collapse}
+    .leaderboard-table th,.leaderboard-table td,.history-table th,.history-table td,.mistake-table th,.mistake-table td{padding:10px 8px;border-bottom:1px solid #1a1a1a;text-align:left;font-size:13px}
+    .leaderboard-table th,.history-table th,.mistake-table th{color:var(--muted);font-weight:600}
+    .rank-badge{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#111;border:1px solid #232323;font-weight:800}
+    .rank-1{color:#fbbf24}.rank-2{color:#cbd5e1}.rank-3{color:#fb923c}
+    .lb-user{display:flex;align-items:center;gap:10px;min-width:0}
+    .lb-user img{width:30px;height:30px;border-radius:50%;object-fit:cover;background:#161616}
+    .lb-user .name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+    .lb-user .mail{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+    .muted{color:var(--muted)}
+    .good{color:#5ee089}.bad{color:#ff8b8b}
+
+    .mini-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+    .mini-panel{background:#0d0d0d;border:1px solid #191919;border-radius:16px;padding:14px}
+    .chart-wrap{height:200px;background:#0b0b0b;border:1px solid #171717;border-radius:14px;padding:10px}
+    .canvas{width:100%;height:100%}
+    .history-letters{max-height:220px;overflow:auto;display:flex;flex-wrap:wrap;gap:6px}
+    .key-chip{padding:6px 8px;border-radius:10px;background:#121212;border:1px solid #202020;font-size:12px}
+    .key-chip.bad{border-color:rgba(239,68,68,.35);color:#ff9696}
+    .key-chip.good{border-color:rgba(34,197,94,.35);color:#7be89b}
+
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .tab-btn{padding:9px 12px;border-radius:12px;border:1px solid #252525;background:#0f0f0f;color:#fff;cursor:pointer;font-weight:700}
+    .tab-btn.active{background:var(--primary);border-color:var(--primary)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    .empty-box{padding:18px;text-align:center;color:var(--muted);border:1px dashed #2a2a2a;border-radius:16px;background:#0a0a0a}
+
+    .result-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:18px;z-index:90}
+    .result-modal{width:min(1100px,100%);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#080808,#121212);border:1px solid #242424;border-radius:24px;box-shadow:0 25px 60px rgba(0,0,0,.5);padding:18px}
+    .result-head{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:12px}
+    .result-main{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+    .result-stat{padding:16px;background:#0d0d0d;border:1px solid #1b1b1b;border-radius:18px}
+    .result-stat .big{font-size:34px;font-weight:800;margin-top:6px}
+    .advanced-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .advanced-card{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:18px;padding:14px}
+    .advanced-card h4{margin:0 0 10px 0}
+    .advanced-card .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #171717}
+    .advanced-card .row:last-child{border-bottom:none}
+
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#101010;border:1px solid #242424;color:var(--muted);font-size:12px}
+    .footer-note{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+
+    @media (max-width:1200px){
+      .layout{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .result-main,.advanced-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width:760px){
+      .topbar{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .prompt-text{font-size:24px;min-height:150px}
+      .result-main,.advanced-grid{grid-template-columns:1fr}
+      .toolbar{align-items:flex-start}
+      .brand{padding:14px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">TT</div>
+        <div>
+          <h1>Typing Test Arena</h1>
+          <p>Realtime leaderboard • all time ranking • detailed typing analytics</p>
+        </div>
+      </div>
+      <div class="user-card">
+        <img id="userAvatar" class="avatar" alt="avatar" />
+        <div class="user-meta">
+          <strong id="userName">Guest User</strong>
+          <span id="userEmail">Waiting login data...</span>
+        </div>
+      </div>
+      <div class="online-card">
+        <div>
+          <strong id="onlineCount">0 Online</strong>
+          <span id="syncState">Realtime sync idle</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section class="panel left-panel">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <select id="languageSelect" class="select">
+              <option value="english">English</option>
+              <option value="indonesia">Indonesia</option>
+              <option value="melayu">Melayu</option>
+            </select>
+            <select id="modeSelect" class="select">
+              <option value="words">Random Words</option>
+              <option value="quote">Paragraph</option>
+            </select>
+            <button id="restartBtn" class="btn ghost">Restart</button>
+            <button id="showResultBtn" class="btn ghost">Advanced Result</button>
+          </div>
+          <div class="toolbar-right">
+            <div class="duration-wrap" id="durationWrap">
+              <button class="duration-btn" data-duration="15">15s</button>
+              <button class="duration-btn" data-duration="30">30s</button>
+              <button class="duration-btn active" data-duration="60">60s</button>
+              <button class="duration-btn" data-duration="120">120s</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat"><div class="k">WPM</div><div class="v" id="statWpm">0</div></div>
+          <div class="stat"><div class="k">Accuracy</div><div class="v" id="statAccuracy">100%</div></div>
+          <div class="stat"><div class="k">Raw WPM</div><div class="v" id="statRawWpm">0</div></div>
+          <div class="stat"><div class="k">Errors</div><div class="v" id="statErrors">0</div></div>
+          <div class="stat"><div class="k">Time Left</div><div class="v" id="statTime">60</div></div>
+          <div class="stat"><div class="k">Tests</div><div class="v" id="statTests">0</div></div>
+        </div>
+
+        <div class="prompt-card">
+          <div class="test-meta">
+            <div class="pill" id="testInfoPill">Ready • English • 60s</div>
+            <div class="test-status" id="testStatus">Start typing to begin.</div>
+          </div>
+          <div id="promptText" class="prompt-text"></div>
+          <input id="typingInput" class="typing-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Click here and start typing..." />
+          <div class="hint">
+            <span>Tracks wrong letters, speed per word, raw WPM, and advanced result.</span>
+            <span id="lastSavedLabel">No result saved yet</span>
+          </div>
+        </div>
+
+        <div class="mini-grid">
+          <div class="mini-panel">
+            <div class="section-title">
+              <h3>Live WPM Graph</h3>
+              <span>Per second during current test</span>
+            </div>
+            <div class="chart-wrap"><canvas id="wpmCanvas" class="canvas"></canvas></div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="history">Input History</button>
+            <button class="tab-btn" data-tab="mistakes">Mistakes</button>
+            <button class="tab-btn" data-tab="myhistory">My History</button>
+          </div>
+
+          <div id="tab-history" class="tab-content active mini-panel">
+            <div class="section-title">
+              <h3>Keystroke History</h3>
+              <span>Green = correct • red = wrong</span>
+            </div>
+            <div id="historyLetters" class="history-letters"></div>
+          </div>
+
+          <div id="tab-mistakes" class="tab-content mini-panel">
+            <div class="section-title">
+              <h3>Wrong Letters</h3>
+              <span>Most frequent mistakes in this session</span>
+            </div>
+            <table class="mistake-table">
+              <thead><tr><th>Letter</th><th>Count</th><th>Last Wrong</th></tr></thead>
+              <tbody id="mistakeTableBody"></tbody>
+            </table>
+          </div>
+
+          <div id="tab-myhistory" class="tab-content mini-panel">
+            <div class="section-title">
+              <h3>My Recent Tests</h3>
+              <span>Latest saved results</span>
+            </div>
+            <table class="history-table">
+              <thead><tr><th>Date Time</th><th>Lang</th><th>Time</th><th>WPM</th><th>Accuracy</th></tr></thead>
+              <tbody id="myHistoryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel right-panel">
+        <div class="section-title">
+          <h3>All Time Leaderboard</h3>
+          <span>Realtime from Firebase</span>
+        </div>
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Best WPM</th>
+              <th>Best Acc</th>
+              <th>Tests</th>
+              <th>Last Typing</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+        <div id="leaderboardEmpty" class="empty-box" style="display:none;margin-top:12px;">No leaderboard data yet.</div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="resultOverlay" class="result-overlay">
+    <div class="result-modal">
+      <div class="result-head">
+        <div>
+          <h2 style="margin:0">Advanced Result</h2>
+          <div class="muted" id="resultSubline">Typing test completed</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button id="saveAgainBtn" class="btn">Save Result</button>
+          <button id="closeResultBtn" class="btn ghost">Close</button>
+        </div>
+      </div>
+
+      <div class="result-main">
+        <div class="result-stat"><div class="muted">WPM</div><div class="big" id="resultWpm">0</div></div>
+        <div class="result-stat"><div class="muted">Accuracy</div><div class="big" id="resultAccuracy">100%</div></div>
+        <div class="result-stat"><div class="muted">Raw WPM</div><div class="big" id="resultRaw">0</div></div>
+        <div class="result-stat"><div class="muted">Consistency</div><div class="big" id="resultConsistency">0%</div></div>
+      </div>
+
+      <div class="mini-panel" style="margin-bottom:12px;">
+        <div class="section-title">
+          <h3>Result Graph</h3>
+          <span>WPM flow for this test</span>
+        </div>
+        <div class="chart-wrap"><canvas id="resultCanvas" class="canvas"></canvas></div>
+      </div>
+
+      <div class="advanced-grid">
+        <div class="advanced-card">
+          <h4>Typing Summary</h4>
+          <div class="row"><span>Correct Words</span><strong id="advCorrectWords">0</strong></div>
+          <div class="row"><span>Wrong Words</span><strong id="advWrongWords">0</strong></div>
+          <div class="row"><span>Correct Chars</span><strong id="advCorrectChars">0</strong></div>
+          <div class="row"><span>Wrong Chars</span><strong id="advWrongChars">0</strong></div>
+          <div class="row"><span>Spaces</span><strong id="advSpaces">0</strong></div>
+        </div>
+        <div class="advanced-card">
+          <h4>Keystrokes</h4>
+          <div class="row"><span>Total Keys</span><strong id="advTotalKeys">0</strong></div>
+          <div class="row"><span>Correct Keystrokes</span><strong id="advCorrectKeys">0</strong></div>
+          <div class="row"><span>Wrong Keystrokes</span><strong id="advWrongKeys">0</strong></div>
+          <div class="row"><span>Corrected Chars</span><strong id="advCorrectedChars">0</strong></div>
+          <div class="row"><span>Corrected Keystrokes</span><strong id="advCorrectedKeys">0</strong></div>
+        </div>
+        <div class="advanced-card">
+          <h4>Speed Data</h4>
+          <div class="row"><span>CPM</span><strong id="advCpm">0</strong></div>
+          <div class="row"><span>CPM Raw</span><strong id="advCpmRaw">0</strong></div>
+          <div class="row"><span>KPM</span><strong id="advKpm">0</strong></div>
+          <div class="row"><span>KPM Raw</span><strong id="advKpmRaw">0</strong></div>
+          <div class="row"><span>Pace</span><strong id="advPace">0</strong></div>
+        </div>
+      </div>
+      <div class="footer-note">This result can be pushed to all-time leaderboard and your personal history in realtime.</div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script>
+    // === FIREBASE CONFIG ===
+    // Replace with the SAME blurphp config from your main page.
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+      authDomain: "blurphp.firebaseapp.com",
+      databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "blurphp",
+      storageBucket: "blurphp.appspot.com",
+      messagingSenderId: "593904200464",
+      appId: "1:593904200464:web:cea7bc1360532c20d99395"
+    };
+
+    const WORD_BANK = {
+      english: {
+        words: ["these","use","what","much","leave","man","who","against","two","one","help","very","why","most","week","work","time","system","then","there","government","really","need","small","life","case","part","few","good","hand","state","hear","only","while","also","like","which","after","before","where","think","world","sound","great","still","around","again","place","every","young","point","home","water","thing","group","under","never","start","right","house","become","friend","family","money","story","light","today","night","learn","power","order","among","change","follow","answer","study","close","country","example","during","important","simple","future","people","better","strong","quick","typing"],
+        quotes:[
+          "typing quickly becomes easier when your rhythm stays calm and your eyes stay ahead of the current word",
+          "consistency matters more than speed because clean accuracy builds the muscle memory needed for faster typing later",
+          "practice a little every day and your fingers will learn where to go without wasting motion or focus"
+        ]
+      },
+      indonesia: {
+        words: ["saya","kamu","kami","mereka","waktu","cepat","lambat","sistem","negara","kerja","hidup","bagian","belajar","teman","rumah","besar","kecil","benar","salah","hari","malam","pikir","tangan","suara","bahasa","sekarang","besok","kemarin","uang","cerita","contoh","aturan","hasil","data","cukup","lanjut","selalu","jarang","penting","aman","indah","halaman","tombol","fokus","latihan","kecepatan","akurasi","huruf","kata","kalimat"],
+        quotes:[
+          "latihan mengetik yang stabil akan membuat akurasi meningkat dan kecepatan ikut naik secara alami",
+          "jangan buru buru mengejar angka tinggi jika banyak huruf salah karena ritme yang bersih jauh lebih penting",
+          "setiap tes memberi data yang berguna untuk melihat huruf mana yang paling sering salah dan kata mana yang paling lambat"
+        ]
+      },
+      melayu: {
+        words: ["saya","awak","kami","mereka","masa","cepat","perlahan","sistem","kerja","hidup","bahagian","belajar","kawan","rumah","besar","kecil","betul","salah","hari","malam","fikir","tangan","suara","bahasa","sekarang","esok","semalam","duit","cerita","contoh","aturan","hasil","data","cukup","lanjut","selalu","jarang","penting","selamat","indah","halaman","butang","fokus","latihan","kelajuan","ketepatan","huruf","perkataan","ayat"],
+        quotes:[
+          "latihan menaip yang konsisten akan bantu tingkatkan ketepatan dan kelajuan dengan lebih stabil",
+          "jangan terlalu gopoh ketika menaip kerana irama yang kemas biasanya memberi keputusan yang lebih baik",
+          "setiap ujian boleh tunjuk huruf mana yang paling kerap salah dan perkataan mana yang paling perlahan ditaip"
+        ]
+      }
+    };
+
+    const state = {
+      user: null,
+      userKey: null,
+      language: 'english',
+      mode: 'words',
+      duration: 60,
+      started: false,
+      finished: false,
+      startTs: 0,
+      endTs: 0,
+      promptWords: [],
+      currentWordIndex: 0,
+      currentInput: '',
+      timer: null,
+      timeLeft: 60,
+      history: [],
+      wordTimings: [],
+      secondSeries: [],
+      wrongMap: {},
+      sessionMistakes: {},
+      totalTyped: 0,
+      correctTyped: 0,
+      wrongTyped: 0,
+      correctedChars: 0,
+      correctedKeystrokes: 0,
+      spaces: 0,
+      totalTests: 0,
+      myHistory: [],
+      leaderboard: [],
+      dbReady: false,
+      saveLock: false,
+      presenceRef: null,
+      testSaved: false
+    };
+
+    const els = {
+      userAvatar: document.getElementById('userAvatar'),
+      userName: document.getElementById('userName'),
+      userEmail: document.getElementById('userEmail'),
+      onlineCount: document.getElementById('onlineCount'),
+      syncState: document.getElementById('syncState'),
+      languageSelect: document.getElementById('languageSelect'),
+      modeSelect: document.getElementById('modeSelect'),
+      restartBtn: document.getElementById('restartBtn'),
+      showResultBtn: document.getElementById('showResultBtn'),
+      durationWrap: document.getElementById('durationWrap'),
+      statWpm: document.getElementById('statWpm'),
+      statAccuracy: document.getElementById('statAccuracy'),
+      statRawWpm: document.getElementById('statRawWpm'),
+      statErrors: document.getElementById('statErrors'),
+      statTime: document.getElementById('statTime'),
+      statTests: document.getElementById('statTests'),
+      testInfoPill: document.getElementById('testInfoPill'),
+      testStatus: document.getElementById('testStatus'),
+      promptText: document.getElementById('promptText'),
+      typingInput: document.getElementById('typingInput'),
+      historyLetters: document.getElementById('historyLetters'),
+      mistakeTableBody: document.getElementById('mistakeTableBody'),
+      myHistoryBody: document.getElementById('myHistoryBody'),
+      leaderboardBody: document.getElementById('leaderboardBody'),
+      leaderboardEmpty: document.getElementById('leaderboardEmpty'),
+      lastSavedLabel: document.getElementById('lastSavedLabel'),
+      resultOverlay: document.getElementById('resultOverlay'),
+      closeResultBtn: document.getElementById('closeResultBtn'),
+      saveAgainBtn: document.getElementById('saveAgainBtn'),
+      resultSubline: document.getElementById('resultSubline'),
+      resultWpm: document.getElementById('resultWpm'),
+      resultAccuracy: document.getElementById('resultAccuracy'),
+      resultRaw: document.getElementById('resultRaw'),
+      resultConsistency: document.getElementById('resultConsistency'),
+      advCorrectWords: document.getElementById('advCorrectWords'),
+      advWrongWords: document.getElementById('advWrongWords'),
+      advCorrectChars: document.getElementById('advCorrectChars'),
+      advWrongChars: document.getElementById('advWrongChars'),
+      advSpaces: document.getElementById('advSpaces'),
+      advTotalKeys: document.getElementById('advTotalKeys'),
+      advCorrectKeys: document.getElementById('advCorrectKeys'),
+      advWrongKeys: document.getElementById('advWrongKeys'),
+      advCorrectedChars: document.getElementById('advCorrectedChars'),
+      advCorrectedKeys: document.getElementById('advCorrectedKeys'),
+      advCpm: document.getElementById('advCpm'),
+      advCpmRaw: document.getElementById('advCpmRaw'),
+      advKpm: document.getElementById('advKpm'),
+      advKpmRaw: document.getElementById('advKpmRaw'),
+      advPace: document.getElementById('advPace')
+    };
+
+    let db = null;
+
+    function sanitizeEmail(email=''){
+      return String(email).trim().toLowerCase().replace(/\./g,'_');
+    }
+    function safeName(user){
+      return user?.name || (user?.email ? user.email.split('@')[0] : 'Guest User');
+    }
+    function formatDateTime(ts){
+      const d = new Date(Number(ts || Date.now()));
+      if (Number.isNaN(d.getTime())) return '-';
+      const pad = n => String(n).padStart(2,'0');
+      return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+    function escapeHtml(s=''){
+      return String(s).replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+    function average(arr){
+      return arr.length ? arr.reduce((a,b)=>a+b,0) / arr.length : 0;
+    }
+    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+    function initFirebase(){
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        state.dbReady = true;
+        els.syncState.textContent = 'Realtime sync connected';
+      } catch(err){
+        console.warn('Firebase init failed:', err);
+        els.syncState.textContent = 'Firebase config missing';
+      }
+    }
+
+    function setUser(user){
+      if (!user?.email) return;
+      state.user = {
+        name: user.name || '',
+        email: String(user.email).toLowerCase(),
+        photo: user.photo || ''
+      };
+      state.userKey = sanitizeEmail(state.user.email);
+      els.userName.textContent = safeName(state.user);
+      els.userEmail.textContent = state.user.email;
+      els.userAvatar.src = state.user.photo || 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect width="100%" height="100%" rx="48" fill="#1668dc"/><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-size="34" font-family="Arial" fill="#fff">${safeName(state.user).slice(0,1).toUpperCase()}</text></svg>`);
+      bindRealtime();
+    }
+
+    function loadUserFromStorage(){
+      try {
+        const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
+        if (login?.email) setUser(login);
+      } catch(_){}
+    }
+
+    window.addEventListener('message', (e) => {
+      const data = e.data || {};
+      if (data.type === 'user-login' && data.user?.email) {
+        setUser(data.user);
+      }
+    });
+
+    function buildPrompt(){
+      const bank = WORD_BANK[state.language];
+      const words = [];
+      if (state.mode === 'quote') {
+        const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
+        state.promptWords = quote.trim().split(/\s+/);
+      } else {
+        const targetCount = state.duration >= 120 ? 110 : state.duration >= 60 ? 80 : 40;
+        for (let i=0;i<targetCount;i++) {
+          words.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
+        }
+        state.promptWords = words;
+      }
+      state.currentWordIndex = 0;
+      state.currentInput = '';
+      renderPrompt();
+      updateTestInfo();
+    }
+
+    function renderPrompt(){
+      const current = state.currentWordIndex;
+      const input = state.currentInput;
+      const html = state.promptWords.map((word, wordIndex) => {
+        let wordClass = 'word';
+        const wordHistory = state.wordTimings[wordIndex];
+        if (wordHistory?.done) wordClass += wordHistory.correct ? ' done correct-word' : ' done wrong-word';
+        const chars = word.split('').map((char, charIndex) => {
+          let cls = 'char';
+          if (wordIndex < current) {
+            const typed = wordHistory?.typed || '';
+            cls += typed[charIndex] === char ? ' correct' : ' wrong';
+          } else if (wordIndex === current) {
+            if (charIndex < input.length) {
+              cls += input[charIndex] === char ? ' correct' : ' wrong';
+            } else if (charIndex === input.length) {
+              cls += ' current';
+            } else {
+              cls += ' pending';
+            }
+          } else {
+            cls += ' pending';
+          }
+          return `<span class="${cls}">${escapeHtml(char)}</span>`;
+        }).join('');
+
+        let extras = '';
+        if (wordIndex === current && input.length > word.length) {
+          extras = input.slice(word.length).split('').map(ch => `<span class="char extra">${escapeHtml(ch)}</span>`).join('');
+        }
+        return `<span class="${wordClass}">${chars}${extras}</span>`;
+      }).join(' ');
+      els.promptText.innerHTML = html;
+    }
+
+    function updateTestInfo(){
+      els.testInfoPill.textContent = `${state.started ? 'Running' : state.finished ? 'Finished' : 'Ready'} • ${capitalize(state.language)} • ${state.duration}s`;
+    }
+    function capitalize(s=''){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    function resetTest(full=true){
+      clearInterval(state.timer);
+      state.started = false;
+      state.finished = false;
+      state.startTs = 0;
+      state.endTs = 0;
+      state.timeLeft = state.duration;
+      state.history = [];
+      state.wordTimings = [];
+      state.secondSeries = [];
+      state.sessionMistakes = {};
+      state.totalTyped = 0;
+      state.correctTyped = 0;
+      state.wrongTyped = 0;
+      state.correctedChars = 0;
+      state.correctedKeystrokes = 0;
+      state.spaces = 0;
+      state.testSaved = false;
+      els.typingInput.value = '';
+      els.testStatus.textContent = 'Start typing to begin.';
+      els.lastSavedLabel.textContent = 'No result saved yet';
+      if (full) buildPrompt();
+      updateStats();
+      renderMistakes();
+      renderHistory();
+      drawLineChart(document.getElementById('wpmCanvas'), []);
+      updateTestInfo();
+    }
+
+    function startTest(){
+      if (state.started || state.finished) return;
+      state.started = true;
+      state.startTs = Date.now();
+      els.testStatus.textContent = 'Typing in progress...';
+      updateTestInfo();
+      state.timer = setInterval(() => {
+        state.timeLeft--;
+        recordSecondSample();
+        updateStats();
+        if (state.timeLeft <= 0) finishTest();
+      }, 1000);
+    }
+
+    function recordSecondSample(){
+      const elapsedMin = Math.max((Date.now() - state.startTs) / 60000, 1/60);
+      const wpm = Math.round((state.correctTyped / 5) / elapsedMin);
+      state.secondSeries.push(wpm);
+      drawLineChart(document.getElementById('wpmCanvas'), state.secondSeries);
+    }
+
+    function handleInput(e){
+      if (state.finished) return;
+      const value = e.target.value;
+      const prev = state.currentInput;
+      if (!state.started && value.length > 0) startTest();
+
+      if (value.length < prev.length) {
+        state.correctedChars += (prev.length - value.length);
+        state.correctedKeystrokes += (prev.length - value.length);
+      }
+      if (value.endsWith(' ')) {
+        finalizeCurrentWord(value.trimEnd());
+        e.target.value = '';
+        return;
+      }
+
+      state.currentInput = value;
+      compareCurrentWord(value, prev);
+      renderPrompt();
+      updateStats();
+    }
+
+    function compareCurrentWord(nextValue, prevValue){
+      const word = state.promptWords[state.currentWordIndex] || '';
+      const maxLen = Math.max(nextValue.length, prevValue.length);
+      for (let i = prevValue.length; i < nextValue.length; i++) {
+        const typedChar = nextValue[i] || '';
+        const expectedChar = word[i] || '';
+        state.totalTyped++;
+        if (typedChar === expectedChar) {
+          state.correctTyped++;
+          pushHistory(typedChar, true);
+        } else {
+          state.wrongTyped++;
+          registerWrongChar(expectedChar || '(extra)', typedChar);
+          pushHistory(typedChar || '(blank)', false);
+        }
+      }
+      renderPrompt();
+      renderHistory();
+      renderMistakes();
+    }
+
+    function pushHistory(char, ok){
+      state.history.push({ char, ok, at: Date.now() });
+      if (state.history.length > 300) state.history.shift();
+    }
+
+    function registerWrongChar(expected, typed){
+      const key = expected || typed || '?';
+      state.sessionMistakes[key] = state.sessionMistakes[key] || { count: 0, lastWrong: 0 };
+      state.sessionMistakes[key].count += 1;
+      state.sessionMistakes[key].lastWrong = Date.now();
+    }
+
+    function finalizeCurrentWord(typedWord){
+      const expected = state.promptWords[state.currentWordIndex] || '';
+      const isCorrect = typedWord === expected;
+      const now = Date.now();
+      const prevAt = state.currentWordIndex === 0 ? state.startTs : (state.wordTimings[state.currentWordIndex - 1]?.endedAt || state.startTs);
+      const durationMs = Math.max(1, now - prevAt);
+      state.wordTimings[state.currentWordIndex] = {
+        expected,
+        typed: typedWord,
+        done: true,
+        correct: isCorrect,
+        durationMs,
+        endedAt: now,
+        wpm: Math.round((expected.length / 5) / (durationMs / 60000))
+      };
+      if (typedWord.length === expected.length) {
+        state.spaces += 1;
+      }
+      if (!isCorrect) {
+        const max = Math.max(expected.length, typedWord.length);
+        for (let i=0;i<max;i++) {
+          if ((typedWord[i] || '') !== (expected[i] || '')) {
+            registerWrongChar(expected[i] || '(missing)', typedWord[i] || '(none)');
+          }
+        }
+      }
+      state.currentWordIndex++;
+      state.currentInput = '';
+      if (state.currentWordIndex >= state.promptWords.length) {
+        finishTest();
+      } else {
+        renderPrompt();
+        updateStats();
+        renderMistakes();
+      }
+    }
+
+    function finishTest(){
+      if (state.finished) return;
+      clearInterval(state.timer);
+      state.finished = true;
+      state.started = false;
+      state.endTs = Date.now();
+      recordSecondSample();
+      els.typingInput.blur();
+      els.testStatus.textContent = 'Test completed.';
+      updateStats();
+      fillResultModal();
+      openResultModal();
+      saveResult();
+      updateTestInfo();
+    }
+
+    function getComputedStats(){
+      const elapsedMs = (state.finished ? state.endTs : Date.now()) - (state.startTs || Date.now());
+      const elapsedMin = Math.max(elapsedMs / 60000, 1/60);
+      const correctWords = state.wordTimings.filter(w => w?.done && w.correct).length;
+      const wrongWords = state.wordTimings.filter(w => w?.done && !w.correct).length;
+      const rawWpm = Math.round((state.totalTyped / 5) / elapsedMin);
+      const wpm = Math.round((state.correctTyped / 5) / elapsedMin);
+      const accuracy = state.totalTyped > 0 ? Math.round((state.correctTyped / state.totalTyped) * 100) : 100;
+      const cpm = Math.round(state.correctTyped / elapsedMin);
+      const cpmRaw = Math.round(state.totalTyped / elapsedMin);
+      const wordWpmSeries = state.wordTimings.filter(Boolean).map(w => w.wpm || 0);
+      const consistency = wordWpmSeries.length > 1
+        ? Math.max(0, Math.round(100 - ((stdDev(wordWpmSeries) / Math.max(1, average(wordWpmSeries))) * 100)))
+        : 100;
+      return {
+        elapsedMs, elapsedMin, correctWords, wrongWords, rawWpm, wpm, accuracy,
+        cpm, cpmRaw, kpm: cpm, kpmRaw: cpmRaw, consistency,
+        wrongChars: state.wrongTyped,
+        correctChars: state.correctTyped,
+        totalKeys: state.totalTyped + state.correctedKeystrokes,
+        correctKeys: state.correctTyped,
+        wrongKeys: state.wrongTyped,
+        correctedChars: state.correctedChars,
+        correctedKeystrokes: state.correctedKeystrokes,
+        pace: Math.round(60000 / Math.max(1, state.wordTimings.filter(Boolean).length ? average(state.wordTimings.filter(Boolean).map(w => w.durationMs / Math.max(1, w.expected.length))) : 0)) || 0
+      };
+    }
+
+    function stdDev(arr){
+      if (!arr.length) return 0;
+      const avg = average(arr);
+      return Math.sqrt(average(arr.map(n => Math.pow(n - avg, 2))));
+    }
+
+    function updateStats(){
+      const s = getComputedStats();
+      els.statWpm.textContent = s.wpm;
+      els.statAccuracy.textContent = `${s.accuracy}%`;
+      els.statRawWpm.textContent = s.rawWpm;
+      els.statErrors.textContent = s.wrongChars;
+      els.statTime.textContent = state.finished ? 0 : state.timeLeft;
+      els.statTests.textContent = state.totalTests || 0;
+    }
+
+    function renderHistory(){
+      const items = state.history.slice(-120).map(item => `<span class="key-chip ${item.ok ? 'good' : 'bad'}">${escapeHtml(item.char)}</span>`).join('');
+      els.historyLetters.innerHTML = items || '<div class="empty-box" style="width:100%">No keystrokes yet</div>';
+    }
+
+    function renderMistakes(){
+      const rows = Object.entries(state.sessionMistakes)
+        .sort((a,b) => b[1].count - a[1].count)
+        .slice(0, 20)
+        .map(([letter, meta]) => `<tr><td>${escapeHtml(letter)}</td><td>${meta.count}</td><td>${formatDateTime(meta.lastWrong)}</td></tr>`)
+        .join('');
+      els.mistakeTableBody.innerHTML = rows || '<tr><td colspan="3" class="muted">No mistakes yet</td></tr>';
+    }
+
+    function fillResultModal(){
+      const s = getComputedStats();
+      els.resultSubline.textContent = `${capitalize(state.language)} • ${state.duration}s • ${formatDateTime(Date.now())}`;
+      els.resultWpm.textContent = s.wpm;
+      els.resultAccuracy.textContent = `${s.accuracy}%`;
+      els.resultRaw.textContent = s.rawWpm;
+      els.resultConsistency.textContent = `${s.consistency}%`;
+      els.advCorrectWords.textContent = s.correctWords;
+      els.advWrongWords.textContent = s.wrongWords;
+      els.advCorrectChars.textContent = s.correctChars;
+      els.advWrongChars.textContent = s.wrongChars;
+      els.advSpaces.textContent = state.spaces;
+      els.advTotalKeys.textContent = s.totalKeys;
+      els.advCorrectKeys.textContent = s.correctKeys;
+      els.advWrongKeys.textContent = s.wrongKeys;
+      els.advCorrectedChars.textContent = s.correctedChars;
+      els.advCorrectedKeys.textContent = s.correctedKeystrokes;
+      els.advCpm.textContent = s.cpm;
+      els.advCpmRaw.textContent = s.cpmRaw;
+      els.advKpm.textContent = s.kpm;
+      els.advKpmRaw.textContent = s.kpmRaw;
+      els.advPace.textContent = s.pace;
+      drawLineChart(document.getElementById('resultCanvas'), state.secondSeries);
+    }
+
+    function openResultModal(){ els.resultOverlay.style.display = 'flex'; }
+    function closeResultModal(){ els.resultOverlay.style.display = 'none'; }
+
+    function getResultPayload(){
+      const s = getComputedStats();
+      return {
+        user: {
+          name: safeName(state.user),
+          email: state.user?.email || '',
+          photo: state.user?.photo || ''
+        },
+        language: state.language,
+        mode: state.mode,
+        duration: state.duration,
+        wpm: s.wpm,
+        rawWpm: s.rawWpm,
+        accuracy: s.accuracy,
+        consistency: s.consistency,
+        correctWords: s.correctWords,
+        wrongWords: s.wrongWords,
+        correctChars: s.correctChars,
+        wrongChars: s.wrongChars,
+        totalKeys: s.totalKeys,
+        correctKeys: s.correctKeys,
+        wrongKeys: s.wrongKeys,
+        correctedChars: s.correctedChars,
+        correctedKeystrokes: s.correctedKeystrokes,
+        cpm: s.cpm,
+        cpmRaw: s.cpmRaw,
+        pace: s.pace,
+        spaces: state.spaces,
+        secondSeries: state.secondSeries,
+        wordTimings: state.wordTimings.filter(Boolean),
+        wrongMap: state.sessionMistakes,
+        typedAt: Date.now(),
+        typedAtText: formatDateTime(Date.now())
+      };
+    }
+
+    async function saveResult(){
+      if (!state.dbReady || !state.userKey || state.saveLock || state.testSaved) return;
+      state.saveLock = true;
+      try {
+        const payload = getResultPayload();
+        const historyRef = db.ref(`typingTest/users/${state.userKey}/history`).push();
+        await historyRef.set(payload);
+
+        const userStatsRef = db.ref(`typingTest/users/${state.userKey}/stats`);
+        const snap = await userStatsRef.once('value');
+        const cur = snap.val() || {};
+        const totalTests = Number(cur.totalTests || 0) + 1;
+        const avgWpm = cur.avgWpm ? Math.round(((Number(cur.avgWpm) * Number(cur.totalTests || 0)) + payload.wpm) / totalTests) : payload.wpm;
+        const avgAcc = cur.avgAccuracy ? Math.round(((Number(cur.avgAccuracy) * Number(cur.totalTests || 0)) + payload.accuracy) / totalTests) : payload.accuracy;
+        const bestWpm = Math.max(Number(cur.bestWpm || 0), payload.wpm);
+        const bestAccuracy = Math.max(Number(cur.bestAccuracy || 0), payload.accuracy);
+        await userStatsRef.update({
+          bestWpm,
+          bestAccuracy,
+          avgWpm,
+          avgAccuracy: avgAcc,
+          totalTests,
+          lastTypingAt: payload.typedAt,
+          lastTypingText: payload.typedAtText,
+          lastDuration: payload.duration,
+          lastLanguage: payload.language,
+          updatedAt: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        await db.ref(`typingTest/users/${state.userKey}/profile`).update({
+          name: payload.user.name,
+          email: payload.user.email,
+          photo: payload.user.photo,
+          updatedAt: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        await db.ref(`typingTest/leaderboard/allTime/${state.userKey}`).set({
+          name: payload.user.name,
+          email: payload.user.email,
+          photo: payload.user.photo,
+          bestWpm,
+          bestAccuracy,
+          avgWpm,
+          avgAccuracy: avgAcc,
+          totalTests,
+          lastTypingAt: payload.typedAt,
+          lastTypingText: payload.typedAtText,
+          lastDuration: payload.duration,
+          lastLanguage: payload.language
+        });
+
+        state.totalTests = totalTests;
+        state.testSaved = true;
+        els.statTests.textContent = totalTests;
+        els.lastSavedLabel.textContent = `Saved • ${payload.typedAtText}`;
+        loadMyHistory();
+      } catch(err){
+        console.warn('saveResult failed:', err);
+        els.lastSavedLabel.textContent = 'Save failed';
+      } finally {
+        state.saveLock = false;
+      }
+    }
+
+    function bindRealtime(){
+      if (!state.dbReady || !state.userKey) return;
+      bindPresence();
+      loadMyHistory();
+      db.ref('typingTest/leaderboard/allTime').on('value', snap => {
+        const rows = [];
+        snap.forEach(child => {
+          rows.push({ key: child.key, ...(child.val() || {}) });
+        });
+        rows.sort((a,b) => {
+          if ((b.bestWpm || 0) !== (a.bestWpm || 0)) return (b.bestWpm || 0) - (a.bestWpm || 0);
+          if ((b.bestAccuracy || 0) !== (a.bestAccuracy || 0)) return (b.bestAccuracy || 0) - (a.bestAccuracy || 0);
+          return (b.lastTypingAt || 0) - (a.lastTypingAt || 0);
+        });
+        state.leaderboard = rows;
+        renderLeaderboard();
+      });
+
+      db.ref('typingTest/presence').on('value', snap => {
+        let count = 0;
+        snap.forEach(child => {
+          const v = child.val() || {};
+          if (v.online === true) count++;
+        });
+        els.onlineCount.textContent = `${count} Online`;
+      });
+
+      db.ref(`typingTest/users/${state.userKey}/stats`).on('value', snap => {
+        const v = snap.val() || {};
+        state.totalTests = Number(v.totalTests || 0);
+        els.statTests.textContent = state.totalTests;
+      });
+    }
+
+    function bindPresence(){
+      try {
+        const ref = db.ref(`typingTest/presence/${state.userKey}`);
+        state.presenceRef = ref;
+        ref.set({
+          online: true,
+          name: safeName(state.user),
+          email: state.user.email,
+          at: firebase.database.ServerValue.TIMESTAMP
+        });
+        ref.onDisconnect().remove();
+        window.addEventListener('beforeunload', () => {
+          try { ref.remove(); } catch(_){}
+        });
+      } catch(err){ console.warn('presence failed', err); }
+    }
+
+    function renderLeaderboard(){
+      const rows = state.leaderboard.slice(0, 50).map((row, idx) => {
+        const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
+        return `
+          <tr>
+            <td><span class="rank-badge ${rankClass}">${idx + 1}</span></td>
+            <td>
+              <div class="lb-user">
+                <img src="${escapeHtml(row.photo || '')}" onerror="this.src='data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"60\" height=\"60\"><rect width=\"100%\" height=\"100%\" rx=\"30\" fill=\"#1668dc\"/><text x=\"50%\" y=\"54%\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"24\" font-family=\"Arial\" fill=\"#fff\">${(row.name || row.email || 'U').slice(0,1).toUpperCase()}</text></svg>')}'" alt="avatar">
+                <div style="min-width:0">
+                  <div class="name">${escapeHtml(row.name || '-')}</div>
+                  <div class="mail">${escapeHtml(row.email || '-')}</div>
+                </div>
+              </div>
+            </td>
+            <td><strong>${Number(row.bestWpm || 0)}</strong></td>
+            <td>${Number(row.bestAccuracy || 0)}%</td>
+            <td>${Number(row.totalTests || 0)}</td>
+            <td class="muted">${escapeHtml(row.lastTypingText || formatDateTime(row.lastTypingAt || 0))}</td>
+          </tr>`;
+      }).join('');
+      els.leaderboardBody.innerHTML = rows;
+      els.leaderboardEmpty.style.display = rows ? 'none' : 'block';
+    }
+
+    async function loadMyHistory(){
+      if (!state.dbReady || !state.userKey) return;
+      try {
+        const snap = await db.ref(`typingTest/users/${state.userKey}/history`).limitToLast(12).once('value');
+        const rows = [];
+        snap.forEach(child => rows.push({ id: child.key, ...(child.val() || {}) }));
+        rows.sort((a,b) => (b.typedAt || 0) - (a.typedAt || 0));
+        state.myHistory = rows;
+        els.myHistoryBody.innerHTML = rows.map(row => `
+          <tr>
+            <td>${escapeHtml(row.typedAtText || formatDateTime(row.typedAt || 0))}</td>
+            <td>${escapeHtml(capitalize(row.language || '-'))}</td>
+            <td>${Number(row.duration || 0)}s</td>
+            <td><strong>${Number(row.wpm || 0)}</strong></td>
+            <td>${Number(row.accuracy || 0)}%</td>
+          </tr>`).join('') || '<tr><td colspan="5" class="muted">No history yet</td></tr>';
+      } catch(err){ console.warn('loadMyHistory failed:', err); }
+    }
+
+    function drawLineChart(canvas, data){
+      if (!canvas) return;
+      const ratio = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const width = Math.max(300, Math.floor(rect.width * ratio));
+      const height = Math.max(180, Math.floor(rect.height * ratio));
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,width,height);
+      const pad = 18 * ratio;
+      ctx.strokeStyle = 'rgba(255,255,255,.08)';
+      ctx.lineWidth = 1;
+      for (let i=0;i<4;i++){
+        const y = pad + ((height - pad*2) / 3) * i;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(width - pad, y);
+        ctx.stroke();
+      }
+      if (!data.length) return;
+      const max = Math.max(10, ...data);
+      ctx.beginPath();
+      data.forEach((v, i) => {
+        const x = pad + (i / Math.max(1, data.length - 1)) * (width - pad*2);
+        const y = height - pad - (v / max) * (height - pad*2);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#1668dc';
+      ctx.lineWidth = 3 * ratio;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      const gradient = ctx.createLinearGradient(0, pad, 0, height-pad);
+      gradient.addColorStop(0, 'rgba(22,104,220,.28)');
+      gradient.addColorStop(1, 'rgba(22,104,220,0)');
+      ctx.lineTo(width-pad, height-pad);
+      ctx.lineTo(pad, height-pad);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+    }
+
+    function switchTab(name){
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === name));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.toggle('active', tab.id === `tab-${name}`));
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+    document.querySelectorAll('.duration-btn').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.duration-btn').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      state.duration = Number(btn.dataset.duration || 60);
+      state.timeLeft = state.duration;
+      resetTest(true);
+    }));
+
+    els.languageSelect.addEventListener('change', () => { state.language = els.languageSelect.value; resetTest(true); });
+    els.modeSelect.addEventListener('change', () => { state.mode = els.modeSelect.value; resetTest(true); });
+    els.restartBtn.addEventListener('click', () => resetTest(true));
+    els.typingInput.addEventListener('input', handleInput);
+    els.showResultBtn.addEventListener('click', () => { fillResultModal(); openResultModal(); });
+    els.closeResultBtn.addEventListener('click', closeResultModal);
+    els.saveAgainBtn.addEventListener('click', saveResult);
+    els.resultOverlay.addEventListener('click', (e) => { if (e.target === els.resultOverlay) closeResultModal(); });
+    window.addEventListener('resize', () => {
+      drawLineChart(document.getElementById('wpmCanvas'), state.secondSeries);
+      drawLineChart(document.getElementById('resultCanvas'), state.secondSeries);
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeResultModal();
+      if (e.key === 'Tab' && document.activeElement !== els.typingInput) {
+        e.preventDefault();
+        els.typingInput.focus();
+      }
+    });
+
+    initFirebase();
+    loadUserFromStorage();
+    buildPrompt();
+    resetTest(false);
+  </script>
+</body>
+</html>
