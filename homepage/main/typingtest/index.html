@@ -130,7 +130,13 @@
     .layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(400px,.9fr);gap:10px}
     .panel{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
     .left-panel{padding:16px}
-    .right-panel{padding:14px}
+    .right-panel{
+  padding:14px;
+  max-height:calc(100vh - 100px);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
 
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
     .toolbar-left,.toolbar-right,.duration-wrap{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
@@ -173,6 +179,25 @@
     .section-title h3{margin:0;font-size:17px}
     .section-title span{color:var(--muted);font-size:12px}
     .leaderboard-table,.history-table,.mistake-table{width:100%;border-collapse:collapse}
+    .leaderboard-scroll{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-right:4px;
+}
+
+.leaderboard-scroll .leaderboard-table thead th{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:#0d0d0d;
+}
+
+.leaderboard-scroll .leaderboard-table{
+  border-collapse:separate;
+  border-spacing:0;
+}
     .leaderboard-table th,.leaderboard-table td,.history-table th,.history-table td,.mistake-table th,.mistake-table td{padding:10px 8px;border-bottom:1px solid #1a1a1a;text-align:left;font-size:13px}
     .leaderboard-table th,.history-table th,.mistake-table th{color:var(--muted);font-weight:600}
     .rank-badge{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#111;border:1px solid #232323;font-weight:800}
@@ -456,26 +481,30 @@ html {
         </div>
       </section>
 
-      <aside class="panel right-panel">
-        <div class="section-title">
-          <h3>All Time Leaderboard</h3>
-          <span>All user</span>
-        </div>
-        <table class="leaderboard-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>User</th>
-              <th>Best WPM</th>
-              <th>Best Accuracy</th>
-              <th>Typing</th>
-              <th>Last Typing</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboardBody"></tbody>
-        </table>
-        <div id="leaderboardEmpty" class="empty-box" style="display:none;margin-top:12px;">No leaderboard data yet.</div>
-      </aside>
+<aside class="panel right-panel">
+  <div class="section-title">
+    <h3>All Time Leaderboard</h3>
+    <span>All user</span>
+  </div>
+
+  <div class="leaderboard-scroll">
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th>Best WPM</th>
+          <th>Best Accuracy</th>
+          <th>Typing</th>
+          <th>Last Typing</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardBody"></tbody>
+    </table>
+
+    <div id="leaderboardEmpty" class="empty-box" style="display:none;margin-top:12px;">No leaderboard data yet.</div>
+  </div>
+</aside>
     </div>
   </div>
 
