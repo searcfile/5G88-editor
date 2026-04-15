@@ -2192,14 +2192,14 @@ document.querySelectorAll('#lineCountOptions .ts-opt').forEach(btn => {
   });
 });
 els.restartBtn.addEventListener('click', () => {
-  els.restartBtn.classList.remove('spin');
+  els.restartBtn.classList.remove('spinning');
   void els.restartBtn.offsetWidth;
-  els.restartBtn.classList.add('spin');
+  els.restartBtn.classList.add('spinning');
 
   resetTest(true);
 
   setTimeout(() => {
-    els.restartBtn.classList.remove('spin');
+    els.restartBtn.classList.remove('spinning');
   }, 700);
 });
     els.typingInput.addEventListener('input', handleInput);
