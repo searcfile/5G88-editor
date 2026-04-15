@@ -139,6 +139,10 @@
       .toolbar{align-items:flex-start}
       .brand{padding:14px}
     }
+    .latest-row {
+  background: rgba(22,104,220,0.1);
+  border-left: 3px solid #1668dc;
+}
   </style>
 </head>
 <body>
@@ -1209,7 +1213,8 @@ function loadMyHistory() {
       console.log('My History rows final:', rows.length, rows);
 
       els.myHistoryBody.innerHTML =
-        rows.map(row => `
+        rows.map((row, i) => `
+           <tr class="${i === 0 ? 'latest-row' : ''}">
           <tr>
             <td>${escapeHtml(row.typedAtText || formatDateTime(row.typedAt || 0))}</td>
             <td>${escapeHtml(capitalize(row.language || '-'))}</td>
