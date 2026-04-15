@@ -415,8 +415,10 @@
       leaderboard: [],
       dbReady: false,
       saveLock: false,
-      presenceRef: null,
+presenceRef: null,
 myHistoryRef: null,
+leaderboardRef: null,
+presenceListRef: null,
 testSaved: false
     };
 
@@ -986,34 +988,42 @@ async function saveResult(forceSave = false){
     state.saveLock = false;
   }
 }
-    function bindRealtime(){
-      if (!state.dbReady || !state.userKey) return;
-      bindPresence();
-      loadMyHistory();
-      db.ref('typingTest/leaderboard/allTime').on('value', snap => {
-        const rows = [];
-        snap.forEach(child => {
-          rows.push({ key: child.key, ...(child.val() || {}) });
-        });
-        rows.sort((a,b) => {
-          if ((b.bestWpm || 0) !== (a.bestWpm || 0)) return (b.bestWpm || 0) - (a.bestWpm || 0);
-          if ((b.bestAccuracy || 0) !== (a.bestAccuracy || 0)) return (b.bestAccuracy || 0) - (a.bestAccuracy || 0);
-          return (b.lastTypingAt || 0) - (a.lastTypingAt || 0);
-        });
-        state.leaderboard = rows;
-        renderLeaderboard();
-      });
+function bindRealtime(){
+  if (!state.dbReady || !state.userKey) return;
 
-      db.ref('typingTest/presence').on('value', snap => {
-        let count = 0;
-        snap.forEach(child => {
-          const v = child.val() || {};
-          if (v.online === true) count++;
-        });
-        els.onlineCount.textContent = `${count} Online`;
-      });
-    }
+  if (state.leaderboardRef) state.leaderboardRef.off();
+  if (state.presenceListRef) state.presenceListRef.off();
 
+  bindPresence();
+  loadMyHistory();
+
+  state.leaderboardRef = db.ref('typingTest/leaderboard/allTime');
+  state.leaderboardRef.on('value', snap => {
+    const rows = [];
+    snap.forEach(child => {
+      rows.push({ key: child.key, ...(child.val() || {}) });
+    });
+
+    rows.sort((a, b) => {
+      if ((b.bestWpm || 0) !== (a.bestWpm || 0)) return (b.bestWpm || 0) - (a.bestWpm || 0);
+      if ((b.bestAccuracy || 0) !== (a.bestAccuracy || 0)) return (b.bestAccuracy || 0) - (a.bestAccuracy || 0);
+      return (b.lastTypingAt || 0) - (a.lastTypingAt || 0);
+    });
+
+    state.leaderboard = rows;
+    renderLeaderboard();
+  });
+
+  state.presenceListRef = db.ref('typingTest/presence');
+  state.presenceListRef.on('value', snap => {
+    let count = 0;
+    snap.forEach(child => {
+      const v = child.val() || {};
+      if (v.online === true) count++;
+    });
+    els.onlineCount.textContent = `${count} Online`;
+  });
+}
     function bindPresence(){
       try {
         const ref = db.ref(`typingTest/presence/${state.userKey}`);
