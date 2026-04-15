@@ -416,7 +416,8 @@
       dbReady: false,
       saveLock: false,
       presenceRef: null,
-      testSaved: false
+myHistoryRef: null,
+testSaved: false
     };
 
     const els = {
@@ -958,7 +959,7 @@ async function saveResult(forceSave = false){
     els.statTests.textContent = totalTests;
     els.lastSavedLabel.textContent = `Saved • ${payload.typedAtText}`;
 
-    await loadMyHistory();
+    loadMyHistory();
     return true;
   } catch(err){
     console.warn('saveResult failed:', err);
@@ -1050,29 +1051,60 @@ function maskLeaderboardName(name = '') {
   const stars = '*'.repeat(Math.max(3, raw.length - 5));
   return first + stars + last;
 }
+function compressDuplicateWords(text = '') {
+  const parts = String(text || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
 
+  if (!parts.length) return '';
+
+  const normalized = parts.map(p => normalizeCompareName(p));
+  const allSame = normalized.every(p => p === normalized[0]);
+
+  return allSame ? parts[0] : parts.join(' ');
+}
+
+function maskLeaderboardDisplayText(text = '') {
+  const parts = String(text || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!parts.length) return '-';
+
+  return parts.map(maskLeaderboardName).join(' ');
+}
 function buildLeaderboardDisplayName(row) {
   const rawName = String(row?.name || '').trim();
   const email = String(row?.email || '').trim().toLowerCase();
   const emailUser = email.includes('@') ? email.split('@')[0].trim() : '';
-  const safeEmailUser = emailUser || rawName || 'User';
 
-  // kalau name kosong, guna username email yang sudah disensor
-  if (!rawName) {
-    return maskLeaderboardName(safeEmailUser);
+  const compactName = compressDuplicateWords(rawName);
+  const compactEmailUser = compressDuplicateWords(emailUser);
+
+  if (!compactName && !compactEmailUser) {
+    return '-';
   }
 
-  // compare name dengan username email
-  const normName = normalizeCompareName(rawName);
-  const normEmailUser = normalizeCompareName(emailUser);
-
-  // kalau sama, tampil satu saja, tak perlu dua kali
-  if (normName && normEmailUser && normName === normEmailUser) {
-    return maskLeaderboardName(rawName);
+  if (!compactName) {
+    return maskLeaderboardDisplayText(compactEmailUser);
   }
 
-  // kalau berbeza, tampil kedua-dua
-  return `${maskLeaderboardName(rawName)} ${maskLeaderboardName(safeEmailUser)}`;
+  if (!compactEmailUser) {
+    return maskLeaderboardDisplayText(compactName);
+  }
+
+  const normName = normalizeCompareName(compactName);
+  const normEmailUser = normalizeCompareName(compactEmailUser);
+
+  // kalau nama depan & belakang sama / atau sama dengan username email
+  if (normName === normEmailUser) {
+    return maskLeaderboardDisplayText(compactName);
+  }
+
+  // kalau dalam raw name ada 2 perkataan tapi sebenarnya sama, compressDuplicateWords sudah buang duplicate
+  return `${maskLeaderboardDisplayText(compactName)} ${maskLeaderboardDisplayText(compactEmailUser)}`;
 }
 function getAvatarSrc(row) {
   const raw = String(row?.photo || '').trim();
@@ -1117,24 +1149,36 @@ function renderLeaderboard() {
   els.leaderboardEmpty.style.display = rows ? 'none' : 'block';
 }
 
-    async function loadMyHistory(){
-      if (!state.dbReady || !state.userKey) return;
-      try {
-        const snap = await db.ref(`typingTest/users/${state.userKey}/history`).limitToLast(12).once('value');
-        const rows = [];
-        snap.forEach(child => rows.push({ id: child.key, ...(child.val() || {}) }));
-        rows.sort((a,b) => (b.typedAt || 0) - (a.typedAt || 0));
-        state.myHistory = rows;
-        els.myHistoryBody.innerHTML = rows.map(row => `
-          <tr>
-            <td>${escapeHtml(row.typedAtText || formatDateTime(row.typedAt || 0))}</td>
-            <td>${escapeHtml(capitalize(row.language || '-'))}</td>
-            <td>${Number(row.duration || 0)}s</td>
-            <td><strong>${Number(row.wpm || 0)}</strong></td>
-            <td>${Number(row.accuracy || 0)}%</td>
-          </tr>`).join('') || '<tr><td colspan="5" class="muted">No history yet</td></tr>';
-      } catch(err){ console.warn('loadMyHistory failed:', err); }
+function loadMyHistory() {
+  if (!state.dbReady || !state.userKey) return;
+
+  try {
+    if (state.myHistoryRef) {
+      state.myHistoryRef.off();
     }
+
+    state.myHistoryRef = db.ref(`typingTest/users/${state.userKey}/history`).limitToLast(12);
+
+    state.myHistoryRef.on('value', (snap) => {
+      const rows = [];
+      snap.forEach(child => rows.push({ id: child.key, ...(child.val() || {}) }));
+      rows.sort((a, b) => (b.typedAt || 0) - (a.typedAt || 0));
+      state.myHistory = rows;
+
+      els.myHistoryBody.innerHTML = rows.map(row => `
+        <tr>
+          <td>${escapeHtml(row.typedAtText || formatDateTime(row.typedAt || 0))}</td>
+          <td>${escapeHtml(capitalize(row.language || '-'))}</td>
+          <td>${Number(row.duration || 0)}s</td>
+          <td><strong>${Number(row.wpm || 0)}</strong></td>
+          <td>${Number(row.accuracy || 0)}%</td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" class="muted">No history yet</td></tr>';
+    });
+  } catch (err) {
+    console.warn('loadMyHistory failed:', err);
+  }
+}}
 
     function drawLineChart(canvas, data){
       if (!canvas) return;
