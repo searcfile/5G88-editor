@@ -584,6 +584,8 @@ leaderboardRef: null,
 presenceListRef: null,
 leaderboardChartPoints: [],
 leaderboardHoverIndex: -1,
+visibleStartIndex: 0,
+visibleLineRanges: [],
 testSaved: false
     };
 
@@ -913,28 +915,22 @@ function buildPrompt(){
     state.promptWords = words;
   }
 
-  state.currentWordIndex = 0;
-  state.currentInput = '';
-  renderPrompt();
-  updateTestInfo();
+state.currentWordIndex = 0;
+state.currentInput = '';
+state.visibleStartIndex = 0;
+state.visibleLineRanges = [];
+renderPrompt();
+updateTestInfo();
 }
 function renderPrompt() {
   const current = state.currentWordIndex;
   const input = state.currentInput;
 
-  const wordsPerLine = getWordsPerLine();
-  const visibleLines = Math.max(1, Number(state.textLineCount || 2));
-  const visibleCount = wordsPerLine * visibleLines;
+  const startIndex = Math.max(0, Number(state.visibleStartIndex || 0));
+  const probeCount = Math.max(20, getPromptTargetWordCount() + getWordsPerLine() * 6);
+  const probeWords = state.promptWords.slice(startIndex, startIndex + probeCount);
 
-  // rolling per line
-  const currentLineIndex = Math.floor(current / wordsPerLine);
-  const startLineIndex = Math.max(0, currentLineIndex - (visibleLines - 1));
-  const startIndex = startLineIndex * wordsPerLine;
-  const endIndex = Math.min(state.promptWords.length, startIndex + visibleCount);
-
-  const visibleWords = state.promptWords.slice(startIndex, endIndex);
-
-  const html = visibleWords.map((word, visibleIndex) => {
+  const html = probeWords.map((word, visibleIndex) => {
     const realIndex = startIndex + visibleIndex;
     let wordClass = 'word';
     const wordHistory = state.wordTimings[realIndex];
@@ -973,11 +969,49 @@ function renderPrompt() {
         .join('');
     }
 
-    return `<span class="${wordClass}">${chars}${extras}</span>`;
+    return `<span class="${wordClass}" data-real-index="${realIndex}">${chars}${extras}</span>`;
   }).join(' ');
 
   els.promptText.innerHTML = html;
   updateTypingSettingsUI();
+
+  const wordNodes = Array.from(els.promptText.querySelectorAll('.word[data-real-index]'));
+  const maxLines = Math.max(1, Number(state.textLineCount || 2));
+
+  const lines = [];
+  wordNodes.forEach(node => {
+    const realIndex = Number(node.dataset.realIndex || 0);
+    const top = node.offsetTop;
+
+    const lastLine = lines[lines.length - 1];
+    if (!lastLine || Math.abs(lastLine.top - top) > 4) {
+      lines.push({
+        top,
+        startIndex: realIndex,
+        endIndex: realIndex,
+        nodes: [node]
+      });
+    } else {
+      lastLine.endIndex = realIndex;
+      lastLine.nodes.push(node);
+    }
+  });
+
+  state.visibleLineRanges = lines.slice(0, maxLines).map(line => ({
+    startIndex: line.startIndex,
+    endIndex: line.endIndex
+  }));
+
+  const allowedLastIndex = state.visibleLineRanges.length
+    ? state.visibleLineRanges[state.visibleLineRanges.length - 1].endIndex
+    : -1;
+
+  wordNodes.forEach(node => {
+    const realIndex = Number(node.dataset.realIndex || 0);
+    if (realIndex > allowedLastIndex) {
+      node.style.display = 'none';
+    }
+  });
 }
     function updateTestInfo(){
       els.testInfoPill.textContent = `${state.started ? 'Running' : state.finished ? 'Finished' : 'Ready'} • ${capitalize(state.language)} • ${state.duration}s`;
@@ -1013,6 +1047,21 @@ function appendMorePromptWords() {
       extraWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
     }
     state.promptWords.push(...extraWords);
+  }
+}
+function shiftVisibleWindowIfNeeded() {
+  if (!state.visibleLineRanges || !state.visibleLineRanges.length) return;
+
+  const firstLine = state.visibleLineRanges[0];
+  if (!firstLine) return;
+
+  if (state.currentWordIndex > firstLine.endIndex) {
+    const secondLine = state.visibleLineRanges[1];
+    if (secondLine) {
+      state.visibleStartIndex = secondLine.startIndex;
+    } else {
+      state.visibleStartIndex = state.currentWordIndex;
+    }
   }
 }
 function updateTypingSettingsUI() {
@@ -1070,8 +1119,10 @@ prompt.style.overflow = 'hidden';
       state.wrongTyped = 0;
       state.correctedChars = 0;
       state.correctedKeystrokes = 0;
-      state.spaces = 0;
-      state.testSaved = false;
+state.spaces = 0;
+state.testSaved = false;
+state.visibleStartIndex = 0;
+state.visibleLineRanges = [];
       els.typingInput.value = '';
       els.testStatus.textContent = 'Start typing to begin.';
       els.lastSavedLabel.textContent = 'No result saved yet';
@@ -1199,13 +1250,14 @@ state.currentWordIndex++;
 state.currentInput = '';
 
 if (!state.finished && state.timeLeft > 0) {
-  const reserveCount = getPromptTargetWordCount() + getWordsPerLine();
+  const reserveCount = getPromptTargetWordCount() + getWordsPerLine() * 4;
   const remainingWords = state.promptWords.length - state.currentWordIndex;
 
   if (remainingWords < reserveCount) {
     appendMorePromptWords();
   }
 
+  shiftVisibleWindowIfNeeded();
   renderPrompt();
   updateStats();
   renderMistakes();
