@@ -506,19 +506,36 @@ testSaved: false
       }
     }
 
-    function setUser(user){
-      if (!user?.email) return;
-      state.user = {
-        name: user.name || '',
-        email: String(user.email).toLowerCase(),
-        photo: user.photo || ''
-      };
-      state.userKey = sanitizeEmail(state.user.email);
-      els.userName.textContent = safeName(state.user);
-      els.userEmail.textContent = state.user.email;
-      els.userAvatar.src = state.user.photo || 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect width="100%" height="100%" rx="48" fill="#1668dc"/><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-size="34" font-family="Arial" fill="#fff">${safeName(state.user).slice(0,1).toUpperCase()}</text></svg>`);
-      bindRealtime();
-    }
+function setUser(user){
+  if (!user?.email) return;
+
+  state.user = {
+    name: user.name || '',
+    email: String(user.email).toLowerCase(),
+    photo: user.photo || ''
+  };
+
+  state.userKey = sanitizeEmail(state.user.email);
+
+  console.log('TypingTest setUser email:', state.user.email);
+  console.log('TypingTest setUser userKey:', state.userKey);
+
+  els.userName.textContent = safeName(state.user);
+  els.userEmail.textContent = state.user.email;
+  els.userAvatar.src =
+    state.user.photo ||
+    'data:image/svg+xml;utf8,' +
+      encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">
+          <rect width="100%" height="100%" rx="48" fill="#1668dc"/>
+          <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-size="34" font-family="Arial" fill="#fff">
+            ${safeName(state.user).slice(0,1).toUpperCase()}
+          </text>
+        </svg>`
+      );
+
+  bindRealtime();
+}
 
     function loadUserFromStorage(){
       try {
@@ -1144,32 +1161,54 @@ function renderLeaderboard() {
 }
 
 function loadMyHistory() {
-  if (!state.dbReady || !state.userKey) return;
+  if (!state.dbReady || !state.userKey) {
+    console.log('loadMyHistory skipped:', {
+      dbReady: state.dbReady,
+      userKey: state.userKey
+    });
+    return;
+  }
 
   try {
     if (state.myHistoryRef) {
       state.myHistoryRef.off();
     }
 
-    state.myHistoryRef = db.ref(`typingTest/users/${state.userKey}/history`).limitToLast(12);
+    const historyPath = `typingTest/users/${state.userKey}/history`;
+    console.log('Binding My History path:', historyPath);
+
+    state.myHistoryRef = db.ref(historyPath).limitToLast(12);
 
     state.myHistoryRef.on('value', (snap) => {
+      console.log('My History snap exists:', snap.exists());
+      console.log('My History numChildren:', snap.numChildren());
+
       const rows = [];
-      snap.forEach(child => rows.push({ id: child.key, ...(child.val() || {}) }));
+      snap.forEach(child => {
+        rows.push({
+          id: child.key,
+          ...(child.val() || {})
+        });
+      });
+
       rows.sort((a, b) => (b.typedAt || 0) - (a.typedAt || 0));
       state.myHistory = rows;
       state.totalTests = rows.length;
       els.statTests.textContent = rows.length;
-      console.log('My History rows:', rows.length, rows);
-      els.myHistoryBody.innerHTML = rows.map(row => `
-        <tr>
-          <td>${escapeHtml(row.typedAtText || formatDateTime(row.typedAt || 0))}</td>
-          <td>${escapeHtml(capitalize(row.language || '-'))}</td>
-          <td>${Number(row.duration || 0)}s</td>
-          <td><strong>${Number(row.wpm || 0)}</strong></td>
-          <td>${Number(row.accuracy || 0)}%</td>
-        </tr>
-      `).join('') || '<tr><td colspan="5" class="muted">No history yet</td></tr>';
+
+      console.log('My History rows final:', rows.length, rows);
+
+      els.myHistoryBody.innerHTML =
+        rows.map(row => `
+          <tr>
+            <td>${escapeHtml(row.typedAtText || formatDateTime(row.typedAt || 0))}</td>
+            <td>${escapeHtml(capitalize(row.language || '-'))}</td>
+            <td>${Number(row.duration || 0)}s</td>
+            <td><strong>${Number(row.wpm || 0)}</strong></td>
+            <td>${Number(row.accuracy || 0)}%</td>
+          </tr>
+        `).join('') ||
+        '<tr><td colspan="5" class="muted">No history yet</td></tr>';
     });
   } catch (err) {
     console.warn('loadMyHistory failed:', err);
