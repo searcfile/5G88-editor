@@ -1799,14 +1799,20 @@ function pushWordAttempt(typedWord){
 state.currentWordIndex++;
 state.currentInput = '';
 
-if (!state.finished && state.timeLeft > 0) {
+const canContinue =
+  !state.finished &&
+  (
+    state.timerMode === 'countup' ||
+    state.timeLeft > 0
+  );
+
+if (canContinue) {
   const reserveCount = getPromptTargetWordCount() + getWordsPerLine() * 4;
   const remainingWords = state.promptWords.length - state.currentWordIndex;
 
   if (remainingWords < reserveCount) {
     appendMorePromptWords();
 
-    // 🔥 letak di sini bro
     if (state.promptWords.length > 2000) {
       state.promptWords = state.promptWords.slice(state.currentWordIndex);
       state.visibleStartIndex = 0;
