@@ -2223,8 +2223,12 @@ function loadMyHistory() {
 
       rows.sort((a, b) => (b.typedAt || 0) - (a.typedAt || 0));
       state.myHistory = rows;
-      state.totalTests = rows.length;
-      els.statTests.textContent = rows.length;
+db.ref(`typingTest/users/${state.userKey}/stats`).once('value')
+  .then(snap => {
+    const stats = snap.val() || {};
+    state.totalTests = Number(stats.totalTests || 0);
+    els.statTests.textContent = state.totalTests;
+  });
 
       console.log('My History rows final:', rows.length, rows);
 
