@@ -1361,12 +1361,14 @@ if (saved && !state.started && !state.finished) {
       }, 1000);
     }
 
-    function recordSecondSample(){
-      const elapsedMin = Math.max((Date.now() - state.startTs) / 60000, 1/60);
-      const wpm = Math.round((state.correctTyped / 5) / elapsedMin);
-      state.secondSeries.push(wpm);
-      drawLineChart(document.getElementById('wpmCanvas'), state.secondSeries);
-    }
+function recordSecondSample(){
+  const elapsedMin = Math.max((Date.now() - state.startTs) / 60000, 1/60);
+  const wpm = Math.round((state.correctTyped / 5) / elapsedMin);
+  state.secondSeries.push(wpm);
+
+  // guna resultCanvas untuk graph result test
+  drawLineChart(document.getElementById('resultCanvas'), state.secondSeries, 'wpm');
+}
 
 function handleInput(e){
   if (state.finished) return;
