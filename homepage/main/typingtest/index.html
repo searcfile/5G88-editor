@@ -259,11 +259,25 @@
     .stat .k{color:rgb(255, 255, 255,0.65);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
     .stat .v{font-size:20px;font-weight:500;margin-top:6px}
 
-    .prompt-card{padding:18px;background:#090909;border:1px solid #171717;border-radius:18px;position:relative;overflow:hidden}
+.prompt-card{
+  padding:18px;
+  background:#090909;
+  border:1px solid #171717;
+  border-radius:18px;
+  position:relative;
+  overflow:visible;
+}
     .prompt-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(22,104,220,.08),transparent 30%);pointer-events:none}
     .test-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}
     .test-status{color:var(--muted);font-size:13px}
-    .prompt-text{line-height:1.9;font-size:31px;letter-spacing:.02em;word-break:break-word;min-height:180px}
+    .prompt-text{
+  line-height:1.85;
+  font-size:31px;
+  letter-spacing:.02em;
+  word-break:break-word;
+  min-height:180px;
+  padding-bottom:10px;
+}
     .word{margin-right:.34em}
     .char{position:relative}
     .char.correct{color:#f5f5f5}
@@ -1401,18 +1415,17 @@ function updateTypingSettingsUI() {
 
 const lineHeightPx = (() => {
   switch (state.fontSize) {
-    case 'xs': return 22 * 1.9;
-    case 'sm': return 27 * 1.9;
-    case 'md': return 31 * 1.9;
-    case 'lg': return 37 * 1.9;
-    case 'xl': return 44 * 1.9;
-    default: return 31 * 1.9;
+    case 'xs': return 22 * 1.85;
+    case 'sm': return 27 * 1.85;
+    case 'md': return 31 * 1.85;
+    case 'lg': return 37 * 1.85;
+    case 'xl': return 44 * 1.85;
+    default: return 31 * 1.85;
   }
 })();
 
 const visibleLines = Math.max(1, Number(state.textLineCount || 2));
-const promptHeight = Math.ceil((visibleLines * lineHeightPx) + 16); 
-// +16 buffer supaya line terakhir tak terpotong
+const promptHeight = Math.ceil((visibleLines * lineHeightPx) + 30);
 
 prompt.style.minHeight = `${promptHeight}px`;
 prompt.style.maxHeight = `${promptHeight}px`;
