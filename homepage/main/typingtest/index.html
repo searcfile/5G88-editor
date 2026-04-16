@@ -1399,23 +1399,19 @@ function updateTypingSettingsUI() {
   prompt.classList.add(`font-${state.fontFamily}`);
   prompt.classList.add(`size-${state.fontSize}`);
 
-const lineHeightPx = (() => {
-  switch (state.fontSize) {
-    case 'xs': return 22 * 1.9;
-    case 'sm': return 27 * 1.9;
-    case 'md': return 31 * 1.9;
-    case 'lg': return 37 * 1.9;
-    case 'xl': return 44 * 1.9;
-    default: return 31 * 1.9;
-  }
-})();
+  const lineHeightPx = (() => {
+    switch (state.fontSize) {
+      case 'xs': return 22 * 1.9;
+      case 'sm': return 27 * 1.9;
+      case 'md': return 31 * 1.9;
+      case 'lg': return 37 * 1.9;
+      case 'xl': return 44 * 1.9;
+      default: return 31 * 1.9;
+    }
+  })();
 
-const visibleLines = Math.max(1, Number(state.textLineCount || 2));
-const promptHeight = Math.ceil((visibleLines * lineHeightPx) + 16); 
-// +16 buffer supaya line terakhir tak terpotong
-
-prompt.style.minHeight = `${promptHeight}px`;
-prompt.style.maxHeight = `${promptHeight}px`;
+  prompt.style.minHeight = `${Math.max(1, state.textLineCount) * lineHeightPx}px`;
+prompt.style.maxHeight = `${Math.max(1, state.textLineCount) * lineHeightPx}px`;
 prompt.style.overflow = 'hidden';
 
   document.querySelectorAll('#fontFamilyOptions .ts-opt').forEach(btn => {
