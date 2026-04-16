@@ -1787,22 +1787,31 @@ if (!state.finished && state.timeLeft > 0) {
 }
     }
 
-    function finishTest(){
-      if (state.finished) return;
-      clearInterval(state.timer);
-      state.finished = true;
-      state.started = false;
-      state.endTs = Date.now();
-      recordSecondSample();
-      els.typingInput.blur();
-      els.testStatus.textContent = 'Test completed.';
-      updateStats();
-fillResultModal();
-saveLastSessionToStorage();
-openResultModal();
-saveResult(false);
-updateTestInfo();
-    }
+async function finishTest(){
+  if (state.finished) return;
+
+  clearInterval(state.timer);
+  state.finished = true;
+  state.started = false;
+  state.endTs = Date.now();
+
+  recordSecondSample();
+  els.typingInput.blur();
+  els.testStatus.textContent = 'Test completed.';
+  updateStats();
+
+  fillResultModal();
+  saveLastSessionToStorage();
+  openResultModal();
+
+  await saveResult(false);
+  updateTestInfo();
+
+  setTimeout(() => {
+    closeResultModal();
+    resetTest(true);
+  }, 1200);
+}
 
     function getComputedStats(){
       const elapsedMs = (state.finished ? state.endTs : Date.now()) - (state.startTs || Date.now());
