@@ -1210,11 +1210,7 @@ document.querySelectorAll('.duration-btn').forEach(btn => {
   renderHistory();
   renderMistakes();
 
-  drawLineChart(
-    document.getElementById('wpmCanvas'),
-    state.leaderboard.map(x => Number(x.bestWpm || 0)),
-    'leaderboard'
-  );
+redrawLeaderboardChart(80);
 
   if (saved.typedAtText) {
     els.lastSavedLabel.textContent = `Last session • ${saved.typedAtText}`;
@@ -2319,11 +2315,8 @@ function bindRealtime(){
     });
 state.leaderboard = rows;
 renderLeaderboard();
-drawLineChart(
-  document.getElementById('wpmCanvas'),
-  state.leaderboard.map(x => Number(x.bestWpm || 0)),
-  'leaderboard'
-);
+redrawLeaderboardChart(50);
+redrawLeaderboardChart(180);
   });
 
   state.presenceListRef = db.ref('typingTest/presence');
@@ -2697,7 +2690,15 @@ if (hoverPoint && hoverPoint.row) {
     state.leaderboardChartPoints = [];
   }
 }
-
+function redrawLeaderboardChart(delay = 0){
+  setTimeout(() => {
+    drawLineChart(
+      document.getElementById('wpmCanvas'),
+      state.leaderboard.map(x => Number(x.bestWpm || 0)),
+      'leaderboard'
+    );
+  }, delay);
+}
     function switchTab(name){
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === name));
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.toggle('active', tab.id === `tab-${name}`));
@@ -2844,7 +2845,13 @@ if (els.championOverlay) {
 });
     els.resultOverlay.addEventListener('click', (e) => { if (e.target === els.resultOverlay) closeResultModal(); });
 const leaderboardCanvas = document.getElementById('wpmCanvas');
+if (leaderboardCanvas && 'ResizeObserver' in window) {
+  const leaderboardResizeObserver = new ResizeObserver(() => {
+    redrawLeaderboardChart(30);
+  });
 
+  leaderboardResizeObserver.observe(leaderboardCanvas);
+}
 if (leaderboardCanvas) {
   leaderboardCanvas.addEventListener('mousemove', (e) => {
     if (!state.leaderboardChartPoints.length) return;
@@ -2887,11 +2894,8 @@ if (leaderboardCanvas) {
   });
 }
 window.addEventListener('resize', () => {
-  drawLineChart(
-    document.getElementById('wpmCanvas'),
-    state.leaderboard.map(x => Number(x.bestWpm || 0)),
-    'leaderboard'
-  );
+  redrawLeaderboardChart(30);
+  redrawLeaderboardChart(120);
   drawLineChart(document.getElementById('resultCanvas'), state.secondSeries, 'wpm');
 });
 window.addEventListener('resize', () => {
@@ -2916,7 +2920,18 @@ window.addEventListener('keydown', (e) => {
     els.typingInput.focus();
   }
 });
+window.addEventListener('load', () => {
+  redrawLeaderboardChart(120);
+  redrawLeaderboardChart(300);
+});
 
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    redrawLeaderboardChart(80);
+    redrawLeaderboardChart(220);
+  }
+});
+    
 initFirebase();
 loadUserFromStorage();
 buildPrompt();
