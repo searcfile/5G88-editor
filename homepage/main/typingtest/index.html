@@ -837,7 +837,7 @@ leaderboardChartPoints: [],
 leaderboardHoverIndex: -1,
 visibleStartIndex: 0,
 visibleLineRanges: [],
-historyLineRanges: [],
+historyLines: [],
 testSaved: false
     };
 
@@ -933,7 +933,7 @@ const payload = {
   history: state.history || [],
   sessionMistakes: state.sessionMistakes || {},
   secondSeries: state.secondSeries || [],
-  historyLineRanges: state.historyLineRanges || [],
+  historyLines: state.historyLines || [],
   typedAt: Date.now(),
   typedAtText: formatDateTime(Date.now()),
 
@@ -1025,7 +1025,7 @@ function restoreLastSessionUI(options = {}) {
 state.history = Array.isArray(saved.history) ? saved.history : [];
 state.sessionMistakes = saved.sessionMistakes || {};
 state.secondSeries = Array.isArray(saved.secondSeries) ? saved.secondSeries : [];
-state.historyLineRanges = Array.isArray(saved.historyLineRanges) ? saved.historyLineRanges : [];
+state.historyLines = Array.isArray(saved.historyLines) ? saved.historyLines : [];
 state.spaces = Number(saved.spaces || 0);
 
   renderHistory();
@@ -1173,7 +1173,7 @@ state.currentWordIndex = 0;
 state.currentInput = '';
 state.visibleStartIndex = 0;
 state.visibleLineRanges = [];
-state.historyLineRanges = [];
+state.historyLines = [];
 renderPrompt();
 updateTestInfo();
 }
@@ -1304,25 +1304,41 @@ function appendMorePromptWords() {
     state.promptWords.push(...extraWords);
   }
 }
-function pushHistoryLineRange(range){
-  if (!range) return;
+function buildHistoryLineSnapshot(range){
+  if (!range) return null;
 
-  const startIndex = Number(range.startIndex || 0);
-  const endIndex = Number(range.endIndex || 0);
+  const start = Number(range.startIndex || 0);
+  const end = Number(range.endIndex || 0);
 
-  if (endIndex < startIndex) return;
+  if (end < start) return null;
 
-  const exists = state.historyLineRanges.some(item =>
-    Number(item.startIndex || 0) === startIndex &&
-    Number(item.endIndex || 0) === endIndex
-  );
+  const html = state.promptWords
+    .slice(start, end + 1)
+    .map((word, idx) => {
+      const realIndex = start + idx;
+      return buildHistoryWordHtml(realIndex, word);
+    })
+    .join('<span class="history-space"></span>');
 
+  return {
+    key: `${start}-${end}`,
+    startIndex: start,
+    endIndex: end,
+    html
+  };
+}
+
+function saveHistoryLine(range){
+  const snapshot = buildHistoryLineSnapshot(range);
+  if (!snapshot) return;
+
+  const exists = state.historyLines.some(item => item.key === snapshot.key);
   if (!exists) {
-    state.historyLineRanges.push({ startIndex, endIndex });
+    state.historyLines.push(snapshot);
   }
 
-  if (state.historyLineRanges.length > 10) {
-    state.historyLineRanges = state.historyLineRanges.slice(-10);
+  if (state.historyLines.length > 10) {
+    state.historyLines = state.historyLines.slice(-10);
   }
 }
 function shiftVisibleWindowIfNeeded() {
@@ -1332,7 +1348,7 @@ function shiftVisibleWindowIfNeeded() {
   if (!firstLine) return;
 
   if (state.currentWordIndex > firstLine.endIndex) {
-    pushHistoryLineRange(firstLine);
+    saveHistoryLine(firstLine);
 
     const secondLine = state.visibleLineRanges[1];
     if (secondLine) {
@@ -1401,7 +1417,7 @@ state.spaces = 0;
 state.testSaved = false;
 state.visibleStartIndex = 0;
 state.visibleLineRanges = [];
-state.historyLineRanges = [];
+state.historyLines = [];
 els.typingInput.value = '';
       els.testStatus.textContent = 'Start typing to begin.';
       els.lastSavedLabel.textContent = 'No result saved yet';
@@ -1692,52 +1708,32 @@ function buildHistoryWordHtml(realIndex, expectedWord){
 }
 
 function renderHistory(){
+  const savedLines = Array.isArray(state.historyLines) ? [...state.historyLines] : [];
   const liveRanges = Array.isArray(state.visibleLineRanges) ? state.visibleLineRanges : [];
-  const savedRanges = Array.isArray(state.historyLineRanges) ? state.historyLineRanges : [];
 
-  const mergedRanges = [...savedRanges, ...liveRanges];
-  const uniqueRanges = [];
+  const liveSnapshots = liveRanges
+    .map(range => buildHistoryLineSnapshot(range))
+    .filter(Boolean);
 
-  mergedRanges.forEach((range) => {
-    const startIndex = Number(range.startIndex || 0);
-    const endIndex = Number(range.endIndex || 0);
+  const merged = [...savedLines];
 
-    const exists = uniqueRanges.some(item =>
-      Number(item.startIndex || 0) === startIndex &&
-      Number(item.endIndex || 0) === endIndex
-    );
-
+  liveSnapshots.forEach((snap) => {
+    const exists = merged.some(item => item.key === snap.key);
     if (!exists) {
-      uniqueRanges.push({ startIndex, endIndex });
+      merged.push(snap);
     }
   });
 
-  const finalRanges = uniqueRanges.slice(-10);
+  const finalLines = merged.slice(-10);
 
-  if (!finalRanges.length) {
+  if (!finalLines.length) {
     els.historyLetters.innerHTML = '<div class="empty-box" style="width:100%">No line history yet</div>';
     return;
   }
 
-  let html = '';
-
-  finalRanges.forEach((range) => {
-    const start = Number(range.startIndex || 0);
-    const end = Number(range.endIndex || 0);
-
-    const lineHtml = state.promptWords
-      .slice(start, end + 1)
-      .map((word, idx) => {
-        const realIndex = start + idx;
-        return buildHistoryWordHtml(realIndex, word);
-      })
-      .join('<span class="history-space"></span>');
-
-    html += `<div class="history-line">${lineHtml}</div>`;
-  });
-
-  els.historyLetters.innerHTML =
-    html || '<div class="empty-box" style="width:100%">No line history yet</div>';
+  els.historyLetters.innerHTML = finalLines
+    .map(item => `<div class="history-line">${item.html}</div>`)
+    .join('');
 
   els.historyLetters.scrollTop = els.historyLetters.scrollHeight;
 }
