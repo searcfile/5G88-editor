@@ -476,7 +476,81 @@ html {
 
     .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#101010;border:1px solid #242424;color:var(--muted);font-size:12px}
     .footer-note{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+.champion-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(4px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:120;
+}
 
+.champion-overlay.show{
+  display:flex;
+}
+
+.champion-modal{
+  position:relative;
+  width:min(460px, 100%);
+  background:linear-gradient(180deg,#080808,#141414);
+  border:1px solid #2a2a2a;
+  border-radius:22px;
+  box-shadow:0 24px 60px rgba(0,0,0,.45);
+  padding:28px 22px 20px;
+  text-align:center;
+}
+
+.champion-close-btn{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:10px;
+  background:#141414;
+  border:1px solid #2a2a2a;
+  color:#fff;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+  transition:all .25s ease;
+}
+
+.champion-close-btn:hover{
+  background:#1b1b1b;
+  border-color:#3c89e8;
+  color:#3c89e8;
+}
+
+.champion-badge{
+  font-size:52px;
+  line-height:1;
+  margin-bottom:12px;
+}
+
+#championTitle{
+  margin:0 0 10px;
+  font-size:28px;
+  font-weight:800;
+  color:#fff;
+}
+
+#championMessage{
+  margin:0;
+  color:#d6dbe3;
+  font-size:16px;
+  line-height:1.7;
+}
+
+.champion-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:22px;
+}
     @media (max-width:1200px){
       .layout{grid-template-columns:1fr}
       .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -825,7 +899,19 @@ html {
       <div class="footer-note">This result can be pushed to all-time leaderboard and your personal history in realtime.</div>
     </div>
   </div>
+<div id="championOverlay" class="champion-overlay">
+  <div class="champion-modal">
+    <button id="championCloseBtn" class="champion-close-btn" type="button" aria-label="Close">×</button>
 
+    <div class="champion-badge" id="championBadge">🏆</div>
+    <h2 id="championTitle">Selamat!</h2>
+    <p id="championMessage">Anda juara leaderboard.</p>
+
+    <div class="champion-actions">
+      <button id="championOkBtn" class="btn">OK</button>
+    </div>
+  </div>
+</div>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script>
@@ -965,7 +1051,13 @@ testSaved: false
       advCpmRaw: document.getElementById('advCpmRaw'),
       advKpm: document.getElementById('advKpm'),
       advKpmRaw: document.getElementById('advKpmRaw'),
-      advPace: document.getElementById('advPace')
+      advPace: document.getElementById('advPace'),
+      championOverlay: document.getElementById('championOverlay'),
+      championCloseBtn: document.getElementById('championCloseBtn'),
+      championOkBtn: document.getElementById('championOkBtn'),
+      championBadge: document.getElementById('championBadge'),
+      championTitle: document.getElementById('championTitle'),
+      championMessage: document.getElementById('championMessage')
     };
 
     let db = null;
@@ -1928,7 +2020,68 @@ function renderHistory() {
 
     function openResultModal(){ els.resultOverlay.style.display = 'flex'; }
     function closeResultModal(){ els.resultOverlay.style.display = 'none'; }
+function openChampionModal(rank){
+  if (!els.championOverlay) return;
 
+  let title = 'Selamat!';
+  let message = '';
+  let badge = '🏆';
+
+  if (rank === 1) {
+    badge = '🥇';
+    message = 'Selamat anda juara leader board 1, silakan ambil hadiah dengan boss kamu.';
+  } else if (rank === 2) {
+    badge = '🥈';
+    message = 'Selamat anda juara leader board 2, nanti bossmu akan dabao KFC buat kamu.';
+  } else if (rank === 3) {
+    badge = '🥉';
+    message = 'Selamat anda juara leader board 3, silakan traktir kawan kamu makan Steamboat.';
+  } else {
+    return;
+  }
+
+  els.championBadge.textContent = badge;
+  els.championTitle.textContent = title;
+  els.championMessage.textContent = message;
+  els.championOverlay.classList.add('show');
+}
+
+function closeChampionModal(){
+  if (!els.championOverlay) return;
+  els.championOverlay.classList.remove('show');
+}
+async function checkMyLeaderboardRankAndCelebrate(){
+  if (!db || !state.userKey) return;
+
+  try {
+    const snap = await db.ref('typingTest/leaderboard/allTime').once('value');
+    const rows = [];
+
+    snap.forEach(child => {
+      rows.push({ key: child.key, ...(child.val() || {}) });
+    });
+
+    rows.sort((a, b) => {
+      if ((b.bestWpm || 0) !== (a.bestWpm || 0)) return (b.bestWpm || 0) - (a.bestWpm || 0);
+      if ((b.bestAccuracy || 0) !== (a.bestAccuracy || 0)) return (b.bestAccuracy || 0) - (a.bestAccuracy || 0);
+      return (b.lastTypingAt || 0) - (a.lastTypingAt || 0);
+    });
+
+    const myIndex = rows.findIndex(row => row.key === state.userKey);
+    const myRank = myIndex + 1;
+
+    if (myRank >= 1 && myRank <= 3) {
+      const celebrateKey = `typingChampionShown_${state.userKey}_${Date.now()}`;
+
+      if (sessionStorage.getItem(celebrateKey)) return;
+      sessionStorage.setItem(celebrateKey, '1');
+
+      openChampionModal(myRank);
+    }
+  } catch (err) {
+    console.warn('checkMyLeaderboardRankAndCelebrate failed:', err);
+  }
+}
     function getResultPayload(){
       const s = getComputedStats();
       return {
@@ -2054,17 +2207,18 @@ await userStatsRef.update({
       lastLanguage: payload.language
     });
 
-state.totalTests = totalTests;
-state.testSaved = true;
+    state.totalTests = totalTests;
+    state.testSaved = true;
 
-els.statTests.textContent = totalTests;
-els.statHighestWpm.textContent = bestWpm;
-els.statLowestWpm.textContent = lowestWpm;
+    els.statTests.textContent = totalTests;
+    els.statHighestWpm.textContent = bestWpm;
+    els.statLowestWpm.textContent = lowestWpm;
 
-els.lastSavedLabel.textContent = `Saved • ${payload.typedAtText}`;
+    els.lastSavedLabel.textContent = `Saved • ${payload.typedAtText}`;
 
-loadMyHistory();
-return true;
+    loadMyHistory();
+    await checkMyLeaderboardRankAndCelebrate(payload.typedAt);
+    return true;
   } catch(err){
     console.warn('saveResult failed:', err);
     els.lastSavedLabel.textContent = 'Save failed';
@@ -2582,6 +2736,21 @@ els.showResultBtn.addEventListener('click', () => {
   openResultModal();
 });
     els.closeResultBtn.addEventListener('click', closeResultModal);
+    if (els.championCloseBtn) {
+  els.championCloseBtn.addEventListener('click', closeChampionModal);
+}
+
+if (els.championOkBtn) {
+  els.championOkBtn.addEventListener('click', closeChampionModal);
+}
+
+if (els.championOverlay) {
+  els.championOverlay.addEventListener('click', (e) => {
+    if (e.target === els.championOverlay) {
+      closeChampionModal();
+    }
+  });
+}
     els.saveAgainBtn.addEventListener('click', async () => {
   if (!state.testSaved) {
     const ok = await saveResult(false);
@@ -2644,13 +2813,16 @@ window.addEventListener('resize', () => {
 window.addEventListener('resize', () => {
   renderPrompt();
 });
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeResultModal();
-      if (e.key === 'Tab' && document.activeElement !== els.typingInput) {
-        e.preventDefault();
-        els.typingInput.focus();
-      }
-    });
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeResultModal();
+    closeChampionModal();
+  }
+  if (e.key === 'Tab' && document.activeElement !== els.typingInput) {
+    e.preventDefault();
+    els.typingInput.focus();
+  }
+});
 
     initFirebase();
     loadUserFromStorage();
