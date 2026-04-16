@@ -846,6 +846,7 @@ leaderboardChartPoints: [],
 leaderboardHoverIndex: -1,
 visibleStartIndex: 0,
 visibleLineRanges: [],
+historyLineRanges: [],
 testSaved: false
     };
 
@@ -1261,7 +1262,18 @@ function renderPrompt() {
     startIndex: line.startIndex,
     endIndex: line.endIndex
   }));
+state.visibleLineRanges.forEach(range => {
+  const exists = state.historyLineRanges.some(saved =>
+    saved.startIndex === range.startIndex && saved.endIndex === range.endIndex
+  );
 
+  if (!exists) {
+    state.historyLineRanges.push({
+      startIndex: range.startIndex,
+      endIndex: range.endIndex
+    });
+  }
+});
   const allowedLastIndex = state.visibleLineRanges.length
     ? state.visibleLineRanges[state.visibleLineRanges.length - 1].endIndex
     : -1;
@@ -1383,6 +1395,7 @@ state.spaces = 0;
 state.testSaved = false;
 state.visibleStartIndex = 0;
 state.visibleLineRanges = [];
+state.historyLineRanges = [];
       els.typingInput.value = '';
       els.testStatus.textContent = 'Start typing to begin.';
       els.lastSavedLabel.textContent = 'No result saved yet';
@@ -1544,6 +1557,7 @@ if (!state.finished && state.timeLeft > 0) {
 
   shiftVisibleWindowIfNeeded();
   renderPrompt();
+  renderHistory();
   updateStats();
   renderMistakes();
 } else {
@@ -1691,12 +1705,15 @@ function buildHistoryRows() {
     });
   }
 
-  // kalau belum ada range line, fallback sementara
-  if (!Array.isArray(state.visibleLineRanges) || !state.visibleLineRanges.length) {
+  const ranges = Array.isArray(state.historyLineRanges) && state.historyLineRanges.length
+    ? state.historyLineRanges
+    : state.visibleLineRanges;
+
+  if (!Array.isArray(ranges) || !ranges.length) {
     return allWords.length ? [allWords] : [];
   }
 
-  state.visibleLineRanges.forEach(range => {
+  ranges.forEach(range => {
     const lineWords = allWords.filter(word =>
       word.index >= range.startIndex && word.index <= range.endIndex
     );
