@@ -1818,16 +1818,10 @@ function normalizeCompareName(value = '') {
 function maskLeaderboardName(name = '') {
   const raw = String(name || '').trim();
   if (!raw) return '-';
+  if (raw.length <= 1) return raw;
 
-  if (raw.length <= 5) return raw;
-  if (raw.length <= 8) {
-    return raw.slice(0, 2) + '*'.repeat(Math.max(1, raw.length - 3)) + raw.slice(-1);
-  }
-
-  const first = raw.slice(0, 2);
-  const last = raw.slice(-3);
-  const stars = '*'.repeat(Math.max(3, raw.length - 5));
-  return first + stars + last;
+  if (raw.length === 2) return raw[0] + '*';
+  return raw[0] + '*'.repeat(raw.length - 2) + raw[raw.length - 1];
 }
 function compressDuplicateWords(text = '') {
   const parts = String(text || '')
