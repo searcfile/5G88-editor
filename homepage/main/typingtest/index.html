@@ -136,7 +136,27 @@
   gap:10px;
   margin-bottom:14px;
 }
+.right-tests-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px 16px;
+  margin-bottom:14px;
+}
 
+.right-tests-card .k{
+  color:var(--muted);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.right-tests-card .v{
+  font-size:28px;
+  font-weight:700;
+  margin-top:6px;
+  color:var(--text);
+}
 .right-header .user-card,
 .right-header .online-card{
   flex:1;
@@ -249,7 +269,7 @@
     .duration-btn:hover{border-color:var(--primary-hover);color:#fff}
     .duration-btn.active{background:var(--primary);border-color:var(--primary);box-shadow:0 8px 20px rgba(22,104,220,.2)}
 
-    .stats-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.stats-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
     .duration-below{
   display:flex;
   justify-content:flex-end; /* kalau mau di kanan */
@@ -461,7 +481,9 @@ html {
   .stats-grid{
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
-
+.right-tests-card .v{
+  font-size:24px;
+}
   .prompt-text{
     font-size:24px;
     min-height:150px;
@@ -605,7 +627,6 @@ html {
           <div class="stat"><div class="k">Raw WPM</div><div class="v" id="statRawWpm">0</div></div>
           <div class="stat"><div class="k">Errors</div><div class="v" id="statErrors">0</div></div>
           <div class="stat"><div class="k">Time Left</div><div class="v" id="statTime">60</div></div>
-          <div class="stat"><div class="k">Tests</div><div class="v" id="statTests">0</div></div>
         </div>
 <div class="duration-below">
   <div class="duration-wrap" id="durationWrap">
@@ -692,7 +713,12 @@ html {
       </div>
     </div>
   </div>
-
+  
+  <div class="right-tests-card">
+    <div class="k">Tests</div>
+    <div class="v" id="statTests">0</div>
+  </div>
+  
   <div class="section-title">
     <h3>All Time Leaderboard</h3>
     <span>All user</span>
