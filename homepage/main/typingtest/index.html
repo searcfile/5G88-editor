@@ -1262,18 +1262,7 @@ function renderPrompt() {
     startIndex: line.startIndex,
     endIndex: line.endIndex
   }));
-state.visibleLineRanges.forEach(range => {
-  const exists = state.historyLineRanges.some(saved =>
-    saved.startIndex === range.startIndex && saved.endIndex === range.endIndex
-  );
 
-  if (!exists) {
-    state.historyLineRanges.push({
-      startIndex: range.startIndex,
-      endIndex: range.endIndex
-    });
-  }
-});
   const allowedLastIndex = state.visibleLineRanges.length
     ? state.visibleLineRanges[state.visibleLineRanges.length - 1].endIndex
     : -1;
@@ -1335,6 +1324,27 @@ function shiftVisibleWindowIfNeeded() {
       state.visibleStartIndex = state.currentWordIndex;
     }
   }
+}
+function commitPassedHistoryLines() {
+  if (!Array.isArray(state.visibleLineRanges) || !state.visibleLineRanges.length) return;
+
+  state.visibleLineRanges.forEach(range => {
+    // simpan hanya line yang sudah benar-benar lepas
+    if (state.currentWordIndex > range.endIndex) {
+      const exists = state.historyLineRanges.some(saved =>
+        saved.startIndex === range.startIndex && saved.endIndex === range.endIndex
+      );
+
+      if (!exists) {
+        state.historyLineRanges.push({
+          startIndex: range.startIndex,
+          endIndex: range.endIndex
+        });
+      }
+    }
+  });
+
+  state.historyLineRanges.sort((a, b) => a.startIndex - b.startIndex);
 }
 function updateTypingSettingsUI() {
   const prompt = els.promptText;
@@ -1555,6 +1565,7 @@ if (!state.finished && state.timeLeft > 0) {
     appendMorePromptWords();
   }
 
+  commitPassedHistoryLines();
   shiftVisibleWindowIfNeeded();
   renderPrompt();
   renderHistory();
@@ -1705,15 +1716,29 @@ function buildHistoryRows() {
     });
   }
 
-  const ranges = Array.isArray(state.historyLineRanges) && state.historyLineRanges.length
-    ? state.historyLineRanges
-    : state.visibleLineRanges;
+  const mergedRanges = [];
 
-  if (!Array.isArray(ranges) || !ranges.length) {
+  (state.historyLineRanges || []).forEach(range => {
+    const exists = mergedRanges.some(r =>
+      r.startIndex === range.startIndex && r.endIndex === range.endIndex
+    );
+    if (!exists) mergedRanges.push({ ...range });
+  });
+
+  (state.visibleLineRanges || []).forEach(range => {
+    const exists = mergedRanges.some(r =>
+      r.startIndex === range.startIndex && r.endIndex === range.endIndex
+    );
+    if (!exists) mergedRanges.push({ ...range });
+  });
+
+  mergedRanges.sort((a, b) => a.startIndex - b.startIndex);
+
+  if (!mergedRanges.length) {
     return allWords.length ? [allWords] : [];
   }
 
-  ranges.forEach(range => {
+  mergedRanges.forEach(range => {
     const lineWords = allWords.filter(word =>
       word.index >= range.startIndex && word.index <= range.endIndex
     );
