@@ -136,12 +136,18 @@
   gap:10px;
   margin-bottom:14px;
 }
+.right-stats-row{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:14px;
+}
 .right-tests-card{
   background:var(--panel);
   border:1px solid var(--line);
   border-radius:10px;
   padding:14px 16px;
-  margin-bottom:14px;
+  min-width:0;
 }
 
 .right-tests-card .k{
@@ -481,9 +487,15 @@ html {
   .stats-grid{
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
-.right-tests-card .v{
-  font-size:24px;
-}
+
+  .right-stats-row{
+    grid-template-columns:1fr;
+  }
+
+  .right-tests-card .v{
+    font-size:24px;
+  }
+
   .prompt-text{
     font-size:24px;
     min-height:150px;
@@ -714,10 +726,22 @@ html {
     </div>
   </div>
   
+<div class="right-stats-row">
+  <div class="right-tests-card">
+    <div class="k">Low WPM</div>
+    <div class="v" id="statLowestWpm">0</div>
+  </div>
+
+  <div class="right-tests-card">
+    <div class="k">High WPM</div>
+    <div class="v" id="statHighestWpm">0</div>
+  </div>
+
   <div class="right-tests-card">
     <div class="k">Tests</div>
     <div class="v" id="statTests">0</div>
   </div>
+</div>
   
   <div class="section-title">
     <h3>All Time Leaderboard</h3>
@@ -908,6 +932,8 @@ testSaved: false
       statErrors: document.getElementById('statErrors'),
       statTime: document.getElementById('statTime'),
       statTests: document.getElementById('statTests'),
+      statLowestWpm: document.getElementById('statLowestWpm'),
+      statHighestWpm: document.getElementById('statHighestWpm'),
       testInfoPill: document.getElementById('testInfoPill'),
       testStatus: document.getElementById('testStatus'),
       promptText: document.getElementById('promptText'),
@@ -1983,21 +2009,29 @@ async function saveResult(forceSave = false){
       ? Math.round(((Number(cur.avgAccuracy || 0) * prevTotalTests) + payload.accuracy) / (shouldAddNewTest ? totalTests : prevTotalTests || 1))
       : payload.accuracy;
 
-    const bestWpm = Math.max(Number(cur.bestWpm || 0), payload.wpm);
-    const bestAccuracy = Math.max(Number(cur.bestAccuracy || 0), payload.accuracy);
+const currentBestWpm = Number(cur.bestWpm || 0);
+const currentLowestWpm = Number(cur.lowestWpm || 0);
 
-    await userStatsRef.update({
-      bestWpm,
-      bestAccuracy,
-      avgWpm,
-      avgAccuracy: avgAcc,
-      totalTests,
-      lastTypingAt: payload.typedAt,
-      lastTypingText: payload.typedAtText,
-      lastDuration: payload.duration,
-      lastLanguage: payload.language,
-      updatedAt: firebase.database.ServerValue.TIMESTAMP
-    });
+const bestWpm = Math.max(currentBestWpm, payload.wpm);
+const lowestWpm = currentLowestWpm > 0
+  ? Math.min(currentLowestWpm, payload.wpm)
+  : payload.wpm;
+
+const bestAccuracy = Math.max(Number(cur.bestAccuracy || 0), payload.accuracy);
+
+await userStatsRef.update({
+  bestWpm,
+  lowestWpm,
+  bestAccuracy,
+  avgWpm,
+  avgAccuracy: avgAcc,
+  totalTests,
+  lastTypingAt: payload.typedAt,
+  lastTypingText: payload.typedAtText,
+  lastDuration: payload.duration,
+  lastLanguage: payload.language,
+  updatedAt: firebase.database.ServerValue.TIMESTAMP
+});
 
     await db.ref(`typingTest/users/${state.userKey}/profile`).update({
       name: payload.user.name,
@@ -2021,13 +2055,17 @@ async function saveResult(forceSave = false){
       lastLanguage: payload.language
     });
 
-    state.totalTests = totalTests;
-    state.testSaved = true;
-    els.statTests.textContent = totalTests;
-    els.lastSavedLabel.textContent = `Saved • ${payload.typedAtText}`;
+state.totalTests = totalTests;
+state.testSaved = true;
 
-    loadMyHistory();
-    return true;
+els.statTests.textContent = totalTests;
+els.statHighestWpm.textContent = bestWpm;
+els.statLowestWpm.textContent = lowestWpm;
+
+els.lastSavedLabel.textContent = `Saved • ${payload.typedAtText}`;
+
+loadMyHistory();
+return true;
   } catch(err){
     console.warn('saveResult failed:', err);
     els.lastSavedLabel.textContent = 'Save failed';
@@ -2252,8 +2290,12 @@ function loadMyHistory() {
 db.ref(`typingTest/users/${state.userKey}/stats`).once('value')
   .then(snap => {
     const stats = snap.val() || {};
+
     state.totalTests = Number(stats.totalTests || 0);
     els.statTests.textContent = state.totalTests;
+
+    els.statHighestWpm.textContent = Number(stats.bestWpm || 0);
+    els.statLowestWpm.textContent = Number(stats.lowestWpm || 0);
   });
 
       console.log('My History rows final:', rows.length, rows);
