@@ -2563,6 +2563,9 @@ window.addEventListener('resize', () => {
   );
   drawLineChart(document.getElementById('resultCanvas'), state.secondSeries, 'wpm');
 });
+window.addEventListener('resize', () => {
+  renderPrompt();
+});
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeResultModal();
       if (e.key === 'Tab' && document.activeElement !== els.typingInput) {
