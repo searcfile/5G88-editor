@@ -1079,6 +1079,7 @@ const payload = {
   language: state.language,
   mode: state.mode,
   duration: state.duration,
+  timerMode: state.timerMode,
   textLineCount: state.textLineCount,
   fontFamily: state.fontFamily,
   fontSize: state.fontSize
@@ -1173,19 +1174,25 @@ function restoreLastSessionUI(options = {}) {
   const prefs = loadTypingPrefsFromStorage();
 
   // hanya apply prefs kalau memang diminta
-  if (applySavedPrefs && prefs) {
-    state.language = prefs.language || 'english';
-    state.mode = prefs.mode || 'words';
-    state.duration = Number(prefs.duration || 60);
-    state.timeLeft = state.duration;
-  }
+if (applySavedPrefs && prefs) {
+  state.language = prefs.language || 'english';
+  state.mode = prefs.mode || 'words';
+  state.timerMode = prefs.timerMode || 'countdown';
+  state.duration = Number(prefs.duration || 60);
+  state.timeLeft = state.timerMode === 'countdown' ? state.duration : 0;
+}
 
   if (els.languageSelect) els.languageSelect.value = state.language;
   if (els.modeSelect) els.modeSelect.value = state.mode;
 
-  document.querySelectorAll('.duration-btn').forEach(btn => {
-    btn.classList.toggle('active', Number(btn.dataset.duration || 0) === Number(state.duration));
-  });
+document.querySelectorAll('.duration-btn').forEach(btn => {
+  const val = btn.dataset.duration || '';
+  if (state.timerMode === 'countup') {
+    btn.classList.toggle('active', val === 'custom');
+  } else {
+    btn.classList.toggle('active', Number(val || 0) === Number(state.duration));
+  }
+});
   updateTypingSettingsUI();
   if (!saved) {
     buildPrompt();
@@ -1299,8 +1306,9 @@ const prefs = loadTypingPrefsFromStorage();
 if (prefs) {
   state.language = prefs.language || state.language;
   state.mode = prefs.mode || state.mode;
+  state.timerMode = prefs.timerMode || state.timerMode || 'countdown';
   state.duration = Number(prefs.duration || state.duration);
-  state.timeLeft = state.duration;
+  state.timeLeft = state.timerMode === 'countdown' ? state.duration : 0;
   state.textLineCount = Number(prefs.textLineCount || state.textLineCount || 2);
   state.fontFamily = prefs.fontFamily || state.fontFamily || 'inter';
   state.fontSize = prefs.fontSize || state.fontSize || 'md';
@@ -2877,10 +2885,19 @@ window.addEventListener('resize', () => {
   renderPrompt();
 });
 window.addEventListener('keydown', (e) => {
+  if (state.timerMode === 'countup' && state.started && !state.finished) {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      e.preventDefault();
+      finishTest();
+      return;
+    }
+  }
+
   if (e.key === 'Escape') {
     closeResultModal();
     closeChampionModal();
   }
+
   if (e.key === 'Tab' && document.activeElement !== els.typingInput) {
     e.preventDefault();
     els.typingInput.focus();
