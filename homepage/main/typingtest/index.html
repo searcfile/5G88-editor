@@ -317,7 +317,7 @@
     .chart-wrap{height:200px;background:#0b0b0b;border:1px solid #171717;border-radius:14px;padding:10px}
     .canvas{width:100%;height:100%}
 .history-letters{
-  max-height:220px;
+  max-height:260px;
   overflow:auto;
   display:flex;
   flex-direction:column;
@@ -325,43 +325,49 @@
 }
 
 .history-line{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  line-height:1.8;
+  line-height:1.9;
+  font-size:18px;
+  word-break:break-word;
+  color:#8d99ab;
 }
 
-.history-word{
-  padding:4px 8px;
-  border-radius:8px;
-  border:1px solid #202020;
-  background:#101010;
-  font-size:14px;
-  color:#6f7a88;
+.history-line + .history-line{
+  margin-top:2px;
 }
 
-.history-word.correct{
-  color:#7be89b;
-  border-color:rgba(34,197,94,.35);
-  background:rgba(34,197,94,.08);
+.history-word-inline{
+  margin-right:.34em;
 }
 
-.history-word.wrong{
-  color:#ff9696;
-  border-color:rgba(239,68,68,.35);
-  background:rgba(239,68,68,.08);
+.history-char{
+  color:#7f8a99;
 }
 
-.history-word.current{
-  color:#dbe7ff;
-  border-color:rgba(22,104,220,.45);
-  background:rgba(22,104,220,.12);
+.history-char.correct{
+  color:#eaf2ff;
 }
 
-.history-word.pending{
-  color:#6f7a88;
-  border-color:#252525;
-  background:#0f0f0f;
+.history-char.wrong{
+  color:#ff5f5f;
+  text-decoration:underline;
+  text-decoration-color:#ff3b3b;
+  text-decoration-thickness:2px;
+  text-underline-offset:3px;
+}
+
+.history-char.pending{
+  color:#657083;
+}
+
+.history-char.current{
+  background:rgba(22,104,220,.22);
+  border-radius:4px;
+  box-shadow:inset 0 -2px 0 var(--primary);
+}
+
+.history-space{
+  display:inline-block;
+  width:.34em;
 }
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
     .tab-btn{padding:0px 15px;border-radius:6px;border:1px solid transparent;background:transparent;color:rgba(255,255,255,0.85);cursor:pointer;font-size:14px;height:32px;transition: all.3s ease}
@@ -1594,25 +1600,69 @@ updateTestInfo();
       els.statTime.textContent = state.finished ? 0 : state.timeLeft;
       els.statTests.textContent = state.totalTests || 0;
     }
-function getHistoryWordClass(realIndex, expectedWord){
+
+function buildHistoryWordHtml(realIndex, expectedWord){
   const current = state.currentWordIndex;
   const historyItem = state.wordTimings[realIndex];
 
-  if (realIndex < current) {
-    return historyItem?.correct ? 'correct' : 'wrong';
+  const typedWord =
+    realIndex < current
+      ? (historyItem?.typed ?? expectedWord)
+      : realIndex === current
+        ? (state.currentInput || '')
+        : expectedWord;
+
+  const isPending = realIndex > current;
+  const chars = [];
+  const maxLen = Math.max(expectedWord.length, typedWord.length);
+
+  for (let i = 0; i < maxLen; i++) {
+    const expectedChar = expectedWord[i] || '';
+    const typedChar = typedWord[i] || '';
+
+    let cls = 'history-char';
+
+    if (isPending) {
+      cls += ' pending';
+      chars.push(`<span class="${cls}">${escapeHtml(expectedChar)}</span>`);
+      continue;
+    }
+
+    if (realIndex < current) {
+      if (typedChar === expectedChar) {
+        cls += ' correct';
+      } else {
+        cls += ' wrong';
+      }
+
+      chars.push(
+        `<span class="${cls}">${escapeHtml(typedChar || expectedChar)}</span>`
+      );
+      continue;
+    }
+
+    if (realIndex === current) {
+      if (i < typedWord.length) {
+        if (typedChar === expectedChar) {
+          cls += ' correct';
+        } else {
+          cls += ' wrong';
+        }
+
+        chars.push(`<span class="${cls}">${escapeHtml(typedChar)}</span>`);
+      } else if (i === typedWord.length) {
+        cls += ' current';
+        chars.push(`<span class="${cls}">${escapeHtml(expectedChar)}</span>`);
+      } else {
+        cls += ' pending';
+        chars.push(`<span class="${cls}">${escapeHtml(expectedChar)}</span>`);
+      }
+    }
   }
 
-  if (realIndex === current) {
-    if (!state.currentInput) return 'current';
-
-    const typed = state.currentInput.trim();
-    if (!typed) return 'current';
-
-    return typed === expectedWord ? 'correct' : 'wrong';
-  }
-
-  return 'pending';
+  return `<span class="history-word-inline">${chars.join('')}</span>`;
 }
+
 function renderHistory(){
   const ranges = Array.isArray(state.visibleLineRanges) ? state.visibleLineRanges : [];
 
@@ -1631,22 +1681,9 @@ function renderHistory(){
       .slice(start, end + 1)
       .map((word, idx) => {
         const realIndex = start + idx;
-        const cls = getHistoryWordClass(realIndex, word);
-
-        let displayText = word;
-
-        if (realIndex === state.currentWordIndex && state.currentInput.trim()) {
-          displayText = state.currentInput.trim();
-        } else if (realIndex < state.currentWordIndex) {
-          const historyItem = state.wordTimings[realIndex];
-          if (historyItem?.typed) {
-            displayText = historyItem.typed;
-          }
-        }
-
-        return `<span class="history-word ${cls}">${escapeHtml(displayText)}</span>`;
+        return buildHistoryWordHtml(realIndex, word);
       })
-      .join('');
+      .join('<span class="history-space"></span>');
 
     html += `<div class="history-line">${lineHtml}</div>`;
   });
@@ -1654,7 +1691,6 @@ function renderHistory(){
   els.historyLetters.innerHTML =
     html || '<div class="empty-box" style="width:100%">No line history yet</div>';
 }
-
     function renderMistakes(){
       const rows = Object.entries(state.sessionMistakes)
         .sort((a,b) => b[1].count - a[1].count)
