@@ -316,11 +316,53 @@
     .mini-panel{background:#0d0d0d;border:1px solid #191919;border-radius:16px;padding:14px}
     .chart-wrap{height:200px;background:#0b0b0b;border:1px solid #171717;border-radius:14px;padding:10px}
     .canvas{width:100%;height:100%}
-    .history-letters{max-height:220px;overflow:auto;display:flex;flex-wrap:wrap;gap:6px}
-    .key-chip{padding:6px 8px;border-radius:10px;background:#121212;border:1px solid #202020;font-size:12px}
-    .key-chip.bad{border-color:rgba(239,68,68,.35);color:#ff9696}
-    .key-chip.good{border-color:rgba(34,197,94,.35);color:#7be89b}
+.history-letters{
+  max-height:220px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
 
+.history-line{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  line-height:1.8;
+}
+
+.history-word{
+  padding:4px 8px;
+  border-radius:8px;
+  border:1px solid #202020;
+  background:#101010;
+  font-size:14px;
+  color:#6f7a88;
+}
+
+.history-word.correct{
+  color:#7be89b;
+  border-color:rgba(34,197,94,.35);
+  background:rgba(34,197,94,.08);
+}
+
+.history-word.wrong{
+  color:#ff9696;
+  border-color:rgba(239,68,68,.35);
+  background:rgba(239,68,68,.08);
+}
+
+.history-word.current{
+  color:#dbe7ff;
+  border-color:rgba(22,104,220,.45);
+  background:rgba(22,104,220,.12);
+}
+
+.history-word.pending{
+  color:#6f7a88;
+  border-color:#252525;
+  background:#0f0f0f;
+}
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
     .tab-btn{padding:0px 15px;border-radius:6px;border:1px solid transparent;background:transparent;color:rgba(255,255,255,0.85);cursor:pointer;font-size:14px;height:32px;transition: all.3s ease}
     .tab-btn:hover{color:#1668dc;}.tab-btn.active{color:#1668dc;}
@@ -573,8 +615,8 @@ html {
 
           <div id="tab-history" class="tab-content active mini-panel">
             <div class="section-title">
-              <h3>Keystroke History</h3>
-              <span>Green = correct • red = wrong</span>
+<h3>Line History</h3>
+<span>Green = correct word • red = wrong word</span>
             </div>
             <div id="historyLetters" class="history-letters"></div>
           </div>
@@ -1552,22 +1594,69 @@ updateTestInfo();
       els.statTime.textContent = state.finished ? 0 : state.timeLeft;
       els.statTests.textContent = state.totalTests || 0;
     }
+function getHistoryWordClass(realIndex, expectedWord){
+  const current = state.currentWordIndex;
+  const historyItem = state.wordTimings[realIndex];
 
+  if (realIndex < current) {
+    return historyItem?.correct ? 'correct' : 'wrong';
+  }
+
+  if (realIndex === current) {
+    if (!state.currentInput) return 'current';
+
+    const typed = state.currentInput.trim();
+    if (!typed) return 'current';
+
+    return typed === expectedWord ? 'correct' : 'wrong';
+  }
+
+  return 'pending';
+}
 function renderHistory(){
-  const items = state.history
-    .slice(-60)
-    .map(item => {
-      const text = item.typed ? item.typed : '∅';
-      const title = item.ok
-        ? `Typed: ${item.typed || '(empty)'}`
-        : `Typed: ${item.typed || '(empty)'} | Expected: ${item.expected || '-'}`;
+  const maxLines = Math.max(1, Number(state.textLineCount || 2));
+  const wordsPerLine = getWordsPerLine();
+  const totalWordsToShow = maxLines * wordsPerLine;
 
-      return `<span class="key-chip ${item.ok ? 'good' : 'bad'}" title="${escapeHtml(title)}">${escapeHtml(text)}</span>`;
-    })
-    .join('');
+  const startIndex = Math.max(0, Number(state.visibleStartIndex || 0));
+  const words = state.promptWords.slice(startIndex, startIndex + totalWordsToShow);
+
+  if (!words.length) {
+    els.historyLetters.innerHTML = '<div class="empty-box" style="width:100%">No line history yet</div>';
+    return;
+  }
+
+  let html = '';
+
+  for (let line = 0; line < maxLines; line++) {
+    const lineStart = line * wordsPerLine;
+    const lineWords = words.slice(lineStart, lineStart + wordsPerLine);
+
+    if (!lineWords.length) continue;
+
+    const lineHtml = lineWords.map((word, idx) => {
+      const realIndex = startIndex + lineStart + idx;
+      const cls = getHistoryWordClass(realIndex, word);
+
+      let displayText = word;
+
+      if (realIndex === state.currentWordIndex && state.currentInput.trim()) {
+        displayText = state.currentInput.trim();
+      } else if (realIndex < state.currentWordIndex) {
+        const historyItem = state.wordTimings[realIndex];
+        if (historyItem?.typed) {
+          displayText = historyItem.typed;
+        }
+      }
+
+      return `<span class="history-word ${cls}">${escapeHtml(displayText)}</span>`;
+    }).join('');
+
+    html += `<div class="history-line">${lineHtml}</div>`;
+  }
 
   els.historyLetters.innerHTML =
-    items || '<div class="empty-box" style="width:100%">No word attempts yet</div>';
+    html || '<div class="empty-box" style="width:100%">No line history yet</div>';
 }
 
     function renderMistakes(){
