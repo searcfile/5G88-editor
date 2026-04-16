@@ -1186,13 +1186,13 @@ function buildPrompt() {
 
   const words = [];
 
-  function pushMoreWords(count = 12) {
+  function pushMoreWords(count = 16) {
     if (state.mode === 'quote') {
-      while (words.length < count || words.length < getPromptTargetWordCount() + 20) {
+      while (words.length < count || words.length < getPromptTargetWordCount() + 60) {
         const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
         const allWords = quote.trim().split(/\s+/);
         words.push(...allWords);
-        if (words.length >= getPromptTargetWordCount() + 20) break;
+        if (words.length >= getPromptTargetWordCount() + 60) break;
       }
     } else {
       for (let i = 0; i < count; i++) {
@@ -1201,15 +1201,15 @@ function buildPrompt() {
     }
   }
 
-  // mula dengan anggaran asas
-  pushMoreWords(getPromptTargetWordCount() + minLinesNeeded * 3);
+  // stok awal lebih besar supaya line tinggi cukup
+  pushMoreWords(getPromptTargetWordCount() + minLinesNeeded * 10);
 
   state.promptWords = words.slice();
   renderPrompt();
 
   let safety = 0;
-  while ((state.visibleLineRanges?.length || 0) < minLinesNeeded && safety < 30) {
-    pushMoreWords(8);
+  while ((state.visibleLineRanges?.length || 0) < minLinesNeeded && safety < 80) {
+    pushMoreWords(20);
     state.promptWords = words.slice();
     renderPrompt();
     safety++;
@@ -1222,7 +1222,13 @@ function renderPrompt() {
   const input = state.currentInput;
 
   const startIndex = Math.max(0, Number(state.visibleStartIndex || 0));
-  const probeCount = Math.max(20, getPromptTargetWordCount() + getWordsPerLine() * 6);
+
+  // ambil jauh lebih banyak word supaya line besar masih boleh dikira
+  const probeCount = Math.max(
+    300,
+    getPromptTargetWordCount() * 4
+  );
+
   const probeWords = state.promptWords.slice(startIndex, startIndex + probeCount);
 
   const html = probeWords.map((word, visibleIndex) => {
@@ -1303,9 +1309,7 @@ function renderPrompt() {
 
   wordNodes.forEach(node => {
     const realIndex = Number(node.dataset.realIndex || 0);
-    if (realIndex > allowedLastIndex) {
-      node.style.display = 'none';
-    }
+    node.style.display = realIndex > allowedLastIndex ? 'none' : '';
   });
 }
     function updateTestInfo(){
@@ -1328,7 +1332,7 @@ function getPromptTargetWordCount() {
   const wordsPerLine = getWordsPerLine();
   return Math.max(4, lines * wordsPerLine);
 }
-function appendMorePromptWords(extraCount = 12) {
+function appendMorePromptWords(extraCount = 20) {
   const bank = WORD_BANK[state.language];
   const extraWords = [];
 
@@ -1346,17 +1350,16 @@ function appendMorePromptWords(extraCount = 12) {
 
   state.promptWords.push(...extraWords);
 
-  // pastikan line visible cukup ikut setting
   let safety = 0;
   renderPrompt();
 
-  while ((state.visibleLineRanges?.length || 0) < Math.max(1, Number(state.textLineCount || 2)) && safety < 20) {
+  while ((state.visibleLineRanges?.length || 0) < Math.max(1, Number(state.textLineCount || 2)) && safety < 40) {
     if (state.mode === 'quote') {
       const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
       const allWords = quote.trim().split(/\s+/);
       state.promptWords.push(...allWords);
     } else {
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 12; i++) {
         state.promptWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
       }
     }
