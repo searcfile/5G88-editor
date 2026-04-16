@@ -317,10 +317,66 @@
     .chart-wrap{height:200px;background:#0b0b0b;border:1px solid #171717;border-radius:14px;padding:10px}
     .canvas{width:100%;height:100%;cursor: pointer;}
     
-    .history-letters{max-height:220px;overflow:auto;display:flex;flex-wrap:wrap;gap:6px}
-    .key-chip{padding:6px 8px;border-radius:10px;background:#121212;border:1px solid #202020;font-size:12px}
-    .key-chip.bad{border-color:rgba(239,68,68,.35);color:#ff9696}
-    .key-chip.good{border-color:rgba(34,197,94,.35);color:#7be89b}
+.history-letters{
+  max-height:220px;
+  overflow:auto;
+  display:block;
+  padding:4px 2px;
+  line-height:1.9;
+  font-size:31px;
+  letter-spacing:.02em;
+  word-break:break-word;
+  white-space:normal;
+}
+
+.history-line{
+  display:block;
+  margin-bottom:4px;
+}
+
+.history-word{
+  display:inline-block;
+  margin-right:.34em;
+}
+
+.history-char{
+  color:#5f6672;
+}
+
+.history-char.correct{
+  color:#f5f5f5;
+}
+
+.history-char.wrong{
+  color:#ff5f5f;
+  text-decoration:underline;
+  text-decoration-color:#ff3b3b;
+  text-underline-offset:4px;
+}
+
+.history-char.pending{
+  color:#7a8492;
+}
+
+.history-char.extra{
+  color:#ff5f5f;
+  text-decoration:underline;
+  text-decoration-color:#ff3b3b;
+  text-underline-offset:4px;
+}
+
+.history-char.current{
+  background:rgba(255,230,0,.35);
+  color:#fff;
+}
+
+.history-word.done.correct-word{
+  border-bottom:2px solid rgba(34,197,94,.45);
+}
+
+.history-word.done.wrong-word{
+  border-bottom:2px solid rgba(239,68,68,.45);
+}
 
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
     .tab-btn{padding:0px 15px;border-radius:6px;border:1px solid transparent;background:transparent;color:rgba(255,255,255,0.85);cursor:pointer;font-size:14px;height:32px;transition: all.3s ease}
@@ -1556,23 +1612,113 @@ updateTestInfo();
       els.statTests.textContent = state.totalTests || 0;
     }
 
-function renderHistory(){
-  const items = state.history
-    .slice(-60)
-    .map(item => {
-      const text = item.typed ? item.typed : '∅';
-      const title = item.ok
-        ? `Typed: ${item.typed || '(empty)'}`
-        : `Typed: ${item.typed || '(empty)'} | Expected: ${item.expected || '-'}`;
+function getHistoryWordHtml(expectedWord = '', typedWord = '', isDone = true, isActive = false) {
+  const expected = String(expectedWord || '');
+  const typed = String(typedWord || '');
+  const maxLen = Math.max(expected.length, typed.length);
 
-      return `<span class="key-chip ${item.ok ? 'good' : 'bad'}" title="${escapeHtml(title)}">${escapeHtml(text)}</span>`;
-    })
-    .join('');
+  let wordClass = 'history-word';
+  if (isDone) {
+    wordClass += typed === expected ? ' done correct-word' : ' done wrong-word';
+  }
 
-  els.historyLetters.innerHTML =
-    items || '<div class="empty-box" style="width:100%">No word attempts yet</div>';
+  let charsHtml = '';
+
+  for (let i = 0; i < maxLen; i++) {
+    const expectedChar = expected[i] || '';
+    const typedChar = typed[i] || '';
+
+    let cls = 'history-char';
+    let outputChar = expectedChar || typedChar || '';
+
+    if (typedChar && expectedChar) {
+      if (typedChar === expectedChar) {
+        cls += ' correct';
+      } else {
+        cls += ' wrong';
+        outputChar = typedChar;
+      }
+    } else if (typedChar && !expectedChar) {
+      cls += ' extra';
+      outputChar = typedChar;
+    } else if (!typedChar && expectedChar) {
+      cls += isActive ? ' pending' : ' pending';
+      outputChar = expectedChar;
+    }
+
+    charsHtml += `<span class="${cls}">${escapeHtml(outputChar)}</span>`;
+  }
+
+  // caret/current highlight pada next char untuk word aktif
+  if (isActive) {
+    const caretChar = expected[typed.length] || '';
+    if (caretChar) {
+      charsHtml =
+        charsHtml.slice(0, charsHtml.length);
+    }
+  }
+
+  return `<span class="${wordClass}">${charsHtml}</span>`;
 }
 
+function buildHistoryRows() {
+  const wordsPerLine = getWordsPerLine();
+  const rows = [];
+
+  const finishedWords = state.wordTimings
+    .map((item, index) => {
+      if (!item || !item.done) return null;
+      return {
+        expected: item.expected || state.promptWords[index] || '',
+        typed: item.typed || '',
+        done: true
+      };
+    })
+    .filter(Boolean);
+
+  const currentExpected = state.promptWords[state.currentWordIndex] || '';
+  const currentTyped = state.currentInput || '';
+
+  const allWords = [...finishedWords];
+
+  if (!state.finished && (currentExpected || currentTyped)) {
+    allWords.push({
+      expected: currentExpected,
+      typed: currentTyped,
+      done: false,
+      active: true
+    });
+  }
+
+  for (let i = 0; i < allWords.length; i += wordsPerLine) {
+    rows.push(allWords.slice(i, i + wordsPerLine));
+  }
+
+  return rows;
+}
+function renderHistory() {
+  const rows = buildHistoryRows();
+
+  if (!rows.length) {
+    els.historyLetters.innerHTML = '<div class="empty-box" style="width:100%">No typing history yet</div>';
+    return;
+  }
+
+  const html = rows.map(rowWords => {
+    const wordsHtml = rowWords.map(word => {
+      return getHistoryWordHtml(
+        word.expected,
+        word.typed,
+        word.done === true,
+        word.active === true
+      );
+    }).join('');
+
+    return `<div class="history-line">${wordsHtml}</div>`;
+  }).join('');
+
+  els.historyLetters.innerHTML = html;
+}
     function renderMistakes(){
       const rows = Object.entries(state.sessionMistakes)
         .sort((a,b) => b[1].count - a[1].count)
