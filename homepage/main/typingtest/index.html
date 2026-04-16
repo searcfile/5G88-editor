@@ -1662,13 +1662,13 @@ function getHistoryWordHtml(expectedWord = '', typedWord = '', isDone = true, is
 }
 
 function buildHistoryRows() {
-  const wordsPerLine = getWordsPerLine();
   const rows = [];
 
   const finishedWords = state.wordTimings
     .map((item, index) => {
       if (!item || !item.done) return null;
       return {
+        index,
         expected: item.expected || state.promptWords[index] || '',
         typed: item.typed || '',
         done: true
@@ -1683,6 +1683,7 @@ function buildHistoryRows() {
 
   if (!state.finished && (currentExpected || currentTyped)) {
     allWords.push({
+      index: state.currentWordIndex,
       expected: currentExpected,
       typed: currentTyped,
       done: false,
@@ -1690,9 +1691,20 @@ function buildHistoryRows() {
     });
   }
 
-  for (let i = 0; i < allWords.length; i += wordsPerLine) {
-    rows.push(allWords.slice(i, i + wordsPerLine));
+  // kalau belum ada range line, fallback sementara
+  if (!Array.isArray(state.visibleLineRanges) || !state.visibleLineRanges.length) {
+    return allWords.length ? [allWords] : [];
   }
+
+  state.visibleLineRanges.forEach(range => {
+    const lineWords = allWords.filter(word =>
+      word.index >= range.startIndex && word.index <= range.endIndex
+    );
+
+    if (lineWords.length) {
+      rows.push(lineWords);
+    }
+  });
 
   return rows;
 }
