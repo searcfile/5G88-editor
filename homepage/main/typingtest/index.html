@@ -316,27 +316,6 @@
 
     .typing-input{width:100%;margin-top:14px;background:var(--panel-3);border:1px solid #424242;border-radius:10px;color:#fff;padding:16px 18px;font-size:18px;outline:none;transition:.18s ease}
     .typing-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(22,104,220,.22)}
-    .typing-direct{
-  display:flex;
-  align-items:center;
-  min-height:60px;
-  user-select:none;
-  caret-color:transparent;
-  cursor:text;
-}
-
-.typing-direct.is-active{
-  border-color:var(--primary);
-  box-shadow:0 0 0 4px rgba(22,104,220,.22);
-}
-
-.typing-direct.has-text{
-  color:#fff;
-}
-
-.typing-direct.is-placeholder{
-  color:rgba(255,255,255,0.45);
-}
     .hint{display:flex;justify-content:space-between;gap:10px;margin-top:10px;color:var(--muted);font-size:12px}
 
     .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
@@ -748,9 +727,7 @@ html {
             <div class="test-status" id="testStatus">Start typing to begin.</div>
           </div>
           <div id="promptText" class="prompt-text"></div>
-         <div id="typingInput" class="typing-input typing-direct is-placeholder" tabindex="0">
-  Click here and start typing...
-</div>
+          <input id="typingInput" class="typing-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Click here and start typing..." />
           <div class="hint">
             <span>Tracks wrong letters, speed per word, raw WPM, and advanced result.</span>
             <span id="lastSavedLabel">No result saved yet</span>
@@ -1084,39 +1061,11 @@ testSaved: false
     };
 
     let db = null;
-    function setTypingBoxText() {
-  if (!els.typingInput) return;
-
-  const text = state.currentInput || '';
-
-  if (text) {
-    els.typingInput.textContent = text;
-    els.typingInput.classList.add('has-text');
-    els.typingInput.classList.remove('is-placeholder');
-  } else {
-    els.typingInput.textContent = 'Click here and start typing...';
-    els.typingInput.classList.remove('has-text');
-    els.typingInput.classList.add('is-placeholder');
-  }
-}
-
-function focusTypingBox(delay = 0){
-  setTimeout(() => {
-    if (!els.typingInput) return;
-    els.typingInput.focus();
-    els.typingInput.classList.add('is-active');
-  }, delay);
-}
-
-function blurTypingBox(){
-  if (!els.typingInput) return;
-  els.typingInput.classList.remove('is-active');
-}
 function focusTypingInput(delay = 0){
   setTimeout(() => {
     if (!els.typingInput) return;
     els.typingInput.focus();
-    els.typingInput.classList.add('is-active');
+    els.typingInput.select?.();
   }, delay);
 }
 function getLastSessionStorageKey() {
@@ -1669,8 +1618,7 @@ state.testSaved = false;
 state.visibleStartIndex = 0;
 state.visibleLineRanges = [];
 state.historyLineRanges = [];
-      state.currentInput = '';
-setTypingBoxText();
+      els.typingInput.value = '';
       els.testStatus.textContent = 'Start typing to begin.';
       els.lastSavedLabel.textContent = 'No result saved yet';
       if (full) buildPrompt();
@@ -1688,9 +1636,7 @@ if (saved && !state.started && !state.finished) {
     'leaderboard'
   );
 }
-    updateTestInfo();
-      setTypingBoxText();
-      focusTypingInput(80);
+      updateTestInfo();
     }
 
     function startTest(){
@@ -1716,44 +1662,21 @@ function recordSecondSample(){
   drawLineChart(document.getElementById('resultCanvas'), state.secondSeries, 'wpm');
 }
 
-function handleDirectKeydown(e){
+function handleInput(e){
   if (state.finished) return;
 
-  const key = e.key;
+  const value = e.target.value;
   const prev = state.currentInput;
 
-  if (
-    key === 'Shift' || key === 'Control' || key === 'Alt' || key === 'Meta' ||
-    key === 'CapsLock' || key === 'Escape' || key === 'Tab' ||
-    key.startsWith('Arrow') || key === 'Insert' || key === 'Home' ||
-    key === 'End' || key === 'PageUp' || key === 'PageDown'
-  ) {
-    return;
+  if (!state.started && value.length > 0) startTest();
+
+  if (value.length < prev.length) {
+    state.correctedChars += (prev.length - value.length);
+    state.correctedKeystrokes += (prev.length - value.length);
   }
 
-  e.preventDefault();
-
-  if (!state.started && !state.finished) {
-    if (key.length === 1 || key === 'Backspace' || key === ' ') {
-      startTest();
-    }
-  }
-
-  if (key === 'Backspace') {
-    if (state.currentInput.length > 0) {
-      state.correctedChars += 1;
-      state.correctedKeystrokes += 1;
-      state.currentInput = state.currentInput.slice(0, -1);
-      setTypingBoxText();
-      renderPrompt();
-      renderHistory();
-      updateStats();
-    }
-    return;
-  }
-
-  if (key === ' ') {
-    const finalWord = state.currentInput.trim();
+  if (value.endsWith(' ')) {
+    const finalWord = value.trimEnd();
 
     if (finalWord !== prev) {
       compareCurrentWord(finalWord, prev);
@@ -1761,22 +1684,15 @@ function handleDirectKeydown(e){
     }
 
     finalizeCurrentWord(finalWord);
-    state.currentInput = '';
-    setTypingBoxText();
+    e.target.value = '';
     return;
   }
 
-  if (key.length === 1) {
-    const nextValue = prev + key;
-    state.currentInput = nextValue;
-
-    compareCurrentWord(nextValue, prev);
-    pushWordAttempt(nextValue);
-
-    setTypingBoxText();
-    renderPrompt();
-    updateStats();
-  }
+  state.currentInput = value;
+  compareCurrentWord(value, prev);
+  pushWordAttempt(value);
+  renderPrompt();
+  updateStats();
 }
 
 function compareCurrentWord(nextValue, prevValue){
@@ -1887,7 +1803,7 @@ async function finishTest(){
   state.endTs = Date.now();
 
   recordSecondSample();
-  blurTypingBox();
+  els.typingInput.blur();
   els.testStatus.textContent = 'Test completed.';
   updateStats();
 
@@ -2121,8 +2037,7 @@ function closeResultModal(){
     resetTest(true);
   }
 
-  setTypingBoxText();
-  focusTypingBox(80);
+  focusTypingInput(80);
 }
 function openChampionModal(rank){
   if (!els.championOverlay) return;
@@ -2828,10 +2743,7 @@ els.restartBtn.addEventListener('click', () => {
     els.restartBtn.classList.remove('spinning');
   }, 700);
 });
-els.typingInput.addEventListener('keydown', handleDirectKeydown);
-els.typingInput.addEventListener('click', () => focusTypingBox(0));
-els.typingInput.addEventListener('focus', () => els.typingInput.classList.add('is-active'));
-els.typingInput.addEventListener('blur', blurTypingBox);
+    els.typingInput.addEventListener('input', handleInput);
 els.showResultBtn.addEventListener('click', () => {
   const hasCurrentResult =
     state.finished ||
@@ -2942,8 +2854,7 @@ initFirebase();
 loadUserFromStorage();
 buildPrompt();
 resetTest(false);
-setTypingBoxText();
-focusTypingBox(80);
+focusTypingInput(80);
   </script>
 </body>
 </html>
