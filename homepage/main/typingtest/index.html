@@ -1614,46 +1614,42 @@ function getHistoryWordClass(realIndex, expectedWord){
   return 'pending';
 }
 function renderHistory(){
-  const maxLines = Math.max(1, Number(state.textLineCount || 2));
-  const wordsPerLine = getWordsPerLine();
-  const totalWordsToShow = maxLines * wordsPerLine;
+  const ranges = Array.isArray(state.visibleLineRanges) ? state.visibleLineRanges : [];
 
-  const startIndex = Math.max(0, Number(state.visibleStartIndex || 0));
-  const words = state.promptWords.slice(startIndex, startIndex + totalWordsToShow);
-
-  if (!words.length) {
+  if (!ranges.length) {
     els.historyLetters.innerHTML = '<div class="empty-box" style="width:100%">No line history yet</div>';
     return;
   }
 
   let html = '';
 
-  for (let line = 0; line < maxLines; line++) {
-    const lineStart = line * wordsPerLine;
-    const lineWords = words.slice(lineStart, lineStart + wordsPerLine);
+  ranges.forEach((range) => {
+    const start = Number(range.startIndex || 0);
+    const end = Number(range.endIndex || 0);
 
-    if (!lineWords.length) continue;
+    const lineHtml = state.promptWords
+      .slice(start, end + 1)
+      .map((word, idx) => {
+        const realIndex = start + idx;
+        const cls = getHistoryWordClass(realIndex, word);
 
-    const lineHtml = lineWords.map((word, idx) => {
-      const realIndex = startIndex + lineStart + idx;
-      const cls = getHistoryWordClass(realIndex, word);
+        let displayText = word;
 
-      let displayText = word;
-
-      if (realIndex === state.currentWordIndex && state.currentInput.trim()) {
-        displayText = state.currentInput.trim();
-      } else if (realIndex < state.currentWordIndex) {
-        const historyItem = state.wordTimings[realIndex];
-        if (historyItem?.typed) {
-          displayText = historyItem.typed;
+        if (realIndex === state.currentWordIndex && state.currentInput.trim()) {
+          displayText = state.currentInput.trim();
+        } else if (realIndex < state.currentWordIndex) {
+          const historyItem = state.wordTimings[realIndex];
+          if (historyItem?.typed) {
+            displayText = historyItem.typed;
+          }
         }
-      }
 
-      return `<span class="history-word ${cls}">${escapeHtml(displayText)}</span>`;
-    }).join('');
+        return `<span class="history-word ${cls}">${escapeHtml(displayText)}</span>`;
+      })
+      .join('');
 
     html += `<div class="history-line">${lineHtml}</div>`;
-  }
+  });
 
   els.historyLetters.innerHTML =
     html || '<div class="empty-box" style="width:100%">No line history yet</div>';
