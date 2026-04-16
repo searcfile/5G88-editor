@@ -952,13 +952,7 @@ const payload = {
     console.warn('saveLastSessionToStorage failed:', err);
   }
 }
-function clearLastSessionFromStorage() {
-  try {
-    localStorage.removeItem(getLastSessionStorageKey());
-  } catch (err) {
-    console.warn('clearLastSessionFromStorage failed:', err);
-  }
-}
+
 function loadLastSessionFromStorage() {
   try {
     const raw = localStorage.getItem(getLastSessionStorageKey());
@@ -1403,47 +1397,47 @@ prompt.style.overflow = 'hidden';
     btn.classList.toggle('active', Number(btn.dataset.lines || 0) === Number(state.textLineCount));
   });
 }
-function resetTest(full=true){
-  clearInterval(state.timer);
-  state.started = false;
-  state.finished = false;
-  state.startTs = 0;
-  state.endTs = 0;
-  state.timeLeft = state.duration;
-  state.history = [];
-  state.wordTimings = [];
-  state.secondSeries = [];
-  state.sessionMistakes = {};
-  state.totalTyped = 0;
-  state.correctTyped = 0;
-  state.wrongTyped = 0;
-  state.correctedChars = 0;
-  state.correctedKeystrokes = 0;
-  state.spaces = 0;
-  state.testSaved = false;
-  state.visibleStartIndex = 0;
-  state.visibleLineRanges = [];
-  state.historyLines = [];
-  els.typingInput.value = '';
-  els.testStatus.textContent = 'Start typing to begin.';
-  els.lastSavedLabel.textContent = 'No result saved yet';
+    function resetTest(full=true){
+      clearInterval(state.timer);
+      state.started = false;
+      state.finished = false;
+      state.startTs = 0;
+      state.endTs = 0;
+      state.timeLeft = state.duration;
+      state.history = [];
+      state.wordTimings = [];
+      state.secondSeries = [];
+      state.sessionMistakes = {};
+      state.totalTyped = 0;
+      state.correctTyped = 0;
+      state.wrongTyped = 0;
+      state.correctedChars = 0;
+      state.correctedKeystrokes = 0;
+state.spaces = 0;
+state.testSaved = false;
+state.visibleStartIndex = 0;
+state.visibleLineRanges = [];
+state.historyLines = [];
+els.typingInput.value = '';
+      els.testStatus.textContent = 'Start typing to begin.';
+      els.lastSavedLabel.textContent = 'No result saved yet';
+      if (full) buildPrompt();
+      updateStats();
+const saved = loadLastSessionFromStorage();
 
-  clearLastSessionFromStorage();
-
-  if (full) buildPrompt();
-
-  updateStats();
+if (saved && !state.started && !state.finished) {
+  restoreLastSessionUI({ applySavedPrefs: false });
+} else {
   renderMistakes();
   renderHistory();
-
   drawLineChart(
     document.getElementById('wpmCanvas'),
     state.leaderboard.map(x => Number(x.bestWpm || 0)),
     'leaderboard'
   );
-
-  updateTestInfo();
 }
+      updateTestInfo();
+    }
 
     function startTest(){
       if (state.started || state.finished) return;
@@ -2461,9 +2455,10 @@ window.addEventListener('resize', () => {
       }
     });
 
-initFirebase();
-loadUserFromStorage();
-resetTest(true);
+    initFirebase();
+    loadUserFromStorage();
+    buildPrompt();
+    resetTest(false);
   </script>
 </body>
 </html>
