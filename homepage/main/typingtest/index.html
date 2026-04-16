@@ -2075,42 +2075,67 @@ function drawLineChart(canvas, data, mode = 'wpm'){
       ctx.stroke();
     });
 
-    const hoverPoint = state.leaderboardChartPoints[state.leaderboardHoverIndex];
-    if (hoverPoint && hoverPoint.row) {
-      const row = hoverPoint.row;
-      const lines = [
-        row.name || row.email || 'User',
-        `Best WPM: ${Number(row.bestWpm || 0)}`,
-        `Best Acc: ${Number(row.bestAccuracy || 0)}%`,
-        `Tests: ${Number(row.totalTests || 0)}`,
-        `Last: ${row.lastTypingText || formatDateTime(row.lastTypingAt || 0)}`
-      ];
+const hoverPoint = state.leaderboardChartPoints[state.leaderboardHoverIndex];
+if (hoverPoint && hoverPoint.row) {
+  const row = hoverPoint.row;
+  const lines = [
+    row.name || row.email || 'User',
+    `Best WPM: ${Number(row.bestWpm || 0)}`,
+    `Best Acc: ${Number(row.bestAccuracy || 0)}%`,
+    `Tests: ${Number(row.totalTests || 0)}`,
+    `Last: ${row.lastTypingText || formatDateTime(row.lastTypingAt || 0)}`
+  ];
 
-      ctx.font = `${12 * ratio}px Arial`;
-      const padding = 10 * ratio;
-      const lineH = 16 * ratio;
-      const boxW = Math.max(...lines.map(t => ctx.measureText(t).width)) + padding * 2;
-      const boxH = lines.length * lineH + padding * 2;
+  ctx.font = `${12 * ratio}px Arial`;
+  const padding = 10 * ratio;
+  const lineH = 16 * ratio;
+  const gap = 12 * ratio;
 
-      let boxX = hoverPoint.x + 12 * ratio;
-      let boxY = hoverPoint.y - boxH - 12 * ratio;
+  const boxW = Math.max(...lines.map(t => ctx.measureText(t).width)) + padding * 2;
+  const boxH = lines.length * lineH + padding * 2;
 
-      if (boxX + boxW > width - pad) boxX = hoverPoint.x - boxW - 12 * ratio;
-      if (boxY < pad) boxY = hoverPoint.y + 12 * ratio;
+  // default: tampil di atas point
+  let boxX = hoverPoint.x + gap;
+  let boxY = hoverPoint.y - boxH - gap;
 
-      ctx.fillStyle = 'rgba(8,10,12,.96)';
-      ctx.strokeStyle = 'rgba(255,255,255,.14)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.roundRect(boxX, boxY, boxW, boxH, 10 * ratio);
-      ctx.fill();
-      ctx.stroke();
+  // kalau kanan tak muat, pindah ke kiri
+  if (boxX + boxW > width - pad) {
+    boxX = hoverPoint.x - boxW - gap;
+  }
 
-      lines.forEach((line, idx) => {
-        ctx.fillStyle = idx === 0 ? '#ffffff' : 'rgba(255,255,255,.8)';
-        ctx.fillText(line, boxX + padding, boxY + padding + (idx + 1) * lineH - 4 * ratio);
-      });
-    }
+  // kalau kiri pun keluar, clamp masuk
+  if (boxX < pad) {
+    boxX = pad;
+  }
+
+  // kalau atas tak muat, pindah ke bawah
+  if (boxY < pad) {
+    boxY = hoverPoint.y + gap;
+  }
+
+  // kalau bawah tak muat, paksa naik semula dalam canvas
+  if (boxY + boxH > height - pad) {
+    boxY = height - pad - boxH;
+  }
+
+  // safety clamp
+  if (boxY < pad) {
+    boxY = pad;
+  }
+
+  ctx.fillStyle = 'rgba(8,10,12,.96)';
+  ctx.strokeStyle = 'rgba(255,255,255,.14)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(boxX, boxY, boxW, boxH, 10 * ratio);
+  ctx.fill();
+  ctx.stroke();
+
+  lines.forEach((line, idx) => {
+    ctx.fillStyle = idx === 0 ? '#ffffff' : 'rgba(255,255,255,.8)';
+    ctx.fillText(line, boxX + padding, boxY + padding + (idx + 1) * lineH - 4 * ratio);
+  });
+}
   } else {
     state.leaderboardChartPoints = [];
   }
