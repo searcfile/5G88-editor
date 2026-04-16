@@ -1061,6 +1061,13 @@ testSaved: false
     };
 
     let db = null;
+function focusTypingInput(delay = 0){
+  setTimeout(() => {
+    if (!els.typingInput) return;
+    els.typingInput.focus();
+    els.typingInput.select?.();
+  }, delay);
+}
 function getLastSessionStorageKey() {
   return state.userKey ? `typingTestLastSession_${state.userKey}` : 'typingTestLastSession_guest';
 }
@@ -2029,6 +2036,8 @@ function closeResultModal(){
   if (state.finished) {
     resetTest(true);
   }
+
+  focusTypingInput(80);
 }
 function openChampionModal(rank){
   if (!els.championOverlay) return;
@@ -2059,6 +2068,7 @@ function openChampionModal(rank){
 function closeChampionModal(){
   if (!els.championOverlay) return;
   els.championOverlay.classList.remove('show');
+  focusTypingInput(80);
 }
 async function checkMyLeaderboardRankAndCelebrate(){
   if (!db || !state.userKey) return;
@@ -2655,6 +2665,7 @@ document.querySelectorAll('.duration-btn').forEach(btn => btn.addEventListener('
     buildPrompt();
   }
   resetTest(false);
+  focusTypingInput(80);
 }));
 
 els.languageSelect.addEventListener('change', () => {
@@ -2662,6 +2673,7 @@ els.languageSelect.addEventListener('change', () => {
   saveTypingPrefsToStorage();
   buildPrompt();
   resetTest(false);
+  focusTypingInput(80);
 });
 
 els.modeSelect.addEventListener('change', () => {
@@ -2669,6 +2681,7 @@ els.modeSelect.addEventListener('change', () => {
   saveTypingPrefsToStorage();
   buildPrompt();
   resetTest(false);
+  focusTypingInput(80);
 });
 const typingSettingsBtn = document.getElementById('typingSettingsBtn');
 const typingSettingsPanel = document.getElementById('typingSettingsPanel');
@@ -2704,6 +2717,7 @@ document.querySelectorAll('#fontSizeOptions .ts-opt').forEach(btn => {
     buildPrompt();
     updateTypingSettingsUI();
     resetTest(false);
+    focusTypingInput(80);
   });
 });
 
@@ -2714,6 +2728,7 @@ document.querySelectorAll('#lineCountOptions .ts-opt').forEach(btn => {
     buildPrompt();
     updateTypingSettingsUI();
     resetTest(false);
+    focusTypingInput(80);
   });
 });
 els.restartBtn.addEventListener('click', () => {
@@ -2722,6 +2737,7 @@ els.restartBtn.addEventListener('click', () => {
   els.restartBtn.classList.add('spinning');
 
   resetTest(true);
+  focusTypingInput(80);
 
   setTimeout(() => {
     els.restartBtn.classList.remove('spinning');
@@ -2834,10 +2850,11 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-    initFirebase();
-    loadUserFromStorage();
-    buildPrompt();
-    resetTest(false);
+initFirebase();
+loadUserFromStorage();
+buildPrompt();
+resetTest(false);
+focusTypingInput(80);
   </script>
 </body>
 </html>
