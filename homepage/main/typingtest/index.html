@@ -2022,8 +2022,14 @@ function renderHistory() {
       drawLineChart(document.getElementById('resultCanvas'), state.secondSeries);
     }
 
-    function openResultModal(){ els.resultOverlay.style.display = 'flex'; }
-    function closeResultModal(){ els.resultOverlay.style.display = 'none'; }
+function openResultModal(){ els.resultOverlay.style.display = 'flex'; }
+function closeResultModal(){
+  els.resultOverlay.style.display = 'none';
+
+  if (state.finished) {
+    resetTest(true);
+  }
+}
 function openChampionModal(rank){
   if (!els.championOverlay) return;
 
