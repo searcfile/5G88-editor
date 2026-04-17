@@ -660,6 +660,7 @@ html {
       <option value="words">Random Words</option>
       <option value="quote">Paragraph</option>
       <option value="numbers">Numbers</option>
+      <option value="mixed">Text + Number</option>
     </select>
   </div>
 
@@ -1426,13 +1427,21 @@ function pushMoreWords(count = 16) {
     for (let i = 0; i < count; i++) {
       words.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
     }
+  } else if (state.mode === 'mixed') {
+    for (let i = 0; i < count; i++) {
+      const useNumber = Math.random() < 0.35;
+      if (useNumber) {
+        words.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
+      } else {
+        words.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
+      }
+    }
   } else {
     for (let i = 0; i < count; i++) {
       words.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
     }
   }
 }
-
   // stok awal lebih besar supaya line tinggi cukup
   pushMoreWords(getPromptTargetWordCount() + minLinesNeeded * 10);
 
@@ -1580,6 +1589,15 @@ if (state.mode === 'quote') {
   for (let i = 0; i < extraCount; i++) {
     extraWords.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
   }
+} else if (state.mode === 'mixed') {
+  for (let i = 0; i < extraCount; i++) {
+    const useNumber = Math.random() < 0.35;
+    if (useNumber) {
+      extraWords.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
+    } else {
+      extraWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
+    }
+  }
 } else {
   for (let i = 0; i < extraCount; i++) {
     extraWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
@@ -1591,24 +1609,33 @@ if (state.mode === 'quote') {
   let safety = 0;
   renderPrompt();
 
-  while ((state.visibleLineRanges?.length || 0) < Math.max(1, Number(state.textLineCount || 2)) && safety < 40) {
-if (state.mode === 'quote') {
-  const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
-  const allWords = quote.trim().split(/\s+/);
-  state.promptWords.push(...allWords);
-} else if (state.mode === 'numbers') {
-  for (let i = 0; i < 12; i++) {
-    state.promptWords.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
+while ((state.visibleLineRanges?.length || 0) < Math.max(1, Number(state.textLineCount || 2)) && safety < 40) {
+  if (state.mode === 'quote') {
+    const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
+    const allWords = quote.trim().split(/\s+/);
+    state.promptWords.push(...allWords);
+  } else if (state.mode === 'numbers') {
+    for (let i = 0; i < 12; i++) {
+      state.promptWords.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
+    }
+  } else if (state.mode === 'mixed') {
+    for (let i = 0; i < 12; i++) {
+      const useNumber = Math.random() < 0.35;
+      if (useNumber) {
+        state.promptWords.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
+      } else {
+        state.promptWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
+      }
+    }
+  } else {
+    for (let i = 0; i < 12; i++) {
+      state.promptWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
+    }
   }
-} else {
-  for (let i = 0; i < 12; i++) {
-    state.promptWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
-  }
-}
 
-    renderPrompt();
-    safety++;
-  }
+  renderPrompt();
+  safety++;
+}
 }
 function shiftVisibleWindowIfNeeded() {
   if (!state.visibleLineRanges || !state.visibleLineRanges.length) return;
