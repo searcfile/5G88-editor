@@ -41,12 +41,18 @@ body {
   background: var(--page-bg);
   color: var(--page-text);
   font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 0;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  min-height: 100vh;
+  overflow: hidden;
 }
-html, body { -ms-overflow-style: none; scrollbar-width: none; }
+html, body { -ms-overflow-style: none; scrollbar-width: none;   height: 100%;
+  margin: 0;
+  padding: 0;}
+    main {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
   h1 {
     color: white;
@@ -432,11 +438,12 @@ align-items: flex-start;
 .chat-wrapper {
   background: white;
   max-width: 640px;
-  margin: 1rem auto 0 auto;
+  margin: 15px auto 0;
   border-radius: 6px;
   display: flex;
   flex-direction: column;
-  height: 93vh;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
   box-shadow: 0 0 10px #1668dc;
   border: 1px solid #1668dc;
