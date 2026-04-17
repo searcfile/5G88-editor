@@ -171,6 +171,28 @@
   display:flex;
   flex-direction:column;
 }
+.leaderboard-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:12px;
+  flex:1;
+  min-height:0;
+}
+
+.leaderboard-panel{
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+
+.leaderboard-panel .section-title{
+  margin-bottom:10px;
+}
+
+.leaderboard-panel .leaderboard-scroll{
+  flex:1;
+  min-height:0;
+}
 .right-header{
   display:flex;
   gap:10px;
@@ -589,6 +611,7 @@ html {
       .layout{grid-template-columns:1fr}
       .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
       .result-main,.advanced-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .leaderboard-grid{grid-template-columns:1fr}
     }
 @media (max-width:760px){
   .stats-grid{
@@ -856,28 +879,61 @@ html {
   </div>
 </div>
   
-  <div class="section-title">
-    <h3>All Time Leaderboard</h3>
-    <span>All user</span>
+<div class="leaderboard-grid">
+  <div class="leaderboard-panel">
+    <div class="section-title">
+      <h3>All Time Leaderboard</h3>
+      <span>All user</span>
+    </div>
+
+    <div class="leaderboard-scroll">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Best WPM</th>
+            <th>Best Accuracy</th>
+            <th>Typing</th>
+            <th>Last Typing</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardBody"></tbody>
+      </table>
+
+      <div id="leaderboardEmpty" class="empty-box" style="display:none;margin-top:12px;">
+        No leaderboard data yet.
+      </div>
+    </div>
   </div>
 
-  <div class="leaderboard-scroll">
-    <table class="leaderboard-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>User</th>
-          <th>Best WPM</th>
-          <th>Best Accuracy</th>
-          <th>Typing</th>
-          <th>Last Typing</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboardBody"></tbody>
-    </table>
+  <div class="leaderboard-panel">
+    <div class="section-title">
+      <h3>Numbers Leaderboard</h3>
+      <span>Numbers only</span>
+    </div>
 
-    <div id="leaderboardEmpty" class="empty-box" style="display:none;margin-top:12px;">No leaderboard data yet.</div>
+    <div class="leaderboard-scroll">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Best WPM</th>
+            <th>Best Accuracy</th>
+            <th>Typing</th>
+            <th>Last Typing</th>
+          </tr>
+        </thead>
+        <tbody id="numberLeaderboardBody"></tbody>
+      </table>
+
+      <div id="numberLeaderboardEmpty" class="empty-box" style="display:none;margin-top:12px;">
+        No numbers leaderboard data yet.
+      </div>
+    </div>
   </div>
+</div>
 </aside>
     </div>
   </div>
@@ -1059,6 +1115,8 @@ started: false,
       totalTests: 0,
       myHistory: [],
       leaderboard: [],
+      numberLeaderboard: [],
+      numberLeaderboardRef: null,
       dbReady: false,
       saveLock: false,
 presenceRef: null,
@@ -1102,6 +1160,8 @@ testSaved: false
       myHistoryBody: document.getElementById('myHistoryBody'),
       leaderboardBody: document.getElementById('leaderboardBody'),
       leaderboardEmpty: document.getElementById('leaderboardEmpty'),
+      numberLeaderboardBody: document.getElementById('numberLeaderboardBody'),
+      numberLeaderboardEmpty: document.getElementById('numberLeaderboardEmpty'),
       lastSavedLabel: document.getElementById('lastSavedLabel'),
       resultOverlay: document.getElementById('resultOverlay'),
       closeResultBtn: document.getElementById('closeResultBtn'),
@@ -2383,7 +2443,41 @@ await userStatsRef.update({
       lastDuration: payload.duration,
       lastLanguage: payload.language
     });
+if (state.mode === 'numbers') {
+  const numberStatsRef = db.ref(`typingTest/leaderboard/numbers/${state.userKey}`);
+  const numberSnap = await numberStatsRef.once('value');
+  const numberCur = numberSnap.val() || {};
 
+  const prevNumberTests = Number(numberCur.totalTests || 0);
+  const numberTotalTests = forceSave && state.testSaved ? prevNumberTests : (prevNumberTests + 1);
+
+  const numberAvgWpm = prevNumberTests > 0
+    ? Math.round(((Number(numberCur.avgWpm || 0) * prevNumberTests) + payload.wpm) / numberTotalTests)
+    : payload.wpm;
+
+  const numberAvgAcc = prevNumberTests > 0
+    ? Math.round(((Number(numberCur.avgAccuracy || 0) * prevNumberTests) + payload.accuracy) / numberTotalTests)
+    : payload.accuracy;
+
+  const numberBestWpm = Math.max(Number(numberCur.bestWpm || 0), payload.wpm);
+  const numberBestAccuracy = Math.max(Number(numberCur.bestAccuracy || 0), payload.accuracy);
+
+  await numberStatsRef.set({
+    name: payload.user.name,
+    email: payload.user.email,
+    photo: payload.user.photo || '',
+    bestWpm: numberBestWpm,
+    bestAccuracy: numberBestAccuracy,
+    avgWpm: numberAvgWpm,
+    avgAccuracy: numberAvgAcc,
+    totalTests: numberTotalTests,
+    lastTypingAt: payload.typedAt,
+    lastTypingText: payload.typedAtText,
+    lastDuration: payload.duration,
+    lastLanguage: payload.language,
+    mode: 'numbers'
+  });
+}
     state.totalTests = totalTests;
     state.testSaved = true;
 
@@ -2408,7 +2502,8 @@ function bindRealtime(){
   if (!state.dbReady || !state.userKey) return;
 
   if (state.leaderboardRef) state.leaderboardRef.off();
-  if (state.presenceListRef) state.presenceListRef.off();
+if (state.numberLeaderboardRef) state.numberLeaderboardRef.off();
+if (state.presenceListRef) state.presenceListRef.off();
 
   bindPresence();
   loadMyHistory();
@@ -2430,7 +2525,22 @@ renderLeaderboard();
 redrawLeaderboardChart(50);
 redrawLeaderboardChart(180);
   });
+state.numberLeaderboardRef = db.ref('typingTest/leaderboard/numbers');
+state.numberLeaderboardRef.on('value', snap => {
+  const rows = [];
+  snap.forEach(child => {
+    rows.push({ key: child.key, ...(child.val() || {}) });
+  });
 
+  rows.sort((a, b) => {
+    if ((b.bestWpm || 0) !== (a.bestWpm || 0)) return (b.bestWpm || 0) - (a.bestWpm || 0);
+    if ((b.bestAccuracy || 0) !== (a.bestAccuracy || 0)) return (b.bestAccuracy || 0) - (a.bestAccuracy || 0);
+    return (b.lastTypingAt || 0) - (a.lastTypingAt || 0);
+  });
+
+  state.numberLeaderboard = rows;
+  renderNumberLeaderboard();
+});
   state.presenceListRef = db.ref('typingTest/presence');
   state.presenceListRef.on('value', snap => {
     let count = 0;
@@ -2580,7 +2690,46 @@ function renderLeaderboard() {
   els.leaderboardBody.innerHTML = rows;
   els.leaderboardEmpty.style.display = rows ? 'none' : 'block';
 }
+function renderNumberLeaderboard() {
+  if (!els.numberLeaderboardBody) return;
 
+  const rows = state.numberLeaderboard.slice(0, 50).map((row, idx) => {
+    const rankClass =
+      idx === 0 ? 'rank-1' :
+      idx === 1 ? 'rank-2' :
+      idx === 2 ? 'rank-3' : '';
+
+    const avatarSrc = getAvatarSrc(row);
+    const fallbackSrc = getAvatarFallbackSvg(row?.name || row?.email || 'U');
+    const displayName = buildLeaderboardDisplayName(row);
+
+    return `
+      <tr>
+        <td><span class="rank-badge ${rankClass}">${idx + 1}</span></td>
+        <td>
+          <div class="lb-user">
+            <img
+              src="${escapeHtml(avatarSrc)}"
+              onerror="this.onerror=null;this.src='${fallbackSrc}'"
+              alt="avatar"
+            >
+            <div style="min-width:0">
+              <div class="name">${escapeHtml(displayName)}</div>
+            </div>
+          </div>
+        </td>
+        <td><strong>${Number(row.bestWpm || 0)}</strong></td>
+        <td>${Number(row.bestAccuracy || 0)}%</td>
+        <td>${Number(row.totalTests || 0)}</td>
+        <td class="muted2">${escapeHtml(row.lastTypingText || formatDateTime(row.lastTypingAt || 0))}</td>
+      </tr>`;
+  }).join('');
+
+  els.numberLeaderboardBody.innerHTML = rows;
+  if (els.numberLeaderboardEmpty) {
+    els.numberLeaderboardEmpty.style.display = rows ? 'none' : 'block';
+  }
+}
 function loadMyHistory() {
   if (!state.dbReady || !state.userKey) {
     console.log('loadMyHistory skipped:', {
