@@ -301,26 +301,32 @@ body.light-theme .tip-search-input::placeholder{
   appearance: none;
   -webkit-appearance: none;
   height: 30px;
+  min-width: 50px; /* tambah lebar sikit */
   border-radius: 6px;
   border: 1px solid var(--border-input);
   background: var(--page-input);
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
-  padding:0 15px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .percent-checkbox:checked{
   background: var(--blue);
   border:1px solid var(--blue);
 }
-.percent-checkbox:checked::after{
-  content: "✔";
-  position: absolute;
+.percent-checkbox::after{
+  content: "OFF";
   color: white;
-  font-size: 16px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+.percent-checkbox:checked::after{
+  content: "%"; /* boleh tukar jadi ON kalau mau */
+  color: white;
+  font-size: 13px;
 }
 .percent-checkbox:hover{
   border-color: var(--blue-hover);
