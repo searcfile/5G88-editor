@@ -374,10 +374,16 @@ html {
   }
 }
   html, body {height: 100%;}
-#pageFrame {
+#pageFrame{
+  display: block;
   width: 100%;
-  height: calc(100vh - 120px);
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   border: none;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
 }
 .tab-bar {
   position: relative;
@@ -816,7 +822,14 @@ a.tab-open .check-icon {
   .btn-cpw{display:none;width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:8px;line-height:1;background: var(--backgroundbtn);color: var(--colorbtn);border: 1px solid var(--border2);border-radius:6px;padding:0 12px;cursor:pointer;font-size:14px;transition:all .3s ease;box-shadow:0 2px 0 rgba(255,255,255,0.04);margin-bottom:8px;}
   .btn-cpw:hover{border:1px solid var(--gold-hover); color:var(--gold-hover);}.btn-cpw:active{border:1px solid var(--gold-active); color:var(--gold-active);}
   /* Empty state */
-#mainContainer { position: relative; }
+#mainContainer{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+  min-height: calc(100vh - 120px);
+  overflow: hidden;
+}
 /* NOTICE MODAL */
 .notice-modal{
   position: fixed;
