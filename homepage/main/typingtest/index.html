@@ -881,7 +881,7 @@ html {
       <div class="result-head">
         <div>
           <h2 style="margin:0">Advanced Result</h2>
-          <div class="muted2" id="resultSubline">Typing test completed</div>
+          <div class="muted" id="resultSubline">Typing test completed</div>
         </div>
         <div style="display:flex;gap:10px;align-items:center;">
           <button id="saveAgainBtn" class="btn">Save Result</button>
@@ -2511,7 +2511,7 @@ function renderLeaderboard() {
         <td><strong>${Number(row.bestWpm || 0)}</strong></td>
         <td>${Number(row.bestAccuracy || 0)}%</td>
         <td>${Number(row.totalTests || 0)}</td>
-        <td class="muted">${escapeHtml(row.lastTypingText || formatDateTime(row.lastTypingAt || 0))}</td>
+        <td class="muted2">${escapeHtml(row.lastTypingText || formatDateTime(row.lastTypingAt || 0))}</td>
       </tr>`;
   }).join('');
 
