@@ -659,6 +659,7 @@ html {
     <select id="modeSelect" class="select">
       <option value="words">Random Words</option>
       <option value="quote">Paragraph</option>
+      <option value="numbers">Numbers</option>
     </select>
   </div>
 
@@ -1019,7 +1020,11 @@ thailand: {
   ]
 }
     };
-
+const NUMBER_BANK = [
+  "12","45","78","99","120","404","808","500","777","888",
+  "1024","2024","3500","6789","1111","2222","3333","4444","5555","9999",
+  "12345","67890","24680","13579","112233","445566","778899","909090"
+];
     const state = {
       user: null,
       userKey: null,
@@ -1409,20 +1414,24 @@ function buildPrompt() {
 
   const words = [];
 
-  function pushMoreWords(count = 16) {
-    if (state.mode === 'quote') {
-      while (words.length < count || words.length < getPromptTargetWordCount() + 60) {
-        const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
-        const allWords = quote.trim().split(/\s+/);
-        words.push(...allWords);
-        if (words.length >= getPromptTargetWordCount() + 60) break;
-      }
-    } else {
-      for (let i = 0; i < count; i++) {
-        words.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
-      }
+function pushMoreWords(count = 16) {
+  if (state.mode === 'quote') {
+    while (words.length < count || words.length < getPromptTargetWordCount() + 60) {
+      const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
+      const allWords = quote.trim().split(/\s+/);
+      words.push(...allWords);
+      if (words.length >= getPromptTargetWordCount() + 60) break;
+    }
+  } else if (state.mode === 'numbers') {
+    for (let i = 0; i < count; i++) {
+      words.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
+    }
+  } else {
+    for (let i = 0; i < count; i++) {
+      words.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
     }
   }
+}
 
   // stok awal lebih besar supaya line tinggi cukup
   pushMoreWords(getPromptTargetWordCount() + minLinesNeeded * 10);
@@ -1561,17 +1570,21 @@ function appendMorePromptWords(extraCount = 20) {
   const bank = WORD_BANK[state.language];
   const extraWords = [];
 
-  if (state.mode === 'quote') {
-    while (extraWords.length < extraCount) {
-      const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
-      const allWords = quote.trim().split(/\s+/);
-      extraWords.push(...allWords);
-    }
-  } else {
-    for (let i = 0; i < extraCount; i++) {
-      extraWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
-    }
+if (state.mode === 'quote') {
+  while (extraWords.length < extraCount) {
+    const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
+    const allWords = quote.trim().split(/\s+/);
+    extraWords.push(...allWords);
   }
+} else if (state.mode === 'numbers') {
+  for (let i = 0; i < extraCount; i++) {
+    extraWords.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
+  }
+} else {
+  for (let i = 0; i < extraCount; i++) {
+    extraWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
+  }
+}
 
   state.promptWords.push(...extraWords);
 
@@ -1579,15 +1592,19 @@ function appendMorePromptWords(extraCount = 20) {
   renderPrompt();
 
   while ((state.visibleLineRanges?.length || 0) < Math.max(1, Number(state.textLineCount || 2)) && safety < 40) {
-    if (state.mode === 'quote') {
-      const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
-      const allWords = quote.trim().split(/\s+/);
-      state.promptWords.push(...allWords);
-    } else {
-      for (let i = 0; i < 12; i++) {
-        state.promptWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
-      }
-    }
+if (state.mode === 'quote') {
+  const quote = bank.quotes[Math.floor(Math.random() * bank.quotes.length)];
+  const allWords = quote.trim().split(/\s+/);
+  state.promptWords.push(...allWords);
+} else if (state.mode === 'numbers') {
+  for (let i = 0; i < 12; i++) {
+    state.promptWords.push(NUMBER_BANK[Math.floor(Math.random() * NUMBER_BANK.length)]);
+  }
+} else {
+  for (let i = 0; i < 12; i++) {
+    state.promptWords.push(bank.words[Math.floor(Math.random() * bank.words.length)]);
+  }
+}
 
     renderPrompt();
     safety++;
