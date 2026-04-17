@@ -264,15 +264,15 @@ background: var(--page-bg);
   min-width: 0;
   height: 30px;
   padding: 0 10px;
-  border-radius: 6px;
+  margin: 0;
   border: 1px solid var(--border-input);
+  border-right: 0;
+  border-radius: 6px 0 0 6px;
   background: var(--page-input);
   color: var(--page-text);
   outline: none;
   box-sizing: border-box;
   font-size: 13px;
-
-  width: 100%; /* 🔥 tambah ini */
 }
 
 .tip-search-input::placeholder{
@@ -293,25 +293,31 @@ body.light-theme .tip-search-input::placeholder{
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 50px;
   height: 30px;
-  flex-shrink: 0; /* 🔥 jangan bagi dia mengecil */
+  flex: 0 0 50px;
+  margin: 0;
+  padding: 0;
 }
 
 .percent-checkbox{
   appearance: none;
   -webkit-appearance: none;
+  width: 50px;
   height: 30px;
-  min-width: 50px; /* 🔥 control size */
-  border-radius: 6px;
+  margin: 0;
+  padding: 0;
   border: 1px solid var(--border-input);
+  border-radius: 0 6px 6px 0;
   background: var(--page-input);
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
-
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  flex: 0 0 50px;
 }
 .percent-checkbox:checked{
   background: var(--blue);
@@ -321,7 +327,8 @@ body.light-theme .tip-search-input::placeholder{
   content: "OFF";
   color: white;
   font-size: 11px;
-  letter-spacing: 1px;
+  letter-spacing: 0;
+  line-height: 1;
 }
 .percent-checkbox:checked::after{
   content: "%"; /* boleh tukar jadi ON kalau mau */
