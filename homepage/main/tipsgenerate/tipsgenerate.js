@@ -108,11 +108,12 @@ function createPlatform(name, tips, rowId) {
         </div>
 
         <div class="input-group">
-          <label class="switch">
-            <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
-            <span class="slider"></span>
-          </label>
-          <div class="input-label">Off-On</div>
+<label class="switch">
+  <input type="checkbox" id="${autoId}" onchange="toggleAuto('${name}')">
+  <span class="slider"></span>
+  <span class="switch-text" id="text-${name}">Off</span>
+</label>
+<div class="input-label">Auto</div>
         </div>
 
         <div class="input-group">
@@ -144,6 +145,10 @@ function createPlatform(name, tips, rowId) {
 
   const autoCheckbox = document.getElementById(`auto-${name}`);
   const savedStatus = localStorage.getItem(`auto-${name}`);
+  const textEl = document.getElementById(`text-${name}`);
+if (textEl) {
+  textEl.textContent = savedStatus === 'on' ? 'On' : 'Off';
+}
   if (savedStatus === 'on') {
     autoCheckbox.checked = true;
     toggleAuto(name); 
@@ -245,8 +250,10 @@ function refreshList(name) {
 
 function toggleAuto(name) {
   const checkbox = document.getElementById('auto-' + name);
+  const text = document.getElementById('text-' + name);
   clearInterval(autoIntervals[name]);
   localStorage.setItem(`auto-${name}`, checkbox.checked ? 'on' : 'off');
+  if (text) text.textContent = checkbox.checked ? 'On' : 'Off';
   
   if (checkbox.checked) {
     let duration = parseFloat(document.getElementById('duration-' + name).value) || 1;
