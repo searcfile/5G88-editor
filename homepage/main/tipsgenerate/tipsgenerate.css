@@ -1,4 +1,4 @@
-  :root{
+ :root{
     --page-bg: #000;
     --page-text: rgba(255,255,255,0.85);
     --page-input: #141414;
@@ -252,9 +252,10 @@ background: var(--page-bg);
   color: var(--page-text);
 }
 .tip-top-bar{
-  width: 100%;
+  width: 90%;
   display: flex;
   align-items: center;
+  gap: 8px;
   margin: 0 0 10px 0;
 }
 
@@ -290,28 +291,31 @@ body.light-theme .tip-search-input::placeholder{
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 25px;
   height: 30px;
-  flex-shrink: 0; /* 🔥 jangan bagi dia mengecil */
+  flex-shrink: 0;
+  user-select: none;
 }
 
 .percent-checkbox{
   appearance: none;
   -webkit-appearance: none;
   height: 30px;
-  min-width: 50px; /* 🔥 control size */
+  min-width: 50px; /* tambah lebar sikit */
   border-radius: 6px;
   border: 1px solid var(--border-input);
   background: var(--page-input);
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
-
+  padding: 0 10px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .percent-checkbox:checked{
   background: var(--blue);
+  border:1px solid var(--blue);
 }
 .percent-checkbox::after{
   content: "OFF";
@@ -322,7 +326,7 @@ body.light-theme .tip-search-input::placeholder{
 .percent-checkbox:checked::after{
   content: "%"; /* boleh tukar jadi ON kalau mau */
   color: white;
-  font-size: 12px;
+  font-size: 13px;
 }
 .percent-checkbox:hover{
   border-color: var(--blue-hover);
