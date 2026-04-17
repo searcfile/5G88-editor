@@ -78,8 +78,8 @@
   overflow:auto;
   margin:0;
   padding:14px;
-  background:linear-gradient(180deg,#0d0d0d,#101010);
-  border:1px solid #1f1f1f;
+  background:var(--panel);
+  border:1px solid var(--border-input);
   border-radius:10px;
   box-shadow:var(--shadow);
 }
@@ -97,7 +97,7 @@
   margin-bottom:0;
 }
 .typing-settings-label{
-  color:#d9e2ec;
+  color:var(--page-text);
   font-weight:700;
   padding-top:8px;
 }
@@ -115,9 +115,9 @@
   min-width:44px;
   padding:0px 15px;
   border-radius:6px;
-  border:1px solid #424242;
-  background:#141414;
-  color: rgba(255, 255, 255, 0.85);
+  border:1px solid var(--border-input);
+  background:var(--page-input);
+  color:var(--page-text);
   cursor:pointer;
   transition: all .3s ease;
   height:32px;
@@ -345,7 +345,7 @@
     .word{margin-right:.34em}
     .char{position:relative}
     .char.correct{color:var(--correct);}
-    .char.wrong{color:#ff8c8c;background:rgba(239,68,68,.1);border-radius:4px}
+    .char.wrong{color:#ff1b1b;background:rgba(239,68,68,.1);border-radius:4px}
     .char.current{background:rgba(22,104,220,.22);border-radius:4px;box-shadow:inset 0 -2px 0 var(--primary)}
     .char.extra{color:#ff7c7c;background:rgba(239,68,68,.12);border-radius:4px}
     .char.pending{color:#5f6672}
