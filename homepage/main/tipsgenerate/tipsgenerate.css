@@ -271,6 +271,8 @@ background: var(--page-bg);
   outline: none;
   box-sizing: border-box;
   font-size: 13px;
+
+  width: 100%; /* 🔥 tambah ini */
 }
 
 .tip-search-input::placeholder{
@@ -291,24 +293,22 @@ body.light-theme .tip-search-input::placeholder{
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 25px;
   height: 30px;
-  flex-shrink: 0;
-  user-select: none;
+  flex-shrink: 0; /* 🔥 jangan bagi dia mengecil */
 }
 
 .percent-checkbox{
   appearance: none;
   -webkit-appearance: none;
   height: 30px;
-  min-width: 50px; /* tambah lebar sikit */
+  min-width: 50px; /* 🔥 control size */
   border-radius: 6px;
   border: 1px solid var(--border-input);
   background: var(--page-input);
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
-  padding: 0 10px;
+
   display: flex;
   align-items: center;
   justify-content: center;
