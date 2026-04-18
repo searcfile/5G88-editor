@@ -1270,6 +1270,13 @@ body.has-custom-wallpaper .chat-shell{
     .profile-name{max-width:250px}
   }
 
+  @media (max-width: 900px){
+    .app{grid-template-columns:1fr}
+    .resizer{display:none}
+    .sidebar{max-height:46vh;border-right:none;border-bottom:1px solid var(--line)}
+    .profile-name{max-width:220px}
+    .bubble{max-width:min(84vw, 400px)}
+  }
 .msg-edit-modal{
   width:min(460px, 100%);
   background:var(--panel);
@@ -1591,50 +1598,6 @@ body.has-custom-wallpaper .chat-shell{
     width:70px;
     min-width:70px;
     padding:0;
-  }
-}
-@media (max-width: 900px){
-  html,
-  body{
-    overflow:auto;
-    height:auto;
-    min-height:100dvh;
-  }
-
-  .app{
-    display:grid;
-    grid-template-columns:1fr;
-    height:auto;
-    min-height:100dvh;
-    overflow:visible;
-  }
-
-  .resizer{
-    display:none;
-  }
-
-  .sidebar{
-    min-width:0 !important;
-    width:100%;
-    max-width:100%;
-    max-height:none;
-    border-right:none;
-    border-bottom:1px solid var(--line);
-    overflow:visible;
-  }
-
-  .chat-shell{
-    min-width:0;
-    width:100%;
-    min-height:100dvh;
-  }
-
-  .profile-name{
-    max-width:220px;
-  }
-
-  .bubble{
-    max-width:min(84vw, 400px);
   }
 }
 </style>
