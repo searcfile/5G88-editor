@@ -149,7 +149,26 @@ input::placeholder{color:var(--blur);}
     color:var(--page-text);
     letter-spacing:.2px;
   }
+.card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
 
+.card-head h3{
+  margin:0;
+}
+
+.mobile-view-btn{
+  display:none;
+  height:30px;
+  min-width:74px;
+  padding:0 14px;
+  font-size:13px;
+  border-radius:8px;
+}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .grid1{display:grid;grid-template-columns:1fr;gap:10px}
 
@@ -1308,7 +1327,36 @@ body.has-custom-wallpaper .chat-shell{
     overflow-x:hidden;
     padding:14px;
   }
+  .mobile-view-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
 
+  body.mobile-chat-open .chat-shell{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100dvh !important;
+    min-height:100dvh !important;
+    z-index:120;
+    background-color:#161717;
+  }
+
+  body.mobile-chat-open .sidebar{
+    display:none;
+  }
+
+  body.mobile-chat-open .chat-area{
+    flex:1 1 auto;
+    min-height:0;
+    height:auto;
+    overflow-y:auto;
+  }
+
+  body.mobile-chat-open .composer{
+    padding-bottom:max(10px, env(safe-area-inset-bottom));
+  }
   .chat-shell{
     flex:1 1 auto;
     display:flex;
@@ -1459,6 +1507,12 @@ body.has-custom-wallpaper .chat-shell{
 
   .bubble-time{
     font-size:11px;
+  }
+    .mobile-view-btn{
+    height:28px;
+    min-width:68px;
+    padding:0 12px;
+    font-size:12px;
   }
 }
 .msg-edit-modal{
@@ -1790,9 +1844,13 @@ body.has-custom-wallpaper .chat-shell{
   <div class="app">
     <aside class="sidebar">
       <div class="sidebar-scroll">
-        <section class="card">
-          <h3>Message</h3>
-          <div class="grid2">
+<section class="card">
+  <div class="card-head">
+    <h3>Message</h3>
+    <button type="button" id="mobileChatToggleBtn" class="ghost mobile-view-btn">View</button>
+  </div>
+
+  <div class="grid2">
 <div>
   <div class="side-toggle" id="msgSideToggle">
     <button type="button" class="side-toggle-btn active" data-side="mine">Mine</button>
@@ -2188,6 +2246,9 @@ body.has-custom-wallpaper .chat-shell{
 
     let state = loadState();
     let pendingImageBase64 = '';
+    let mobileChatVisible = false;
+let mobileChatTapCount = 0;
+let mobileChatTapTimer = null;
     let sidebarWidth = localStorage.getItem(SIDEBAR_KEY) ? parseInt(localStorage.getItem(SIDEBAR_KEY), 10) : 320;
     const $ = (id) => document.getElementById(id);
 
@@ -2230,6 +2291,8 @@ importFile: $('importFile'),
 clearChatBtn: $('clearChatBtn'),
       chatList: $('chatList'),
       chatArea: $('chatArea'),
+      chatShell: document.querySelector('.chat-shell'),
+      mobileChatToggleBtn: $('mobileChatToggleBtn'),
       openProfileModalBtn: $('openProfileModalBtn'),
       openProfileFromHeader: $('openProfileFromHeader'),
       profileModalBackdrop: $('profileModalBackdrop'),
@@ -2873,7 +2936,63 @@ document.body.classList.toggle('has-default-wallpaper', !hasCustomWallpaper);
 
   updateWallpaperPreviewButton();
 }
+function isMobileLayout(){
+  return window.innerWidth <= 900;
+}
 
+function setMobileChatVisible(show){
+  mobileChatVisible = !!show;
+
+  if (!isMobileLayout()) {
+    document.body.classList.remove('mobile-chat-open');
+    if (refs.mobileChatToggleBtn) refs.mobileChatToggleBtn.textContent = 'View';
+    return;
+  }
+
+  document.body.classList.toggle('mobile-chat-open', mobileChatVisible);
+
+  if (refs.mobileChatToggleBtn) {
+    refs.mobileChatToggleBtn.textContent = mobileChatVisible ? 'Hide' : 'View';
+  }
+}
+
+function toggleMobileChat(){
+  setMobileChatVisible(!mobileChatVisible);
+}
+
+function handleMobileChatDoubleTap(){
+  if (!isMobileLayout()) return;
+  if (!mobileChatVisible) return;
+
+  mobileChatTapCount += 1;
+
+  if (mobileChatTapCount === 1) {
+    mobileChatTapTimer = setTimeout(() => {
+      mobileChatTapCount = 0;
+      mobileChatTapTimer = null;
+    }, 260);
+    return;
+  }
+
+  clearTimeout(mobileChatTapTimer);
+  mobileChatTapTimer = null;
+  mobileChatTapCount = 0;
+
+  setMobileChatVisible(false);
+}
+
+function syncMobileChatMode(){
+  if (!isMobileLayout()) {
+    mobileChatVisible = false;
+    document.body.classList.remove('mobile-chat-open');
+    if (refs.mobileChatToggleBtn) refs.mobileChatToggleBtn.textContent = 'View';
+    return;
+  }
+
+  if (refs.mobileChatToggleBtn) {
+    refs.mobileChatToggleBtn.textContent = mobileChatVisible ? 'Hide' : 'View';
+  }
+}
 function renderChat(){
   refs.chatList.innerHTML = '';
 
@@ -4121,7 +4240,25 @@ if (refs.clearChatBtn) {
     }, 'Clear Chat');
   });
 }
+if (refs.mobileChatToggleBtn) {
+  refs.mobileChatToggleBtn.addEventListener('click', () => {
+    toggleMobileChat();
+  });
+}
 
+if (refs.chatShell) {
+  refs.chatShell.addEventListener('dblclick', () => {
+    if (!isMobileLayout()) return;
+    if (!mobileChatVisible) return;
+    setMobileChatVisible(false);
+  });
+
+  refs.chatShell.addEventListener('touchend', () => {
+    handleMobileChatDoubleTap();
+  }, { passive:true });
+}
+
+window.addEventListener('resize', syncMobileChatMode);
       if (refs.exportBtn) {
         refs.exportBtn.addEventListener('click', () => {
           const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
@@ -4207,6 +4344,7 @@ document.addEventListener('keydown', (e) => {
 });
     initResizer();
     saveAndRender();
+    syncMobileChatMode();
     (function () {
   const THEME_KEY = "siteTheme";
 
