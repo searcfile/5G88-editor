@@ -1283,7 +1283,51 @@ body.has-custom-wallpaper .chat-shell{
     background-clip:content-box;
   }
   ::-webkit-scrollbar-track{background:transparent}
+.chat-area,
+.sidebar-scroll{
+  scrollbar-width:none;
+}
 
+@media (max-width: 900px){
+  .chat-area,
+  .sidebar-scroll{
+    scrollbar-width:none;
+  }
+
+  .chat-area::-webkit-scrollbar,
+  .sidebar-scroll::-webkit-scrollbar{
+    width:4px;
+    height:4px;
+  }
+
+  .chat-area::-webkit-scrollbar-thumb,
+  .sidebar-scroll::-webkit-scrollbar-thumb{
+    background:transparent;
+    border-radius:999px;
+    border:none;
+    transition:background .2s ease, opacity .2s ease;
+  }
+
+  .chat-area::-webkit-scrollbar-track,
+  .sidebar-scroll::-webkit-scrollbar-track{
+    background:transparent;
+  }
+
+  .chat-area.is-scrolling,
+  .sidebar-scroll.is-scrolling{
+    scrollbar-width:thin;
+  }
+
+  .chat-area.is-scrolling::-webkit-scrollbar-thumb,
+  .sidebar-scroll.is-scrolling::-webkit-scrollbar-thumb{
+    background:rgba(255,255,255,0.35);
+  }
+
+  body.light-theme .chat-area.is-scrolling::-webkit-scrollbar-thumb,
+  body.light-theme .sidebar-scroll.is-scrolling::-webkit-scrollbar-thumb{
+    background:rgba(0,0,0,0.28);
+  }
+}
   @media (max-width: 1100px){
     .app{grid-template-columns:320px 1px 1fr}
     .profile-name{max-width:250px}
@@ -2285,6 +2329,7 @@ importFile: $('importFile'),
 clearChatBtn: $('clearChatBtn'),
       chatList: $('chatList'),
       chatArea: $('chatArea'),
+      sidebarScroll: document.querySelector('.sidebar-scroll'),
       chatShell: document.querySelector('.chat-shell'),
       mobileChatToggleBtn: $('mobileChatToggleBtn'),
       openProfileModalBtn: $('openProfileModalBtn'),
@@ -2986,6 +3031,40 @@ function syncMobileChatMode(){
   if (refs.mobileChatToggleBtn) {
     refs.mobileChatToggleBtn.textContent = mobileChatVisible ? 'Hide' : 'View';
   }
+}
+    function initAutoHideScrollbars(){
+  const targets = [refs.chatArea, refs.sidebarScroll].filter(Boolean);
+
+  targets.forEach((el) => {
+    let timer = null;
+
+    const showScrollbar = () => {
+      if (window.innerWidth > 900) return;
+
+      el.classList.add('is-scrolling');
+
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        el.classList.remove('is-scrolling');
+      }, 700);
+    };
+
+    el.addEventListener('scroll', showScrollbar, { passive: true });
+
+    el.addEventListener('touchstart', () => {
+      if (window.innerWidth > 900) return;
+      el.classList.add('is-scrolling');
+    }, { passive: true });
+
+    el.addEventListener('touchend', () => {
+      if (window.innerWidth > 900) return;
+
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        el.classList.remove('is-scrolling');
+      }, 700);
+    }, { passive: true });
+  });
 }
 function renderChat(){
   refs.chatList.innerHTML = '';
@@ -4339,6 +4418,7 @@ document.addEventListener('keydown', (e) => {
     initResizer();
     saveAndRender();
     syncMobileChatMode();
+    initAutoHideScrollbars();
     (function () {
   const THEME_KEY = "siteTheme";
 
