@@ -339,40 +339,6 @@ html {
   to{ transform: rotate(360deg); }
 }
   .menu-img {width: 20px;height: 20px;vertical-align: middle;margin-right: 8px;border-radius: 4px;}
-@media (max-width: 815px){
-  .container,
-  .container.shrink{
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-
-  .header,
-  .header.shrink{
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-
-  .tab-bar,
-  .tab-bar.shrink{
-    margin-left: 0 !important;
-    width: 100% !important;
-    display: flex !important;
-    max-height: 56px !important;
-    min-height:56px !important;
-    margin-top: 64px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    white-space: nowrap !important;
-    -webkit-overflow-scrolling: touch;
-    position: relative !important;
-    z-index: 1000 !important;
-  }
-
-  .tab{
-    display: inline-flex !important;
-    flex: 0 0 auto !important;
-  }
-}
   html, body {height: 100%;}
 #pageFrame{
   display: block;
@@ -731,6 +697,61 @@ a.tab-open .check-icon {
     color: var(--gold-active);
     border: 1px solid var(--gold-active);
   }
+  .user-text{
+    gap: 8px;
+  }
+  .floating-fab-wrap,
+  #floatingFabWrap{
+    display: none !important;
+  }
+
+  .tab,
+  .tab.active-tab{
+    display: inline-flex !important;
+    visibility: visible !important;
+  }
+  .header-links{
+    padding: 0;
+    gap: 3px;
+  }
+  .live-chat-button{
+    padding: 0 10px;
+  }
+  .container,
+  .container.shrink{
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .header,
+  .header.shrink{
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .tab-bar,
+  .tab-bar.shrink{
+    margin-left: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    max-height: 56px !important;
+    min-height:56px !important;
+    margin-top: 64px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    position: relative !important;
+    z-index: 1000 !important;
+     visibility: visible !important;
+     opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .tab{
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+  }
 }
 @media (max-width: 915px){
   #userNameText{ display:none !important; }
@@ -770,13 +791,6 @@ a.tab-open .check-icon {
 
 @media (max-width: 572px){
   .date-time{ display:none !important; }
-}
-
-@media (max-width: 815px){
-  .floating-fab-wrap,
-  #floatingFabWrap{
-    display: none !important;
-  }
 }
 .tab-sort-chosen{
   opacity: 0.15 !important;
@@ -1364,23 +1378,7 @@ body.tab-dragging-active *{
   user-select: none !important;
   cursor: grabbing !important;
 }
-@media (max-width: 815px){
-  .tab-bar,
-  .tab-bar.shrink{
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    margin-left: 0 !important;
-    width: 100% !important;
-    transform: none !important;
-  }
 
-  .tab,
-  .tab.active-tab{
-    display: inline-flex !important;
-    visibility: visible !important;
-  }
-}
 #sidebar a,
 #customSidebarTabs a{
   display: flex;
@@ -1508,21 +1506,5 @@ body.light-theme .app-update-message{
   to{
     opacity: 1;
     transform: scale(1);
-  }
-}
-@media (max-width: 815px){
-  .header-links{
-    padding: 0;
-    gap: 3px;
-  }
-}
-@media (max-width: 815px){
-  .live-chat-button{
-    padding: 0 10px;
-  }
-}
-@media (max-width: 815px){
-  .user-text{
-    gap: 8px;
   }
 }
