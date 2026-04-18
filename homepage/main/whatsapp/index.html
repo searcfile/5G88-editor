@@ -1274,18 +1274,17 @@ body.has-custom-wallpaper .chat-shell{
   html,
   body{
     margin:0;
-    height:auto;
+    height:100dvh;
     min-height:100dvh;
-    overflow-x:hidden;
-    overflow-y:auto;
+    overflow:hidden;
   }
 
   .app{
     display:flex;
     flex-direction:column;
-    height:auto;
+    height:100dvh;
     min-height:100dvh;
-    overflow:visible;
+    overflow:hidden;
   }
 
   .resizer{
@@ -1293,30 +1292,31 @@ body.has-custom-wallpaper .chat-shell{
   }
 
   .sidebar{
-    flex:none;
+    flex:0 0 auto;
     min-width:0;
     width:100%;
     max-width:none;
     height:auto;
-    max-height:none;
-    overflow:visible;
+    max-height:42dvh;
+    overflow:hidden;
     border-right:none;
     border-bottom:1px solid var(--line);
   }
 
   .sidebar-scroll{
-    overflow:visible;
+    overflow-y:auto;
+    overflow-x:hidden;
     padding:14px;
   }
 
   .chat-shell{
-    flex:none;
+    flex:1 1 auto;
     display:flex;
     flex-direction:column;
     width:100%;
     min-width:0;
-    height:auto !important;
     min-height:0 !important;
+    height:0 !important;
     overflow:hidden;
   }
 
@@ -1325,11 +1325,12 @@ body.has-custom-wallpaper .chat-shell{
   }
 
   .chat-area{
-    flex:none;
-    min-height:320px;
+    flex:1 1 auto;
+    min-height:0;
     height:auto;
     max-height:none;
     overflow-y:auto;
+    overflow-x:hidden;
     padding:14px 12px 0;
   }
 
