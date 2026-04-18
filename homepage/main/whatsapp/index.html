@@ -1270,13 +1270,6 @@ body.has-custom-wallpaper .chat-shell{
     .profile-name{max-width:250px}
   }
 
-  @media (max-width: 900px){
-    .app{grid-template-columns:1fr}
-    .resizer{display:none}
-    .sidebar{max-height:46vh;border-right:none;border-bottom:1px solid var(--line)}
-    .profile-name{max-width:220px}
-    .bubble{max-width:min(84vw, 400px)}
-  }
 .msg-edit-modal{
   width:min(460px, 100%);
   background:var(--panel);
@@ -1600,34 +1593,49 @@ body.has-custom-wallpaper .chat-shell{
     padding:0;
   }
 }
-  @media (max-width: 768px){
+@media (max-width: 900px){
+  html,
+  body{
+    overflow:auto;
+    height:auto;
+    min-height:100dvh;
+  }
 
   .app{
-    grid-template-columns: 1fr; /* stack vertical kalau phone kecil */
+    display:grid;
+    grid-template-columns:1fr;
     height:auto;
-  }
-
-  .sidebar{
-    min-width:0 !important;
-    width:100%;
-    max-height:100vh;
-    overflow:auto;
-  }
-
-  .chat-shell{
-    min-width:0;
-    width:100%;
+    min-height:100dvh;
+    overflow:visible;
   }
 
   .resizer{
     display:none;
   }
-  .app,
-.sidebar,
-.chat-shell{
-  min-width:0;
-}
 
+  .sidebar{
+    min-width:0 !important;
+    width:100%;
+    max-width:100%;
+    max-height:none;
+    border-right:none;
+    border-bottom:1px solid var(--line);
+    overflow:visible;
+  }
+
+  .chat-shell{
+    min-width:0;
+    width:100%;
+    min-height:100dvh;
+  }
+
+  .profile-name{
+    max-width:220px;
+  }
+
+  .bubble{
+    max-width:min(84vw, 400px);
+  }
 }
 </style>
 </head>
