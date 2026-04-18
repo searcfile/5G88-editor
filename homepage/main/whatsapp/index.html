@@ -1281,7 +1281,7 @@ body.has-custom-wallpaper .chat-shell{
     min-height:100dvh;
     display:grid;
     grid-template-columns:1fr;
-    grid-template-rows:auto auto;
+    grid-template-rows:auto minmax(0, 1fr);
     overflow:visible;
   }
 
@@ -1307,11 +1307,13 @@ body.has-custom-wallpaper .chat-shell{
   .chat-shell{
     min-width:0;
     width:100%;
-    min-height:100dvh;
+    min-height:0;
     height:auto;
   }
 
   .chat-area{
+    min-height:300px;
+    max-height:none;
     padding:14px 12px 0;
   }
 
