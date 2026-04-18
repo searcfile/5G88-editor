@@ -72,13 +72,13 @@
     height:100vh;
   }
 
-  .app{
-    height:100vh;
-    display:grid;
-    grid-template-columns:320px 1px 1fr;
-    gap:0;
-    overflow:hidden;
-  }
+.app{
+  height:100vh;
+  display:grid;
+  grid-template-columns:minmax(565px, 680px) 1px minmax(0, 1fr);
+  gap:0;
+  overflow:hidden;
+}
 :focus{
   outline: none;
   border-color: #1668dc;
@@ -92,16 +92,15 @@ input::placeholder{color:var(--blur);}
   border-right:1px solid var(--border-input);
   display:flex;
   flex-direction:column;
-  min-width:565px;
+  min-width:0;
   width:100%;
   overflow-y:auto;
   overflow-x:hidden;
   position:relative;
-  
+
   container-type:inline-size;
   container-name:sidebar;
 }
-
   .sidebar-header{
     padding:18px 18px 14px;
     border-bottom:1px solid var(--line);
@@ -1270,13 +1269,174 @@ body.has-custom-wallpaper .chat-shell{
     .profile-name{max-width:250px}
   }
 
-  @media (max-width: 900px){
-    .app{grid-template-columns:1fr}
-    .resizer{display:none}
-    .sidebar{max-height:46vh;border-right:none;border-bottom:1px solid var(--line)}
-    .profile-name{max-width:220px}
-    .bubble{max-width:min(84vw, 400px)}
+@media (max-width: 900px){
+  html, body{
+    height:auto;
+    min-height:100dvh;
+    overflow:auto;
   }
+
+  .app{
+    height:auto;
+    min-height:100dvh;
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto;
+    overflow:visible;
+  }
+
+  .resizer{
+    display:none;
+  }
+
+  .sidebar{
+    min-width:0;
+    max-width:none;
+    width:100%;
+    height:auto;
+    max-height:none;
+    border-right:none;
+    border-bottom:1px solid var(--line);
+  }
+
+  .sidebar-scroll{
+    overflow:visible;
+    padding:14px;
+  }
+
+  .chat-shell{
+    min-width:0;
+    width:100%;
+    min-height:100dvh;
+    height:auto;
+  }
+
+  .chat-area{
+    padding:14px 12px 0;
+  }
+
+  .composer{
+    padding:0 8px 10px;
+  }
+
+  .profile-name{
+    max-width:160px;
+  }
+
+  .bubble{
+    max-width:min(86vw, 420px);
+  }
+
+  .image-wrap.is-portrait,
+  .image-wrap.is-square{
+    width:min(240px, 100%);
+    max-width:100%;
+  }
+
+  .image-wrap.is-portrait img,
+  .image-wrap.is-square img,
+  .image-wrap.is-landscape img{
+    width:100%;
+    max-width:100%;
+    height:auto;
+  }
+}
+@media (max-width: 600px){
+  .sidebar-header{
+    padding:14px 14px 12px;
+  }
+
+  .card{
+    padding:12px;
+    border-radius:12px;
+  }
+
+  .grid2{
+    grid-template-columns:1fr;
+  }
+
+  .btn-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  .time-input-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 64px;
+    gap:8px;
+  }
+
+  .side-toggle{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  .topbar{
+    height:58px;
+    padding:0 10px;
+  }
+
+  .avatar{
+    width:34px;
+    height:34px;
+  }
+
+  .profile-name{
+    font-size:15px;
+    max-width:120px;
+  }
+
+  .profile-sub{
+    font-size:12px;
+  }
+
+  .actions{
+    gap:4px;
+  }
+
+  .icon-btn{
+    width:34px;
+    height:34px;
+  }
+
+  .call-btn{
+    height:34px;
+    padding:6px 10px;
+    margin:0 4px;
+  }
+
+  .chat-area{
+    padding:12px 8px 0;
+  }
+
+  .composer-bar{
+    height:46px;
+    padding:0 8px;
+  }
+
+  .composer-input span{
+    font-size:14px;
+  }
+
+  .bubble{
+    font-size:14px;
+    max-width:min(88vw, 100%);
+  }
+
+  .msg-row.mine .bubble .bubble-text::after{
+    width:64px;
+  }
+
+  .msg-row.their .bubble .bubble-text::after{
+    width:46px;
+  }
+
+  .bubble-time{
+    font-size:11px;
+  }
+}
 .msg-edit-modal{
   width:min(460px, 100%);
   background:var(--panel);
