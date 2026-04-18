@@ -1109,6 +1109,13 @@ const NUMBER_BANK = [
   "1024","2024","3500","6789","1111","2222","3333","4444","5555","9999",
   "12345","67890","24680","13579","112233","445566","778899","909090"
 ];
+    const LANGUAGE_META = {
+  english:   { label: 'English',   flag: '🇬🇧' },
+  indonesia: { label: 'Indonesia', flag: '🇮🇩' },
+  melayu:    { label: 'Melayu',    flag: '🇲🇾' },
+  chinese:   { label: 'Chinese',   flag: '🇨🇳' },
+  thailand:  { label: 'Thailand',  flag: '🇹🇭' }
+};
     const state = {
       user: null,
       userKey: null,
@@ -1642,8 +1649,10 @@ function renderPrompt() {
 }
 function updateTestInfo(){
   const timeLabel = state.timerMode === 'countup' ? 'Custom' : `${state.duration}s`;
+  const langLabel = LANGUAGE_META[state.language]?.label || capitalize(state.language);
+
   els.testInfoPill.textContent =
-    `${state.started ? 'Running' : state.finished ? 'Finished' : 'Ready'} • ${capitalize(state.language)} • ${timeLabel}`;
+    `${state.started ? 'Running' : state.finished ? 'Finished' : 'Ready'} • ${langLabel} • ${timeLabel}`;
 }
     function capitalize(s=''){ return s.charAt(0).toUpperCase() + s.slice(1); }
     function getWordsPerLine() {
@@ -1656,6 +1665,18 @@ function updateTestInfo(){
   };
 
   return wordsPerLineMap[state.fontSize] || 6;
+}
+function renderLanguageOptions() {
+  if (!els.languageSelect) return;
+
+  const currentValue = state.language || 'english';
+
+  els.languageSelect.innerHTML = Object.entries(LANGUAGE_META)
+    .map(([value, meta]) => {
+      const selected = value === currentValue ? 'selected' : '';
+      return `<option value="${value}" ${selected}>${meta.flag} ${meta.label}</option>`;
+    })
+    .join('');
 }
 function getPromptTargetWordCount() {
   const lines = Math.max(1, Number(state.textLineCount || 2));
@@ -3017,6 +3038,9 @@ if (val === 'custom') {
 
 els.languageSelect.addEventListener('change', () => {
   state.language = els.languageSelect.value;
+
+  renderLanguageOptions(); // 👈 tambah ini
+
   saveTypingPrefsToStorage();
   buildPrompt();
   resetTest(false);
@@ -3221,6 +3245,7 @@ document.addEventListener('visibilitychange', () => {
 });
     
 initFirebase();
+renderLanguageOptions();
 loadUserFromStorage();
 buildPrompt();
 resetTest(false);
@@ -3237,8 +3262,7 @@ focusTypingInput(80);
 
   window.addEventListener("message", function (e) {
     const allowedOrigins = [
-      "https://5g88-main.vercel.app",
-      "https://searcfile.github.io"
+      "https://5g88-main.vercel.app"
     ];
     if (!allowedOrigins.includes(e.origin)) return;
 
