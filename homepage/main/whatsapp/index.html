@@ -1278,10 +1278,10 @@ body.has-custom-wallpaper .chat-shell{
 
   .app{
     height:auto;
-    min-height:100dvh;
+    min-height:0;
     display:grid;
     grid-template-columns:1fr;
-    grid-template-rows:auto minmax(0, 1fr);
+    grid-template-rows:auto auto;
     overflow:visible;
   }
 
@@ -1305,20 +1305,37 @@ body.has-custom-wallpaper .chat-shell{
   }
 
   .chat-shell{
+    display:block;
     min-width:0;
     width:100%;
     min-height:0;
     height:auto;
+    overflow:visible;
+  }
+
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:5;
   }
 
   .chat-area{
-    min-height:300px;
-    max-height:none;
+    flex:none;
+    min-height:0;
+    height:auto;
+    overflow:visible;
     padding:14px 12px 0;
   }
 
+  .chat-inner{
+    min-height:0;
+    height:auto;
+    padding-bottom:10px;
+  }
+
   .composer{
-    padding:0 8px 10px;
+    min-height:auto;
+    padding:10px 8px 12px;
   }
 
   .profile-name{
