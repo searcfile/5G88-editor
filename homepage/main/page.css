@@ -403,7 +403,12 @@ html {
   -ms-overflow-style: none;
   scrollbar-width: none;
   box-sizing: border-box;
-  padding: 0px 10px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--border2); /* tambah ini */
+}
+
+.tab-bar::after{
+  content: none; /* buang pseudo line lama */
 }
 .tab-bar::after{
   content: "";
@@ -431,6 +436,7 @@ html {
     box-shadow .18s ease,
     opacity .18s ease;
   border: 1px solid var(--border3);
+  border-bottom: none; /* penting */
   display: inline-flex;
   font-size: 14px;
   align-items: center;
@@ -441,8 +447,8 @@ html {
   flex-shrink: 0;
   line-height: 1.2;
   z-index: 2;
-  margin-bottom: -1px;
-  will-change: transform;
+  margin-bottom: 0; /* buang -1px */
+  will-change: auto; /* tukar dari transform */
 }
 .tab .close-tab{
   background: transparent;
@@ -482,8 +488,11 @@ html {
   color: var(--gold-active) !important;
 }
 .active-tab {
-  color: var(--gold) !important;background:var(--tab2);
-  transition: all 0.3s ease;border-bottom: 1px solid var(--border-bottom);z-index: 3;
+  color: var(--gold) !important;
+  background: var(--tab2);
+  transition: all 0.3s ease;
+  border-bottom: none; /* buang border bawah active */
+  z-index: 3;
 }
   .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
   .header.shrink {
