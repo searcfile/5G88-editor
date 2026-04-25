@@ -1623,12 +1623,19 @@ const ICON_CLOSE = "M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06
 
 function setSearchActionIcon(type){
   if (!actionPath) return;
+
+  const btn = actionPath.closest(".tab-search-close");
+
   actionPath.setAttribute(
     "d",
     type === "search" ? ICON_SEARCH :
     type === "close" ? ICON_CLOSE :
     ICON_ARROW
   );
+
+  if (btn) {
+    btn.classList.toggle("active", type === "close");
+  }
 }
 
 function getItems(){
