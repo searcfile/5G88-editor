@@ -1658,7 +1658,7 @@ function openSearch(){
   input.value = "";
   list.innerHTML = "";
   list.style.display = "none"; // ✅ buka input saja dulu
-  setTimeout(() => input.focus(), 30);
+  //setTimeout(() => input.focus(), 30);
 }
 
 function openSearchList(){
