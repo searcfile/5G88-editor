@@ -1651,7 +1651,7 @@ function openSearch(){
 
   const rect = input.getBoundingClientRect();
   list.style.left = rect.left + "px";
-  list.style.top = (rect.bottom + 6) + "px";
+  list.style.top = (rect.bottom + 4) + "px";
   list.style.minWidth = rect.width + "px";
   setTimeout(() => input.focus(), 30);
 }
