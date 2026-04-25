@@ -1610,7 +1610,6 @@ body.light-theme .app-update-message{
   align-items: center;
   justify-content: center;
 
-  cursor: pointer;
   background: transparent;
   border: none;
   border-radius: 0;
@@ -1618,8 +1617,18 @@ body.light-theme .app-update-message{
   outline: none;
   appearance: none;
   -webkit-appearance: none;
-  color: var(--colorbtn);
+
+  color: var(--blur);        /* ✅ arrow/search macam placeholder */
+  cursor: default;           /* ✅ bukan macam button */
+  pointer-events: none;      /* ✅ arrow/search tak boleh click */
+
   transition: all .2s ease;
+}
+
+.tab-search-close.active{
+  color: var(--colorbtn);    /* ✅ X jadi normal */
+  cursor: pointer;
+  pointer-events: auto;      /* ✅ hanya X boleh click */
 }
 
 .tab-search-list{
