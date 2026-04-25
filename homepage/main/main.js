@@ -1633,7 +1633,7 @@ function getItems(){
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "tab-search-item";
-      btn.textContent = item.label;
+      btn.textContent = toTitleCase(item.label);
 
       btn.onclick = () => {
         item.el.click(); // ✅ buka tab ikut sidebar asal
@@ -1643,7 +1643,9 @@ function getItems(){
       list.appendChild(btn);
     });
   }
-
+function toTitleCase(str){
+  return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
 function openSearch(){
   box.classList.add("open");
   input.value = "";
