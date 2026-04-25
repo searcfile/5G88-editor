@@ -1623,14 +1623,19 @@ const ICON_CLOSE = "m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.
 function setSearchActionIcon(type){
   if (!actionPath) return;
 
+  const svg = actionPath.closest("svg");
   const btn = actionPath.closest(".tab-search-close");
 
-  actionPath.setAttribute(
-    "d",
-    type === "search" ? ICON_SEARCH :
-    type === "close" ? ICON_CLOSE :
-    ICON_ARROW
-  );
+  if (type === "close") {
+    actionPath.setAttribute("d", ICON_CLOSE);
+    svg.setAttribute("viewBox", "0 0 24 24"); // ✅ untuk X baru
+  } else if (type === "search") {
+    actionPath.setAttribute("d", ICON_SEARCH);
+    svg.setAttribute("viewBox", "64 64 896 896"); // ✅ untuk search
+  } else {
+    actionPath.setAttribute("d", ICON_ARROW);
+    svg.setAttribute("viewBox", "64 64 896 896"); // ✅ untuk arrow
+  }
 
   if (btn) {
     btn.classList.toggle("active", type === "close");
