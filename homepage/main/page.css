@@ -374,9 +374,18 @@ html {
   scrollbar-width: none;
   box-sizing: border-box;
   padding: 0px 12px;
-  border-bottom: 1px solid var(--border2);
 }
-
+.tab-bar::after{
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 1px;
+  background: var(--border2);
+  z-index: 1;
+  pointer-events: none;
+}
 .tab-bar::-webkit-scrollbar {display: none;}
 .tab {
   background: var(--tab-bg);
@@ -446,8 +455,11 @@ html {
   color: var(--gold-active) !important;
 }
 .active-tab {
-  color: var(--gold) !important;background:var(--tab2);
-  transition: all 0.3s ease;border-bottom-color: var(--tab2);z-index: 3;
+  color: var(--gold) !important;
+  background: var(--tab2);
+  border-bottom-color: var(--bg-main); /* ✅ hitam ikut background */
+  transition: all 0.3s ease;
+  z-index: 3;
 }
   .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
   .header.shrink {
