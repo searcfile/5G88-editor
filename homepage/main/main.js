@@ -1628,13 +1628,19 @@ function setSearchActionIcon(type){
 
   if (type === "close") {
     actionPath.setAttribute("d", ICON_CLOSE);
-    svg.setAttribute("viewBox", "0 0 24 24"); // ✅ untuk X baru
+    svg.setAttribute("viewBox", "0 0 24 24");
+
+    svg.classList.add("icon-close"); // ✅ tambah ini
   } else if (type === "search") {
     actionPath.setAttribute("d", ICON_SEARCH);
-    svg.setAttribute("viewBox", "64 64 896 896"); // ✅ untuk search
+    svg.setAttribute("viewBox", "64 64 896 896");
+
+    svg.classList.remove("icon-close"); // ✅ buang
   } else {
     actionPath.setAttribute("d", ICON_ARROW);
-    svg.setAttribute("viewBox", "64 64 896 896"); // ✅ untuk arrow
+    svg.setAttribute("viewBox", "64 64 896 896");
+
+    svg.classList.remove("icon-close"); // ✅ buang
   }
 
   if (btn) {
