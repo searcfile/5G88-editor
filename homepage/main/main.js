@@ -1609,15 +1609,14 @@ function initTabBarSearch(){
   const input = box.querySelector("#tabSearchInput");
   const list = box.querySelector("#tabSearchList");
 
-  function getItems(){
-    return [...document.querySelectorAll("#customSidebarTabs a")]
-      .filter(a => a.style.display !== "none")
-      .map(a => ({
-        label: (a.getAttribute("data-label") || a.textContent || "").trim(),
-        el: a
-      }))
-      .filter(x => x.label);
-  }
+function getItems(){
+  return [...document.querySelectorAll("#customSidebarTabs a")]
+    .map(a => ({
+      label: (a.getAttribute("data-label") || a.textContent || "").trim(),
+      el: a
+    }))
+    .filter(x => x.label);
+}
 
   function renderSearchList(){
     const q = input.value.trim().toLowerCase();
@@ -1645,12 +1644,17 @@ function initTabBarSearch(){
     });
   }
 
-  function openSearch(){
-    box.classList.add("open");
-    input.value = "";
-    renderSearchList();
-    setTimeout(() => input.focus(), 30);
-  }
+function openSearch(){
+  box.classList.add("open");
+  input.value = "";
+  renderSearchList();
+
+  const rect = input.getBoundingClientRect();
+  list.style.left = rect.left + "px";
+  list.style.top = (rect.bottom + 6) + "px";
+
+  setTimeout(() => input.focus(), 30);
+}
 
   function closeSearch(){
     box.classList.remove("open");
