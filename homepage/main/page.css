@@ -373,18 +373,10 @@ html {
   -ms-overflow-style: none;
   scrollbar-width: none;
   box-sizing: border-box;
-  padding: 0px 10px;
+  padding: 0px 12px;
+  border-bottom: 1px solid var(--border2);
 }
-.tab-bar::after{
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 10px;
-  width: calc(100% - 20px); 
-  height: 1px;
-  background: var(--border2);
-  z-index: 1; /* 🔥 belakang tab */
-}
+
 .tab-bar::-webkit-scrollbar {display: none;}
 .tab {
   background: var(--tab-bg);
@@ -401,6 +393,7 @@ html {
     box-shadow .18s ease,
     opacity .18s ease;
   border: 1px solid var(--border3);
+  border-bottom: 1px solid var(--border3);
   display: inline-flex;
   font-size: 14px;
   align-items: center;
@@ -412,6 +405,7 @@ html {
   line-height: 1.2;
   z-index: 2;
   margin-bottom: -1px;
+  position: relative;
   will-change: transform;
 }
 .tab .close-tab{
@@ -453,7 +447,7 @@ html {
 }
 .active-tab {
   color: var(--gold) !important;background:var(--tab2);
-  transition: all 0.3s ease;border-bottom: 1px solid var(--border-bottom);z-index: 3;
+  transition: all 0.3s ease;border-bottom-color: var(--tab2);z-index: 3;
 }
   .floating-logo {position: fixed;top: 5px;left: 50%;transform: translateX(-50%);height: 40px;z-index: 1103;}.floating-logo.shrink {transform: translateX(calc(-50% + 130px));}
   .header.shrink {
