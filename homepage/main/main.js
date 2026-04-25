@@ -1646,23 +1646,33 @@ function getItems(){
 function toTitleCase(str){
   return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
 }
-function openSearch(){
-  box.classList.add("open");
-  input.value = "";
-  renderSearchList();
-
+function positionSearchList(){
   const rect = input.getBoundingClientRect();
   list.style.left = rect.left + "px";
   list.style.top = (rect.bottom + 3) + "px";
   list.style.minWidth = rect.width + "px";
+}
+
+function openSearch(){
+  box.classList.add("open");
+  input.value = "";
+  list.innerHTML = "";
+  list.style.display = "none"; // ✅ buka input saja dulu
   setTimeout(() => input.focus(), 30);
 }
 
-  function closeSearch(){
-    box.classList.remove("open");
-    input.value = "";
-    list.innerHTML = "";
-  }
+function openSearchList(){
+  renderSearchList();
+  positionSearchList();
+  list.style.display = "flex"; // ✅ list keluar hanya bila tekan input
+}
+
+function closeSearch(){
+  box.classList.remove("open");
+  input.value = "";
+  list.innerHTML = "";
+  list.style.display = "none";
+}
 
   openBtn.onclick = (e) => {
     e.stopPropagation();
@@ -1674,7 +1684,9 @@ function openSearch(){
     closeSearch();
   };
 
-input.oninput = renderSearchList;
+input.addEventListener("focus", openSearchList);
+input.addEventListener("click", openSearchList);
+input.addEventListener("input", openSearchList);
 
 /* ✅ bagi mouse wheel scroll dalam list search */
 list.addEventListener("wheel", (e) => {
