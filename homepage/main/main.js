@@ -1672,7 +1672,18 @@ function openSearch(){
     closeSearch();
   };
 
-  input.oninput = renderSearchList;
+input.oninput = renderSearchList;
+
+/* ✅ bagi mouse wheel scroll dalam list search */
+list.addEventListener("wheel", (e) => {
+  e.stopPropagation();
+
+  const maxScroll = list.scrollHeight - list.clientHeight;
+  if (maxScroll <= 0) return;
+
+  e.preventDefault();
+  list.scrollTop += e.deltaY;
+}, { passive: false });
 
   document.addEventListener("click", (e) => {
     if (!box.contains(e.target)) closeSearch();
