@@ -1085,7 +1085,10 @@ if (pageFrame) {
   bindIframeInteractionUnlock(pageFrame);
   pageFrame.addEventListener("load", () => {
     try {
-      pageFrame.contentWindow.document.addEventListener("click", closeAllDropdowns);
+   pageFrame.contentWindow.document.addEventListener("click", () => {
+  closeAllDropdowns();
+  window.closeTabSearchList && window.closeTabSearchList();
+  });
     } catch (_) {}
 
     const origin = getChildOriginFromSrc(pageFrame.src);
@@ -1667,12 +1670,18 @@ function openSearchList(){
   list.style.display = "flex"; // ✅ list keluar hanya bila tekan input
 }
 
-function closeSearch(){
-  box.classList.remove("open");
-  input.value = "";
+function closeSearchList(){
   list.innerHTML = "";
   list.style.display = "none";
 }
+
+function closeSearch(){
+  box.classList.remove("open");
+  input.value = "";
+  closeSearchList();
+}
+
+window.closeTabSearchList = closeSearchList;
 
   openBtn.onclick = (e) => {
     e.stopPropagation();
@@ -1699,9 +1708,9 @@ list.addEventListener("wheel", (e) => {
   list.scrollTop += e.deltaY;
 }, { passive: false });
 
-  document.addEventListener("click", (e) => {
-    if (!box.contains(e.target)) closeSearch();
-  });
+document.addEventListener("click", (e) => {
+  if (!box.contains(e.target)) closeSearchList();
+});
 }
 // === APPLY VISIBILITY KE SEMUA TAB YANG SEDANG DIRENDER ===
 function applyRenderedTabVisibility() {
