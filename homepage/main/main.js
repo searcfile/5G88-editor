@@ -1667,12 +1667,17 @@ function openSearch(){
 function openSearchList(){
   renderSearchList();
   positionSearchList();
-  list.style.display = "flex"; // ✅ list keluar hanya bila tekan input
+
+  list.style.display = "flex";
+  list.style.flexDirection = "column"; // ✅ penting
+  list.style.gap = "2px";              // ✅ penting
 }
 
 function closeSearchList(){
   list.innerHTML = "";
   list.style.display = "none";
+  list.style.flexDirection = "";
+  list.style.gap = "";
 }
 
 function closeSearch(){
