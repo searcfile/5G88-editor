@@ -1743,10 +1743,9 @@ closeBtn.onclick = (e) => {
     closeSearch();
   }
 };
-input.addEventListener("mousedown", (e) => {
-  if (document.activeElement === input) {
-    openSearchList();
-  }
+input.addEventListener("click", (e) => {
+  e.stopPropagation();
+  openSearchList();
 });
 
 input.addEventListener("input", openSearchList);
