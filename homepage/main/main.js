@@ -1595,7 +1595,7 @@ function initTabBarSearch(){
     </button>
 
     <div class="tab-search-panel">
-      <input id="tabSearchInput" type="text" placeholder="Search">
+      <input id="tabSearchInput" type="text" placeholder="Select Module">
       <button type="button" id="tabSearchClose" class="tab-search-close">×</button>
     </div>
 
