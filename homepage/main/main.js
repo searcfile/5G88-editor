@@ -1698,7 +1698,9 @@ function openSearch(){
   list.innerHTML = "";
   list.style.display = "none";
   setSearchActionIcon("arrow");
-  //setTimeout(() => input.focus(), 30);
+  setTimeout(() => {
+    input.focus(); // cursor masuk, border focus keluar
+  }, 30);
 }
 
 function openSearchList(){
@@ -1741,8 +1743,12 @@ closeBtn.onclick = (e) => {
     closeSearch();
   }
 };
-input.addEventListener("focus", openSearchList);
-input.addEventListener("click", openSearchList);
+input.addEventListener("mousedown", (e) => {
+  if (document.activeElement === input) {
+    openSearchList();
+  }
+});
+
 input.addEventListener("input", openSearchList);
 
 /* ✅ bagi mouse wheel scroll dalam list search */
