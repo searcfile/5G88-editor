@@ -1597,10 +1597,14 @@ function initTabBarSearch(){
       </svg>
     </button>
 
-    <div class="tab-search-panel">
-      <input id="tabSearchInput" type="text" placeholder="Select Module">
-      <button type="button" id="tabSearchClose" class="tab-search-close">×</button>
-    </div>
+<div class="tab-search-panel">
+  <input id="tabSearchInput" type="text" placeholder="Select Module">
+  <button type="button" id="tabSearchClose" class="tab-search-close" aria-label="Close">
+    <svg id="tabSearchActionIcon" viewBox="64 64 896 896" width="12" height="12" fill="currentColor">
+      <path id="tabSearchActionPath" d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+    </svg>
+  </button>
+</div>
 
     <div id="tabSearchList" class="tab-search-list"></div>
   `;
@@ -1611,6 +1615,21 @@ function initTabBarSearch(){
   const closeBtn = box.querySelector("#tabSearchClose");
   const input = box.querySelector("#tabSearchInput");
   const list = box.querySelector("#tabSearchList");
+  const actionPath = box.querySelector("#tabSearchActionPath");
+
+const ICON_ARROW = "M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z";
+const ICON_SEARCH = "M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z";
+const ICON_CLOSE = "M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06.08a.12.12 0 010 .06c0 .03-.02.05-.06.09L569.93 512l287.7 287.7c.04.04.05.06.06.09a.12.12 0 010 .07c0 .02-.02.04-.06.08l-57.7 57.69c-.03.04-.05.05-.07.06a.12.12 0 01-.07 0c-.03 0-.05-.02-.09-.06L512 569.93l-287.7 287.7c-.04.04-.06.05-.09.06a.12.12 0 01-.07 0c-.02 0-.04-.02-.08-.06l-57.69-57.7c-.04-.03-.05-.05-.06-.07a.12.12 0 010-.07c0-.03.02-.05.06-.09L454.07 512l-287.7-287.7c-.04-.04-.05-.06-.06-.09a.12.12 0 010-.07c0-.02.02-.04.06-.08l57.7-57.69c.03-.04.05-.05.07-.06a.12.12 0 01.07 0c.03 0 .05.02.09.06L512 454.07l287.7-287.7c.04-.04.06-.05.09-.06a.12.12 0 01.07 0z";
+
+function setSearchActionIcon(type){
+  if (!actionPath) return;
+  actionPath.setAttribute(
+    "d",
+    type === "search" ? ICON_SEARCH :
+    type === "close" ? ICON_CLOSE :
+    ICON_ARROW
+  );
+}
 
 function getItems(){
   return [...document.querySelectorAll("#customSidebarTabs a")]
@@ -1660,7 +1679,8 @@ function openSearch(){
   box.classList.add("open");
   input.value = "";
   list.innerHTML = "";
-  list.style.display = "none"; // ✅ buka input saja dulu
+  list.style.display = "none";
+  setSearchActionIcon("arrow");
   //setTimeout(() => input.focus(), 30);
 }
 
@@ -1671,6 +1691,7 @@ function openSearchList(){
   list.style.display = "flex";
   list.style.flexDirection = "column"; // ✅ penting
   list.style.gap = "2px";              // ✅ penting
+  setSearchActionIcon("search");
 }
 
 function closeSearchList(){
@@ -1678,6 +1699,7 @@ function closeSearchList(){
   list.style.display = "none";
   list.style.flexDirection = "";
   list.style.gap = "";
+  setSearchActionIcon("close");
 }
 
 function closeSearch(){
@@ -1693,11 +1715,15 @@ window.closeTabSearchList = closeSearchList;
     openSearch();
   };
 
-  closeBtn.onclick = (e) => {
-    e.stopPropagation();
-    closeSearch();
-  };
+closeBtn.onclick = (e) => {
+  e.stopPropagation();
 
+  if (list.style.display === "flex") {
+    closeSearchList();
+  } else {
+    closeSearch();
+  }
+};
 input.addEventListener("focus", openSearchList);
 input.addEventListener("click", openSearchList);
 input.addEventListener("input", openSearchList);
