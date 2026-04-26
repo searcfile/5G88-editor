@@ -442,6 +442,29 @@ input::placeholder{
 .filter-combo-menu button.active{
   background:var(--chip-menu);
 }
+.btn-cancel{
+  height:32px;
+  border-radius:6px;
+  border:1px solid var(--border-input) ;
+  background:transparent;
+  color:var(--page-text);
+  padding:0 15px;
+  cursor:pointer;
+  transition: all .3s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  font-size:14px;
+}
+.btn-cancel:hover{
+  border:1px solid var(--blue-hover);
+  color:var(--blue-hover);
+  }
+.btn-cancel:active{
+  border:1px solid var(--blue-active);
+  color:var(--blue-active);
+}
 .btn{
   height:32px;
   border-radius:6px;
@@ -1076,7 +1099,7 @@ html {
     </div>
 
     <div class="dialog-foot">
-      <button id="cancelBtn" class="btn">Cancel</button>
+      <button id="cancelBtn" class="btn-cancel">Cancel</button>
       <button id="saveBtn" class="btn primary">Save</button>
     </div>
   </div>
