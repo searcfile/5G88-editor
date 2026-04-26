@@ -146,16 +146,27 @@ body{
   fill:currentColor;
 }
 
-.search-wrap:hover .search,
-.search-wrap:hover .search-icon-btn,
-.search-wrap:focus-within .search,
-.search-wrap:focus-within .search-icon-btn{
+.search-wrap:hover .search{
   border-color:var(--blue-hover);
 }
 
-.search-wrap:focus-within .search-icon-btn,
+.search-wrap:hover .search-icon-btn{
+  border-color:var(--blue-hover);
+}
+
+.search-wrap .search:focus{
+  border-color:var(--blue-hover);
+}
+
+/* icon button tidak ikut biru masa input focus */
+.search-wrap .search:focus + .search-icon-btn{
+  color:var(--soft);
+  border-color:var(--border);
+}
+
 .search-icon-btn:hover{
   color:var(--blue-hover);
+  border-color:var(--blue-hover);
 }
 .btn{
   height:32px;
