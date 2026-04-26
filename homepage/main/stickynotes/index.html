@@ -475,7 +475,31 @@ body.dark-theme .note-card{
   </div>
 </div>
 
+<!-- WAJIB ADA sebelum script ini -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
 <script>
+/* =========================
+   FIREBASE - guna blurphp
+========================= */
+const blurphpApp = firebase.apps.find(app => app.name === "blurphpStickyApp")
+  || firebase.initializeApp({
+    apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+    authDomain: "blurphp.firebaseapp.com",
+    databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "blurphp",
+    storageBucket: "blurphp.appspot.com",
+    messagingSenderId: "593904200464",
+    appId: "1:593904200464:web:cea7bc1360532c20d99395",
+    measurementId: "G-R494S2DPZ5"
+  }, "blurphpStickyApp");
+
+const blurphpDb = blurphpApp.database();
+
+/* =========================
+   STATE
+========================= */
 let currentUser = {
   name: "Guest",
   email: "guest",
@@ -487,6 +511,8 @@ let editingId = null;
 let deleteId = null;
 let activeFilter = "all";
 let selectedColor = "#fff4b8";
+let notesRef = null;
+let notesListener = null;
 
 const COLORS = [
   "#fff4b8",
@@ -505,8 +531,11 @@ const els = {
   pageSub: document.getElementById("pageSub"),
   searchInput: document.getElementById("searchInput"),
   createBtn: document.getElementById("createBtn"),
+  floatingCreateBtn: document.getElementById("floatingCreateBtn"),
+
   notesGrid: document.getElementById("notesGrid"),
   emptyState: document.getElementById("emptyState"),
+
   noteModal: document.getElementById("noteModal"),
   modalTitle: document.getElementById("modalTitle"),
   closeModal: document.getElementById("closeModal"),
@@ -515,37 +544,31 @@ const els = {
   noteTitle: document.getElementById("noteTitle"),
   noteBody: document.getElementById("noteBody"),
   colorList: document.getElementById("colorList"),
+
   confirmModal: document.getElementById("confirmModal"),
   confirmClose: document.getElementById("confirmClose"),
   confirmNo: document.getElementById("confirmNo"),
   confirmYes: document.getElementById("confirmYes"),
+
   countAll: document.getElementById("countAll"),
   countPinned: document.getElementById("countPinned"),
   countRecent: document.getElementById("countRecent")
 };
 
+/* =========================
+   HELPERS
+========================= */
 function sanitizeEmail(email){
   return String(email || "guest")
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]/g, "_");
+    .replace(/\./g, "_")
+    .replace(/[@#$\[\]\/\s]/g, "_");
 }
 
-function getStorageKey(){
-  return "stickyNotes_" + sanitizeEmail(currentUser.email);
-}
-
-function loadNotes(){
-  try{
-    notes = JSON.parse(localStorage.getItem(getStorageKey()) || "[]");
-  }catch{
-    notes = [];
-  }
-  renderNotes();
-}
-
-function saveNotes(){
-  localStorage.setItem(getStorageKey(), JSON.stringify(notes));
+function getUserNotesPath(){
+  const key = sanitizeEmail(currentUser.email);
+  return `users/${key}/stickyNotes`;
 }
 
 function escapeHtml(str){
@@ -567,17 +590,72 @@ function formatTime(ms){
   return `${dd}/${mm}/${yy} ${hh}:${mi}`;
 }
 
+/* =========================
+   FIREBASE LOAD / SAVE
+========================= */
+function detachNotesListener(){
+  if(notesRef && notesListener){
+    notesRef.off("value", notesListener);
+  }
+  notesRef = null;
+  notesListener = null;
+}
+
+function loadNotes(){
+  detachNotesListener();
+
+  notesRef = blurphpDb.ref(getUserNotesPath());
+
+  notesListener = notesRef.on("value", (snap) => {
+    const data = snap.val() || {};
+
+    notes = Object.keys(data).map(id => ({
+      id,
+      ...data[id]
+    }));
+
+    renderNotes();
+  }, (err) => {
+    console.error("Sticky notes Firebase error:", err);
+    notes = [];
+    renderNotes();
+  });
+}
+
+function saveNoteToFirebase(note){
+  if(!note || !note.id) return Promise.resolve();
+  return blurphpDb.ref(`${getUserNotesPath()}/${note.id}`).set(note);
+}
+
+function deleteNoteFromFirebase(id){
+  if(!id) return Promise.resolve();
+  return blurphpDb.ref(`${getUserNotesPath()}/${id}`).remove();
+}
+
+/* =========================
+   RENDER
+========================= */
 function renderUser(){
   const name = currentUser.name || "Guest";
   const email = currentUser.email || "guest";
 
-  els.userName.textContent = name;
-  els.userEmail.textContent = email;
-  els.pageSub.textContent = `Notes for ${name}`;
+  if(els.userName) els.userName.textContent = name;
+  if(els.userEmail) els.userEmail.textContent = email;
+  if(els.pageSub) els.pageSub.textContent = `Notes for ${name}`;
+}
+
+function renderCounts(){
+  if(els.countAll) els.countAll.textContent = notes.length;
+  if(els.countPinned) els.countPinned.textContent = notes.filter(n => n.pinned).length;
+
+  const sevenDays = Date.now() - (7 * 24 * 60 * 60 * 1000);
+  if(els.countRecent){
+    els.countRecent.textContent = notes.filter(n => Number(n.updatedAt || 0) >= sevenDays).length;
+  }
 }
 
 function getVisibleNotes(){
-  const q = els.searchInput.value.trim().toLowerCase();
+  const q = (els.searchInput?.value || "").trim().toLowerCase();
 
   let list = [...notes];
 
@@ -608,27 +686,21 @@ function getVisibleNotes(){
   return list;
 }
 
-function renderCounts(){
-  els.countAll.textContent = notes.length;
-  els.countPinned.textContent = notes.filter(n => n.pinned).length;
-
-  const sevenDays = Date.now() - (7 * 24 * 60 * 60 * 1000);
-  els.countRecent.textContent = notes.filter(n => Number(n.updatedAt || 0) >= sevenDays).length;
-}
-
 function renderNotes(){
   renderUser();
   renderCounts();
+
+  if(!els.notesGrid) return;
 
   const list = getVisibleNotes();
   els.notesGrid.innerHTML = "";
 
   if(!list.length){
-    els.emptyState.classList.add("show");
+    els.emptyState?.classList.add("show");
     return;
   }
 
-  els.emptyState.classList.remove("show");
+  els.emptyState?.classList.remove("show");
 
   list.forEach(note => {
     const card = document.createElement("div");
@@ -660,7 +732,12 @@ function renderNotes(){
   });
 }
 
+/* =========================
+   MODAL
+========================= */
 function renderColors(){
+  if(!els.colorList) return;
+
   els.colorList.innerHTML = "";
 
   COLORS.forEach(color => {
@@ -680,49 +757,52 @@ function openModal(note = null){
   editingId = note ? note.id : null;
   selectedColor = note?.color || COLORS[0];
 
-  els.modalTitle.textContent = note ? "Edit Note" : "Create Note";
-  els.noteTitle.value = note?.title || "";
-  els.noteBody.value = note?.body || "";
+  if(els.modalTitle) els.modalTitle.textContent = note ? "Edit Note" : "Create Note";
+  if(els.noteTitle) els.noteTitle.value = note?.title || "";
+  if(els.noteBody) els.noteBody.value = note?.body || "";
 
   renderColors();
-  els.noteModal.classList.add("show");
+  els.noteModal?.classList.add("show");
 
-  setTimeout(() => els.noteTitle.focus(), 50);
+  setTimeout(() => els.noteTitle?.focus(), 50);
 }
 
 function closeModal(){
-  els.noteModal.classList.remove("show");
+  els.noteModal?.classList.remove("show");
   editingId = null;
 }
 
 function handleSave(){
-  const title = els.noteTitle.value.trim();
-  const body = els.noteBody.value.trim();
+  const title = (els.noteTitle?.value || "").trim();
+  const body = (els.noteBody?.value || "").trim();
 
   if(!title && !body){
-    els.noteTitle.focus();
+    els.noteTitle?.focus();
     return;
   }
 
   const now = Date.now();
 
-  if(editingId){
-    notes = notes.map(n => {
-      if(n.id !== editingId) return n;
+  let note;
 
-      return {
-        ...n,
-        title: title || "Untitled",
-        body,
-        color: selectedColor,
-        userName: currentUser.name || "Guest",
-        userEmail: currentUser.email || "guest",
-        updatedAt: now
-      };
-    });
+  if(editingId){
+    const old = notes.find(n => n.id === editingId);
+    if(!old) return;
+
+    note = {
+      ...old,
+      title: title || "Untitled",
+      body,
+      color: selectedColor,
+      userName: currentUser.name || "Guest",
+      userEmail: currentUser.email || "guest",
+      updatedAt: now
+    };
   }else{
-    notes.push({
-      id: "note_" + now + "_" + Math.random().toString(16).slice(2),
+    const id = "note_" + now + "_" + Math.random().toString(16).slice(2);
+
+    note = {
+      id,
       title: title || "Untitled",
       body,
       color: selectedColor,
@@ -731,45 +811,61 @@ function handleSave(){
       userEmail: currentUser.email || "guest",
       createdAt: now,
       updatedAt: now
-    });
+    };
   }
 
-  saveNotes();
-  closeModal();
-  renderNotes();
+  saveNoteToFirebase(note)
+    .then(() => {
+      closeModal();
+    })
+    .catch(err => {
+      console.error("Save note failed:", err);
+      alert("Save failed. Please check Firebase rules.");
+    });
 }
 
+/* =========================
+   DELETE / PIN
+========================= */
 function openConfirm(id){
   deleteId = id;
-  els.confirmModal.classList.add("show");
+  els.confirmModal?.classList.add("show");
 }
 
 function closeConfirm(){
   deleteId = null;
-  els.confirmModal.classList.remove("show");
+  els.confirmModal?.classList.remove("show");
 }
 
 function deleteNote(){
   if(!deleteId) return;
-  notes = notes.filter(n => n.id !== deleteId);
-  saveNotes();
-  closeConfirm();
-  renderNotes();
+
+  deleteNoteFromFirebase(deleteId)
+    .then(() => closeConfirm())
+    .catch(err => {
+      console.error("Delete note failed:", err);
+      alert("Delete failed. Please check Firebase rules.");
+    });
 }
 
 function togglePin(id){
-  notes = notes.map(n => {
-    if(n.id !== id) return n;
-    return {
-      ...n,
-      pinned: !n.pinned,
-      updatedAt: Date.now()
-    };
+  const note = notes.find(n => n.id === id);
+  if(!note) return;
+
+  const updated = {
+    ...note,
+    pinned: !note.pinned,
+    updatedAt: Date.now()
+  };
+
+  saveNoteToFirebase(updated).catch(err => {
+    console.error("Pin failed:", err);
   });
-  saveNotes();
-  renderNotes();
 }
 
+/* =========================
+   THEME / PARENT
+========================= */
 function applyTheme(theme){
   document.body.classList.remove("light-theme","dark-theme");
   document.body.classList.add(theme === "dark" ? "dark-theme" : "light-theme");
@@ -787,12 +883,22 @@ window.addEventListener("message", (e) => {
   const data = e.data || {};
 
   if(data.type === "user-login" && data.user){
-    currentUser = {
+    const nextUser = {
       name: data.user.name || "Guest",
       email: data.user.email || "guest",
       photo: data.user.photo || ""
     };
-    loadNotes();
+
+    const oldEmail = String(currentUser.email || "").toLowerCase();
+    const newEmail = String(nextUser.email || "").toLowerCase();
+
+    currentUser = nextUser;
+
+    if(oldEmail !== newEmail){
+      loadNotes();
+    }else{
+      renderNotes();
+    }
   }
 
   if(data.type === "theme-change"){
@@ -800,21 +906,27 @@ window.addEventListener("message", (e) => {
   }
 });
 
-els.createBtn.addEventListener("click", () => openModal());
-els.closeModal.addEventListener("click", closeModal);
-els.cancelBtn.addEventListener("click", closeModal);
-els.saveBtn.addEventListener("click", handleSave);
-els.searchInput.addEventListener("input", renderNotes);
+/* =========================
+   EVENTS
+========================= */
+els.createBtn?.addEventListener("click", () => openModal());
+els.floatingCreateBtn?.addEventListener("click", () => openModal());
 
-els.noteModal.addEventListener("click", (e) => {
+els.closeModal?.addEventListener("click", closeModal);
+els.cancelBtn?.addEventListener("click", closeModal);
+els.saveBtn?.addEventListener("click", handleSave);
+
+els.searchInput?.addEventListener("input", renderNotes);
+
+els.noteModal?.addEventListener("click", (e) => {
   if(e.target === els.noteModal) closeModal();
 });
 
-els.confirmClose.addEventListener("click", closeConfirm);
-els.confirmNo.addEventListener("click", closeConfirm);
-els.confirmYes.addEventListener("click", deleteNote);
+els.confirmClose?.addEventListener("click", closeConfirm);
+els.confirmNo?.addEventListener("click", closeConfirm);
+els.confirmYes?.addEventListener("click", deleteNote);
 
-els.confirmModal.addEventListener("click", (e) => {
+els.confirmModal?.addEventListener("click", (e) => {
   if(e.target === els.confirmModal) closeConfirm();
 });
 
@@ -827,7 +939,7 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
   });
 });
 
-els.notesGrid.addEventListener("click", (e) => {
+els.notesGrid?.addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-action]");
   if(!btn) return;
 
@@ -852,16 +964,24 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+/* =========================
+   INIT
+========================= */
 (function init(){
   try{
     const localLogin = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
     if(localLogin.email){
-      currentUser = localLogin;
+      currentUser = {
+        name: localLogin.name || "Guest",
+        email: localLogin.email || "guest",
+        photo: localLogin.photo || ""
+      };
     }
   }catch{}
 
   const savedTheme = localStorage.getItem("siteTheme") || "light";
   applyTheme(savedTheme);
+
   loadNotes();
   requestParentData();
 
