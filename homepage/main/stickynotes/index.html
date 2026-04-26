@@ -735,20 +735,27 @@ body.dark-theme .note-card{
 }
 
 .close{
-  width:34px;
-  height:34px;
   border:none;
-  border-radius:10px;
   background:transparent;
-  color:var(--text);
+  color:var(--page-text);
   cursor:pointer;
-  font-size:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.close:hover{
-  background:var(--panel2);
+.close svg{
+  width:14px;
+  height:14px;
+  fill:currentColor;
 }
 
+.close svg:hover{
+  background:var(--bg);
+}
+.close svg:active{
+  background:var(--chip-close);
+}
 .dialog-body{
   padding:16px;
 }
@@ -1079,7 +1086,11 @@ html {
   <div class="dialog">
     <div class="dialog-head">
       <div id="modalTitle" class="dialog-title">Create Note</div>
-      <button id="closeModal" class="close">×</button>
+      <button id="closeModal" class="close" aria-label="Close">
+  <svg viewBox="0 0 1024 1024" aria-hidden="true">
+    <path d="M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06.08a.12.12 0 010 .06c0 .03-.02.05-.06.09L569.93 512l287.7 287.7c.04.04.05.06.06.09a.12.12 0 010 .07c0 .02-.02.04-.06.08l-57.7 57.69c-.03.04-.05.05-.07.06a.12.12 0 01-.07 0c-.03 0-.05-.02-.09-.06L512 569.93l-287.7 287.7c-.04.04-.06.05-.09.06a.12.12 0 01-.07 0c-.02 0-.04-.02-.08-.06l-57.69-57.7c-.04-.03-.05-.05-.06-.07a.12.12 0 010-.07c0-.03.02-.05.06-.09L454.07 512l-287.7-287.7c-.04-.04-.05-.06-.06-.09a.12.12 0 010-.07c0-.02.02-.04.06-.08l57.7-57.69c.03-.04.05-.05.07-.06a.12.12 0 01.07 0c.03 0 .05.02.09.06L512 454.07l287.7-287.7c.04-.04.06-.05.09-.06a.12.12 0 01.07 0z"/>
+  </svg>
+</button>
     </div>
 
     <div class="dialog-body">
@@ -1110,7 +1121,11 @@ html {
   <div class="dialog" style="width:min(420px,100%)">
     <div class="dialog-head">
       <div class="dialog-title">Delete Note</div>
-      <button id="confirmClose" class="close">×</button>
+     <button id="closeModal" class="close" aria-label="Close">
+  <svg viewBox="0 0 1024 1024" aria-hidden="true">
+    <path d="M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06.08a.12.12 0 010 .06c0 .03-.02.05-.06.09L569.93 512l287.7 287.7c.04.04.05.06.06.09a.12.12 0 010 .07c0 .02-.02.04-.06.08l-57.7 57.69c-.03.04-.05.05-.07.06a.12.12 0 01-.07 0c-.03 0-.05-.02-.09-.06L512 569.93l-287.7 287.7c-.04.04-.06.05-.09.06a.12.12 0 01-.07 0c-.02 0-.04-.02-.08-.06l-57.69-57.7c-.04-.03-.05-.05-.06-.07a.12.12 0 010-.07c0-.03.02-.05.06-.09L454.07 512l-287.7-287.7c-.04-.04-.05-.06-.06-.09a.12.12 0 010-.07c0-.02.02-.04.06-.08l57.7-57.69c.03-.04.05-.05.07-.06a.12.12 0 01.07 0c.03 0 .05.02.09.06L512 454.07l287.7-287.7c.04-.04.06-.05.09-.06a.12.12 0 01.07 0z"/>
+  </svg>
+</button>
     </div>
     <div class="dialog-body">
       <p class="confirm-text">Are you sure you want to delete this note?</p>
