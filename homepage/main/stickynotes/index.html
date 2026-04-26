@@ -19,19 +19,40 @@
   --danger:#dc2626;
   --shadow:0 10px 30px rgba(15,23,42,.10);
   --close-hover2:rgba(0,0,0,0.08);
-}
 
-body.dark-theme{
-  --bg:#000;
-  --panel:#141414;
-  --panel2:#1f1f1f;
-  --text:rgba(255,255,255,.85);
-  --soft:rgba(255,255,255,.45);
-  --border:#424242;
-  --shadow:0 12px 32px rgba(0,0,0,.45);
-  
-  --close-hover2:rgba(255,255,255,0.08);
-}
+    --page-bg: #000;
+    --panel:#0b0b0b;
+    --page-text: rgba(255,255,255,0.85);
+    --page-input: #141414;
+    --border-input:#424242;
+    --page-bg2:#1f1f1f;
+    --name:#1668dc;
+    --blur:rgba(255,255,255,0.25);
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+    --xclose-hover:#ffffff;
+    --xclose-hover-active:rgba(255,255,255,0.25);
+  }
+
+  body.light-theme{
+    --page-bg: #ffffff;
+    --panel:#ffffff;
+    --page-text: rgba(0,0,0,0.88);
+    --page-input: #ffffff;
+    --border-input:#d9d9d9;
+    --page-bg2:#ffffff;
+    --name:#1668dc;
+    --blur:rgba(0,0,0,0.25);
+    --muted:rgb(0 0 0 / 65%);
+
+    --blue: #1668dc;
+    --blue-hover: #3c89e8;
+    --blue-active: #1554ad;
+    --xclose-hover:#000000;
+    --xclose-hover-active:rgba(0,0,0,0.25);
+  }
 
 *{
   box-sizing:border-box;
@@ -979,7 +1000,7 @@ html {
 </style>
 </head>
 
-<body class="light-theme">
+<body>
 <div class="app">
   <main class="main">
     
@@ -1491,11 +1512,6 @@ function togglePin(id){
 /* =========================
    THEME / PARENT
 ========================= */
-function applyTheme(theme){
-  document.body.classList.remove("light-theme","dark-theme");
-  document.body.classList.add(theme === "dark" ? "dark-theme" : "light-theme");
-}
-
 function requestParentData(){
   try{
     window.parent.postMessage({ type:"sticky-notes-ready" }, "*");
@@ -1524,10 +1540,6 @@ window.addEventListener("message", (e) => {
     }else{
       renderNotes();
     }
-  }
-
-  if(data.type === "theme-change"){
-    applyTheme(data.theme);
   }
 });
 
@@ -1710,14 +1722,35 @@ document.addEventListener("keydown", (e) => {
     }
   }catch{}
 
-  const savedTheme = localStorage.getItem("siteTheme") || "light";
-  applyTheme(savedTheme);
-
   loadNotes();
   requestParentData();
 
   setTimeout(requestParentData, 500);
   setTimeout(requestParentData, 1200);
+})();
+  (function () {
+  const THEME_KEY = "siteTheme";
+
+  function applyChildTheme(theme) {
+    document.body.classList.remove("light-theme", "dark-theme");
+    document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+  }
+
+  applyChildTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+
+  window.addEventListener("message", function (e) {
+    const allowedOrigins = [
+      "https://5g88-main.vercel.app"
+    ];
+    if (!allowedOrigins.includes(e.origin)) return;
+
+    const data = e.data || {};
+    if (data.type === "theme-change") {
+      const theme = data.theme === "dark" ? "dark" : "light";
+      localStorage.setItem(THEME_KEY, theme);
+      applyChildTheme(theme);
+    }
+  });
 })();
 </script>
 </body>
