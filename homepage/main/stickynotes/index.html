@@ -865,6 +865,24 @@ body.dark-theme .note-card{
   height:14px;
   fill:currentColor;
 }
+.pin{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.pin-icon{
+  width:14px;
+  height:14px;
+  fill:#eb2f96;
+}
+.pin.is-pinned .pin-icon{
+  fill:#eb2f96;
+}
+
+.pin.is-unpinned .pin-icon{
+  fill:#8c8c8c;
+}
 </style>
 </head>
 
@@ -1207,8 +1225,16 @@ function renderNotes(){
     card.innerHTML = `
       <div class="note-head">
         <div class="note-title">${escapeHtml(note.title || "Untitled")}</div>
-        <button class="pin" title="Pin note" data-action="pin" data-id="${note.id}">
-          ${note.pinned ? "📌" : "📍"}
+        <button class="pin ${note.pinned ? "is-pinned" : "is-unpinned"}" title="Pin note" data-action="pin" data-id="${note.id}">
+          ${note.pinned ? `
+  <svg class="pin-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M8 17h2v5l-2 2v-7zm2-11.5c0-2.319 1.219-4.35 3.047-5.5h-9.047c.068 1.911 2.429 2.097 2.429 5 0 3.771-3.429 3.291-3.429 10h12c0-1.358-.145-2.412-.369-3.276-2.678-.803-4.631-3.284-4.631-6.224zm6.5-4.5c-2.486 0-4.5 2.015-4.5 4.5s2.014 4.5 4.5 4.5c2.484 0 4.5-2.015 4.5-4.5s-2.016-4.5-4.5-4.5zm-.469 6.484l-1.688-1.637.695-.697.992.94 2.115-2.169.697.696-2.811 2.867z"/>
+  </svg>
+` : `
+  <svg class="pin-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M8 17h2v5l-2 2v-7zm4.462-6.412c.246.625.437 1.39.506 2.412h-7.936c.297-4.36 2.757-4.163 2.757-7.65 0-1.605-.522-2.35-1.272-3.35h4.512c.518-.807 1.207-1.489 2.019-2h-9.048c0 3.656 1.789 2.979 1.789 5.351 0 1.073-.364 1.59-.915 2.373-1.782 2.532-1.874 4.148-1.874 7.276h12c0-1.27-.021-2.287-.159-3.222-.88-.232-1.688-.64-2.379-1.19zm8.538-5.088c0 2.485-2.018 4.5-4.5 4.5-2.484 0-4.5-2.015-4.5-4.5s2.016-4.5 4.5-4.5c2.482 0 4.5 2.015 4.5 4.5zm-2-.5h-5v1h5v-1z"/>
+  </svg>
+`}
         </button>
       </div>
 
