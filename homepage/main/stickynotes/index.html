@@ -102,13 +102,9 @@ body{
   border-radius:6px;
   padding:4px 11px;
   outline:none;
-  transition:.3s;
+  transition:.2s;
 }
 
-.search:hover,
-.search:focus{
-  border-color:var(--blue-hover);
-}
 .search-wrap{
   width:33%;
   min-width:260px;
@@ -122,8 +118,11 @@ body{
   width:100%;
   min-width:0;
   height:32px;
+  border:1px solid var(--border);
   border-right:none;
   border-radius:6px 0 0 6px;
+  padding:0 12px;
+  font-size:14px;
 }
 
 .search-icon-btn{
@@ -131,7 +130,6 @@ body{
   height:32px;
   flex:0 0 32px;
   border:1px solid var(--border);
-  border-left:none;
   background:var(--panel2);
   color:var(--soft);
   border-radius:0 6px 6px 0;
@@ -148,16 +146,14 @@ body{
   fill:currentColor;
 }
 
+.search-wrap:hover .search,
+.search-wrap:hover .search-icon-btn,
 .search-wrap:focus-within .search,
 .search-wrap:focus-within .search-icon-btn{
   border-color:var(--blue-hover);
 }
 
-.search-wrap:hover .search,
-.search-wrap:hover .search-icon-btn{
-  border-color:var(--blue-hover);
-}
-
+.search-wrap:focus-within .search-icon-btn,
 .search-icon-btn:hover{
   color:var(--blue-hover);
 }
@@ -573,12 +569,6 @@ body.dark-theme .note-card{
   .actions{
     width:100%;
   }
-
-  .search{
-    width:100%;
-    flex:1;
-  }
-
   .main{
     grid-template-columns:1fr;
   }
