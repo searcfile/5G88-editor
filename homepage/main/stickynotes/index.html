@@ -281,8 +281,18 @@ body{
 }
 
 .filter-chip{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  max-width:none;
+  height:auto;
+  background:transparent;
+  padding:0;
+  overflow:hidden;
+}
+
+.filter-chip-item{
   height:24px;
-  max-width:145px;
   padding:0 6px 0 8px;
   border-radius:4px;
   background:#2f2f2f;
@@ -292,6 +302,19 @@ body{
   gap:5px;
   font-size:13px;
   white-space:nowrap;
+}
+
+.filter-chip-item button{
+  border:none;
+  background:transparent;
+  color:rgba(255,255,255,.65);
+  cursor:pointer;
+  font-size:14px;
+  line-height:1;
+}
+
+.filter-chip-item button:hover{
+  color:#fff;
 }
 
 .filter-chip.hidden{
@@ -962,7 +985,7 @@ let currentUser = {
 let notes = [];
 let editingId = null;
 let deleteId = null;
-let activeFilter = "all";
+let activeFilters = [];
 let selectedColor = "#fff4b8";
 let notesRef = null;
 let notesListener = null;
@@ -1111,14 +1134,15 @@ function getVisibleNotes(){
 
   let list = [...notes];
 
-  if(activeFilter === "pinned"){
-    list = list.filter(n => n.pinned);
-  }
+if(activeFilters.length && !activeFilters.includes("all")){
+  const sevenDays = Date.now() - (7 * 24 * 60 * 60 * 1000);
 
-  if(activeFilter === "recent"){
-    const sevenDays = Date.now() - (7 * 24 * 60 * 60 * 1000);
-    list = list.filter(n => Number(n.updatedAt || 0) >= sevenDays);
-  }
+  list = list.filter(n => {
+    if(activeFilters.includes("pinned") && n.pinned) return true;
+    if(activeFilters.includes("recent") && Number(n.updatedAt || 0) >= sevenDays) return true;
+    return false;
+  });
+}
 
   if(q){
     list = list.filter(n =>
@@ -1412,23 +1436,29 @@ function updateFilterDropdown(){
     recent: "Recent"
   };
 
-  const hasFilter = !!activeFilter;
-
   if(filterChip){
-    filterChip.classList.toggle("hidden", !hasFilter);
-  }
+    filterChip.innerHTML = "";
 
-  if(filterChipText){
-    filterChipText.textContent = labelMap[activeFilter] || "All";
+    activeFilters.forEach(filter => {
+      const chip = document.createElement("div");
+      chip.className = "filter-chip-item";
+      chip.innerHTML = `
+        <span>${labelMap[filter] || filter}</span>
+        <button type="button" data-remove-filter="${filter}">×</button>
+      `;
+      filterChip.appendChild(chip);
+    });
+
+    filterChip.classList.toggle("hidden", activeFilters.length === 0);
   }
 
   if(filterComboInput){
     filterComboInput.value = "";
-    filterComboInput.placeholder = hasFilter ? "" : "Filter Type";
+    filterComboInput.placeholder = activeFilters.length ? "" : "Filter Type";
   }
 
   document.querySelectorAll("#filterComboMenu button").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.filter === activeFilter);
+    btn.classList.toggle("active", activeFilters.includes(btn.dataset.filter));
   });
 }
 
@@ -1442,16 +1472,27 @@ filterComboMenu?.addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-filter]");
   if(!btn) return;
 
-  activeFilter = btn.dataset.filter || "all";
-  filterCombo?.classList.remove("open");
+  const value = btn.dataset.filter || "all";
+
+  if(activeFilters.includes(value)){
+    activeFilters = activeFilters.filter(f => f !== value);
+  }else{
+    activeFilters.push(value);
+  }
+
   updateFilterDropdown();
   renderNotes();
 });
 
-filterChipClose?.addEventListener("click", (e) => {
+filterChip?.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-remove-filter]");
+  if(!btn) return;
+
   e.stopPropagation();
-  activeFilter = "";
-  filterCombo?.classList.remove("open");
+
+  const value = btn.dataset.removeFilter;
+  activeFilters = activeFilters.filter(f => f !== value);
+
   updateFilterDropdown();
   renderNotes();
 });
