@@ -592,16 +592,33 @@ body.dark-theme .note-card{
 .note-actions button{
   flex:1;
   height:32px;
-  border:1px solid #15325b;
-  background:#111a2c;
-  color:#3c89e8;
   border-radius:6px;
   cursor:pointer;
   transition: all .3s ease;
+}}
+
+/* EDIT (biru) */
+.btn-edit{
+  border:1px solid #15325b;
+  background:#111a2c;
+  color:#3c89e8;
 }
 
-.note-actions button:hover{
-  background:rgba(255,255,255,.75);
+.btn-edit:hover{
+  background:#3c89e8;
+  color:#fff;
+}
+
+/* DELETE (merah) */
+.btn-delete{
+  border:1px solid #5b1515;
+  background:#2c1111;
+  color:#ff4d4f;
+}
+
+.btn-delete:hover{
+  background:#ff4d4f;
+  color:#fff;
 }
 
 .empty{
@@ -1300,10 +1317,10 @@ function renderNotes(){
         <span>${formatTime(note.updatedAt)}</span>
       </div>
 
-      <div class="note-actions">
-        <button data-action="edit" data-id="${note.id}">Edit</button>
-        <button data-action="delete" data-id="${note.id}">Delete</button>
-      </div>
+<div class="note-actions">
+  <button class="btn-edit" data-action="edit" data-id="${note.id}">Edit</button>
+  <button class="btn-delete" data-action="delete" data-id="${note.id}">Delete</button>
+</div>
     `;
 
     els.notesGrid.appendChild(card);
