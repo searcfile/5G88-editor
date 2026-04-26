@@ -495,8 +495,8 @@ body{
 }
 .notes-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:10px;
   align-items:start;
 }
 
@@ -522,13 +522,14 @@ body.dark-theme .note-card{
   gap:8px;
   align-items:flex-start;
 }
-
 .note-title{
   font-weight:600;
   font-size:14px;
   line-height:1.35;
-  word-break:break-word;
-  color:rgba(0,0,0,0.85);
+  color:rgba(255,255,255,0.85);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .pin{
@@ -547,13 +548,13 @@ body.dark-theme .note-card{
   word-break:break-word;
   font-size:14px;
   line-height:1.55;
-  color:rgba(17,24,39,.78);
+  color:rgba(255,255,255,.85);
   max-height:145px;
   flex:1;
   overflow:auto;
   padding: 4px 10px;
   border-radius: 6px;
-  border: 1px solid #42424263;
+  border: 1px solid rgba(255,255,255,.45);
 }
 
 .note-meta{
@@ -605,10 +606,11 @@ body.dark-theme .note-card{
 }
 
 .btn-edit:hover{
-  background:#3c89e8;
-  color:#fff;
+  color:#86bcff;
 }
-
+.btn-edit:active{
+  color:#1554ad;
+}
 /* DELETE (merah) */
 .btn-delete{
   border:1px solid #5b1515;
@@ -617,8 +619,10 @@ body.dark-theme .note-card{
 }
 
 .btn-delete:hover{
-  background:#ff4d4f;
-  color:#fff;
+  color:#ff9b9c;
+}
+.btn-delete:hover{
+  color:#c83536;
 }
 
 .empty{
