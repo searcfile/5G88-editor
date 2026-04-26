@@ -146,7 +146,14 @@ body{
   fill:currentColor;
   transition: all .3s ease;
 }
+.search-wrap .search:not(:focus):hover + .search-icon-btn{
+  border-left-color:var(--blue-hover);
+}
 
+.search-wrap .search:focus + .search-icon-btn,
+.search-wrap .search:focus:hover + .search-icon-btn{
+  border-left-color:var(--blue);
+}
 /* input hover hanya kalau BELUM focus */
 .search-wrap .search:not(:focus):hover{
   border-color:var(--blue-hover);
