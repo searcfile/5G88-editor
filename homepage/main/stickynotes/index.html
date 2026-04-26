@@ -94,12 +94,6 @@ body{
   text-overflow:ellipsis;
 }
 
-.actions{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
 .search{
   width:260px;
   height:36px;
@@ -230,7 +224,23 @@ body{
   padding:18px;
   overflow:auto;
 }
+.content-toolbar{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
+}
 
+.content-toolbar .search{
+  width:min(520px,100%);
+  flex:1;
+}
+
+.content-toolbar .btn{
+  flex-shrink:0;
+}
 .notes-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
@@ -543,6 +553,18 @@ body.dark-theme .note-card{
   .notes-grid{
     grid-template-columns:1fr;
   }
+  .content-toolbar{
+  gap:10px;
+}
+
+.content-toolbar .search{
+  min-width:0;
+}
+
+.content-toolbar .btn{
+  padding:0 12px;
+  white-space:nowrap;
+}
 }
 </style>
 </head>
@@ -556,11 +578,6 @@ body.dark-theme .note-card{
         <h1>Sticky Notes</h1>
         <p id="pageSub">Create, edit and manage your notes</p>
       </div>
-    </div>
-
-    <div class="actions">
-      <input id="searchInput" class="search" type="search" placeholder="Search notes..." />
-      <button id="createBtn" class="btn primary">+ Create New</button>
     </div>
   </header>
 
@@ -580,6 +597,10 @@ body.dark-theme .note-card{
     </aside>
 
     <section class="content">
+      <div class="content-toolbar">
+  <input id="searchInput" class="search" type="search" placeholder="Search notes..." />
+  <button id="createBtn" class="btn primary">Create Player</button>
+</div>
       <div id="notesGrid" class="notes-grid"></div>
 
       <div id="emptyState" class="empty">
