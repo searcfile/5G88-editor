@@ -1023,7 +1023,7 @@ let currentUser = {
 let notes = [];
 let editingId = null;
 let deleteId = null;
-let activeFilters = [];
+let activeFilters = ["all"];
 let selectedColor = "#fff4b8";
 let notesRef = null;
 let notesListener = null;
@@ -1171,7 +1171,9 @@ function getVisibleNotes(){
   const q = (els.searchInput?.value || "").trim().toLowerCase();
 
   let list = [...notes];
-
+if(activeFilters.length === 0){
+  return [];
+}
 if(activeFilters.length && !activeFilters.includes("all")){
   const sevenDays = Date.now() - (7 * 24 * 60 * 60 * 1000);
 
