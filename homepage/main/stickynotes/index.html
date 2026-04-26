@@ -1162,7 +1162,21 @@ els.cancelBtn?.addEventListener("click", closeModal);
 els.saveBtn?.addEventListener("click", handleSave);
 
 els.searchInput?.addEventListener("input", renderNotes);
+const searchIconBtn = document.querySelector(".search-icon-btn");
 
+searchIconBtn?.addEventListener("mousedown", (e) => {
+  e.preventDefault();
+});
+
+searchIconBtn?.addEventListener("click", () => {
+  els.searchInput?.focus();
+  renderNotes();
+});
+
+searchIconBtn?.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  els.searchInput?.focus();
+}, { passive:false });
 els.noteModal?.addEventListener("click", (e) => {
   if(e.target === els.noteModal) closeModal();
 });
