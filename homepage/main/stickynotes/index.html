@@ -460,73 +460,8 @@ body{
 .main{
   flex:1;
   min-height:0;
-  display:grid;
-  grid-template-columns:220px minmax(0,1fr);
+  display:block;
 }
-
-.sidebar{
-  border-right:1px solid var(--border);
-  background:var(--panel);
-  padding:14px;
-  overflow:auto;
-}
-
-.user-card{
-  border:1px solid var(--border);
-  background:var(--panel2);
-  border-radius:14px;
-  padding:12px;
-  margin-bottom:14px;
-}
-
-.user-name{
-  font-size:14px;
-  font-weight:700;
-  color:var(--text);
-  word-break:break-word;
-}
-
-.user-email{
-  margin-top:4px;
-  font-size:12px;
-  color:var(--soft);
-  word-break:break-word;
-}
-
-.filter-title{
-  font-size:12px;
-  color:var(--soft);
-  font-weight:700;
-  margin:15px 0 8px;
-  text-transform:uppercase;
-}
-
-.filter-btn{
-  width:100%;
-  height:36px;
-  border:1px solid transparent;
-  border-radius:10px;
-  background:transparent;
-  color:var(--text);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 10px;
-  cursor:pointer;
-  transition:.2s;
-  margin-bottom:5px;
-}
-
-.filter-btn:hover{
-  background:var(--panel2);
-}
-
-.filter-btn.active{
-  background:rgba(22,104,220,.12);
-  color:var(--blue);
-  border-color:rgba(22,104,220,.25);
-}
-
 .content{
   min-width:0;
   min-height:0;
@@ -837,26 +772,6 @@ body.dark-theme .note-card{
   .actions{
     width:100%;
   }
-  .main{
-    grid-template-columns:1fr;
-  }
-
-  .sidebar{
-    border-right:none;
-    border-bottom:1px solid var(--border);
-    display:block;
-  }
-
-  .filter-row{
-    display:flex;
-    gap:8px;
-    overflow:auto;
-  }
-
-  .filter-btn{
-    min-width:105px;
-  }
-
   .content{
     padding:12px;
   }
@@ -930,13 +845,7 @@ body.dark-theme .note-card{
 <body class="light-theme">
 <div class="app">
   <main class="main">
-    <aside class="sidebar">
-      <div class="user-card">
-        <div class="user-name" id="userName">Guest</div>
-        <div class="user-email" id="userEmail">guest</div>
-      </div>
-    </aside>
-
+    
     <section class="content">
       <div class="content-toolbar">
   <div class="search-wrap">
