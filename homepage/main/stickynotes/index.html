@@ -146,27 +146,38 @@ body{
   fill:currentColor;
 }
 
-.search-wrap:hover .search{
+/* ================= INPUT ================= */
+.search:focus{
+  border-color:var(--blue);
+}
+
+/* hover input saja */
+.search:hover{
   border-color:var(--blue-hover);
 }
 
-.search-wrap:hover .search-icon-btn{
-  border-color:var(--blue-hover);
-}
-
-.search-wrap .search:focus{
-  border-color:var(--blue-hover);
-}
-
-/* icon button tidak ikut biru masa input focus */
-.search-wrap .search:focus + .search-icon-btn{
+/* ================= BUTTON ================= */
+.search-icon-btn{
   color:var(--soft);
-  border-color:var(--border);
 }
 
+/* hover button sahaja */
 .search-icon-btn:hover{
   color:var(--blue-hover);
   border-color:var(--blue-hover);
+}
+
+/* active button */
+.search-icon-btn:active{
+  color:var(--blue-active);
+  border-color:var(--blue-active);
+  transform:scale(0.96);
+}
+
+/* ================= FIX supaya tak ikut input ================= */
+.search:focus + .search-icon-btn{
+  color:var(--soft);
+  border-color:var(--border);
 }
 .btn{
   height:32px;
