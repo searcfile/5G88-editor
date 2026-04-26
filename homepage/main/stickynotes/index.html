@@ -182,6 +182,87 @@ body{
   color:var(--blue-active);
   border-color:var(--blue-active);
 }
+  .filter-select{
+  width:250px;
+  height:32px;
+  position:relative;
+  flex:0 0 250px;
+}
+
+.filter-select-btn{
+  width:100%;
+  height:32px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:0 10px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.filter-select-btn:hover,
+.filter-select.open .filter-select-btn{
+  border-color:var(--blue-hover);
+}
+
+.filter-clear{
+  color:var(--soft);
+  font-size:14px;
+  line-height:1;
+  margin-left:auto;
+}
+
+.filter-clear:hover{
+  color:var(--danger);
+}
+
+.filter-arrow{
+  color:var(--soft);
+  font-size:13px;
+}
+
+.filter-menu{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  width:100%;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  display:none;
+  z-index:20;
+  box-shadow:var(--shadow);
+}
+
+.filter-select.open .filter-menu{
+  display:block;
+}
+
+.filter-menu button{
+  width:100%;
+  height:36px;
+  border:none;
+  background:transparent;
+  color:var(--text);
+  padding:0 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  text-align:left;
+}
+
+.filter-menu button:hover,
+.filter-menu button.active{
+  background:rgba(22,104,220,.12);
+  color:var(--blue);
+}
 .btn{
   height:32px;
   border-radius:6px;
@@ -637,6 +718,10 @@ body.dark-theme .note-card{
   padding:0 12px;
   white-space:nowrap;
 }
+  .filter-select{
+  width:130px;
+  flex:0 0 130px;
+}
 }
 </style>
 </head>
@@ -649,13 +734,6 @@ body.dark-theme .note-card{
         <div class="user-name" id="userName">Guest</div>
         <div class="user-email" id="userEmail">guest</div>
       </div>
-
-      <div class="filter-title">Filter</div>
-      <div class="filter-row">
-        <button class="filter-btn active" data-filter="all">All <span id="countAll">0</span></button>
-        <button class="filter-btn" data-filter="pinned">Pinned <span id="countPinned">0</span></button>
-        <button class="filter-btn" data-filter="recent">Recent <span id="countRecent">0</span></button>
-      </div>
     </aside>
 
     <section class="content">
@@ -667,6 +745,19 @@ body.dark-theme .note-card{
       <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"/>
     </svg>
   </button>
+</div>
+  <div class="filter-select" id="filterSelect">
+  <button class="filter-select-btn" type="button" id="filterSelectBtn">
+    <span id="filterSelectText">All</span>
+    <span class="filter-clear" id="filterClear">×</span>
+    <span class="filter-arrow">⌄</span>
+  </button>
+
+  <div class="filter-menu" id="filterMenu">
+    <button type="button" data-filter="all">All <span id="countAll">0</span></button>
+    <button type="button" data-filter="pinned">Pinned <span id="countPinned">0</span></button>
+    <button type="button" data-filter="recent">Recent <span id="countRecent">0</span></button>
+  </div>
 </div>
   <button id="createBtn" class="btn primary">Create Player</button>
 </div>
@@ -941,6 +1032,7 @@ function getVisibleNotes(){
 function renderNotes(){
   renderUser();
   renderCounts();
+   updateFilterDropdown();
 
   if(!els.notesGrid) return;
 
@@ -1196,13 +1288,53 @@ els.confirmModal?.addEventListener("click", (e) => {
   if(e.target === els.confirmModal) closeConfirm();
 });
 
-document.querySelectorAll(".filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeFilter = btn.dataset.filter || "all";
-    renderNotes();
+const filterSelect = document.getElementById("filterSelect");
+const filterSelectBtn = document.getElementById("filterSelectBtn");
+const filterSelectText = document.getElementById("filterSelectText");
+const filterClear = document.getElementById("filterClear");
+const filterMenu = document.getElementById("filterMenu");
+
+function updateFilterDropdown(){
+  const labelMap = {
+    all: "All",
+    pinned: "Pinned",
+    recent: "Recent"
+  };
+
+  if(filterSelectText){
+    filterSelectText.textContent = labelMap[activeFilter] || "All";
+  }
+
+  document.querySelectorAll("#filterMenu button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.filter === activeFilter);
   });
+}
+
+filterSelectBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  filterSelect?.classList.toggle("open");
+});
+
+filterMenu?.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-filter]");
+  if(!btn) return;
+
+  activeFilter = btn.dataset.filter || "all";
+  filterSelect?.classList.remove("open");
+  updateFilterDropdown();
+  renderNotes();
+});
+
+filterClear?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  activeFilter = "all";
+  filterSelect?.classList.remove("open");
+  updateFilterDropdown();
+  renderNotes();
+});
+
+document.addEventListener("click", () => {
+  filterSelect?.classList.remove("open");
 });
 
 els.notesGrid?.addEventListener("click", (e) => {
