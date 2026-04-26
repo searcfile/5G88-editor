@@ -147,14 +147,15 @@ body{
   transition: all .3s ease;
 }
 
-/* input focus = input saja biru */
-.search-wrap .search:focus{
-  border-color:var(--blue);
-}
-
-/* input hover hanya kalau input tidak focus */
+/* input hover hanya kalau BELUM focus */
 .search-wrap .search:not(:focus):hover{
   border-color:var(--blue-hover);
+}
+
+/* input focus wajib paling bawah supaya hover tidak boleh override */
+.search-wrap .search:focus,
+.search-wrap .search:focus:hover{
+  border-color:var(--blue);
 }
 
 /* button normal */
