@@ -18,16 +18,18 @@
   --blue-active:#1554ad;
   --danger:#dc2626;
   --shadow:0 10px 30px rgba(15,23,42,.10);
+  --close-hover2:rgba(255,255,255,0.08);
 }
 
 body.dark-theme{
   --bg:#000;
   --panel:#141414;
   --panel2:#1f1f1f;
-  --text:rgba(255,255,255,.88);
+  --text:rgba(255,255,255,.85);
   --soft:rgba(255,255,255,.45);
   --border:#424242;
   --shadow:0 12px 32px rgba(0,0,0,.45);
+  --close-hover2:rgba(0,0,0,0.08);
 }
 
 *{
@@ -299,13 +301,14 @@ body{
   height:24px;
   padding:0 6px 0 8px;
   border-radius:4px;
-  background:#2f2f2f;
+  background:rgba(255, 255, 255, 0.12);
   color:#fff;
   display:flex;
   align-items:center;
   gap:5px;
   font-size:13px;
   white-space:nowrap;
+  line-height: 22px;
 }
 
 .filter-chip-item button{
@@ -362,7 +365,7 @@ body{
 
 .filter-combo-menu{
   position:absolute;
-  top:calc(100% + 6px);
+  top:calc(100% + 3px);
   left:0;
   width:100%;
   max-height:240px;
@@ -372,7 +375,8 @@ body{
   border-radius:8px;
   display:none;
   z-index:30;
-  box-shadow:var(--shadow);
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  padding:4px;
 }
 
 .filter-combo.open .filter-combo-menu{
@@ -392,11 +396,11 @@ body{
   cursor:pointer;
   text-align:left;
 }
-
-.filter-combo-menu button:hover,
+.filter-combo-menu button:hover{
+  background:var(--close-hover2);
+}
 .filter-combo-menu button.active{
-  background:rgba(22,104,220,.12);
-  color:var(--blue);
+  background:#111a2c;
 }
 .btn{
   height:32px;
@@ -517,7 +521,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:14px;
+  gap:8px;
   margin-bottom:14px;
 }
 
@@ -909,7 +913,7 @@ body.dark-theme .note-card{
     <button type="button" data-filter="recent">Recent <span id="countRecent">0</span></button>
   </div>
 </div>
-  <button id="createBtn" class="btn primary">Create Player</button>
+  <button id="createBtn" class="btn primary">Create Notes</button>
 </div>
       <div id="notesGrid" class="notes-grid"></div>
 
