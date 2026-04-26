@@ -239,12 +239,117 @@ body{
   z-index:20;
   box-shadow:var(--shadow);
 }
+.filter-combo{
+  width:250px;
+  height:32px;
+  position:relative;
+  flex:0 0 250px;
+}
 
-.filter-select.open .filter-menu{
+.filter-combo-box{
+  width:100%;
+  height:32px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:0 6px;
+  cursor:text;
+  transition:.2s;
+}
+
+.filter-combo.open .filter-combo-box,
+.filter-combo-box:focus-within{
+  border-color:var(--blue);
+}
+
+.filter-combo-box input{
+  flex:1;
+  min-width:0;
+  height:100%;
+  border:none;
+  outline:none;
+  background:transparent;
+  color:var(--text);
+  font-size:14px;
+}
+
+.filter-combo-box input::placeholder{
+  color:var(--soft);
+}
+
+.filter-chip{
+  height:24px;
+  max-width:145px;
+  padding:0 6px 0 8px;
+  border-radius:4px;
+  background:#2f2f2f;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.filter-chip.hidden{
+  display:none;
+}
+
+.filter-chip span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.filter-chip button{
+  border:none;
+  background:transparent;
+  color:rgba(255,255,255,.65);
+  cursor:pointer;
+  font-size:14px;
+  line-height:1;
+}
+
+.filter-chip button:hover{
+  color:#fff;
+}
+
+.filter-combo-arrow{
+  width:20px;
+  height:24px;
+  border:none;
+  background:transparent;
+  color:var(--soft);
+  cursor:pointer;
+  flex:0 0 20px;
+}
+
+.filter-combo-arrow:hover{
+  color:var(--blue-hover);
+}
+
+.filter-combo-menu{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  width:100%;
+  max-height:240px;
+  overflow:auto;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  display:none;
+  z-index:30;
+  box-shadow:var(--shadow);
+}
+
+.filter-combo.open .filter-combo-menu{
   display:block;
 }
 
-.filter-menu button{
+.filter-combo-menu button{
   width:100%;
   height:36px;
   border:none;
@@ -258,8 +363,8 @@ body{
   text-align:left;
 }
 
-.filter-menu button:hover,
-.filter-menu button.active{
+.filter-combo-menu button:hover,
+.filter-combo-menu button.active{
   background:rgba(22,104,220,.12);
   color:var(--blue);
 }
@@ -718,9 +823,9 @@ body.dark-theme .note-card{
   padding:0 12px;
   white-space:nowrap;
 }
-  .filter-select{
-  width:130px;
-  flex:0 0 130px;
+.filter-combo{
+  width:150px;
+  flex:0 0 150px;
 }
 }
 </style>
@@ -746,14 +851,18 @@ body.dark-theme .note-card{
     </svg>
   </button>
 </div>
-  <div class="filter-select" id="filterSelect">
-  <button class="filter-select-btn" type="button" id="filterSelectBtn">
-    <span id="filterSelectText">All</span>
-    <span class="filter-clear" id="filterClear">×</span>
-    <span class="filter-arrow">⌄</span>
-  </button>
+<div class="filter-combo" id="filterCombo">
+  <div class="filter-combo-box" id="filterComboBox">
+    <div id="filterChip" class="filter-chip hidden">
+      <span id="filterChipText">All</span>
+      <button type="button" id="filterChipClose">×</button>
+    </div>
 
-  <div class="filter-menu" id="filterMenu">
+    <input id="filterComboInput" type="text" placeholder="Filter Type" readonly />
+    <button type="button" id="filterComboArrow" class="filter-combo-arrow">⌄</button>
+  </div>
+
+  <div class="filter-combo-menu" id="filterComboMenu">
     <button type="button" data-filter="all">All <span id="countAll">0</span></button>
     <button type="button" data-filter="pinned">Pinned <span id="countPinned">0</span></button>
     <button type="button" data-filter="recent">Recent <span id="countRecent">0</span></button>
@@ -1288,11 +1397,13 @@ els.confirmModal?.addEventListener("click", (e) => {
   if(e.target === els.confirmModal) closeConfirm();
 });
 
-const filterSelect = document.getElementById("filterSelect");
-const filterSelectBtn = document.getElementById("filterSelectBtn");
-const filterSelectText = document.getElementById("filterSelectText");
-const filterClear = document.getElementById("filterClear");
-const filterMenu = document.getElementById("filterMenu");
+const filterCombo = document.getElementById("filterCombo");
+const filterComboBox = document.getElementById("filterComboBox");
+const filterComboInput = document.getElementById("filterComboInput");
+const filterComboMenu = document.getElementById("filterComboMenu");
+const filterChip = document.getElementById("filterChip");
+const filterChipText = document.getElementById("filterChipText");
+const filterChipClose = document.getElementById("filterChipClose");
 
 function updateFilterDropdown(){
   const labelMap = {
@@ -1301,40 +1412,52 @@ function updateFilterDropdown(){
     recent: "Recent"
   };
 
-  if(filterSelectText){
-    filterSelectText.textContent = labelMap[activeFilter] || "All";
+  const hasFilter = !!activeFilter;
+
+  if(filterChip){
+    filterChip.classList.toggle("hidden", !hasFilter);
   }
 
-  document.querySelectorAll("#filterMenu button").forEach(btn => {
+  if(filterChipText){
+    filterChipText.textContent = labelMap[activeFilter] || "All";
+  }
+
+  if(filterComboInput){
+    filterComboInput.value = "";
+    filterComboInput.placeholder = hasFilter ? "" : "Filter Type";
+  }
+
+  document.querySelectorAll("#filterComboMenu button").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.filter === activeFilter);
   });
 }
 
-filterSelectBtn?.addEventListener("click", (e) => {
+filterComboBox?.addEventListener("click", (e) => {
   e.stopPropagation();
-  filterSelect?.classList.toggle("open");
+  filterCombo?.classList.add("open");
+  filterComboInput?.focus();
 });
 
-filterMenu?.addEventListener("click", (e) => {
+filterComboMenu?.addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-filter]");
   if(!btn) return;
 
   activeFilter = btn.dataset.filter || "all";
-  filterSelect?.classList.remove("open");
+  filterCombo?.classList.remove("open");
   updateFilterDropdown();
   renderNotes();
 });
 
-filterClear?.addEventListener("click", (e) => {
+filterChipClose?.addEventListener("click", (e) => {
   e.stopPropagation();
-  activeFilter = "all";
-  filterSelect?.classList.remove("open");
+  activeFilter = "";
+  filterCombo?.classList.remove("open");
   updateFilterDropdown();
   renderNotes();
 });
 
 document.addEventListener("click", () => {
-  filterSelect?.classList.remove("open");
+  filterCombo?.classList.remove("open");
 });
 
 els.notesGrid?.addEventListener("click", (e) => {
