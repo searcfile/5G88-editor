@@ -240,13 +240,14 @@ body{
   box-shadow:var(--shadow);
 }
 .filter-combo{
-  width:250px;
+  width:33%;
+  min-width:260px;
+  max-width:620px;
   min-height:32px;
   height:auto;
   position:relative;
-  flex:0 0 250px;
+  flex:unset;
 }
-
 .filter-combo-box{
   width:100%;
   min-height:32px;
@@ -526,7 +527,12 @@ body{
   max-width:620px;
   flex:unset;
 }
-
+.content-toolbar .filter-combo{
+  width:33%;
+  min-width:260px;
+  max-width:620px;
+  flex:unset;
+}
 .content-toolbar .btn{
   flex-shrink:0;
   margin-left:auto;
@@ -853,8 +859,10 @@ body.dark-theme .note-card{
   white-space:nowrap;
 }
 .filter-combo{
-  width:150px;
-  flex:0 0 150px;
+  width:100%;
+  min-width:0;
+  max-width:none;
+  flex:1;
 }
 }
 </style>
