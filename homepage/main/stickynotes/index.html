@@ -36,9 +36,11 @@
     --xclose-hover-active:rgba(255,255,255,0.25);
     --bg-chip:rgba(255, 255, 255, 0.12);
     --chip-close:rgba(255,255,255,0.45);
+    --chip-menu:#111a2c;
   }
 
   body.light-theme{
+    --bg:#000000;
     --page-bg: #ffffff;
     --panel:#ffffff;
     --page-text: rgba(0,0,0,0.85);
@@ -56,6 +58,7 @@
     --xclose-hover-active:rgba(0,0,0,0.25);
     --bg-chip:rgba(0, 0, 0, 0.12);
     --chip-close:rgba(0,0,0,0.45);
+    --chip-menu:rgba(255, 255, 255, 0.25);
   }
 
 *{
@@ -377,7 +380,7 @@ input::placeholder{
 }
 
 .filter-chip button:hover{
-  color:var(--page-bg);
+  color:var(--bg);
 }
 
 .filter-combo-arrow{
@@ -437,7 +440,7 @@ input::placeholder{
   background:var(--close-hover2);
 }
 .filter-combo-menu button.active{
-  background:#111a2c;
+  background:var(--chip-menu);
 }
 .btn{
   height:32px;
