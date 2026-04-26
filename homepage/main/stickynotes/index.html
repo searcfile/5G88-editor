@@ -568,9 +568,8 @@ function sanitizeEmail(email){
 
 function getUserNotesPath(){
   const key = sanitizeEmail(currentUser.email);
-  return `users/${key}/stickyNotes`;
+  return `stickyNotes/${key}`;
 }
-
 function escapeHtml(str){
   return String(str || "")
     .replaceAll("&","&amp;")
