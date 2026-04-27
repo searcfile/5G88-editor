@@ -288,6 +288,8 @@ body{
   gap:4px;
   cursor:text;
   transition:.3s;
+  position:relative;
+  padding-right:36px;
 }
 .filter-combo-box:hover{border-color:var(--blue-hover);
 }
@@ -385,12 +387,17 @@ input::placeholder{
   color:var(--blue-active);
 }
 .filter-combo-arrow{
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:32px;
+  height:32px;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding-right:11px; 
-  box-sizing:border-box;
   color:var(--blur);
+  pointer-events:none;
 }
 
 .filter-combo-arrow svg{
@@ -399,6 +406,12 @@ input::placeholder{
   fill:currentColor;
 }
 .filter-combo-clear{
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:32px;
+  height:32px;
   border:none;
   background:transparent;
   color:var(--blur);
@@ -407,8 +420,8 @@ input::placeholder{
   justify-content:center;
   cursor:pointer;
   padding:0;
-  padding:4px 11px;
   transition:all .3s ease;
+  z-index:2;
 }
 
 .filter-combo-clear svg{
