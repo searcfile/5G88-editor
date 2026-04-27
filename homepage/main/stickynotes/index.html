@@ -600,6 +600,7 @@ body.dark-theme .note-card{
   justify-content:space-between;
   gap:8px;
   align-items:flex-start;
+  margin-bottom:10px;
 }
 .note-title{
   font-weight:600;
@@ -615,8 +616,6 @@ body.dark-theme .note-card{
   border:none;
   background:transparent;
   color:#111827;
-  width:30px;
-  height:30px;
   border:none;
   cursor:pointer;
   flex-shrink:0;
@@ -1070,8 +1069,6 @@ html {
 .archive-btn{
   border:none;
   background:transparent;
-  width:30px;
-  height:30px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -1409,17 +1406,21 @@ function getVisibleNotes(){
 if(activeFilters.length === 0){
   return [];
 }
-if(activeFilters.length && !activeFilters.includes("all")){
-  const sevenDays = Date.now() - (7 * 24 * 60 * 60 * 1000);
+const sevenDays = Date.now() - (7 * 24 * 60 * 60 * 1000);
 
+if(activeFilters.includes("all") && activeFilters.includes("archived")){
+  // All + Archived = tunjuk semua termasuk archived
+  list = list;
+}else if(activeFilters.includes("all")){
+  // All sahaja = hide archived
+  list = list.filter(n => !n.archived);
+}else if(activeFilters.length){
   list = list.filter(n => {
     if(activeFilters.includes("pinned") && n.pinned && !n.archived) return true;
     if(activeFilters.includes("recent") && Number(n.updatedAt || 0) >= sevenDays && !n.archived) return true;
     if(activeFilters.includes("archived") && n.archived) return true;
     return false;
   });
-}else{
-  list = list.filter(n => !n.archived);
 }
 
   if(q){
