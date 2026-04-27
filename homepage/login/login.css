@@ -53,7 +53,7 @@ body{
   margin:0 auto; 
   padding:0 30px 40px;
   border:1px solid var(--border-input); 
-  border-radius:20px;
+  border-radius:12px;
   background-color:var(--page-bg2);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   transition: transform .3s ease, box-shadow .3s ease;
@@ -61,12 +61,18 @@ body{
 }
 .sep{display:none !important;}
 /* ===== Tabs (Username / Google) ===== */
-.tabs{ display:flex; gap:12px; width:100%; margin:6px 0 16px; }
+.tabs{
+  display:flex;
+  gap:12px;
+  width:100%;
+  max-width:300px;
+  margin:6px auto 16px;
+}
 .tab{
   flex:1;
   text-align:
   center; 
-  padding: 5px 5px;
+  padding:0;
   border:1px solid var(--border-input); 
   border-radius:30px;
   cursor:pointer; user-select:none; transition:.2s;
@@ -74,6 +80,7 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
+  height:42px;
 }
 .tab:hover{color:var(--blue-hover);border:1px solid var(--blue-hover);}.tab.active{color:var(--blue);border:1px solid var(--blue);}
 .form{ width:100%; display:none; }
@@ -265,7 +272,7 @@ input:hover:not(:focus){
 
 /* ===== Small screens ===== */
 @media (max-width: 480px){
-  .login-box{ padding:0 30px 40px; border-radius:20px; }
+  .login-box{ padding:0 30px 40px; border-radius:12px; }
   .tab{ font-size:13px; padding:10px 12px; }
 
   .input{
@@ -480,7 +487,7 @@ input:hover:not(:focus){
 .login-header{
   width: calc(100% + 60px);
   padding: 32px 40px 28px;
-  background: linear-gradient(135deg, #2f6fde, #2a65d1);
+  background: #1677ff;
   text-align:center;
   border-radius:20px 20px 0 0;
   margin:0 -30px 30px;
@@ -489,12 +496,13 @@ input:hover:not(:focus){
 .login-icon{
   width:64px;
   height:64px;
-  margin:0 auto 12px;
+  margin:0 auto 16px;
   border-radius:50%;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.15);
   display:flex;
   align-items:center;
   justify-content:center;
+ border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .login-icon svg{
@@ -504,7 +512,7 @@ input:hover:not(:focus){
 }
 
 .login-title{
-  font-size:28px;
+  font-size:24px;
   font-weight:600;
   color:white;
   margin:0;
@@ -512,6 +520,6 @@ input:hover:not(:focus){
 
 .login-sub{
   font-size:13px;
-  color:rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.65);
   margin-top:6px;
 }
