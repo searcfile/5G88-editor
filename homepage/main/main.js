@@ -1034,10 +1034,26 @@ const bankResitDropdown = document.getElementById("bankResitDropdown");
 const gameLinksBtn      = document.getElementById("gameLinksBtn");
 const gameLinksDropdown = document.getElementById("gameLinksDropdown");
 
+function closeStickyNotesDropdown(){
+  const frame = document.getElementById("pageFrame");
+  if (!frame || !frame.contentWindow) return;
+
+  const origin = getChildOriginFromSrc(frame.src);
+  if (!origin) return;
+
+  try {
+    frame.contentWindow.postMessage({
+      type: "close-sticky-dropdown"
+    }, origin);
+  } catch (_) {}
+}
+
 function closeAllDropdowns() {
   if (gameLogDropdown)   gameLogDropdown.style.display   = "none";
   if (bankResitDropdown) bankResitDropdown.style.display = "none";
   if (gameLinksDropdown) gameLinksDropdown.style.display = "none";
+
+  closeStickyNotesDropdown();
 }
 
 function toggleDropdown(btnEl, ddEl) {
