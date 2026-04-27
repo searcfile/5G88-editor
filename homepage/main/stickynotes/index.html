@@ -1688,7 +1688,9 @@ function requestParentData(){
 
 window.addEventListener("message", (e) => {
   const data = e.data || {};
-
+  if(data.type === "close-sticky-dropdown"){
+    filterCombo?.classList.remove("open");
+  }
   if(data.type === "user-login" && data.user){
     const nextUser = {
       name: data.user.name || "Guest",
