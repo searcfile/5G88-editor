@@ -390,6 +390,7 @@ input::placeholder{
   justify-content:center;
   padding-right:11px; 
   box-sizing:border-box;
+  color:var(--blur);
 }
 
 .filter-combo-arrow svg{
@@ -397,7 +398,39 @@ input::placeholder{
   height:12px;
   fill:currentColor;
 }
+.filter-combo-clear{
+  border:none;
+  background:transparent;
+  color:var(--blur);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  padding:0;
+  transition:all .3s ease;
+}
 
+.filter-combo-clear svg{
+  width:14px;
+  height:14px;
+  fill:currentColor;
+}
+
+.filter-combo.has-chip:hover .filter-combo-clear{
+  display:flex;
+}
+
+.filter-combo.has-chip:hover .filter-combo-arrow{
+  display:none;
+}
+
+.filter-combo-clear:hover{
+  color:var(--blue-hover);
+}
+
+.filter-combo-clear:active{
+  color:var(--blue-active);
+}
 .filter-combo-menu{
   position:absolute;
   top:calc(100% + 3px);
@@ -1057,7 +1090,13 @@ html {
     </div>
 
     <input id="filterComboInput" type="text" placeholder="Filter Type" readonly />
-    <span class="filter-combo-arrow" aria-hidden="true">
+<button type="button" class="filter-combo-clear" id="filterComboClear" aria-label="Clear filters">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 8.933-2.721-2.722c-.146-.146-.339-.219-.531-.219-.404 0-.75.324-.75.749 0 .193.073.384.219.531l2.722 2.722-2.728 2.728c-.147.147-.22.34-.22.531 0 .427.35.75.751.75.192 0 .384-.073.53-.219l2.728-2.728 2.729 2.728c.146.146.338.219.53.219.401 0 .75-.323.75-.75 0-.191-.073-.384-.22-.531l-2.727-2.728 2.717-2.717c.146-.147.219-.338.219-.531 0-.425-.346-.75-.75-.75-.192 0-.385.073-.531.22z"/>
+  </svg>
+</button>
+
+<span class="filter-combo-arrow" aria-hidden="true">
   <svg viewBox="0 0 1024 1024">
     <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"/>
   </svg>
@@ -1645,6 +1684,7 @@ const filterComboMenu = document.getElementById("filterComboMenu");
 const filterChip = document.getElementById("filterChip");
 const filterChipText = document.getElementById("filterChipText");
 const filterChipClose = document.getElementById("filterChipClose");
+const filterComboClear = document.getElementById("filterComboClear");
 
 function updateFilterDropdown(){
   const labelMap = {
@@ -1677,7 +1717,8 @@ chip.innerHTML = `
     filterComboInput.value = "";
     filterComboInput.placeholder = activeFilters.length ? "" : "Filter Type";
   }
-
+  filterCombo?.classList.toggle("has-chip", activeFilters.length > 0);
+  
   document.querySelectorAll("#filterComboMenu button").forEach(btn => {
     btn.classList.toggle("active", activeFilters.includes(btn.dataset.filter));
   });
@@ -1717,7 +1758,13 @@ filterChip?.addEventListener("click", (e) => {
   updateFilterDropdown();
   renderNotes();
 });
-
+filterComboClear?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  activeFilters = [];
+  filterCombo?.classList.remove("open");
+  updateFilterDropdown();
+  renderNotes();
+});
 document.addEventListener("click", () => {
   filterCombo?.classList.remove("open");
 });
