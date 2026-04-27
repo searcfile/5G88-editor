@@ -49,7 +49,7 @@ body{
 .login-box{
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   margin:0 auto; 
   padding:0 30px 40px;
   border:1px solid var(--border-input); 
@@ -63,26 +63,37 @@ body{
 /* ===== Tabs (Username / Google) ===== */
 .tabs{
   display:flex;
-  gap:12px;
+  justify-content:center;
+  gap:28px;
   width:100%;
   max-width:300px;
-  margin:6px auto 16px;
+  margin:8px auto 18px;
 }
 .tab{
-  flex:1;
-  text-align:
-  center; 
+  flex:0 0 auto;
+  width:44px;
+  height:44px;
   padding:0;
-  border:1px solid var(--border-input); 
-  border-radius:30px;
-  cursor:pointer; user-select:none; transition:.2s;
-  background:var(--page-input); color:var(--page-text); font-weight:500; font-size:14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height:42px;
+  border:0;
+  border-radius:50%;
+  background:transparent;
 }
-.tab:hover{color:var(--blue-hover);border:1px solid var(--blue-hover);}.tab.active{color:var(--blue);border:1px solid var(--blue);}
+
+.tab:hover{
+  background:rgba(255,255,255,.06);
+  border:0;
+}
+
+.tab.active{
+  background:rgba(22,104,220,.16);
+  border:1px solid var(--blue);
+}
+
+.tab-label-img{
+  width:28px !important;
+  height:28px !important;
+  object-fit:contain;
+}
 .form{ width:100%; display:none; }
 .form.active{ display:block; }
 
@@ -98,7 +109,7 @@ body{
 .input{
   width:100%;
   height:32px;
-  padding:4px 11px;
+  padding:7px 11px;
   border-radius:6px;
   border:1px solid var(--border-input);
   background:var(--page-input);
@@ -489,7 +500,6 @@ input:hover:not(:focus){
   padding: 32px 40px 28px;
   background: #1677ff;
   text-align:center;
-  border-radius:20px 20px 0 0;
   margin:0 -30px 30px;
 }
 
