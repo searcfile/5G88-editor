@@ -663,22 +663,30 @@ async function createAccount(){
 }
 
 /* ===== Password eye ===== */
-const EYE_SHOW = "M942.2 486.2Q889.47 375.11 816.7 305l-50.88 50.88C807.31 395.53 843.45 447.4 874.7 512 791.5 684.2 673.4 766 512 766q-72.67 0-133.87-22.38L323 798.75Q408 838 512 838q288.3 0 430.2-300.3a60.29 60.29 0 000-51.5zm-63.57-320.64L836 122.88a8 8 0 00-11.32 0L715.31 232.2Q624.86 186 512 186q-288.3 0-430.2 300.3a60.3 60.3 0 000 51.5q56.69 119.4 136.5 191.41L112.48 835a8 8 0 000 11.31L155.17 889a8 8 0 0011.31 0l712.15-712.12a8 8 0 000-11.32zM149.3 512C232.6 339.8 350.7 258 512 258c54.54 0 104.13 9.36 149.12 28.39l-70.3 70.3a176 176 0 00-238.13 238.13l-83.42 83.42C223.1 637.49 183.3 582.28 149.3 512zm246.7 0a112.11 112.11 0 01146.2-106.69L401.31 546.2A112 112 0 01396 512z";
-const EYE_HIDE = "M149.3 126.2L120.4 155l145.7 145.7C207.1 345.6 157 409.6 124.5 469.8a43.42 43.42 0 000 41.4C214.6 679.9 350.5 784 512 784c63.5 0 123.8-16.1 177.8-44.7L847 896.5l28.8-28.8-726.5-741.5zM512 720c-136.8 0-252.1-72.2-334.3-188C224.6 447.3 289.2 390 367 357.3l52.8 52.8A127.2 127.2 0 00384 512c0 70.7 57.3 128 128 128 38 0 72.2-16.6 95.7-43l46.1 46.1A304.5 304.5 0 01512 720zm0-464c161.5 0 297.4 104.1 387.5 272.8a43.42 43.42 0 010 41.4 560.3 560.3 0 01-89.2 115.4l-45.3-45.3A503.7 503.7 0 00846.3 512C764.1 396.2 648.8 324 512 324c-48.3 0-94.8 9-137.6 25.6l-50.3-50.3A372.7 372.7 0 01512 256zm0 128c70.7 0 128 57.3 128 128 0 19.1-4.2 37.2-11.7 53.4l-41.9-41.9c.9-3.8 1.6-7.6 1.6-11.5 0-42.3-34.3-76.6-76.6-76.6-3.9 0-7.7.7-11.5 1.6L458 395.1A127.6 127.6 0 01512 384z";
-
 function togglePassword(){
   const input = document.getElementById('password');
   const btn   = document.getElementById('eyeBtn');
-  const path  = document.getElementById('eyePath');
+  const eyeShow = document.getElementById('eyeShow');
+  const eyeHide = document.getElementById('eyeHide');
+
   const isHidden = btn.dataset.state !== 'show';
+
   if (isHidden){
-    input.type = 'text'; btn.dataset.state = 'show';
-    btn.setAttribute('aria-pressed','true'); btn.setAttribute('aria-label','Hide password');
-    path.setAttribute('d', EYE_HIDE);
+    input.type = 'text';
+    btn.dataset.state = 'show';
+    btn.setAttribute('aria-pressed','true');
+    btn.setAttribute('aria-label','Hide password');
+
+    eyeShow.style.display = 'none';
+    eyeHide.style.display = 'block';
   } else {
-    input.type = 'password'; btn.dataset.state = 'hide';
-    btn.setAttribute('aria-pressed','false'); btn.setAttribute('aria-label','Show password');
-    path.setAttribute('d', EYE_SHOW);
+    input.type = 'password';
+    btn.dataset.state = 'hide';
+    btn.setAttribute('aria-pressed','false');
+    btn.setAttribute('aria-label','Show password');
+
+    eyeShow.style.display = 'block';
+    eyeHide.style.display = 'none';
   }
 }
 (function addHoldToPeek(){
