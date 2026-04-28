@@ -666,8 +666,8 @@ async function createAccount(){
 function togglePassword(){
   const input = document.getElementById('password');
   const btn   = document.getElementById('eyeBtn');
-  const eyeShow = document.getElementById('eyeShow');
-  const eyeHide = document.getElementById('eyeHide');
+  const eyeShow = document.getElementById('eyeShow'); // biru
+  const eyeHide = document.getElementById('eyeHide'); // garis
 
   const isHidden = btn.dataset.state !== 'show';
 
@@ -677,16 +677,16 @@ function togglePassword(){
     btn.setAttribute('aria-pressed','true');
     btn.setAttribute('aria-label','Hide password');
 
-    eyeShow.style.display = 'none';
-    eyeHide.style.display = 'block';
+    eyeShow.style.display = 'block';  // biru masa password nampak
+    eyeHide.style.display = 'none';
   } else {
     input.type = 'password';
     btn.dataset.state = 'hide';
     btn.setAttribute('aria-pressed','false');
     btn.setAttribute('aria-label','Show password');
 
-    eyeShow.style.display = 'block';
-    eyeHide.style.display = 'none';
+    eyeShow.style.display = 'none';
+    eyeHide.style.display = 'block';  // garis masa password hidden
   }
 }
 (function addHoldToPeek(){
