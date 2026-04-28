@@ -329,8 +329,11 @@ fpRequest?.addEventListener('click', async () => {
       verify: ok === true ? 'exists' : 'unknown',  // catat hasil verifikasi
       ua: navigator.userAgent
     });
-    alert('Request successfully. New password will procces.');
-    closeForgot();
+alert('Request successfully. New password will procces.');
+closeForgot();
+
+lcPinnedOpen = true;
+await openLiveChat();
   }catch(e){
     console.error(e);
     alert('Request error. Try again.');
@@ -858,10 +861,13 @@ createCancel?.addEventListener('click', closeCreate);
 createOverlay?.addEventListener('click', (e)=>{ if (e.target === createOverlay) closeCreate(); });
 
 // Create Now: tutup popup lalu buka livechat
-createNow?.addEventListener('click', () => {
+createNow?.addEventListener('click', async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
   closeCreate();
-  // pastikan livechat terbuka
-  openLiveChat();
+  lcPinnedOpen = true;
+  await openLiveChat();
 });
 auth.onAuthStateChanged(async (user) => {
   if (!user || user.isAnonymous) {
@@ -1107,8 +1113,7 @@ function applyChildTheme(theme) {
 
   window.addEventListener("message", function (e) {
     const allowedOrigins = [
-      "https://5g88-main.vercel.app",
-      "https://searcfile.github.io"
+      "https://5g88-main.vercel.app"
     ];
     if (!allowedOrigins.includes(e.origin)) return;
 
