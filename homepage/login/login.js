@@ -677,7 +677,7 @@ function togglePassword(){
     btn.setAttribute('aria-pressed','true');
     btn.setAttribute('aria-label','Hide password');
 
-    eyeShow.style.display = 'block';  // biru masa password nampak
+    eyeShow.style.display = 'block';
     eyeHide.style.display = 'none';
   } else {
     input.type = 'password';
@@ -686,7 +686,7 @@ function togglePassword(){
     btn.setAttribute('aria-label','Show password');
 
     eyeShow.style.display = 'none';
-    eyeHide.style.display = 'block';  // garis masa password hidden
+    eyeHide.style.display = 'block';
   }
 }
 (function addHoldToPeek(){
