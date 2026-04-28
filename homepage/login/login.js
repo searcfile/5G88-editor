@@ -671,6 +671,8 @@ function togglePassword(){
 
   const isHidden = btn.dataset.state !== 'show';
 
+  input.focus(); // click eye terus focus input
+
   if (isHidden){
     input.type = 'text';
     btn.dataset.state = 'show';
