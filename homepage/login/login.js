@@ -329,7 +329,6 @@ fpRequest?.addEventListener('click', async () => {
       verify: ok === true ? 'exists' : 'unknown',  // catat hasil verifikasi
       ua: navigator.userAgent
     });
-alert('Request successfully. New password will procces.');
 closeForgot();
 
 lcPinnedOpen = true;
