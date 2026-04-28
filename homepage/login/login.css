@@ -127,8 +127,20 @@ body{
 .input:focus{
   border-color:var(--blue);
 }
+
+/* hover input sahaja */
 input:hover:not(:focus){
   border-color: var(--blue-hover);
+}
+
+/* hover eye icon -> input ikut hover */
+.field:has(.toggle-eye:hover) .input{
+  border-color: var(--blue-hover);
+}
+
+/* input focus bila click eye */
+.field:focus-within .input{
+  border-color: var(--blue);
 }
 /* ===== Password eye (tengah tepat) ===== */
 .password-wrap { /* boleh kosong atau biarkan seperti ini */ }
