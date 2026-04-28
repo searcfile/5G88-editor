@@ -121,7 +121,7 @@ body{
   border:1px solid var(--border-input);
   background:var(--page-input);
   color:var(--page-text); outline:none;
-  transition: border-color .2s, box-shadow .2s, background .2s;
+  transition: all 0.3s;
 }
 .input::placeholder{ color:var(--blur); opacity:.9; }
 .input:focus{
@@ -129,18 +129,13 @@ body{
 }
 
 /* hover input sahaja */
-input:hover:not(:focus){
+.input:hover:not(:focus){
   border-color: var(--blue-hover);
 }
 
-/* hover eye icon -> input ikut hover */
-.field:has(.toggle-eye:hover) .input{
+/* hover eye icon sahaja -> input ikut hover */
+.field:has(.toggle-eye:hover) .input:not(:focus){
   border-color: var(--blue-hover);
-}
-
-/* input focus bila click eye */
-.field:focus-within .input{
-  border-color: var(--blue);
 }
 /* ===== Password eye (tengah tepat) ===== */
 .password-wrap { /* boleh kosong atau biarkan seperti ini */ }
@@ -164,8 +159,9 @@ input:hover:not(:focus){
   padding: 0;
   z-index: 3;
   font-size:16px;
+transition: all 0.3s;
 }
-.toggle-eye:hover{color:var(--page-text);}
+.toggle-eye:hover{color:var(--page-text);transition: all 0.3s;}
 .toggle-eye:focus{ outline:none; }
 .toggle-eye svg{ width:1em; height:1em; display:block; }
 
