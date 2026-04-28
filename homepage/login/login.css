@@ -48,18 +48,24 @@ body{
 
 /* ===== Login Card ===== */
 .login-box{
-  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-  width: 100%;
-  max-width: 420px;
-  margin:0 auto; 
-  padding:32px 40px;
-  border:1px solid var(--border-input5); 
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  max-width:420px;
+  margin:0 auto;
+  padding:0;
+  border:1px solid var(--border-input5);
   border-radius:12px;
   background-color:var(--page-bg2);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition: transform .3s ease, box-shadow .3s ease;
- box-shadow: rgba(0, 0, 0, 0.45) 0px 8px 32px;
-  overflow:hidden;                        /* jaga-jaga biar tak keluar */
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 8px 32px;
+  overflow:hidden;
+}
+.login-content{
+  width:100%;
+  padding:32px 40px;
 }
 .sep{display:none !important;}
 /* ===== Tabs (Username / Google) ===== */
@@ -286,7 +292,8 @@ input:hover:not(:focus){
 
 /* ===== Small screens ===== */
 @media (max-width: 480px){
-  .login-box{ padding:0 30px 40px; border-radius:12px; }
+    .login-box{ padding:0; border-radius:12px; }
+  .login-content{ padding:30px; }
   .tab{ font-size:13px; padding:10px 12px; }
 
   .input{
@@ -304,6 +311,9 @@ input:hover:not(:focus){
 
   .btn{
     padding: 0 15px;
+  }
+  .tab-label-img{
+    height: 18px;
   }
 }
 /* === Forgot Password UI === */
@@ -471,11 +481,7 @@ input:hover:not(:focus){
   pointer-events: none;
   user-select: none;
 }
-@media (max-width: 480px){
-  .tab-label-img{
-    height: 18px;
-  }
-}
+
 .input:-webkit-autofill,
 .input:-webkit-autofill:hover,
 .input:-webkit-autofill:focus,
@@ -500,9 +506,9 @@ input:hover:not(:focus){
 }
 /* ===== HEADER LOGIN ===== */
 .login-header{
-  width: calc(100% + 60px);
-  padding: 32px 40px 28px;
-  background: #1677ff;
+  width:100%;
+  padding:32px 40px 28px;
+  background:#1677ff;
   text-align:center;
 }
 
