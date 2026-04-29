@@ -69,39 +69,48 @@ body{
 }
 .sep{display:none !important;}
 /* ===== Tabs (Username / Google) ===== */
+.label-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 0 8px;
+}
+
+.label-row .label{
+  padding:0;
+}
+
 .tabs{
   display:flex;
-  justify-content:flex-start;
   align-items:center;
-  gap:12px;
-  width:100%;
-  margin:0 0 10px;
+  gap:10px;
+  margin:0;
+  width:auto;
 }
 .tab{
   padding:0;
   border:0;
-  border-radius:50%;
   background:transparent;
   color:var(--icon);
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:.2s;
 }
+
 .tab svg{
+  width:18px;
+  height:18px;
+}
+
+#tab-google svg{
   width:20px;
   height:20px;
-  display:block;
 }
 
-.tab:hover{
-  color:var(--blue-hover);
-}
-
-.tab.active{
-  color:var(--blue);
-}
+.tab:hover{ color:var(--blue-hover); }
+.tab.active{ color:var(--blue); }
 
 .form{ width:100%; display:none; }
 .form.active{ display:block; }
