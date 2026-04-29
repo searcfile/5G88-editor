@@ -718,8 +718,25 @@ const tabUser = document.getElementById('tab-userpass');
 const tabGoo  = document.getElementById('tab-google');
 const formUser= document.getElementById('form-userpass');
 const formGoo = document.getElementById('form-google');
-tabUser?.addEventListener('click', ()=>{ tabUser.classList.add('active'); tabGoo.classList.remove('active'); formUser.classList.add('active'); formGoo.classList.remove('active'); });
-tabGoo?.addEventListener('click', ()=>{ tabGoo.classList.add('active'); tabUser.classList.remove('active'); formGoo.classList.add('active'); formUser.classList.remove('active'); });
+const userLabel = document.querySelector('.label-row .label');
+
+tabUser?.addEventListener('click', () => {
+  tabUser.classList.add('active');
+  tabGoo.classList.remove('active');
+  formUser.classList.add('active');
+  formGoo.classList.remove('active');
+
+  if (userLabel) userLabel.style.visibility = 'visible';
+});
+
+tabGoo?.addEventListener('click', () => {
+  tabGoo.classList.add('active');
+  tabUser.classList.remove('active');
+  formGoo.classList.add('active');
+  formUser.classList.remove('active');
+
+  if (userLabel) userLabel.style.visibility = 'hidden';
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("googleLoginBtn")?.addEventListener("click", signInWithGoogle);
