@@ -314,7 +314,7 @@ const manualColEl = document.getElementById("manualCol");
 const hintText = document.getElementById("hintText");
 const debugList = document.getElementById("debugList");
 
-let manualColumn = 3;
+let manualColumn = 1;
 
 function cleanNum(value){
   if(value === undefined || value === null) return null;
@@ -327,8 +327,6 @@ function cleanNum(value){
 
   const num = Math.abs(parseFloat(str));
   if(isNaN(num)) return null;
-
-  // safety: elak ID panjang detect jadi bet
   if(num > 1000000) return null;
 
   return num;
@@ -346,6 +344,15 @@ function isNumberToken(v){
   return /^-?\d+(?:,\d{3})*(?:\.\d+)?$/.test(v);
 }
 
+function getNumberColumns(line){
+  const parts = line.trim().split(/\s+/);
+
+  return parts
+    .filter(x => !isDate(x) && !isTime(x))
+    .map(x => cleanNum(x))
+    .filter(x => x !== null);
+}
+
 function applyManual(){
   manualColumn = parseInt(manualColEl.value, 10) || 1;
   modeEl.value = "manual";
@@ -361,43 +368,35 @@ function extractBet(line){
   const parts = line.trim().split(/\s+/);
   const mode = modeEl.value;
 
-  // ✅ Manual mode: ikut column yang bro pilih
+  // ✅ MANUAL MODE BARU:
+  // kira column berdasarkan nombor saja, bukan semua text
   if(mode === "manual"){
+    const nums = getNumberColumns(line);
     const index = manualColumn - 1;
-    return cleanNum(parts[index]);
+    return nums[index] ?? null;
   }
 
-  // ✅ Auto Format A:
-  // Game TableID Bet Win Begin End Date Time
-  // DolphinReef 0 2.00 0.00 17.98 15.98 2026-04-30 13:46:53
+  // ✅ AUTO FORMAT B:
+  // ... 2026-04-30 18:24:04 -5.0000 0.0000 ...
   const firstDateIndex = parts.findIndex(isDate);
 
   if(firstDateIndex !== -1){
-    const beforeDate = parts.slice(0, firstDateIndex);
-    const numsBeforeDate = beforeDate.filter(isNumberToken);
-
-    // kalau sebelum date ada 5 angka: tableId, bet, win, begin, end
-    if(numsBeforeDate.length >= 5){
-      const bet = cleanNum(numsBeforeDate[1]);
-      if(bet !== null) return bet;
-    }
-
-    // ✅ Auto Format B:
-    // ... ID 2026-04-30 18:24:04 -5.0000 0.0000 -5.0000 4.0000 ...
     if(parts[firstDateIndex + 1] && isTime(parts[firstDateIndex + 1])){
       const betAfterDateTime = cleanNum(parts[firstDateIndex + 2]);
       if(betAfterDateTime !== null) return betAfterDateTime;
     }
-  }
 
-  // ✅ Auto Format C:
-  // Ada perkataan Bet, ambil nombor valid selepas Bet
-  const betWordIndex = parts.findIndex(x => /^bet$/i.test(x));
-  if(betWordIndex !== -1){
-    for(let i = betWordIndex + 1; i < parts.length; i++){
-      if(isDate(parts[i])) break;
-      const n = cleanNum(parts[i]);
-      if(n !== null && n > 0) return n;
+    // ✅ AUTO FORMAT A:
+    // DolphinReef 0 2.00 0.00 17.98 15.98 date time
+    const beforeDate = parts.slice(0, firstDateIndex);
+    const numsBeforeDate = beforeDate
+      .filter(isNumberToken)
+      .map(cleanNum)
+      .filter(x => x !== null);
+
+    if(numsBeforeDate.length >= 5){
+      const bet = numsBeforeDate[1];
+      if(bet !== null) return bet;
     }
   }
 
@@ -474,8 +473,7 @@ function escapeHTML(str){
 }
 
 function copyResult(){
-  const total = document.getElementById("total").textContent;
-  navigator.clipboard.writeText(total);
+  navigator.clipboard.writeText(document.getElementById("total").textContent);
 }
 
 function clearAll(){
@@ -488,17 +486,15 @@ input.addEventListener("input", calculate);
 modeEl.addEventListener("change", ()=>{
   if(modeEl.value === "manual"){
     manualColumn = parseInt(manualColEl.value, 10) || 1;
-    hintText.textContent = "Manual aktif: masukkan nombor column, lalu tekan OK.";
+    hintText.textContent = "Manual aktif: column dikira dari nombor saja. Contoh column 1 = angka pertama.";
   }else{
-    hintText.textContent = "Auto detect aktif. Manual boleh guna column apa saja.";
+    hintText.textContent = "Auto detect aktif. Manual boleh guna column nombor apa saja.";
   }
   calculate();
 });
 
 manualColEl.addEventListener("keydown", (e)=>{
-  if(e.key === "Enter"){
-    applyManual();
-  }
+  if(e.key === "Enter") applyManual();
 });
 
 calculate();
