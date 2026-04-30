@@ -300,23 +300,6 @@ body.dark-theme{
     .btn:active{
       background:#1554ad;
     }
-
-    .info{
-      margin-top:14px;
-      text-align:center;
-      font-size:13px;
-      color:rgba(255,255,255,0.68);
-      min-height:18px;
-    }
-
-    .error{
-      color:#ff6b6b;
-    }
-
-    .success{
-      color:#7dff9b;
-    }
-
     .loading{
       opacity:.7;
       pointer-events:none;
@@ -395,7 +378,6 @@ body.dark-theme{
 <div id="turnstileBox"></div>
 </div>
       <button type="submit" class="btn" id="loginBtn">LOGIN</button>
-      <div class="info" id="loginMsg"></div>
     </form>
   </div>
 </div>
@@ -423,7 +405,6 @@ body.dark-theme{
   const usernameEl = document.getElementById("username");
   const passwordEl = document.getElementById("password");
   const loginBtn = document.getElementById("loginBtn");
-  const loginMsg = document.getElementById("loginMsg");
   const loginBox = document.getElementById("loginBox");
   const togglePassword = document.getElementById("togglePassword");
   const usernameError = document.getElementById("usernameError");
@@ -467,10 +448,6 @@ function renderTurnstile(){
     theme: document.body.classList.contains("dark-theme") ? "light" : "dark"
   });
 }
-  function showMsg(text, type = "") {
-    loginMsg.textContent = text;
-    loginMsg.className = "info " + type;
-  }
 
   function normalizeEmailFromUsername(input) {
     const v = String(input || "").trim().toLowerCase();
@@ -531,7 +508,6 @@ togglePassword.addEventListener("click", () => {
     const password = passwordEl.value;
 
 clearFieldErrors();
-showMsg("");
 
 if (!username) {
   setFieldError("username", "Username wajib isi.");
@@ -550,8 +526,6 @@ if (!password) {
     try {
       isSubmitting = true;
       setLoading(true);
-      showMsg("Sedang login...", "");
-
       await auth.signInWithEmailAndPassword(email, password);
 
       // ✅ jangan redirect di sini
@@ -566,8 +540,6 @@ if (!password) {
       else if (err.code === "auth/invalid-login-credentials") msg = "Username atau password salah.";
       else if (err.code === "auth/invalid-email") msg = "Format username/email tidak sah.";
       else if (err.code === "auth/too-many-requests") msg = "Terlalu banyak percubaan. Cuba lagi nanti.";
-
-      showMsg("");
 
 if (
   err.code === "auth/user-not-exist" ||
