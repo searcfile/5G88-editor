@@ -1039,6 +1039,13 @@ html, body {
       <span>Change Password</span>
     </button>
 
+   <button id="changeSecondPasswordBtn" class="dropdown-btn" type="button">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 1.75l8 3.56v6.05c0 5.05-3.41 9.76-8 10.89-4.59-1.13-8-5.84-8-10.89V5.31l8-3.56zm0 2.19L6 6.61v4.75c0 4.02 2.54 7.79 6 8.84 3.46-1.05 6-4.82 6-8.84V6.61l-6-2.67zm3.53 5.53l1.06 1.06-5.36 5.36-3.18-3.18 1.06-1.06 2.12 2.12 4.3-4.3z"/>
+  </svg>
+  <span>Change 2nd Password</span>
+</button>
+  
     <button id="logoutBtn" class="dropdown-btn" type="button">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z"/>
@@ -1065,6 +1072,25 @@ html, body {
     <div class="modal-actions">
       <button id="cancelChangePasswordBtn" class="modal-btn modal-btn-cancel" type="button">Cancel</button>
       <button id="submitChangePasswordBtn" class="modal-btn modal-btn-primary" type="button">Change</button>
+    </div>
+  </div>
+</div>
+
+<div id="changeSecondPasswordModal" class="modal-overlay">
+  <div class="modal-box">
+    <button id="closeChangeSecondPasswordModal" class="modal-close-btn" type="button">×</button>
+
+    <div class="modal-title">Change 2nd Password</div>
+
+    <div class="modal-form">
+      <input id="oldSecondPasswordInput" class="modal-input" type="password" inputmode="numeric" maxlength="6" placeholder="Old 2nd Password" />
+      <input id="newSecondPasswordInput" class="modal-input" type="password" inputmode="numeric" maxlength="6" placeholder="New 2nd Password" />
+      <input id="confirmSecondPasswordInput" class="modal-input" type="password" inputmode="numeric" maxlength="6" placeholder="Confirm 2nd Password" />
+    </div>
+
+    <div class="modal-actions">
+      <button id="cancelChangeSecondPasswordBtn" class="modal-btn modal-btn-cancel" type="button">Cancel</button>
+      <button id="submitChangeSecondPasswordBtn" class="modal-btn modal-btn-primary" type="button">Change</button>
     </div>
   </div>
 </div>
@@ -1104,6 +1130,7 @@ html, body {
   const loginFirebaseConfig = {
     apiKey: "AIzaSyCIYYpl-1psexPB_-CadD1smsc_e6rhu1U",
     authDomain: "page-login2.firebaseapp.com",
+    databaseURL: "https://page-login2-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "page-login2",
     storageBucket: "page-login2.firebasestorage.app",
     messagingSenderId: "860837620702",
@@ -1114,6 +1141,7 @@ html, body {
     || firebase.initializeApp(loginFirebaseConfig, "loginApp");
 
   const loginAuth = loginApp.auth();
+  const loginDb = loginApp.database();
 function syncAdminIdentityForLivechat() {
   const savedLoginUser = JSON.parse(localStorage.getItem("loginUser") || "null");
   if (!savedLoginUser) return;
@@ -1197,6 +1225,112 @@ if (savedLoginUser) {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", logoutAccount);
   }
+  const changeSecondPasswordBtn = document.getElementById("changeSecondPasswordBtn");
+const changeSecondPasswordModal = document.getElementById("changeSecondPasswordModal");
+const closeChangeSecondPasswordModal = document.getElementById("closeChangeSecondPasswordModal");
+const cancelChangeSecondPasswordBtn = document.getElementById("cancelChangeSecondPasswordBtn");
+const submitChangeSecondPasswordBtn = document.getElementById("submitChangeSecondPasswordBtn");
+
+const oldSecondPasswordInput = document.getElementById("oldSecondPasswordInput");
+const newSecondPasswordInput = document.getElementById("newSecondPasswordInput");
+const confirmSecondPasswordInput = document.getElementById("confirmSecondPasswordInput");
+
+function cleanSecondPasswordInputs() {
+  [oldSecondPasswordInput, newSecondPasswordInput, confirmSecondPasswordInput].forEach(input => {
+    if (!input) return;
+    input.value = input.value.replace(/\D/g, "").slice(0, 6);
+  });
+}
+
+[oldSecondPasswordInput, newSecondPasswordInput, confirmSecondPasswordInput].forEach(input => {
+  if (input) input.addEventListener("input", cleanSecondPasswordInputs);
+});
+
+function openChangeSecondPasswordModal() {
+  if (dropdownContent) dropdownContent.classList.remove("show");
+  if (changeSecondPasswordModal) changeSecondPasswordModal.classList.add("show");
+}
+
+function closeChangeSecondPasswordPopup() {
+  if (changeSecondPasswordModal) changeSecondPasswordModal.classList.remove("show");
+  if (oldSecondPasswordInput) oldSecondPasswordInput.value = "";
+  if (newSecondPasswordInput) newSecondPasswordInput.value = "";
+  if (confirmSecondPasswordInput) confirmSecondPasswordInput.value = "";
+}
+
+if (changeSecondPasswordBtn) {
+  changeSecondPasswordBtn.addEventListener("click", openChangeSecondPasswordModal);
+}
+
+if (closeChangeSecondPasswordModal) {
+  closeChangeSecondPasswordModal.addEventListener("click", closeChangeSecondPasswordPopup);
+}
+
+if (cancelChangeSecondPasswordBtn) {
+  cancelChangeSecondPasswordBtn.addEventListener("click", closeChangeSecondPasswordPopup);
+}
+
+if (changeSecondPasswordModal) {
+  changeSecondPasswordModal.addEventListener("click", (e) => {
+    if (e.target === changeSecondPasswordModal) closeChangeSecondPasswordPopup();
+  });
+}
+
+if (submitChangeSecondPasswordBtn) {
+  submitChangeSecondPasswordBtn.addEventListener("click", async () => {
+    const oldCode = oldSecondPasswordInput?.value?.trim() || "";
+    const newCode = newSecondPasswordInput?.value?.trim() || "";
+    const confirmCode = confirmSecondPasswordInput?.value?.trim() || "";
+
+    if (!oldCode || !newCode || !confirmCode) {
+      alert("Please fill in all 2nd password fields.");
+      return;
+    }
+
+    if (newCode.length !== 6) {
+      alert("New 2nd password must be 6 digits.");
+      return;
+    }
+
+    if (newCode !== confirmCode) {
+      alert("New 2nd password and confirm do not match.");
+      return;
+    }
+
+    const user = loginAuth.currentUser;
+
+    if (!user) {
+      alert("User not found. Please login again.");
+      return;
+    }
+
+    try {
+      submitChangeSecondPasswordBtn.disabled = true;
+      submitChangeSecondPasswordBtn.textContent = "Changing...";
+
+      const ref = loginDb.ref("users/" + user.uid + "/secondPassword");
+      const snap = await ref.get();
+      const savedCode = String(snap.val() || "");
+
+      if (oldCode !== savedCode) {
+        alert("Old 2nd password is incorrect.");
+        return;
+      }
+
+      await ref.set(newCode);
+
+      alert("2nd password changed successfully.");
+      closeChangeSecondPasswordPopup();
+
+    } catch (err) {
+      console.error("Change 2nd password error:", err);
+      alert(err.message || "Failed to change 2nd password.");
+    } finally {
+      submitChangeSecondPasswordBtn.disabled = false;
+      submitChangeSecondPasswordBtn.textContent = "Change";
+    }
+  });
+}
 const changePasswordBtn = document.getElementById("changePasswordBtn");
 const changePasswordModal = document.getElementById("changePasswordModal");
 const closeChangePasswordModal = document.getElementById("closeChangePasswordModal");
