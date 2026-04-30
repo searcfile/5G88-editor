@@ -444,17 +444,22 @@ html, body {
   height: 100%;
 }
 
-#pageFrame {
+#pageFrame{
   display: block;
   width: 100%;
-  height: calc(100vh - 120px);
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   border: none;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
 }
 .tab-bar {
   position: relative;
   transition: margin-left 0.2s ease, width 0.2s ease;
   width: 100%;
-  height: 56px;
+  height: 52px;
   background: var(--bg-main);
   display: flex;
   align-items: flex-end;
@@ -468,23 +473,23 @@ html, body {
   -ms-overflow-style: none;
   scrollbar-width: none;
   box-sizing: border-box;
-  padding: 0px 10px;
+  padding: 0px 12px;
 }
-.tab-bar::after{
+.tab-bar::before{
   content: "";
   position: absolute;
+  left: 12px;
+  right: 12px;
   bottom: 0;
-  left: 10px;
-  width: calc(100% - 20px); 
-  height: 1px;
-  background: var(--border2);
-  z-index: 1; /* 🔥 belakang tab */
+  border-bottom:1px solid var(--border4);
+  z-index: 0; /* bawah tab */
+  pointer-events: none;
 }
 .tab-bar::-webkit-scrollbar {display: none;}
 .tab {
   background: var(--tab-bg);
   color: var(--text-soft)!important;
-  padding: 12px 16px;
+  padding: 11px 16px;
   border-radius: 8px 8px 0 0;
   gap: 2px;
   white-space: nowrap;
@@ -496,6 +501,7 @@ html, body {
     box-shadow .18s ease,
     opacity .18s ease;
   border: 1px solid var(--border3);
+  border-bottom: 1px solid var(--border3);
   display: inline-flex;
   font-size: 14px;
   align-items: center;
@@ -507,26 +513,35 @@ html, body {
   line-height: 1.2;
   z-index: 2;
   margin-bottom: -1px;
+  position: relative;
   will-change: transform;
 }
-.tab .close-tab{
-  background: transparent;
-  color: var(--close);
-  border: none;
-  border-radius: 0;
-  cursor: pointer;
-  width: 1em;
-  height: 1em;
-  padding: 0;
-  margin-left: 4px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: color .3s ease, transform .2s ease;
+.tab .close-tab {
+    background: transparent;
+    color: var(--close);
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    width: 1em;
+    height: 1em;
+    padding: 0;
+    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color .3s ease, transform .2s ease;
     margin-left: 4px;
     pointer-events: auto;
-  font-size:12px;
+    font-size: 12px;
 }
+
+.tab .close-tab svg{
+  width: 12px;
+  height: 12px;
+  display: block;
+  fill: currentColor;
+}
+
 .tab .close-tab:hover{
   color:var(--text-main)!important
 }
@@ -1960,27 +1975,16 @@ if (settingsBtn) {
       title.textContent = tab.label;
       title.style.pointerEvents = "none";
 
-      const closeBtn = document.createElement("button");
-      closeBtn.className = "close-tab";
-      closeBtn.textContent = "×";
-      closeBtn.style.marginLeft = "4px";
-      closeBtn.style.cursor = "pointer";
-      closeBtn.style.background = "none";
-      closeBtn.style.border = "none";
-      closeBtn.style.color = "red";
-      closeBtn.style.fontSize = "14px";
-      closeBtn.style.transition = "all 0.2s ease";
-      closeBtn.style.padding = "0";
-      closeBtn.style.pointerEvents = "auto";
+const closeBtn = document.createElement("button");
+closeBtn.className = "close-tab";
+closeBtn.type = "button";
+closeBtn.setAttribute("aria-label", "Close tab");
 
-      closeBtn.onmouseover = () => {
-        closeBtn.style.color = "#ff1a1a";
-        closeBtn.style.transform = "scale(1.2)";
-      };
-      closeBtn.onmouseout = () => {
-        closeBtn.style.color = "red";
-        closeBtn.style.transform = "scale(1)";
-      };
+closeBtn.innerHTML = `
+  <svg viewBox="64 64 896 896" aria-hidden="true">
+    <path d="M799.86 166.31c.02 0 .04.02.08.06l57.69 57.7c.04.03.05.05.06.08a.12.12 0 010 .06c0 .03-.02.05-.06.09L569.93 512l287.7 287.7c.04.04.05.06.06.09a.12.12 0 010 .07c0 .02-.02.04-.06.08l-57.7 57.69c-.03.04-.05.05-.07.06a.12.12 0 01-.07 0c-.03 0-.05-.02-.09-.06L512 569.93l-287.7 287.7c-.04.04-.06.05-.09.06a.12.12 0 01-.07 0c-.02 0-.04-.02-.08-.06l-57.69-57.7c-.04-.03-.05-.05-.06-.07a.12.12 0 010-.07c0-.03.02-.05.06-.09L454.07 512l-287.7-287.7c-.04-.04-.05-.06-.06-.09a.12.12 0 010-.07c0-.02.02-.04.06-.08l57.7-57.69c.03-.04.05-.05.07-.06a.12.12 0 01.07 0c.03 0 .05.02.09.06L512 454.07l287.7-287.7c.04-.04.06-.05.09-.06a.12.12 0 01.07 0z"></path>
+  </svg>
+`;
 
       closeBtn.onclick = (e) => {
         e.stopPropagation();
