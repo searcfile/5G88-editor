@@ -23,6 +23,7 @@
   --tab2: #ffffff;
   --border-bottom: #ffffff;
   --close: rgba(0, 0, 0, 0.88);
+   --border-input5:#f0f0f0;  
 
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #d4dbe6;
@@ -47,7 +48,7 @@
 }
 
 body.dark-theme{
-  --bg-main: #000;
+  --bg-main: #141414;
   --sidebar: #001529;
   --text-main: #fff;
   --text-soft: rgba(255,255,255,0.85);
@@ -63,6 +64,7 @@ body.dark-theme{
   --tab2: #141414;
   --border-bottom: #141414;
   --close: rgba(255,255,255,0.45);
+   --border-input5:#303030;  
 
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #303030;
@@ -97,10 +99,8 @@ body.dark-theme{
       display:flex;
       align-items:center;
       justify-content:center;
-      background:
-        radial-gradient(circle at top, #1f2937 0, transparent 55%),
-        radial-gradient(circle at bottom, #020617 0, #000 65%);
-      color:#fff;
+      background:var(--bg-main);
+      color:var(--text-soft);
       padding:20px;
     }
 
@@ -108,38 +108,23 @@ body.dark-theme{
       width:100%;
       max-width:420px;
       background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:18px;
-      padding:28px 22px;
-      box-shadow:0 20px 50px rgba(0,0,0,0.35);
-      backdrop-filter:blur(10px);
-    }
-
-    .logo-wrap{
-      display:flex;
-      justify-content:center;
-      margin-bottom:14px;
-    }
-
-    .logo-wrap img{
-      width:78px;
-      height:78px;
-      object-fit:contain;
-      border-radius:16px;
+      border:1px solid var(--border-input5);
+      border-radius:12px;
+      padding:32px 40px;
+      box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 24px;
     }
 
     .title{
       text-align:center;
-      font-size:28px;
-      font-weight:700;
-      margin-bottom:6px;
+      font-size:24px;
+      font-weight:600;
+      color:white;
     }
 
     .sub{
       text-align:center;
-      color:rgba(255,255,255,0.68);
-      font-size:14px;
-      margin-bottom:22px;
+      color: rgba(255, 255, 255, 0.65);
+      font-size:13px;
     }
 
     .field{
@@ -160,16 +145,15 @@ body.dark-theme{
 
     .input{
       width:100%;
-      height:32px;
+      height:40px;
       border-radius:6px;
       border:1px solid #334155;
       background:rgba(15,23,42,0.72);
       color:#fff;
-      padding:0 14px;
+      padding:7 11px;
       outline:none;
       transition:all .2s ease;
       font-size:14px;
-      padding:0px 15px;
     }
 
     .input::placeholder{
@@ -196,7 +180,7 @@ body.dark-theme{
 
     .btn{
       width:100%;
-      height:32px;
+      height:40px;
       border:none;
       border-radius:6px;
       background:#1668dc;
@@ -241,11 +225,8 @@ body.dark-theme{
 </head>
 <body>
   <div class="login-box" id="loginBox">
-    <div class="logo-wrap">
-      <img src="https://i.imgur.com/QrxyBjc.png" alt="5G88 Logo">
-    </div>
 
-    <div class="title">Login Admin</div>
+    <div class="title">Log in</div>
     <div class="sub">Masuk guna username dan password</div>
 
     <form id="loginForm">
