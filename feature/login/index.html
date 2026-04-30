@@ -737,11 +737,23 @@ otpInputs.forEach((input, index) => {
     otpInputs[nextIndex]?.focus();
   });
 
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Backspace" && !input.value && otpInputs[index - 1]) {
-      otpInputs[index - 1].focus();
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+
+    const code = otpInputs.map(i => i.value).join("");
+
+    if (code.length === 6) {
+      verifySecondBtn.click();
     }
-  });
+
+    return;
+  }
+
+  if (e.key === "Backspace" && !input.value && otpInputs[index - 1]) {
+    otpInputs[index - 1].focus();
+  }
+});
 });
 
 changeLoginBtn.addEventListener("click", async () => {
