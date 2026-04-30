@@ -466,7 +466,7 @@ html, body {
   white-space: nowrap;
   margin-top: 64px;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   -ms-overflow-style: none;
   scrollbar-width: none;
   box-sizing: border-box;
@@ -486,7 +486,6 @@ html, body {
 .tab-module-search{
   position: relative;
   flex-shrink: 0;
-  margin-right: 6px;
   z-index: 5;
 }
 
@@ -552,15 +551,15 @@ html, body {
 }
 
 .tab-search-action svg{
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   fill: currentColor;
 }
 
 .tab-search-list{
-  position: absolute;
-  top: 36px;
-  left: 0;
+  position: fixed;
+  top: 116px;
+  left: 12px;
   width: 260px;
   max-height: 360px;
   overflow-y: auto;
@@ -569,7 +568,7 @@ html, body {
   border: 1px solid var(--border2);
   border-radius: 8px;
   padding: 8px;
-  z-index: 9999;
+  z-index: 99999;
 }
 
 .tab-module-search.list-open .tab-search-list{
@@ -2111,18 +2110,27 @@ function createTabModuleSearch(){
     setTimeout(() => input.focus(), 0);
   });
 
-  input.addEventListener("click", (e) => {
-    e.stopPropagation();
-    wrap.classList.add("list-open");
-    setIcon(ICON_SEARCH);
-    renderList();
-  });
+input.addEventListener("click", (e) => {
+  e.stopPropagation();
 
-  input.addEventListener("input", () => {
-    wrap.classList.add("list-open");
-    setIcon(ICON_SEARCH);
-    renderList();
-  });
+  const rect = wrap.getBoundingClientRect();
+  list.style.left = rect.left + "px";
+  list.style.top = (rect.bottom + 3) + "px";
+
+  wrap.classList.add("list-open");
+  setIcon(ICON_SEARCH);
+  renderList();
+});
+
+input.addEventListener("input", () => {
+  const rect = wrap.getBoundingClientRect();
+  list.style.left = rect.left + "px";
+  list.style.top = (rect.bottom + 3) + "px";
+
+  wrap.classList.add("list-open");
+  setIcon(ICON_SEARCH);
+  renderList();
+});
 
   action.addEventListener("click", (e) => {
     e.stopPropagation();
