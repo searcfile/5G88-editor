@@ -2,15 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Universal Valid Bet Calculator</title>
+<title>Platform Valid Bet Calculator</title>
 
 <style>
 *{box-sizing:border-box}
 
 :root{
   --bg:#050505;
-  --panel:#111;
-  --panel2:#080808;
   --border:#333;
   --text:#fff;
   --muted:#9ca3af;
@@ -18,10 +16,7 @@
   --gold2:#ffdd55;
 }
 
-html,body{
-  width:100%;
-  min-height:100%;
-}
+html,body{width:100%;min-height:100%}
 
 body{
   margin:0;
@@ -31,12 +26,12 @@ body{
     radial-gradient(circle at bottom right, rgba(246,201,69,.08), transparent 35%),
     var(--bg);
   color:var(--text);
-  font-family:Arial, sans-serif;
+  font-family:Arial,sans-serif;
   padding:18px;
 }
 
 .container{
-  width:min(100%, 1080px);
+  width:min(100%,1120px);
   margin:0 auto;
   background:linear-gradient(180deg,#141414,#0b0b0b);
   padding:20px;
@@ -57,7 +52,6 @@ h2{
   color:var(--gold);
   margin:0;
   font-size:25px;
-  line-height:1.2;
 }
 
 .badge{
@@ -70,7 +64,6 @@ h2{
 }
 
 textarea{
-  display:block;
   width:100%;
   height:340px;
   resize:vertical;
@@ -82,7 +75,6 @@ textarea{
   outline:none;
   font-size:13px;
   line-height:1.5;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
 }
 
 textarea::placeholder{color:var(--muted)}
@@ -92,12 +84,24 @@ textarea:focus{
   box-shadow:0 0 0 3px rgba(246,201,69,.16);
 }
 
-.controls{
+.panel{
   margin-top:14px;
   display:grid;
-  grid-template-columns:160px 180px 90px 1fr auto auto;
+  grid-template-columns:1.1fr .8fr .7fr auto auto auto;
   gap:10px;
   align-items:center;
+}
+
+.add-panel{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:1fr 150px auto;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  border:1px solid #2f2f2f;
+  border-radius:14px;
+  background:#090909;
 }
 
 select,input{
@@ -112,18 +116,9 @@ select,input{
   font-size:14px;
 }
 
-select:focus,
-input:focus{
+select:focus,input:focus{
   border-color:var(--gold);
   box-shadow:0 0 0 3px rgba(246,201,69,.14);
-}
-
-.hint{
-  color:var(--muted);
-  font-size:12px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
 
 button{
@@ -147,15 +142,26 @@ button:active{transform:translateY(1px)}
   border:1px solid #444;
 }
 
+.danger{
+  background:#3a1515;
+  color:#ffb4b4;
+  border:1px solid #6b2525;
+}
+
+.hint{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+}
+
 .result{
   margin-top:15px;
   display:grid;
-  grid-template-columns:repeat(3, minmax(0, 1fr));
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:10px;
 }
 
 .card{
-  min-width:0;
   background:linear-gradient(180deg,#0b0b0b,#050505);
   border:1px solid #333;
   padding:14px;
@@ -165,12 +171,10 @@ button:active{transform:translateY(1px)}
 .card .label{
   font-size:14px;
   margin-bottom:7px;
-  color:#fff;
 }
 
 .value{
   font-size:26px;
-  line-height:1;
   color:var(--gold);
   font-weight:bold;
   word-break:break-all;
@@ -192,14 +196,14 @@ button:active{transform:translateY(1px)}
 }
 
 .debug-list{
-  max-height:190px;
+  max-height:210px;
   overflow:auto;
   font-size:12px;
 }
 
 .debug-row{
   display:grid;
-  grid-template-columns:55px 90px 1fr;
+  grid-template-columns:55px 90px 80px 1fr;
   gap:8px;
   padding:8px 13px;
   border-bottom:1px solid rgba(255,255,255,.05);
@@ -216,9 +220,7 @@ textarea::-webkit-scrollbar,
 }
 
 textarea::-webkit-scrollbar-track,
-.debug-list::-webkit-scrollbar-track{
-  background:transparent;
-}
+.debug-list::-webkit-scrollbar-track{background:transparent}
 
 textarea::-webkit-scrollbar-thumb,
 .debug-list::-webkit-scrollbar-thumb{
@@ -226,23 +228,9 @@ textarea::-webkit-scrollbar-thumb,
   border-radius:999px;
 }
 
-textarea::-webkit-scrollbar-thumb:hover,
-.debug-list::-webkit-scrollbar-thumb:hover{
-  background:rgba(246,201,69,.45);
-}
-
-@media(max-width:850px){
-  .controls{
-    grid-template-columns:1fr 1fr 90px 1fr;
-  }
-
-  .controls button{
-    width:100%;
-  }
-
-  .result{
-    grid-template-columns:1fr;
-  }
+@media(max-width:900px){
+  .panel,.add-panel{grid-template-columns:1fr 1fr}
+  .result{grid-template-columns:1fr}
 }
 
 @media(max-width:520px){
@@ -251,9 +239,8 @@ textarea::-webkit-scrollbar-thumb:hover,
   .header{align-items:flex-start;flex-direction:column}
   h2{font-size:21px}
   textarea{height:300px}
-  .controls{grid-template-columns:1fr}
-  .hint{white-space:normal}
-  .debug-row{grid-template-columns:45px 75px 1fr}
+  .panel,.add-panel{grid-template-columns:1fr}
+  .debug-row{grid-template-columns:42px 70px 60px 1fr}
 }
 </style>
 </head>
@@ -262,26 +249,36 @@ textarea::-webkit-scrollbar-thumb:hover,
 
 <div class="container">
   <div class="header">
-    <h2>Universal Valid Bet Calculator</h2>
-    <div class="badge">Multi Platform</div>
+    <h2>Platform Valid Bet Calculator</h2>
+    <div class="badge">Custom Platform</div>
   </div>
 
   <textarea id="input" placeholder="Paste game log text here..."></textarea>
 
-  <div class="controls">
-    <select id="mode">
-      <option value="auto">Auto Detect</option>
-      <option value="manual">Manual Column</option>
+  <div class="panel">
+    <select id="platformSelect"></select>
+
+    <select id="columnMode">
+      <option value="number">Number Column</option>
+      <option value="text">Text Column</option>
+      <option value="afterDateTime">After Date Time</option>
     </select>
 
-    <input id="manualCol" type="number" value="3" min="1" title="Bet column position">
+    <input id="betColumn" type="number" value="1" min="1">
 
-    <button type="button" onclick="applyManual()">OK</button>
+    <button type="button" id="applyBtn">Apply</button>
+    <button type="button" id="copyBtn">Copy</button>
+    <button type="button" class="ghost" id="resetBtn">Reset</button>
+  </div>
 
-    <div class="hint" id="hintText">Auto detect aktif. Manual boleh guna column apa saja.</div>
+  <div class="add-panel">
+    <input id="newPlatformName" placeholder="New platform name, contoh: XE88">
+    <input id="newPlatformCol" type="number" min="1" value="1" placeholder="Bet column">
+    <button type="button" id="savePlatformBtn">Save Platform</button>
+  </div>
 
-    <button type="button" onclick="copyResult()">Copy</button>
-    <button type="button" class="ghost" onclick="clearAll()">Reset</button>
+  <div class="hint" id="hintText">
+    Number Column = kira ikut nombor saja. Contoh: -5.0000 0.0000 -5.0000 = column 1 ialah 5.00.
   </div>
 
   <div class="result">
@@ -289,12 +286,10 @@ textarea::-webkit-scrollbar-thumb:hover,
       <div class="label">Total Bet</div>
       <div class="value" id="total">0.00</div>
     </div>
-
     <div class="card">
       <div class="label">Valid Rows</div>
       <div class="value" id="rows">0</div>
     </div>
-
     <div class="card">
       <div class="label">Skipped</div>
       <div class="value" id="skip">0</div>
@@ -309,12 +304,108 @@ textarea::-webkit-scrollbar-thumb:hover,
 
 <script>
 const input = document.getElementById("input");
-const modeEl = document.getElementById("mode");
-const manualColEl = document.getElementById("manualCol");
+const platformSelect = document.getElementById("platformSelect");
+const columnMode = document.getElementById("columnMode");
+const betColumn = document.getElementById("betColumn");
 const hintText = document.getElementById("hintText");
 const debugList = document.getElementById("debugList");
 
-let manualColumn = 1;
+const STORAGE_KEY = "validBetPlatforms.v2";
+
+const defaultPlatforms = {
+  dolphin: {
+    name: "Dolphin / Format Lama",
+    mode: "number",
+    col: 2
+  },
+  fortune: {
+    name: "Fortune Gems / DateTime",
+    mode: "afterDateTime",
+    col: 1
+  }
+};
+
+let platforms = loadPlatforms();
+let activeKey = localStorage.getItem("activeValidBetPlatform") || "dolphin";
+
+function loadPlatforms(){
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  return {...defaultPlatforms, ...saved};
+}
+
+function savePlatforms(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(platforms));
+}
+
+function renderPlatforms(){
+  platformSelect.innerHTML = "";
+
+  Object.keys(platforms).forEach(key=>{
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = platforms[key].name;
+    platformSelect.appendChild(opt);
+  });
+
+  if(!platforms[activeKey]){
+    activeKey = Object.keys(platforms)[0];
+  }
+
+  platformSelect.value = activeKey;
+  loadPlatformSetting();
+}
+
+function loadPlatformSetting(){
+  const p = platforms[platformSelect.value];
+  if(!p) return;
+
+  columnMode.value = p.mode || "number";
+  betColumn.value = p.col || 1;
+
+  localStorage.setItem("activeValidBetPlatform", platformSelect.value);
+  updateHint();
+}
+
+function updatePlatformSetting(){
+  const key = platformSelect.value;
+  if(!platforms[key]) return;
+
+  platforms[key].mode = columnMode.value;
+  platforms[key].col = parseInt(betColumn.value, 10) || 1;
+
+  savePlatforms();
+  updateHint();
+  calculate();
+}
+
+function saveNewPlatform(){
+  const name = document.getElementById("newPlatformName").value.trim();
+  const col = parseInt(document.getElementById("newPlatformCol").value, 10) || 1;
+
+  if(!name){
+    alert("Isi nama platform dulu bro");
+    return;
+  }
+
+  const key = name.toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  platforms[key] = {
+    name,
+    mode: columnMode.value || "number",
+    col
+  };
+
+  savePlatforms();
+  activeKey = key;
+  renderPlatforms();
+
+  document.getElementById("newPlatformName").value = "";
+  document.getElementById("newPlatformCol").value = "1";
+
+  calculate();
+}
 
 function cleanNum(value){
   if(value === undefined || value === null) return null;
@@ -340,23 +431,15 @@ function isTime(v){
   return /^\d{2}:\d{2}:\d{2}$/.test(v);
 }
 
-function isNumberToken(v){
-  return /^-?\d+(?:,\d{3})*(?:\.\d+)?$/.test(v);
+function getTextColumns(line){
+  return line.trim().split(/\s+/);
 }
 
 function getNumberColumns(line){
-  const parts = line.trim().split(/\s+/);
-
-  return parts
+  return getTextColumns(line)
     .filter(x => !isDate(x) && !isTime(x))
-    .map(x => cleanNum(x))
+    .map(cleanNum)
     .filter(x => x !== null);
-}
-
-function applyManual(){
-  manualColumn = parseInt(manualColEl.value, 10) || 1;
-  modeEl.value = "manual";
-  calculate();
 }
 
 function extractBet(line){
@@ -365,39 +448,32 @@ function extractBet(line){
   if(/transfer\s*success/i.test(line)) return null;
   if(/withdraw/i.test(line) && !/bet/i.test(line)) return null;
 
-  const parts = line.trim().split(/\s+/);
-  const mode = modeEl.value;
+  const p = platforms[platformSelect.value];
+  if(!p) return null;
 
-  // ✅ MANUAL MODE BARU:
-  // kira column berdasarkan nombor saja, bukan semua text
-  if(mode === "manual"){
-    const nums = getNumberColumns(line);
-    const index = manualColumn - 1;
-    return nums[index] ?? null;
+  const mode = p.mode;
+  const col = (parseInt(p.col, 10) || 1) - 1;
+  const parts = getTextColumns(line);
+
+  if(mode === "text"){
+    return cleanNum(parts[col]);
   }
 
-  // ✅ AUTO FORMAT B:
-  // ... 2026-04-30 18:24:04 -5.0000 0.0000 ...
-  const firstDateIndex = parts.findIndex(isDate);
+  if(mode === "number"){
+    const nums = getNumberColumns(line);
+    return nums[col] ?? null;
+  }
 
-  if(firstDateIndex !== -1){
-    if(parts[firstDateIndex + 1] && isTime(parts[firstDateIndex + 1])){
-      const betAfterDateTime = cleanNum(parts[firstDateIndex + 2]);
-      if(betAfterDateTime !== null) return betAfterDateTime;
+  if(mode === "afterDateTime"){
+    const dateIndex = parts.findIndex((x, i) =>
+      isDate(x) && parts[i + 1] && isTime(parts[i + 1])
+    );
+
+    if(dateIndex !== -1){
+      return cleanNum(parts[dateIndex + 2]);
     }
 
-    // ✅ AUTO FORMAT A:
-    // DolphinReef 0 2.00 0.00 17.98 15.98 date time
-    const beforeDate = parts.slice(0, firstDateIndex);
-    const numsBeforeDate = beforeDate
-      .filter(isNumberToken)
-      .map(cleanNum)
-      .filter(x => x !== null);
-
-    if(numsBeforeDate.length >= 5){
-      const bet = numsBeforeDate[1];
-      if(bet !== null) return bet;
-    }
+    return null;
   }
 
   return null;
@@ -420,22 +496,24 @@ function calculate(){
       total += bet;
       valid++;
 
-      if(preview.length < 80){
+      if(preview.length < 100){
         preview.push({
           type:"good",
           no:idx + 1,
           bet:bet.toFixed(2),
+          col: platforms[platformSelect.value].col,
           text:line.trim()
         });
       }
     }else{
       skip++;
 
-      if(preview.length < 80){
+      if(preview.length < 100){
         preview.push({
           type:"bad",
           no:idx + 1,
           bet:"Skip",
+          col:"-",
           text:line.trim()
         });
       }
@@ -451,7 +529,11 @@ function calculate(){
 
 function renderPreview(items){
   if(!items.length){
-    debugList.innerHTML = `<div class="debug-row bad"><div>-</div><div>Empty</div><div>No data pasted yet.</div></div>`;
+    debugList.innerHTML = `
+      <div class="debug-row bad">
+        <div>-</div><div>Empty</div><div>-</div><div>No data pasted yet.</div>
+      </div>
+    `;
     return;
   }
 
@@ -459,9 +541,23 @@ function renderPreview(items){
     <div class="debug-row ${item.type}">
       <div>#${item.no}</div>
       <div>${item.bet}</div>
+      <div>Col ${item.col}</div>
       <div>${escapeHTML(item.text)}</div>
     </div>
   `).join("");
+}
+
+function updateHint(){
+  const mode = columnMode.value;
+  const col = betColumn.value || 1;
+
+  if(mode === "number"){
+    hintText.textContent = `Number Column aktif: system kira nombor saja. Sekarang ambil nombor column ${col}.`;
+  }else if(mode === "text"){
+    hintText.textContent = `Text Column aktif: system kira ikut semua column text. Sekarang ambil text column ${col}.`;
+  }else{
+    hintText.textContent = `After Date Time aktif: system ambil nombor selepas date + time pertama. Sesuai format Fortune Gems.`;
+  }
 }
 
 function escapeHTML(str){
@@ -481,22 +577,25 @@ function clearAll(){
   calculate();
 }
 
+document.getElementById("applyBtn").addEventListener("click", updatePlatformSetting);
+document.getElementById("copyBtn").addEventListener("click", copyResult);
+document.getElementById("resetBtn").addEventListener("click", clearAll);
+document.getElementById("savePlatformBtn").addEventListener("click", saveNewPlatform);
+
 input.addEventListener("input", calculate);
 
-modeEl.addEventListener("change", ()=>{
-  if(modeEl.value === "manual"){
-    manualColumn = parseInt(manualColEl.value, 10) || 1;
-    hintText.textContent = "Manual aktif: column dikira dari nombor saja. Contoh column 1 = angka pertama.";
-  }else{
-    hintText.textContent = "Auto detect aktif. Manual boleh guna column nombor apa saja.";
-  }
+platformSelect.addEventListener("change", ()=>{
+  activeKey = platformSelect.value;
+  loadPlatformSetting();
   calculate();
 });
 
-manualColEl.addEventListener("keydown", (e)=>{
-  if(e.key === "Enter") applyManual();
+columnMode.addEventListener("change", updateHint);
+betColumn.addEventListener("keydown", e=>{
+  if(e.key === "Enter") updatePlatformSetting();
 });
 
+renderPlatforms();
 calculate();
 </script>
 
