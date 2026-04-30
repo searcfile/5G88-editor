@@ -399,8 +399,15 @@ body.dark-theme{
   font-size:13px;
   padding:4px 0;
   white-space:nowrap;
+  display:flex;
+  align-items:center;
+  gap:5px;
 }
-
+.signin-change svg{
+  width:14px;
+  height:14px;
+  display:block;
+}
 .signin-change:hover{
   color:#3c89e8;
 }
@@ -481,9 +488,12 @@ body.dark-theme{
     </div>
   </div>
 
-  <button type="button" id="changeLoginBtn" class="signin-change">
-    ← Change
-  </button>
+<button type="button" id="changeLoginBtn" class="signin-change" aria-label="Change user">
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M9.474 5.209s-4.501 4.505-6.254 6.259c-.147.146-.22.338-.22.53s.073.384.22.53c1.752 1.754 6.252 6.257 6.252 6.257.145.145.336.217.527.217.191-.001.383-.074.53-.221.293-.293.294-.766.004-1.057l-4.976-4.976h14.692c.414 0 .75-.336.75-.75s-.336-.75-.75-.75H5.557l4.978-4.979c.289-.289.287-.761-.006-1.054-.147-.147-.339-.221-.53-.221-.191-.001-.38.071-.525.215z"/>
+  </svg>
+  <span>Change</span>
+</button>
 </div>
 
     <label class="label">2nd password</label>
@@ -690,7 +700,28 @@ const otpInputs = Array.from(document.querySelectorAll(".otp-input"));
 otpInputs.forEach((input, index) => {
   input.addEventListener("input", () => {
     input.value = input.value.replace(/\D/g, "").slice(0, 1);
-    if (input.value && otpInputs[index + 1]) otpInputs[index + 1].focus();
+
+    if (input.value && otpInputs[index + 1]) {
+      otpInputs[index + 1].focus();
+    }
+  });
+
+  input.addEventListener("paste", (e) => {
+    e.preventDefault();
+
+    const pasteText = (e.clipboardData || window.clipboardData)
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, otpInputs.length);
+
+    if (!pasteText) return;
+
+    otpInputs.forEach((box, i) => {
+      box.value = pasteText[i] || "";
+    });
+
+    const nextIndex = Math.min(pasteText.length, otpInputs.length) - 1;
+    otpInputs[nextIndex]?.focus();
   });
 
   input.addEventListener("keydown", (e) => {
