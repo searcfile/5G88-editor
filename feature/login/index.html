@@ -423,14 +423,6 @@ body.dark-theme{
 
 togglePassword.addEventListener("click", () => {
   const isPwd = passwordEl.type === "password";
-  const eyeLock = document.getElementById("eyeLock");
-  const eyeShow = document.getElementById("eyeShow");
-
-  passwordEl.type = isPwd ? "text" : "password";
-  togglePassword.setAttribute("aria-label", isPwd ? "Hide password" : "Show password");
-
-togglePassword.addEventListener("click", () => {
-  const isPwd = passwordEl.type === "password";
 
   passwordEl.type = isPwd ? "text" : "password";
 
@@ -439,9 +431,17 @@ togglePassword.addEventListener("click", () => {
     isPwd ? "Hide password" : "Show password"
   );
 
+  // toggle icon
+  const eyeIcon = document.getElementById("eyeIcon");
+  const eyeShow = document.getElementById("eyeShow");
+
+  if (eyeIcon && eyeShow) {
+    eyeIcon.style.display = isPwd ? "none" : "block";
+    eyeShow.style.display = isPwd ? "block" : "none";
+  }
+
   passwordEl.focus();
 });
-
   // ✅ pastikan session disimpan local
   auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     .catch(err => console.error("Persistence error:", err));
