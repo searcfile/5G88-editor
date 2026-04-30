@@ -565,7 +565,9 @@ if (!password) {
       setLoading(true);
 const cred = await auth.signInWithEmailAndPassword(email, password);
 pendingUser = cred.user;
-
+alert("UID LOGIN: " + pendingUser.uid);
+console.log("UID LOGIN:", pendingUser.uid);
+      
 document.getElementById("loginForm").style.display = "none";
 document.getElementById("secondPassPanel").style.display = "block";
 document.getElementById("secondUserName").textContent = username;
