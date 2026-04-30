@@ -1993,10 +1993,22 @@ closeBtn.innerHTML = `
   </svg>
 `;
 
-      closeBtn.onclick = (e) => {
-        e.stopPropagation();
-        closeTab(tab.label);
-      };
+closeBtn.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+});
+
+closeBtn.addEventListener("mousedown", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+});
+
+closeBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  closeTab(tab.label);
+});
 
       tabElement.appendChild(title);
       tabElement.appendChild(closeBtn);
