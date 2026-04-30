@@ -240,18 +240,35 @@ body.dark-theme{
       border-color:#1668dc;
     }
 
-    .password-toggle{
-      position:absolute;
-      right:12px;
-      top:50%;
-      transform:translateY(-50%);
-      background:none;
-      border:none;
-      color:rgba(255,255,255,0.6);
-      cursor:pointer;
-      font-size:10px;
-      font-weight:700;
-    }
+.password-toggle{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:18px;
+  height:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:none;
+  border:none;
+  color:var(--close);
+  opacity:.75;
+  cursor:pointer;
+  padding:0;
+  line-height:0;
+}
+
+.password-toggle svg{
+  width:1em;
+  height:1em;
+  display:block;
+}
+
+.password-toggle:hover{
+  color:var(--gold-hover);
+  opacity:1;
+}
 
     .btn{
       width:100%;
@@ -331,7 +348,18 @@ body.dark-theme{
           <svg viewBox="64 64 896 896"><path fill="currentColor" d="M832 464h-68V240c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zM332 240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v224H332V240zm460 600H232V536h560v304zM484 701v53c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-53a48.01 48.01 0 10-56 0z"/></svg>
          </span>
         <input id="password" class="input has-left-icon has-right-icon" type="password" placeholder="Masukkan password" autocomplete="new-password" required />
-        <button type="button" class="password-toggle" id="togglePassword">SHOW</button>
+<button type="button" class="password-toggle" id="togglePassword" aria-label="Show password">
+  <svg id="eyeLock" viewBox="64 64 896 896" aria-hidden="true">
+    <path fill="currentColor" d="M832 464h-68V240c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zM332 240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v224H332V240zm460 600H232V536h560v304zM484 701v53c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-53a48.01 48.01 0 10-56 0z"/>
+  </svg>
+
+  <svg id="eyeShow" viewBox="64 64 896 896" aria-hidden="true" style="display:none;">
+    <path d="M81.8 537.8a60.3 60.3 0 010-51.5C176.6 286.5 319.8 186 512 186c-192.2 0-335.4 100.5-430.2 300.3a60.3 60.3 0 000 51.5C176.6 737.5 319.9 838 512 838c-192.1 0-335.4-100.5-430.2-300.2z" fill="#e6f4ff"></path>
+    <path d="M512 258c-161.3 0-279.4 81.8-362.7 254C232.6 684.2 350.7 766 512 766c161.4 0 279.5-81.8 362.7-254C791.4 339.8 673.3 258 512 258zm-4 430c-97.2 0-176-78.8-176-176s78.8-176 176-176 176 78.8 176 176-78.8 176-176 176z" fill="#e6f4ff"></path>
+    <path d="M942.2 486.2C847.4 286.5 704.1 186 512 186c-192.2 0-335.4 100.5-430.2 300.3a60.3 60.3 0 000 51.5C176.6 737.5 319.9 838 512 838c192.2 0 335.4-100.5 430.2-300.3 7.7-16.2 7.7-35 0-51.5zM512 766c-161.3 0-279.4-81.8-362.7-254C232.6 339.8 350.7 258 512 258s279.4 81.8 362.7 254C791.5 684.2 673.4 766 512 766z" fill="#1677ff"></path>
+    <path d="M508 336c-97.2 0-176 78.8-176 176s78.8 176 176 176 176-78.8 176-176-78.8-176-176-176zm0 288c-61.9 0-112-50.1-112-112s50.1-112 112-112 112 50.1 112 112-50.1 112-112 112z" fill="#1677ff"></path>
+  </svg>
+</button>
         </div>
       </div>
 
@@ -392,12 +420,19 @@ body.dark-theme{
     loginBtn.textContent = state ? "PLEASE WAIT..." : "LOGIN";
   }
 
-  togglePassword.addEventListener("click", () => {
-    const isPwd = passwordEl.type === "password";
-    passwordEl.type = isPwd ? "text" : "password";
-    togglePassword.textContent = isPwd ? "HIDE" : "SHOW";
-  });
+togglePassword.addEventListener("click", () => {
+  const isPwd = passwordEl.type === "password";
+  const eyeLock = document.getElementById("eyeLock");
+  const eyeShow = document.getElementById("eyeShow");
 
+  passwordEl.type = isPwd ? "text" : "password";
+  togglePassword.setAttribute("aria-label", isPwd ? "Hide password" : "Show password");
+
+  eyeLock.style.display = isPwd ? "none" : "block";
+  eyeShow.style.display = isPwd ? "block" : "none";
+
+  passwordEl.focus();
+});
   // ✅ pastikan session disimpan local
   auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     .catch(err => console.error("Persistence error:", err));
