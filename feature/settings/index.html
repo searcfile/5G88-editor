@@ -600,7 +600,7 @@ html, body {
 }
 
 .tab-search-item:hover{
-  background:va(--close-hover2);
+  background:var(--close-hover2);
 }
 .tab {
   background: var(--tab-bg);
@@ -2133,12 +2133,20 @@ function createTabModuleSearch(){
     `).join("");
   }
 
-  toggle.addEventListener("click", (e) => {
-    e.stopPropagation();
-    wrap.classList.add("open");
-    setIcon(ICON_DOWN);
-    setTimeout(() => input.focus(), 0);
+toggle.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  wrap.classList.add("open");
+  wrap.classList.remove("list-open");
+
+  setIcon(ICON_DOWN);
+
+  requestAnimationFrame(() => {
+    input.focus();
+    input.select();
   });
+});
 
 input.addEventListener("click", (e) => {
   e.stopPropagation();
