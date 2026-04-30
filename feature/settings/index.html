@@ -26,6 +26,7 @@
   --border4:#d9d9d9;
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #d4dbe6;
+  --close-hover2:rgba(255,255,255,0.08);
 
   --btn-bg: transparent;
   --btn-text: rgba(17,24,39,0.88);
@@ -66,6 +67,7 @@ body.dark-theme{
   --border4:#303030;
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #303030;
+  --close-hover2:rgba(0,0,0,0.08);
 
   --btn-bg: transparent;
   --btn-text: rgba(255,255,255,0.85);
@@ -487,8 +489,14 @@ html, body {
   position: relative;
   flex-shrink: 0;
   z-index: 5;
+  margin-bottom:4px;
 }
-
+.tab-module-search:hover{
+  border-color:1px solid var(--gold-hover);
+}
+.tab-module-search:active{
+  border-color:1px solid var(--gold-active);
+}
 .tab-search-toggle{
   width: 32px;
   height: 32px;
@@ -592,8 +600,7 @@ html, body {
 }
 
 .tab-search-item:hover{
-  background: rgba(22,104,220,.15);
-  color: var(--gold-hover);
+  background:va(--close-hover2);
 }
 .tab {
   background: var(--tab-bg);
