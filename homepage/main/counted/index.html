@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valid Bet Calculator</title>
+<style>
+  body{
+    margin:0;
+    background:#050505;
+    color:#fff;
+    font-family:Arial,sans-serif;
+    padding:20px;
+  }
+
+  .box{
+    max-width:900px;
+    margin:auto;
+    background:#111;
+    border:1px solid #333;
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 0 30px rgba(255,215,0,.12);
+  }
+
+  h2{
+    margin:0 0 14px;
+    color:#f6c945;
+  }
+
+  textarea{
+    width:100%;
+    height:360px;
+    resize:vertical;
+    background:#050505;
+    color:#fff;
+    border:1px solid #444;
+    border-radius:12px;
+    padding:14px;
+    font-size:13px;
+    line-height:1.5;
+    outline:none;
+    box-sizing:border-box;
+  }
+
+  textarea:focus{
+    border-color:#f6c945;
+    box-shadow:0 0 0 3px rgba(246,201,69,.18);
+  }
+
+  .result{
+    margin-top:15px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+  }
+
+  .card{
+    background:#0b0b0b;
+    border:1px solid #2b2b2b;
+    border-radius:12px;
+    padding:14px;
+  }
+
+  .label{
+    font-size:12px;
+    color:#aaa;
+    margin-bottom:6px;
+  }
+
+  .value{
+    font-size:26px;
+    font-weight:bold;
+    color:#f6c945;
+  }
+
+  .buttons{
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  button{
+    border:0;
+    border-radius:10px;
+    padding:10px 16px;
+    cursor:pointer;
+    font-weight:bold;
+    background:#f6c945;
+    color:#111;
+  }
+
+  button:hover{
+    filter:brightness(1.08);
+  }
+
+  .ghost{
+    background:#222;
+    color:#fff;
+    border:1px solid #444;
+  }
+
+  @media(max-width:600px){
+    .result{
+      grid-template-columns:1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Valid Bet Calculator</h2>
+
+  <textarea id="logInput" placeholder="Paste game log text here..."></textarea>
+
+  <div class="result">
+    <div class="card">
+      <div class="label">Valid Bet / Total Bet</div>
+      <div class="value" id="validBet">0.00</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Valid Rows</div>
+      <div class="value" id="validRows">0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Skipped Rows</div>
+      <div class="value" id="skippedRows">0</div>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button onclick="copyTotal()">Copy Total</button>
+    <button class="ghost" onclick="clearData()">Reset</button>
+  </div>
+</div>
+
+<script>
+const logInput = document.getElementById("logInput");
+const validBetEl = document.getElementById("validBet");
+const validRowsEl = document.getElementById("validRows");
+const skippedRowsEl = document.getElementById("skippedRows");
+
+function calculateValidBet() {
+  const text = logInput.value;
+  const lines = text.split(/\n+/);
+
+  let totalBet = 0;
+  let validRows = 0;
+  let skippedRows = 0;
+
+  lines.forEach(line => {
+    line = line.trim();
+
+    if (!line) return;
+
+    // Skip set score / summary row
+    if (/set\s*score/i.test(line)) {
+      skippedRows++;
+      return;
+    }
+
+    const parts = line.split(/\s+/);
+
+    /*
+      Format:
+      GameName TableID Bet Win BeginMoney EndMoney Date Time
+
+      Example:
+      DolphinReef 0 2.00 0.00 17.98 15.98 2026-04-30 13:46:53
+
+      Bet = parts[2]
+    */
+    const bet = parseFloat(parts[2]);
+
+    if (!isNaN(bet)) {
+      totalBet += bet;
+      validRows++;
+    } else {
+      skippedRows++;
+    }
+  });
+
+  validBetEl.textContent = totalBet.toFixed(2);
+  validRowsEl.textContent = validRows;
+  skippedRowsEl.textContent = skippedRows;
+}
+
+function copyTotal() {
+  navigator.clipboard.writeText(validBetEl.textContent);
+}
+
+function clearData() {
+  logInput.value = "";
+  calculateValidBet();
+}
+
+logInput.addEventListener("input", calculateValidBet);
+</script>
+
+</body>
+</html>
