@@ -318,6 +318,28 @@ body.dark-theme{
   width:100%;
    margin-top: 15px;
 }
+    .otp-row{
+  display:grid;
+  grid-template-columns:repeat(6, 1fr);
+  gap:8px;
+}
+
+.otp-input{
+  width:100%;
+  height:38px;
+  border-radius:8px;
+  border:1px solid var(--border2);
+  background:var(--backgroundbtn);
+  color:var(--text-soft);
+  text-align:center;
+  font-size:20px;
+  font-weight:700;
+  outline:none;
+}
+
+.otp-input:focus{
+  border-color:#1668dc;
+}
   </style>
 </head>
 <body>
@@ -379,28 +401,54 @@ body.dark-theme{
 </div>
       <button type="submit" class="btn" id="loginBtn">Log in</button>
     </form>
+    <div id="secondPassPanel" style="display:none;">
+  <div class="field">
+    <div style="background:var(--backgroundbtn);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;margin-bottom:24px;">
+      <div style="font-size:12px;color:var(--text-dim);">Signing in as</div>
+      <div id="secondUserName" style="font-weight:700;color:var(--text-soft);">client</div>
+      <button type="button" id="changeLoginBtn" style="margin-top:8px;background:none;border:none;color:#1668dc;cursor:pointer;">← Change</button>
+    </div>
+
+    <label class="label">2nd password</label>
+    <div class="otp-row">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+      <input class="otp-input" maxlength="1" inputmode="numeric">
+    </div>
+
+    <div class="field-error" id="secondPassError"></div>
+  </div>
+
+  <button type="button" class="btn" id="verifySecondBtn">Verify</button>
+</div>
   </div>
 </div>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCIYYpl-1psexPB_-CadD1smsc_e6rhu1U",
-    authDomain: "page-login2.firebaseapp.com",
-    projectId: "page-login2",
-    storageBucket: "page-login2.firebasestorage.app",
-    messagingSenderId: "860837620702",
-    appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyCIYYpl-1psexPB_-CadD1smsc_e6rhu1U",
+  authDomain: "page-login2.firebaseapp.com",
+  databaseURL: "https://page-login2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "page-login2",
+  storageBucket: "page-login2.firebasestorage.app",
+  messagingSenderId: "860837620702",
+  appId: "1:860837620702:web:db51c2a50d414a4de44b4f"
+};
 
   // ✅ guna NAMA APP YANG SAMA macam settings page
   const loginApp = firebase.apps.find(app => app.name === "loginApp")
     || firebase.initializeApp(firebaseConfig, "loginApp");
 
   const auth = loginApp.auth();
-
+const db = loginApp.database();
+let pendingUser = null;
   const loginForm = document.getElementById("loginForm");
   const usernameEl = document.getElementById("username");
   const passwordEl = document.getElementById("password");
@@ -484,21 +532,10 @@ togglePassword.addEventListener("click", () => {
     .catch(err => console.error("Persistence error:", err));
 
   // ✅ hanya redirect dari sini
-  auth.onAuthStateChanged((user) => {
-    if (!user) return;
-
-    localStorage.setItem("loginUser", JSON.stringify({
-      uid: user.uid,
-      email: user.email || "",
-      username: (user.email || "").replace("@5g88.local", ""),
-      lastLogin: Date.now()
-    }));
-
-    if (!hasRedirected) {
-      hasRedirected = true;
-      window.location.replace(SETTINGS_URL);
-    }
-  });
+auth.onAuthStateChanged((user) => {
+  if (!user) return;
+  pendingUser = user;
+});
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -526,10 +563,19 @@ if (!password) {
     try {
       isSubmitting = true;
       setLoading(true);
-      await auth.signInWithEmailAndPassword(email, password);
+const cred = await auth.signInWithEmailAndPassword(email, password);
+pendingUser = cred.user;
 
-      // ✅ jangan redirect di sini
-      // biar onAuthStateChanged saja yang redirect
+document.getElementById("loginForm").style.display = "none";
+document.getElementById("secondPassPanel").style.display = "block";
+document.getElementById("secondUserName").textContent = username;
+
+setLoading(false);
+isSubmitting = false;
+
+setTimeout(() => {
+  document.querySelector(".otp-input")?.focus();
+}, 100);
 
     } catch (err) {
       console.error("Login error:", err);
@@ -557,6 +603,82 @@ if (
       setLoading(false);
     }
   });
+const secondPassPanel = document.getElementById("secondPassPanel");
+const verifySecondBtn = document.getElementById("verifySecondBtn");
+const changeLoginBtn = document.getElementById("changeLoginBtn");
+const secondPassError = document.getElementById("secondPassError");
+const otpInputs = Array.from(document.querySelectorAll(".otp-input"));
+
+otpInputs.forEach((input, index) => {
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/\D/g, "").slice(0, 1);
+    if (input.value && otpInputs[index + 1]) otpInputs[index + 1].focus();
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Backspace" && !input.value && otpInputs[index - 1]) {
+      otpInputs[index - 1].focus();
+    }
+  });
+});
+
+changeLoginBtn.addEventListener("click", async () => {
+  await auth.signOut();
+  pendingUser = null;
+  otpInputs.forEach(i => i.value = "");
+  secondPassError.style.display = "none";
+  secondPassPanel.style.display = "none";
+  loginForm.style.display = "block";
+  passwordEl.value = "";
+  usernameEl.focus();
+});
+
+verifySecondBtn.addEventListener("click", async () => {
+  if (!pendingUser) return;
+
+  const code = otpInputs.map(i => i.value).join("");
+
+  secondPassError.style.display = "none";
+  secondPassError.textContent = "";
+
+  if (code.length !== 6) {
+    secondPassError.textContent = "Sila isi 6 digit 2nd password.";
+    secondPassError.style.display = "block";
+    return;
+  }
+
+  verifySecondBtn.disabled = true;
+  verifySecondBtn.textContent = "Verifying...";
+
+  try {
+    const snap = await db.ref("users/" + pendingUser.uid + "/secondPassword").get();
+    const savedCode = String(snap.val() || "");
+
+    if (code !== savedCode) {
+      secondPassError.textContent = "2nd password salah.";
+      secondPassError.style.display = "block";
+      verifySecondBtn.disabled = false;
+      verifySecondBtn.textContent = "Verify";
+      return;
+    }
+
+    localStorage.setItem("loginUser", JSON.stringify({
+      uid: pendingUser.uid,
+      email: pendingUser.email || "",
+      username: (pendingUser.email || "").replace("@5g88.local", ""),
+      lastLogin: Date.now()
+    }));
+
+    window.location.replace(SETTINGS_URL);
+
+  } catch (err) {
+    console.error(err);
+    secondPassError.textContent = "Gagal semak 2nd password.";
+    secondPassError.style.display = "block";
+    verifySecondBtn.disabled = false;
+    verifySecondBtn.textContent = "Verify";
+  }
+});
   const THEME_KEY = "siteTheme";
 
 function applyTheme(theme) {
