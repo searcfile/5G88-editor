@@ -1924,7 +1924,17 @@ if (settingsBtn) {
       pageFrame.src = "";
     }
   }
+function formatTabLabel(text) {
+  const specialWords = {
+    livechat: "LiveChat"
+  };
 
+  return String(text || "")
+    .toLowerCase()
+    .split(" ")
+    .map(word => specialWords[word] || word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
   function renderTabs() {
     tabBar.innerHTML = "";
     const tabs = getTabs();
@@ -1969,7 +1979,7 @@ if (settingsBtn) {
       }
 
       const title = document.createElement("span");
-      title.textContent = tab.label;
+      title.textContent = formatTabLabel(tab.label);
       title.style.pointerEvents = "none";
 
 const closeBtn = document.createElement("button");
