@@ -503,6 +503,7 @@ html, body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: color 0.3s;
 }
 
 .tab-search-toggle svg{
@@ -511,10 +512,12 @@ html, body {
   fill: currentColor;
 }
 .tab-search-toggle:hover{
-  border-color:1px solid var(--gold-hover);
+  border:1px solid var(--gold-hover);
+  color:var(--gold-hover);
 }
 .tab-search-toggle:active{
-  border-color:1px solid var(--gold-active);
+  border:1px solid var(--gold-active);
+  color:var(--gold-active);
 }
 .tab-search-box{
   width: 150px;
@@ -525,6 +528,7 @@ html, body {
   display: none;
   align-items: center;
   overflow: hidden;
+  transition: color 0.3s;
 }
 .tab-search-box:hover{
   border-color: var(--gold-hover);
@@ -580,17 +584,14 @@ html, body {
   overflow-y: auto;
   display: none;
   background: var(--backgrounddrop);
-  border: 1px solid var(--border2);
   border-radius: 8px;
   padding: 4px;
   z-index: 99999;
   box-shadow: 0 8px 20px rgba(0, 0, 0, .35);
 }
-
 .tab-module-search.list-open .tab-search-list{
   display: block;
 }
-
 .tab-search-item{
   width: 100%;
   display: flex;
