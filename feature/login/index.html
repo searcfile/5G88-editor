@@ -390,10 +390,7 @@ body.dark-theme{
         <div class="field-error" id="passwordError"></div>
       </div>
       <div class="turnstile-wrap">
-  <div class="cf-turnstile"
-       data-sitekey="0x4AAAAAAC1xHeoFIKqZZywR"
-       data-theme="auto">
-  </div>
+<div id="turnstileBox"></div>
 </div>
       <button type="submit" class="btn" id="loginBtn">LOGIN</button>
       <div class="info" id="loginMsg"></div>
@@ -453,7 +450,21 @@ function setFieldError(type, text){
 
   let hasRedirected = false;
   let isSubmitting = false;
+let turnstileWidgetId = null;
 
+function renderTurnstile(){
+  if (!window.turnstile) return;
+
+  const box = document.getElementById("turnstileBox");
+  if (!box) return;
+
+  box.innerHTML = "";
+
+  turnstileWidgetId = turnstile.render("#turnstileBox", {
+    sitekey: "0x4AAAAAAC1xHeoFIKqZZywR",
+    theme: document.body.classList.contains("dark-theme") ? "light" : "dark"
+  });
+}
   function showMsg(text, type = "") {
     loginMsg.textContent = text;
     loginMsg.className = "info " + type;
@@ -574,10 +585,12 @@ if (
   });
   const THEME_KEY = "siteTheme";
 
-  function applyTheme(theme) {
-    const finalTheme = theme === "dark" ? "dark" : "light";
-    document.body.classList.toggle("dark-theme", finalTheme === "dark");
-  }
+function applyTheme(theme) {
+  const finalTheme = theme === "dark" ? "dark" : "light";
+  document.body.classList.toggle("dark-theme", finalTheme === "dark");
+
+  setTimeout(renderTurnstile, 200);
+}
 
   // apply masa mula load
   applyTheme(localStorage.getItem(THEME_KEY) || "light");
