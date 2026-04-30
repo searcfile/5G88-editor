@@ -272,6 +272,16 @@ body.dark-theme{
 .input-wrap:has(.password-toggle:hover) .input{
   border-color: var(--gold-hover);
 }
+    .field-error{
+  display:none;
+  margin-top:6px;
+  font-size:12px;
+  color:#ff4d4f;
+}
+
+.input.invalid{
+  border-color:#ff4d4f !important;
+}
     .btn{
       width:100%;
       height:46px;
@@ -339,8 +349,9 @@ body.dark-theme{
   <span class="input-icon">
     <svg viewBox="64 64 896 896"><path fill="currentColor" d="M858.5 763.6a374 374 0 00-80.6-119.5 375.63 375.63 0 00-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 00-80.6 119.5A371.7 371.7 0 00136 901.8a8 8 0 008 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 008-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"/></svg>
   </span>
-        <input id="username" class="input has-left-icon" type="text" placeholder="Username" autocomplete="off" autocapitalize="off" spellcheck="false" required />
+<input id="username" class="input has-left-icon" type="text" placeholder="Username" autocomplete="off" autocapitalize="off" spellcheck="false" required />
         </div>
+        <div class="field-error" id="usernameError"></div>
       </div>
 
       <div class="field">
@@ -367,6 +378,7 @@ body.dark-theme{
 
 </button>
         </div>
+        <div class="field-error" id="passwordError"></div>
       </div>
 
       <button type="submit" class="btn" id="loginBtn">LOGIN</button>
@@ -401,6 +413,26 @@ body.dark-theme{
   const loginMsg = document.getElementById("loginMsg");
   const loginBox = document.getElementById("loginBox");
   const togglePassword = document.getElementById("togglePassword");
+  const usernameError = document.getElementById("usernameError");
+  const passwordError = document.getElementById("passwordError");
+
+function clearFieldErrors(){
+  usernameError.textContent = "";
+  passwordError.textContent = "";
+  usernameError.style.display = "none";
+  passwordError.style.display = "none";
+  usernameEl.classList.remove("invalid");
+  passwordEl.classList.remove("invalid");
+}
+
+function setFieldError(type, text){
+  const el = type === "username" ? usernameError : passwordError;
+  const input = type === "username" ? usernameEl : passwordEl;
+
+  el.textContent = text;
+  el.style.display = "block";
+  input.classList.add("invalid");
+}
 
   const SETTINGS_URL = "/settings/";
   const USER_DOMAIN = "@5g88.local";
@@ -471,10 +503,20 @@ togglePassword.addEventListener("click", () => {
     const username = usernameEl.value.trim();
     const password = passwordEl.value;
 
-    if (!username || !password) {
-      showMsg("Username dan password wajib isi.", "error");
-      return;
-    }
+clearFieldErrors();
+showMsg("");
+
+if (!username) {
+  setFieldError("username", "Username wajib isi.");
+  usernameEl.focus();
+  return;
+}
+
+if (!password) {
+  setFieldError("password", "Password wajib isi.");
+  passwordEl.focus();
+  return;
+}
 
     const email = normalizeEmailFromUsername(username);
 
@@ -498,7 +540,20 @@ togglePassword.addEventListener("click", () => {
       else if (err.code === "auth/invalid-email") msg = "Format username/email tidak sah.";
       else if (err.code === "auth/too-many-requests") msg = "Terlalu banyak percubaan. Cuba lagi nanti.";
 
-      showMsg(msg, "error");
+      showMsg("");
+
+if (
+  err.code === "auth/user-not-exist" ||
+  err.code === "auth/invalid-email"
+) {
+  setFieldError("username", "Username salah.");
+  usernameEl.focus();
+} else if (err.code === "auth/wrong-password") {
+  setFieldError("password", "Password salah.");
+  passwordEl.focus();
+} else {
+  setFieldError("password", "Username atau password salah.");
+}
       isSubmitting = false;
       setLoading(false);
     }
