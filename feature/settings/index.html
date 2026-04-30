@@ -1555,9 +1555,25 @@ function closeUserDropdown() {
   }
 }
 
+function closeTabModuleSearch() {
+  document.querySelectorAll(".tab-module-search").forEach(wrap => {
+    wrap.classList.remove("list-open");
+
+    const action = wrap.querySelector(".tab-search-action");
+    if (action && typeof ICON_CLOSE !== "undefined") {
+      action.innerHTML = `
+        <svg viewBox="0 0 24 24">
+          <path d="${ICON_CLOSE}"></path>
+        </svg>
+      `;
+    }
+  });
+}
+
 function closeAllFloatingUi() {
   closeUserDropdown();
   closeSidebar();
+  closeTabModuleSearch();
 }
 const themeToggleBtn = document.getElementById("themeToggleBtn");
 const themeToggleLabel = document.getElementById("themeToggleLabel");
@@ -1896,9 +1912,13 @@ function startHeaderLivechatTracker() {
   if (pageFrame) {
   pageFrame.addEventListener("load", () => {
     try {
-      pageFrame.contentWindow.addEventListener("pointerdown", () => {
-        closeAllFloatingUi();
-      });
+pageFrame.contentWindow.addEventListener("pointerdown", () => {
+  closeAllFloatingUi();
+});
+
+pageFrame.contentWindow.addEventListener("click", () => {
+  closeAllFloatingUi();
+});
     } catch (err) {
       // cross-origin iframe mungkin tak boleh inject event
     }
