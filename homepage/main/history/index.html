@@ -125,10 +125,12 @@ body {
 
 .panel-head {
   padding: 12px 14px;
-  border-bottom: 1px solid var(--border2);
+  border-bottom: 1px solid var(--border2) !important;
   background: transparent;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-soft);
+  font-size:14px;
+  border-radius:8px 8px 0 0 !important;
 }
 
 .search-box {
@@ -252,16 +254,13 @@ body {
   border-bottom: 1px solid var(--border2);
   text-align: left;
   font-size: 14px;
-}
-
-.stats-table th {
-  background: #181818;
   color: var(--text-soft);
+  background: var(--backgrounddrop);
+  font-weight: 400;
 }
 
 .stats-table td {
-  color: #fff;
-  font-weight: 700;
+  color: var(--text-soft);
 }
 
 .stats-table td:nth-child(2) {
@@ -285,13 +284,14 @@ table {
 th,
 td {
   padding: 11px 12px;
-  border-bottom: 1px solid var(--border2);
+  border-bottom: 1px solid var(--border4);
   text-align: left;
   font-size: 14px;
+  background:var(--backgroundbtn);
 }
 
 th {
-  background: #181818;
+  background: var(--backgrounddrop);
   color: var(--text-soft);
   position: sticky;
   top: 0;
@@ -303,15 +303,10 @@ tr:last-child td {
 
 .count-badge {
   display: inline-flex;
-  min-width: 34px;
-  height: 24px;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  background: rgba(214,168,79,.18);
-  border: 1px solid rgba(214,168,79,.35);
   color: var(--text-soft);
-  font-weight: 800;
+  font-size: 14px;
 }
 
 .logs-box {
@@ -322,7 +317,7 @@ tr:last-child td {
   max-height: 240px;
   overflow: auto;
   border: 1px solid var(--border2);
-  border-radius: 12px;
+  border-radius: 0 0 8px 8px;
 }
 
 .log-row {
@@ -330,8 +325,9 @@ tr:last-child td {
   justify-content: space-between;
   gap: 12px;
   padding: 9px 12px;
-  border-bottom: 1px solid var(--border2);
-  font-size: 13px;
+  border-bottom: 1px solid var(--border4);
+  font-size: 14px;
+  background:var(--backgroundbtn);
 }
 
 .log-row:last-child {
@@ -343,7 +339,7 @@ tr:last-child td {
 }
 
 .log-time {
-  color: var(--text-dim);
+  color: var(--text-soft);
   white-space: nowrap;
 }
 
