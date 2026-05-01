@@ -1206,7 +1206,50 @@ function getCurrentUserStorageSuffix() {
     return "guest";
   }
 }
+function getCurrentUserHistoryKey() {
+  try {
+    const login = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+    const email = String(login.email || "").trim().toLowerCase();
 
+    if (!email) return "guest";
+
+    // sama style dengan Firebase RTDB safe key
+    return email.replace(/[.#$\[\]/\s]/g, "_");
+  } catch (e) {
+    return "guest";
+  }
+}
+
+function saveTabHistory(tabData) {
+  try {
+    const userKey = getCurrentUserHistoryKey();
+    if (!userKey) return;
+
+    const label = String(tabData.label || "").trim().toUpperCase();
+    const url = String(tabData.url || "").trim();
+
+    if (!label || !url) return;
+
+    const payload = {
+      label,
+      url,
+      group: tabData.group || "none",
+      route: tabData.route || "",
+      openedAt: Date.now()
+    };
+
+    // localStorage backup
+    const localKey = `tabHistory_${userKey}`;
+    const oldList = JSON.parse(localStorage.getItem(localKey) || "[]");
+    oldList.unshift(payload);
+    localStorage.setItem(localKey, JSON.stringify(oldList.slice(0, 300)));
+
+    // Firebase
+    blurphpDb.ref(`users/${userKey}/tabHistory`).push(payload);
+  } catch (err) {
+    console.warn("[saveTabHistory] gagal:", err);
+  }
+}
 function getTabsStorageKey() {
   return `openTabs_${getCurrentUserStorageSuffix()}`;
 }
@@ -1365,8 +1408,16 @@ function addTab(label, url, opt = {}) {
 
   saveTabs(existingTabs);
 
-  loadPage(newUrl);
-  renderTabs();
+loadPage(newUrl);
+
+saveTabHistory({
+  label: L,
+  url: newUrl,
+  group,
+  route
+});
+
+renderTabs();
   updateGameLogCheckmarks();
   updateBankResitCheckmarks();
   updateGameLinksCheckmarks();
