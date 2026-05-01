@@ -129,8 +129,8 @@ body {
 }
 .panel-head {
   padding: 12px 14px;
-  border-bottom: 1px solid var(--border2) !important;
-  background: transparent;
+  border: 1px solid var(--border4) !important;
+  background: var(--backgrounddrop);
   font-weight: 500;
   color: var(--text-soft);
   font-size:14px;
@@ -203,15 +203,11 @@ body {
 .status-closed {
   color: #b31111;
 }
-
-.detail-wrap {
-  padding: 14px;
-}
-
 .detail-empty {
   color: var(--text-dim);
   text-align: center;
   padding: 50px 10px;
+  background:var(--backgroundbtn);
 }
 
 .detail-grid {
@@ -242,8 +238,8 @@ body {
 .stats-table-wrap {
   margin-bottom: 14px;
   overflow: auto;
-  border: 1px solid var(--border2);
-  border-radius: 12px;
+  border: 1px solid var(--border4);
+  border-radius: 8px;
 }
 
 .stats-table {
@@ -273,8 +269,8 @@ body {
 }
 .table-wrap {
   overflow: auto;
-  border: 1px solid var(--border2);
-  border-radius: 12px;
+  border: 1px solid var(--border4);
+  border-radius: 8px;
 }
 table th:nth-child(2),
 table td:nth-child(2) {
@@ -321,7 +317,7 @@ tr:last-child td {
 .log-list {
   max-height: 240px;
   overflow: auto;
-  border: 1px solid var(--border2);
+  border: 1px solid var(--border4);
   border-radius: 0 0 8px 8px;
 }
 
@@ -467,7 +463,6 @@ text-align: center;
     </aside>
 
     <main class="right-panel">
-      <div class="panel-head"></div>
       <div id="detailWrap" class="detail-wrap">
         <div class="detail-empty">Select tab session from left side.</div>
       </div>
@@ -797,7 +792,7 @@ detailWrap.innerHTML = `
     </div>
 
     <div class="logs-box">
-      <div class="panel-head" style="border:1px solid var(--border);border-radius:12px 12px 0 0;">
+      <div class="panel-head">
         History Logs
       </div>
       <div class="log-list">
