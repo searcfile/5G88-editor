@@ -119,7 +119,9 @@ body {
   background: var(--backgrounddrop);
   border: 1px solid var(--border2);
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  z-index: 20;
 }
 
 .right-panel {
@@ -430,7 +432,7 @@ text-align: center;
   position: absolute;
   left: 0;
   top: 38px;
-  width: 520px;
+  width: min(620px, calc(100vw - 32px));
   max-width: calc(100vw - 32px);
   background: var(--backgrounddrop);
   border: 1px solid var(--border2);
