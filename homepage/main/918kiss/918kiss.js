@@ -1430,36 +1430,55 @@ function sendUserAction(actionName, extra = {}) {
 }
 
 /* =========================
-   AUTO TRACK CLICK (UPGRADE)
+   AUTO TRACK CLICK - COUNT SEMUA CLICK
 ========================= */
-
-let lastClickTime = 0;
-
 document.addEventListener("click", function(e) {
-  const now = Date.now();
-
-  // ❗ elak spam click (double click)
-  if (now - lastClickTime < 300) return;
-  lastClickTime = now;
-
-  const el = e.target.closest("button, [onclick], a, .btn");
+  const el = e.target.closest("button, [onclick], a, .btn, [data-action]");
   if (!el) return;
 
-  // ambil nama paling cantik
+  if (el.disabled || el.getAttribute("aria-disabled") === "true") return;
+
   let name =
-    el.innerText ||
     el.getAttribute("data-action") ||
     el.getAttribute("title") ||
+    el.getAttribute("aria-label") ||
+    el.innerText ||
+    el.textContent ||
     el.id ||
     "";
 
-  name = String(name).trim();
+  name = String(name)
+    .replace(/\s+/g, " ")
+    .trim();
 
-  // ❗ skip kalau kosong / terlalu pendek
   if (!name || name.length < 2) return;
 
-  // ❗ limit panjang
-  name = name.slice(0, 30);
+  name = name.slice(0, 40);
 
   sendUserAction(name);
-});
+}, true);
+
+
+/* =========================
+   AUTO TRACK CTRL + C / COPY IMAGE
+========================= */
+document.addEventListener("keydown", function(e) {
+  const key = String(e.key || "").toLowerCase();
+
+  if ((e.ctrlKey || e.metaKey) && key === "c") {
+    sendUserAction("COPY IMAGE", {
+      method: "keyboard",
+      shortcut: "Ctrl+C"
+    });
+  }
+}, true);
+
+
+/* =========================
+   AUTO TRACK BROWSER COPY EVENT
+========================= */
+document.addEventListener("copy", function() {
+  sendUserAction("COPY IMAGE", {
+    method: "copy-event"
+  });
+}, true);
