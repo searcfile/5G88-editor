@@ -405,15 +405,21 @@ function renderDetail() {
     return;
   }
 
-  const actions = item.actions || {};
-  const actionRows = Object.entries(actions)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name, count]) => `
+const actions = item.actions || {};
+const labels = item.actionLabels || {};
+
+const actionRows = Object.entries(actions)
+  .sort((a, b) => b[1] - a[1])
+  .map(([key, count]) => {
+    const name = labels[key] || key;
+
+    return `
       <tr>
         <td>${escapeHtml(name)}</td>
         <td><span class="count-badge">${Number(count || 0)}</span></td>
       </tr>
-    `).join("");
+    `;
+  }).join("");
 
   const logs = item.logs || {};
   const logRows = Object.values(logs)
