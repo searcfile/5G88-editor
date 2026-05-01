@@ -642,8 +642,7 @@ if (btnBlur) {
 
   window.addEventListener("message", function (e) {
     const allowedOrigins = [
-      "https://5g88-main.vercel.app",
-      "https://searcfile.github.io"
+      "https://5g88-main.vercel.app"
     ];
     if (!allowedOrigins.includes(e.origin)) return;
 
@@ -656,7 +655,7 @@ if (btnBlur) {
   });
 })();
 // ✅ Tukar ikut page
-window.HISTORY_TAB_NAME = "TIPS GAME";
+window.HISTORY_TAB_NAME = "CIMB BANK";
 // ✅ Hantar ke main page
 function sendUserAction(actionName, extra = {}) {
   if (!actionName) return;
