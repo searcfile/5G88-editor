@@ -211,7 +211,11 @@ body {
   padding: 50px 10px;
   background:var(--backgroundbtn);
 }
-
+.detail-empty2 {
+  color: var(--text-dim);
+  text-align: center;
+  padding: 50px 10px;
+}
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(120px, 1fr));
@@ -878,10 +882,10 @@ const filtered = allSessions.filter(item => {
 
   if (!filtered.length) {
     tabList.innerHTML = `
-      <div class="detail-empty">No history found.</div>
+      <div class="detail-empty">No History Data.</div>
     `;
     detailWrap.innerHTML = `
-      <div class="detail-empty">No action detail.</div>
+      <div class="detail-empty2">No Data.</div>
     `;
     return;
   }
