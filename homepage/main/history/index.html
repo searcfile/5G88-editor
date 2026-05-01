@@ -10,32 +10,15 @@
 
 <style>
 :root{
-  --bg:#ffffff;
-  --panel:#ffffff;
-  --panel2:#f6f8fb;
-  --text:#111827;
-  --soft:#6b7280;
-  --border:#d9d9d9;
+  --page-bg:#000;
+  --page-text:rgba(255,255,255,0.85);
+  --page-input:#141414;
+  --border-input:#424242;
   --blue:#1668dc;
   --blue-hover:#3c89e8;
   --blue-active:#1554ad;
-  --danger:#dc2626;
-  --shadow:0 10px 30px rgba(15,23,42,.10);
-  --close-hover2:rgba(0,0,0,0.08);
-
-  --page-bg: #000;
-  --page-text: rgba(255,255,255,0.85);
-  --page-input: #141414;
-  --border-input:#424242;
-  --page-bg2:#1f1f1f;
-  --name:#1668dc;
-  --blur:rgba(255,255,255,0.25);
-
-  --xclose-hover:#ffffff;
-  --xclose-hover-active:rgba(255,255,255,0.25);
-  --bg-chip:rgba(255, 255, 255, 0.12);
-  --chip-close:rgba(255,255,255,0.45);
-  --chip-menu:#111a2c;
+  --soft:#8b9bb4;
+  --bg-chip:rgba(255,255,255,0.12);
 }
 
 *{ box-sizing:border-box; }
@@ -45,7 +28,7 @@ body{
   min-height:100vh;
   font-family:Inter,Segoe UI,Arial,sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(22,104,220,.20), transparent 32%),
+    radial-gradient(circle at top left, rgba(22,104,220,.16), transparent 30%),
     linear-gradient(180deg, #050505, var(--page-bg));
   color:var(--page-text);
   padding:18px;
@@ -56,117 +39,55 @@ body{
   margin:0 auto;
 }
 
-.header{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:14px;
-  margin-bottom:18px;
-}
-
-.title-box h1{
-  margin:0;
-  font-size:24px;
-  color:#fff;
-  letter-spacing:.2px;
-}
-
-.title-box p{
-  margin:7px 0 0;
-  font-size:13px;
-  color:#8b9bb4;
-}
-
-.stats-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
-  margin-bottom:16px;
-}
-
-.stat-card{
-  background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+/* ===== STATS TABLE ===== */
+.stats-table-wrap{
+  width:100%;
+  margin-bottom:14px;
   border:1px solid var(--border-input);
-  border-radius:18px;
-  padding:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.22);
+  border-radius:16px;
+  overflow:hidden;
+  background:rgba(11,11,11,.92);
+  box-shadow:0 16px 42px rgba(0,0,0,.28);
 }
 
-.stat-card .label{
+.stats-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.stats-table thead{
+  background:rgba(255,255,255,.045);
+}
+
+.stats-table th{
+  text-align:left;
+  padding:12px 14px;
   font-size:12px;
-  color:#8b9bb4;
-  margin-bottom:9px;
-}
-
-.stat-card .value{
-  font-size:25px;
+  color:#9ca3af;
   font-weight:800;
-  color:#fff;
+  border-bottom:1px solid var(--border-input);
+  white-space:nowrap;
 }
 
+.stats-table td{
+  padding:14px;
+  font-size:22px;
+  color:#fff;
+  font-weight:900;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.stats-table tr:last-child td{
+  border-bottom:none;
+}
+
+/* ===== MAIN TABLE ===== */
 .panel{
   background:rgba(11,11,11,.92);
   border:1px solid var(--border-input);
-  border-radius:20px;
+  border-radius:16px;
   box-shadow:0 20px 50px rgba(0,0,0,.35);
   overflow:hidden;
-}
-
-.toolbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:14px;
-  border-bottom:1px solid var(--border-input);
-  background:rgba(255,255,255,.025);
-}
-
-.search-box{
-  flex:1;
-  position:relative;
-  min-width:220px;
-}
-
-.search-box input{
-  width:100%;
-  height:38px;
-  border:1px solid var(--border-input);
-  background:var(--page-input);
-  color:#fff;
-  outline:none;
-  border-radius:12px;
-  padding:0 13px 0 38px;
-  transition:.2s;
-}
-
-.search-box input::placeholder{
-  color:#6b7280;
-}
-
-.search-box input:focus{
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px rgba(22,104,220,.18);
-}
-
-.search-box svg{
-  position:absolute;
-  left:13px;
-  top:50%;
-  transform:translateY(-50%);
-  width:15px;
-  height:15px;
-  color:#8b9bb4;
-}
-
-.select{
-  height:38px;
-  border:1px solid var(--border-input);
-  background:var(--page-input);
-  color:#fff;
-  border-radius:12px;
-  padding:0 12px;
-  outline:none;
 }
 
 .table-wrap{
@@ -176,7 +97,7 @@ body{
 
 .history-table{
   width:100%;
-  min-width:900px;
+  min-width:760px;
   border-collapse:collapse;
 }
 
@@ -210,14 +131,18 @@ body{
   background:rgba(22,104,220,.10);
 }
 
+.history-table tbody tr:last-child td{
+  border-bottom:none;
+}
+
 .no-col{
   width:58px;
-  color:#8b9bb4;
+  color:#9ca3af;
 }
 
 .tab-name{
   color:#fff;
-  font-weight:800;
+  font-weight:900;
 }
 
 .group-chip{
@@ -242,21 +167,12 @@ body{
   background:rgba(22,104,220,.16);
   color:#8bbdff;
   border:1px solid rgba(22,104,220,.35);
-  font-weight:800;
-}
-
-.url-text{
-  max-width:430px;
-  display:block;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  color:#8da2c0;
+  font-weight:900;
 }
 
 .empty-cell{
   text-align:center !important;
-  padding:48px 20px !important;
+  padding:45px 20px !important;
   color:#6b7280 !important;
 }
 
@@ -275,31 +191,19 @@ body{
   background:rgba(255,255,255,.3);
 }
 
-@media(max-width:900px){
+@media(max-width:700px){
   body{ padding:12px; }
 
-  .header{
-    flex-direction:column;
-    align-items:stretch;
+  .stats-table{
+    min-width:650px;
   }
 
-  .stats-grid{
-    grid-template-columns:repeat(2,1fr);
+  .stats-table-wrap{
+    overflow:auto;
   }
 
-  .toolbar{
-    flex-direction:column;
-    align-items:stretch;
-  }
-}
-
-@media(max-width:520px){
-  .stats-grid{
-    grid-template-columns:1fr;
-  }
-
-  .title-box h1{
-    font-size:21px;
+  .history-table{
+    min-width:680px;
   }
 }
 </style>
@@ -308,46 +212,28 @@ body{
 <body>
 <div class="history-wrap">
 
-  <div class="header">
-    <div class="title-box">
-      <h1>Tab History</h1>
-      <p>View user opened tabs, total visits, and latest activity.</p>
-    </div>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="label">Total Opened</div>
-      <div class="value" id="totalOpened">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Unique Tabs</div>
-      <div class="value" id="uniqueTabs">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Most Opened</div>
-      <div class="value" id="mostOpened">-</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Last Opened</div>
-      <div class="value" id="lastOpened">-</div>
-    </div>
+  <div class="stats-table-wrap">
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th>Total Opened</th>
+          <th>Unique Tabs</th>
+          <th>Most Opened</th>
+          <th>Last Opened</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="totalOpened">0</td>
+          <td id="uniqueTabs">0</td>
+          <td id="mostOpened">-</td>
+          <td id="lastOpened">-</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="panel">
-    <div class="toolbar">
-      <div class="search-box">
-        <svg viewBox="64 64 896 896" fill="currentColor">
-          <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path>
-        </svg>
-        <input id="searchInput" type="text" placeholder="Search tab, url, group..." />
-      </div>
-
-      <select class="select" id="groupFilter">
-        <option value="all">All Group</option>
-      </select>
-    </div>
-
     <div class="table-wrap">
       <table class="history-table">
         <thead>
@@ -357,17 +243,17 @@ body{
             <th>Group</th>
             <th>Open Count</th>
             <th>Last Opened</th>
-            <th>URL</th>
           </tr>
         </thead>
         <tbody id="historyTableBody">
           <tr>
-            <td colspan="6" class="empty-cell">Loading...</td>
+            <td colspan="5" class="empty-cell">Loading...</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+
 </div>
 
 <script>
@@ -392,8 +278,6 @@ const els = {
   uniqueTabs: document.getElementById("uniqueTabs"),
   mostOpened: document.getElementById("mostOpened"),
   lastOpened: document.getElementById("lastOpened"),
-  searchInput: document.getElementById("searchInput"),
-  groupFilter: document.getElementById("groupFilter"),
   historyTableBody: document.getElementById("historyTableBody")
 };
 
@@ -473,18 +357,6 @@ function normalizeHistoryItem(item) {
   };
 }
 
-function getFilteredHistory() {
-  const q = els.searchInput.value.trim().toLowerCase();
-  const group = els.groupFilter.value;
-
-  return allHistory.filter(item => {
-    const text = `${item.label} ${item.url} ${item.group} ${item.route}`.toLowerCase();
-    const matchSearch = !q || text.includes(q);
-    const matchGroup = group === "all" || item.group === group;
-    return matchSearch && matchGroup;
-  });
-}
-
 function buildSummary(list) {
   const map = new Map();
 
@@ -494,9 +366,7 @@ function buildSummary(list) {
     if (!map.has(key)) {
       map.set(key, {
         label: item.label,
-        url: item.url,
         group: item.group,
-        route: item.route,
         count: 0,
         lastOpened: 0
       });
@@ -513,24 +383,6 @@ function buildSummary(list) {
   });
 }
 
-function updateGroupFilter() {
-  const oldValue = els.groupFilter.value || "all";
-  const groups = [...new Set(allHistory.map(x => x.group || "none"))].sort();
-
-  els.groupFilter.innerHTML = `<option value="all">All Group</option>`;
-
-  groups.forEach(group => {
-    const opt = document.createElement("option");
-    opt.value = group;
-    opt.textContent = group.toUpperCase();
-    els.groupFilter.appendChild(opt);
-  });
-
-  if ([...els.groupFilter.options].some(o => o.value === oldValue)) {
-    els.groupFilter.value = oldValue;
-  }
-}
-
 function renderStats(list, summary) {
   els.totalOpened.textContent = list.length;
   els.uniqueTabs.textContent = summary.length;
@@ -542,7 +394,7 @@ function renderTable(summary) {
   if (!summary.length) {
     els.historyTableBody.innerHTML = `
       <tr>
-        <td colspan="6" class="empty-cell">No history found.</td>
+        <td colspan="5" class="empty-cell">No history found.</td>
       </tr>
     `;
     return;
@@ -555,20 +407,13 @@ function renderTable(summary) {
       <td><span class="group-chip">${escapeHtml(item.group || "none")}</span></td>
       <td><span class="count-badge">${item.count}x</span></td>
       <td>${escapeHtml(formatDate(item.lastOpened))}</td>
-      <td>
-        <span class="url-text" title="${escapeHtml(item.url)}">
-          ${escapeHtml(item.url)}
-        </span>
-      </td>
     </tr>
   `).join("");
 }
 
 function renderAll() {
-  const filtered = getFilteredHistory();
-  const summary = buildSummary(filtered);
-
-  renderStats(filtered, summary);
+  const summary = buildSummary(allHistory);
+  renderStats(allHistory, summary);
   renderTable(summary);
 }
 
@@ -589,7 +434,7 @@ function loadHistory() {
   if (!email) {
     els.historyTableBody.innerHTML = `
       <tr>
-        <td colspan="6" class="empty-cell">
+        <td colspan="5" class="empty-cell">
           No login data found. Open this page inside main iframe.
         </td>
       </tr>
@@ -602,7 +447,7 @@ function loadHistory() {
 
   els.historyTableBody.innerHTML = `
     <tr>
-      <td colspan="6" class="empty-cell">Loading...</td>
+      <td colspan="5" class="empty-cell">Loading...</td>
     </tr>
   `;
 
@@ -628,22 +473,18 @@ function loadHistory() {
       allHistory = [...uniqueMap.values()]
         .sort((a, b) => b.openedAt - a.openedAt);
 
-      updateGroupFilter();
       renderAll();
     }, err => {
       console.warn("History load error:", err);
       els.historyTableBody.innerHTML = `
         <tr>
-          <td colspan="6" class="empty-cell">
+          <td colspan="5" class="empty-cell">
             Failed to load Firebase history. Please check Firebase rules.
           </td>
         </tr>
       `;
     });
 }
-
-els.searchInput.addEventListener("input", renderAll);
-els.groupFilter.addEventListener("change", renderAll);
 
 document.addEventListener("DOMContentLoaded", () => {
   currentUser = getLoginFromLocal();
