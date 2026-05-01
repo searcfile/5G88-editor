@@ -388,6 +388,37 @@ html {
   scrollbar-width: thin;
   scrollbar-color: #555 transparent;
 }
+#dateRangeInput {
+  margin-top: 8px;
+  cursor: default;
+}
+
+.range-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.range-buttons button {
+  height: 30px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--backgroundbtn);
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all .25s;
+}
+
+.range-buttons button:hover {
+  border-color: var(--gold-hover);
+}
+
+.range-buttons button.active {
+  border-color: var(--gold);
+  color: var(--gold);
+}
 </style>
 </head>
 
@@ -397,9 +428,20 @@ html {
   <div class="history-layout">
     <aside class="left-panel">
       <div class="panel-head">History Tabs</div>
-      <div class="search-box">
-        <input id="searchInput" type="text" placeholder="Search tab...">
-      </div>
+<div class="search-box">
+  <input id="searchInput" type="text" placeholder="Search tab...">
+
+  <input id="dateRangeInput" type="text" readonly placeholder="YYYY-MM-DD -> YYYY-MM-DD">
+
+  <div class="range-buttons">
+    <button type="button" data-range="today">Today</button>
+    <button type="button" data-range="yesterday">Yesterday</button>
+    <button type="button" data-range="thisWeek">This Week</button>
+    <button type="button" data-range="lastWeek">Last Week</button>
+    <button type="button" data-range="thisMonth">This Month</button>
+    <button type="button" data-range="lastMonth">Last Month</button>
+  </div>
+</div>
       <div id="tabList" class="tab-list"></div>
     </aside>
 
@@ -429,7 +471,14 @@ const blurphpDb = blurphpApp.database();
 const tabList = document.getElementById("tabList");
 const detailWrap = document.getElementById("detailWrap");
 const searchInput = document.getElementById("searchInput");
+const dateRangeInput = document.getElementById("dateRangeInput");
+const rangeButtons = document.querySelectorAll(".range-buttons button");
 
+let activeRange = {
+  start: null,
+  end: null,
+  key: "today"
+};
 let allSessions = [];
 let selectedSessionId = "";
 
@@ -462,7 +511,90 @@ function formatTime(ms) {
 
   return `${dd}-${mm}-${yy} ${hh}:${mi}:${ss}`;
 }
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
 
+function toYMD(date) {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
+function startOfDay(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function endOfDay(date) {
+  const d = new Date(date);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
+// Monday start week
+function startOfWeek(date) {
+  const d = startOfDay(date);
+  const day = d.getDay(); // Sun=0, Mon=1
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+function endOfWeek(date) {
+  const d = startOfWeek(date);
+  d.setDate(d.getDate() + 6);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
+function getRangeByKey(key) {
+  const now = new Date();
+  let start, end;
+
+  if (key === "yesterday") {
+    start = startOfDay(now);
+    start.setDate(start.getDate() - 1);
+    end = endOfDay(start);
+  } else if (key === "thisWeek") {
+    start = startOfWeek(now);
+    end = endOfWeek(now);
+  } else if (key === "lastWeek") {
+    start = startOfWeek(now);
+    start.setDate(start.getDate() - 7);
+    end = endOfWeek(start);
+  } else if (key === "thisMonth") {
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+  } else if (key === "lastMonth") {
+    start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+  } else {
+    start = startOfDay(now);
+    end = endOfDay(now);
+  }
+
+  return { start, end };
+}
+
+function setActiveRange(key = "today") {
+  const range = getRangeByKey(key);
+
+  activeRange = {
+    key,
+    start: range.start.getTime(),
+    end: range.end.getTime()
+  };
+
+  if (dateRangeInput) {
+    dateRangeInput.value = `${toYMD(range.start)} -> ${toYMD(range.end)}`;
+  }
+
+  rangeButtons.forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.range === key);
+  });
+
+  renderTabList();
+}
 function escapeHtml(str) {
   return String(str || "")
     .replaceAll("&", "&amp;")
@@ -475,10 +607,17 @@ function escapeHtml(str) {
 function renderTabList() {
   const q = searchInput.value.trim().toLowerCase();
 
-  const filtered = allSessions.filter(item => {
-    const tab = String(item.tab || "").toLowerCase();
-    return tab.includes(q);
-  });
+const filtered = allSessions.filter(item => {
+  const tab = String(item.tab || "").toLowerCase();
+  const matchSearch = tab.includes(q);
+
+  const openedAt = Number(item.openedAt || 0);
+  const matchDate =
+    !activeRange.start ||
+    (openedAt >= activeRange.start && openedAt <= activeRange.end);
+
+  return matchSearch && matchDate;
+});
 
   if (!filtered.length) {
     tabList.innerHTML = `
@@ -660,7 +799,11 @@ function startHistoryListener() {
 }
 
 searchInput.addEventListener("input", renderTabList);
-
+rangeButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    setActiveRange(btn.dataset.range || "today");
+  });
+});
 window.addEventListener("message", function(e) {
   const allowedOrigins = [
     "https://5g88-main.vercel.app"
@@ -676,6 +819,7 @@ window.addEventListener("message", function(e) {
   }
 });
 
+setActiveRange("today");
 startHistoryListener();
   (function () {
   const THEME_KEY = "siteTheme";
