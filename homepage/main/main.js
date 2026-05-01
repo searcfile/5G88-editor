@@ -1268,6 +1268,138 @@ function setActiveTabUrl(url){
 function getActiveTabUrl(){
   return normUrl(localStorage.getItem(getActiveTabStorageKey()) || "");
 }
+/* =========================
+   USER TAB HISTORY TRACKER
+========================= */
+function historyEmailKey(email) {
+  return String(email || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[.#$[\]/]/g, "_");
+}
+
+function getHistoryLogin() {
+  try {
+    return JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function makeHistorySessionId(tabName) {
+  return String(tabName || "TAB")
+    .replace(/[^a-z0-9]/gi, "_")
+    .toLowerCase() + "_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+}
+
+function getHistorySessionStorageKey(tabName) {
+  return "historySession_" + String(tabName || "").trim().toUpperCase();
+}
+
+function startTabHistorySession(tabName, tabUrl = "") {
+  const login = getHistoryLogin();
+  if (!login.email || !tabName) return "";
+
+  const tab = String(tabName).trim().toUpperCase();
+  const emailKey = historyEmailKey(login.email);
+  const sessionId = makeHistorySessionId(tab);
+
+  sessionStorage.setItem(getHistorySessionStorageKey(tab), sessionId);
+
+  blurphpDb.ref(`tabHistory/${emailKey}/sessions/${sessionId}`).set({
+    sessionId,
+    tab,
+    tabUrl,
+    userEmail: login.email,
+    userName: login.name || "",
+    openedAt: Date.now(),
+    closedAt: null,
+    actions: {},
+    totalActions: 0,
+    lastAction: "",
+    lastActionAt: null,
+    updatedAt: Date.now()
+  });
+
+  return sessionId;
+}
+
+function closeTabHistorySession(tabName) {
+  const login = getHistoryLogin();
+  if (!login.email || !tabName) return;
+
+  const tab = String(tabName).trim().toUpperCase();
+  const emailKey = historyEmailKey(login.email);
+  const storageKey = getHistorySessionStorageKey(tab);
+  const sessionId = sessionStorage.getItem(storageKey);
+
+  if (!sessionId) return;
+
+  blurphpDb.ref(`tabHistory/${emailKey}/sessions/${sessionId}`).update({
+    closedAt: Date.now(),
+    updatedAt: Date.now()
+  });
+
+  sessionStorage.removeItem(storageKey);
+}
+
+function saveUserTabAction(tabName, actionName, extra = {}) {
+  const login = getHistoryLogin();
+  if (!login.email || !tabName || !actionName) return;
+
+  const tab = String(tabName).trim().toUpperCase();
+  const action = String(actionName).trim();
+  const emailKey = historyEmailKey(login.email);
+
+  let sessionId = sessionStorage.getItem(getHistorySessionStorageKey(tab));
+
+  if (!sessionId) {
+    sessionId = startTabHistorySession(tab, getActiveTabUrl());
+  }
+
+  const sessionRef = blurphpDb.ref(`tabHistory/${emailKey}/sessions/${sessionId}`);
+
+  sessionRef.transaction(old => {
+    old = old || {
+      sessionId,
+      tab,
+      userEmail: login.email,
+      userName: login.name || "",
+      openedAt: Date.now(),
+      closedAt: null,
+      actions: {},
+      totalActions: 0
+    };
+
+    old.actions = old.actions || {};
+    old.actions[action] = (old.actions[action] || 0) + 1;
+    old.totalActions = (old.totalActions || 0) + 1;
+    old.lastAction = action;
+    old.lastActionAt = Date.now();
+    old.updatedAt = Date.now();
+
+    return old;
+  });
+
+  blurphpDb.ref(`tabHistory/${emailKey}/sessions/${sessionId}/logs`).push({
+    action,
+    extra,
+    time: Date.now()
+  });
+}
+
+window.addEventListener("message", function(e) {
+  const allowedOrigins = [
+    "https://5g88-main.vercel.app"
+  ];
+
+  if (!allowedOrigins.includes(e.origin)) return;
+
+  const data = e.data || {};
+  if (data.type !== "user-tab-action") return;
+
+  saveUserTabAction(data.tab, data.action, data.extra || {});
+});
 function notifyLivechatPanelStateToIframe() {
   const frame = document.getElementById("pageFrame");
   if (!frame || !frame.contentWindow) return;
@@ -1355,9 +1487,10 @@ function addTab(label, url, opt = {}) {
     String(tab.label || "").trim().toUpperCase() === L
   );
 
-  if (idx === -1) {
-    existingTabs.push({ label: L, url: newUrl, group, route });
-  } else {
+if (idx === -1) {
+  existingTabs.push({ label: L, url: newUrl, group, route });
+  startTabHistorySession(L, newUrl);
+} else {
     existingTabs[idx].url = newUrl;
     existingTabs[idx].group = group;
     existingTabs[idx].route = route;
@@ -1458,6 +1591,8 @@ if (liveChatBtn) {
   });
 }
 function closeTab(label) {
+  closeTabHistorySession(label);
+
   let tabs = getTabs().filter(tab => tab.label !== label);
   saveTabs(tabs);
   renderTabs();
