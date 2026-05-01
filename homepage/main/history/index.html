@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tab History</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<style>
+:root{
+  --bg:#ffffff;
+  --panel:#ffffff;
+  --panel2:#f6f8fb;
+  --text:#111827;
+  --soft:#6b7280;
+  --border:#d9d9d9;
+  --blue:#1668dc;
+  --blue-hover:#3c89e8;
+  --blue-active:#1554ad;
+  --danger:#dc2626;
+  --shadow:0 10px 30px rgba(15,23,42,.10);
+  --close-hover2:rgba(0,0,0,0.08);
+
+  --page-bg: #000;
+  --page-text: rgba(255,255,255,0.85);
+  --page-input: #141414;
+  --border-input:#424242;
+  --page-bg2:#1f1f1f;
+  --name:#1668dc;
+  --blur:rgba(255,255,255,0.25);
+
+  --xclose-hover:#ffffff;
+  --xclose-hover-active:rgba(255,255,255,0.25);
+  --bg-chip:rgba(255, 255, 255, 0.12);
+  --chip-close:rgba(255,255,255,0.45);
+  --chip-menu:#111a2c;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(22,104,220,.22), transparent 34%),
+    linear-gradient(180deg, #050505, var(--page-bg));
+  color:var(--page-text);
+  padding:18px;
+}
+
+.history-wrap{
+  max-width:1250px;
+  margin:0 auto;
+}
+
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.title-box h1{
+  margin:0;
+  font-size:24px;
+  color:#fff;
+  letter-spacing:.2px;
+}
+
+.title-box p{
+  margin:7px 0 0;
+  font-size:13px;
+  color:var(--soft);
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.btn{
+  height:36px;
+  border:1px solid var(--border-input);
+  background:var(--page-input);
+  color:var(--page-text);
+  border-radius:10px;
+  padding:0 13px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  transition:.2s;
+}
+
+.btn:hover{
+  border-color:var(--blue);
+  color:#fff;
+  box-shadow:0 0 0 3px rgba(22,104,220,.15);
+}
+
+.btn.primary{
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+
+.btn.primary:hover{
+  background:var(--blue-hover);
+}
+
+.btn.danger:hover{
+  border-color:var(--danger);
+  color:#fff;
+  box-shadow:0 0 0 3px rgba(220,38,38,.15);
+}
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.stat-card{
+  background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+  border:1px solid var(--border-input);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.22);
+}
+
+.stat-card .label{
+  font-size:12px;
+  color:var(--soft);
+  margin-bottom:9px;
+}
+
+.stat-card .value{
+  font-size:25px;
+  font-weight:800;
+  color:#fff;
+}
+
+.panel{
+  background:rgba(11,11,11,.92);
+  border:1px solid var(--border-input);
+  border-radius:20px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px;
+  border-bottom:1px solid var(--border-input);
+  background:rgba(255,255,255,.025);
+}
+
+.search-box{
+  flex:1;
+  position:relative;
+  min-width:220px;
+}
+
+.search-box input{
+  width:100%;
+  height:38px;
+  border:1px solid var(--border-input);
+  background:var(--page-input);
+  color:#fff;
+  outline:none;
+  border-radius:12px;
+  padding:0 13px 0 38px;
+  transition:.2s;
+}
+
+.search-box input:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(22,104,220,.18);
+}
+
+.search-box svg{
+  position:absolute;
+  left:13px;
+  top:50%;
+  transform:translateY(-50%);
+  width:15px;
+  height:15px;
+  color:var(--soft);
+}
+
+.select{
+  height:38px;
+  border:1px solid var(--border-input);
+  background:var(--page-input);
+  color:#fff;
+  border-radius:12px;
+  padding:0 12px;
+  outline:none;
+}
+
+.content-grid{
+  display:grid;
+  grid-template-columns:390px 1fr;
+  min-height:520px;
+}
+
+.summary-side{
+  border-right:1px solid var(--border-input);
+  padding:14px;
+  background:rgba(255,255,255,.015);
+  overflow:auto;
+  max-height:calc(100vh - 235px);
+}
+
+.history-side{
+  padding:14px;
+  overflow:auto;
+  max-height:calc(100vh - 235px);
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+  color:#fff;
+  font-weight:700;
+  font-size:14px;
+}
+
+.module-card{
+  border:1px solid var(--border-input);
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
+  border-radius:16px;
+  padding:13px;
+  margin-bottom:10px;
+  transition:.2s;
+}
+
+.module-card:hover{
+  border-color:rgba(22,104,220,.75);
+  transform:translateY(-1px);
+}
+
+.module-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.module-name{
+  font-weight:800;
+  color:#fff;
+  font-size:14px;
+}
+
+.badge{
+  min-width:32px;
+  height:24px;
+  padding:0 8px;
+  border-radius:999px;
+  background:rgba(22,104,220,.16);
+  color:#7db1ff;
+  border:1px solid rgba(22,104,220,.35);
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+}
+
+.module-meta{
+  margin-top:9px;
+  color:var(--soft);
+  font-size:12px;
+  line-height:1.5;
+  word-break:break-word;
+}
+
+.history-item{
+  border:1px solid var(--border-input);
+  background:rgba(255,255,255,.025);
+  border-radius:16px;
+  padding:13px;
+  margin-bottom:10px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.history-icon{
+  width:38px;
+  height:38px;
+  border-radius:13px;
+  background:rgba(22,104,220,.18);
+  border:1px solid rgba(22,104,220,.35);
+  color:#9bc3ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+}
+
+.history-main{
+  flex:1;
+  min-width:0;
+}
+
+.history-title{
+  color:#fff;
+  font-weight:800;
+  font-size:14px;
+  margin-bottom:5px;
+}
+
+.history-url{
+  color:var(--soft);
+  font-size:12px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.history-bottom{
+  margin-top:9px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  color:var(--soft);
+  font-size:12px;
+}
+
+.group-chip{
+  padding:4px 8px;
+  border-radius:999px;
+  background:var(--bg-chip);
+  color:#dbeafe;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.empty{
+  text-align:center;
+  color:var(--soft);
+  padding:50px 20px;
+  border:1px dashed var(--border-input);
+  border-radius:18px;
+}
+
+.loading{
+  padding:40px;
+  color:var(--soft);
+  text-align:center;
+}
+
+::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+::-webkit-scrollbar-track{
+  background:transparent;
+}
+::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.18);
+  border-radius:999px;
+}
+::-webkit-scrollbar-thumb:hover{
+  background:rgba(255,255,255,.3);
+}
+
+@media(max-width:900px){
+  body{
+    padding:12px;
+  }
+
+  .header{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .actions{
+    justify-content:flex-end;
+  }
+
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .toolbar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .content-grid{
+    grid-template-columns:1fr;
+  }
+
+  .summary-side{
+    border-right:none;
+    border-bottom:1px solid var(--border-input);
+    max-height:none;
+  }
+
+  .history-side{
+    max-height:none;
+  }
+}
+
+@media(max-width:520px){
+  .stats-grid{
+    grid-template-columns:1fr;
+  }
+
+  .actions{
+    flex-wrap:wrap;
+  }
+
+  .btn{
+    flex:1;
+    justify-content:center;
+  }
+
+  .title-box h1{
+    font-size:21px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="history-wrap">
+
+  <div class="header">
+    <div class="title-box">
+      <h1>Tab History</h1>
+      <p>View user opened tabs, total visits, and latest activity.</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="refreshBtn">Refresh</button>
+      <button class="btn danger" id="clearLocalBtn">Clear Local</button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">Total Opened</div>
+      <div class="value" id="totalOpened">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Unique Tabs</div>
+      <div class="value" id="uniqueTabs">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Most Opened</div>
+      <div class="value" id="mostOpened">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Last Opened</div>
+      <div class="value" id="lastOpened">-</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="toolbar">
+      <div class="search-box">
+        <svg viewBox="64 64 896 896" fill="currentColor">
+          <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path>
+        </svg>
+        <input id="searchInput" type="text" placeholder="Search tab, url, group..." />
+      </div>
+
+      <select class="select" id="groupFilter">
+        <option value="all">All Group</option>
+      </select>
+    </div>
+
+    <div class="content-grid">
+      <div class="summary-side">
+        <div class="section-title">
+          <span>Tab Count</span>
+          <span id="summaryCount">0</span>
+        </div>
+        <div id="summaryList" class="loading">Loading...</div>
+      </div>
+
+      <div class="history-side">
+        <div class="section-title">
+          <span>Full History</span>
+          <span id="historyCount">0</span>
+        </div>
+        <div id="historyList" class="loading">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const blurphpApp = firebase.initializeApp({
+  apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+  authDomain: "blurphp.firebaseapp.com",
+  databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "blurphp",
+  storageBucket: "blurphp.appspot.com",
+  messagingSenderId: "593904200464",
+  appId: "1:593904200464:web:cea7bc1360532c20d99395",
+  measurementId: "G-R494S2DPZ5"
+}, "historyBlurphpApp");
+
+const blurphpDb = blurphpApp.database();
+
+let currentUser = null;
+let allHistory = [];
+
+const els = {
+  totalOpened: document.getElementById("totalOpened"),
+  uniqueTabs: document.getElementById("uniqueTabs"),
+  mostOpened: document.getElementById("mostOpened"),
+  lastOpened: document.getElementById("lastOpened"),
+  summaryList: document.getElementById("summaryList"),
+  historyList: document.getElementById("historyList"),
+  summaryCount: document.getElementById("summaryCount"),
+  historyCount: document.getElementById("historyCount"),
+  searchInput: document.getElementById("searchInput"),
+  groupFilter: document.getElementById("groupFilter"),
+  refreshBtn: document.getElementById("refreshBtn"),
+  clearLocalBtn: document.getElementById("clearLocalBtn")
+};
+
+function safeUserKey(email) {
+  return String(email || "guest")
+    .trim()
+    .toLowerCase()
+    .replace(/[.#$\[\]/\s]/g, "_");
+}
+
+function getLoginFromLocal() {
+  try {
+    return JSON.parse(localStorage.getItem("gmailLogin") || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function requestLoginFromParent() {
+  try {
+    window.parent.postMessage({ type: "request-login" }, "*");
+  } catch {}
+}
+
+window.addEventListener("message", (event) => {
+  const data = event.data || {};
+
+  if (data.type === "user-login" && data.user && data.user.email) {
+    currentUser = data.user;
+    localStorage.setItem("gmailLogin", JSON.stringify(currentUser));
+    loadHistory();
+  }
+
+  if (data.type === "theme-change") {
+    // ready kalau nanti mau support light/dark
+  }
+});
+
+function formatDate(ms) {
+  const d = new Date(Number(ms || 0));
+  if (isNaN(d.getTime())) return "-";
+
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  const ss = String(d.getSeconds()).padStart(2, "0");
+
+  return `${dd}-${mm}-${yy} ${hh}:${mi}:${ss}`;
+}
+
+function shortDate(ms) {
+  const d = new Date(Number(ms || 0));
+  if (isNaN(d.getTime())) return "-";
+
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+
+  return `${dd}/${mm} ${hh}:${mi}`;
+}
+
+function escapeHtml(str) {
+  return String(str || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function normalizeHistoryItem(item) {
+  return {
+    label: String(item.label || "UNKNOWN").trim().toUpperCase(),
+    url: String(item.url || ""),
+    group: String(item.group || "none").toLowerCase(),
+    route: String(item.route || ""),
+    openedAt: Number(item.openedAt || 0)
+  };
+}
+
+function getFilteredHistory() {
+  const q = els.searchInput.value.trim().toLowerCase();
+  const group = els.groupFilter.value;
+
+  return allHistory.filter(item => {
+    const text = `${item.label} ${item.url} ${item.group} ${item.route}`.toLowerCase();
+    const matchSearch = !q || text.includes(q);
+    const matchGroup = group === "all" || item.group === group;
+    return matchSearch && matchGroup;
+  });
+}
+
+function buildSummary(list) {
+  const map = new Map();
+
+  list.forEach(item => {
+    const key = item.label;
+
+    if (!map.has(key)) {
+      map.set(key, {
+        label: item.label,
+        url: item.url,
+        group: item.group,
+        route: item.route,
+        count: 0,
+        lastOpened: 0
+      });
+    }
+
+    const cur = map.get(key);
+    cur.count += 1;
+    cur.lastOpened = Math.max(cur.lastOpened, item.openedAt || 0);
+  });
+
+  return [...map.values()].sort((a, b) => {
+    if (b.count !== a.count) return b.count - a.count;
+    return b.lastOpened - a.lastOpened;
+  });
+}
+
+function updateGroupFilter() {
+  const oldValue = els.groupFilter.value || "all";
+  const groups = [...new Set(allHistory.map(x => x.group || "none"))].sort();
+
+  els.groupFilter.innerHTML = `<option value="all">All Group</option>`;
+
+  groups.forEach(group => {
+    const opt = document.createElement("option");
+    opt.value = group;
+    opt.textContent = group.toUpperCase();
+    els.groupFilter.appendChild(opt);
+  });
+
+  if ([...els.groupFilter.options].some(o => o.value === oldValue)) {
+    els.groupFilter.value = oldValue;
+  }
+}
+
+function renderStats(list, summary) {
+  els.totalOpened.textContent = list.length;
+  els.uniqueTabs.textContent = summary.length;
+  els.mostOpened.textContent = summary[0] ? summary[0].count : "-";
+  els.lastOpened.textContent = list[0] ? shortDate(list[0].openedAt) : "-";
+}
+
+function renderSummary(summary) {
+  els.summaryCount.textContent = summary.length;
+
+  if (!summary.length) {
+    els.summaryList.innerHTML = `<div class="empty">No tab count found.</div>`;
+    return;
+  }
+
+  els.summaryList.innerHTML = summary.map(item => `
+    <div class="module-card">
+      <div class="module-top">
+        <div class="module-name">${escapeHtml(item.label)}</div>
+        <div class="badge">${item.count}x</div>
+      </div>
+      <div class="module-meta">
+        Group: ${escapeHtml(item.group || "none")}<br>
+        Last: ${escapeHtml(formatDate(item.lastOpened))}<br>
+        URL: ${escapeHtml(item.url)}
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderHistory(list) {
+  els.historyCount.textContent = list.length;
+
+  if (!list.length) {
+    els.historyList.innerHTML = `<div class="empty">No history found.</div>`;
+    return;
+  }
+
+  els.historyList.innerHTML = list.map(item => `
+    <div class="history-item">
+      <div class="history-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path d="M13 3a9 9 0 1 0 8.95 10h-2.02A7 7 0 1 1 13 5c1.93 0 3.68.78 4.95 2.05L15 10h7V3l-2.64 2.64A8.96 8.96 0 0 0 13 3Zm-1 5v5l4.2 2.5 1-1.73-3.2-1.9V8h-2Z"/>
+        </svg>
+      </div>
+
+      <div class="history-main">
+        <div class="history-title">${escapeHtml(item.label)}</div>
+        <div class="history-url">${escapeHtml(item.url)}</div>
+
+        <div class="history-bottom">
+          <span>${escapeHtml(formatDate(item.openedAt))}</span>
+          <span class="group-chip">${escapeHtml(item.group || "none")}</span>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderAll() {
+  const filtered = getFilteredHistory();
+  const summary = buildSummary(filtered);
+
+  renderStats(filtered, summary);
+  renderSummary(summary);
+  renderHistory(filtered);
+}
+
+function loadLocalBackup(userKey) {
+  try {
+    const localKey = `tabHistory_${userKey}`;
+    const list = JSON.parse(localStorage.getItem(localKey) || "[]");
+    return Array.isArray(list) ? list.map(normalizeHistoryItem) : [];
+  } catch {
+    return [];
+  }
+}
+
+function loadHistory() {
+  const login = currentUser || getLoginFromLocal();
+  const email = String(login.email || "").trim().toLowerCase();
+
+  if (!email) {
+    els.summaryList.innerHTML = `<div class="empty">No login data found. Open this page inside main iframe.</div>`;
+    els.historyList.innerHTML = `<div class="empty">Waiting for login data...</div>`;
+    requestLoginFromParent();
+    return;
+  }
+
+  const userKey = safeUserKey(email);
+
+  els.summaryList.innerHTML = `<div class="loading">Loading...</div>`;
+  els.historyList.innerHTML = `<div class="loading">Loading...</div>`;
+
+  blurphpDb.ref(`users/${userKey}/tabHistory`)
+    .orderByChild("openedAt")
+    .limitToLast(500)
+    .on("value", snap => {
+      const data = snap.val() || {};
+
+      const firebaseList = Object.values(data)
+        .map(normalizeHistoryItem)
+        .filter(x => x.label && x.openedAt);
+
+      const localList = loadLocalBackup(userKey);
+
+      const merged = [...firebaseList, ...localList];
+
+      const uniqueMap = new Map();
+      merged.forEach(item => {
+        const key = `${item.label}_${item.url}_${item.openedAt}`;
+        uniqueMap.set(key, item);
+      });
+
+      allHistory = [...uniqueMap.values()]
+        .sort((a, b) => b.openedAt - a.openedAt);
+
+      updateGroupFilter();
+      renderAll();
+    }, err => {
+      console.warn("History load error:", err);
+      els.summaryList.innerHTML = `<div class="empty">Failed to load Firebase history.</div>`;
+      els.historyList.innerHTML = `<div class="empty">Please check Firebase rules.</div>`;
+    });
+}
+
+els.searchInput.addEventListener("input", renderAll);
+els.groupFilter.addEventListener("change", renderAll);
+
+els.refreshBtn.addEventListener("click", () => {
+  loadHistory();
+});
+
+els.clearLocalBtn.addEventListener("click", () => {
+  const login = currentUser || getLoginFromLocal();
+  const userKey = safeUserKey(login.email || "");
+  localStorage.removeItem(`tabHistory_${userKey}`);
+  loadHistory();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  currentUser = getLoginFromLocal();
+
+  if (!currentUser || !currentUser.email) {
+    requestLoginFromParent();
+  }
+
+  setTimeout(loadHistory, 250);
+});
+</script>
+</body>
+</html>
