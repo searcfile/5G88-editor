@@ -409,7 +409,7 @@ html {
   color: var(--text-soft);
   cursor: pointer;
   font-size: 12px;
-  transition: all .25s;
+  transition: all .3s;
 }
 #dateRangeInput{
 text-align: center;
@@ -445,6 +445,7 @@ text-align: center;
   z-index: 999999;
   display: none;
   box-shadow: 0 12px 28px rgba(0,0,0,.35);
+   transition: all .3s;
 }
 
 .range-picker.open {
@@ -468,6 +469,7 @@ text-align: center;
   background: var(--backgroundbtn);
   color: var(--text-soft);
   cursor: pointer;
+   transition: all .3s;
 }
 
 #pickerTitle {
@@ -811,20 +813,41 @@ function renderCalendar(container, titleEl, date) {
 btn.addEventListener("click", (e) => {
   e.stopPropagation();
 
+  // Klik pertama = pilih tarikh mula
   if (!tempStartDate || (tempStartDate && tempEndDate)) {
-        tempStartDate = startOfDay(d);
-        tempEndDate = null;
-      } else {
-        if (d.getTime() < tempStartDate.getTime()) {
-          tempEndDate = tempStartDate;
-          tempStartDate = startOfDay(d);
-        } else {
-          tempEndDate = endOfDay(d);
-        }
-      }
+    tempStartDate = startOfDay(d);
+    tempEndDate = null;
+    renderRangePicker();
+    return;
+  }
 
-      renderRangePicker();
-    });
+  // Klik kedua = pilih tarikh akhir dan terus apply
+  if (d.getTime() < tempStartDate.getTime()) {
+    tempEndDate = endOfDay(tempStartDate);
+    tempStartDate = startOfDay(d);
+  } else {
+    tempEndDate = endOfDay(d);
+  }
+
+  const start = startOfDay(tempStartDate);
+  const end = endOfDay(tempEndDate);
+
+  activeRange = {
+    key: "custom",
+    start: start.getTime(),
+    end: end.getTime()
+  };
+
+  if (dateRangeInput) {
+    dateRangeInput.value = `${toYMD(start)} → ${toYMD(end)}`;
+  }
+
+  rangeButtons.forEach(btn => btn.classList.remove("active"));
+
+  renderRangePicker();
+  closeRangePicker();
+  renderTabList();
+});
 
     container.appendChild(btn);
   }
