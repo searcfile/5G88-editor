@@ -38,16 +38,14 @@
   --chip-menu:#111a2c;
 }
 
-*{
-  box-sizing:border-box;
-}
+*{ box-sizing:border-box; }
 
 body{
   margin:0;
   min-height:100vh;
   font-family:Inter,Segoe UI,Arial,sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(22,104,220,.22), transparent 34%),
+    radial-gradient(circle at top left, rgba(22,104,220,.20), transparent 32%),
     linear-gradient(180deg, #050505, var(--page-bg));
   color:var(--page-text);
   padding:18px;
@@ -60,7 +58,7 @@ body{
 
 .header{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:space-between;
   gap:14px;
   margin-bottom:18px;
@@ -76,50 +74,7 @@ body{
 .title-box p{
   margin:7px 0 0;
   font-size:13px;
-  color:var(--soft);
-}
-
-.actions{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.btn{
-  height:36px;
-  border:1px solid var(--border-input);
-  background:var(--page-input);
-  color:var(--page-text);
-  border-radius:10px;
-  padding:0 13px;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  font-size:13px;
-  transition:.2s;
-}
-
-.btn:hover{
-  border-color:var(--blue);
-  color:#fff;
-  box-shadow:0 0 0 3px rgba(22,104,220,.15);
-}
-
-.btn.primary{
-  background:var(--blue);
-  border-color:var(--blue);
-  color:#fff;
-}
-
-.btn.primary:hover{
-  background:var(--blue-hover);
-}
-
-.btn.danger:hover{
-  border-color:var(--danger);
-  color:#fff;
-  box-shadow:0 0 0 3px rgba(220,38,38,.15);
+  color:#8b9bb4;
 }
 
 .stats-grid{
@@ -139,7 +94,7 @@ body{
 
 .stat-card .label{
   font-size:12px;
-  color:var(--soft);
+  color:#8b9bb4;
   margin-bottom:9px;
 }
 
@@ -185,6 +140,10 @@ body{
   transition:.2s;
 }
 
+.search-box input::placeholder{
+  color:#6b7280;
+}
+
 .search-box input:focus{
   border-color:var(--blue);
   box-shadow:0 0 0 3px rgba(22,104,220,.18);
@@ -197,7 +156,7 @@ body{
   transform:translateY(-50%);
   width:15px;
   height:15px;
-  color:var(--soft);
+  color:#8b9bb4;
 }
 
 .select{
@@ -210,160 +169,95 @@ body{
   outline:none;
 }
 
-.content-grid{
-  display:grid;
-  grid-template-columns:390px 1fr;
-  min-height:520px;
-}
-
-.summary-side{
-  border-right:1px solid var(--border-input);
-  padding:14px;
-  background:rgba(255,255,255,.015);
+.table-wrap{
+  width:100%;
   overflow:auto;
-  max-height:calc(100vh - 235px);
 }
 
-.history-side{
-  padding:14px;
-  overflow:auto;
-  max-height:calc(100vh - 235px);
+.history-table{
+  width:100%;
+  min-width:900px;
+  border-collapse:collapse;
 }
 
-.section-title{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:12px;
-  color:#fff;
-  font-weight:700;
-  font-size:14px;
+.history-table thead{
+  background:rgba(255,255,255,.045);
 }
 
-.module-card{
-  border:1px solid var(--border-input);
-  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
-  border-radius:16px;
-  padding:13px;
-  margin-bottom:10px;
-  transition:.2s;
-}
-
-.module-card:hover{
-  border-color:rgba(22,104,220,.75);
-  transform:translateY(-1px);
-}
-
-.module-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.module-name{
-  font-weight:800;
-  color:#fff;
-  font-size:14px;
-}
-
-.badge{
-  min-width:32px;
-  height:24px;
-  padding:0 8px;
-  border-radius:999px;
-  background:rgba(22,104,220,.16);
-  color:#7db1ff;
-  border:1px solid rgba(22,104,220,.35);
+.history-table th{
+  text-align:left;
+  padding:13px 14px;
   font-size:12px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
+  color:#9ca3af;
   font-weight:800;
-}
-
-.module-meta{
-  margin-top:9px;
-  color:var(--soft);
-  font-size:12px;
-  line-height:1.5;
-  word-break:break-word;
-}
-
-.history-item{
-  border:1px solid var(--border-input);
-  background:rgba(255,255,255,.025);
-  border-radius:16px;
-  padding:13px;
-  margin-bottom:10px;
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-}
-
-.history-icon{
-  width:38px;
-  height:38px;
-  border-radius:13px;
-  background:rgba(22,104,220,.18);
-  border:1px solid rgba(22,104,220,.35);
-  color:#9bc3ff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex:0 0 auto;
-}
-
-.history-main{
-  flex:1;
-  min-width:0;
-}
-
-.history-title{
-  color:#fff;
-  font-weight:800;
-  font-size:14px;
-  margin-bottom:5px;
-}
-
-.history-url{
-  color:var(--soft);
-  font-size:12px;
+  border-bottom:1px solid var(--border-input);
   white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
 
-.history-bottom{
-  margin-top:9px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  color:var(--soft);
-  font-size:12px;
+.history-table td{
+  padding:14px;
+  font-size:13px;
+  color:var(--page-text);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  vertical-align:middle;
+}
+
+.history-table tbody tr{
+  transition:.18s ease;
+}
+
+.history-table tbody tr:hover{
+  background:rgba(22,104,220,.10);
+}
+
+.no-col{
+  width:58px;
+  color:#8b9bb4;
+}
+
+.tab-name{
+  color:#fff;
+  font-weight:800;
 }
 
 .group-chip{
-  padding:4px 8px;
+  display:inline-flex;
+  padding:5px 9px;
   border-radius:999px;
-  background:var(--bg-chip);
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.10);
   color:#dbeafe;
-  border:1px solid rgba(255,255,255,.08);
+  font-size:12px;
+  text-transform:uppercase;
 }
 
-.empty{
-  text-align:center;
-  color:var(--soft);
-  padding:50px 20px;
-  border:1px dashed var(--border-input);
-  border-radius:18px;
+.count-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:38px;
+  height:24px;
+  padding:0 9px;
+  border-radius:999px;
+  background:rgba(22,104,220,.16);
+  color:#8bbdff;
+  border:1px solid rgba(22,104,220,.35);
+  font-weight:800;
 }
 
-.loading{
-  padding:40px;
-  color:var(--soft);
-  text-align:center;
+.url-text{
+  max-width:430px;
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  color:#8da2c0;
+}
+
+.empty-cell{
+  text-align:center !important;
+  padding:48px 20px !important;
+  color:#6b7280 !important;
 }
 
 ::-webkit-scrollbar{
@@ -382,17 +276,11 @@ body{
 }
 
 @media(max-width:900px){
-  body{
-    padding:12px;
-  }
+  body{ padding:12px; }
 
   .header{
     flex-direction:column;
     align-items:stretch;
-  }
-
-  .actions{
-    justify-content:flex-end;
   }
 
   .stats-grid{
@@ -403,34 +291,11 @@ body{
     flex-direction:column;
     align-items:stretch;
   }
-
-  .content-grid{
-    grid-template-columns:1fr;
-  }
-
-  .summary-side{
-    border-right:none;
-    border-bottom:1px solid var(--border-input);
-    max-height:none;
-  }
-
-  .history-side{
-    max-height:none;
-  }
 }
 
 @media(max-width:520px){
   .stats-grid{
     grid-template-columns:1fr;
-  }
-
-  .actions{
-    flex-wrap:wrap;
-  }
-
-  .btn{
-    flex:1;
-    justify-content:center;
   }
 
   .title-box h1{
@@ -447,11 +312,6 @@ body{
     <div class="title-box">
       <h1>Tab History</h1>
       <p>View user opened tabs, total visits, and latest activity.</p>
-    </div>
-
-    <div class="actions">
-      <button class="btn" id="refreshBtn">Refresh</button>
-      <button class="btn danger" id="clearLocalBtn">Clear Local</button>
     </div>
   </div>
 
@@ -488,22 +348,24 @@ body{
       </select>
     </div>
 
-    <div class="content-grid">
-      <div class="summary-side">
-        <div class="section-title">
-          <span>Tab Count</span>
-          <span id="summaryCount">0</span>
-        </div>
-        <div id="summaryList" class="loading">Loading...</div>
-      </div>
-
-      <div class="history-side">
-        <div class="section-title">
-          <span>Full History</span>
-          <span id="historyCount">0</span>
-        </div>
-        <div id="historyList" class="loading">Loading...</div>
-      </div>
+    <div class="table-wrap">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th class="no-col">No</th>
+            <th>Tab Name</th>
+            <th>Group</th>
+            <th>Open Count</th>
+            <th>Last Opened</th>
+            <th>URL</th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody">
+          <tr>
+            <td colspan="6" class="empty-cell">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -530,14 +392,9 @@ const els = {
   uniqueTabs: document.getElementById("uniqueTabs"),
   mostOpened: document.getElementById("mostOpened"),
   lastOpened: document.getElementById("lastOpened"),
-  summaryList: document.getElementById("summaryList"),
-  historyList: document.getElementById("historyList"),
-  summaryCount: document.getElementById("summaryCount"),
-  historyCount: document.getElementById("historyCount"),
   searchInput: document.getElementById("searchInput"),
   groupFilter: document.getElementById("groupFilter"),
-  refreshBtn: document.getElementById("refreshBtn"),
-  clearLocalBtn: document.getElementById("clearLocalBtn")
+  historyTableBody: document.getElementById("historyTableBody")
 };
 
 function safeUserKey(email) {
@@ -568,10 +425,6 @@ window.addEventListener("message", (event) => {
     currentUser = data.user;
     localStorage.setItem("gmailLogin", JSON.stringify(currentUser));
     loadHistory();
-  }
-
-  if (data.type === "theme-change") {
-    // ready kalau nanti mau support light/dark
   }
 });
 
@@ -685,55 +538,29 @@ function renderStats(list, summary) {
   els.lastOpened.textContent = list[0] ? shortDate(list[0].openedAt) : "-";
 }
 
-function renderSummary(summary) {
-  els.summaryCount.textContent = summary.length;
-
+function renderTable(summary) {
   if (!summary.length) {
-    els.summaryList.innerHTML = `<div class="empty">No tab count found.</div>`;
+    els.historyTableBody.innerHTML = `
+      <tr>
+        <td colspan="6" class="empty-cell">No history found.</td>
+      </tr>
+    `;
     return;
   }
 
-  els.summaryList.innerHTML = summary.map(item => `
-    <div class="module-card">
-      <div class="module-top">
-        <div class="module-name">${escapeHtml(item.label)}</div>
-        <div class="badge">${item.count}x</div>
-      </div>
-      <div class="module-meta">
-        Group: ${escapeHtml(item.group || "none")}<br>
-        Last: ${escapeHtml(formatDate(item.lastOpened))}<br>
-        URL: ${escapeHtml(item.url)}
-      </div>
-    </div>
-  `).join("");
-}
-
-function renderHistory(list) {
-  els.historyCount.textContent = list.length;
-
-  if (!list.length) {
-    els.historyList.innerHTML = `<div class="empty">No history found.</div>`;
-    return;
-  }
-
-  els.historyList.innerHTML = list.map(item => `
-    <div class="history-item">
-      <div class="history-icon">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-          <path d="M13 3a9 9 0 1 0 8.95 10h-2.02A7 7 0 1 1 13 5c1.93 0 3.68.78 4.95 2.05L15 10h7V3l-2.64 2.64A8.96 8.96 0 0 0 13 3Zm-1 5v5l4.2 2.5 1-1.73-3.2-1.9V8h-2Z"/>
-        </svg>
-      </div>
-
-      <div class="history-main">
-        <div class="history-title">${escapeHtml(item.label)}</div>
-        <div class="history-url">${escapeHtml(item.url)}</div>
-
-        <div class="history-bottom">
-          <span>${escapeHtml(formatDate(item.openedAt))}</span>
-          <span class="group-chip">${escapeHtml(item.group || "none")}</span>
-        </div>
-      </div>
-    </div>
+  els.historyTableBody.innerHTML = summary.map((item, index) => `
+    <tr>
+      <td class="no-col">${index + 1}</td>
+      <td><span class="tab-name">${escapeHtml(item.label)}</span></td>
+      <td><span class="group-chip">${escapeHtml(item.group || "none")}</span></td>
+      <td><span class="count-badge">${item.count}x</span></td>
+      <td>${escapeHtml(formatDate(item.lastOpened))}</td>
+      <td>
+        <span class="url-text" title="${escapeHtml(item.url)}">
+          ${escapeHtml(item.url)}
+        </span>
+      </td>
+    </tr>
   `).join("");
 }
 
@@ -742,8 +569,7 @@ function renderAll() {
   const summary = buildSummary(filtered);
 
   renderStats(filtered, summary);
-  renderSummary(summary);
-  renderHistory(filtered);
+  renderTable(summary);
 }
 
 function loadLocalBackup(userKey) {
@@ -761,16 +587,24 @@ function loadHistory() {
   const email = String(login.email || "").trim().toLowerCase();
 
   if (!email) {
-    els.summaryList.innerHTML = `<div class="empty">No login data found. Open this page inside main iframe.</div>`;
-    els.historyList.innerHTML = `<div class="empty">Waiting for login data...</div>`;
+    els.historyTableBody.innerHTML = `
+      <tr>
+        <td colspan="6" class="empty-cell">
+          No login data found. Open this page inside main iframe.
+        </td>
+      </tr>
+    `;
     requestLoginFromParent();
     return;
   }
 
   const userKey = safeUserKey(email);
 
-  els.summaryList.innerHTML = `<div class="loading">Loading...</div>`;
-  els.historyList.innerHTML = `<div class="loading">Loading...</div>`;
+  els.historyTableBody.innerHTML = `
+    <tr>
+      <td colspan="6" class="empty-cell">Loading...</td>
+    </tr>
+  `;
 
   blurphpDb.ref(`users/${userKey}/tabHistory`)
     .orderByChild("openedAt")
@@ -783,7 +617,6 @@ function loadHistory() {
         .filter(x => x.label && x.openedAt);
 
       const localList = loadLocalBackup(userKey);
-
       const merged = [...firebaseList, ...localList];
 
       const uniqueMap = new Map();
@@ -799,24 +632,18 @@ function loadHistory() {
       renderAll();
     }, err => {
       console.warn("History load error:", err);
-      els.summaryList.innerHTML = `<div class="empty">Failed to load Firebase history.</div>`;
-      els.historyList.innerHTML = `<div class="empty">Please check Firebase rules.</div>`;
+      els.historyTableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="empty-cell">
+            Failed to load Firebase history. Please check Firebase rules.
+          </td>
+        </tr>
+      `;
     });
 }
 
 els.searchInput.addEventListener("input", renderAll);
 els.groupFilter.addEventListener("change", renderAll);
-
-els.refreshBtn.addEventListener("click", () => {
-  loadHistory();
-});
-
-els.clearLocalBtn.addEventListener("click", () => {
-  const login = currentUser || getLoginFromLocal();
-  const userKey = safeUserKey(login.email || "");
-  localStorage.removeItem(`tabHistory_${userKey}`);
-  loadHistory();
-});
 
 document.addEventListener("DOMContentLoaded", () => {
   currentUser = getLoginFromLocal();
