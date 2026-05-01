@@ -416,21 +416,125 @@ text-align: center;
   border-color: var(--gold);
   color: var(--gold);
 }
-.date-range-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 6px;
-  align-items: center;
+.custom-range-wrap {
+  position: relative;
   margin-top: 8px;
 }
 
-.date-range-row span {
-  color: var(--text-dim);
-  font-size: 13px;
+#dateRangeInput {
+  text-align: center;
+  cursor: pointer;
 }
 
-.date-range-row input {
-  min-width: 0;
+.range-picker {
+  position: absolute;
+  left: 0;
+  top: 38px;
+  width: 520px;
+  max-width: calc(100vw - 32px);
+  background: var(--backgrounddrop);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 9999;
+  display: none;
+  box-shadow: 0 12px 28px rgba(0,0,0,.35);
+}
+
+.range-picker.open {
+  display: block;
+}
+
+.range-picker-head,
+.picker-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.range-picker-head button,
+.picker-actions button {
+  height: 28px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--backgroundbtn);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+#pickerTitle {
+  font-size: 13px;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.calendar-grid-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.month-title {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-week,
+.cal-day {
+  height: 28px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.cal-week {
+  color: var(--text-dim);
+}
+
+.cal-day {
+  border: 1px solid transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.cal-day:hover {
+  border-color: var(--gold-hover);
+}
+
+.cal-day.muted {
+  color: var(--text-dim);
+  opacity: .45;
+}
+
+.cal-day.in-range {
+  background: rgba(22,104,220,.18);
+}
+
+.cal-day.selected {
+  background: var(--gold);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .range-picker {
+    width: 100%;
+  }
+
+  .calendar-grid-wrap {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 </head>
@@ -444,10 +548,33 @@ text-align: center;
 <div class="search-box">
   <input id="searchInput" type="text" placeholder="Search tab...">
 
- <div class="date-range-row">
-  <input id="startDateInput" type="date">
-  <span>→</span>
-  <input id="endDateInput" type="date">
+<div class="custom-range-wrap">
+  <input id="dateRangeInput" type="text" readonly placeholder="YYYY-MM-DD → YYYY-MM-DD">
+
+  <div id="rangePicker" class="range-picker">
+    <div class="range-picker-head">
+      <button type="button" id="prevMonthBtn">‹‹</button>
+      <div id="pickerTitle"></div>
+      <button type="button" id="nextMonthBtn">››</button>
+    </div>
+
+    <div class="calendar-grid-wrap">
+      <div>
+        <div id="leftMonthTitle" class="month-title"></div>
+        <div id="leftCalendar" class="calendar-grid"></div>
+      </div>
+
+      <div>
+        <div id="rightMonthTitle" class="month-title"></div>
+        <div id="rightCalendar" class="calendar-grid"></div>
+      </div>
+    </div>
+
+    <div class="picker-actions">
+      <button type="button" id="clearRangeBtn">Clear</button>
+      <button type="button" id="applyRangeBtn">Apply</button>
+    </div>
+  </div>
 </div>
 
   <div class="range-buttons">
@@ -487,26 +614,22 @@ const blurphpDb = blurphpApp.database();
 const tabList = document.getElementById("tabList");
 const detailWrap = document.getElementById("detailWrap");
 const searchInput = document.getElementById("searchInput");
-const startDateInput = document.getElementById("startDateInput");
-const endDateInput = document.getElementById("endDateInput");
+const dateRangeInput = document.getElementById("dateRangeInput");
+const rangePicker = document.getElementById("rangePicker");
+const pickerTitle = document.getElementById("pickerTitle");
+const leftMonthTitle = document.getElementById("leftMonthTitle");
+const rightMonthTitle = document.getElementById("rightMonthTitle");
+const leftCalendar = document.getElementById("leftCalendar");
+const rightCalendar = document.getElementById("rightCalendar");
+const prevMonthBtn = document.getElementById("prevMonthBtn");
+const nextMonthBtn = document.getElementById("nextMonthBtn");
+const applyRangeBtn = document.getElementById("applyRangeBtn");
+const clearRangeBtn = document.getElementById("clearRangeBtn");
 const rangeButtons = document.querySelectorAll(".range-buttons button");
-[startDateInput, endDateInput].forEach(input => {
-  input?.addEventListener("change", () => {
-    if (!startDateInput.value || !endDateInput.value) return;
+let pickerBaseDate = new Date();
+let tempStartDate = null;
+let tempEndDate = null;
 
-    const start = new Date(startDateInput.value + "T00:00:00");
-    const end = new Date(endDateInput.value + "T23:59:59");
-
-    activeRange = {
-      key: "custom",
-      start: start.getTime(),
-      end: end.getTime()
-    };
-
-    rangeButtons.forEach(btn => btn.classList.remove("active"));
-    renderTabList();
-  });
-});
 let activeRange = {
   start: null,
   end: null,
@@ -618,14 +741,114 @@ function setActiveRange(key = "today") {
     end: range.end.getTime()
   };
 
-if (startDateInput) startDateInput.value = toYMD(range.start);
-if (endDateInput) endDateInput.value = toYMD(range.end);
+if (dateRangeInput) {
+  dateRangeInput.value = `${toYMD(range.start)} → ${toYMD(range.end)}`;
+}
 
   rangeButtons.forEach(btn => {
     btn.classList.toggle("active", btn.dataset.range === key);
   });
 
   renderTabList();
+}
+function monthName(date) {
+  return date.toLocaleString("en-US", { month: "short", year: "numeric" });
+}
+
+function sameDay(a, b) {
+  if (!a || !b) return false;
+  return toYMD(a) === toYMD(b);
+}
+
+function isBetweenDay(day, start, end) {
+  if (!day || !start || !end) return false;
+  const t = startOfDay(day).getTime();
+  return t >= startOfDay(start).getTime() && t <= startOfDay(end).getTime();
+}
+
+function renderCalendar(container, titleEl, date) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  titleEl.textContent = monthName(date);
+  container.innerHTML = "";
+
+  ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].forEach(w => {
+    const el = document.createElement("div");
+    el.className = "cal-week";
+    el.textContent = w;
+    container.appendChild(el);
+  });
+
+  const first = new Date(year, month, 1);
+  const startOffset = first.getDay();
+  const gridStart = new Date(year, month, 1 - startOffset);
+
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(gridStart);
+    d.setDate(gridStart.getDate() + i);
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "cal-day";
+    btn.textContent = d.getDate();
+
+    if (d.getMonth() !== month) btn.classList.add("muted");
+
+    if (sameDay(d, tempStartDate) || sameDay(d, tempEndDate)) {
+      btn.classList.add("selected");
+    } else if (isBetweenDay(d, tempStartDate, tempEndDate)) {
+      btn.classList.add("in-range");
+    }
+
+    btn.addEventListener("click", () => {
+      if (!tempStartDate || (tempStartDate && tempEndDate)) {
+        tempStartDate = startOfDay(d);
+        tempEndDate = null;
+      } else {
+        if (d.getTime() < tempStartDate.getTime()) {
+          tempEndDate = tempStartDate;
+          tempStartDate = startOfDay(d);
+        } else {
+          tempEndDate = endOfDay(d);
+        }
+      }
+
+      renderRangePicker();
+    });
+
+    container.appendChild(btn);
+  }
+}
+
+function renderRangePicker() {
+  const leftDate = new Date(pickerBaseDate.getFullYear(), pickerBaseDate.getMonth(), 1);
+  const rightDate = new Date(pickerBaseDate.getFullYear(), pickerBaseDate.getMonth() + 1, 1);
+
+  if (pickerTitle) {
+    pickerTitle.textContent = `${monthName(leftDate)} - ${monthName(rightDate)}`;
+  }
+
+  renderCalendar(leftCalendar, leftMonthTitle, leftDate);
+  renderCalendar(rightCalendar, rightMonthTitle, rightDate);
+}
+
+function openRangePicker() {
+  if (!rangePicker) return;
+
+  const currentStart = activeRange.start ? new Date(activeRange.start) : new Date();
+  const currentEnd = activeRange.end ? new Date(activeRange.end) : currentStart;
+
+  tempStartDate = startOfDay(currentStart);
+  tempEndDate = endOfDay(currentEnd);
+  pickerBaseDate = new Date(currentStart.getFullYear(), currentStart.getMonth(), 1);
+
+  rangePicker.classList.add("open");
+  renderRangePicker();
+}
+
+function closeRangePicker() {
+  rangePicker?.classList.remove("open");
 }
 function escapeHtml(str) {
   return String(str || "")
@@ -835,6 +1058,54 @@ rangeButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     setActiveRange(btn.dataset.range || "today");
   });
+});
+dateRangeInput?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  openRangePicker();
+});
+
+prevMonthBtn?.addEventListener("click", () => {
+  pickerBaseDate.setMonth(pickerBaseDate.getMonth() - 1);
+  renderRangePicker();
+});
+
+nextMonthBtn?.addEventListener("click", () => {
+  pickerBaseDate.setMonth(pickerBaseDate.getMonth() + 1);
+  renderRangePicker();
+});
+
+applyRangeBtn?.addEventListener("click", () => {
+  if (!tempStartDate) return;
+
+  const start = startOfDay(tempStartDate);
+  const end = tempEndDate ? endOfDay(tempEndDate) : endOfDay(tempStartDate);
+
+  activeRange = {
+    key: "custom",
+    start: start.getTime(),
+    end: end.getTime()
+  };
+
+  if (dateRangeInput) {
+    dateRangeInput.value = `${toYMD(start)} → ${toYMD(end)}`;
+  }
+
+  rangeButtons.forEach(btn => btn.classList.remove("active"));
+  closeRangePicker();
+  renderTabList();
+});
+
+clearRangeBtn?.addEventListener("click", () => {
+  tempStartDate = null;
+  tempEndDate = null;
+  setActiveRange("today");
+  closeRangePicker();
+});
+
+document.addEventListener("click", (e) => {
+  if (!rangePicker?.classList.contains("open")) return;
+  if (rangePicker.contains(e.target) || e.target === dateRangeInput) return;
+  closeRangePicker();
 });
 window.addEventListener("message", function(e) {
   const allowedOrigins = [
