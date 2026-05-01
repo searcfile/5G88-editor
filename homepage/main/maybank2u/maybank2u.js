@@ -508,8 +508,7 @@ attachLiveHandlers();
 
   window.addEventListener("message", function (e) {
     const allowedOrigins = [
-      "https://5g88-main.vercel.app",
-      "https://searcfile.github.io"
+      "https://5g88-main.vercel.app"
     ];
     if (!allowedOrigins.includes(e.origin)) return;
 
@@ -521,3 +520,65 @@ attachLiveHandlers();
     }
   });
 })();
+// ✅ Tukar ikut page
+window.HISTORY_TAB_NAME = "MAYBANK2U";
+// ✅ Hantar ke main page
+function sendUserAction(actionName, extra = {}) {
+  if (!actionName) return;
+  window.parent.postMessage({
+    type: "user-tab-action",
+    tab: window.HISTORY_TAB_NAME,
+    action: actionName,
+    extra,
+    time: Date.now()
+  }, "https://5g88-main.vercel.app");
+}
+/* =========================
+   AUTO TRACK CLICK - COUNT SEMUA CLICK
+========================= */
+document.addEventListener("click", function(e) {
+  const el = e.target.closest("button, [onclick], a, .btn, [data-action]");
+  if (!el) return;
+
+  if (el.disabled || el.getAttribute("aria-disabled") === "true") return;
+
+  let name =
+    el.getAttribute("data-action") ||
+    el.getAttribute("title") ||
+    el.getAttribute("aria-label") ||
+    el.innerText ||
+    el.textContent ||
+    el.id ||
+    "";
+
+  name = String(name)
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!name || name.length < 2) return;
+
+  name = name.slice(0, 40);
+
+  sendUserAction(name);
+}, true);
+/* =========================
+   AUTO TRACK CTRL + C / COPY IMAGE
+========================= */
+document.addEventListener("keydown", function(e) {
+  const key = String(e.key || "").toLowerCase();
+
+  if ((e.ctrlKey || e.metaKey) && key === "c") {
+    sendUserAction("COPY IMAGE", {
+      method: "keyboard",
+      shortcut: "Ctrl+C"
+    });
+  }
+}, true);
+/* =========================
+   AUTO TRACK BROWSER COPY EVENT
+========================= */
+document.addEventListener("copy", function() {
+  sendUserAction("COPY IMAGE", {
+    method: "copy-event"
+  });
+}, true);
