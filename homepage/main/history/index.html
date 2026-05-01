@@ -131,7 +131,7 @@ body {
 }
 .panel-head {
   padding: 12px 14px;
-  border: 1px solid var(--border4) !important;
+  border: 1px solid var(--border4);
   background: var(--backgrounddrop);
   font-weight: 500;
   color: var(--text-soft);
@@ -295,7 +295,7 @@ table {
 th,
 td {
   padding: 11px 12px;
-  border-bottom: 1px solid var(--border4);
+  border-bottom: 1px solid var(--border2);
   text-align: left;
   font-size: 14px;
   background:var(--backgroundbtn);
@@ -329,6 +329,7 @@ tr:last-child td {
   overflow: auto;
   border: 1px solid var(--border4);
   border-radius: 0 0 8px 8px;
+  border-top: 1px solid var(--border2);
 }
 
 .log-row {
@@ -400,7 +401,7 @@ html {
 
 .range-buttons {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   margin-top: 8px;
 }
@@ -428,7 +429,6 @@ text-align: center;
 }
 .custom-range-wrap {
   position: relative;
-  margin-top: 8px;
   z-index: 99999;
 }
 #dateRangeInput {
@@ -465,8 +465,6 @@ text-align: center;
   margin-bottom: 8px;
    transition: all .3s;
 }
-
-.range-picker-head button,
 .picker-actions button {
   height: 28px;
   border: 1px solid var(--border2);
@@ -476,10 +474,25 @@ text-align: center;
   cursor: pointer;
    transition: all .3s;
 }
-.range-picker-head button, .picker-actions button:hover{
+.range-picker-head button{
+  height: 28px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--backgroundbtn);
+  color: var(--text-soft);
+  cursor: pointer;
+   transition: all .3s;
+}
+.range-picker-head button:hover{
   border: 1px solid var(--gold-hover);
 }
-.range-picker-head button, .picker-actions button:active{
+.range-picker-head button:active{
+  border: 1px solid var(--gold-active);
+}
+.picker-actions button:hover{
+  border: 1px solid var(--gold-hover);
+}
+.picker-actions button:active{
   border: 1px solid var(--gold-active);
 }
 #pickerTitle {
@@ -556,6 +569,53 @@ text-align: center;
     grid-template-columns: 1fr;
   }
 }
+.date-range-line {
+  display: grid;
+  grid-template-columns: 1fr 36px;
+  gap: 6px;
+  align-items: center;
+}
+
+.date-range-line #dateRangeInput {
+  margin-top: 0;
+}
+
+.range-toggle-btn {
+  width: 36px;
+  height: 32px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--backgroundbtn);
+  color: var(--text-soft);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all .3s;
+}
+
+.range-toggle-btn:hover {
+  border-color: var(--gold-hover);
+}
+
+.range-toggle-btn.active {
+  border-color: var(--gold);
+}
+
+.range-toggle-btn svg {
+  transition: transform .25s ease;
+}
+
+.range-toggle-btn.active svg {
+  transform: rotate(180deg);
+}
+
+.range-buttons {
+  display: none;
+}
+
+.range-buttons.show {
+  display: grid;
+}
 </style>
 </head>
 
@@ -569,7 +629,15 @@ text-align: center;
   <input id="searchInput" type="text" placeholder="Search tab...">
 
 <div class="custom-range-wrap">
-  <input id="dateRangeInput" type="text" readonly placeholder="YYYY-MM-DD → YYYY-MM-DD">
+  <div class="date-range-line">
+    <input id="dateRangeInput" type="text" readonly placeholder="YYYY-MM-DD → YYYY-MM-DD">
+
+    <button type="button" id="rangeToggleBtn" class="range-toggle-btn" aria-label="Toggle Range">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M16.59 8.59L12 13.17L7.41 8.59L6 10l6 6l6-6z"></path>
+      </svg>
+    </button>
+  </div>
 
   <div id="rangePicker" class="range-picker">
     <div class="range-picker-head">
@@ -646,6 +714,8 @@ const nextMonthBtn = document.getElementById("nextMonthBtn");
 const applyRangeBtn = document.getElementById("applyRangeBtn");
 const clearRangeBtn = document.getElementById("clearRangeBtn");
 const rangeButtons = document.querySelectorAll(".range-buttons button");
+  const rangeToggleBtn = document.getElementById("rangeToggleBtn");
+const rangeButtonsWrap = document.querySelector(".range-buttons");
 let pickerBaseDate = new Date();
 let tempStartDate = null;
 let tempEndDate = null;
@@ -1097,9 +1167,19 @@ function startHistoryListener() {
 }
 
 searchInput.addEventListener("input", renderTabList);
+rangeToggleBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  rangeButtonsWrap?.classList.toggle("show");
+  rangeToggleBtn.classList.toggle("active", rangeButtonsWrap?.classList.contains("show"));
+});
+
 rangeButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     setActiveRange(btn.dataset.range || "today");
+
+    // pilih range terus hide balik
+    rangeButtonsWrap?.classList.remove("show");
+    rangeToggleBtn?.classList.remove("active");
   });
 });
 dateRangeInput?.addEventListener("click", (e) => {
@@ -1150,9 +1230,21 @@ clearRangeBtn?.addEventListener("click", (e) => {
 });
 
 document.addEventListener("click", (e) => {
-  if (!rangePicker?.classList.contains("open")) return;
-  if (rangePicker.contains(e.target) || e.target === dateRangeInput) return;
-  closeRangePicker();
+  if (rangePicker?.classList.contains("open")) {
+    if (!rangePicker.contains(e.target) && e.target !== dateRangeInput) {
+      closeRangePicker();
+    }
+  }
+
+  if (rangeButtonsWrap?.classList.contains("show")) {
+    if (
+      !rangeButtonsWrap.contains(e.target) &&
+      !rangeToggleBtn?.contains(e.target)
+    ) {
+      rangeButtonsWrap.classList.remove("show");
+      rangeToggleBtn?.classList.remove("active");
+    }
+  }
 });
 window.addEventListener("message", function(e) {
   const allowedOrigins = [
