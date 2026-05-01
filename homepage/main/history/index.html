@@ -254,8 +254,7 @@ body {
   min-width: 620px;
 }
 
-.stats-table th,
-.stats-table td {
+.stats-table th {
   padding: 11px 12px;
   border-bottom: 1px solid var(--border2);
   text-align: left;
@@ -266,8 +265,13 @@ body {
 }
 
 .stats-table td {
-  color: var(--text-soft);
   background:var(--backgroundbtn);
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border2);
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-soft);
+  font-weight: 400;
 }
 
 .stats-table td:nth-child(2) {
@@ -459,6 +463,7 @@ text-align: center;
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 8px;
+   transition: all .3s;
 }
 
 .range-picker-head button,
@@ -471,7 +476,12 @@ text-align: center;
   cursor: pointer;
    transition: all .3s;
 }
-
+.range-picker-head button, .picker-actions button:hover{
+  border: 1px solid var(--gold-hover);
+}
+.range-picker-head button, .picker-actions button:active{
+  border: 1px solid var(--gold-active);
+}
 #pickerTitle {
   font-size: 13px;
   color: var(--text-soft);
@@ -516,6 +526,7 @@ text-align: center;
   color: var(--text-soft);
   cursor: pointer;
   background:var(--backgroundbtn);
+   transition: all .3s;
 }
 
 .cal-day:hover {
