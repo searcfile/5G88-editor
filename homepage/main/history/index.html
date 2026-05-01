@@ -166,7 +166,40 @@ body {
   font-weight: 800;
   color: var(--gold2);
 }
+.stats-table-wrap {
+  margin-bottom: 14px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
 
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 14px;
+}
+
+.stats-table th {
+  background: #181818;
+  color: var(--gold2);
+}
+
+.stats-table td {
+  color: #fff;
+  font-weight: 700;
+}
+
+.stats-table td:nth-child(2) {
+  color: var(--gold2);
+}
 .table-wrap {
   overflow: auto;
   border: 1px solid var(--border);
@@ -453,27 +486,26 @@ const actionRows = Object.entries(actions)
       </div>
     `).join("");
 
-  detailWrap.innerHTML = `
-    <div class="detail-grid">
-      <div class="stat-card">
-        <div class="stat-label">Tab</div>
-        <div class="stat-value">${escapeHtml(item.tab || "-")}</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-label">Total Actions</div>
-        <div class="stat-value">${realTotalActions}</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-label">Opened At</div>
-        <div class="stat-value" style="font-size:13px;">${formatTime(item.openedAt)}</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-label">Closed At</div>
-        <div class="stat-value" style="font-size:13px;">${formatTime(item.closedAt)}</div>
-      </div>
+detailWrap.innerHTML = `
+    <div class="stats-table-wrap">
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>Tab</th>
+            <th>Total Action</th>
+            <th>Opened At</th>
+            <th>Closed At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${escapeHtml(item.tab || "-")}</td>
+            <td>${realTotalActions}</td>
+            <td>${formatTime(item.openedAt)}</td>
+            <td>${formatTime(item.closedAt)}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="table-wrap">
