@@ -1342,7 +1342,19 @@ function closeTabHistorySession(tabName) {
 
   sessionStorage.removeItem(storageKey);
 }
+function switchTabHistorySession(tabName, tabUrl = "") {
+  const tab = String(tabName || "").trim().toUpperCase();
+  if (!tab) return;
 
+  const lastTab = sessionStorage.getItem("historyActiveTab");
+
+  if (lastTab && lastTab !== tab) {
+    closeTabHistorySession(lastTab);
+  }
+
+  startTabHistorySession(tab, tabUrl);
+  sessionStorage.setItem("historyActiveTab", tab);
+}
 function saveUserTabAction(tabName, actionName, extra = {}) {
   const login = getHistoryLogin();
   if (!login.email || !tabName || !actionName) return;
@@ -1494,9 +1506,7 @@ if (idx === -1) {
   existingTabs[idx].route = route;
 }
 
-if (!sessionStorage.getItem(getHistorySessionStorageKey(L))) {
-  startTabHistorySession(L, newUrl);
-}
+switchTabHistorySession(L, newUrl);
 
   saveTabs(existingTabs);
 
@@ -1595,6 +1605,9 @@ if (liveChatBtn) {
 function closeTab(label) {
   closeTabHistorySession(label);
 
+  if (sessionStorage.getItem("historyActiveTab") === String(label).trim().toUpperCase()) {
+    sessionStorage.removeItem("historyActiveTab");
+  }
   let tabs = getTabs().filter(tab => tab.label !== label);
   saveTabs(tabs);
   renderTabs();
@@ -1654,10 +1667,13 @@ function renderTabs() {
 tabElement.onclick = (e) => {
   if (e.target.closest(".close-tab")) return;
 
-  const u = normUrl(tab.url);
-  setActiveTabUrl(u);
-  loadPage(u);
-  setBrowserRoute(tab);
+const u = normUrl(tab.url);
+
+switchTabHistorySession(tab.label, u);
+
+setActiveTabUrl(u);
+loadPage(u);
+setBrowserRoute(tab);
 
       const gameLogBtn = document.getElementById("gameLogBtn");
       const liveBtn = document.getElementById("liveChatBtn");
