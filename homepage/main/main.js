@@ -1357,34 +1357,33 @@ function saveUserTabAction(tabName, actionName, extra = {}) {
     sessionId = startTabHistorySession(tab, getActiveTabUrl());
   }
 
-  const sessionRef = blurphpDb.ref(`tabHistory/${emailKey}/sessions/${sessionId}`);
+  const basePath = `tabHistory/${emailKey}/sessions/${sessionId}`;
 
-  sessionRef.transaction(old => {
-    old = old || {
-      sessionId,
-      tab,
-      userEmail: login.email,
-      userName: login.name || "",
-      openedAt: Date.now(),
-      closedAt: null,
-      actions: {},
-      totalActions: 0
-    };
-
-    old.actions = old.actions || {};
-    old.actions[action] = (old.actions[action] || 0) + 1;
-    old.totalActions = (old.totalActions || 0) + 1;
-    old.lastAction = action;
-    old.lastActionAt = Date.now();
-    old.updatedAt = Date.now();
-
-    return old;
-  });
-
-  blurphpDb.ref(`tabHistory/${emailKey}/sessions/${sessionId}/logs`).push({
+  blurphpDb.ref(`${basePath}/logs`).push({
     action,
     extra,
     time: Date.now()
+  });
+
+  const safeActionKey = action
+    .toLowerCase()
+    .replace(/[.#$[\]/]/g, "_")
+    .replace(/\s+/g, "_");
+
+  blurphpDb.ref(`${basePath}/actions/${safeActionKey}`).transaction(count => {
+    return (Number(count) || 0) + 1;
+  });
+
+  blurphpDb.ref(`${basePath}/actionLabels/${safeActionKey}`).set(action);
+
+  blurphpDb.ref(`${basePath}/totalActions`).transaction(count => {
+    return (Number(count) || 0) + 1;
+  });
+
+  blurphpDb.ref(basePath).update({
+    lastAction: action,
+    lastActionAt: Date.now(),
+    updatedAt: Date.now()
   });
 }
 
@@ -1489,12 +1488,15 @@ function addTab(label, url, opt = {}) {
 
 if (idx === -1) {
   existingTabs.push({ label: L, url: newUrl, group, route });
-  startTabHistorySession(L, newUrl);
 } else {
-    existingTabs[idx].url = newUrl;
-    existingTabs[idx].group = group;
-    existingTabs[idx].route = route;
-  }
+  existingTabs[idx].url = newUrl;
+  existingTabs[idx].group = group;
+  existingTabs[idx].route = route;
+}
+
+if (!sessionStorage.getItem(getHistorySessionStorageKey(L))) {
+  startTabHistorySession(L, newUrl);
+}
 
   saveTabs(existingTabs);
 
