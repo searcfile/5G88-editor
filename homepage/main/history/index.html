@@ -405,8 +405,29 @@ function renderDetail() {
     return;
   }
 
-const actions = item.actions || {};
+let actions = item.actions || {};
 const labels = item.actionLabels || {};
+
+// ✅ kalau actions kosong, kira semula dari logs
+if (!actions || Object.keys(actions).length === 0) {
+  actions = {};
+
+  Object.values(item.logs || {}).forEach(log => {
+    const name = String(log.action || "").trim();
+    if (!name) return;
+
+    const key = name
+      .toLowerCase()
+      .replace(/[.#$[\]/]/g, "_")
+      .replace(/\s+/g, "_");
+
+    actions[key] = (actions[key] || 0) + 1;
+    labels[key] = name;
+  });
+}
+
+const realTotalActions = Object.values(actions)
+  .reduce((sum, n) => sum + Number(n || 0), 0);
 
 const actionRows = Object.entries(actions)
   .sort((a, b) => b[1] - a[1])
@@ -441,7 +462,7 @@ const actionRows = Object.entries(actions)
 
       <div class="stat-card">
         <div class="stat-label">Total Actions</div>
-        <div class="stat-value">${Number(item.totalActions || 0)}</div>
+        <div class="stat-value">${realTotalActions}</div>
       </div>
 
       <div class="stat-card">
