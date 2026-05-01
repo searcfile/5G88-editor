@@ -1021,6 +1021,7 @@ function resetSelectToPlaceholder(selectId, placeholderText, disable = false) {
   select.disabled = disable;
 }
 function resetLog() {
+  sendUserAction("Change");
   localStorage.removeItem("gameLogData918kiss");
   localStorage.removeItem("jackpotInsertedMap");
   jackpotInsertedMap = {};
@@ -1400,8 +1401,7 @@ document.querySelectorAll("button").forEach(btn => {
 
   window.addEventListener("message", function (e) {
     const allowedOrigins = [
-      "https://5g88-main.vercel.app",
-      "https://searcfile.github.io"
+      "https://5g88-main.vercel.app"
     ];
     if (!allowedOrigins.includes(e.origin)) return;
 
@@ -1413,3 +1413,53 @@ document.querySelectorAll("button").forEach(btn => {
     }
   });
 })();
+// ✅ Tukar ikut page
+window.HISTORY_TAB_NAME = "918KISS";
+
+// ✅ Hantar ke main page
+function sendUserAction(actionName, extra = {}) {
+  if (!actionName) return;
+
+  window.parent.postMessage({
+    type: "user-tab-action",
+    tab: window.HISTORY_TAB_NAME,
+    action: actionName,
+    extra,
+    time: Date.now()
+  }, "https://5g88-main.vercel.app");
+}
+
+/* =========================
+   AUTO TRACK CLICK (UPGRADE)
+========================= */
+
+let lastClickTime = 0;
+
+document.addEventListener("click", function(e) {
+  const now = Date.now();
+
+  // ❗ elak spam click (double click)
+  if (now - lastClickTime < 300) return;
+  lastClickTime = now;
+
+  const el = e.target.closest("button, [onclick], a, .btn");
+  if (!el) return;
+
+  // ambil nama paling cantik
+  let name =
+    el.innerText ||
+    el.getAttribute("data-action") ||
+    el.getAttribute("title") ||
+    el.id ||
+    "";
+
+  name = String(name).trim();
+
+  // ❗ skip kalau kosong / terlalu pendek
+  if (!name || name.length < 2) return;
+
+  // ❗ limit panjang
+  name = name.slice(0, 30);
+
+  sendUserAction(name);
+});
