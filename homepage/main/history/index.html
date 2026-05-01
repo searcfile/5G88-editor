@@ -425,8 +425,8 @@ text-align: center;
 .custom-range-wrap {
   position: relative;
   margin-top: 8px;
+  z-index: 99999;
 }
-
 #dateRangeInput {
   text-align: center;
   cursor: pointer;
@@ -442,7 +442,7 @@ text-align: center;
   border: 1px solid var(--border2);
   border-radius: 8px;
   padding: 10px;
-  z-index: 9999;
+  z-index: 999999;
   display: none;
   box-shadow: 0 12px 28px rgba(0,0,0,.35);
 }
@@ -807,8 +807,10 @@ function renderCalendar(container, titleEl, date) {
       btn.classList.add("in-range");
     }
 
-    btn.addEventListener("click", () => {
-      if (!tempStartDate || (tempStartDate && tempEndDate)) {
+btn.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  if (!tempStartDate || (tempStartDate && tempEndDate)) {
         tempStartDate = startOfDay(d);
         tempEndDate = null;
       } else {
@@ -1070,17 +1072,20 @@ dateRangeInput?.addEventListener("click", (e) => {
   openRangePicker();
 });
 
-prevMonthBtn?.addEventListener("click", () => {
+prevMonthBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
   pickerBaseDate.setMonth(pickerBaseDate.getMonth() - 1);
   renderRangePicker();
 });
 
-nextMonthBtn?.addEventListener("click", () => {
+nextMonthBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
   pickerBaseDate.setMonth(pickerBaseDate.getMonth() + 1);
   renderRangePicker();
 });
 
-applyRangeBtn?.addEventListener("click", () => {
+applyRangeBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
   if (!tempStartDate) return;
 
   const start = startOfDay(tempStartDate);
@@ -1101,7 +1106,8 @@ applyRangeBtn?.addEventListener("click", () => {
   renderTabList();
 });
 
-clearRangeBtn?.addEventListener("click", () => {
+clearRangeBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
   tempStartDate = null;
   tempEndDate = null;
   setActiveRange("today");
