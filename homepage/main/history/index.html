@@ -5,16 +5,91 @@
 <title>My History</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-:root {
-  --bg: #050505;
-  --card: #111;
-  --card2: #171717;
-  --border: rgba(255,255,255,.12);
-  --text: #fff;
-  --muted: #aaa;
-  --gold: #d6a84f;
-  --gold2: #f6d98b;
-  --danger: #ef4444;
+:root{
+  --bg-main: #000;
+  --pg-card:#0b0b0b;
+  --text-main: #fff;
+  --text-soft: rgba(255,255,255,0.85);
+  --text-dim: rgba(255,255,255,0.65);
+  --colorbtn:rgba(255,255,255,0.85);
+  --backgroundbtn:#141414;
+  --backgrounddrop:#1f1f1f;
+  --border:#303030;
+  --border4:#303030;
+  --border2:#424242;
+  --panel-border: #424242;
+  --blur:rgba(255,255,255,0.25);
+  --border3:#303030;
+  --tab2:#141414;
+  --border-bottom:#141414;
+  --close:rgba(255,255,255,0.45);
+   --close-hover2:rgba(255,255,255,0.08);
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #303030;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(255,255,255,0.85);
+  --btn-border: #424242;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(0,0,0,0.5);
+  --popup-bg: #1f1f1f;
+
+  --empty-text: rgba(255,255,255,.7);
+  --empty-title: rgba(255,255,255,.85);
+
+  --toggle-track: #2c7be5;
+  --toggle-knob: #ffffff;
+  --btnfocus:#15325b;
+  --colorbtn-close:rgba(255, 255, 255, 0.45);
+  
+}
+
+/* default light theme */
+body.light-theme{
+  --pg-card:#ffffff;
+  --bg-main: #fff;
+  --text-main: #000;
+  --text-soft: rgba(0,0,0,0.88);
+  --text-dim: rgba(0,0,0,0.68);
+  --colorbtn:rgba(0, 0, 0, 0.88);
+  --colorbtn-close:rgba(0, 0, 0, 0.45);
+  --backgroundbtn:#ffffff;
+  --backgrounddrop:#ffffff;
+  --border:#303030;
+  --border4:#d9d9d9;
+  --border2:#d9d9d9;
+  --panel-border: #d4dbe6;
+  --blur:rgba(0,0,0,0.25);
+  --border3:#f0f0f0;
+  --tab2:#ffffff;
+  --border-bottom:#ffffff;
+  --close:rgba(0, 0, 0, 0.88);
+   --close-hover2:rgba(0,0,0,0.08);
+
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #d4dbe6;
+
+  --btn-bg: transparent;
+  --btn-text: rgba(17,24,39,0.88);
+  --btn-border: #d4dbe6;
+
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+
+  --overlay-bg: rgba(15,23,42,0.18);
+  --popup-bg: #ffffff;
+
+  --empty-text: rgba(17,24,39,.7);
+  --empty-title: rgba(17,24,39,.88);
+
+  --toggle-track: #cfd8e3;
+  --toggle-knob: #ffffff;
+  --btnfocus:#91caff;
 }
 
 * {
@@ -24,8 +99,8 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg-main);
+  color: var(--text-soft);
 }
 
 .history-page {
@@ -42,39 +117,41 @@ body {
 
 .left-panel,
 .right-panel {
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--backgrounddrop);
+  border: 1px solid var(--border2);
   border-radius: 8px;
   overflow: hidden;
 }
 
 .panel-head {
   padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, #181818, #101010);
+  border-bottom: 1px solid var(--border2);
+  background: transparent;
   font-weight: 700;
-  color: var(--gold2);
+  color: var(--text-soft);
 }
 
 .search-box {
   padding: 10px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border2);
 }
 
 .search-box input {
   width: 100%;
-  height: 36px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #070707;
-  color: #fff;
-  padding: 0 12px;
+  height: 32px;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--backgroundbtn);
+  color: var(--text-soft);
+  padding: 4px 11px;
   outline: none;
+  transition: all .3s;
 }
-
+.search-box input:hover{
+  border-color: var(--gold-hover);
+}
 .search-box input:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(214,168,79,.15);
 }
 
 .tab-list {
@@ -85,32 +162,32 @@ body {
 
 .tab-item {
   width: 100%;
-  border: 1px solid var(--border);
-  background: var(--card2);
-  color: #fff;
+  border: 1px solid var(--border2);
+  background: var(--backgroundbtn);
+  color: var(--text-soft);
   text-align: left;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 10px;
   margin-bottom: 8px;
   cursor: pointer;
-  transition: .18s;
+  transition: all .3s;
 }
 
-.tab-item:hover,
+.tab-item:hover {
+  border-color: var(--gold-hover);
+}
 .tab-item.active {
   border-color: var(--gold);
-  background: rgba(214,168,79,.12);
 }
-
 .tab-name {
-  font-weight: 800;
+  font-weight: 600;
   font-size: 14px;
 }
 
 .tab-meta {
   margin-top: 5px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text-dim);
 }
 
 .status-open {
@@ -118,7 +195,7 @@ body {
 }
 
 .status-closed {
-  color: #aaa;
+  color: #b31111;
 }
 
 .detail-wrap {
@@ -126,7 +203,7 @@ body {
 }
 
 .detail-empty {
-  color: var(--muted);
+  color: var(--text-dim);
   text-align: center;
   padding: 50px 10px;
 }
@@ -154,12 +231,12 @@ body {
   margin-top: 6px;
   font-size: 18px;
   font-weight: 800;
-  color: var(--gold2);
+  color: var(--text-soft);
 }
 .stats-table-wrap {
   margin-bottom: 14px;
   overflow: auto;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border2);
   border-radius: 12px;
 }
 
@@ -172,14 +249,14 @@ body {
 .stats-table th,
 .stats-table td {
   padding: 11px 12px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border2);
   text-align: left;
   font-size: 14px;
 }
 
 .stats-table th {
   background: #181818;
-  color: var(--gold2);
+  color: var(--text-soft);
 }
 
 .stats-table td {
@@ -188,11 +265,11 @@ body {
 }
 
 .stats-table td:nth-child(2) {
-  color: var(--gold2);
+  color: var(--text-soft);
 }
 .table-wrap {
   overflow: auto;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border2);
   border-radius: 12px;
 }
 table th:nth-child(2),
@@ -208,14 +285,14 @@ table {
 th,
 td {
   padding: 11px 12px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border2);
   text-align: left;
   font-size: 14px;
 }
 
 th {
   background: #181818;
-  color: var(--gold2);
+  color: var(--text-soft);
   position: sticky;
   top: 0;
 }
@@ -233,7 +310,7 @@ tr:last-child td {
   border-radius: 999px;
   background: rgba(214,168,79,.18);
   border: 1px solid rgba(214,168,79,.35);
-  color: var(--gold2);
+  color: var(--text-soft);
   font-weight: 800;
 }
 
@@ -244,7 +321,7 @@ tr:last-child td {
 .log-list {
   max-height: 240px;
   overflow: auto;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border2);
   border-radius: 12px;
 }
 
@@ -253,7 +330,7 @@ tr:last-child td {
   justify-content: space-between;
   gap: 12px;
   padding: 9px 12px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border2);
   font-size: 13px;
 }
 
@@ -266,7 +343,7 @@ tr:last-child td {
 }
 
 .log-time {
-  color: var(--muted);
+  color: var(--text-dim);
   white-space: nowrap;
 }
 
@@ -584,8 +661,7 @@ searchInput.addEventListener("input", renderTabList);
 
 window.addEventListener("message", function(e) {
   const allowedOrigins = [
-    "https://5g88-main.vercel.app",
-    "https://searcfile.github.io"
+    "https://5g88-main.vercel.app"
   ];
 
   if (!allowedOrigins.includes(e.origin)) return;
@@ -596,13 +672,33 @@ window.addEventListener("message", function(e) {
     localStorage.setItem("gmailLogin", JSON.stringify(data.user));
     startHistoryListener();
   }
-
-  if (data.type === "theme-change") {
-    document.body.classList.toggle("light-theme", data.theme === "light");
-  }
 });
 
 startHistoryListener();
+  (function () {
+  const THEME_KEY = "siteTheme";
+
+  function applyChildTheme(theme) {
+    document.body.classList.remove("light-theme", "dark-theme");
+    document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+  }
+
+  applyChildTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+
+  window.addEventListener("message", function (e) {
+    const allowedOrigins = [
+      "https://5g88-main.vercel.app"
+    ];
+    if (!allowedOrigins.includes(e.origin)) return;
+
+    const data = e.data || {};
+    if (data.type === "theme-change") {
+      const theme = data.theme === "dark" ? "dark" : "light";
+      localStorage.setItem(THEME_KEY, theme);
+      applyChildTheme(theme);
+    }
+  });
+})();
 </script>
 </body>
 </html>
