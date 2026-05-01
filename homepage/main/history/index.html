@@ -1,294 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tab History</title>
+<meta charset="UTF-8">
+<title>User History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <style>
-:root{
-  --page-bg:#000;
-  --page-text:rgba(255,255,255,0.85);
-  --page-input:#141414;
-  --border-input:#424242;
-  --blue:#1668dc;
-  --blue-hover:#3c89e8;
-  --blue-active:#1554ad;
-  --soft:#8b9bb4;
-  --bg-chip:rgba(255,255,255,0.12);
+:root {
+  --bg: #050505;
+  --card: #111;
+  --card2: #171717;
+  --border: rgba(255,255,255,.12);
+  --text: #fff;
+  --muted: #aaa;
+  --gold: #d6a84f;
+  --gold2: #f6d98b;
+  --danger: #ef4444;
 }
 
-*{ box-sizing:border-box; }
-
-body{
-  margin:0;
-  min-height:100vh;
-  font-family:Inter,Segoe UI,Arial,sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(22,104,220,.16), transparent 30%),
-    linear-gradient(180deg, #050505, var(--page-bg));
-  color:var(--page-text);
-  padding:18px;
+* {
+  box-sizing: border-box;
 }
 
-.history-wrap{
-  max-width:1250px;
-  margin:0 auto;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-/* ===== SEARCH ===== */
-.search-toolbar{
-  width:100%;
-  margin-bottom:12px;
+.history-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px;
 }
 
-.search-box{
-  width:360px;
-  max-width:100%;
-  position:relative;
+.history-title {
+  margin: 0 0 14px;
+  font-size: 20px;
+  color: var(--gold2);
 }
 
-.search-box input{
-  width:100%;
-  height:38px;
-  border:1px solid var(--border-input);
-  background:var(--page-input);
-  color:#fff;
-  outline:none;
-  border-radius:12px;
-  padding:0 12px 0 38px;
-  transition:.2s;
+.history-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 14px;
 }
 
-.search-box input::placeholder{
-  color:#6b7280;
+.left-panel,
+.right-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
 }
 
-.search-box input:focus{
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px rgba(22,104,220,.18);
+.panel-head {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #181818, #101010);
+  font-weight: 700;
+  color: var(--gold2);
 }
 
-.search-box svg{
-  position:absolute;
-  left:13px;
-  top:50%;
-  transform:translateY(-50%);
-  width:15px;
-  height:15px;
-  color:#8b9bb4;
+.search-box {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
 }
 
-/* ===== MAIN TABLE ===== */
-.panel{
-  background:rgba(11,11,11,.92);
-  border:1px solid var(--border-input);
-  border-radius:16px;
-  box-shadow:0 20px 50px rgba(0,0,0,.35);
-  overflow:hidden;
+.search-box input {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #070707;
+  color: #fff;
+  padding: 0 12px;
+  outline: none;
 }
 
-.table-wrap{
-  width:100%;
-  overflow:auto;
+.search-box input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(214,168,79,.15);
 }
 
-.history-table{
-  width:100%;
-  min-width:760px;
-  border-collapse:collapse;
+.tab-list {
+  max-height: calc(100vh - 150px);
+  overflow: auto;
+  padding: 8px;
 }
 
-.history-table thead{
-  background:rgba(255,255,255,.045);
+.tab-item {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: #fff;
+  text-align: left;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: .18s;
 }
 
-.history-table th{
-  text-align:left;
-  padding:13px 14px;
-  font-size:12px;
-  color:#9ca3af;
-  font-weight:800;
-  border-bottom:1px solid var(--border-input);
-  white-space:nowrap;
+.tab-item:hover,
+.tab-item.active {
+  border-color: var(--gold);
+  background: rgba(214,168,79,.12);
 }
 
-.history-table td{
-  padding:14px;
-  font-size:13px;
-  color:var(--page-text);
-  border-bottom:1px solid rgba(255,255,255,.08);
-  vertical-align:middle;
+.tab-name {
+  font-weight: 800;
+  font-size: 14px;
 }
 
-.history-table tbody tr{
-  transition:.18s ease;
+.tab-meta {
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--muted);
 }
 
-.history-table tbody tr:hover{
-  background:rgba(22,104,220,.10);
+.status-open {
+  color: #22c55e;
 }
 
-.history-table tbody tr:last-child td{
-  border-bottom:none;
+.status-closed {
+  color: #aaa;
 }
 
-.no-col{
-  width:58px;
-  color:#9ca3af;
+.detail-wrap {
+  padding: 14px;
 }
 
-.tab-name{
-  color:#fff;
-  font-weight:900;
+.detail-empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 50px 10px;
 }
 
-.group-chip{
-  display:inline-flex;
-  padding:5px 9px;
-  border-radius:999px;
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.10);
-  color:#dbeafe;
-  font-size:12px;
-  text-transform:uppercase;
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
-.count-badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-width:38px;
-  height:24px;
-  padding:0 9px;
-  border-radius:999px;
-  background:rgba(22,104,220,.16);
-  color:#8bbdff;
-  border:1px solid rgba(22,104,220,.35);
-  font-weight:900;
+.stat-card {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
 }
 
-.empty-cell{
-  text-align:center !important;
-  padding:45px 20px !important;
-  color:#6b7280 !important;
+.stat-label {
+  color: var(--muted);
+  font-size: 12px;
 }
 
-/* ===== FOOTER STATS ===== */
-.stats-table-wrap{
-  width:100%;
-  border-top:1px solid var(--border-input);
-  overflow:auto;
-  background:rgba(255,255,255,.018);
+.stat-value {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold2);
 }
 
-.stats-table{
-  width:100%;
-  min-width:650px;
-  border-collapse:collapse;
+.table-wrap {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
 }
 
-.stats-table thead{
-  background:rgba(255,255,255,.035);
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
 }
 
-.stats-table th{
-  text-align:left;
-  padding:11px 14px;
-  font-size:12px;
-  color:#9ca3af;
-  font-weight:800;
-  border-bottom:1px solid var(--border-input);
-  white-space:nowrap;
+th,
+td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 14px;
 }
 
-.stats-table td{
-  padding:13px 14px;
-  font-size:21px;
-  color:#fff;
-  font-weight:900;
+th {
+  background: #181818;
+  color: var(--gold2);
+  position: sticky;
+  top: 0;
 }
 
-::-webkit-scrollbar{
-  width:8px;
-  height:8px;
-}
-::-webkit-scrollbar-track{
-  background:transparent;
-}
-::-webkit-scrollbar-thumb{
-  background:rgba(255,255,255,.18);
-  border-radius:999px;
-}
-::-webkit-scrollbar-thumb:hover{
-  background:rgba(255,255,255,.3);
+tr:last-child td {
+  border-bottom: none;
 }
 
-@media(max-width:700px){
-  body{ padding:12px; }
-  .history-table{ min-width:680px; }
-  .search-box{ width:100%; }
+.count-badge {
+  display: inline-flex;
+  min-width: 34px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(214,168,79,.18);
+  border: 1px solid rgba(214,168,79,.35);
+  color: var(--gold2);
+  font-weight: 800;
+}
+
+.logs-box {
+  margin-top: 14px;
+}
+
+.log-list {
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.log-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.log-row:last-child {
+  border-bottom: 0;
+}
+
+.log-action {
+  color: #fff;
+}
+
+.log-time {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 850px) {
+  .history-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-list {
+    max-height: 280px;
+  }
+
+  .detail-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
 </head>
 
 <body>
-<div class="history-wrap">
+<div class="history-page">
+  <h1 class="history-title">User Tab History</h1>
 
-  <div class="search-toolbar">
-    <div class="search-box">
-      <svg viewBox="64 64 896 896" fill="currentColor">
-        <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6z"></path>
-      </svg>
-      <input id="searchInput" type="text" placeholder="Search tab, group, date..." />
-    </div>
+  <div class="history-layout">
+    <aside class="left-panel">
+      <div class="panel-head">Opened Tabs</div>
+      <div class="search-box">
+        <input id="searchInput" type="text" placeholder="Search tab...">
+      </div>
+      <div id="tabList" class="tab-list"></div>
+    </aside>
+
+    <main class="right-panel">
+      <div class="panel-head">Action Detail</div>
+      <div id="detailWrap" class="detail-wrap">
+        <div class="detail-empty">Select tab session from left side.</div>
+      </div>
+    </main>
   </div>
-
-  <div class="panel">
-    <div class="table-wrap">
-      <table class="history-table">
-        <thead>
-          <tr>
-            <th class="no-col">No</th>
-            <th>Tab Name</th>
-            <th>Group</th>
-            <th>Open Count</th>
-            <th>Last Opened</th>
-          </tr>
-        </thead>
-        <tbody id="historyTableBody">
-          <tr>
-            <td colspan="5" class="empty-cell">Loading...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="stats-table-wrap">
-      <table class="stats-table">
-        <thead>
-          <tr>
-            <th>Total Opened</th>
-            <th>Unique Tabs</th>
-            <th>Most Opened</th>
-            <th>Last Opened</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td id="totalOpened">0</td>
-            <td id="uniqueTabs">0</td>
-            <td id="mostOpened">-</td>
-            <td id="lastOpened">-</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
 </div>
 
 <script>
@@ -299,32 +290,26 @@ const blurphpApp = firebase.initializeApp({
   projectId: "blurphp",
   storageBucket: "blurphp.appspot.com",
   messagingSenderId: "593904200464",
-  appId: "1:593904200464:web:cea7bc1360532c20d99395",
-  measurementId: "G-R494S2DPZ5"
-}, "historyBlurphpApp");
+  appId: "1:593904200464:web:cea7bc1360532c20d99395"
+}, "blurphpHistoryApp");
 
 const blurphpDb = blurphpApp.database();
 
-let currentUser = null;
-let allHistory = [];
+const tabList = document.getElementById("tabList");
+const detailWrap = document.getElementById("detailWrap");
+const searchInput = document.getElementById("searchInput");
 
-const els = {
-  totalOpened: document.getElementById("totalOpened"),
-  uniqueTabs: document.getElementById("uniqueTabs"),
-  mostOpened: document.getElementById("mostOpened"),
-  lastOpened: document.getElementById("lastOpened"),
-  historyTableBody: document.getElementById("historyTableBody"),
-  searchInput: document.getElementById("searchInput")
-};
+let allSessions = [];
+let selectedSessionId = "";
 
-function safeUserKey(email) {
-  return String(email || "guest")
+function historyEmailKey(email) {
+  return String(email || "")
     .trim()
     .toLowerCase()
-    .replace(/[.#$\[\]/\s]/g, "_");
+    .replace(/[.#$[\]/]/g, "_");
 }
 
-function getLoginFromLocal() {
+function getLoginData() {
   try {
     return JSON.parse(localStorage.getItem("gmailLogin") || "{}");
   } catch {
@@ -332,24 +317,9 @@ function getLoginFromLocal() {
   }
 }
 
-function requestLoginFromParent() {
-  try {
-    window.parent.postMessage({ type: "request-login" }, "*");
-  } catch {}
-}
-
-window.addEventListener("message", (event) => {
-  const data = event.data || {};
-
-  if (data.type === "user-login" && data.user && data.user.email) {
-    currentUser = data.user;
-    localStorage.setItem("gmailLogin", JSON.stringify(currentUser));
-    loadHistory();
-  }
-});
-
-function formatDate(ms) {
-  const d = new Date(Number(ms || 0));
+function formatTime(ms) {
+  if (!ms) return "-";
+  const d = new Date(Number(ms));
   if (isNaN(d.getTime())) return "-";
 
   const dd = String(d.getDate()).padStart(2, "0");
@@ -362,18 +332,6 @@ function formatDate(ms) {
   return `${dd}-${mm}-${yy} ${hh}:${mi}:${ss}`;
 }
 
-function shortDate(ms) {
-  const d = new Date(Number(ms || 0));
-  if (isNaN(d.getTime())) return "-";
-
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mi = String(d.getMinutes()).padStart(2, "0");
-
-  return `${dd}/${mm} ${hh}:${mi}`;
-}
-
 function escapeHtml(str) {
   return String(str || "")
     .replaceAll("&", "&amp;")
@@ -383,171 +341,190 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
-function normalizeHistoryItem(item) {
-  return {
-    label: String(item.label || "UNKNOWN").trim().toUpperCase(),
-    url: String(item.url || ""),
-    group: String(item.group || "none").toLowerCase(),
-    route: String(item.route || ""),
-    openedAt: Number(item.openedAt || 0)
-  };
+function renderTabList() {
+  const q = searchInput.value.trim().toLowerCase();
+
+  const filtered = allSessions.filter(item => {
+    const tab = String(item.tab || "").toLowerCase();
+    return tab.includes(q);
+  });
+
+  if (!filtered.length) {
+    tabList.innerHTML = `
+      <div class="detail-empty">No history found.</div>
+    `;
+    detailWrap.innerHTML = `
+      <div class="detail-empty">No action detail.</div>
+    `;
+    return;
+  }
+
+  tabList.innerHTML = filtered.map(item => {
+    const isActive = item.sessionId === selectedSessionId;
+    const status = item.closedAt ? "Closed" : "Open";
+    const statusClass = item.closedAt ? "status-closed" : "status-open";
+
+    return `
+      <button class="tab-item ${isActive ? "active" : ""}" data-id="${escapeHtml(item.sessionId)}">
+        <div class="tab-name">${escapeHtml(item.tab || "UNKNOWN")}</div>
+        <div class="tab-meta">
+          Total Action: ${Number(item.totalActions || 0)}
+        </div>
+        <div class="tab-meta">
+          Opened: ${formatTime(item.openedAt)}
+        </div>
+        <div class="tab-meta ${statusClass}">
+          ${status}
+        </div>
+      </button>
+    `;
+  }).join("");
+
+  tabList.querySelectorAll(".tab-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectedSessionId = btn.dataset.id;
+      renderTabList();
+      renderDetail();
+    });
+  });
+
+  if (!selectedSessionId && filtered[0]) {
+    selectedSessionId = filtered[0].sessionId;
+    renderTabList();
+    renderDetail();
+  }
 }
 
-function buildSummary(list) {
-  const map = new Map();
+function renderDetail() {
+  const item = allSessions.find(x => x.sessionId === selectedSessionId);
 
-  list.forEach(item => {
-    const key = item.label;
+  if (!item) {
+    detailWrap.innerHTML = `
+      <div class="detail-empty">Select tab session from left side.</div>
+    `;
+    return;
+  }
 
-    if (!map.has(key)) {
-      map.set(key, {
-        label: item.label,
-        group: item.group,
-        count: 0,
-        lastOpened: 0
-      });
+  const actions = item.actions || {};
+  const actionRows = Object.entries(actions)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count]) => `
+      <tr>
+        <td>${escapeHtml(name)}</td>
+        <td><span class="count-badge">${Number(count || 0)}</span></td>
+      </tr>
+    `).join("");
+
+  const logs = item.logs || {};
+  const logRows = Object.values(logs)
+    .sort((a, b) => Number(b.time || 0) - Number(a.time || 0))
+    .slice(0, 50)
+    .map(log => `
+      <div class="log-row">
+        <span class="log-action">${escapeHtml(log.action)}</span>
+        <span class="log-time">${formatTime(log.time)}</span>
+      </div>
+    `).join("");
+
+  detailWrap.innerHTML = `
+    <div class="detail-grid">
+      <div class="stat-card">
+        <div class="stat-label">Tab</div>
+        <div class="stat-value">${escapeHtml(item.tab || "-")}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Total Actions</div>
+        <div class="stat-value">${Number(item.totalActions || 0)}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Opened At</div>
+        <div class="stat-value" style="font-size:13px;">${formatTime(item.openedAt)}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Closed At</div>
+        <div class="stat-value" style="font-size:13px;">${formatTime(item.closedAt)}</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Action Detail</th>
+            <th>Total Click</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${actionRows || `<tr><td colspan="2">No action yet.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="logs-box">
+      <div class="panel-head" style="border:1px solid var(--border);border-radius:12px 12px 0 0;">
+        Latest Action Logs
+      </div>
+      <div class="log-list">
+        ${logRows || `<div class="detail-empty">No logs yet.</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function startHistoryListener() {
+  const login = getLoginData();
+
+  if (!login.email) {
+    detailWrap.innerHTML = `
+      <div class="detail-empty">No login data found.</div>
+    `;
+    return;
+  }
+
+  const emailKey = historyEmailKey(login.email);
+
+  blurphpDb.ref(`tabHistory/${emailKey}/sessions`).on("value", snap => {
+    const data = snap.val() || {};
+
+    allSessions = Object.values(data).sort((a, b) => {
+      return Number(b.openedAt || 0) - Number(a.openedAt || 0);
+    });
+
+    if (selectedSessionId && !allSessions.some(x => x.sessionId === selectedSessionId)) {
+      selectedSessionId = "";
     }
 
-    const cur = map.get(key);
-    cur.count += 1;
-    cur.lastOpened = Math.max(cur.lastOpened, item.openedAt || 0);
-  });
-
-  return [...map.values()].sort((a, b) => {
-    if (b.count !== a.count) return b.count - a.count;
-    return b.lastOpened - a.lastOpened;
+    renderTabList();
+    renderDetail();
   });
 }
 
-function getFilteredSummary() {
-  const q = String(els.searchInput.value || "").trim().toLowerCase();
-  const summary = buildSummary(allHistory);
+searchInput.addEventListener("input", renderTabList);
 
-  if (!q) return summary;
+window.addEventListener("message", function(e) {
+  const allowedOrigins = [
+    "https://5g88-main.vercel.app",
+    "https://searcfile.github.io"
+  ];
 
-  return summary.filter(item => {
-    const dateText = formatDate(item.lastOpened).toLowerCase();
-    const text = `${item.label} ${item.group} ${item.count} ${dateText}`.toLowerCase();
-    return text.includes(q);
-  });
-}
+  if (!allowedOrigins.includes(e.origin)) return;
 
-function renderStats(filteredSummary) {
-  const totalOpened = filteredSummary.reduce((sum, item) => sum + item.count, 0);
+  const data = e.data || {};
 
-  els.totalOpened.textContent = totalOpened;
-  els.uniqueTabs.textContent = filteredSummary.length;
-  els.mostOpened.textContent = filteredSummary[0] ? filteredSummary[0].count : "-";
-  els.lastOpened.textContent = filteredSummary[0] ? shortDate(filteredSummary[0].lastOpened) : "-";
-}
-
-function renderTable(summary) {
-  if (!summary.length) {
-    els.historyTableBody.innerHTML = `
-      <tr>
-        <td colspan="5" class="empty-cell">No history found.</td>
-      </tr>
-    `;
-    return;
+  if (data.type === "user-login" && data.user) {
+    localStorage.setItem("gmailLogin", JSON.stringify(data.user));
+    startHistoryListener();
   }
 
-  els.historyTableBody.innerHTML = summary.map((item, index) => `
-    <tr>
-      <td class="no-col">${index + 1}</td>
-      <td><span class="tab-name">${escapeHtml(item.label)}</span></td>
-      <td><span class="group-chip">${escapeHtml(item.group || "none")}</span></td>
-      <td><span class="count-badge">${item.count}x</span></td>
-      <td>${escapeHtml(formatDate(item.lastOpened))}</td>
-    </tr>
-  `).join("");
-}
-
-function renderAll() {
-  const filteredSummary = getFilteredSummary();
-  renderTable(filteredSummary);
-  renderStats(filteredSummary);
-}
-
-function loadLocalBackup(userKey) {
-  try {
-    const localKey = `tabHistory_${userKey}`;
-    const list = JSON.parse(localStorage.getItem(localKey) || "[]");
-    return Array.isArray(list) ? list.map(normalizeHistoryItem) : [];
-  } catch {
-    return [];
+  if (data.type === "theme-change") {
+    document.body.classList.toggle("light-theme", data.theme === "light");
   }
-}
-
-function loadHistory() {
-  const login = currentUser || getLoginFromLocal();
-  const email = String(login.email || "").trim().toLowerCase();
-
-  if (!email) {
-    els.historyTableBody.innerHTML = `
-      <tr>
-        <td colspan="5" class="empty-cell">
-          No login data found. Open this page inside main iframe.
-        </td>
-      </tr>
-    `;
-    requestLoginFromParent();
-    return;
-  }
-
-  const userKey = safeUserKey(email);
-
-  els.historyTableBody.innerHTML = `
-    <tr>
-      <td colspan="5" class="empty-cell">Loading...</td>
-    </tr>
-  `;
-
-  blurphpDb.ref(`users/${userKey}/tabHistory`)
-    .orderByChild("openedAt")
-    .limitToLast(500)
-    .on("value", snap => {
-      const data = snap.val() || {};
-
-      const firebaseList = Object.values(data)
-        .map(normalizeHistoryItem)
-        .filter(x => x.label && x.openedAt);
-
-      const localList = loadLocalBackup(userKey);
-      const merged = [...firebaseList, ...localList];
-
-      const uniqueMap = new Map();
-      merged.forEach(item => {
-        const key = `${item.label}_${item.url}_${item.openedAt}`;
-        uniqueMap.set(key, item);
-      });
-
-      allHistory = [...uniqueMap.values()]
-        .sort((a, b) => b.openedAt - a.openedAt);
-
-      renderAll();
-    }, err => {
-      console.warn("History load error:", err);
-      els.historyTableBody.innerHTML = `
-        <tr>
-          <td colspan="5" class="empty-cell">
-            Failed to load Firebase history. Please check Firebase rules.
-          </td>
-        </tr>
-      `;
-    });
-}
-
-els.searchInput.addEventListener("input", renderAll);
-
-document.addEventListener("DOMContentLoaded", () => {
-  currentUser = getLoginFromLocal();
-
-  if (!currentUser || !currentUser.email) {
-    requestLoginFromParent();
-  }
-
-  setTimeout(loadHistory, 250);
 });
+
+startHistoryListener();
 </script>
 </body>
 </html>
