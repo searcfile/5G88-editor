@@ -46,6 +46,7 @@ const auth = firebase.auth();
 const db   = firebase.database();
 let turnstileVerifiedUser = false;
 let turnstileVerifiedGoogle = false;
+let pending2FA = null;
 
 function onTurnstileSuccess(token){
   turnstileVerifiedUser = !!token;
@@ -610,6 +611,7 @@ function clearLoginErrors(){
     passwordErr.textContent = '';
     passwordErr.style.display = 'none';
   }
+  clearTwofaError();
 }
 
 function showLoginError(type, message){
@@ -622,6 +624,141 @@ function showLoginError(type, message){
     err.textContent = message;
     err.style.display = 'block';
   }
+}
+function showTwofaError(message){
+  const err = document.getElementById('twofaErr');
+  document.querySelectorAll('.otp-input').forEach(i => i.classList.add('invalid'));
+
+  if (err){
+    err.textContent = message;
+    err.style.display = 'block';
+  }
+}
+
+function clearTwofaError(){
+  const err = document.getElementById('twofaErr');
+  document.querySelectorAll('.otp-input').forEach(i => i.classList.remove('invalid'));
+
+  if (err){
+    err.textContent = '';
+    err.style.display = 'none';
+  }
+}
+
+function openTwofaPage(uname, acc){
+  pending2FA = { uname, acc };
+
+  document.querySelector('.login-box').style.display = 'none';
+  document.getElementById('twofaBox').style.display = 'flex';
+  document.getElementById('twofaUsername').textContent = uname;
+
+  clearTwofaError();
+
+  document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+
+  setTimeout(() => {
+    document.querySelector('.otp-input')?.focus();
+  }, 80);
+}
+
+function closeTwofaPage(){
+  pending2FA = null;
+
+  document.getElementById('twofaBox').style.display = 'none';
+  document.querySelector('.login-box').style.display = 'flex';
+
+  clearTwofaError();
+
+  document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+
+  setTimeout(() => {
+    document.getElementById('username')?.focus();
+  }, 80);
+}
+
+function getOtpValue(){
+  return Array.from(document.querySelectorAll('.otp-input'))
+    .map(i => i.value.trim())
+    .join('');
+}
+
+async function verifyTwofa(){
+  if (!pending2FA) return;
+
+  const code = getOtpValue();
+
+  clearTwofaError();
+
+  if (!/^\d{6}$/.test(code)){
+    showTwofaError('Please enter 6 digit 2nd password.');
+    return;
+  }
+
+  const inputHash = await sha256Hex(code);
+
+  if (inputHash !== pending2FA.acc.secondPasswordHash){
+    showTwofaError('2nd password incorrect.');
+    document.querySelector('.otp-input')?.focus();
+    return;
+  }
+
+  const uname = pending2FA.uname;
+
+  await ensureGuestAuth();
+
+  await finishLogin({
+    email: `${uname}@5g88.local`,
+    displayName: uname,
+    photoURL: ""
+  });
+}
+
+function setupTwofaInputs(){
+  const inputs = Array.from(document.querySelectorAll('.otp-input'));
+
+  inputs.forEach((input, index) => {
+    input.addEventListener('input', () => {
+      clearTwofaError();
+
+      input.value = input.value.replace(/\D/g, '').slice(0, 1);
+
+      if (input.value && inputs[index + 1]){
+        inputs[index + 1].focus();
+      }
+
+      if (getOtpValue().length === 6){
+        verifyTwofa();
+      }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !input.value && inputs[index - 1]){
+        inputs[index - 1].focus();
+      }
+
+      if (e.key === 'Enter'){
+        verifyTwofa();
+      }
+    });
+
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+
+      inputs.forEach((box, i) => {
+        box.value = text[i] || '';
+      });
+
+      if (text.length === 6){
+        verifyTwofa();
+      } else {
+        inputs[text.length]?.focus();
+      }
+    });
+  });
+
+  document.getElementById('twofaVerify')?.addEventListener('click', verifyTwofa);
+  document.getElementById('twofaChange')?.addEventListener('click', closeTwofaPage);
 }
 document.getElementById('username')?.addEventListener('input', clearLoginErrors);
 document.getElementById('password')?.addEventListener('input', clearLoginErrors);
@@ -679,11 +816,13 @@ async function loginWithUsername(){
       return;
     }
 
-    await ensureGuestAuth();
+if (!acc.secondPasswordHash){
+  showLoginError('password', '2nd password belum diset. Please contact admin.');
+  passwordInput.focus();
+  return;
+}
 
-    const pseudoEmail = `${uname}@5g88.local`;
-
-    await finishLogin({ email: pseudoEmail, displayName: uname, photoURL: "" });
+openTwofaPage(uname, acc);
 
   }catch(err){
     showLoginError('password', 'Login failed. Try again.');
@@ -787,7 +926,7 @@ tabGoo?.addEventListener('click', () => {
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("googleLoginBtn")?.addEventListener("click", signInWithGoogle);
   document.getElementById("eyeBtn")?.addEventListener("click", togglePassword);
-
+ setupTwofaInputs();
   setTimeout(() => {
     applyTurnstileTheme();
   }, 300);
