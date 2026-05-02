@@ -224,6 +224,46 @@ content="
     </div>
   </div>
 </div>
+<!-- 2ND PASSWORD PAGE -->
+<div class="twofa-box" id="twofaBox" style="display:none;">
+  <div class="login-header">
+    <div class="login-icon">
+      <svg viewBox="64 64 896 896">
+        <path fill="currentColor"
+          d="M832 464h-68V240c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zM332 240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v224H332V240zm460 600H232V536h560v304z"/>
+      </svg>
+    </div>
+
+    <h2 class="login-title">2nd Password</h2>
+    <p class="login-sub">Enter your 6 digit 2nd password to continue.</p>
+  </div>
+
+  <div class="login-content">
+    <div class="twofa-user-card">
+      <div>
+        <small>Signing in as</small>
+        <b id="twofaUsername">-</b>
+      </div>
+
+      <button type="button" id="twofaChange">← Change</button>
+    </div>
+
+    <label class="label">2nd Password</label>
+
+    <div class="otp-wrap" id="otpWrap">
+      <input class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+      <input class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+      <input class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+      <input class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+      <input class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+      <input class="otp-input" maxlength="1" inputmode="numeric" autocomplete="off">
+    </div>
+
+    <div id="twofaErr" class="login-error"></div>
+
+    <button type="button" class="btn" id="twofaVerify">Verify</button>
+  </div>
+</div>
 <!-- FORGOT PASSWORD POPUP -->
 <div id="forgotOverlay" class="blocked-overlay" aria-hidden="true">
   <div class="blocked-box forgot-box zoom-in" role="dialog" aria-modal="true">
