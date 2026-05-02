@@ -141,6 +141,7 @@ body{
   color:var(--text-soft);
   outline:none;
   padding:4px 11px;
+  transition: all .3s;
 }
 .search-wrap input:hover{
   border-color:var(--gold-hover);
@@ -396,14 +397,21 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
   cursor:pointer;
   display:grid;
   place-items:center;
-  transition:.25s;
+  transition: all .3s;
 }
 
-.range-toggle-btn:hover,
+.range-toggle-btn:hover{
+  border-color:var(--gold-hover);
+  color:var(--gold-hover);
+}
+.range-toggle-btn:active{
+  border-color:var(--gold-active);
+  color:var(--gold-active);
+}
 .range-toggle-btn.active{
   border-color:var(--gold);
+    color:var(--gold);
 }
-
 .range-toggle-btn svg{
   transition:.25s;
 }
@@ -417,6 +425,7 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
   grid-template-columns:repeat(3,1fr);
   gap:6px;
   margin-top:8px;
+  transition: all .3s;
 }
 
 .range-buttons.show{
@@ -431,9 +440,17 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
   color:var(--text-soft);
   cursor:pointer;
   font-size:12px;
+    transition: all .3s;
 }
 
-.range-buttons button:hover,
+.range-buttons button:hover{
+  border-color:var(--gold-hover);
+  color:var(--gold-hover);
+}
+.range-buttons button:active{
+  border-color:var(--gold-active);
+  color:var(--gold-active);
+}
 .range-buttons button.active{
   border-color:var(--gold);
   color:var(--gold);
@@ -468,9 +485,27 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
   justify-content:space-between;
   gap:8px;
   margin-bottom:8px;
+  transition: all .3s;
 }
 
-.range-picker-head button,
+.range-picker-head button{
+  height:28px;
+  border:1px solid var(--border2);
+  border-radius:6px;
+  background:var(--backgroundbtn);
+  color:var(--text-soft);
+  cursor:pointer;
+  transition: all .3s;
+    padding:0 15px;
+}
+.range-picker-head button:hover{
+ border-color:var(--gold-hover); 
+ color:var(--gold-hover);
+}
+.range-picker-head button:active{
+ border-color:var(--gold-active); 
+ color:var(--gold-active);
+}
 .picker-actions button{
   height:28px;
   border:1px solid var(--border2);
@@ -478,8 +513,17 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
   background:var(--backgroundbtn);
   color:var(--text-soft);
   cursor:pointer;
+  transition: all .3s;
+  margin-top:5px;
 }
-
+.picker-actions button:hover{
+ border-color:var(--gold-hover); 
+ color:var(--gold-hover);
+}
+.picker-actions button:active{
+ border-color:var(--gold-active); 
+ color:var(--gold-active);
+}
 #pickerTitle,
 .month-title{
   text-align:center;
@@ -522,6 +566,7 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
   background:var(--backgroundbtn);
   color:var(--text-soft);
   cursor:pointer;
+  transition: all .3s;
 }
 
 .cal-day:hover{
