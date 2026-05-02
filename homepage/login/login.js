@@ -658,7 +658,7 @@ async function loginWithUsername(){
     const snap = await db.ref(`logins/user_accounts/${uname}`).get();
 
     if (!snap.exists()){
-      showLoginError('username', 'Username not exist');
+      showLoginError('username', 'Username does not exist');
       usernameInput.focus();
       return;
     }
@@ -666,7 +666,7 @@ async function loginWithUsername(){
     const acc = snap.val();
 
     if (acc.active === false){
-      showLoginError('username', 'This ID Already banned.');
+      showLoginError('username', 'This ID Already got banned.');
       usernameInput.focus();
       return;
     }
@@ -674,7 +674,7 @@ async function loginWithUsername(){
     const inputHash = await sha256Hex(pass);
 
     if (inputHash !== acc.passwordHash){
-      showLoginError('password', 'Password not exist.');
+      showLoginError('password', 'Password does not exist.');
       passwordInput.focus();
       return;
     }
