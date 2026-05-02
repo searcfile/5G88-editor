@@ -718,17 +718,23 @@ function clearSameDeviceFilter(){
   // ---------- Actions ----------
 function forceLogoutUser(email){
   const key = sanitizeEmail(email);
+  const overrideRef = firebase.database().ref('logins/admin_override/' + key);
+
   const payload = {
     forceLogout: true,
-    clearAllStorage: true,   // ✅ hanya admin logout clear semua storage
+    clearAllStorage: true,
     at: Date.now()
   };
 
-  firebase.database()
-    .ref('logins/admin_override/' + key)
-    .set(payload)
-    .then(()=> showToast(`Logout sent to ${email}`))
-    .catch(err=> showToast(`Error logout: ${err.message}`, "error"));
+  overrideRef.set(payload)
+    .then(() => {
+      showToast(`Logout sent to ${email}`);
+
+      setTimeout(() => {
+        overrideRef.remove().catch(() => {});
+      }, 5000);
+    })
+    .catch(err => showToast(`Error logout: ${err.message}`, "error"));
 }
 
   function toggleBlockUser(button){
@@ -1035,7 +1041,7 @@ function doForceLogoutAll(){
     const key = sanitizeEmail(email);
     updates['logins/admin_override/' + key] = {
       forceLogout: true,
-      clearAllStorage: true,   // ✅ hanya untuk admin logout all
+      clearAllStorage: true,
       at: ts
     };
   });
@@ -1047,6 +1053,18 @@ function doForceLogoutAll(){
         setTimeout(() => showToast(`Logout sent to ${email}`), delay);
         delay += 200;
       });
+
+      // ✅ buang semua override selepas 5 saat
+      // supaya user login semula tidak kena tendang kali kedua
+      setTimeout(() => {
+        const cleanUpdates = {};
+        emails.forEach(email => {
+          const key = sanitizeEmail(email);
+          cleanUpdates['logins/admin_override/' + key] = null;
+        });
+
+        firebase.database().ref().update(cleanUpdates).catch(() => {});
+      }, 5000);
     })
     .catch(err => showToast(`Error force logout all: ${err.message}`, "error"));
 }
