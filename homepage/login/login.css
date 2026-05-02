@@ -9,6 +9,8 @@
     --icon:rgba(255, 255, 255, 0.45);
     --icon-focus: rgba(255,255,255,0.75);
     --border-input5:#303030;
+    --bg-box:rgba(255, 255, 255, 0.06);
+    --border-box:#303030;
 
     --blue: #1668dc;
     --blue-hover: #3c89e8;
@@ -35,6 +37,9 @@
     --blue: #1668dc;
     --blue-hover: #3c89e8;
     --blue-active: #1554ad;
+        
+    --bg-box:rgb(245, 245, 245);
+    --border-box: rgb(232, 232, 232);
   }
 
 /* ===== Base & Layout ===== */
@@ -647,7 +652,7 @@ transition: all 0.3s;
 
 .login-error{
   display:none;
-  color:#d50000;
+  color:#dc4446;
   font-size:12px;
   margin-top:6px;
   margin-bottom:12px;
@@ -655,25 +660,23 @@ transition: all 0.3s;
 
 .input.invalid,
 .otp-input.invalid{
-  border-color:#d50000 !important;
+  border-color:#dc4446 !important;
 }
 .twofa-user-card{
-  padding:14px 16px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid var(--border-input);
+  padding:10px 14px;
+  background:var(--bg-box);
+  border:1px solid var(--border-box);
 }
 
 .twofa-user-left{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:10px;
   min-width:0;
 }
 
 .twofa-user-icon{
-  width:18px;
-  height:18px;
-  color:var(--blue);
+  color:#1677ff;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -681,36 +684,35 @@ transition: all 0.3s;
 }
 
 .twofa-user-icon svg{
-  width:18px;
-  height:18px;
+  width:16px;
+  height:16px;
   display:block;
 }
 
 .twofa-user-left small{
   display:block;
-  color:var(--page-text);
-  opacity:.65;
-  font-size:12px;
-  line-height:1.2;
+  color:var(--icon);
+  font-size:11px;
+  line-height: 1.5714285714285714;
 }
 
 .twofa-user-left b{
   display:block;
   color:var(--page-text);
   font-size:14px;
-  line-height:1.35;
-  margin-top:3px;
+  line-height: 1.5714285714285714;
+  font-weight:600;
 }
 
 #twofaChange{
   display:flex;
   align-items:center;
-  gap:6px;
+  gap:8px;
   border:0;
   background:transparent;
   color:var(--blue);
   cursor:pointer;
-  font-size:13px;
+  font-size:12px;
   padding:4px 0;
   white-space:nowrap;
 }
