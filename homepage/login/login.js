@@ -592,58 +592,104 @@ async function sha256Hex(text){
   const buf = await crypto.subtle.digest('SHA-256', enc);
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
 }
+function clearLoginErrors(){
+  const username = document.getElementById('username');
+  const password = document.getElementById('password');
+  const usernameErr = document.getElementById('usernameErr');
+  const passwordErr = document.getElementById('passwordErr');
 
+  username?.classList.remove('invalid');
+  password?.classList.remove('invalid');
+
+  if (usernameErr){
+    usernameErr.textContent = '';
+    usernameErr.style.display = 'none';
+  }
+
+  if (passwordErr){
+    passwordErr.textContent = '';
+    passwordErr.style.display = 'none';
+  }
+}
+
+function showLoginError(type, message){
+  const input = document.getElementById(type);
+  const err = document.getElementById(type + 'Err');
+
+  input?.classList.add('invalid');
+
+  if (err){
+    err.textContent = message;
+    err.style.display = 'block';
+  }
+}
+document.getElementById('username')?.addEventListener('input', clearLoginErrors);
+document.getElementById('password')?.addEventListener('input', clearLoginErrors);
 // --- LOGIN VIA REALTIME DB ---
 async function loginWithUsername(){
-  const uname = String(document.getElementById('username').value || '').trim().toLowerCase();
-  const pass  = String(document.getElementById('password').value || '');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
 
-  if (!uname || !pass){
-    alert("Masukkan username dan password.");
+  const uname = String(usernameInput.value || '').trim().toLowerCase();
+  const pass  = String(passwordInput.value || '');
+
+  clearLoginErrors();
+
+  if (!uname){
+    showLoginError('username', 'Username wajib diisi.');
+    usernameInput.focus();
+    return;
+  }
+
+  if (!pass){
+    showLoginError('password', 'Password wajib diisi.');
+    passwordInput.focus();
     return;
   }
 
   if (!turnstileVerifiedUser){
-    alert("Sila complete verification dulu.");
+    showLoginError('password', 'Sila complete verification dulu.');
     return;
   }
 
   setLoading(true,'userpass');
 
   try{
-    // 1️⃣ Ambil akun dari RTDB
     const snap = await db.ref(`logins/user_accounts/${uname}`).get();
-    if (!snap.exists()) throw new Error("Akun tidak ditemukan.");
+
+    if (!snap.exists()){
+      showLoginError('username', 'Username salah / tidak ditemukan.');
+      usernameInput.focus();
+      return;
+    }
+
     const acc = snap.val();
-    if (acc.active === false) throw new Error("Akun dinonaktifkan.");
 
-    // 2️⃣ Hash password input dan cocokkan
+    if (acc.active === false){
+      showLoginError('username', 'Akun ini sudah dinonaktifkan.');
+      usernameInput.focus();
+      return;
+    }
+
     const inputHash = await sha256Hex(pass);
-    if (inputHash !== acc.passwordHash) throw new Error("Password salah.");
 
-    // 3️⃣ Wajib: sign-in anonymous supaya rules 'auth != null' lolos
+    if (inputHash !== acc.passwordHash){
+      showLoginError('password', 'Password salah.');
+      passwordInput.focus();
+      return;
+    }
+
     await ensureGuestAuth();
 
-    // 4️⃣ Ambil pseudo-email untuk sistem login
     const pseudoEmail = `${uname}@5g88.local`;
 
-    // 5️⃣ Simpan log & redirect
     await finishLogin({ email: pseudoEmail, displayName: uname, photoURL: "" });
 
- }catch(err){
-  alert(err.message || "Login gagal. Coba lagi.");
-
-  turnstileVerifiedUser = false;
-  const btn = document.getElementById('btnUserpass');
-  if (btn) btn.disabled = true;
-
-  if (window.turnstile) {
-    const widgetEl = document.querySelector('#form-userpass .cf-turnstile');
-    if (widgetEl) turnstile.reset(widgetEl);
+  }catch(err){
+    showLoginError('password', 'Login gagal. Coba lagi.');
+  }finally{
+    setLoading(false,'userpass');
   }
-}finally{
-  setLoading(false,'userpass');
-}
 }
 // Optional createAccount (tetap sama)
 async function createAccount(){
