@@ -368,6 +368,69 @@ tr.session-row.active td{
 ::-webkit-scrollbar-thumb{background:#555;border-radius:10px}
 ::-webkit-scrollbar-thumb:hover{background:#777}
 html{scrollbar-width:thin;scrollbar-color:#555 transparent}
+.date-line{
+  display:grid;
+  grid-template-columns:1fr 34px;
+  gap:6px;
+  margin-top:8px;
+}
+
+#dateRangeInput{
+  text-align:center;
+  cursor:default;
+}
+
+.range-toggle-btn{
+  height:32px;
+  border:1px solid var(--border2);
+  border-radius:6px;
+  background:var(--backgroundbtn);
+  color:var(--text-soft);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition:.25s;
+}
+
+.range-toggle-btn:hover,
+.range-toggle-btn.active{
+  border-color:var(--gold);
+}
+
+.range-toggle-btn svg{
+  transition:.25s;
+}
+
+.range-toggle-btn.active svg{
+  transform:rotate(180deg);
+}
+
+.range-buttons{
+  display:none;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-top:8px;
+}
+
+.range-buttons.show{
+  display:grid;
+}
+
+.range-buttons button{
+  height:28px;
+  border:1px solid var(--border2);
+  border-radius:6px;
+  background:var(--backgroundbtn);
+  color:var(--text-soft);
+  cursor:pointer;
+  font-size:12px;
+}
+
+.range-buttons button:hover,
+.range-buttons button.active{
+  border-color:var(--gold);
+  color:var(--gold);
+}
 </style>
 </head>
 
@@ -379,9 +442,27 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
       <span id="userCount">0</span>
     </div>
 
-    <div class="search-wrap">
-      <input id="userSearch" type="text" placeholder="Search user...">
-    </div>
+<div class="search-wrap">
+  <input id="userSearch" type="text" placeholder="Search user...">
+
+  <div class="date-line">
+    <input id="dateRangeInput" type="text" readonly placeholder="YYYY-MM-DD → YYYY-MM-DD">
+    <button type="button" id="rangeToggleBtn" class="range-toggle-btn">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M16.59 8.59L12 13.17L7.41 8.59L6 10l6 6l6-6z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div id="rangeButtons" class="range-buttons">
+    <button type="button" data-range="today">Today</button>
+    <button type="button" data-range="yesterday">Yesterday</button>
+    <button type="button" data-range="thisWeek">This Week</button>
+    <button type="button" data-range="lastWeek">Last Week</button>
+    <button type="button" data-range="thisMonth">This Month</button>
+    <button type="button" data-range="lastMonth">Last Month</button>
+  </div>
+</div>
 
     <div id="userList" class="user-list"></div>
   </aside>
@@ -485,6 +566,15 @@ const confirmMask = document.getElementById("confirmMask");
 const confirmText = document.getElementById("confirmText");
 const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+const dateRangeInput = document.getElementById("dateRangeInput");
+const rangeToggleBtn = document.getElementById("rangeToggleBtn");
+const rangeButtonsWrap = document.getElementById("rangeButtons");
+const rangeButtons = document.querySelectorAll("#rangeButtons button");
+let activeRange = {
+  key: "today",
+  start: null,
+  end: null
+};
 
 let historyData = {};
 let selectedUserKey = "";
@@ -513,7 +603,89 @@ function formatTime(ms){
   const ss = String(d.getSeconds()).padStart(2,"0");
   return `${dd}-${mm}-${yy} ${hh}:${mi}:${ss}`;
 }
+function pad2(n){
+  return String(n).padStart(2, "0");
+}
 
+function toYMD(date){
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
+function startOfDay(date){
+  const d = new Date(date);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function endOfDay(date){
+  const d = new Date(date);
+  d.setHours(23,59,59,999);
+  return d;
+}
+
+function startOfWeek(date){
+  const d = startOfDay(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+function endOfWeek(date){
+  const d = startOfWeek(date);
+  d.setDate(d.getDate() + 6);
+  d.setHours(23,59,59,999);
+  return d;
+}
+
+function getRangeByKey(key){
+  const now = new Date();
+  let start, end;
+
+  if (key === "yesterday") {
+    start = startOfDay(now);
+    start.setDate(start.getDate() - 1);
+    end = endOfDay(start);
+  } else if (key === "thisWeek") {
+    start = startOfWeek(now);
+    end = endOfWeek(now);
+  } else if (key === "lastWeek") {
+    start = startOfWeek(now);
+    start.setDate(start.getDate() - 7);
+    end = endOfWeek(start);
+  } else if (key === "thisMonth") {
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23,59,59,999);
+  } else if (key === "lastMonth") {
+    start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    end = new Date(now.getFullYear(), now.getMonth(), 0, 23,59,59,999);
+  } else {
+    start = startOfDay(now);
+    end = endOfDay(now);
+  }
+
+  return { start, end };
+}
+
+function setActiveRange(key = "today"){
+  const range = getRangeByKey(key);
+
+  activeRange = {
+    key,
+    start: range.start.getTime(),
+    end: range.end.getTime()
+  };
+
+  dateRangeInput.value = `${toYMD(range.start)} → ${toYMD(range.end)}`;
+
+  rangeButtons.forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.range === key);
+  });
+
+  renderUsers();
+  renderSessions();
+  renderEmptyDetail();
+}
 function getSessions(userKey){
   const user = historyData[userKey] || {};
   const sessions = user.sessions || {};
@@ -547,7 +719,17 @@ function renderUsers(){
   const q = userSearch.value.trim().toLowerCase();
   const keys = Object.keys(historyData).sort();
 
-  const filtered = keys.filter(key => key.toLowerCase().includes(q));
+  const filtered = keys.filter(key => {
+  const matchSearch = key.toLowerCase().includes(q);
+
+  const sessions = getSessions(key);
+  const matchDate = sessions.some(s => {
+    const openedAt = Number(s.openedAt || 0);
+    return openedAt >= activeRange.start && openedAt <= activeRange.end;
+  });
+
+  return matchSearch && matchDate;
+});
 
   userCount.textContent = String(filtered.length);
 
@@ -601,7 +783,10 @@ function renderSessions(){
     return;
   }
 
-  const sessions = getSessions(selectedUserKey);
+  const sessions = getSessions(selectedUserKey).filter(s => {
+  const openedAt = Number(s.openedAt || 0);
+  return openedAt >= activeRange.start && openedAt <= activeRange.end;
+});
   sessionTitle.textContent = selectedUserKey;
   sessionCount.textContent = String(sessions.length);
 
@@ -721,7 +906,28 @@ confirmMask.addEventListener("click", (e) => {
 });
 
 userSearch.addEventListener("input", renderUsers);
+rangeToggleBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  rangeButtonsWrap.classList.toggle("show");
+  rangeToggleBtn.classList.toggle("active", rangeButtonsWrap.classList.contains("show"));
+});
 
+rangeButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    setActiveRange(btn.dataset.range || "today");
+    rangeButtonsWrap.classList.remove("show");
+    rangeToggleBtn.classList.remove("active");
+  });
+});
+
+document.addEventListener("click", (e) => {
+  if (!rangeButtonsWrap?.classList.contains("show")) return;
+  if (rangeButtonsWrap.contains(e.target) || rangeToggleBtn.contains(e.target)) return;
+
+  rangeButtonsWrap.classList.remove("show");
+  rangeToggleBtn.classList.remove("active");
+});
+setActiveRange("today");
 blurphpDb.ref("tabHistory").on("value", snap => {
   historyData = snap.val() || {};
 
