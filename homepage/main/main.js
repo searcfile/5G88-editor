@@ -403,11 +403,13 @@ sessionStorage.removeItem("forceLogout");
 
   function makeToken(){
     if (crypto?.getRandomValues) {
-      const a = new Uint32Array(4); crypto.getRandomValues(a);
+      const a = new Uint32Array(4);
+      crypto.getRandomValues(a);
       return Array.from(a).map(x=>x.toString(16)).join('-');
     }
     return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
   }
+
   function keyify(s){
     return String(s||'').trim().toLowerCase().replace(/[.#$\[\]/\s]/g,'_');
   }
@@ -418,51 +420,47 @@ sessionStorage.removeItem("forceLogout");
     await stopSingleSession();
     if (!ownerId) return;
 
-    const token   = makeToken();
-    const key     = keyify(ownerId);
-    const sessRef = loginDb.ref(`${SESS_ROOT}/${key}`); 
+    const token = makeToken();
+    const key = keyify(ownerId);
+    const sessRef = loginDb.ref(`${SESS_ROOT}/${key}`);
 
     try { await sessRef.onDisconnect().remove(); } catch(_){}
 
-    await sessRef.transaction(cur=>{
-      const now = firebase.database.ServerValue.TIMESTAMP;
-      if (!cur) {
-        return { token, owner:key, createdAt:now, lastSeen:now };
-      }
-      if (cur.forceLogoutAt) return cur;
-      if (cur.token && cur.token !== token) {
-        return { ...cur, forceLogoutAt: now };
-      }
-      return { ...cur, token, lastSeen: now };
+    await sessRef.set({
+      token,
+      owner: key,
+      createdAt: firebase.database.ServerValue.TIMESTAMP,
+      lastSeen: firebase.database.ServerValue.TIMESTAMP
     });
 
-    const onValue = sessRef.on('value', snap=>{
+    const onValue = sessRef.on('value', snap => {
       const v = snap.val();
       if (!v) return;
-      if (v.forceLogoutAt) return hardLogout('force');
-      if (v.token && v.token !== token) return hardLogout('token-changed');
+      if (v.token && v.token !== token) {
+        hardLogout('token-changed');
+      }
     });
 
-    const hb = setInterval(()=>{
+    const hb = setInterval(() => {
       sessRef.child('lastSeen')
         .set(firebase.database.ServerValue.TIMESTAMP)
         .catch(()=>{});
     }, HB_MS);
 
-    async function hardLogout(){
+    async function hardLogout(reason){
       try { sessRef.off('value', onValue); } catch(_){}
       try { clearInterval(hb); } catch(_){}
       try { await sessRef.remove(); } catch(_){}
       try { await loginAuth.signOut(); } catch(_){}
-      if (typeof onForcedLogout === 'function') onForcedLogout();
-      else location.reload();
+
+      if (typeof onForcedLogout === 'function') {
+        onForcedLogout(reason);
+      } else {
+        location.reload();
+      }
     }
 
-    _session = { sessRef, onValue, hb, hardLogout };
-    window.addEventListener('beforeunload', ()=>{
-      try { clearInterval(hb); } catch(_){}
-      try { sessRef.off('value', onValue); } catch(_){}
-    });
+    _session = { sessRef, onValue, hb };
   }
 
   async function stopSingleSession(){
@@ -474,17 +472,15 @@ sessionStorage.removeItem("forceLogout");
     _session = null;
   }
 
-  // helper: tentukan ownerId dari login data (username utk @5g88.local, selain itu email)
   function getSessionOwnerFrom(loginData){
-    const email = (loginData?.email||'').toLowerCase();
+    const email = (loginData?.email || '').toLowerCase();
     if (!email) return null;
-    if (email.endsWith('@5g88.local')) return email.split('@')[0]; // username
-    return email; // Gmail/Facebook pakai email penuh
+    if (email.endsWith('@5g88.local')) return email.split('@')[0];
+    return email;
   }
 
-  // expose
   window.startSingleSession = startSingleSession;
-  window.stopSingleSession  = stopSingleSession;
+  window.stopSingleSession = stopSingleSession;
   window.getSessionOwnerFrom = getSessionOwnerFrom;
 })();
 
@@ -2689,12 +2685,13 @@ async function ensureAnonAuth(maxRetries = 2) {
   // ✅ 3) Single-Session
   try {
     const ownerId = window.getSessionOwnerFrom(sessionData);
-    await window.startSingleSession(ownerId, () => {
-      try { localStorage.removeItem('gmailLogin'); } catch (_){}
-      try { sessionStorage.setItem('forceLogout','1'); } catch (_){}
-      try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
-      window.location.href = "/login?dup=1";
-    });
+await window.startSingleSession(ownerId, () => {
+  try { localStorage.removeItem('gmailLogin'); } catch (_){}
+  try { localStorage.removeItem('useremail'); } catch (_){}
+  try { sessionStorage.setItem('forceLogout','1'); } catch (_){}
+  try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
+  window.location.replace("/login?dup=1");
+});
   } catch (e) {
     console.warn('[single-session] gagal start:', e);
   }
