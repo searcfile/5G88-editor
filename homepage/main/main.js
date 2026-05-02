@@ -2726,8 +2726,11 @@ myOverrideRef.on('value', async (snap) => {
 
   try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
 
-  try { await myOverrideRef.remove(); } catch (_) {}
-  window.location.href = "/login?blocked=1";
+try { await myOverrideRef.remove(); } catch (_) {}
+
+setTimeout(() => {
+  window.location.replace("/login?blocked=1");
+}, 300);
 });
 
   // User diblok
