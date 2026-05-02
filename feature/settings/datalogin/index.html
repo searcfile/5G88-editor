@@ -732,7 +732,7 @@ function forceLogoutUser(email){
 
       setTimeout(() => {
         overrideRef.remove().catch(() => {});
-      }, 5000);
+      }, 1500);
     })
     .catch(err => showToast(`Error logout: ${err.message}`, "error"));
 }
@@ -1064,7 +1064,7 @@ function doForceLogoutAll(){
         });
 
         firebase.database().ref().update(cleanUpdates).catch(() => {});
-      }, 5000);
+      }, 1500);
     })
     .catch(err => showToast(`Error force logout all: ${err.message}`, "error"));
 }
