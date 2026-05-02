@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin User History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<style>
+:root{
+  --bg-main: #000;
+  --sidebar: #001529;
+  --text-main: #fff;
+  --text-soft: rgba(255,255,255,0.85);
+  --text-dim: rgba(255,255,255,0.65);
+  --colorbtn:rgba(255,255,255,0.85);
+  --backgroundbtn:#141414;
+  --backgrounddrop:#1f1f1f;
+  --border:#303030;
+  --border4:#303030;
+  --border2:#424242;
+  --panel-border: #424242;
+  --blur:rgba(255,255,255,0.25);
+  --border3:#303030;
+  --tab2:#141414;
+  --border-bottom:#141414;
+  --close:rgba(255,255,255,0.45);
+  --close-hover2:rgba(255,255,255,0.08);
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #303030;
+  --btn-bg: transparent;
+  --btn-text: rgba(255,255,255,0.85);
+  --btn-border: #424242;
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+  --overlay-bg: rgba(0,0,0,0.5);
+  --popup-bg: #1f1f1f;
+  --empty-text: rgba(255,255,255,.7);
+  --empty-title: rgba(255,255,255,.85);
+  --toggle-track: #2c7be5;
+  --toggle-knob: #ffffff;
+  --btnfocus:#15325b;
+  --colorbtn-close:rgba(255, 255, 255, 0.45);
+}
+
+body.light-theme{
+  --bg-main: #fff;
+  --sidebar: #001529;
+  --text-main: #000;
+  --text-soft: rgba(17,24,39,0.88);
+  --text-dim: rgba(17,24,39,0.72);
+  --colorbtn:rgba(0, 0, 0, 0.88);
+  --colorbtn-close:rgba(0, 0, 0, 0.45);
+  --backgroundbtn:#ffffff;
+  --backgrounddrop:#ffffff;
+  --border:#303030;
+  --border4:#d9d9d9;
+  --border2:#d9d9d9;
+  --panel-border: #d4dbe6;
+  --blur:rgba(0,0,0,0.25);
+  --border3:#f0f0f0;
+  --tab2:#ffffff;
+  --border-bottom:#ffffff;
+  --close:rgba(0, 0, 0, 0.88);
+  --close-hover2:rgba(0,0,0,0.08);
+  --tab-bg: rgba(255,255,255,0.04);
+  --tab-border: #d4dbe6;
+  --btn-bg: transparent;
+  --btn-text: rgba(17,24,39,0.88);
+  --btn-border: #d4dbe6;
+  --gold: #1668dc;
+  --gold-hover: #3c89e8;
+  --gold-active: #1554ad;
+  --overlay-bg: rgba(15,23,42,0.18);
+  --popup-bg: #ffffff;
+  --empty-text: rgba(17,24,39,.7);
+  --empty-title: rgba(17,24,39,.88);
+  --toggle-track: #cfd8e3;
+  --toggle-knob: #ffffff;
+  --btnfocus:#91caff;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg-main);
+  color:var(--text-soft);
+  font-family:Arial,sans-serif;
+}
+
+.admin-history{
+  height:100vh;
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:8px;
+  padding:8px;
+}
+
+.panel{
+  border:1px solid var(--border2);
+  background:var(--backgrounddrop);
+  border-radius:8px;
+  overflow:hidden;
+  min-height:0;
+}
+
+.panel-head{
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:0 12px;
+  border-bottom:1px solid var(--border2);
+  font-size:14px;
+  font-weight:600;
+  color:var(--text-soft);
+}
+
+.search-wrap{
+  padding:10px;
+  border-bottom:1px solid var(--border2);
+}
+
+.search-wrap input{
+  width:100%;
+  height:32px;
+  border:1px solid var(--border2);
+  border-radius:6px;
+  background:var(--backgroundbtn);
+  color:var(--text-soft);
+  outline:none;
+  padding:4px 11px;
+}
+
+.search-wrap input:focus{
+  border-color:var(--gold);
+}
+
+.user-list{
+  height:calc(100vh - 104px);
+  overflow:auto;
+  padding:8px;
+}
+
+.user-row{
+  display:grid;
+  grid-template-columns:1fr 62px;
+  gap:6px;
+  margin-bottom:8px;
+}
+
+.user-btn,
+.delete-btn,
+.small-btn{
+  border:1px solid var(--border2);
+  background:var(--backgroundbtn);
+  color:var(--text-soft);
+  border-radius:6px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.user-btn{
+  min-width:0;
+  text-align:left;
+  padding:9px 10px;
+}
+
+.user-btn.active{
+  border-color:var(--gold);
+}
+
+.user-name{
+  font-weight:600;
+  font-size:13px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.user-meta{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--text-dim);
+}
+
+.delete-btn{
+  color:#ff6b6b;
+  font-size:12px;
+}
+
+.user-btn:hover,
+.delete-btn:hover,
+.small-btn:hover{
+  border-color:var(--gold-hover);
+}
+
+.main-area{
+  display:grid;
+  grid-template-rows:240px 1fr;
+  gap:8px;
+  min-height:0;
+}
+
+.session-panel,
+.detail-panel{
+  min-height:0;
+}
+
+.table-wrap{
+  height:calc(100% - 42px);
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:760px;
+}
+
+th,td{
+  padding:10px 12px;
+  border-bottom:1px solid var(--border4);
+  background:var(--backgroundbtn);
+  color:var(--text-soft);
+  font-size:13px;
+  text-align:left;
+}
+
+th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:var(--backgrounddrop);
+  font-weight:600;
+}
+
+tr.session-row{
+  cursor:pointer;
+}
+
+tr.session-row:hover td,
+tr.session-row.active td{
+  background:rgba(22,104,220,.15);
+}
+
+.center{text-align:center}
+.status-open{color:#22c55e;font-weight:600}
+.status-closed{color:#ef4444;font-weight:600}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  height:calc(100% - 42px);
+  padding:8px;
+  min-height:0;
+}
+
+.detail-box{
+  border:1px solid var(--border2);
+  border-radius:8px;
+  overflow:hidden;
+  min-height:0;
+  background:var(--backgrounddrop);
+}
+
+.detail-box-head{
+  height:38px;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  border-bottom:1px solid var(--border2);
+  font-weight:600;
+  font-size:13px;
+}
+
+.detail-box-body{
+  height:calc(100% - 38px);
+  overflow:auto;
+}
+
+.log-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px 12px;
+  border-bottom:1px solid var(--border4);
+  background:var(--backgroundbtn);
+  font-size:13px;
+}
+
+.empty{
+  padding:40px 12px;
+  text-align:center;
+  color:var(--text-dim);
+}
+
+.confirm-mask{
+  position:fixed;
+  inset:0;
+  background:var(--overlay-bg);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999999;
+}
+
+.confirm-box{
+  width:min(420px,calc(100vw - 28px));
+  background:var(--popup-bg);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:16px;
+}
+
+.confirm-title{
+  font-size:16px;
+  font-weight:700;
+  color:var(--text-soft);
+  margin-bottom:8px;
+}
+
+.confirm-text{
+  font-size:13px;
+  color:var(--text-dim);
+  line-height:1.5;
+  margin-bottom:14px;
+}
+
+.confirm-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
+
+.small-btn{
+  height:32px;
+  padding:0 12px;
+}
+
+.danger{
+  color:#fff;
+  background:#b91c1c;
+  border-color:#dc2626;
+}
+
+@media(max-width:900px){
+  .admin-history{
+    grid-template-columns:1fr;
+    height:auto;
+  }
+  .user-list{height:280px}
+  .main-area{grid-template-rows:auto auto}
+  .session-panel{height:320px}
+  .detail-panel{height:520px}
+  .detail-grid{grid-template-columns:1fr}
+}
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#555;border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:#777}
+html{scrollbar-width:thin;scrollbar-color:#555 transparent}
+</style>
+</head>
+
+<body>
+<div class="admin-history">
+  <aside class="panel">
+    <div class="panel-head">
+      <span>User History</span>
+      <span id="userCount">0</span>
+    </div>
+
+    <div class="search-wrap">
+      <input id="userSearch" type="text" placeholder="Search user...">
+    </div>
+
+    <div id="userList" class="user-list"></div>
+  </aside>
+
+  <main class="main-area">
+    <section class="panel session-panel">
+      <div class="panel-head">
+        <span id="sessionTitle">Sessions</span>
+        <span id="sessionCount">0</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tab</th>
+              <th class="center">Total Action</th>
+              <th>Opened At</th>
+              <th>Closed At</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="sessionTbody">
+            <tr><td colspan="5" class="empty">Select user from left side.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel detail-panel">
+      <div class="panel-head">
+        <span id="detailTitle">Action Detail</span>
+        <span id="selectedInfo">-</span>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-box">
+          <div class="detail-box-head">Action Summary</div>
+          <div class="detail-box-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th class="center">Total</th>
+                </tr>
+              </thead>
+              <tbody id="actionTbody">
+                <tr><td colspan="2" class="empty">No session selected.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="detail-box">
+          <div class="detail-box-head">History Logs</div>
+          <div id="logList" class="detail-box-body">
+            <div class="empty">No logs.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="confirmMask" class="confirm-mask">
+  <div class="confirm-box">
+    <div class="confirm-title">Delete User History?</div>
+    <div id="confirmText" class="confirm-text"></div>
+    <div class="confirm-actions">
+      <button id="cancelDeleteBtn" class="small-btn" type="button">Cancel</button>
+      <button id="confirmDeleteBtn" class="small-btn danger" type="button">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const blurphpApp = firebase.initializeApp({
+  apiKey: "AIzaSyCKmrlS4qrZCrMNRIfIRCWCbNgZT1uQ3ZI",
+  authDomain: "blurphp.firebaseapp.com",
+  databaseURL: "https://blurphp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "blurphp",
+  storageBucket: "blurphp.appspot.com",
+  messagingSenderId: "593904200464",
+  appId: "1:593904200464:web:cea7bc1360532c20d99395"
+}, "adminHistoryApp");
+
+const blurphpDb = blurphpApp.database();
+
+const userList = document.getElementById("userList");
+const userSearch = document.getElementById("userSearch");
+const userCount = document.getElementById("userCount");
+const sessionTitle = document.getElementById("sessionTitle");
+const sessionCount = document.getElementById("sessionCount");
+const sessionTbody = document.getElementById("sessionTbody");
+const actionTbody = document.getElementById("actionTbody");
+const logList = document.getElementById("logList");
+const detailTitle = document.getElementById("detailTitle");
+const selectedInfo = document.getElementById("selectedInfo");
+
+const confirmMask = document.getElementById("confirmMask");
+const confirmText = document.getElementById("confirmText");
+const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+let historyData = {};
+let selectedUserKey = "";
+let selectedSessionId = "";
+let deleteTargetKey = "";
+
+function escapeHtml(str){
+  return String(str || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function formatTime(ms){
+  if (!ms) return "-";
+  const d = new Date(Number(ms));
+  if (isNaN(d.getTime())) return "-";
+
+  const dd = String(d.getDate()).padStart(2,"0");
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const yy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mi = String(d.getMinutes()).padStart(2,"0");
+  const ss = String(d.getSeconds()).padStart(2,"0");
+  return `${dd}-${mm}-${yy} ${hh}:${mi}:${ss}`;
+}
+
+function getSessions(userKey){
+  const user = historyData[userKey] || {};
+  const sessions = user.sessions || {};
+  return Object.values(sessions).sort((a,b) => Number(b.openedAt || 0) - Number(a.openedAt || 0));
+}
+
+function getRealActions(session){
+  let actions = session.actions || {};
+  const labels = session.actionLabels || {};
+
+  if (!actions || Object.keys(actions).length === 0) {
+    actions = {};
+    Object.values(session.logs || {}).forEach(log => {
+      const name = String(log.action || "").trim();
+      if (!name) return;
+      const key = name.toLowerCase().replace(/[.#$[\]/]/g, "_").replace(/\s+/g, "_");
+      actions[key] = (actions[key] || 0) + 1;
+      labels[key] = name;
+    });
+  }
+
+  return { actions, labels };
+}
+
+function getRealTotal(session){
+  const { actions } = getRealActions(session);
+  return Object.values(actions).reduce((sum,n) => sum + Number(n || 0), 0);
+}
+
+function renderUsers(){
+  const q = userSearch.value.trim().toLowerCase();
+  const keys = Object.keys(historyData).sort();
+
+  const filtered = keys.filter(key => key.toLowerCase().includes(q));
+
+  userCount.textContent = String(filtered.length);
+
+  if (!filtered.length) {
+    userList.innerHTML = `<div class="empty">No user history found.</div>`;
+    return;
+  }
+
+  userList.innerHTML = filtered.map(key => {
+    const sessions = getSessions(key);
+    const totalActions = sessions.reduce((sum,s) => sum + getRealTotal(s), 0);
+    const active = key === selectedUserKey ? "active" : "";
+
+    return `
+      <div class="user-row">
+        <button class="user-btn ${active}" type="button" data-user="${escapeHtml(key)}">
+          <div class="user-name">${escapeHtml(key)}</div>
+          <div class="user-meta">${sessions.length} sessions · ${totalActions} actions</div>
+        </button>
+
+        <button class="delete-btn" type="button" data-delete="${escapeHtml(key)}">
+          Delete
+        </button>
+      </div>
+    `;
+  }).join("");
+
+  userList.querySelectorAll("[data-user]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectedUserKey = btn.dataset.user;
+      selectedSessionId = "";
+      renderUsers();
+      renderSessions();
+      renderEmptyDetail();
+    });
+  });
+
+  userList.querySelectorAll("[data-delete]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openDeleteConfirm(btn.dataset.delete);
+    });
+  });
+}
+
+function renderSessions(){
+  if (!selectedUserKey) {
+    sessionTitle.textContent = "Sessions";
+    sessionCount.textContent = "0";
+    sessionTbody.innerHTML = `<tr><td colspan="5" class="empty">Select user from left side.</td></tr>`;
+    return;
+  }
+
+  const sessions = getSessions(selectedUserKey);
+  sessionTitle.textContent = selectedUserKey;
+  sessionCount.textContent = String(sessions.length);
+
+  if (!sessions.length) {
+    sessionTbody.innerHTML = `<tr><td colspan="5" class="empty">No sessions found.</td></tr>`;
+    return;
+  }
+
+  sessionTbody.innerHTML = sessions.map(s => {
+    const active = s.sessionId === selectedSessionId ? "active" : "";
+    const status = s.closedAt ? "Closed" : "Open";
+    const statusClass = s.closedAt ? "status-closed" : "status-open";
+    const total = getRealTotal(s);
+
+    return `
+      <tr class="session-row ${active}" data-session="${escapeHtml(s.sessionId || "")}">
+        <td>${escapeHtml(s.tab || "UNKNOWN")}</td>
+        <td class="center">${total}</td>
+        <td>${formatTime(s.openedAt)}</td>
+        <td>${formatTime(s.closedAt)}</td>
+        <td class="${statusClass}">${status}</td>
+      </tr>
+    `;
+  }).join("");
+
+  sessionTbody.querySelectorAll("[data-session]").forEach(row => {
+    row.addEventListener("click", () => {
+      selectedSessionId = row.dataset.session;
+      renderSessions();
+      renderDetail();
+    });
+  });
+}
+
+function renderEmptyDetail(){
+  detailTitle.textContent = "Action Detail";
+  selectedInfo.textContent = "-";
+  actionTbody.innerHTML = `<tr><td colspan="2" class="empty">No session selected.</td></tr>`;
+  logList.innerHTML = `<div class="empty">No logs.</div>`;
+}
+
+function renderDetail(){
+  const sessions = getSessions(selectedUserKey);
+  const session = sessions.find(s => s.sessionId === selectedSessionId);
+
+  if (!session) {
+    renderEmptyDetail();
+    return;
+  }
+
+  detailTitle.textContent = `${session.tab || "UNKNOWN"} Detail`;
+  selectedInfo.textContent = `${formatTime(session.openedAt)} → ${formatTime(session.closedAt)}`;
+
+  const { actions, labels } = getRealActions(session);
+
+  const actionRows = Object.entries(actions)
+    .sort((a,b) => Number(b[1]) - Number(a[1]))
+    .map(([key,count]) => `
+      <tr>
+        <td>${escapeHtml(labels[key] || key)}</td>
+        <td class="center">${Number(count || 0)}</td>
+      </tr>
+    `).join("");
+
+  actionTbody.innerHTML = actionRows || `<tr><td colspan="2" class="empty">No action.</td></tr>`;
+
+  const logs = Object.values(session.logs || {})
+    .sort((a,b) => Number(b.time || 0) - Number(a.time || 0));
+
+  logList.innerHTML = logs.length
+    ? logs.map(log => `
+        <div class="log-row">
+          <span>${escapeHtml(log.action || "-")}</span>
+          <span>${formatTime(log.time)}</span>
+        </div>
+      `).join("")
+    : `<div class="empty">No logs.</div>`;
+}
+
+function openDeleteConfirm(userKey){
+  deleteTargetKey = userKey;
+  confirmText.innerHTML = `
+    You are going to delete all history for:<br>
+    <b>${escapeHtml(userKey)}</b><br><br>
+    This will remove <b>tabHistory/${escapeHtml(userKey)}</b>.
+  `;
+  confirmMask.style.display = "flex";
+}
+
+function closeDeleteConfirm(){
+  deleteTargetKey = "";
+  confirmMask.style.display = "none";
+}
+
+cancelDeleteBtn.addEventListener("click", closeDeleteConfirm);
+
+confirmDeleteBtn.addEventListener("click", () => {
+  if (!deleteTargetKey) return;
+
+  blurphpDb.ref(`tabHistory/${deleteTargetKey}`).remove()
+    .then(() => {
+      if (selectedUserKey === deleteTargetKey) {
+        selectedUserKey = "";
+        selectedSessionId = "";
+        renderSessions();
+        renderEmptyDetail();
+      }
+      closeDeleteConfirm();
+    })
+    .catch(err => {
+      alert("Delete failed: " + err.message);
+    });
+});
+
+confirmMask.addEventListener("click", (e) => {
+  if (e.target === confirmMask) closeDeleteConfirm();
+});
+
+userSearch.addEventListener("input", renderUsers);
+
+blurphpDb.ref("tabHistory").on("value", snap => {
+  historyData = snap.val() || {};
+
+  if (selectedUserKey && !historyData[selectedUserKey]) {
+    selectedUserKey = "";
+    selectedSessionId = "";
+  }
+
+  renderUsers();
+  renderSessions();
+
+  if (selectedSessionId) renderDetail();
+  else renderEmptyDetail();
+});
+
+(function () {
+  const THEME_KEY = "siteTheme";
+
+  function applyChildTheme(theme) {
+    document.body.classList.remove("light-theme", "dark-theme");
+    document.body.classList.add(theme === "light" ? "light-theme" : "dark-theme");
+  }
+
+  applyChildTheme(localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light");
+
+  window.addEventListener("message", function (e) {
+    const allowedOrigins = ["https://5g88-main.vercel.app"];
+    if (!allowedOrigins.includes(e.origin)) return;
+
+    const data = e.data || {};
+    if (data.type === "theme-change") {
+      const theme = data.theme === "dark" ? "dark" : "light";
+      localStorage.setItem(THEME_KEY, theme);
+      applyChildTheme(theme);
+    }
+  });
+})();
+</script>
+</body>
+</html>
