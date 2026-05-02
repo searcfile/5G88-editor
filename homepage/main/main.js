@@ -343,13 +343,15 @@ const TAB_ROUTE_MAP = {
     const currentLogin = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
     const currentEmail = String(currentLogin.email || "").toLowerCase();
 
-    localStorage.setItem("gmailLogin", JSON.stringify({
-      name: decodedName,
-      email: decodedEmail,
-      photo: decodedPhoto
-    }));
+localStorage.setItem("gmailLogin", JSON.stringify({
+  name: decodedName,
+  email: decodedEmail,
+  photo: decodedPhoto
+}));
 
-    sessionStorage.setItem("justLoggedIn", "1");
+localStorage.setItem("useremail", decodedEmail);
+sessionStorage.setItem("justLoggedIn", "1");
+sessionStorage.removeItem("forceLogout");
 
     if (restoreTabsRaw) {
       try {
@@ -518,15 +520,27 @@ const TAB_ROUTE_MAP = {
     const v = localStorage.getItem(STORAGE_EXPIRE);
     expireAt = v ? Number(v) : null;
   }
-  async function doLogout(reason="timeout"){
-    try { clearInterval(checkTimer); } catch {}
-    try { await loginAuth.signOut(); } catch(_) {}
-    try { localStorage.removeItem("gmailLogin"); } catch(_) {}
-    try { localStorage.removeItem(STORAGE_EXPIRE); } catch(_) {}
-    try { bc && bc.postMessage({t:"logout", reason}); } catch {}
-    try { window.google?.accounts?.id?.disableAutoSelect(); } catch(_){}
-    window.location.href = LOGIN_URL;
-  }
+async function doLogout(reason="timeout"){
+  try { clearInterval(checkTimer); } catch {}
+
+  try { await loginAuth.signOut(); } catch(_) {}
+
+  try { localStorage.removeItem("gmailLogin"); } catch(_) {}
+  try { localStorage.removeItem("useremail"); } catch(_) {}
+  try { localStorage.removeItem(STORAGE_EXPIRE); } catch(_) {}
+  try { localStorage.removeItem("autoLogout.expireAt"); } catch(_) {}
+  try { localStorage.removeItem("login.livechatUnreadCount"); } catch(_) {}
+
+  try { sessionStorage.removeItem("justLoggedIn"); } catch(_) {}
+  try { sessionStorage.removeItem("forceLogout"); } catch(_) {}
+  try { sessionStorage.removeItem("autoOpenTab"); } catch(_) {}
+  try { sessionStorage.removeItem("queryUserAppliedOnce"); } catch(_) {}
+
+  try { bc && bc.postMessage({ t:"logout", reason }); } catch {}
+  try { window.google?.accounts?.id?.disableAutoSelect(); } catch(_){}
+
+  window.location.replace(LOGIN_URL);
+}
   function shouldLogout(){
     const t = now();
     if (expireAt && t >= expireAt) return true;
