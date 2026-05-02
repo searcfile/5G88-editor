@@ -2846,8 +2846,7 @@ document.addEventListener('keydown', (e) => {
 
   window.addEventListener("message", function (e) {
     const allowedOrigins = [
-      "https://5g88-main.vercel.app",
-      "https://searcfile.github.io"
+      "https://5g88-main.vercel.app"
     ];
     if (!allowedOrigins.includes(e.origin)) return;
 
@@ -2919,6 +2918,31 @@ document.addEventListener("keydown", function(e) {
 document.addEventListener("copy", function() {
   sendUserAction("COPY IMAGE", {
     method: "copy-event"
+  });
+}, true);
+/* =========================
+   AUTO TRACK ENTER SEND MESSAGE
+========================= */
+document.addEventListener("keydown", function(e) {
+  const key = String(e.key || "").toLowerCase();
+
+  if (key !== "enter") return;
+  if (e.shiftKey) return; // Shift+Enter untuk new line, jangan kira
+
+  const el = e.target;
+  if (!el) return;
+
+  const isMessageInput =
+    el.matches("textarea, input[type='text'], [contenteditable='true']") ||
+    el.closest("[contenteditable='true']");
+
+  if (!isMessageInput) return;
+
+  const value = (el.value || el.innerText || el.textContent || "").trim();
+  if (!value) return;
+
+  sendUserAction("Send Message", {
+    method: "enter-key"
   });
 }, true);
 </script>
