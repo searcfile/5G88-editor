@@ -2659,9 +2659,9 @@ try {
   await loginAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 } catch (_) {}
 
-try {
-  await loginAuth.signOut();
-} catch (_) {}
+// try {
+//  await loginAuth.signOut();
+// } catch (_) {}
   // ✅ 1) RTDB rules `auth != null` → login anon di project loginApp
 async function ensureAnonAuth(maxRetries = 2) {
   for (let i = 0; i <= maxRetries; i++) {
@@ -2704,33 +2704,31 @@ async function ensureAnonAuth(maxRetries = 2) {
 
 // Admin override (paksa logout user tertentu)
 const myOverrideRef = loginDb.ref('logins/admin_override/' + userId);
-let lastAt = 0;
+let adminOverrideProcessing = false;
 
 myOverrideRef.on('value', async (snap) => {
   const v = snap.val();
   if (!v || v.forceLogout !== true) return;
-  if (v.at && v.at <= lastAt) return;
-  lastAt = v.at || Date.now();
+  if (adminOverrideProcessing) return;
+
+  adminOverrideProcessing = true;
+
+  try { myOverrideRef.off(); } catch (_) {}
+
+  // ✅ buang command Firebase dulu supaya login balik tidak kena baca command lama
+  try { await myOverrideRef.remove(); } catch (_) {}
 
   try { await loginAuth.signOut(); } catch (_) {}
 
-  // ✅ hanya clear semua storage kalau arahan datang dari admin logout / logout all
-  if (v.clearAllStorage === true) {
-    try { localStorage.clear(); } catch (_) {}
-    try { sessionStorage.clear(); } catch (_) {}
-  } else {
-    // ✅ kalau tiada flag ini, kekal macam biasa
-    try { localStorage.removeItem('gmailLogin'); } catch (_) {}
-    try { sessionStorage.setItem('forceLogout', '1'); } catch (_) {}
-  }
+  // ✅ memang clear semua storage kalau admin logout
+  try { localStorage.clear(); } catch (_) {}
+  try { sessionStorage.clear(); } catch (_) {}
 
-  try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
+  try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_) {}
 
-try { await myOverrideRef.remove(); } catch (_) {}
-
-setTimeout(() => {
-  window.location.replace("/login?blocked=1");
-}, 300);
+  setTimeout(() => {
+    window.location.replace("/login?blocked=1");
+  }, 300);
 });
 
   // User diblok
