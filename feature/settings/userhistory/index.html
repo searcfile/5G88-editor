@@ -94,7 +94,7 @@ body{
 .admin-history{
   height:100vh;
   display:grid;
-  grid-template-columns:320px 1fr;
+  grid-template-columns:400px 1fr;
   gap:8px;
   padding:8px;
 }
@@ -135,7 +135,9 @@ body{
   outline:none;
   padding:4px 11px;
 }
-
+.search-wrap input:hover{
+  border-color:var(--gold-hover);
+}
 .search-wrap input:focus{
   border-color:var(--gold);
 }
@@ -757,6 +759,22 @@ blurphpDb.ref("tabHistory").on("value", snap => {
     }
   });
 })();
+  const THEME_KEY = "siteTheme";
+
+  function applyTheme(theme) {
+    const finalTheme = theme === "dark" ? "dark" : "light";
+    document.body.classList.toggle("dark-theme", finalTheme === "dark");
+  }
+
+  // apply masa mula load
+  applyTheme(localStorage.getItem(THEME_KEY) || "light");
+
+  // dengar dari parent
+  window.addEventListener("message", (event) => {
+    if (event.data?.type === "theme-change") {
+      applyTheme(event.data.theme);
+    }
+  });
 </script>
 </body>
 </html>
