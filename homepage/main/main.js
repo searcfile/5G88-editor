@@ -636,9 +636,13 @@ function isUsernameLoginNow() {
 }
 
 function updateChangePwVisibility() {
-  const btn = document.getElementById('changePwBtn');
-  if (!btn) return;
-  btn.style.display = isUsernameLoginNow() ? 'flex' : 'none';
+  const show = isUsernameLoginNow();
+
+  const btn1 = document.getElementById('changePwBtn');
+  const btn2 = document.getElementById('change2ndPwBtn');
+
+  if (btn1) btn1.style.display = show ? 'flex' : 'none';
+  if (btn2) btn2.style.display = show ? 'flex' : 'none';
 }
 window.addEventListener('load', () => {
   updateChangePwVisibility();
@@ -3151,6 +3155,164 @@ async function doChange(){
 }
   submit.addEventListener('click', doChange);
   [inOld,inNew,inNew2].forEach(i=>i.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doChange(); }));
+})();
+(function(){
+  const btn = document.getElementById('change2ndPwBtn');
+  if (!btn) return;
+
+  const modal  = document.getElementById('cp2Modal');
+  const closeX = document.getElementById('cp2Close');
+  const cancel = document.getElementById('cp2Cancel');
+  const submit = document.getElementById('cp2Submit');
+
+  const inOld  = document.getElementById('cp2Old');
+  const inNew  = document.getElementById('cp2New');
+  const inNew2 = document.getElementById('cp2New2');
+
+  const errBox = document.getElementById('cp2Err');
+  const okBox  = document.getElementById('cp2Ok');
+
+  function onlyDigits(el){
+    el.value = String(el.value || '').replace(/\D/g, '').slice(0, 6);
+  }
+
+  function openCp2(){
+    if (!isUsernameLoginNow()) return;
+
+    errBox.style.display = 'none';
+    errBox.textContent = '';
+    okBox.style.display = 'none';
+    okBox.textContent = '';
+
+    inOld.value = '';
+    inNew.value = '';
+    inNew2.value = '';
+
+    modal.style.display = 'flex';
+    setTimeout(() => inOld.focus(), 0);
+  }
+
+  function closeCp2(){
+    modal.style.display = 'none';
+  }
+
+  function showErr(msg){
+    errBox.textContent = msg;
+    errBox.style.display = 'block';
+    okBox.style.display = 'none';
+  }
+
+  function showOk(msg){
+    okBox.textContent = msg;
+    okBox.style.display = 'block';
+    errBox.style.display = 'none';
+  }
+
+  async function doChange2nd(){
+    const oldPw = inOld.value.trim();
+    const newPw = inNew.value.trim();
+    const newPw2 = inNew2.value.trim();
+
+    if (!/^\d{6}$/.test(oldPw)){
+      showErr('Current 2nd password must be 6 digits.');
+      return;
+    }
+
+    if (!/^\d{6}$/.test(newPw)){
+      showErr('New 2nd password must be 6 digits.');
+      return;
+    }
+
+    if (newPw !== newPw2){
+      showErr('Confirm 2nd password does not match.');
+      return;
+    }
+
+    if (newPw === oldPw){
+      showErr('New 2nd password cannot be the same as current.');
+      return;
+    }
+
+    try{
+      const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
+      const email = (login?.email || '').toLowerCase();
+
+      if (!email.endsWith('@5g88.local')){
+        showErr('This account type cannot change 2nd password here.');
+        return;
+      }
+
+      const uname = email.split('@')[0];
+
+      const ref = loginDb.ref(`logins/user_accounts/${uname}`);
+      const snap = await ref.get();
+
+      if (!snap.exists()){
+        showErr('Username does not exist.');
+        return;
+      }
+
+      const user = snap.val();
+
+      if (user.active === false){
+        showErr('This account is deactivated.');
+        return;
+      }
+
+      if (!user.secondPasswordHash){
+        showErr('2nd password is not set. Please contact admin.');
+        return;
+      }
+
+      const oldHash = await sha256Hex(oldPw);
+
+      if (oldHash !== user.secondPasswordHash){
+        showErr('Wrong current 2nd password.');
+        return;
+      }
+
+      const newHash = await sha256Hex(newPw);
+
+      await ref.update({
+        secondPasswordHash: newHash,
+        secondPasswordUpdatedAt: Date.now(),
+        secondPasswordVersion: (user.secondPasswordVersion || 0) + 1
+      });
+
+      try{
+        await loginDb.ref(`logins/second_password_change_logs/${uname}`).push({
+          at: Date.now(),
+          ua: navigator.userAgent || '',
+          result: 'ok'
+        });
+      }catch(_){}
+
+      showOk('2nd password changed successfully ✅');
+
+      setTimeout(() => {
+        closeCp2();
+      }, 900);
+
+    }catch(err){
+      showErr('Failed to change 2nd password. ' + (err?.message || ''));
+    }
+  }
+
+  [inOld, inNew, inNew2].forEach(input => {
+    input.addEventListener('input', () => onlyDigits(input));
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doChange2nd();
+    });
+  });
+
+  btn.addEventListener('click', openCp2);
+  closeX.addEventListener('click', closeCp2);
+  cancel.addEventListener('click', closeCp2);
+  submit.addEventListener('click', doChange2nd);
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) closeCp2();
+  });
 })();
 // ====== ❄️ SNOW EFFECT – MERRY CHRISTMAS ❄️ ======
 (function () {
