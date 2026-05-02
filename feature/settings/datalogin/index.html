@@ -452,6 +452,11 @@ body.dark-theme{
         <input id="cu-password" type="password" autocomplete="new-password" />
         <small class="hint2">Min 6 characters</small>
       </label>
+      <label class="field">
+  <span>2nd Password</span>
+  <input id="cu-second-password" type="password" inputmode="numeric" autocomplete="new-password" maxlength="6" />
+  <small class="hint2">6 digit code</small>
+</label>
       <div class="error-line" id="cu-error" hidden></div>
     </div>
 
@@ -476,7 +481,15 @@ body.dark-theme{
         <input id="rp-username" type="text" inputmode="latin" autocomplete="off" />
         <small class="hint">Masukkan username yang akan di-reset.</small>
       </label>
-
+      
+<label class="field">
+  <span>Reset Type</span>
+  <select id="rp-mode" class="status-filter" style="width:100%; height:40px;">
+    <option value="password">Reset Password</option>
+    <option value="secondPassword">Reset 2nd Password</option>
+  </select>
+</label>
+      
       <label class="field">
         <span>New Password</span>
         <input id="rp-password" type="password" autocomplete="new-password" />
@@ -1093,9 +1106,12 @@ function doForceLogoutAll(){
     const overlay = document.getElementById('createUserModal');
     const u = document.getElementById('cu-username');
     const p = document.getElementById('cu-password');
+    const sp = document.getElementById('cu-second-password');
     const err = document.getElementById('cu-error');
     err.textContent = ''; err.hidden = true;
-    u.value = ''; p.value = '';
+    u.value = '';
+    p.value = '';
+    if (sp) sp.value = '';
     overlay.style.display = 'flex';
     setTimeout(()=> u.focus(), 60);
     // Prevent background scroll (optional)
@@ -1108,52 +1124,70 @@ function doForceLogoutAll(){
   }
 
   // Create handler
-  async function handleCreateUser(){
-    const btn = document.getElementById('cu-create');
-    const cancel = document.getElementById('cu-cancel');
-    const uEl = document.getElementById('cu-username');
-    const pEl = document.getElementById('cu-password');
-    const err = document.getElementById('cu-error');
+async function handleCreateUser(){
+  const btn = document.getElementById('cu-create');
+  const cancel = document.getElementById('cu-cancel');
+  const uEl = document.getElementById('cu-username');
+  const pEl = document.getElementById('cu-password');
+  const spEl = document.getElementById('cu-second-password');
+  const err = document.getElementById('cu-error');
 
-    const rawU = (uEl.value || '').trim();
-    const username = sanitizeUsername(rawU);
-    const password = String(pEl.value || '');
+  const rawU = (uEl.value || '').trim();
+  const username = sanitizeUsername(rawU);
+  const password = String(pEl.value || '');
+  const secondPassword = String(spEl.value || '').trim();
 
-    if (!username){
-      err.textContent = 'Username tidak valid. Gunakan huruf/angka/._- (3–24).';
-      err.hidden = false; uEl.focus(); return;
-    }
-    if (password.length < 6){
-      err.textContent = 'Password minimal 6 karakter.';
-      err.hidden = false; pEl.focus(); return;
-    }
-
-    btn.disabled = true; cancel.disabled = true;
-    try{
-      // Cek apakah sudah ada
-      const snap = await userAcctRef.child(username).get();
-      if (snap.exists()){
-        err.textContent = 'Username sudah dipakai.';
-        err.hidden = false; btn.disabled = false; cancel.disabled = false; return;
-      }
-      const hash = await sha256Hex(password);
-      const payload = {
-        username,
-        passwordHash: hash,
-        createdAt: Date.now(),
-        createdBy: 'admin-ui',
-        active: true
-      };
-      await userAcctRef.child(username).set(payload);
-      showToast(`User "${username}" berhasil dibuat.`, 'success');
-      closeCreateUserModal();
-    }catch(e){
-      err.textContent = `Gagal membuat user: ${e.message}`;
-      err.hidden = false;
-    }finally{
-      btn.disabled = false; cancel.disabled = false;
-    }
+  if (!username){
+    err.textContent = 'Username tidak valid. Gunakan huruf/angka/._- (3–24).';
+    err.hidden = false; uEl.focus(); return;
   }
+
+  if (password.length < 6){
+    err.textContent = 'Password minimal 6 karakter.';
+    err.hidden = false; pEl.focus(); return;
+  }
+
+  if (!/^\d{6}$/.test(secondPassword)){
+    err.textContent = '2nd Password wajib 6 digit nombor.';
+    err.hidden = false; spEl.focus(); return;
+  }
+
+  btn.disabled = true; cancel.disabled = true;
+
+  try{
+    const snap = await userAcctRef.child(username).get();
+
+    if (snap.exists()){
+      err.textContent = 'Username sudah dipakai.';
+      err.hidden = false;
+      return;
+    }
+
+    const hash = await sha256Hex(password);
+    const secondHash = await sha256Hex(secondPassword);
+
+    const payload = {
+      username,
+      passwordHash: hash,
+      secondPasswordHash: secondHash,
+      createdAt: Date.now(),
+      createdBy: 'admin-ui',
+      active: true
+    };
+
+    await userAcctRef.child(username).set(payload);
+
+    showToast(`User "${username}" berhasil dibuat.`, 'success');
+    closeCreateUserModal();
+
+  }catch(e){
+    err.textContent = `Gagal membuat user: ${e.message}`;
+    err.hidden = false;
+  }finally{
+    btn.disabled = false;
+    cancel.disabled = false;
+  }
+}
 
   // Pasang event & integrate ke init()
   function setupCreateUserModal(){
@@ -1164,6 +1198,7 @@ function doForceLogoutAll(){
     const createBtn = document.getElementById('cu-create');
     const uEl = document.getElementById('cu-username');
     const pEl = document.getElementById('cu-password');
+    const spEl = document.getElementById('cu-second-password');
 
     if (openBtn){ openBtn.addEventListener('click', openCreateUserModal); }
     if (closeBtn){ closeBtn.addEventListener('click', closeCreateUserModal); }
@@ -1181,7 +1216,7 @@ function doForceLogoutAll(){
     });
 
     // Enter dari input fokus juga trigger create
-    [uEl, pEl].forEach(el=>{
+    [uEl, pEl, spEl].forEach(el=>{
       el.addEventListener('keydown', (e)=>{
         if (e.key === 'Enter') handleCreateUser();
       });
@@ -1291,6 +1326,8 @@ function openResetPwModal(){
   err.textContent = ''; err.hidden = true;
   u.value = ''; p1.value = ''; p2.value = '';
   o.style.display = 'flex';
+  document.getElementById('rp-mode').value = 'password';
+updateResetModeLabel();
   setTimeout(()=> u.focus(), 60);
   document.body.style.overflow = 'hidden';
 }
@@ -1300,10 +1337,26 @@ function closeResetPwModal(){
   o.style.display = 'none';
   document.body.style.overflow = '';
 }
+function updateResetModeLabel(){
+  const mode = document.getElementById('rp-mode')?.value || 'password';
+  const title = document.getElementById('rp-title');
+  const p1Label = document.querySelector('label.field:has(#rp-password) span');
+  const p2Label = document.querySelector('label.field:has(#rp-password2) span');
 
+  if (title){
+    title.textContent = mode === 'secondPassword' ? 'Reset 2nd Password' : 'Reset Password';
+  }
+  if (p1Label){
+    p1Label.textContent = mode === 'secondPassword' ? 'New 2nd Password' : 'New Password';
+  }
+  if (p2Label){
+    p2Label.textContent = mode === 'secondPassword' ? 'Confirm 2nd Password' : 'Confirm Password';
+  }
+}
 async function handleResetPassword(){
   const btn = document.getElementById('rp-reset');
   const cancel = document.getElementById('rp-cancel');
+  const modeEl = document.getElementById('rp-mode');
   const uEl = document.getElementById('rp-username');
   const p1El = document.getElementById('rp-password');
   const p2El = document.getElementById('rp-password2');
@@ -1311,51 +1364,75 @@ async function handleResetPassword(){
 
   const rawU = (uEl.value || '').trim();
   const username = sanitizeUsername(rawU);
-  const pw1 = String(p1El.value || '');
-  const pw2 = String(p2El.value || '');
+  const mode = modeEl?.value || 'password';
+  const pw1 = String(p1El.value || '').trim();
+  const pw2 = String(p2El.value || '').trim();
 
   if (!username){
-    err.textContent = 'Username tidak valid.'; err.hidden = false; uEl.focus(); return;
+    err.textContent = 'Username tidak valid.';
+    err.hidden = false; uEl.focus(); return;
   }
-  if (pw1.length < 6){
-    err.textContent = 'Password minimal 6 karakter.'; err.hidden = false; p1El.focus(); return;
+
+  if (mode === 'secondPassword'){
+    if (!/^\d{6}$/.test(pw1)){
+      err.textContent = '2nd Password wajib 6 digit nombor.';
+      err.hidden = false; p1El.focus(); return;
+    }
+  } else {
+    if (pw1.length < 6){
+      err.textContent = 'Password minimal 6 karakter.';
+      err.hidden = false; p1El.focus(); return;
+    }
   }
+
   if (pw1 !== pw2){
-    err.textContent = 'Konfirmasi password tidak sama.'; err.hidden = false; p2El.focus(); return;
+    err.textContent = 'Konfirmasi password tidak sama.';
+    err.hidden = false; p2El.focus(); return;
   }
 
   btn.disabled = true; cancel.disabled = true;
+
   try{
     const snap = await userAcctRef.child(username).get();
+
     if (!snap.exists()){
-      err.textContent = 'Username tidak ditemukan.'; err.hidden = false;
-      btn.disabled = false; cancel.disabled = false; return;
+      err.textContent = 'Username tidak ditemukan.';
+      err.hidden = false;
+      return;
     }
-    const cur = snap.val() || {};
+
     const newHash = await sha256Hex(pw1);
 
-    // set lengkap sesuai rules (harus ada semua field wajib)
-    const payload = {
-      username: cur.username || username,
-      passwordHash: newHash,
-      createdAt: cur.createdAt || Date.now(),
-      createdBy: cur.createdBy || 'admin-ui',
-      active: (typeof cur.active === 'boolean') ? cur.active : true,
+    const updates = {
       updatedAt: Date.now(),
       updatedBy: 'admin-ui'
     };
 
-    await userAcctRef.child(username).set(payload);
-    showToast(`Password "${username}" berhasil di-reset.`, 'success');
+    if (mode === 'secondPassword'){
+      updates.secondPasswordHash = newHash;
+    } else {
+      updates.passwordHash = newHash;
+    }
+
+    await userAcctRef.child(username).update(updates);
+
+    showToast(
+      mode === 'secondPassword'
+        ? `2nd Password "${username}" berhasil di-reset.`
+        : `Password "${username}" berhasil di-reset.`,
+      'success'
+    );
+
     closeResetPwModal();
+
   }catch(e){
-    err.textContent = `Gagal reset password: ${e.message}`;
+    err.textContent = `Gagal reset: ${e.message}`;
     err.hidden = false;
   }finally{
-    btn.disabled = false; cancel.disabled = false;
+    btn.disabled = false;
+    cancel.disabled = false;
   }
 }
-
 // Pasang event untuk modal reset
 function setupResetPwModal(){
   const openBtn = document.getElementById('resetPwBtn');
@@ -1366,7 +1443,9 @@ function setupResetPwModal(){
   const uEl = document.getElementById('rp-username');
   const p1El = document.getElementById('rp-password');
   const p2El = document.getElementById('rp-password2');
-
+const modeEl = document.getElementById('rp-mode');
+modeEl?.addEventListener('change', updateResetModeLabel);
+  
   openBtn?.addEventListener('click', openResetPwModal);
   closeBtn?.addEventListener('click', closeResetPwModal);
   cancelBtn?.addEventListener('click', closeResetPwModal);
