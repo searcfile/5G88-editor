@@ -385,8 +385,20 @@ body.dark-theme{
 }
 
 .custom-select-arrow{
-  font-size:14px;
+  width:14px;
+  height:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   transition:.3s;
+  color:var(--blur);
+}
+
+.custom-select-arrow svg{
+  width:12px;
+  height:12px;
+  display:block;
+  fill:currentColor;
 }
 
 .custom-select.open .custom-select-arrow{
@@ -575,7 +587,11 @@ body.dark-theme{
 <div class="custom-select" id="rpModeSelect">
   <button type="button" class="custom-select-btn" id="rpModeBtn">
     <span id="rpModeText">Reset Password</span>
-    <span class="custom-select-arrow">⌄</span>
+    <span class="custom-select-arrow" aria-hidden="true">
+  <svg viewBox="64 64 896 896">
+    <path fill="currentColor" d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"/>
+  </svg>
+</span>
   </button>
 
   <div class="custom-select-menu" id="rpModeMenu">
@@ -1421,7 +1437,15 @@ function openResetPwModal(){
   err.textContent = ''; err.hidden = true;
   u.value = ''; p1.value = ''; p2.value = '';
   o.style.display = 'flex';
-  document.getElementById('rp-mode').value = 'password';
+document.getElementById('rp-mode').value = 'password';
+document.getElementById('rpModeText').textContent = 'Reset Password';
+
+document.querySelectorAll('#rpModeMenu button').forEach(b => {
+  b.classList.toggle('active', b.dataset.value === 'password');
+});
+
+document.getElementById('rpModeSelect')?.classList.remove('open');
+
 updateResetModeLabel();
   setTimeout(()=> u.focus(), 60);
   document.body.style.overflow = 'hidden';
@@ -1528,6 +1552,41 @@ async function handleResetPassword(){
     cancel.disabled = false;
   }
 }
+function setupCustomResetModeSelect(){
+  const wrap = document.getElementById('rpModeSelect');
+  const btn = document.getElementById('rpModeBtn');
+  const text = document.getElementById('rpModeText');
+  const hidden = document.getElementById('rp-mode');
+  const menu = document.getElementById('rpModeMenu');
+
+  if (!wrap || !btn || !text || !hidden || !menu) return;
+
+  btn.onclick = function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    wrap.classList.toggle('open');
+  };
+
+  menu.querySelectorAll('button[data-value]').forEach(item => {
+    item.onclick = function(e){
+      e.preventDefault();
+      e.stopPropagation();
+
+      hidden.value = item.dataset.value;
+      text.textContent = item.textContent.trim();
+
+      menu.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      item.classList.add('active');
+
+      wrap.classList.remove('open');
+      updateResetModeLabel();
+    };
+  });
+
+  document.addEventListener('click', function(){
+    wrap.classList.remove('open');
+  });
+}
 // Pasang event untuk modal reset
 function setupResetPwModal(){
   const openBtn = document.getElementById('resetPwBtn');
@@ -1538,8 +1597,7 @@ function setupResetPwModal(){
   const uEl = document.getElementById('rp-username');
   const p1El = document.getElementById('rp-password');
   const p2El = document.getElementById('rp-password2');
-const modeEl = document.getElementById('rp-mode');
-modeEl?.addEventListener('change', updateResetModeLabel);
+  setupCustomResetModeSelect();
   
   openBtn?.addEventListener('click', openResetPwModal);
   closeBtn?.addEventListener('click', closeResetPwModal);
