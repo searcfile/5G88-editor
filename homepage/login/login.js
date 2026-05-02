@@ -636,19 +636,19 @@ async function loginWithUsername(){
   clearLoginErrors();
 
   if (!uname){
-    showLoginError('username', 'Username wajib diisi.');
+    showLoginError('username', 'Please fill the username.');
     usernameInput.focus();
     return;
   }
 
   if (!pass){
-    showLoginError('password', 'Password wajib diisi.');
+    showLoginError('password', 'Please fill the password.');
     passwordInput.focus();
     return;
   }
 
   if (!turnstileVerifiedUser){
-    showLoginError('password', 'Sila complete verification dulu.');
+    showLoginError('password', 'Please complete the verification.');
     return;
   }
 
@@ -658,7 +658,7 @@ async function loginWithUsername(){
     const snap = await db.ref(`logins/user_accounts/${uname}`).get();
 
     if (!snap.exists()){
-      showLoginError('username', 'Username salah / tidak ditemukan.');
+      showLoginError('username', 'Username not exist');
       usernameInput.focus();
       return;
     }
@@ -666,7 +666,7 @@ async function loginWithUsername(){
     const acc = snap.val();
 
     if (acc.active === false){
-      showLoginError('username', 'Akun ini sudah dinonaktifkan.');
+      showLoginError('username', 'This ID Already banned.');
       usernameInput.focus();
       return;
     }
@@ -674,7 +674,7 @@ async function loginWithUsername(){
     const inputHash = await sha256Hex(pass);
 
     if (inputHash !== acc.passwordHash){
-      showLoginError('password', 'Password salah.');
+      showLoginError('password', 'Password not exist.');
       passwordInput.focus();
       return;
     }
@@ -686,7 +686,7 @@ async function loginWithUsername(){
     await finishLogin({ email: pseudoEmail, displayName: uname, photoURL: "" });
 
   }catch(err){
-    showLoginError('password', 'Login gagal. Coba lagi.');
+    showLoginError('password', 'Login failed. Try again.');
   }finally{
     setLoading(false,'userpass');
   }
