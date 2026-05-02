@@ -23,7 +23,7 @@
   --tab2: #ffffff;
   --border-bottom: #ffffff;
   --close: rgba(0, 0, 0, 0.88);
-
+  --close-hover2:rgba(0,0,0,0.08);
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #d4dbe6;
 
@@ -63,10 +63,10 @@ body.dark-theme{
   --tab2: #141414;
   --border-bottom: #141414;
   --close: rgba(255,255,255,0.45);
-
+  --close-hover2:rgba(255,255,255,0.08);
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #303030;
-
+  
   --btn-bg: transparent;
   --btn-text: rgba(255,255,255,0.85);
   --btn-border: #424242;
@@ -347,6 +347,83 @@ body.dark-theme{
 .tbl tbody tr:hover{
   background-color: var(--blur);  /* biru soft transparan */
 }
+.custom-select{
+  position:relative;
+  width:100%;
+}
+
+.custom-select-btn{
+  width:100%;
+  height:42px;
+  padding:4px 11px;
+  border:1px solid var(--border2);
+  border-radius:6px;
+  background:var(--backgroundbtn);
+  color:var(--colorbtn);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  font-size:14px;
+  transition:.3s;
+}
+
+.custom-select-btn:hover{
+  border-color:var(--gold-hover);
+}
+
+.custom-select.open .custom-select-btn{
+  border-color:var(--gold);
+}
+
+.custom-select-arrow{
+  font-size:14px;
+  transition:.3s;
+}
+
+.custom-select.open .custom-select-arrow{
+  transform:rotate(180deg);
+}
+
+.custom-select-menu{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 3px);
+  background:var(--backgroundbtn);
+  border:1px solid var(--border2);
+  border-radius:6px;
+  padding:4px;
+  display:none;
+  z-index:100005;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .35);
+}
+
+.custom-select.open .custom-select-menu{
+  display:block;
+}
+
+.custom-select-menu button{
+  width:100%;
+  padding:5px 12px;
+  border:0;
+  border-radius:4px;
+  background:transparent;
+  color:var(--colorbtn);
+  text-align:left;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.custom-select-menu button:hover{
+  background:var(--close-hover2);
+  color:var(--text-soft);
+}
+
+.custom-select-menu button.active{
+  background:var(--gold);
+  color:var(--text-soft);
+}
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -485,10 +562,19 @@ body.dark-theme{
       
 <label class="field">
   <span>Reset Type</span>
-  <select id="rp-mode" class="status-filter" style="width:100%; height:40px;">
-    <option value="password">Reset Password</option>
-    <option value="secondPassword">Reset 2nd Password</option>
-  </select>
+<input type="hidden" id="rp-mode" value="password">
+
+<div class="custom-select" id="rpModeSelect">
+  <button type="button" class="custom-select-btn" id="rpModeBtn">
+    <span id="rpModeText">Reset Password</span>
+    <span class="custom-select-arrow">⌄</span>
+  </button>
+
+  <div class="custom-select-menu" id="rpModeMenu">
+    <button type="button" data-value="password">Reset Password</button>
+    <button type="button" data-value="secondPassword">Reset 2nd Password</button>
+  </div>
+</div>
 </label>
       
       <label class="field">
