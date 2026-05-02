@@ -2726,11 +2726,9 @@ myOverrideRef.on('value', async (snap) => {
 
   try { window.google?.accounts?.id?.disableAutoSelect?.(); } catch (_){}
 
-try { await myOverrideRef.remove(); } catch (_) {}
-
-setTimeout(() => {
-  window.location.replace("/login?blocked=1");
-}, 300);
+  try { await myOverrideRef.remove(); } catch (_) {}
+  window.location.href = "/login?blocked=1";
+});
 
   // User diblok
   loginDb.ref(`logins/blocked_users/${userId}`).on("value", async (s) => {
