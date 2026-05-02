@@ -56,6 +56,13 @@ function hideLoginLoading(){
   const el = document.getElementById('loginLoading');
   if (el) el.style.display = 'none';
 }
+window.addEventListener('load', () => {
+  hideLoginLoading();
+});
+
+setTimeout(() => {
+  hideLoginLoading();
+}, 3000);
 function onTurnstileSuccess(token){
   turnstileVerifiedUser = !!token;
   const btn = document.getElementById('btnUserpass');
