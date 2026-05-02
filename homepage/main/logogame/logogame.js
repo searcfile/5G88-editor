@@ -1034,69 +1034,16 @@ function setPlatform(platform) {
   renderGames();
 
 async function copyImageToClipboard(imageUrl, parentElement) {
-  function showNotice(text, type = "info") {
-    const existing = parentElement.querySelector('.copy-notice');
-    if (existing) existing.remove();
+const gameName =
+    parentElement?.querySelector(".game-name")?.innerText ||
+    parentElement?.querySelector(".game-alias")?.innerText ||
+    "Image";
 
-    const notice = document.createElement('div');
-    notice.textContent = text;
-    notice.className = 'copy-notice';
-
-    if (type === "success") {
-      notice.style.background = '#1668dc';
-      notice.style.color = '#ffffff';
-    } else if (type === "error") {
-      notice.style.background = '#ff4d4f';
-      notice.style.color = '#fff';
-    } else {
-      notice.style.background = '#1668dc';
-      notice.style.color = '#ffffff';
-    }
-
-    parentElement.appendChild(notice);
-
-    setTimeout(() => {
-      if (notice && notice.parentNode) notice.remove();
-    }, 2200);
-  }
-
-  // 1) Cuba copy terus dalam child
-  try {
-    const response = await fetch(imageUrl);
-    if (!response.ok) throw new Error("Fetch failed: " + response.status);
-
-    const blob = await response.blob();
-
-    if (!window.ClipboardItem || !navigator.clipboard?.write) {
-      throw new Error("Clipboard API not supported");
-    }
-
-    const item = new ClipboardItem({ [blob.type]: blob });
-    await navigator.clipboard.write([item]);
-
-    showNotice("Image Copied!", "success");
-    return;
-  } catch (err) {
-    console.warn("Direct child copy failed:", err);
-  }
-
-  // 2) Fallback ke parent
-  if (window.parent !== window) {
-    try {
-      window.parent.postMessage(
-        { action: "copy-image", url: imageUrl },
-        "https://5g88-main.vercel.app"
-      );
-      showNotice("Sending copy request...", "info");
-      return;
-    } catch (err) {
-      console.error("PostMessage fallback failed:", err);
-    }
-  }
-
-  showNotice("❌ Failed to copy image", "error");
-}
-async function copyImageToClipboard(imageUrl, parentElement) {
+  sendUserAction("COPY IMAGE", {
+    method: "logo-game-click",
+    image: String(gameName).replace(/\s+/g, " ").trim().slice(0, 60),
+    url: imageUrl
+  });
   function showNotice(text, type = "info") {
     const existing = parentElement.querySelector('.copy-notice');
     if (existing) existing.remove();
