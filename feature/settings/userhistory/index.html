@@ -431,6 +431,109 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
   border-color:var(--gold);
   color:var(--gold);
 }
+.custom-range-wrap{
+  position:relative;
+  z-index:99999;
+}
+
+.range-picker{
+  position:absolute;
+  left:0;
+  top:38px;
+  width:min(620px, calc(100vw - 32px));
+  background:var(--backgrounddrop);
+  border:1px solid var(--border2);
+  border-radius:8px;
+  padding:10px;
+  z-index:999999;
+  display:none;
+  box-shadow:0 12px 28px rgba(0,0,0,.35);
+}
+
+.range-picker.open{
+  display:block;
+}
+
+.range-picker-head,
+.picker-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.range-picker-head button,
+.picker-actions button{
+  height:28px;
+  border:1px solid var(--border2);
+  border-radius:6px;
+  background:var(--backgroundbtn);
+  color:var(--text-soft);
+  cursor:pointer;
+}
+
+#pickerTitle,
+.month-title{
+  text-align:center;
+  font-size:13px;
+  color:var(--text-soft);
+  font-weight:600;
+}
+
+.month-title{
+  margin-bottom:6px;
+}
+
+.calendar-grid-wrap{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7, 1fr);
+  gap:4px;
+}
+
+.cal-week,
+.cal-day{
+  height:28px;
+  display:grid;
+  place-items:center;
+  font-size:12px;
+  border-radius:6px;
+}
+
+.cal-week{
+  color:var(--text-dim);
+}
+
+.cal-day{
+  border:1px solid transparent;
+  background:var(--backgroundbtn);
+  color:var(--text-soft);
+  cursor:pointer;
+}
+
+.cal-day:hover{
+  border-color:var(--gold-hover);
+}
+
+.cal-day.muted{
+  color:var(--text-dim);
+  opacity:.45;
+}
+
+.cal-day.in-range{
+  background:rgba(22,104,220,.18);
+}
+
+.cal-day.selected{
+  background:var(--gold);
+  color:#fff;
+}
 </style>
 </head>
 
@@ -445,6 +548,7 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
 <div class="search-wrap">
   <input id="userSearch" type="text" placeholder="Search user...">
 
+<div class="custom-range-wrap">
   <div class="date-line">
     <input id="dateRangeInput" type="text" readonly placeholder="YYYY-MM-DD → YYYY-MM-DD">
     <button type="button" id="rangeToggleBtn" class="range-toggle-btn">
@@ -453,6 +557,32 @@ html{scrollbar-width:thin;scrollbar-color:#555 transparent}
       </svg>
     </button>
   </div>
+
+  <div id="rangePicker" class="range-picker">
+    <div class="range-picker-head">
+      <button type="button" id="prevMonthBtn">‹‹</button>
+      <div id="pickerTitle"></div>
+      <button type="button" id="nextMonthBtn">››</button>
+    </div>
+
+    <div class="calendar-grid-wrap">
+      <div>
+        <div id="leftMonthTitle" class="month-title"></div>
+        <div id="leftCalendar" class="calendar-grid"></div>
+      </div>
+
+      <div>
+        <div id="rightMonthTitle" class="month-title"></div>
+        <div id="rightCalendar" class="calendar-grid"></div>
+      </div>
+    </div>
+
+    <div class="picker-actions">
+      <button type="button" id="clearRangeBtn">Clear</button>
+      <button type="button" id="applyRangeBtn">Apply</button>
+    </div>
+  </div>
+</div>
 
   <div id="rangeButtons" class="range-buttons">
     <button type="button" data-range="today">Today</button>
@@ -570,6 +700,19 @@ const dateRangeInput = document.getElementById("dateRangeInput");
 const rangeToggleBtn = document.getElementById("rangeToggleBtn");
 const rangeButtonsWrap = document.getElementById("rangeButtons");
 const rangeButtons = document.querySelectorAll("#rangeButtons button");
+const rangePicker = document.getElementById("rangePicker");
+const pickerTitle = document.getElementById("pickerTitle");
+const leftMonthTitle = document.getElementById("leftMonthTitle");
+const rightMonthTitle = document.getElementById("rightMonthTitle");
+const leftCalendar = document.getElementById("leftCalendar");
+const rightCalendar = document.getElementById("rightCalendar");
+const prevMonthBtn = document.getElementById("prevMonthBtn");
+const nextMonthBtn = document.getElementById("nextMonthBtn");
+const applyRangeBtn = document.getElementById("applyRangeBtn");
+const clearRangeBtn = document.getElementById("clearRangeBtn");
+let pickerBaseDate = new Date();
+let tempStartDate = null;
+let tempEndDate = null;
 let activeRange = {
   key: "today",
   start: null,
@@ -685,6 +828,114 @@ function setActiveRange(key = "today"){
   renderUsers();
   renderSessions();
   renderEmptyDetail();
+}
+function monthName(date) {
+  return date.toLocaleString("en-US", { month: "short", year: "numeric" });
+}
+
+function sameDay(a, b) {
+  if (!a || !b) return false;
+  return toYMD(a) === toYMD(b);
+}
+
+function isBetweenDay(day, start, end) {
+  if (!day || !start || !end) return false;
+  const t = startOfDay(day).getTime();
+  return t >= startOfDay(start).getTime() && t <= startOfDay(end).getTime();
+}
+
+function renderCalendar(container, titleEl, date) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  titleEl.textContent = monthName(date);
+  container.innerHTML = "";
+
+  ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].forEach(w => {
+    const el = document.createElement("div");
+    el.className = "cal-week";
+    el.textContent = w;
+    container.appendChild(el);
+  });
+
+  const first = new Date(year, month, 1);
+  const gridStart = new Date(year, month, 1 - first.getDay());
+
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(gridStart);
+    d.setDate(gridStart.getDate() + i);
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "cal-day";
+    btn.textContent = d.getDate();
+
+    if (d.getMonth() !== month) btn.classList.add("muted");
+
+    if (sameDay(d, tempStartDate) || sameDay(d, tempEndDate)) {
+      btn.classList.add("selected");
+    } else if (isBetweenDay(d, tempStartDate, tempEndDate)) {
+      btn.classList.add("in-range");
+    }
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if (!tempStartDate || (tempStartDate && tempEndDate)) {
+        tempStartDate = startOfDay(d);
+        tempEndDate = null;
+        renderRangePicker();
+        return;
+      }
+
+      if (d.getTime() < tempStartDate.getTime()) {
+        tempEndDate = endOfDay(tempStartDate);
+        tempStartDate = startOfDay(d);
+      } else {
+        tempEndDate = endOfDay(d);
+      }
+
+      activeRange = {
+        key: "custom",
+        start: startOfDay(tempStartDate).getTime(),
+        end: endOfDay(tempEndDate).getTime()
+      };
+
+      dateRangeInput.value = `${toYMD(new Date(activeRange.start))} → ${toYMD(new Date(activeRange.end))}`;
+
+      rangeButtons.forEach(btn => btn.classList.remove("active"));
+      closeRangePicker();
+      renderUsers();
+      renderSessions();
+      renderEmptyDetail();
+    });
+
+    container.appendChild(btn);
+  }
+}
+
+function renderRangePicker() {
+  const leftDate = new Date(pickerBaseDate.getFullYear(), pickerBaseDate.getMonth(), 1);
+  const rightDate = new Date(pickerBaseDate.getFullYear(), pickerBaseDate.getMonth() + 1, 1);
+
+  pickerTitle.textContent = `${monthName(leftDate)} - ${monthName(rightDate)}`;
+  renderCalendar(leftCalendar, leftMonthTitle, leftDate);
+  renderCalendar(rightCalendar, rightMonthTitle, rightDate);
+}
+
+function openRangePicker() {
+  const currentStart = activeRange.start ? new Date(activeRange.start) : new Date();
+
+  tempStartDate = startOfDay(currentStart);
+  tempEndDate = activeRange.end ? endOfDay(new Date(activeRange.end)) : null;
+  pickerBaseDate = new Date(currentStart.getFullYear(), currentStart.getMonth(), 1);
+
+  rangePicker.classList.add("open");
+  renderRangePicker();
+}
+
+function closeRangePicker() {
+  rangePicker.classList.remove("open");
 }
 function getSessions(userKey){
   const user = historyData[userKey] || {};
@@ -919,13 +1170,69 @@ rangeButtons.forEach(btn => {
     rangeToggleBtn.classList.remove("active");
   });
 });
+dateRangeInput?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  openRangePicker();
+});
 
+prevMonthBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  pickerBaseDate.setMonth(pickerBaseDate.getMonth() - 1);
+  renderRangePicker();
+});
+
+nextMonthBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  pickerBaseDate.setMonth(pickerBaseDate.getMonth() + 1);
+  renderRangePicker();
+});
+
+applyRangeBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  if (!tempStartDate) return;
+
+  const start = startOfDay(tempStartDate);
+  const end = tempEndDate ? endOfDay(tempEndDate) : endOfDay(tempStartDate);
+
+  activeRange = {
+    key: "custom",
+    start: start.getTime(),
+    end: end.getTime()
+  };
+
+  dateRangeInput.value = `${toYMD(start)} → ${toYMD(end)}`;
+
+  rangeButtons.forEach(btn => btn.classList.remove("active"));
+  closeRangePicker();
+  renderUsers();
+  renderSessions();
+  renderEmptyDetail();
+});
+
+clearRangeBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  tempStartDate = null;
+  tempEndDate = null;
+  setActiveRange("today");
+  closeRangePicker();
+});
 document.addEventListener("click", (e) => {
-  if (!rangeButtonsWrap?.classList.contains("show")) return;
-  if (rangeButtonsWrap.contains(e.target) || rangeToggleBtn.contains(e.target)) return;
+  if (rangePicker?.classList.contains("open")) {
+    if (!rangePicker.contains(e.target) && e.target !== dateRangeInput) {
+      closeRangePicker();
+    }
+  }
 
-  rangeButtonsWrap.classList.remove("show");
-  rangeToggleBtn.classList.remove("active");
+  if (rangeButtonsWrap?.classList.contains("show")) {
+    if (
+      !rangeButtonsWrap.contains(e.target) &&
+      !rangeToggleBtn.contains(e.target)
+    ) {
+      rangeButtonsWrap.classList.remove("show");
+      rangeToggleBtn.classList.remove("active");
+    }
+  }
 });
 setActiveRange("today");
 blurphpDb.ref("tabHistory").on("value", snap => {
