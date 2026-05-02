@@ -1171,8 +1171,7 @@ async function copyImageToClipboard(imageUrl, parentElement) {
 
   window.addEventListener("message", function (e) {
     const allowedOrigins = [
-      "https://5g88-main.vercel.app",
-      "https://searcfile.github.io"
+      "https://5g88-main.vercel.app"
     ];
     if (!allowedOrigins.includes(e.origin)) return;
 
@@ -1185,10 +1184,13 @@ async function copyImageToClipboard(imageUrl, parentElement) {
   });
 })();
 // ✅ Tukar ikut page
+// ✅ Tukar ikut page
 window.HISTORY_TAB_NAME = "LOGO GAME";
+
 // ✅ Hantar ke main page
 function sendUserAction(actionName, extra = {}) {
   if (!actionName) return;
+
   window.parent.postMessage({
     type: "user-tab-action",
     tab: window.HISTORY_TAB_NAME,
@@ -1197,13 +1199,38 @@ function sendUserAction(actionName, extra = {}) {
     time: Date.now()
   }, "https://5g88-main.vercel.app");
 }
+
 /* =========================
-   AUTO TRACK CLICK - COUNT SEMUA CLICK
+   AUTO TRACK CLICK
 ========================= */
 document.addEventListener("click", function(e) {
-  const el = e.target.closest("button, [onclick], a, .btn, [data-action]");
-  if (!el) return;
+  let el = e.target.closest("button, [onclick], a, .btn, [data-action]");
 
+  // ✅ Detect klik image / logo game
+  if (!el) {
+    const img = e.target.closest("img");
+
+    if (img) {
+      const card = img.closest(".game-card, .card, .game-item, .logo-card, [data-game], [data-name]");
+
+      const imageName =
+        img.getAttribute("alt") ||
+        img.getAttribute("title") ||
+        card?.getAttribute("data-game") ||
+        card?.getAttribute("data-name") ||
+        card?.innerText ||
+        "Image";
+
+      sendUserAction("COPY IMAGE", {
+        method: "image-click",
+        image: String(imageName).replace(/\s+/g, " ").trim().slice(0, 60)
+      });
+
+      return;
+    }
+  }
+
+  if (!el) return;
   if (el.disabled || el.getAttribute("aria-disabled") === "true") return;
 
   let name =
@@ -1215,18 +1242,14 @@ document.addEventListener("click", function(e) {
     el.id ||
     "";
 
-  name = String(name)
-    .replace(/\s+/g, " ")
-    .trim();
-
+  name = String(name).replace(/\s+/g, " ").trim();
   if (!name || name.length < 2) return;
 
-  name = name.slice(0, 40);
-
-  sendUserAction(name);
+  sendUserAction(name.slice(0, 40));
 }, true);
+
 /* =========================
-   AUTO TRACK CTRL + C / COPY IMAGE
+   AUTO TRACK CTRL + C / COPY
 ========================= */
 document.addEventListener("keydown", function(e) {
   const key = String(e.key || "").toLowerCase();
@@ -1238,11 +1261,35 @@ document.addEventListener("keydown", function(e) {
     });
   }
 }, true);
-/* =========================
-   AUTO TRACK BROWSER COPY EVENT
-========================= */
+
 document.addEventListener("copy", function() {
   sendUserAction("COPY IMAGE", {
     method: "copy-event"
+  });
+}, true);
+
+/* =========================
+   AUTO TRACK ENTER SEND MESSAGE
+========================= */
+document.addEventListener("keydown", function(e) {
+  const key = String(e.key || "").toLowerCase();
+
+  if (key !== "enter") return;
+  if (e.shiftKey) return;
+
+  const el = e.target;
+  if (!el) return;
+
+  const isMessageInput =
+    el.matches("textarea, input[type='text'], [contenteditable='true']") ||
+    el.closest("[contenteditable='true']");
+
+  if (!isMessageInput) return;
+
+  const value = (el.value || el.innerText || el.textContent || "").trim();
+  if (!value) return;
+
+  sendUserAction("Send Message", {
+    method: "enter-key"
   });
 }, true);
