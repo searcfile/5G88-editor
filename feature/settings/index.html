@@ -748,6 +748,10 @@ html, body {
   background: var(--gold);
   color: white;
 }
+.live-chat-button.active-history {
+  background: var(--gold);
+  color: white;
+}
 .livechat-badge{
   position: absolute;
   top: 8px;
@@ -2075,6 +2079,15 @@ if (settingsBtn) {
     settingsBtn.classList.remove("active-tabsettings");
   }
 }
+const userhistory = document.getElementById("userhistory");
+
+if (userhistory) {
+  if (label === "USER HISTORY") {
+    userhistory.classList.add("active-history");
+  } else {
+    userhistory.classList.remove("active-history");
+  }
+}
 }
 
   function closeTab(label) {
@@ -2349,6 +2362,7 @@ function loadPage(url) {
   const liveBtn = document.getElementById("liveChatBtn");
   const detailBtn = document.getElementById("detailLoginBtn");
   const settingsBtn = document.getElementById("tabsettingsBtn");
+  const userhistory = document.getElementById("userhistory");
 
 if (liveBtn) {
   if (label === "ADMIN LIVECHAT" || label === "LIVE CHAT") {
@@ -2381,6 +2395,13 @@ if (liveBtn) {
       settingsBtn.classList.add("active-tabsettings");
     } else {
       settingsBtn.classList.remove("active-tabsettings");
+    }
+  }
+   if (userhistory) {
+    if (label === "USER HISTORY") {
+      userhistory.classList.add("active-history");
+    } else {
+      userhistory.classList.remove("active-history");
     }
   }
 }
