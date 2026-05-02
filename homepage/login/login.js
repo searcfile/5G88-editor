@@ -47,7 +47,15 @@ const db   = firebase.database();
 let turnstileVerifiedUser = false;
 let turnstileVerifiedGoogle = false;
 let pending2FA = null;
+function showLoginLoading(){
+  const el = document.getElementById('loginLoading');
+  if (el) el.style.display = 'flex';
+}
 
+function hideLoginLoading(){
+  const el = document.getElementById('loginLoading');
+  if (el) el.style.display = 'none';
+}
 function onTurnstileSuccess(token){
   turnstileVerifiedUser = !!token;
   const btn = document.getElementById('btnUserpass');
@@ -535,12 +543,17 @@ db.ref("logins/" + emailKey).set({
 function setLoading(state, which='both'){
   const btnG = document.getElementById('googleLoginBtn');
   const btnU = document.getElementById('btnUserpass');
-  if (which==='google' || which==='both'){
-    if (btnG){ btnG.disabled = !!state; btnG.textContent = state ? "Logging in..." : "Login with Google"; }
+
+  if (which === 'google' || which === 'both'){
+    if (btnG) btnG.disabled = !!state;
   }
-  if (which==='userpass' || which==='both'){
-    if (btnU){ btnU.disabled = !!state; btnU.textContent = state ? "Logging in..." : "Login"; }
+
+  if (which === 'userpass' || which === 'both'){
+    if (btnU) btnU.disabled = !!state;
   }
+
+  if (state) showLoginLoading();
+  else hideLoginLoading();
 }
 
 function signInWithGoogle(){
@@ -686,7 +699,6 @@ async function verifyTwofa(){
   if (!pending2FA) return;
 
   const code = getOtpValue();
-
   clearTwofaError();
 
   if (!/^\d{6}$/.test(code)){
@@ -694,23 +706,32 @@ async function verifyTwofa(){
     return;
   }
 
-  const inputHash = await sha256Hex(code);
+  showLoginLoading();
 
-  if (inputHash !== pending2FA.acc.secondPasswordHash){
-    showTwofaError('2nd password incorrect.');
-    document.querySelector('.otp-input')?.focus();
-    return;
+  try{
+    const inputHash = await sha256Hex(code);
+
+    if (inputHash !== pending2FA.acc.secondPasswordHash){
+      hideLoginLoading();
+      showTwofaError('2nd password incorrect.');
+      document.querySelector('.otp-input')?.focus();
+      return;
+    }
+
+    const uname = pending2FA.uname;
+
+    await ensureGuestAuth();
+
+    await finishLogin({
+      email: `${uname}@5g88.local`,
+      displayName: uname,
+      photoURL: ""
+    });
+
+  }catch(err){
+    hideLoginLoading();
+    showTwofaError(err?.message || 'Failed to verify 2nd password.');
   }
-
-  const uname = pending2FA.uname;
-
-  await ensureGuestAuth();
-
-  await finishLogin({
-    email: `${uname}@5g88.local`,
-    displayName: uname,
-    photoURL: ""
-  });
 }
 
 function setupTwofaInputs(){
