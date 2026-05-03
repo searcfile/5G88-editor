@@ -3145,7 +3145,7 @@ async function doChange(){
     } catch(_) {}
 
     // 5) selesai
-    showOk('Password changed successfully ✅');
+    showOk('Password changed successfully.');
     setTimeout(() => {
       // rekomendasi: paksa re-login
       localStorage.removeItem('gmailLogin');
@@ -3289,7 +3289,7 @@ async function doChange(){
         });
       }catch(_){}
 
-      showOk('2nd password changed successfully ✅');
+      showOk('2nd password changed successfully.');
 
       setTimeout(() => {
         closeCp2();
