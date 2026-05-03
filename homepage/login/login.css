@@ -509,27 +509,13 @@ transition: all 0.3s;
   user-select: none;
 }
 
-.input:-webkit-autofill,
-.input:-webkit-autofill:hover,
-.input:-webkit-autofill:focus,
-.input:-webkit-autofill:active{
-
-  /* warna text */
-  -webkit-text-fill-color: var(--page-text) !important;
-  caret-color: var(--page-text) !important;
-
-  /* 2 layer: outer + inner */
-  -webkit-box-shadow:
-    0 0 0 1000px transparent inset,                /* outer */
-    0 0 0 14px rgba(70,90,126,0.4) inset !important; /* inner */
-
-  box-shadow:
-    0 0 0 1000px transparent inset,
-    0 0 0 14px rgba(70,90,126,0.4) inset !important;
-
-  border: 1px solid var(--border-input) !important;
-
-  transition: background-color 99999s ease-in-out 0s !important;
+.input:-webkit-autofill, .input:-webkit-autofill:hover, .input:-webkit-autofill:focus, .input:-webkit-autofill:active {
+    -webkit-text-fill-color: rgba(255,255,255,0.85) !important;
+    caret-color: white !important;
+    -webkit-box-shadow: 0 0 0 1000px transparent inset, 0 0 0 14px rgba(70, 90, 126, 0.4) inset !important;
+    box-shadow: 0 0 0 7px var(--page-input) inset, 0 0 0 1000px rgb(70 90 126 / 40%) inset !important;
+    border: 1px solid var(--border-input) !important;
+    transition: background-color 99999s ease-in-out 0s !important;
 }
 /* ===== HEADER LOGIN ===== */
 .login-header{
