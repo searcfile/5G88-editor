@@ -123,6 +123,7 @@ body{
   width:100%;
   margin-left:auto;
   margin-right:auto;
+ position:relative;
 }
 .label{ display:block; font-size:14px; color:var(--page-text);font-weight:500;padding:0 0 8px; }
 .input{
@@ -565,13 +566,7 @@ transition: all 0.3s;
   color: rgba(255, 255, 255, 0.65);
   margin: 0;
 }
-.login-error{
-  display:none;
-  color:#ff4d4f;
-  font-size:12px;
-  margin-top:6px;
-  line-height:1.35;
-}
+
 .twofa-box{
   display:flex;
   flex-direction:column;
@@ -638,7 +633,8 @@ transition: all 0.3s;
   font-size:16px;
   font-weight:400;
   padding:4px 11px;
-      height:40px;
+  height:40px;
+  transition:all .3s;
 }
 
 .otp-input:focus{
@@ -650,11 +646,13 @@ transition: all 0.3s;
 }
 
 .login-error{
+  position:absolute;
+  bottom:-18px;
+  left:0;
   display:none;
   color:#dc4446;
   font-size:12px;
-  margin-top:6px;
-  margin-bottom:12px;
+  line-height:1.35;
 }
 
 .input.invalid,
@@ -776,7 +774,7 @@ transition: all 0.3s;
 
 .loading-text{
   color:#fff;
-  font-size:12px;
+  font-size:14px;
   font-weight:400;
   text-align:center;
 }
