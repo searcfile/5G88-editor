@@ -765,21 +765,22 @@ transition: all 0.3s;
 }
 
 .loading-dots{
-  width:28px;
-  height:28px;
+  width:34px;
+  height:34px;
   position:relative;
   margin:0 auto;
+  animation:loadingRotate 1s linear infinite;
 }
 
 .loading-dots span{
   position:absolute;
-  width:6px;
-  height:6px;
+  width:8px;
+  height:8px;
   border-radius:50%;
-  background:#1677ff;
+  background:rgba(255,255,255,.85);
   box-shadow:0 0 6px rgba(22,119,255,.75);
   opacity:.25;
-  animation:dotSpin 1s linear infinite;
+  animation:dotPulse 1s linear infinite;
 }
 
 .loading-dots span:nth-child(1){
@@ -810,14 +811,16 @@ transition: all 0.3s;
   animation-delay:.75s;
 }
 
-@keyframes dotSpin{
+@keyframes dotPulse{
   0%{ opacity:.2; }
   25%{ opacity:1; }
-  50%{ opacity:.35; }
+  50%{ opacity:.4; }
   100%{ opacity:.2; }
-}100%{ opacity:.2; transform:translateY(0); }
 }
-
+@keyframes loadingRotate{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
 .loading-text{
   color:#fff;
   font-size:14px;
