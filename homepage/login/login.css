@@ -11,7 +11,9 @@
     --border-input5:#303030;
     --bg-box:rgba(255, 255, 255, 0.06);
     --border-box:#303030;
-
+    --disable: rgba(255, 255, 255, 0.25);
+    --disable-bg:rgba(255, 255, 255, 0.08);
+            
     --blue: #1668dc;
     --blue-hover: #3c89e8;
     --blue-active: #1554ad;
@@ -37,6 +39,8 @@
     --blue: #1668dc;
     --blue-hover: #3c89e8;
     --blue-active: #1554ad;
+     --disable: rgba(0, 0, 0, 0.25);
+    --disable-bg:rgba(0, 0, 0, 0.04);
         
     --bg-box:rgb(245, 245, 245);
     --border-box: rgb(232, 232, 232);
@@ -226,9 +230,9 @@ transition: all 0.3s;
 #btnUserpass:disabled,
 #googleLoginBtn:disabled{
   cursor:not-allowed;
-  background:#424242;
-  color: rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.08);
+  border-color:var(--border-input);
+  color: var(--disable);
+  background: var(--disable-bg);
   box-shadow: none;
 }
 .btn-req{width:100%;padding:12px 14px;margin-top:10px;border-radius:6px;border:1px solid transparent;background:var(--blue); color:white;font-size:14px; cursor:pointer;font-weight:bold; transition:.2s;}
@@ -828,7 +832,34 @@ transition: all 0.3s;
   text-align:center;
 }
 :where(button, .btn):focus-visible{
-  outline: 3px solid #1532b5;
+  outline: 3px solid #15325b;
   outline-offset: 1px;
   transition: outline-offset 0s, outline 0s;
+}
+.login-theme-btn{
+  position:fixed;
+  top:16px;
+  right:16px;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  border:1px solid var(--border-input);
+  background:var(--page-bg2);
+  color:var(--page-text);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  z-index:999999;
+  transition:.2s;
+}
+
+.login-theme-btn:hover{
+  border-color:var(--blue-hover);
+  color:var(--blue-hover);
+}
+
+.login-theme-btn svg{
+  width:14px;
+  height:14px;
+  display:block;
 }
