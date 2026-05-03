@@ -507,10 +507,9 @@ html {
   display: none;
   position: absolute;
   background: var(--backgrounddrop);
-  min-width: 220px;
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
+  min-width: 280px;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
   padding: 10px;
   z-index: 1;
   color: var(--colorbtn);
@@ -825,8 +824,20 @@ a.tab-open .check-icon {
   box-shadow: none !important;
   transform: none !important;
 }
-  #cpModal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(1px);display:none;align-items:center;justify-content:center;z-index:10050}
-  #cpDialog{width:min(650px,92vw);background:var(--backgrounddrop);border:1px solid var(--border2);border-radius:6px;;overflow:hidden;transition: all 0.3s ease;animation: zoomIn .25s ease forwards;}
+  #cpModal{position:fixed;
+  inset:0;
+  background:var(--overlay-bg);
+  display:none;align-items:center;justify-content:center;
+  z-index:10050
+  }
+  #cpDialog{
+  width:min(550px,92vw);
+  background:var(--backgrounddrop);
+  border-radius:8px;
+  overflow:hidden;transition: all 0.3s ease;
+  animation: zoomIn .25s ease forwards;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  }
   #cpHead{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--backgrounddrop);}
   #cpTitle{color:var(--colorbtn);font-weight:700;font-size:15px}
   #cpClose{background:transparent;border:0;color:var(--colorbtn);font-size:20px;cursor:pointer;line-height:1;transition:transform .2s,color .2s}
@@ -834,7 +845,10 @@ a.tab-open .check-icon {
   #cpBody{padding:12px 14px}
   .cp-group{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
   .cp-label{font-size:13px;color:var(--colorbtn);}
-  .cp-input{background:var(--backgroundbtn);border:1px solid var(--border2);border-radius:6px;color:var(--colorbtn);padding:8px 10px;font-size:14px;outline:none;transition: all 0.3s ease;}
+  .cp-input{background:var(--backgroundbtn);border:1px solid var(--border2);border-radius:6px;color:var(--colorbtn);padding:4px 11px;
+  font-size:14px;outline:none;transition: all 0.3s ease;
+  height:32px;
+  }
   .cp-input:focus{border-color:var(--gold);}.cp-input:hover{border-color:var(--gold-hover);}
   #cpFoot{display:flex;gap:8px;justify-content:flex-end;padding:10px 14px;background:var(--backgrounddrop);}
   .cp-btn{min-width:88px;height:34px;border-radius:6px;border:1px solid var(--border2);background:var(--backgroundbtn);color:var(--colorbtn);cursor:pointer;font-size:14px;transition: all 0.3s ease;}
@@ -1745,9 +1759,8 @@ body.light-theme .app-update-message{
 }
 
 #cp2Dialog{
-  width:min(420px, 92vw);
+  width:min(550px, 92vw);
   background:var(--backgrounddrop);
-  border:1px solid var(--border2);
   border-radius:8px;
   color:var(--colorbtn);
   box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
@@ -1783,7 +1796,6 @@ body.light-theme .app-update-message{
   gap:8px;
   justify-content:flex-end;
   padding:12px 16px;
-  border-top:1px solid var(--border2);
 }
 
 #cp2Cancel,
