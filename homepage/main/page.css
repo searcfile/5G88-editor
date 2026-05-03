@@ -38,6 +38,7 @@
   --toggle-knob: #ffffff;
   --btnfocus:#15325b;
   --colorbtn-close:rgba(255, 255, 255, 0.45);
+  --modulx:rgba(255,255,255,0.12);
   
 }
 
@@ -83,6 +84,7 @@ body.light-theme{
   --toggle-track: #cfd8e3;
   --toggle-knob: #ffffff;
   --btnfocus:#91caff;
+  --modulx:rgba(0,0,0,0.12);
 }
 /* ❄️ SNOW EFFECT – MERRY CHRISTMAS ❄️ */
 .snow-layer {
@@ -1860,4 +1862,33 @@ body.light-theme .app-update-message{
 .cp-input::placeholder{
   color:var(--blur);
   opacity:1;
+}
+.notice-close-btn,
+#cpClose,
+#cp2Close{
+  display:grid;
+  place-items:center;
+  width:32px;
+  height:32px;
+  background:transparent;
+  border:0;
+  cursor:pointer;
+  border-radius:4px;
+  color:var(--colorbtn);
+  transition:.2s;
+}
+
+.notice-close-btn svg,
+#cpClose svg,
+#cp2Close svg{
+  width:16px;
+  height:16px;
+  display:block;
+}
+
+.notice-close-btn:hover,
+#cpClose:hover,
+#cp2Close:hover{
+  color:var(--colorbtn);
+  background:var(--modulx);
 }
