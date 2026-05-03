@@ -128,7 +128,7 @@ function onTurnstileGoogleError(){
   if (btn) btn.disabled = true;
 }
 function getTurnstileTheme(){
-  return document.body.classList.contains('light-theme') ? 'light' : 'dark';
+  return document.body.classList.contains('light-theme') ? 'dark' : 'light';
 }
 
 function applyTurnstileTheme(){
