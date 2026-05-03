@@ -47,6 +47,35 @@ const db   = firebase.database();
 let turnstileVerifiedUser = false;
 let turnstileVerifiedGoogle = false;
 let pending2FA = null;
+const LOGIN_THEME_KEY = 'siteTheme';
+
+function applyLoginTheme(theme){
+  const finalTheme = theme === 'light' ? 'light' : 'dark';
+
+  document.body.classList.toggle('light-theme', finalTheme === 'light');
+  localStorage.setItem(LOGIN_THEME_KEY, finalTheme);
+
+  const lightIcon = document.getElementById('loginThemeLightIcon');
+  const darkIcon = document.getElementById('loginThemeDarkIcon');
+
+  if (lightIcon) lightIcon.style.display = finalTheme === 'dark' ? 'block' : 'none';
+  if (darkIcon) darkIcon.style.display = finalTheme === 'light' ? 'block' : 'none';
+}
+
+function setupLoginThemeToggle(){
+  applyLoginTheme(localStorage.getItem(LOGIN_THEME_KEY) || 'dark');
+
+  document.getElementById('loginThemeBtn')?.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light-theme');
+    applyLoginTheme(isLight ? 'dark' : 'light');
+
+    if (window.turnstile) {
+      setTimeout(applyTurnstileTheme, 80);
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', setupLoginThemeToggle);
 function showLoginLoading(){
   const el = document.getElementById('loginLoading');
   if (el) el.style.display = 'flex';
@@ -99,7 +128,7 @@ function onTurnstileGoogleError(){
   if (btn) btn.disabled = true;
 }
 function getTurnstileTheme(){
-  return 'light';
+  return document.body.classList.contains('light-theme') ? 'light' : 'dark';
 }
 
 function applyTurnstileTheme(){
