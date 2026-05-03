@@ -718,12 +718,15 @@ async function verifyTwofa(){
   try{
     const inputHash = await sha256Hex(code);
 
-    if (inputHash !== pending2FA.acc.secondPasswordHash){
-      hideLoginLoading();
-      showTwofaError('2nd password incorrect.');
-      document.querySelector('.otp-input')?.focus();
-      return;
-    }
+if (inputHash !== pending2FA.acc.secondPasswordHash){
+  hideLoginLoading();
+  showTwofaError('2nd password incorrect.');
+
+  const inputs = document.querySelectorAll('.otp-input');
+  inputs[inputs.length - 1]?.focus();
+
+  return;
+}
 
     const uname = pending2FA.uname;
 
