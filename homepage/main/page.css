@@ -873,8 +873,7 @@ a.tab-open .check-icon {
 .notice-modal{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(1px);
+  background: var(--overlay-bg);
   display: none;
   align-items: center;
   justify-content: center;
@@ -882,13 +881,12 @@ a.tab-open .check-icon {
 }
 
 .notice-dialog{
-  width: min(520px, 92vw);
+  width: min(550px, 92vw);
   background: var(--backgroundbtn);
-  border: 1px solid var(--border2);
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   animation: zoomIn .25s ease forwards;
-  box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
 }
 
 .notice-head{
@@ -896,7 +894,6 @@ a.tab-open .check-icon {
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  border-bottom: 1px solid var(--border2);
   background: var(--backgrounddrop);
 }
 
@@ -949,7 +946,6 @@ a.tab-open .check-icon {
   gap: 8px;
   padding: 10px 14px;
   background: var(--backgrounddrop);
-  border-top: 1px solid var(--border2);
 }
 
 .notice-ok-btn{
