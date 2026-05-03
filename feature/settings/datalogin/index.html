@@ -7,6 +7,7 @@
 <title>Admin</title>
 <style>
 :root{
+  
   --bg-main: #fff;
   --sidebar: #001529;
   --text-main: #000;
@@ -40,6 +41,7 @@
 
   --empty-text: rgba(17,24,39,.7);
   --empty-title: rgba(17,24,39,.88);
+  --table-hover:rgba(0,0,0,.08);
 
   --toggle-track: #cfd8e3;
   --toggle-knob: #ffffff;
@@ -80,6 +82,7 @@ body.dark-theme{
 
   --empty-text: rgba(255,255,255,.7);
   --empty-title: rgba(255,255,255,.85);
+  --table-hover:rgba(255,255,255,.08);
 
   --toggle-track: #2c7be5;
   --toggle-knob: #ffffff;
@@ -98,11 +101,11 @@ body.dark-theme{
   html { overflow-x: hidden; }
   *, *::before, *::after { box-sizing: border-box; }
 
-  .table-container{ padding: 0 20px; }
+  .table-container{ padding: 0 12px; }
 
   .search-container{
     display: flex; align-items: center; justify-content: flex-start;
-    max-width: 100%; padding: 0 20px; margin: 15px 0 10px;
+    max-width: 100%; padding: 16px 12px 10px;
     background: transparent; gap: 8px; box-sizing: border-box; flex-wrap: wrap;
   }
   .search-box{ display:flex; min-width:260px; width:auto; flex:0 1 500px;position: relative; }
@@ -117,7 +120,7 @@ body.dark-theme{
 
   /* BUTTON Search */
 .search-container #searchBtn{
-  padding:4px 7px; background:vaR(--backgroundbtn); border:1px solid var(--border2); border-left:1px solid var(--border2);
+  padding:4px 7px; background:var(--backgroundbtn); border:1px solid var(--border2); border-left:1px solid var(--border2);
   border-radius:0 6px 6px 0; display:flex; align-items:center; justify-content:center;
   cursor:pointer; color:#aaa; transition:.2s;
 }
@@ -147,8 +150,10 @@ body.dark-theme{
 
   /* Confirm popover */
   .confirm-box{
-    background:#1f1f1f; border:1px solid #3b8cff; border-radius:6px; padding:10px; width:180px;
-    box-shadow:0 4px 10px rgba(0,0,0,.4); color:#fff; font-size:12px; line-height:1.3; word-wrap:break-word;
+    background:var(--backgrounddrop); border-radius:8px; padding:10px; width:180px;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05); 
+    color:var(--text-soft); 
+    font-size:12px; line-height:1.3; word-wrap:break-word;
     white-space:normal; opacity:0; transition:opacity .2s ease;
   }
   .confirm-box.show{ opacity:1; }
@@ -210,7 +215,11 @@ body.dark-theme{
 
   .tbl{ width:100%; border-collapse:collapse; table-layout:fixed; }
   .tbl th,.tbl td{ padding:8px 12px; border-bottom:1px solid var(--border); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;font-size:14px; }
-  .tbl thead th{ position:sticky; top:0; z-index:2; background:var(--backgrounddrop); color:var(--colorbtn); text-align:center; }
+  .tbl thead th{ position:sticky; top:0; z-index:2; background:var(--backgrounddrop);
+  padding:12px 12px;
+  color:var(--colorbtn); 
+  text-align:center;
+  }
 
   /* OVERRIDES: single line, horizontal scroll */
   .table-viewport{ overflow-x:auto !important; }
@@ -252,7 +261,7 @@ body.dark-theme{
   transform: translateY(-50%);
   right: 42px;                /* ✅ sebelum tombol search */
   border:none;
-  color: #1668dc;
+  color: var(--blur);
   display: flex;
   background:none;
   align-items: center;
@@ -281,21 +290,24 @@ body.dark-theme{
 
 /* Modal overlay & box */
 .modal-overlay{
-  position:fixed; inset:0; background:rgba(0,0,0,.6);
+  position:fixed; inset:0; background:rgba(0,0,0,.8);
   display:flex; align-items:center; justify-content:center; z-index:100000;
+  transition:.3s;
 }
 .modal-box{
-  width:min(92vw, 460px); background:var(--backgrounddrop); color:var(--text-soft);
-  border-radius:10px; box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 24px;
+  width:min(92vw, 550px); background:var(--backgrounddrop); color:var(--text-soft);
+  border-radius:8px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  transition:.3s;
 }
 .modal-head{
   display:flex; align-items:center; justify-content:space-between; padding:14px 16px;
 }
-.modal-head h3{ margin:0; font-size:16px; font-weight:600; color:var(--text-soft); }
+.modal-head h3{ margin:0; font-size:16px; font-weight:600; color:var(--text-soft) !important; }
 .modal-close{
-  background:transparent; border:none; color:var(--text-soft); font-size:14px; cursor:pointer;
+  background:transparent; border:none; color:var(--text-soft); font-size:14px; cursor:pointer;transition:.3s;
 }
-.modal-close:hover{ color:var(--gold-hover); }.modal-close:active{ color:var(--gold-active);transition:.3s; }
+.modal-close:hover{ color:var(--gold-hover); }.modal-close:active{ color:var(--gold-active); }
 
 .modal-body{ padding:14px 16px; display:grid; gap:12px; }
 .field{ display:grid; gap:6px; }
@@ -330,7 +342,7 @@ body.dark-theme{
 .right-buttons{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
   margin-left:auto;      /* ✅ dorong seluruh grup ke kanan */
 }
 
@@ -353,7 +365,7 @@ body.dark-theme{
 }
 
 .tbl tbody tr:hover{
-  background-color: var(--blur);  /* biru soft transparan */
+  background-color: var(--table-hover);  /* biru soft transparan */
 }
 .custom-select{
   position:relative;
@@ -410,13 +422,12 @@ body.dark-theme{
   left:0;
   right:0;
   top:calc(100% + 3px);
-  background:var(--backgroundbtn);
-  border:1px solid var(--border2);
-  border-radius:6px;
+  background:var(--backgrounddrop);
+  border-radius:8px;
   padding:4px;
   display:none;
   z-index:100005;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, .35);
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
 }
 
 .custom-select.open .custom-select-menu{
@@ -441,8 +452,12 @@ body.dark-theme{
 }
 
 .custom-select-menu button.active{
-  background:##0d192b;
+  background:#0d192b;
   color:var(--text-soft);
+}
+.status-custom-select{
+  width:100px;
+  flex:0 0 100px;
 }
 </style>
 
@@ -457,8 +472,8 @@ body.dark-theme{
        <!-- ✅ NEW: clear button -->
       <button id="clearSearch" class="clear-btn" type="button" aria-label="Clear search" hidden>
     <!-- ikon X -->
-     <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+     <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 8.933-2.721-2.722c-.146-.146-.339-.219-.531-.219-.404 0-.75.324-.75.749 0 .193.073.384.219.531l2.722 2.722-2.728 2.728c-.147.147-.22.34-.22.531 0 .427.35.75.751.75.192 0 .384-.073.53-.219l2.728-2.728 2.729 2.728c.146.146.338.219.53.219.401 0 .75-.323.75-.75 0-.191-.073-.384-.22-.531l-2.727-2.728 2.717-2.717c.146-.147.219-.338.219-.531 0-.425-.346-.75-.75-.75-.192 0-.385.073-.531.22z" fill="currentColor" stroke-width="2" stroke-linecap="round"/>
     </svg>
   </button>
       <button id="searchBtn" type="button">
@@ -470,11 +485,24 @@ body.dark-theme{
     </div>
 
     <!-- ✅ NEW: Status filter -->
-    <select id="statusFilter" class="status-filter">
-      <option value="All">All</option>
-      <option value="Active">Active</option>
-      <option value="Unactive">Unactive</option>
-    </select>
+<input type="hidden" id="statusFilter" value="All">
+
+<div class="custom-select status-custom-select" id="statusModeSelect">
+  <button type="button" class="custom-select-btn" id="statusModeBtn">
+    <span id="statusModeText">All</span>
+    <span class="custom-select-arrow" aria-hidden="true">
+      <svg viewBox="64 64 896 896">
+        <path fill="currentColor" d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"/>
+      </svg>
+    </span>
+  </button>
+
+  <div class="custom-select-menu" id="statusModeMenu">
+    <button type="button" data-value="All" class="active">All</button>
+    <button type="button" data-value="Active">Active</button>
+    <button type="button" data-value="Unactive">Unactive</button>
+  </div>
+</div>
     <button id="sameDeviceBtn" class="reset-btn" title="Show users with same Device ID">Same Browser</button>
     <div class="right-buttons">
     <button id="resetPwBtn" class="reset-btn">Reset Password</button>
@@ -1347,6 +1375,7 @@ async function handleCreateUser(){
     startRealtime();
     setupSearchListener();
     setupClearButton();
+    setupCustomStatusSelect();
 
       // Same IP button
   const sameBtn = document.getElementById('sameDeviceBtn');
@@ -1580,6 +1609,44 @@ function setupCustomResetModeSelect(){
 
       wrap.classList.remove('open');
       updateResetModeLabel();
+    };
+  });
+
+  document.addEventListener('click', function(){
+    wrap.classList.remove('open');
+  });
+}
+function setupCustomStatusSelect(){
+  const wrap = document.getElementById('statusModeSelect');
+  const btn = document.getElementById('statusModeBtn');
+  const text = document.getElementById('statusModeText');
+  const hidden = document.getElementById('statusFilter');
+  const menu = document.getElementById('statusModeMenu');
+
+  if (!wrap || !btn || !text || !hidden || !menu) return;
+
+  btn.onclick = function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    document.querySelectorAll('.custom-select.open').forEach(x => {
+      if (x !== wrap) x.classList.remove('open');
+    });
+    wrap.classList.toggle('open');
+  };
+
+  menu.querySelectorAll('button[data-value]').forEach(item => {
+    item.onclick = function(e){
+      e.preventDefault();
+      e.stopPropagation();
+
+      hidden.value = item.dataset.value;
+      text.textContent = item.textContent.trim();
+
+      menu.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      item.classList.add('active');
+
+      wrap.classList.remove('open');
+      rerenderWithCurrentFilters();
     };
   });
 
