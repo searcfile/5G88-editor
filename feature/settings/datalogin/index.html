@@ -27,7 +27,8 @@
   --close-hover2:rgba(0,0,0,0.08);
   --tab-bg: rgba(255,255,255,0.04);
   --tab-border: #d4dbe6;
-
+  --drop-active:#b8d4ff;
+  
   --btn-bg: transparent;
   --btn-text: rgba(17,24,39,0.88);
   --btn-border: #d4dbe6;
@@ -72,7 +73,7 @@ body.dark-theme{
   --btn-bg: transparent;
   --btn-text: rgba(255,255,255,0.85);
   --btn-border: #424242;
-
+  --drop-active:#0d192b;
   --gold: #1668dc;
   --gold-hover: #3c89e8;
   --gold-active: #1554ad;
@@ -314,10 +315,10 @@ body.dark-theme{
 .field span{ font-size:13px; color:var(--text-soft); }
 .field input{
   padding:4px 11px; 
-  border:1px solid #424242; 
+  border:1px solid var(--border2); 
   border-radius:6px; 
-  background:#141414; 
-  color:#fff; 
+  background:var(--backgroundbtn); 
+  color:var(--text-soft); 
   outline:none; 
   font-size:14px;
   height: 32px;
@@ -452,7 +453,7 @@ body.dark-theme{
 }
 
 .custom-select-menu button.active{
-  background:#0d192b;
+  background:var(--drop-active);
   color:var(--text-soft);
 }
 .status-custom-select{
