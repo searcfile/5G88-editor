@@ -1095,9 +1095,83 @@ select:focus-visible{
   background-color: var(--backgroundbtn);
   transition: all .2s ease;
 }
+.login-loading{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.25);
+  z-index:999999;
+}
+
+.login-loading.show{
+  display:flex;
+}
+
+.loading-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+  pointer-events:none;
+}
+
+.loading-dots{
+  width:32px;
+  height:32px;
+  position:relative;
+  margin:0 auto;
+  animation:loadingRotate 1s linear infinite;
+}
+
+.loading-dots span{
+  position:absolute;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:rgba(255,255,255,.85);
+  opacity:.25;
+  animation:dotPulse 1s linear infinite;
+}
+
+.loading-dots span:nth-child(1){top:0;left:50%;transform:translateX(-50%);animation-delay:0s;}
+.loading-dots span:nth-child(2){right:0;top:50%;transform:translateY(-50%);animation-delay:.25s;}
+.loading-dots span:nth-child(3){bottom:0;left:50%;transform:translateX(-50%);animation-delay:.5s;}
+.loading-dots span:nth-child(4){left:0;top:50%;transform:translateY(-50%);animation-delay:.75s;}
+
+@keyframes dotPulse{
+  0%{opacity:.2;}
+  25%{opacity:1;}
+  50%{opacity:.4;}
+  100%{opacity:.2;}
+}
+
+@keyframes loadingRotate{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+
+.loading-text{
+  color:#fff;
+  font-size:14px;
+  font-weight:400;
+  text-align:center;
+}
   </style>
 </head>
 <body>
+<div id="pageLoading" class="login-loading">
+  <div class="loading-box">
+    <div class="loading-dots">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="loading-text">Please wait while fetching...</div>
+  </div>
+</div>
 <div class="sidebar-overlay" id="overlay"></div>
 
 <div class="sidebar" id="sidebar">
@@ -1305,7 +1379,21 @@ select:focus-visible{
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
+function showPageLoading(){
+  document.getElementById("pageLoading")?.classList.add("show");
+}
 
+function hidePageLoading(){
+  document.getElementById("pageLoading")?.classList.remove("show");
+}
+
+showPageLoading();
+
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    hidePageLoading();
+  }, 300);
+});
   // ✅ Firebase login app
   const loginFirebaseConfig = {
     apiKey: "AIzaSyCIYYpl-1psexPB_-CadD1smsc_e6rhu1U",
@@ -2350,6 +2438,14 @@ closeBtn.addEventListener("click", (e) => {
   }
 
 function loadPage(url) {
+  showPageLoading();
+
+  pageFrame.onload = () => {
+    setTimeout(() => {
+      hidePageLoading();
+    }, 300);
+  };
+
   pageFrame.src = url;
   setTimeout(() => {
   if (isAdminLivechatTabOpen()) {
