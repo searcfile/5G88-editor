@@ -23,6 +23,7 @@
    --line-h:64px;                /* tinggi bar adjust line */
    --safe-b: env(safe-area-inset-bottom, 0px);
    --offset: 0px;
+  --autofill:rgba(70,90,126,.4);         
   }
 
   body.light-theme{
@@ -44,6 +45,7 @@
         
     --bg-box:rgb(245, 245, 245);
     --border-box: rgb(232, 232, 232);
+    --autofill:rgb(197 208 229 / 91%)   
   }
 
 /* ===== Base & Layout ===== */
@@ -519,10 +521,9 @@ transition: all 0.3s;
 
 .input:-webkit-autofill,
 .input:-webkit-autofill:hover,
-.input:-webkit-autofill:focus,
 .input:-webkit-autofill:active{
-  -webkit-text-fill-color: var(--page-text) !important;
-  caret-color: var(--page-text) !important;
+  -webkit-text-fill-color: rgba(255,255,255,0.85) !important;
+  caret-color: #ffffff !important;
   border:1px solid var(--border-input) !important;
   transition:background-color 99999s ease-in-out 0s !important;
 }
@@ -534,13 +535,13 @@ transition: all 0.3s;
   -webkit-box-shadow:
     0 0 0 7px var(--page-input) inset,
     32px 0 0 0 var(--page-input) inset,
-    -11px 0 0 0 var(--page-input) inset,
-    0 0 0 1000px rgba(70,90,126,.4) inset !important;
+    -15px 0 0 0 var(--page-input) inset,
+    0 0 0 1000px var(--autofill) inset !important;
   box-shadow:
     0 0 0 7px var(--page-input) inset,
     32px 0 0 0 var(--page-input) inset,
-    -11px 0 0 0 var(--page-input) inset,
-    0 0 0 1000px rgba(70,90,126,.4) inset !important;
+    -15px 0 0 0 var(--page-input) inset,
+    0 0 0 1000px var(--autofill) inset !important;
 }
 
 #password:-webkit-autofill,
@@ -550,13 +551,13 @@ transition: all 0.3s;
   -webkit-box-shadow:
     0 0 0 7px var(--page-input) inset,
     32px 0 0 0 var(--page-input) inset,
-    -46px 0 0 0 var(--page-input) inset,
-    0 0 0 1000px rgba(70,90,126,.4) inset !important;
+    -32px 0 0 0 var(--page-input) inset,
+    0 0 0 1000px var(--autofill) inset !important;
   box-shadow:
     0 0 0 7px var(--page-input) inset,
     32px 0 0 0 var(--page-input) inset,
-    -46px 0 0 0 var(--page-input) inset,
-    0 0 0 1000px rgba(70,90,126,.4) inset !important;
+    -32px 0 0 0 var(--page-input) inset,
+    0 0 0 1000px var(--autofill) inset !important;
 }
 /* ===== HEADER LOGIN ===== */
 .login-header{
