@@ -473,7 +473,7 @@ transition: all 0.3s;
   justify-content: center;
   pointer-events: none;
   color: var(--icon);
-  z-index: 2;
+  z-index: 10;
 }
 
 .field-icon svg{
@@ -481,7 +481,15 @@ transition: all 0.3s;
   height: 1em;
   display: block;
 }
+.toggle-eye{
+  z-index:10 !important;
+}
 
+.field-icon svg,
+.toggle-eye svg{
+  position:relative;
+  z-index:11;
+}
 .input.has-left-icon{
   padding-left: 32px !important;
 }
@@ -513,40 +521,42 @@ transition: all 0.3s;
 .input:-webkit-autofill:hover,
 .input:-webkit-autofill:focus,
 .input:-webkit-autofill:active{
-  -webkit-text-fill-color: rgba(255,255,255,0.5) !important;
-  caret-color: white !important;
+  -webkit-text-fill-color: var(--page-text) !important;
+  caret-color: var(--page-text) !important;
   border:1px solid var(--border-input) !important;
   transition:background-color 99999s ease-in-out 0s !important;
 }
 
-/* username autofill: jangan sampai icon kiri */
 #username:-webkit-autofill,
 #username:-webkit-autofill:hover,
 #username:-webkit-autofill:focus,
 #username:-webkit-autofill:active{
   -webkit-box-shadow:
     0 0 0 7px var(--page-input) inset,
-    32px 0 0 0 rgba(70,90,126,.4) inset,
-    -11px 0 0 0 var(--page-input) inset !important;
+    32px 0 0 0 var(--page-input) inset,
+    -11px 0 0 0 var(--page-input) inset,
+    0 0 0 1000px rgba(70,90,126,.4) inset !important;
   box-shadow:
     0 0 0 7px var(--page-input) inset,
-    32px 0 0 0 rgba(70,90,126,.4) inset,
-    -11px 0 0 0 var(--page-input) inset !important;
+    32px 0 0 0 var(--page-input) inset,
+    -11px 0 0 0 var(--page-input) inset,
+    0 0 0 1000px rgba(70,90,126,.4) inset !important;
 }
 
-/* password autofill: jangan sampai icon kiri dan eye kanan */
 #password:-webkit-autofill,
 #password:-webkit-autofill:hover,
 #password:-webkit-autofill:focus,
 #password:-webkit-autofill:active{
   -webkit-box-shadow:
     0 0 0 7px var(--page-input) inset,
-    32px 0 0 0 rgba(70,90,126,.4) inset,
-    -46px 0 0 0 var(--page-input) inset !important;
+    32px 0 0 0 var(--page-input) inset,
+    -46px 0 0 0 var(--page-input) inset,
+    0 0 0 1000px rgba(70,90,126,.4) inset !important;
   box-shadow:
     0 0 0 7px var(--page-input) inset,
-    32px 0 0 0 rgba(70,90,126,.4) inset,
-    -46px 0 0 0 var(--page-input) inset !important;
+    32px 0 0 0 var(--page-input) inset,
+    -46px 0 0 0 var(--page-input) inset,
+    0 0 0 1000px rgba(70,90,126,.4) inset !important;
 }
 /* ===== HEADER LOGIN ===== */
 .login-header{
