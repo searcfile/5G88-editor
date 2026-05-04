@@ -487,6 +487,27 @@ select:focus-visible{
   background-color: var(--backgroundbtn);
   transition: all .2s ease;
 }
+.btn-loading-spinner{
+  width:14px;
+  height:14px;
+  border:2px solid rgba(255,255,255,.45);
+  border-top-color:#fff;
+  border-radius:50%;
+  display:inline-block;
+  animation:btnSpin .8s linear infinite;
+}
+
+@keyframes btnSpin{
+  to{ transform:rotate(360deg); }
+}
+
+.btn.is-loading{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  pointer-events:none;
+}
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -1268,7 +1289,24 @@ function doForceLogoutAll(){
     const bytes = new Uint8Array(buf);
     return Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
   }
+function setButtonLoading(btn, isLoading, text){
+  if (!btn) return;
 
+  if (isLoading){
+    btn.dataset.oldHtml = btn.innerHTML;
+    btn.classList.add("is-loading");
+    btn.disabled = true;
+    btn.innerHTML = `
+      <span class="btn-loading-spinner"></span>
+      <span>${text}</span>
+    `;
+  } else {
+    btn.classList.remove("is-loading");
+    btn.disabled = false;
+    btn.innerHTML = btn.dataset.oldHtml || text.replace("...", "");
+    delete btn.dataset.oldHtml;
+  }
+}
   // Modal helpers
   function openCreateUserModal(){
     const overlay = document.getElementById('createUserModal');
@@ -1320,7 +1358,8 @@ async function handleCreateUser(){
     err.hidden = false; spEl.focus(); return;
   }
 
-  btn.disabled = true; cancel.disabled = true;
+  setButtonLoading(btn, true, "Create...");
+  cancel.disabled = true;
 
   try{
     const snap = await userAcctRef.child(username).get();
@@ -1352,7 +1391,7 @@ async function handleCreateUser(){
     err.textContent = `Gagal membuat user: ${e.message}`;
     err.hidden = false;
   }finally{
-    btn.disabled = false;
+    setButtonLoading(btn, false, "Create");
     cancel.disabled = false;
   }
 }
@@ -1567,7 +1606,8 @@ async function handleResetPassword(){
     err.hidden = false; p2El.focus(); return;
   }
 
-  btn.disabled = true; cancel.disabled = true;
+  setButtonLoading(btn, true, "Reset...");
+  cancel.disabled = true;
 
   try{
     const snap = await userAcctRef.child(username).get();
@@ -1606,7 +1646,7 @@ async function handleResetPassword(){
     err.textContent = `Gagal reset: ${e.message}`;
     err.hidden = false;
   }finally{
-    btn.disabled = false;
+    setButtonLoading(btn, false, "Reset");
     cancel.disabled = false;
   }
 }
