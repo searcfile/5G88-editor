@@ -1384,18 +1384,20 @@ async function handleCreateUser(){
 
     await userAcctRef.child(username).set(payload);
 
-    showToast(`User "${username}" berhasil dibuat.`, 'success');
+showToast(`User "${username}" berhasil dibuat.`, 'success');
 
-setTimeout(() => {
-  closeCreateUserModal();
-}, 900);
+await new Promise(resolve => setTimeout(resolve, 1200));
+
+closeCreateUserModal();
 
   }catch(e){
     err.textContent = `Gagal membuat user: ${e.message}`;
     err.hidden = false;
   }finally{
-    setButtonLoading(btn, false, "Create");
-    cancel.disabled = false;
+if (document.getElementById('createUserModal')?.style.display !== 'none') {
+  setButtonLoading(btn, false, "Create");
+  cancel.disabled = false;
+}
   }
 }
 
@@ -1638,21 +1640,23 @@ async function handleResetPassword(){
 
 showToast(
   mode === 'secondPassword'
-    ? `2nd Password "${username}"Successfuly.`
-    : `Password "${username}" Successfuly.`,
+    ? `2nd Password "${username}" berhasil di-reset.`
+    : `Password "${username}" berhasil di-reset.`,
   'success'
 );
 
-setTimeout(() => {
-  closeResetPwModal();
-}, 900);
+await new Promise(resolve => setTimeout(resolve, 1200));
+
+closeResetPwModal();
 
   }catch(e){
     err.textContent = `Gagal reset: ${e.message}`;
     err.hidden = false;
   }finally{
-    setButtonLoading(btn, false, "Reset");
-    cancel.disabled = false;
+if (document.getElementById('resetPwModal')?.style.display !== 'none') {
+  setButtonLoading(btn, false, "Save");
+  cancel.disabled = false;
+}
   }
 }
 function setupCustomResetModeSelect(){
