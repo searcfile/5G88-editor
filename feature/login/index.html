@@ -45,6 +45,7 @@
   --toggle-track: #cfd8e3;
   --toggle-knob: #ffffff;
   --btnfocus: #91caff;
+  --autofill:#b5bdcb;
 }
 
 body.dark-theme{
@@ -86,6 +87,7 @@ body.dark-theme{
   --toggle-track: #2c7be5;
   --toggle-knob: #ffffff;
   --btnfocus: #15325b;
+  --autofill:#28303e;   
 }
     *{
       margin:0;
@@ -416,6 +418,108 @@ body.dark-theme{
 }
 .signin-change:active{
   color:#1554ad;
+}
+:where(button, a, .btn, [tabindex]):focus-visible{
+  outline: 3px solid #15325b;
+  outline-offset: 1px;
+  transition: outline-offset 0s, outline 0s;
+}
+:where(.input, input, select, textarea, [tabindex]):focus{
+  border-color: #1668dc !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 2px rgba(0,60,180,0.15);
+  background-color: var(--backgroundbtn);
+  transition: all .2s ease;
+}
+select:focus,
+select:focus-visible{
+  border-color: #1668dc !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(0,60,180,0.15);
+  background-color: var(--backgroundbtn);
+  transition: all .2s ease;
+}
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
+.input:-webkit-autofill:active{
+  -webkit-text-fill-color: rgba(255,255,255,0.85) !important;
+  caret-color: #ffffff !important;
+  border:1px solid var(--border-input) !important;
+  transition:background-color 99999s ease-in-out 0s !important;
+  transition: border-color .3s !important;
+  font-size:15px;
+}
+
+#username:-webkit-autofill,
+#username:-webkit-autofill:active{
+  -webkit-box-shadow:
+    0 0 0 7px var(--backgroundbtn) inset,
+    32px 0 0 0 var(--backgroundbtn) inset,
+    -15px 0 0 0 var(--backgroundbtn) inset,
+    0 0 0 1000px var(--autofill) inset !important;
+  box-shadow:
+    0 0 0 7px var(--backgroundbtn) inset,
+    32px 0 0 0 var(--backgroundbtn) inset,
+    -15px 0 0 0 var(--backgroundbtn) inset,
+    0 0 0 1000px var(--autofill) inset !important;
+   transition: border-color .3s !important;
+   
+}
+
+#username:-webkit-autofill:hover{
+  border-color:var(--gold-hover) !important;
+}
+
+#username:-webkit-autofill:focus{
+  border-color:var(--gold) !important;
+  -webkit-box-shadow:
+    0 0 0 7px var(--backgroundbtn) inset,
+    32px 0 0 0 var(--backgroundbtn) inset,
+    -15px 0 0 0 var(--backgroundbtn) inset,
+    0 0 0 2px rgba(0,60,180,.15),
+    0 0 0 1000px var(--autofill) inset !important;
+  box-shadow:
+    0 0 0 7px var(--backgroundbtn) inset,
+    32px 0 0 0 var(--backgroundbtn) inset,
+    -15px 0 0 0 var(--backgroundbtn) inset,
+    0 0 0 2px rgba(0,60,180,.15),
+    0 0 0 1000px var(--autofill) inset !important;
+}
+
+#password:-webkit-autofill,
+#password:-webkit-autofill:active{
+  -webkit-box-shadow:
+    0 0 0 7px var(--backgroundbtn) inset,
+    32px 0 0 0 var(--backgroundbtn) inset,
+    -32px 0 0 0 var(--backgroundbtn) inset,
+    0 0 0 1000px var(--autofill) inset !important;
+  box-shadow:
+    0 0 0 7px var(--backgroundbtn) inset,
+    32px 0 0 0 var(--backgroundbtn) inset,
+    -32px 0 0 0 var(--backgroundbtn) inset,
+    0 0 0 1000px var(--autofill) inset !important;
+      transition: border-color .3s !important;
+}
+
+#password:-webkit-autofill:hover{
+  border-color:var(--gold-hover) !important;
+}
+
+#password:-webkit-autofill:focus{
+  border-color:var(--gold) !important;
+  -webkit-box-shadow:
+    0 0 0 7px var(--backgroundbtn) inset,
+    32px 0 0 0 var(--backgroundbtn) inset,
+    -32px 0 0 0 var(--backgroundbtn) inset,
+    0 0 0 2px rgba(0,60,180,.15),
+    0 0 0 1000px var(--autofill) inset !important;
+  box-shadow:
+    0 0 0 7px var(--backgroundbtn) inset,
+    32px 0 0 0 var(--backgroundbtn) inset,
+    -32px 0 0 0 var(--backgroundbtn) inset,
+    0 0 0 2px rgba(0,60,180,.15),
+    0 0 0 1000px var(--autofill) inset !important;
 }
   </style>
 </head>
