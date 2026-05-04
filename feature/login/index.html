@@ -521,9 +521,95 @@ select:focus-visible{
     0 0 0 2px rgba(0,60,180,.15),
     0 0 0 1000px var(--autofill) inset !important;
 }
+.page-loading{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.28);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+
+.page-loading.show{
+  display:flex;
+}
+
+.dot-loader{
+  position:relative;
+  width:64px;
+  height:64px;
+  animation:dotSpin 1.1s linear infinite;
+}
+
+.dot-loader span{
+  position:absolute;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:var(--gold);
+  opacity:.25;
+  box-shadow:0 0 14px rgba(22,104,220,.65);
+  animation:dotGlow 1.1s linear infinite;
+}
+
+.dot-loader span:nth-child(1){
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  animation-delay:0s;
+}
+
+.dot-loader span:nth-child(2){
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  animation-delay:.15s;
+}
+
+.dot-loader span:nth-child(3){
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  animation-delay:.3s;
+}
+
+.dot-loader span:nth-child(4){
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  animation-delay:.45s;
+}
+
+@keyframes dotSpin{
+  to{ transform:rotate(360deg); }
+}
+
+@keyframes dotGlow{
+  0%,100%{
+    opacity:.25;
+    scale:.8;
+  }
+  50%{
+    opacity:1;
+    scale:1.2;
+  }
+}
   </style>
 </head>
 <body>
+
+<div id="pageLoading" class="page-loading">
+  <div class="dot-loader">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
 <div class="login-box" id="loginBox">
 
   <div class="login-header">
@@ -701,11 +787,21 @@ function renderTurnstile(){
     return v + USER_DOMAIN;
   }
 
-  function setLoading(state) {
-    loginBtn.disabled = state;
-    loginBox.classList.toggle("loading", state);
-    loginBtn.textContent = state ? "Logging in..." : "Log in";
-  }
+function showPageLoading(){
+  document.getElementById("pageLoading")?.classList.add("show");
+}
+
+function hidePageLoading(){
+  document.getElementById("pageLoading")?.classList.remove("show");
+}
+
+function setLoading(state) {
+  loginBtn.disabled = state;
+  loginBox.classList.toggle("loading", state);
+
+  if (state) showPageLoading();
+  else hidePageLoading();
+}
 
 togglePassword.addEventListener("click", () => {
   const isPwd = passwordEl.type === "password";
@@ -888,8 +984,8 @@ verifySecondBtn.addEventListener("click", async () => {
     return;
   }
 
-  verifySecondBtn.disabled = true;
-  verifySecondBtn.textContent = "Verifying...";
+verifySecondBtn.disabled = true;
+showPageLoading();
 
   try {
     const snap = await db.ref("users/" + pendingUser.uid + "/secondPassword").get();
@@ -898,8 +994,8 @@ verifySecondBtn.addEventListener("click", async () => {
     if (code !== savedCode) {
       secondPassError.textContent = "2nd password salah.";
       secondPassError.style.display = "block";
-      verifySecondBtn.disabled = false;
-      verifySecondBtn.textContent = "Verify";
+verifySecondBtn.disabled = false;
+hidePageLoading();
       return;
     }
 
@@ -916,8 +1012,8 @@ verifySecondBtn.addEventListener("click", async () => {
     console.error(err);
     secondPassError.textContent = "Gagal semak 2nd password.";
     secondPassError.style.display = "block";
-    verifySecondBtn.disabled = false;
-    verifySecondBtn.textContent = "Verify";
+verifySecondBtn.disabled = false;
+hidePageLoading();
   }
 });
   const THEME_KEY = "siteTheme";
@@ -938,6 +1034,15 @@ function applyTheme(theme) {
       applyTheme(event.data.theme);
     }
   });
+// 🔥 show loading sebaik sahaja page start load
+showPageLoading();
+
+// 🔥 hide bila page sudah fully load
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    hidePageLoading();
+  }, 300); // boleh adjust (300–800ms nampak smooth)
+});
 </script>
 </body>
 </html>
