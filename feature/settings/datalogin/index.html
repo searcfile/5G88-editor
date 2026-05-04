@@ -1318,16 +1318,24 @@ function setButtonLoading(btn, isLoading, text){
     u.value = '';
     p.value = '';
     if (sp) sp.value = '';
+    setButtonLoading(document.getElementById('cu-create'), false, "Create");
+    document.getElementById('cu-cancel').disabled = false;
     overlay.style.display = 'flex';
     setTimeout(()=> u.focus(), 60);
     // Prevent background scroll (optional)
     document.body.style.overflow = 'hidden';
   }
-  function closeCreateUserModal(){
-    const overlay = document.getElementById('createUserModal');
-    overlay.style.display = 'none';
-    document.body.style.overflow = ''; // restore
-  }
+function closeCreateUserModal(){
+  const overlay = document.getElementById('createUserModal');
+  const btn = document.getElementById('cu-create');
+  const cancel = document.getElementById('cu-cancel');
+
+  setButtonLoading(btn, false, "Create");
+  if (cancel) cancel.disabled = false;
+
+  overlay.style.display = 'none';
+  document.body.style.overflow = '';
+}
 
   // Create handler
 async function handleCreateUser(){
@@ -1538,6 +1546,8 @@ function openResetPwModal(){
   const err = document.getElementById('rp-error');
   err.textContent = ''; err.hidden = true;
   u.value = ''; p1.value = ''; p2.value = '';
+  setButtonLoading(document.getElementById('rp-reset'), false, "Save");
+document.getElementById('rp-cancel').disabled = false;
   o.style.display = 'flex';
 document.getElementById('rp-mode').value = 'password';
 document.getElementById('rpModeText').textContent = 'Reset Password';
@@ -1555,6 +1565,12 @@ updateResetModeLabel();
 
 function closeResetPwModal(){
   const o = document.getElementById('resetPwModal');
+  const btn = document.getElementById('rp-reset');
+  const cancel = document.getElementById('rp-cancel');
+
+  setButtonLoading(btn, false, "Save");
+  if (cancel) cancel.disabled = false;
+
   o.style.display = 'none';
   document.body.style.overflow = '';
 }
