@@ -302,7 +302,7 @@ body.dark-theme{
 .modal-head{
   display:flex; align-items:center; justify-content:space-between; padding:14px 16px;
 }
-.modal-head h3{ margin:0; font-size:16px; font-weight:600; color:var(--text-soft) !important; }
+.modal-head h3{ margin:0; font-size:14px; font-weight:600; color:var(--text-soft) !important; }
 .modal-close{
   background:transparent; border:none; color:var(--text-soft); font-size:14px; cursor:pointer;transition:.3s;
 }
@@ -658,12 +658,12 @@ select:focus-visible{
       </label>
       
 <label class="field">
-  <span>Reset Type</span>
+  <span>Type Password</span>
 <input type="hidden" id="rp-mode" value="password">
 
 <div class="custom-select" id="rpModeSelect">
   <button type="button" class="custom-select-btn" id="rpModeBtn">
-    <span id="rpModeText">Reset Password</span>
+    <span id="rpModeText">Change Password</span>
     <span class="custom-select-arrow" aria-hidden="true">
   <svg viewBox="64 64 896 896">
     <path fill="currentColor" d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"/>
@@ -672,8 +672,8 @@ select:focus-visible{
   </button>
 
   <div class="custom-select-menu" id="rpModeMenu">
-    <button type="button" data-value="password">Reset Password</button>
-    <button type="button" data-value="secondPassword">Reset 2nd Password</button>
+    <button type="button" data-value="password">Change Password</button>
+    <button type="button" data-value="secondPassword">Change 2nd Password</button>
   </div>
 </div>
 </label>
@@ -693,7 +693,7 @@ select:focus-visible{
 
     <div class="modal-foot">
       <button type="button" class="btn ghost" id="rp-cancel">Cancel</button>
-      <button type="button" class="btn primary" id="rp-reset">Reset</button>
+      <button type="button" class="btn primary" id="rp-reset">Save</button>
     </div>
   </div>
 </div>
@@ -1358,7 +1358,7 @@ async function handleCreateUser(){
     err.hidden = false; spEl.focus(); return;
   }
 
-  setButtonLoading(btn, true, "Create...");
+  setButtonLoading(btn, true, "Create");
   cancel.disabled = true;
 
   try{
@@ -1609,7 +1609,7 @@ async function handleResetPassword(){
     err.hidden = false; p2El.focus(); return;
   }
 
-  setButtonLoading(btn, true, "Reset...");
+  setButtonLoading(btn, true, "Save");
   cancel.disabled = true;
 
   try{
