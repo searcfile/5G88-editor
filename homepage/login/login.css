@@ -521,6 +521,7 @@ transition: all 0.3s;
 
 .input:-webkit-autofill,
 .input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
 .input:-webkit-autofill:active{
   -webkit-text-fill-color: rgba(255,255,255,0.85) !important;
   caret-color: #ffffff !important;
@@ -529,8 +530,6 @@ transition: all 0.3s;
 }
 
 #username:-webkit-autofill,
-#username:-webkit-autofill:hover,
-#username:-webkit-autofill:focus,
 #username:-webkit-autofill:active{
   -webkit-box-shadow:
     0 0 0 7px var(--page-input) inset,
@@ -544,9 +543,27 @@ transition: all 0.3s;
     0 0 0 1000px var(--autofill) inset !important;
 }
 
+#username:-webkit-autofill:hover{
+  border-color:var(--blue-hover) !important;
+}
+
+#username:-webkit-autofill:focus{
+  border-color:var(--blue) !important;
+  -webkit-box-shadow:
+    0 0 0 7px var(--page-input) inset,
+    32px 0 0 0 var(--page-input) inset,
+    -15px 0 0 0 var(--page-input) inset,
+    0 0 0 2px rgba(0,60,180,.15),
+    0 0 0 1000px var(--autofill) inset !important;
+  box-shadow:
+    0 0 0 7px var(--page-input) inset,
+    32px 0 0 0 var(--page-input) inset,
+    -15px 0 0 0 var(--page-input) inset,
+    0 0 0 2px rgba(0,60,180,.15),
+    0 0 0 1000px var(--autofill) inset !important;
+}
+
 #password:-webkit-autofill,
-#password:-webkit-autofill:hover,
-#password:-webkit-autofill:focus,
 #password:-webkit-autofill:active{
   -webkit-box-shadow:
     0 0 0 7px var(--page-input) inset,
@@ -557,6 +574,26 @@ transition: all 0.3s;
     0 0 0 7px var(--page-input) inset,
     32px 0 0 0 var(--page-input) inset,
     -32px 0 0 0 var(--page-input) inset,
+    0 0 0 1000px var(--autofill) inset !important;
+}
+
+#password:-webkit-autofill:hover{
+  border-color:var(--blue-hover) !important;
+}
+
+#password:-webkit-autofill:focus{
+  border-color:var(--blue) !important;
+  -webkit-box-shadow:
+    0 0 0 7px var(--page-input) inset,
+    32px 0 0 0 var(--page-input) inset,
+    -32px 0 0 0 var(--page-input) inset,
+    0 0 0 2px rgba(0,60,180,.15),
+    0 0 0 1000px var(--autofill) inset !important;
+  box-shadow:
+    0 0 0 7px var(--page-input) inset,
+    32px 0 0 0 var(--page-input) inset,
+    -32px 0 0 0 var(--page-input) inset,
+    0 0 0 2px rgba(0,60,180,.15),
     0 0 0 1000px var(--autofill) inset !important;
 }
 /* ===== HEADER LOGIN ===== */
