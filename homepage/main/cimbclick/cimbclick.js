@@ -716,3 +716,60 @@ document.addEventListener("copy", function() {
     method: "copy-event"
   });
 }, true);
+async function copyReceiptImage() {
+  const target = document.querySelector(".container");
+  if (!target) return;
+
+  try {
+    const canvas = await html2canvas(target, {
+      backgroundColor: null,
+      scale: 2,
+      useCORS: true
+    });
+
+    canvas.toBlob(async function(blob) {
+      if (!blob) return;
+
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          "image/png": blob
+        })
+      ]);
+
+      sendUserAction("COPY IMAGE", {
+        method: "button"
+      });
+
+      const btn = document.getElementById("btn-copy-image");
+      if (btn) {
+        const oldText = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(() => btn.textContent = oldText, 1200);
+      }
+    }, "image/png");
+
+  } catch (err) {
+    console.error("Copy image failed:", err);
+    alert("Copy image failed. Please allow clipboard permission.");
+  }
+}
+
+document.getElementById("btn-copy-image")?.addEventListener("click", copyReceiptImage);
+
+document.addEventListener("keydown", function(e) {
+  const key = String(e.key || "").toLowerCase();
+
+  if ((e.ctrlKey || e.metaKey) && key === "c") {
+    const active = document.activeElement;
+    const isTyping = active && (
+      active.tagName === "INPUT" ||
+      active.tagName === "TEXTAREA" ||
+      active.isContentEditable
+    );
+
+    if (isTyping) return;
+
+    e.preventDefault();
+    copyReceiptImage();
+  }
+}, true);
