@@ -564,14 +564,61 @@ document.addEventListener("click", function(e) {
 /* =========================
    AUTO TRACK CTRL + C / COPY IMAGE
 ========================= */
+async function copyReceiptImage(method = "button") {
+  const target = document.getElementById("receiptCard");
+  if (!target) return;
+
+  try {
+    const canvas = await html2canvas(target, {
+      backgroundColor: "#ffffff",
+      scale: 2,
+      useCORS: true
+    });
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": blob })
+      ]);
+
+      if (typeof sendUserAction === "function") {
+        sendUserAction("COPY IMAGE", { method });
+      }
+
+      const btn = document.getElementById("copyImageBtn");
+      if (btn) {
+        const oldText = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(() => btn.textContent = oldText, 1200);
+      }
+    }, "image/png");
+
+  } catch (err) {
+    console.error("Copy image failed:", err);
+    alert("Copy image failed. Please allow clipboard permission.");
+  }
+}
+
+document.getElementById("copyImageBtn")?.addEventListener("click", () => {
+  copyReceiptImage("button");
+});
+
 document.addEventListener("keydown", function(e) {
   const key = String(e.key || "").toLowerCase();
 
   if ((e.ctrlKey || e.metaKey) && key === "c") {
-    sendUserAction("COPY IMAGE", {
-      method: "keyboard",
-      shortcut: "Ctrl+C"
-    });
+    const active = document.activeElement;
+    const isTyping = active && (
+      active.tagName === "INPUT" ||
+      active.tagName === "TEXTAREA" ||
+      active.isContentEditable
+    );
+
+    if (isTyping) return;
+
+    e.preventDefault();
+    copyReceiptImage("keyboard");
   }
 }, true);
 /* =========================
