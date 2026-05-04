@@ -3174,8 +3174,9 @@ async function doChange(){
 
     // 5) selesai
 showOk('Password changed successfully.');
-
-await new Promise(resolve => setTimeout(resolve, 1200));
+await new Promise(function(resolve){
+  setTimeout(resolve, 1200);
+});
 
 localStorage.removeItem('gmailLogin');
 window.location.href = '/login?pw_changed=1';
@@ -3329,9 +3330,9 @@ function closeCp2(){
       }catch(_){}
 
 showOk('2nd password changed successfully.');
-
-await new Promise(resolve => setTimeout(resolve, 1200));
-
+await new Promise(function(resolve){
+  setTimeout(resolve, 1200);
+});
 closeCp2();
 
 }catch(err){
