@@ -1907,3 +1907,24 @@ select:focus-visible{
   background-color: var(--backgroundbtn);
   transition: all .2s ease;
 }
+.btn-spinner{
+  width:14px;
+  height:14px;
+  border:2px solid rgba(255,255,255,.45);
+  border-top-color:#fff;
+  border-radius:50%;
+  display:inline-block;
+  animation:btnSpin .8s linear infinite;
+}
+
+@keyframes btnSpin{
+  to{ transform:rotate(360deg); }
+}
+
+.btn-loading{
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  pointer-events:none;
+}
