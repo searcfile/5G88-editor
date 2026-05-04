@@ -3096,16 +3096,25 @@ tabBar.addEventListener('wheel', (e) => {
   const errBox  = document.getElementById('cpErr');
   const okBox   = document.getElementById('cpOk');
 
-  function openCp(){
-    // cek ulang status login SAAT INI (bukan nilai lama)
-    if (!isUsernameLoginNow()) return;
-    errBox.style.display = 'none'; errBox.textContent = '';
-    okBox.style.display  = 'none'; okBox.textContent  = '';
-    inOld.value = inNew.value = inNew2.value = '';
-    modal.style.display = 'flex';
-    setTimeout(()=>inOld.focus(), 0);
-  }
-  function closeCp(){ modal.style.display = 'none'; }
+function openCp(){
+  if (!isUsernameLoginNow()) return;
+
+  errBox.style.display = 'none'; errBox.textContent = '';
+  okBox.style.display  = 'none'; okBox.textContent  = '';
+  inOld.value = inNew.value = inNew2.value = '';
+
+  setBtnLoading(submit, false, "Change");
+  cancel.disabled = false;
+
+  modal.style.display = 'flex';
+  setTimeout(()=>inOld.focus(), 0);
+}
+
+function closeCp(){
+  setBtnLoading(submit, false, "Change");
+  cancel.disabled = false;
+  modal.style.display = 'none';
+}
   function showErr(msg){ errBox.textContent = msg; errBox.style.display='block'; okBox.style.display='none'; }
   function showOk(msg){  okBox.textContent  = msg; okBox.style.display='block'; errBox.style.display='none'; }
 
@@ -3164,15 +3173,17 @@ async function doChange(){
     } catch(_) {}
 
     // 5) selesai
-    showOk('Password changed successfully.');
-    setTimeout(() => {
-      // rekomendasi: paksa re-login
-      localStorage.removeItem('gmailLogin');
-      window.location.href = '/login?pw_changed=1';
-    }, 1000);
+showOk('Password changed successfully.');
+
+await new Promise(resolve => setTimeout(resolve, 1200));
+
+localStorage.removeItem('gmailLogin');
+window.location.href = '/login?pw_changed=1';
+    
 }catch(err){
   showErr('Failed to change password. ' + (err?.message || ''));
 }finally{
+if (modal.style.display !== 'none' && okBox.style.display !== 'block') {
   setBtnLoading(submit, false, "Change");
   cancel.disabled = false;
 }
@@ -3200,25 +3211,30 @@ async function doChange(){
     el.value = String(el.value || '').replace(/\D/g, '').slice(0, 6);
   }
 
-  function openCp2(){
-    if (!isUsernameLoginNow()) return;
+function openCp2(){
+  if (!isUsernameLoginNow()) return;
 
-    errBox.style.display = 'none';
-    errBox.textContent = '';
-    okBox.style.display = 'none';
-    okBox.textContent = '';
+  errBox.style.display = 'none';
+  errBox.textContent = '';
+  okBox.style.display = 'none';
+  okBox.textContent = '';
 
-    inOld.value = '';
-    inNew.value = '';
-    inNew2.value = '';
+  inOld.value = '';
+  inNew.value = '';
+  inNew2.value = '';
 
-    modal.style.display = 'flex';
-    setTimeout(() => inOld.focus(), 0);
-  }
+  setBtnLoading(submit, false, "Save");
+  cancel.disabled = false;
 
-  function closeCp2(){
-    modal.style.display = 'none';
-  }
+  modal.style.display = 'flex';
+  setTimeout(() => inOld.focus(), 0);
+}
+
+function closeCp2(){
+  setBtnLoading(submit, false, "Save");
+  cancel.disabled = false;
+  modal.style.display = 'none';
+}
 
   function showErr(msg){
     errBox.textContent = msg;
@@ -3312,19 +3328,20 @@ async function doChange(){
         });
       }catch(_){}
 
-      showOk('2nd password changed successfully.');
+showOk('2nd password changed successfully.');
 
-      setTimeout(() => {
-        closeCp2();
-      }, 900);
+await new Promise(resolve => setTimeout(resolve, 1200));
+
+closeCp2();
 
 }catch(err){
   showErr('Failed to change 2nd password. ' + (err?.message || ''));
 }finally{
-  setBtnLoading(submit, false, "Save");
-  cancel.disabled = false;
-}
+  if (modal.style.display !== 'none' && okBox.style.display !== 'block') {
+    setBtnLoading(submit, false, "Save");
+    cancel.disabled = false;
   }
+}
 
   [inOld, inNew, inNew2].forEach(input => {
     input.addEventListener('input', () => onlyDigits(input));
