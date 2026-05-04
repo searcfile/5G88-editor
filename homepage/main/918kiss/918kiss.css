@@ -537,3 +537,15 @@ select.has-value {
   color: var(--blur);
   cursor: default;
 }
+:where(button, a, select, .btn [tabindex]):focus-visible{
+  outline: 3px solid #15325b;
+  outline-offset: 1px;
+  transition: outline-offset 0s, outline 0s;
+}
+:where(.input, input, textarea):focus{
+  border-color: #1668dc !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 2px rgba(0,60,180,0.15);
+  background-color: var(--backgroundbtn);
+  transition: all .2s ease;
+}
