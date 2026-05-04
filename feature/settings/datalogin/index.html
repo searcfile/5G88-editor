@@ -1385,7 +1385,10 @@ async function handleCreateUser(){
     await userAcctRef.child(username).set(payload);
 
     showToast(`User "${username}" berhasil dibuat.`, 'success');
-    closeCreateUserModal();
+
+setTimeout(() => {
+  closeCreateUserModal();
+}, 900);
 
   }catch(e){
     err.textContent = `Gagal membuat user: ${e.message}`;
@@ -1633,14 +1636,16 @@ async function handleResetPassword(){
 
     await userAcctRef.child(username).update(updates);
 
-    showToast(
-      mode === 'secondPassword'
-        ? `2nd Password "${username}" berhasil di-reset.`
-        : `Password "${username}" berhasil di-reset.`,
-      'success'
-    );
+showToast(
+  mode === 'secondPassword'
+    ? `2nd Password "${username}"Successfuly.`
+    : `Password "${username}" Successfuly.`,
+  'success'
+);
 
-    closeResetPwModal();
+setTimeout(() => {
+  closeResetPwModal();
+}, 900);
 
   }catch(e){
     err.textContent = `Gagal reset: ${e.message}`;
