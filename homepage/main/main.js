@@ -44,6 +44,24 @@ async function sha256Hex(text){
     .map(b => b.toString(16).padStart(2, '0'))
     .join('');
 }
+function setBtnLoading(btn, state, text){
+  if (!btn) return;
+
+  if (state){
+    btn.dataset.oldHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.classList.add("btn-loading");
+    btn.innerHTML = `
+      <span class="btn-spinner"></span>
+      <span>${text}</span>
+    `;
+  } else {
+    btn.disabled = false;
+    btn.classList.remove("btn-loading");
+    btn.innerHTML = btn.dataset.oldHtml || text.replace("...", "");
+    delete btn.dataset.oldHtml;
+  }
+}
 const THEME_KEY = "siteTheme";
 
 const DEFAULT_PAGE_TITLE = "Back Office Editor 5G88";
@@ -3105,7 +3123,8 @@ async function doChange(){
   if (newPw.length < 6)            { showErr('New password must be at least 6 characters.'); return; }
   if (newPw !== newPw2)            { showErr('Confirm password does not match.'); return; }
   if (newPw === oldPw)             { showErr('New password cannot be the same as current.'); return; }
-
+  setBtnLoading(submit, true, "Change...");
+  cancel.disabled = true;
   try{
     // ambil username dari sesi (email pseudo: <username>@5g88.local)
     const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
@@ -3151,9 +3170,12 @@ async function doChange(){
       localStorage.removeItem('gmailLogin');
       window.location.href = '/login?pw_changed=1';
     }, 1000);
-  }catch(err){
-    showErr('Failed to change password. ' + (err?.message || ''));
-  }
+}catch(err){
+  showErr('Failed to change password. ' + (err?.message || ''));
+}finally{
+  setBtnLoading(submit, false, "Change");
+  cancel.disabled = false;
+}
 }
   submit.addEventListener('click', doChange);
   [inOld,inNew,inNew2].forEach(i=>i.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doChange(); }));
@@ -3234,7 +3256,8 @@ async function doChange(){
       showErr('New 2nd password cannot be the same as current.');
       return;
     }
-
+   setBtnLoading(submit, true, "Save...");
+   cancel.disabled = true;
     try{
       const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
       const email = (login?.email || '').toLowerCase();
@@ -3295,9 +3318,12 @@ async function doChange(){
         closeCp2();
       }, 900);
 
-    }catch(err){
-      showErr('Failed to change 2nd password. ' + (err?.message || ''));
-    }
+}catch(err){
+  showErr('Failed to change 2nd password. ' + (err?.message || ''));
+}finally{
+  setBtnLoading(submit, false, "Save");
+  cancel.disabled = false;
+}
   }
 
   [inOld, inNew, inNew2].forEach(input => {
