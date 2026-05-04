@@ -203,7 +203,6 @@ function stopLivechatLoopSound() {
   audio.currentTime = 0;
   livechatLoopPlaying = false;
 }
-
 function syncLivechatAlertState(unreadCount = 0) {
   const count = Number(unreadCount || 0);
 
