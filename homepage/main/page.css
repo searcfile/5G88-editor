@@ -196,6 +196,36 @@ html {
   font-size: 12px;
   line-height: 1.5;
   word-break: break-word;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sidebar-version-left{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  min-width:0;
+}
+
+.sidebar-notif-slot{
+  display:none;
+  align-items:center;
+  justify-content:flex-end;
+  flex-shrink:0;
+}
+
+.sidebar-notif-slot #notifButton{
+  width:28px;
+  height:28px;
+}
+
+@media (max-width: 600px){
+  .sidebar-notif-slot{
+    display:flex;
+  }
 }
 
 .sidebar-version-label {
@@ -941,12 +971,6 @@ a.tab-open .check-icon {
   fill: rgba(255,255,255,0.85) !important;
   color: rgba(255,255,255,0.85) !important;
 }
-
-/* icon notice dalam username dropdown = merah */
-#mobileNotifSlot #notifButton svg{
-  fill: var(--colorbtn) !important;
-  color: var(--colorbtn) !important;
-}
 .empty-state{
   position: absolute; inset: 0;
   display: flex; flex-direction: column;
@@ -1095,13 +1119,12 @@ body.light-theme .theme-toggle-knob{
   display: flex;
   justify-content: center;
   margin: 0;
-  padding: 0;
+  padding: 0 8px 8px;
   background: #001529;
 }
 
 .sidebar-search-input{
   width: 100%;
-  max-width: 210px;
   height: 32px;
   border: 1px solid var(--border2);
   border-radius: 6px;
@@ -1109,7 +1132,7 @@ body.light-theme .theme-toggle-knob{
   color: var(--text-soft);
   text-align: left;
   outline: none;
-  padding: 0 11px;
+  padding: 4px 11px;
   font-size: 14px;
   transition: all 0.2s ease;
   box-sizing: border-box;
