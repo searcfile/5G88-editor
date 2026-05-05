@@ -287,6 +287,132 @@ html {
   height: 100%;
   padding-inline: 16px;
 }
+.header-module-search{
+  position: relative;
+  width: 100%;
+  max-width: 150px;
+  height: 32px;
+  flex: 0 0 150px;
+  z-index: 10020;
+  align-self: center;
+}
+
+.header-module-inputbox{
+  width: 100%;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  background: var(--backgroundbtn);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all .2s ease;
+}
+
+.header-module-search.open .header-module-inputbox,
+.header-module-inputbox:focus-within{
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(0,60,180,0.15);
+}
+
+#headerModuleInput{
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: var(--colorbtn);
+  font-size: 14px;
+  padding: 0 4px 0 10px;
+  cursor: pointer;
+}
+
+#headerModuleInput::placeholder{
+  color: var(--blur);
+  opacity: 1;
+}
+
+#headerModuleAction{
+  width: 32px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  color: var(--blur);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: 0 0 32px;
+  transition: all .2s ease;
+}
+
+#headerModuleAction:hover{
+  color: var(--gold-hover);
+}
+
+#headerModuleIcon{
+  width: 12px;
+  height: 12px;
+  display: block;
+  fill: currentColor;
+}
+
+.header-module-list{
+  display: none;
+  position: fixed;
+  top: 44px;
+  left: 16px;
+  width: 150px;
+  max-height: 260px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--backgrounddrop);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 6px 0;
+  z-index: 99999;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
+
+.header-module-search.open .header-module-list{
+  display: block;
+}
+
+.header-module-item{
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--colorbtn);
+  font-size: 14px;
+  text-align: left;
+  padding: 7px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-module-item:hover{
+  background: var(--close-hover2);
+}
+
+.header-module-empty{
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+@media (max-width: 815px){
+  .header-module-search{
+    max-width: 130px;
+    flex-basis: 130px;
+  }
+
+  .header-module-list{
+    width: 130px;
+  }
+}
 .header-right-meta{
   display: flex;
   align-items: center;
