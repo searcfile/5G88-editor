@@ -1931,3 +1931,56 @@ select:focus-visible{
   gap:7px;
   pointer-events:none;
 }
+.sidebar-account-slot{
+  display:none;
+  padding: 10px 8px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  margin-bottom: 8px;
+}
+
+@media (max-width: 815px){
+  .sidebar-account-slot{
+    display:block;
+  }
+
+  .sidebar .user-dropdown{
+    display:block;
+    height:auto;
+    width:100%;
+  }
+
+  .sidebar .user-button{
+    width:100% !important;
+    height:32px !important;
+    padding:0 12px !important;
+    border:1px solid var(--border2) !important;
+    border-radius:6px !important;
+    background:var(--backgroundbtn) !important;
+    box-shadow:0 2px 0 rgba(255,255,255,0.04) !important;
+    justify-content:center;
+    margin-bottom:8px;
+  }
+
+  .sidebar #userNameText{
+    display:inline !important;
+  }
+
+  .sidebar .dropdown-content{
+    position:static !important;
+    display:block !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    transform:none !important;
+    min-width:0 !important;
+    width:100% !important;
+    padding:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    border-radius:0 !important;
+  }
+
+  .sidebar .dropdown-user-top,
+  .sidebar .dropdown-content hr{
+    display:none !important;
+  }
+}
