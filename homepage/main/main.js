@@ -1285,25 +1285,33 @@ function initHeaderModuleSearch(){
     svg.setAttribute("viewBox", type === "close" ? "0 0 24 24" : "64 64 896 896");
   }
 
-  function getItems(){
-    return [...wrap.querySelectorAll("a")].map(a => ({
-      name: (a.textContent || "").trim(),
-      url: a.getAttribute("href") || a.dataset.url || ""
-    })).filter(x => x.name);
-  }
+function getItems(){
+  return [...wrap.querySelectorAll("a")].map(a => {
+    const name =
+      (a.querySelector(".sidebar-link-text")?.textContent || a.dataset.label || a.textContent || "")
+        .trim();
 
-  function render(q = ""){
-    const keyword = q.toLowerCase();
-    const found = getItems().filter(x => x.name.toLowerCase().includes(keyword));
+    return {
+      name,
+      el: a
+    };
+  }).filter(x => x.name);
+}
 
-    list.innerHTML = found.length
-      ? found.map(x => `
-        <button type="button" class="header-module-item" data-name="${x.name}" data-url="${x.url}">
-          ${x.name}
-        </button>
-      `).join("")
-      : `<div class="header-module-empty">No module</div>`;
-  }
+let headerModuleItems = [];
+
+function render(q = ""){
+  const keyword = q.toLowerCase();
+  headerModuleItems = getItems().filter(x => x.name.toLowerCase().includes(keyword));
+
+  list.innerHTML = headerModuleItems.length
+    ? headerModuleItems.map((x, i) => `
+      <button type="button" class="header-module-item" data-index="${i}">
+        ${x.name}
+      </button>
+    `).join("")
+    : `<div class="header-module-empty">No module</div>`;
+}
 
   function openList(){
     input.removeAttribute("readonly");
@@ -1342,21 +1350,23 @@ function initHeaderModuleSearch(){
     openList();
   });
 
-  list.addEventListener("click", (e) => {
-    const item = e.target.closest(".header-module-item");
-    if (!item) return;
+list.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-    const name = item.dataset.name;
-    const url = item.dataset.url;
+  const item = e.target.closest(".header-module-item");
+  if (!item) return;
 
-    input.value = name;
-    setIcon("close");
-    box.classList.remove("open");
+  const data = headerModuleItems[Number(item.dataset.index)];
+  if (!data) return;
 
-    if (url && typeof addTab === "function") {
-      addTab(name.toUpperCase(), url);
-    }
-  });
+  input.value = data.name;
+  setIcon("close");
+  box.classList.remove("open");
+
+  // ✅ klik sidebar link asal, jadi tab buka macam biasa
+  data.el.click();
+});
 
   document.addEventListener("click", (e) => {
     if (!box.contains(e.target)) closeList();
