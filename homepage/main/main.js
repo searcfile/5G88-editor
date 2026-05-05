@@ -1169,10 +1169,11 @@ if (pageFrame) {
   bindIframeInteractionUnlock(pageFrame);
   pageFrame.addEventListener("load", () => {
     try {
-   pageFrame.contentWindow.document.addEventListener("click", () => {
+pageFrame.contentWindow.document.addEventListener("click", () => {
   closeAllDropdowns();
   window.closeTabSearchList && window.closeTabSearchList();
-  });
+  window.closeHeaderModuleSearchList && window.closeHeaderModuleSearchList();
+});
     } catch (_) {}
 
     const origin = getChildOriginFromSrc(pageFrame.src);
@@ -1299,6 +1300,8 @@ function getItems(){
 }
 
 let headerModuleItems = [];
+let selectedHeaderModuleName = "";
+let lastSelectedHeaderModuleName = "";
 
 function render(q = ""){
   const keyword = q.toLowerCase();
@@ -1306,29 +1309,43 @@ function render(q = ""){
 
   list.innerHTML = headerModuleItems.length
     ? headerModuleItems.map((x, i) => `
-      <button type="button" class="header-module-item" data-index="${i}">
-        ${x.name}
+      <button type="button" class="header-module-item ${x.name === selectedHeaderModuleName ? 'active' : ''}" data-index="${i}">
+        ${x.name.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
       </button>
     `).join("")
     : `<div class="header-module-empty">No module</div>`;
 }
 
-  function openList(){
-    setTimeout(() => {
-  input.removeAttribute("readonly");
-  input.focus({ preventScroll: true });
-}, 80);
-    render(input.value);
-    box.classList.add("open");
-    setIcon(input.value ? "close" : "search");
-    setTimeout(() => input.focus(), 0);
+function openList(){
+  lastSelectedHeaderModuleName = selectedHeaderModuleName;
+
+  input.value = "";
+  render("");
+  box.classList.add("open");
+  setIcon("search");
+
+  setTimeout(() => {
+    input.removeAttribute("readonly");
+    input.focus({ preventScroll: true });
+  }, 80);
+}
+
+function closeList(){
+  box.classList.remove("open");
+
+  if (!selectedHeaderModuleName && lastSelectedHeaderModuleName) {
+    selectedHeaderModuleName = lastSelectedHeaderModuleName;
   }
 
-  function closeList(){
-    box.classList.remove("open");
-    if (!input.value) setIcon("arrow");
-  }
+  input.value = selectedHeaderModuleName || "";
 
+  if (selectedHeaderModuleName) {
+    setIcon("close");
+  } else {
+    setIcon("arrow");
+  }
+}
+  window.closeHeaderModuleSearchList = closeList;
   input.addEventListener("click", (e) => {
     e.stopPropagation();
     openList();
@@ -1342,13 +1359,15 @@ function render(q = ""){
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
 
-    if (input.value) {
-      input.value = "";
-      render("");
-      setIcon("arrow");
-      box.classList.remove("open");
-      return;
-    }
+if (selectedHeaderModuleName && !box.classList.contains("open")) {
+  selectedHeaderModuleName = "";
+  lastSelectedHeaderModuleName = "";
+  input.value = "";
+  render("");
+  setIcon("arrow");
+  box.classList.remove("open");
+  return;
+}
 
     openList();
   });
@@ -1363,9 +1382,12 @@ list.addEventListener("click", (e) => {
   const data = headerModuleItems[Number(item.dataset.index)];
   if (!data) return;
 
-  input.value = data.name;
-  setIcon("close");
-  box.classList.remove("open");
+selectedHeaderModuleName = data.name;
+lastSelectedHeaderModuleName = data.name;
+input.value = data.name;
+
+setIcon("close");
+box.classList.remove("open");
 
   // ✅ klik sidebar link asal, jadi tab buka macam biasa
   data.el.click();
