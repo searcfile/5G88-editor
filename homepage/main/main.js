@@ -706,6 +706,37 @@ function moveNotifButtonResponsive() {
     }
   }
 }
+function syncMenuNotifDot(){
+  const notifDot = document.getElementById("notifDot");
+  const menuDot = document.getElementById("menuNotifDot");
+  if (!notifDot || !menuDot) return;
+
+  const isMobile = window.innerWidth <= 815;
+  const hasNotice = getComputedStyle(notifDot).display !== "none";
+
+  if (isMobile && hasNotice) {
+    menuDot.style.display = "flex";
+    menuDot.textContent = (notifDot.textContent || "1").trim() || "1";
+  } else {
+    menuDot.style.display = "none";
+    menuDot.textContent = "";
+  }
+}
+
+window.addEventListener("resize", syncMenuNotifDot);
+document.addEventListener("DOMContentLoaded", syncMenuNotifDot);
+window.addEventListener("load", syncMenuNotifDot);
+
+const notifDotObserver = document.getElementById("notifDot");
+if (notifDotObserver) {
+  new MutationObserver(syncMenuNotifDot).observe(notifDotObserver, {
+    attributes: true,
+    childList: true,
+    characterData: true,
+    subtree: true,
+    attributeFilter: ["style", "class"]
+  });
+}
 function handleFloatingFabResponsive() {
   const fab = document.getElementById("floatingFabWrap");
   if (!fab) return;
@@ -768,6 +799,7 @@ function showNotification(message, timestamp) {
     if (notifDot) {
     notifDot.style.display = "flex";
     notifDot.textContent = "1";
+    syncMenuNotifDot();
     }
     if (window.updateFloatingFabNoticeDot) {
     window.updateFloatingFabNoticeDot(1);
@@ -796,6 +828,7 @@ function openNoticeModal(message, timestamp) {
   if (notifDot) {
     notifDot.style.display = "none";
     notifDot.textContent = "";
+    syncMenuNotifDot();
   }
 
   const cur = JSON.parse(localStorage.getItem("gmailLogin") || "{}");
