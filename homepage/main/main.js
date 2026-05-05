@@ -3570,14 +3570,16 @@ document.addEventListener("DOMContentLoaded", () => {
     mainInput.value = headerInput.value;
     mainInput.dispatchEvent(new Event("input", { bubbles:true }));
 
-    list.style.display = "block";
+list.style.display = "flex";
+list.style.flexDirection = "column";
+list.style.gap = "2px";
 
 const r = headerInput.getBoundingClientRect();
 list.style.position = "fixed";
 list.style.left = `${r.left}px`;
-list.style.top = `${r.bottom + 4}px`;
+list.style.top = `${r.bottom + 8}px`;
 list.style.width = `${r.width}px`;
-list.style.zIndex = "200000";
+list.style.zIndex = "300001";
   }
 
   headerInput.addEventListener("focus", openHeaderModuleList);
