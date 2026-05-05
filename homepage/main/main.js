@@ -648,7 +648,6 @@ async function doLogout(reason="timeout"){
   };
 })();
 
-// === Helper: cek tipe login & update tombol Change Password ===
 function isUsernameLoginNow() {
   try {
     const login = JSON.parse(localStorage.getItem('gmailLogin') || '{}');
