@@ -141,6 +141,7 @@ html {
   position: fixed;
   top: 64px;
   left: 0;
+  right: 0;
   width: 100%;
   height: calc(100vh - 64px);
   z-index: 1001;
@@ -153,15 +154,17 @@ html {
 .sidebar {
   position: fixed;
   top: 64px;
-  left: 0;
+  right: 0;
+  left: auto;
   width: 255px;
   height: calc(100vh - 64px);
   background: #001529;
   z-index: 1002;
   overflow: hidden;
-  border-right: 1px solid rgba(255,255,255,0.12);
-  box-shadow: 4px 0 18px rgba(0,0,0,0.35);
-  transform: translateX(-100%);
+  border-left: 1px solid rgba(255,255,255,0.12);
+  border-right: none;
+  box-shadow: -4px 0 18px rgba(0,0,0,0.35);
+  transform: translateX(100%);
   transition: transform 0.28s ease;
 
   display: flex;
@@ -287,8 +290,8 @@ html {
   width: 100%;
 }
 .container.shrink {
-  margin-left: 255px;
-  width: calc(100% - 255px);
+  margin-left: 0 !important;
+  width: 100% !important;
 }
   .menu-icon {
   position: static;
@@ -471,8 +474,8 @@ html {
   transition: none;
 }
 .tab-bar.shrink {
-  margin-left: 255px;
-  width: calc(100% - 255px);
+  margin-left: 0 !important;
+  width: 100% !important;
 }
   #logoutBtn {display: flex;align-items: center;justify-content: center;height:32px;line-height: 1;gap: 8px;background: var(--backgroundbtn);color: var(--colorbtn);padding: 5px 10px;border-radius: 6px;cursor: pointer;width: 100%;box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);transition: all 0.3s ease;border: 1px solid var(--border2);font-size: 14px;}#logoutBtn:hover {color: var(--gold-hover);transition: all 0.3s ease;border: 1px solid var(--gold-hover);}#logoutBtn:active {color: var(--gold-active);transition: all 0.3s ease;border: 1px solid var(--gold-active);}
   #notifTooltip {opacity: 0;transition: opacity 0.2s ease;}
