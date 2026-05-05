@@ -689,16 +689,16 @@ const noticeOkBtn = document.getElementById("noticeOkBtn");
 
 function moveNotifButtonResponsive() {
   const notifButtonEl = document.getElementById("notifButton");
-  const mobileSlot = document.getElementById("mobileNotifSlot");
+  const sidebarSlot = document.getElementById("sidebarNotifSlot");
   const desktopSlot = document.getElementById("desktopNotifSlot");
 
-  if (!notifButtonEl || !mobileSlot || !desktopSlot) return;
+  if (!notifButtonEl || !sidebarSlot || !desktopSlot) return;
 
-  const isMobile = window.innerWidth <= 600; // samakan dengan CSS kamu
+  const isMobile = window.innerWidth <= 600;
 
   if (isMobile) {
-    if (notifButtonEl.parentElement !== mobileSlot) {
-      mobileSlot.appendChild(notifButtonEl);
+    if (notifButtonEl.parentElement !== sidebarSlot) {
+      sidebarSlot.appendChild(notifButtonEl);
     }
   } else {
     if (notifButtonEl.parentElement !== desktopSlot) {
