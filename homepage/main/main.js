@@ -1191,6 +1191,33 @@ function closeSidebar() {
   document.getElementById("tabBar").classList.remove("shrink");
   document.getElementById("menuIcon").classList.remove("active-menu-icon");
 }
+const sidebarAccountSlot = document.getElementById("sidebarAccountSlot");
+const userDropdownEl = document.querySelector(".user-dropdown");
+
+const originalUserDropdownParent = userDropdownEl?.parentNode || null;
+const originalUserDropdownNext = userDropdownEl?.nextSibling || null;
+
+function moveAccountToSidebarOnMobile(){
+  if (!sidebarAccountSlot || !userDropdownEl || !originalUserDropdownParent) return;
+
+  const isMobile = window.innerWidth <= 815;
+
+  if (isMobile) {
+    if (userDropdownEl.parentNode !== sidebarAccountSlot) {
+      sidebarAccountSlot.appendChild(userDropdownEl);
+    }
+  } else {
+    if (userDropdownEl.parentNode !== originalUserDropdownParent) {
+      originalUserDropdownParent.insertBefore(userDropdownEl, originalUserDropdownNext);
+    }
+  }
+
+  updateChangePwVisibility && updateChangePwVisibility();
+}
+
+window.addEventListener("resize", moveAccountToSidebarOnMobile);
+document.addEventListener("DOMContentLoaded", moveAccountToSidebarOnMobile);
+window.addEventListener("load", moveAccountToSidebarOnMobile);
 function initSidebarSearch() {
   const input = document.getElementById("sidebarSearchInput");
   const wrap = document.getElementById("customSidebarTabs");
