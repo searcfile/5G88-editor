@@ -3547,30 +3547,51 @@ if (modal.style.display !== 'none' && okBox.style.display !== 'block') {
 })();
 document.addEventListener("DOMContentLoaded", () => {
   const headerInput = document.getElementById("headerModuleInput");
+  const clearBtn = document.getElementById("headerModuleClear");
 
   if (!headerInput) return;
 
-  headerInput.addEventListener("focus", () => {
-    // trigger buka search panel lama
-    const openBtn = document.getElementById("tabSearchOpen");
-    if (openBtn) openBtn.click();
-  });
+  function openHeaderModuleList(){
+    const box = document.getElementById("tabSearchBox");
+    const mainInput = document.getElementById("tabSearchInput");
+    const list = document.getElementById("tabSearchList");
+
+    if (!box || !mainInput || !list) return;
+
+    box.classList.add("open");
+    mainInput.value = headerInput.value;
+    mainInput.dispatchEvent(new Event("input", { bubbles:true }));
+
+    list.style.display = "block";
+
+    const r = headerInput.getBoundingClientRect();
+    list.style.position = "fixed";
+    list.style.left = `${r.left}px`;
+    list.style.top = `${r.bottom + 6}px`;
+    list.style.width = `${r.width}px`;
+    list.style.zIndex = "10050";
+  }
+
+  headerInput.addEventListener("focus", openHeaderModuleList);
+  headerInput.addEventListener("click", openHeaderModuleList);
 
   headerInput.addEventListener("input", () => {
+    openHeaderModuleList();
+  });
+
+  clearBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    headerInput.value = "";
+
     const mainInput = document.getElementById("tabSearchInput");
     if (mainInput) {
-      mainInput.value = headerInput.value;
-      mainInput.dispatchEvent(new Event("input"));
+      mainInput.value = "";
+      mainInput.dispatchEvent(new Event("input", { bubbles:true }));
     }
-  });
-  document.getElementById("headerModuleClear")?.addEventListener("click", () => {
-  const headerInput = document.getElementById("headerModuleInput");
-  const mainInput = document.getElementById("tabSearchInput");
 
-  if (headerInput) headerInput.value = "";
-  if (mainInput) {
-    mainInput.value = "";
-    mainInput.dispatchEvent(new Event("input"));
-  }
-});
+    openHeaderModuleList();
+    headerInput.focus();
+  });
 });
