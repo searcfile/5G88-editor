@@ -3577,7 +3577,6 @@ list.style.position = "fixed";
 list.style.left = `${r.left}px`;
 list.style.top = `${r.bottom + 4}px`;
 list.style.width = `${r.width}px`;
-list.style.maxHeight = `calc(100vh - ${r.bottom + 12}px)`;
 list.style.zIndex = "200000";
   }
 
