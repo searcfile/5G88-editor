@@ -3558,7 +3558,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!box || !mainInput || !list) return;
 
-    box.classList.add("open");
+    box.classList.add("open", "header-search-mode");
     mainInput.value = headerInput.value;
     mainInput.dispatchEvent(new Event("input", { bubbles:true }));
 
@@ -3594,4 +3594,15 @@ document.addEventListener("DOMContentLoaded", () => {
     openHeaderModuleList();
     headerInput.focus();
   });
+});
+document.addEventListener("click", (e) => {
+  if (
+    e.target.closest(".header-module-select") ||
+    e.target.closest("#tabSearchList")
+  ) return;
+
+  document.getElementById("tabSearchBox")?.classList.remove("open", "header-search-mode");
+
+  const list = document.getElementById("tabSearchList");
+  if (list) list.style.display = "none";
 });
