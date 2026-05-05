@@ -670,12 +670,10 @@ function updateChangePwVisibility() {
 }
 window.addEventListener('load', () => {
   updateChangePwVisibility();
-  window.renderMobileUserBtn && window.renderMobileUserBtn();
 });
 window.addEventListener('storage', (e)=> {
   if (e.key === 'gmailLogin') {
     updateChangePwVisibility();
-    window.renderMobileUserBtn && window.renderMobileUserBtn();
   }
 });
 let userId = "";
