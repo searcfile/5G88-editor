@@ -1264,6 +1264,107 @@ function initSidebarSearch() {
     });
   });
 }
+initHeaderModuleSearch();
+
+function initHeaderModuleSearch(){
+  const box = document.getElementById("headerModuleSearch");
+  const input = document.getElementById("headerModuleInput");
+  const list = document.getElementById("headerModuleList");
+  const btn = document.getElementById("headerModuleAction");
+  const path = document.getElementById("headerModulePath");
+  const svg = document.getElementById("headerModuleIcon");
+  const wrap = document.getElementById("customSidebarTabs");
+
+  if (!box || !input || !list || !btn || !path || !svg || !wrap) return;
+
+  const ICON_ARROW = "M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z";
+  const ICON_SEARCH = "M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z";
+  const ICON_CLOSE = "m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 8.933-2.721-2.722c-.146-.146-.339-.219-.531-.219-.404 0-.75.324-.75.749 0 .193.073.384.219.531l2.722 2.722-2.728 2.728c-.147.147-.22.34-.22.531 0 .427.35.75.751.75.192 0 .384-.073.53-.219l2.728-2.728 2.729 2.728c.146.146.338.219.53.219.401 0 .75-.323.75-.75 0-.191-.073-.384-.22-.531l-2.727-2.728 2.717-2.717c.146-.147.219-.338.219-.531 0-.425-.346-.75-.75-.75-.192 0-.385.073-.531.22z";
+
+  function setIcon(type){
+    path.setAttribute("d", type === "close" ? ICON_CLOSE : type === "search" ? ICON_SEARCH : ICON_ARROW);
+    svg.setAttribute("viewBox", type === "close" ? "0 0 24 24" : "64 64 896 896");
+  }
+
+  function getItems(){
+    return [...wrap.querySelectorAll("a")].map(a => ({
+      name: (a.textContent || "").trim(),
+      url: a.getAttribute("href") || a.dataset.url || ""
+    })).filter(x => x.name);
+  }
+
+  function render(q = ""){
+    const keyword = q.toLowerCase();
+    const found = getItems().filter(x => x.name.toLowerCase().includes(keyword));
+
+    list.innerHTML = found.length
+      ? found.map(x => `
+        <button type="button" class="header-module-item" data-name="${x.name}" data-url="${x.url}">
+          ${x.name}
+        </button>
+      `).join("")
+      : `<div class="header-module-empty">No module</div>`;
+  }
+
+  function openList(){
+    input.removeAttribute("readonly");
+    render(input.value);
+    box.classList.add("open");
+    setIcon(input.value ? "close" : "search");
+    setTimeout(() => input.focus(), 0);
+  }
+
+  function closeList(){
+    box.classList.remove("open");
+    if (!input.value) setIcon("arrow");
+  }
+
+  input.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openList();
+  });
+
+  input.addEventListener("input", () => {
+    render(input.value);
+    setIcon(input.value ? "close" : "search");
+  });
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    if (input.value) {
+      input.value = "";
+      render("");
+      setIcon("arrow");
+      box.classList.remove("open");
+      return;
+    }
+
+    openList();
+  });
+
+  list.addEventListener("click", (e) => {
+    const item = e.target.closest(".header-module-item");
+    if (!item) return;
+
+    const name = item.dataset.name;
+    const url = item.dataset.url;
+
+    input.value = name;
+    setIcon("close");
+    box.classList.remove("open");
+
+    if (url && typeof addTab === "function") {
+      addTab(name.toUpperCase(), url);
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!box.contains(e.target)) closeList();
+  });
+
+  setIcon("arrow");
+}
 document.addEventListener("click", (e) => {
   const isSidebar = e.target.closest("#sidebar");
   const isMenuIcon = e.target.closest("#menuIcon");
