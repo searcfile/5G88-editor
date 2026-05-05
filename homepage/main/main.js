@@ -1314,7 +1314,10 @@ function render(q = ""){
 }
 
   function openList(){
-    input.removeAttribute("readonly");
+    setTimeout(() => {
+  input.removeAttribute("readonly");
+  input.focus({ preventScroll: true });
+}, 80);
     render(input.value);
     box.classList.add("open");
     setIcon(input.value ? "close" : "search");
