@@ -3545,3 +3545,32 @@ if (modal.style.display !== 'none' && okBox.style.display !== 'block') {
     }
   });
 })();
+document.addEventListener("DOMContentLoaded", () => {
+  const headerInput = document.getElementById("headerModuleInput");
+
+  if (!headerInput) return;
+
+  headerInput.addEventListener("focus", () => {
+    // trigger buka search panel lama
+    const openBtn = document.getElementById("tabSearchOpen");
+    if (openBtn) openBtn.click();
+  });
+
+  headerInput.addEventListener("input", () => {
+    const mainInput = document.getElementById("tabSearchInput");
+    if (mainInput) {
+      mainInput.value = headerInput.value;
+      mainInput.dispatchEvent(new Event("input"));
+    }
+  });
+  document.getElementById("headerModuleClear")?.addEventListener("click", () => {
+  const headerInput = document.getElementById("headerModuleInput");
+  const mainInput = document.getElementById("tabSearchInput");
+
+  if (headerInput) headerInput.value = "";
+  if (mainInput) {
+    mainInput.value = "";
+    mainInput.dispatchEvent(new Event("input"));
+  }
+});
+});
