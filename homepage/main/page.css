@@ -2055,11 +2055,6 @@ select:focus-visible{
   font-size:12px;
   padding:0;
 }
-#headerModuleClear svg{
-  width:12px;
-  height:12px;
-  display:block;
-}
 
 #headerModuleClear:hover{
   background: rgba(255,255,255,0.45);
@@ -2067,4 +2062,26 @@ select:focus-visible{
 
 #headerModuleClear:active{
   background: rgba(255,255,255,0.6);
+}
+/* HEADER MODULE SEARCH MODE */
+.tab-search-box.header-search-mode .tab-search-btn,
+.tab-search-box.header-search-mode .tab-search-panel{
+  display:none !important;
+}
+
+.tab-search-box.header-search-mode{
+  width:0 !important;
+  min-width:0 !important;
+  height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+}
+
+.tab-search-box.header-search-mode .tab-search-list{
+  display:flex !important;
+  flex-direction:column;
+  gap:2px;
+  position:fixed !important;
+  z-index:10050 !important;
 }
