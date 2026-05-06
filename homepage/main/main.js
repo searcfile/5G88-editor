@@ -1173,6 +1173,7 @@ if (pageFrame) {
    pageFrame.contentWindow.document.addEventListener("click", () => {
   closeAllDropdowns();
   window.closeTabSearchList && window.closeTabSearchList();
+  window.closeHeaderTabSearchList && window.closeHeaderTabSearchList();
   });
     } catch (_) {}
 
@@ -1262,6 +1263,83 @@ function initSidebarSearch() {
       const text = (link.textContent || "").toLowerCase();
       link.style.display = text.includes(keyword) ? "" : "none";
     });
+  });
+}
+function initHeaderTabSearch(){
+  const box = document.getElementById("headerTabSearch");
+  const input = document.getElementById("headerTabSearchInput");
+  const list = document.getElementById("headerTabSearchList");
+  const sidebarTabs = document.getElementById("customSidebarTabs");
+
+  if (!box || !input || !list || !sidebarTabs) return;
+
+  function positionList(){
+    const rect = input.getBoundingClientRect();
+    list.style.left = `${rect.left}px`;
+    list.style.top = `${rect.bottom + 6}px`;
+    list.style.width = `${rect.width}px`;
+  }
+
+  function renderList(){
+    const keyword = input.value.trim().toLowerCase();
+    const links = Array.from(sidebarTabs.querySelectorAll("a"));
+
+    list.innerHTML = "";
+
+    links.forEach(oldLink => {
+      const text = (oldLink.textContent || "").trim();
+      if (!text) return;
+      if (keyword && !text.toLowerCase().includes(keyword)) return;
+
+      const item = document.createElement("a");
+      item.href = "javascript:void(0)";
+      item.textContent = text;
+      item.title = text;
+
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        oldLink.click();
+
+        input.value = text;
+        closeHeaderTabSearchList();
+      });
+
+      list.appendChild(item);
+    });
+
+    positionList();
+    list.style.display = list.children.length ? "block" : "none";
+  }
+
+  function openHeaderTabSearchList(){
+    renderList();
+  }
+
+  function closeHeaderTabSearchList(){
+    list.style.display = "none";
+    list.innerHTML = "";
+  }
+
+  window.closeHeaderTabSearchList = closeHeaderTabSearchList;
+
+  input.addEventListener("focus", openHeaderTabSearchList);
+  input.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openHeaderTabSearchList();
+  });
+
+  input.addEventListener("input", renderList);
+
+  window.addEventListener("resize", () => {
+    if (list.style.display === "block") positionList();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!box.contains(e.target) && !list.contains(e.target)) {
+      closeHeaderTabSearchList();
+    }
   });
 }
 document.addEventListener("click", (e) => {
@@ -2702,6 +2780,7 @@ btnEl.onclick = function () {
 // ⬇️ GANTI seluruh blok ini
 document.addEventListener("DOMContentLoaded", async () => {
   initSidebarSearch();
+  initHeaderTabSearch();
   const forceLogout = sessionStorage.getItem("forceLogout");
   if (forceLogout === "1") {
     sessionStorage.removeItem("forceLogout");
