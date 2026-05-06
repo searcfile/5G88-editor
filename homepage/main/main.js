@@ -1279,7 +1279,11 @@ function initHeaderTabSearch(){
     list.style.top = `${rect.bottom + 6}px`;
     list.style.width = `${rect.width}px`;
   }
-
+function toNiceTitle(str){
+  return String(str || "")
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
   function renderList(){
     const keyword = input.value.trim().toLowerCase();
     const links = Array.from(sidebarTabs.querySelectorAll("a"));
@@ -1291,10 +1295,12 @@ function initHeaderTabSearch(){
       if (!text) return;
       if (keyword && !text.toLowerCase().includes(keyword)) return;
 
-      const item = document.createElement("a");
-      item.href = "javascript:void(0)";
-      item.textContent = text;
-      item.title = text;
+const niceText = toNiceTitle(text);
+
+const item = document.createElement("a");
+item.href = "javascript:void(0)";
+item.textContent = niceText;
+item.title = niceText;
 
       item.addEventListener("click", (e) => {
         e.preventDefault();
@@ -1302,7 +1308,7 @@ function initHeaderTabSearch(){
 
         oldLink.click();
 
-        input.value = text;
+        input.value = niceText;
         closeHeaderTabSearchList();
       });
 
