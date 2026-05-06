@@ -1272,7 +1272,25 @@ function initHeaderTabSearch(){
   const sidebarTabs = document.getElementById("customSidebarTabs");
 
   if (!box || !input || !list || !sidebarTabs) return;
+const iconPath = box.querySelector(".header-tab-search-arrow path");
+const iconSvg = box.querySelector(".header-tab-search-arrow");
 
+const ICON_ARROW = "M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z";
+const ICON_SEARCH = "M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z";
+const ICON_CLOSE = "m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 8.933-2.721-2.722c-.146-.146-.339-.219-.531-.219-.404 0-.75.324-.75.749 0 .193.073.384.219.531l2.722 2.722-2.728 2.728c-.147.147-.22.34-.22.531 0 .427.35.75.751.75.192 0 .384-.073.53-.219l2.728-2.728 2.729 2.728c.146.146.338.219.53.219.401 0 .75-.323.75-.75 0-.191-.073-.384-.22-.531l-2.727-2.728 2.717-2.717c.146-.147.219-.338.219-.531 0-.425-.346-.75-.75-.75-.192 0-.385.073-.531.22z";
+
+function setHeaderSearchIcon(type){
+  if (!iconPath || !iconSvg) return;
+
+  iconSvg.setAttribute("viewBox", type === "close" ? "0 0 24 24" : "64 64 896 896");
+  iconPath.setAttribute("d",
+    type === "close" ? ICON_CLOSE :
+    type === "search" ? ICON_SEARCH :
+    ICON_ARROW
+  );
+
+  box.classList.toggle("has-selected", type === "close");
+}
   function positionList(){
     const rect = input.getBoundingClientRect();
     list.style.left = `${rect.left}px`;
@@ -1308,9 +1326,9 @@ item.addEventListener("click", (e) => {
 
   oldLink.click();
 
-  input.value = niceText;
-  closeHeaderTabSearchList();
-});
+input.value = niceText;
+setHeaderSearchIcon("close");
+closeHeaderTabSearchList();
 
       list.appendChild(item);
     });
@@ -1319,10 +1337,12 @@ item.addEventListener("click", (e) => {
     list.style.display = list.children.length ? "flex" : "none";
   }
 
-  function openHeaderTabSearchList(){
-    renderList();
+function openHeaderTabSearchList(){
+  renderList();
+  if (!input.value.trim()) {
+    setHeaderSearchIcon("search");
   }
-
+}
   function closeHeaderTabSearchList(){
     list.style.display = "none";
     list.innerHTML = "";
@@ -1336,8 +1356,18 @@ item.addEventListener("click", (e) => {
     openHeaderTabSearchList();
   });
 
-  input.addEventListener("input", renderList);
+  input.addEventListener("input", () => {
+  renderList();
+  setHeaderSearchIcon(input.value.trim() ? "search" : "search");
+});
+iconSvg?.addEventListener("click", (e) => {
+  if (!box.classList.contains("has-selected")) return;
 
+  e.stopPropagation();
+  input.value = "";
+  setHeaderSearchIcon("arrow");
+  closeHeaderTabSearchList();
+});
   window.addEventListener("resize", () => {
     if (list.style.display === "block") positionList();
   });
