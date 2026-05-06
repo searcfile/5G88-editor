@@ -1297,26 +1297,26 @@ function toNiceTitle(str){
 
 const niceText = toNiceTitle(text);
 
-const item = document.createElement("a");
-item.href = "javascript:void(0)";
+const item = document.createElement("button");
+item.type = "button";
+item.className = "tab-search-item";
 item.textContent = niceText;
 item.title = niceText;
 
-      item.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+item.addEventListener("click", (e) => {
+  e.stopPropagation();
 
-        oldLink.click();
+  oldLink.click();
 
-        input.value = niceText;
-        closeHeaderTabSearchList();
-      });
+  input.value = niceText;
+  closeHeaderTabSearchList();
+});
 
       list.appendChild(item);
     });
 
     positionList();
-    list.style.display = list.children.length ? "block" : "none";
+    list.style.display = list.children.length ? "flex" : "none";
   }
 
   function openHeaderTabSearchList(){
