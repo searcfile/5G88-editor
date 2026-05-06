@@ -2103,3 +2103,18 @@ html {
   fill: var(--blur);
   pointer-events: none;
 }
+/* bila ada selected item → boleh klik (close) */
+.header-tab-search.has-selected .header-tab-search-arrow{
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* hover effect untuk close icon */
+.header-tab-search.has-selected .header-tab-search-arrow:hover{
+  fill: #fff; /* atau var(--gold-hover) ikut theme kau */
+}
+
+/* bila tengah search (list open) */
+.header-tab-search.search-mode .header-tab-search-arrow{
+  pointer-events: none;
+}
