@@ -1294,7 +1294,7 @@ function setHeaderSearchIcon(type){
   function positionList(){
     const rect = input.getBoundingClientRect();
     list.style.left = `${rect.left}px`;
-    list.style.top = `${rect.bottom + 6}px`;
+    list.style.top = `${rect.bottom + 3}px`;
     list.style.width = `${rect.width}px`;
   }
 function toNiceTitle(str){
@@ -1326,12 +1326,12 @@ item.addEventListener("click", (e) => {
 
   oldLink.click();
 
-input.value = niceText;
-setHeaderSearchIcon("close");
-closeHeaderTabSearchList();
+  input.value = niceText;
+  setHeaderSearchIcon("close");
+  closeHeaderTabSearchList();
+});
 
-      list.appendChild(item);
-    });
+list.appendChild(item);
 
     positionList();
     list.style.display = list.children.length ? "flex" : "none";
