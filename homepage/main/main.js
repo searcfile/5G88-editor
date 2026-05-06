@@ -1297,7 +1297,7 @@ function initHeaderTabSearch(){
   function positionList(){
     const rect = input.getBoundingClientRect();
     list.style.left = `${rect.left}px`;
-    list.style.top = `${rect.bottom + 6}px`;
+    list.style.top = `${rect.bottom + 3}px`;
     list.style.width = `${rect.width}px`;
   }
 
