@@ -26,8 +26,36 @@ a{color:#337ab7;text-decoration:none}
 
 /* custom dropdown */
 .custom-select{position:relative;height:32px}
-.cs-display{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:0 10px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
-.cs-display:after{content:"▾";font-size:12px;color:#aaa}
+.cs-display{
+  height:32px;
+  border-radius:6px;
+  border:1px solid #424242;
+  background:#141414;
+  color:#fff;
+  padding:0 10px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  user-select:none;
+}
+.cs-display:after{content:none}
+.cs-text{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.cs-arrow{
+  width:14px;
+  height:14px;
+  fill:#aaa;
+  flex:0 0 14px;
+  margin-left:8px;
+}
+.custom-select.open .cs-arrow{
+  transform:rotate(180deg);
+}
 .cs-list{display:none;position:absolute;z-index:9999;top:36px;left:0;right:0;background:#141414;border:1px solid #424242;border-radius:6px;max-height:260px;overflow:auto}
 .custom-select.open .cs-list{display:block}
 .cs-item{padding:8px 10px;color:#fff;cursor:pointer}
@@ -70,6 +98,11 @@ let currentRoundSuffix = "";
 let selectedGame = "";
 let selectedBet = 0;
 let selectedTotalWin = 0;
+
+const ARROW_SVG = `
+<svg class="cs-arrow" viewBox="0 0 1024 1024">
+  <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+</svg>`;
 
 const gameData = {
   "460_3 Charge Buffalo": {
@@ -172,7 +205,10 @@ function makeCustomSelect(id, items, value, labelFn, onChange){
 
   el.dataset.value = selected;
   el.innerHTML = `
-    <div class="cs-display">${labelFn(selected)}</div>
+    <div class="cs-display">
+      <span class="cs-text">${labelFn(selected)}</span>
+      ${ARROW_SVG}
+    </div>
     <div class="cs-list">
       ${items.map(v => `<div class="cs-item ${String(v)===String(selected)?"active":""}" data-value="${v}">${labelFn(v)}</div>`).join("")}
     </div>
@@ -188,7 +224,7 @@ function makeCustomSelect(id, items, value, labelFn, onChange){
   el.querySelectorAll(".cs-item").forEach(item=>{
     item.onclick = function(){
       el.dataset.value = this.dataset.value;
-      el.querySelector(".cs-display").textContent = this.textContent;
+      el.querySelector(".cs-text").textContent = this.textContent;
       el.querySelectorAll(".cs-item").forEach(x=>x.classList.remove("active"));
       this.classList.add("active");
       el.classList.remove("open");
@@ -203,10 +239,6 @@ document.addEventListener("click", function(e){
     document.querySelectorAll(".custom-select").forEach(x=>x.classList.remove("open"));
   }
 });
-
-function getCustomValue(id){
-  return document.getElementById(id).dataset.value;
-}
 
 function initGameDropdown(savedGame, savedBet, savedWin){
   const games = Object.keys(gameData);
@@ -284,7 +316,7 @@ function makeBetRow(data){
     <td><span class="badge badge-bet">Bet</span></td>
     <td>${game}</td>
     <td><a href="#">${email}</a></td>
-    <td><a href="#" class="round-id">${orderId()}</a></td>
+    <td><a href="#">${orderId()}</a>
     <td>${formatDate(data.time)}</td>
     <td>-${money(bet)}</td>
     <td>${money(win)}</td>
