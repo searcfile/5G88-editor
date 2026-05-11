@@ -330,7 +330,7 @@ select:focus-visible{
   <div id="gameSelect" class="custom-select input-game"></div>
   <div id="betInput" class="custom-select input-bet"></div>
   <div id="totalWinInput" class="custom-select input-win"></div>
-  <input id="dateInput" class="input-date" type="text" placeholder="YYYY-MM-DD HH:mm:ss">
+  <input id="dateInput" class="input-date" type="text" placeholder="Set Time">
   <button class="btn-now" onclick="setNow()">Click Now</button>
 </div>
 
@@ -510,10 +510,15 @@ function initGameDropdown(savedGame, savedBet, savedWin){
   const games = Object.keys(gameData);
   selectedGame = savedGame && gameData[savedGame] ? savedGame : "";
 
-  makeCustomSelect("gameSelect", games, selectedGame, v => v, function(v){
-    selectedGame = v;
-    updateBetDropdown("", "");
-  }, "Select Game");
+makeCustomSelect("gameSelect", games, selectedGame, v => v, function(v){
+  selectedGame = v;
+
+  const firstBet = gameData[selectedGame].bets[0];
+  const firstKey = findPecahanKey(gameData[selectedGame].pecahan, firstBet);
+  const firstWin = gameData[selectedGame].pecahan[firstKey][0];
+
+  updateBetDropdown(firstBet, firstWin);
+}, "Select Game");
 
   updateBetDropdown(savedBet, savedWin);
 }
@@ -697,13 +702,15 @@ function resetTable(){
 
   initGameDropdown("", "", "");
 
+  document.getElementById("dateInput").value = "";
+  document.getElementById("scoreInput").value = "";
+
   document.getElementById("logBody").innerHTML = `
     <tr class="no-data-row">
       <td colspan="12">No data</td>
     </tr>
   `;
 
-  document.getElementById("scoreInput").value = "";
   saveState();
 }
 
