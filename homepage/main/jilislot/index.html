@@ -9,8 +9,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
 
 body{margin:0;background:#fff;font-family:'Source Sans Pro',Arial,sans-serif;font-size:13px;color:#333}
-.control-panel{background:#000;padding:10px;display:grid;grid-template-columns:1.5fr 1fr 1fr 1.4fr auto 1fr auto auto;gap:8px}
-.control-panel.second{grid-template-columns:1fr 1fr auto auto auto}
+.control-panel{background:#000;padding:10px;display:grid;grid-template-columns:1.5fr 1fr 1fr 1.4fr auto auto auto;gap:8px}
+.control-panel.second{grid-template-columns:1fr auto auto auto}
 input,select,button{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:0 10px;box-sizing:border-box}
 button{background:#1668dc;border:none;cursor:pointer}
 button:hover{background:#3c89e8}
@@ -34,13 +34,11 @@ a{color:#337ab7;text-decoration:none}
   <select id="totalWinInput"></select>
   <input id="dateInput" type="datetime-local">
   <button onclick="setNow()">Now</button>
-  <button onclick="generateRows()">Generate Rows</button>
   <button onclick="copyTableImage()">Copy Image</button>
 </div>
 
 <div class="control-panel second">
   <input id="emailInput" value="585630940@api-385.game" placeholder="User Email">
-  <input id="rowInput" type="number" value="18" min="1" max="18" placeholder="Rows">
   <button onclick="changeLog()">Change</button>
   <button onclick="addScoreRow()" class="gray">Add Score Row</button>
   <button onclick="resetTable()" class="reset">Reset Log</button>
@@ -53,6 +51,8 @@ a{color:#337ab7;text-decoration:none}
 </div>
 
 <script>
+const MAX_ROWS = 18;
+
 const gameData = {
   "460_3 Charge Buffalo": {
     bets:[0.10,0.20,0.50,1.00],
@@ -119,14 +119,6 @@ function orderId(){
 
 function randomGap(){
   return gaps[Math.floor(Math.random()*gaps.length)];
-}
-
-function getMaxRows(){
-  let rows = parseInt(document.getElementById("rowInput").value || 18);
-  if(rows > 18) rows = 18;
-  if(rows < 1) rows = 1;
-  document.getElementById("rowInput").value = rows;
-  return rows;
 }
 
 function initGameDropdown(){
@@ -227,13 +219,12 @@ function generateRows(){
 
   balance = parseFloat(document.getElementById("scoreInput").value || 0);
 
-  const rows = getMaxRows();
   const totalWin = parseFloat(document.getElementById("totalWinInput").value || 0);
-  const wins = splitTotalWin(totalWin, rows);
+  const wins = splitTotalWin(totalWin, MAX_ROWS);
 
   let time = getStartDate();
 
-  for(let i=0; i<rows; i++){
+  for(let i=0; i<MAX_ROWS; i++){
     tbody.insertAdjacentHTML("beforeend", createBetRow(new Date(time), wins[i]));
     time.setSeconds(time.getSeconds() - randomGap());
   }
@@ -267,7 +258,7 @@ function addScoreRow(){
   const tbody = document.getElementById("logBody");
   tbody.insertAdjacentHTML("afterbegin", row);
 
-  while(tbody.children.length > 18){
+  while(tbody.children.length > MAX_ROWS){
     tbody.removeChild(tbody.lastElementChild);
   }
 }
