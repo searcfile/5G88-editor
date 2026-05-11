@@ -11,7 +11,7 @@
 body{margin:0;background:#fff;font-family:'Source Sans Pro',Arial,sans-serif;font-size:13px;color:#333}
 .control-panel{background:#000;padding:10px;display:grid;grid-template-columns:1.5fr 1fr 1.4fr 1.5fr auto auto;gap:8px}
 .control-panel.second{grid-template-columns:1fr auto auto auto;gap:8px}
-input,select,button{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:0 10px;box-sizing:border-box}
+input,button{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:0 10px;box-sizing:border-box}
 button{background:#1668dc;border:none;cursor:pointer}
 button:hover{background:#3c89e8}
 .reset{background:red}.gray{background:#555}
@@ -22,18 +22,25 @@ button:hover{background:#3c89e8}
 a{color:#337ab7;text-decoration:none}
 .badge{display:inline-block;min-width:10px;padding:3px 7px;font-size:12px;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:middle;background-color:#777;border-radius:10px}
 .badge-win{background:#00a65a}.badge-lose{background:#dd4b39}.badge-draw{background:#777}.badge-bet{background:#3c8dbc}.badge-transfer{background:#777}.badge-withdraw{background:#00a65a}
-  .round-id{
-  color:#999;
-}
+.round-id{color:#999!important}
+
+/* custom dropdown */
+.custom-select{position:relative;height:32px}
+.cs-display{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:0 10px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.cs-display:after{content:"▾";font-size:12px;color:#aaa}
+.cs-list{display:none;position:absolute;z-index:9999;top:36px;left:0;right:0;background:#141414;border:1px solid #424242;border-radius:6px;max-height:260px;overflow:auto}
+.custom-select.open .cs-list{display:block}
+.cs-item{padding:8px 10px;color:#fff;cursor:pointer}
+.cs-item:hover,.cs-item.active{background:#1668dc}
 </style>
 </head>
 
 <body>
 
 <div class="control-panel">
-  <select id="gameSelect"></select>
-  <select id="betInput"></select>
-  <select id="totalWinInput"></select>
+  <div id="gameSelect" class="custom-select"></div>
+  <div id="betInput" class="custom-select"></div>
+  <div id="totalWinInput" class="custom-select"></div>
   <input id="dateInput" type="text" placeholder="YYYY-MM-DD HH:mm:ss">
   <button onclick="setNow()">Click Now</button>
   <button onclick="copyTableImage()">Copy Image</button>
@@ -55,9 +62,14 @@ a{color:#337ab7;text-decoration:none}
 <script>
 const MAX_ROWS = 18;
 const DEFAULT_EMAIL = "585630940@api-385.game";
+const STORAGE_KEY = "jili_game_log_state_v1";
 
 let currentRoundPrefix = "";
 let currentRoundSuffix = "";
+
+let selectedGame = "";
+let selectedBet = 0;
+let selectedTotalWin = 0;
 
 const gameData = {
   "460_3 Charge Buffalo": {
@@ -109,27 +121,18 @@ function formatDate(d){
 
 function setNow(){
   document.getElementById("dateInput").value = formatDate(new Date());
+  saveState();
 }
 
 function parseCustomDate(value){
   if(!value) return new Date();
   value = value.trim();
-
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
-
   if(!match){
     alert("Format masa salah bro. Pakai format: 2026-05-11 13:56:22");
     return new Date();
   }
-
-  return new Date(
-    Number(match[1]),
-    Number(match[2]) - 1,
-    Number(match[3]),
-    Number(match[4]),
-    Number(match[5]),
-    Number(match[6] || 0)
-  );
+  return new Date(Number(match[1]),Number(match[2])-1,Number(match[3]),Number(match[4]),Number(match[5]),Number(match[6]||0));
 }
 
 function getStartDate(){
@@ -139,87 +142,105 @@ function getStartDate(){
 function refreshRoundPattern(){
   const d = getStartDate();
   const base = BigInt(d.getTime());
-
   currentRoundPrefix = String(2240 + Number((base / 1800000n) % 1000n)).slice(-4);
   currentRoundSuffix = String(4000 + Number((base / 60000n) % 999n)).padStart(4,"0");
 }
 
 function orderId(){
-  if(!currentRoundPrefix || !currentRoundSuffix){
-    refreshRoundPattern();
-  }
-
+  if(!currentRoundPrefix || !currentRoundSuffix) refreshRoundPattern();
   let middle = "";
-  for(let i=0; i<11; i++){
-    middle += Math.floor(Math.random() * 10);
-  }
-
+  for(let i=0; i<11; i++) middle += Math.floor(Math.random()*10);
   return currentRoundPrefix + middle + currentRoundSuffix;
 }
 
 function transferId(){
   let id = "177";
-  while(id.length < 19){
-    id += Math.floor(Math.random() * 10);
-  }
+  while(id.length < 19) id += Math.floor(Math.random()*10);
   return id;
 }
 
-function randomGap(){
-  return gaps[Math.floor(Math.random()*gaps.length)];
-}
-
-function randomScoreGap(){
-  return scoreGaps[Math.floor(Math.random()*scoreGaps.length)];
-}
+function randomGap(){return gaps[Math.floor(Math.random()*gaps.length)]}
+function randomScoreGap(){return scoreGaps[Math.floor(Math.random()*scoreGaps.length)]}
 
 function findPecahanKey(pecahan, bet){
   return Object.keys(pecahan).find(key => Number(key) === Number(bet));
 }
 
-function initGameDropdown(){
-  const gameSelect = document.getElementById("gameSelect");
-  gameSelect.innerHTML = "";
+function makeCustomSelect(id, items, value, labelFn, onChange){
+  const el = document.getElementById(id);
+  const selected = items.some(v => String(v) === String(value)) ? value : items[0];
 
-  Object.keys(gameData).forEach(game=>{
-    gameSelect.innerHTML += `<option value="${game}">${game}</option>`;
+  el.dataset.value = selected;
+  el.innerHTML = `
+    <div class="cs-display">${labelFn(selected)}</div>
+    <div class="cs-list">
+      ${items.map(v => `<div class="cs-item ${String(v)===String(selected)?"active":""}" data-value="${v}">${labelFn(v)}</div>`).join("")}
+    </div>
+  `;
+
+  el.querySelector(".cs-display").onclick = function(){
+    document.querySelectorAll(".custom-select").forEach(x=>{
+      if(x !== el) x.classList.remove("open");
+    });
+    el.classList.toggle("open");
+  };
+
+  el.querySelectorAll(".cs-item").forEach(item=>{
+    item.onclick = function(){
+      el.dataset.value = this.dataset.value;
+      el.querySelector(".cs-display").textContent = this.textContent;
+      el.querySelectorAll(".cs-item").forEach(x=>x.classList.remove("active"));
+      this.classList.add("active");
+      el.classList.remove("open");
+      onChange(this.dataset.value);
+      saveState();
+    };
   });
-
-  gameSelect.addEventListener("change", updateBetDropdown);
-  document.getElementById("betInput").addEventListener("change", updateWinDropdown);
-
-  updateBetDropdown();
 }
 
-function updateBetDropdown(){
-  const game = document.getElementById("gameSelect").value;
-  const betInput = document.getElementById("betInput");
-
-  betInput.innerHTML = "";
-
-  gameData[game].bets.forEach(bet=>{
-    betInput.innerHTML += `<option value="${Number(bet)}">${money(bet)}</option>`;
-  });
-
-  updateWinDropdown();
-}
-
-function updateWinDropdown(){
-  const game = document.getElementById("gameSelect").value;
-  const bet = Number(document.getElementById("betInput").value);
-  const totalWinInput = document.getElementById("totalWinInput");
-  const pecahan = gameData[game].pecahan;
-  const key = findPecahanKey(pecahan, bet);
-
-  totalWinInput.innerHTML = "";
-
-  if(!key){
-    totalWinInput.innerHTML = `<option value="0">Total Win 0.0000</option>`;
-    return;
+document.addEventListener("click", function(e){
+  if(!e.target.closest(".custom-select")){
+    document.querySelectorAll(".custom-select").forEach(x=>x.classList.remove("open"));
   }
+});
 
-  pecahan[key].forEach(win=>{
-    totalWinInput.innerHTML += `<option value="${Number(win)}">Total Win ${money(win)}</option>`;
+function getCustomValue(id){
+  return document.getElementById(id).dataset.value;
+}
+
+function initGameDropdown(savedGame, savedBet, savedWin){
+  const games = Object.keys(gameData);
+  selectedGame = savedGame && gameData[savedGame] ? savedGame : games[0];
+
+  makeCustomSelect("gameSelect", games, selectedGame, v => v, function(v){
+    selectedGame = v;
+    updateBetDropdown();
+  });
+
+  updateBetDropdown(savedBet, savedWin);
+}
+
+function updateBetDropdown(savedBet, savedWin){
+  const bets = gameData[selectedGame].bets.map(Number);
+  selectedBet = savedBet && bets.some(b=>Number(b)===Number(savedBet)) ? Number(savedBet) : bets[0];
+
+  makeCustomSelect("betInput", bets, selectedBet, v => money(v), function(v){
+    selectedBet = Number(v);
+    updateWinDropdown();
+  });
+
+  updateWinDropdown(savedWin);
+}
+
+function updateWinDropdown(savedWin){
+  const pecahan = gameData[selectedGame].pecahan;
+  const key = findPecahanKey(pecahan, selectedBet);
+  const wins = key ? pecahan[key].map(Number) : [0];
+
+  selectedTotalWin = savedWin && wins.some(w=>Number(w)===Number(savedWin)) ? Number(savedWin) : wins[0];
+
+  makeCustomSelect("totalWinInput", wins, selectedTotalWin, v => "Total Win " + money(v), function(v){
+    selectedTotalWin = Number(v);
   });
 }
 
@@ -232,8 +253,7 @@ function splitTotalWin(totalWin, rows){
 
   for(let i=0; i<winRows-1; i++){
     let max = remain / 2;
-    let part = Math.random() * max;
-    part = Math.round(part * 10000) / 10000;
+    let part = Math.round((Math.random() * max) * 10000) / 10000;
     wins[i] = part;
     remain -= part;
   }
@@ -244,14 +264,13 @@ function splitTotalWin(totalWin, rows){
     let j = Math.floor(Math.random() * (i+1));
     [wins[i], wins[j]] = [wins[j], wins[i]];
   }
-
   return wins;
 }
 
 function makeBetRow(data){
-  const game = document.getElementById("gameSelect").value;
+  const game = selectedGame;
   const email = DEFAULT_EMAIL;
-  const bet = Number(document.getElementById("betInput").value);
+  const bet = Number(selectedBet);
   const win = Number(data.win);
   const profit = win - bet;
 
@@ -265,7 +284,7 @@ function makeBetRow(data){
     <td><span class="badge badge-bet">Bet</span></td>
     <td>${game}</td>
     <td><a href="#">${email}</a></td>
-    <td><a href="#">${orderId()}</a></td>
+    <td><a href="#" class="round-id">${orderId()}</a></td>
     <td>${formatDate(data.time)}</td>
     <td>-${money(bet)}</td>
     <td>${money(win)}</td>
@@ -280,9 +299,9 @@ function generateRows(){
   tbody.innerHTML = "";
   refreshRoundPattern();
 
-  const bet = Number(document.getElementById("betInput").value);
+  const bet = Number(selectedBet);
   const topBalance = Number(document.getElementById("scoreInput").value || 0);
-  const totalWin = Number(document.getElementById("totalWinInput").value || 0);
+  const totalWin = Number(selectedTotalWin || 0);
   const wins = splitTotalWin(totalWin, MAX_ROWS);
 
   let time = getStartDate();
@@ -291,14 +310,7 @@ function generateRows(){
   for(let i=0; i<MAX_ROWS; i++){
     const win = Number(wins[i]);
     const profit = win - bet;
-
-    rowsData.push({
-      time: new Date(time),
-      win: win,
-      profit: profit,
-      balanceAfter: 0
-    });
-
+    rowsData.push({time:new Date(time),win:win,profit:profit,balanceAfter:0});
     time.setSeconds(time.getSeconds() - randomGap());
   }
 
@@ -310,6 +322,7 @@ function generateRows(){
   }
 
   tbody.innerHTML = rowsData.map(row => makeBetRow(row)).join("");
+  saveState();
 }
 
 function changeLog(){
@@ -320,7 +333,6 @@ function addScoreRow(){
   const email = DEFAULT_EMAIL;
   const score = Number(document.getElementById("scoreInput").value || 0);
   const scoreTime = getStartDate();
-
   scoreTime.setSeconds(scoreTime.getSeconds() + randomScoreGap());
 
   const row = `
@@ -344,10 +356,36 @@ function addScoreRow(){
   while(tbody.children.length > MAX_ROWS){
     tbody.removeChild(tbody.lastElementChild);
   }
+  saveState();
+}
+
+function saveState(){
+  const state = {
+    game:selectedGame,
+    bet:selectedBet,
+    win:selectedTotalWin,
+    date:document.getElementById("dateInput").value,
+    score:document.getElementById("scoreInput").value,
+    tableHTML:document.getElementById("logBody").innerHTML
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadState(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  }catch(e){
+    return {};
+  }
 }
 
 function resetTable(){
+  localStorage.removeItem(STORAGE_KEY);
   document.getElementById("logBody").innerHTML = "";
+  document.getElementById("scoreInput").value = "1.0400";
+  setNow();
+  initGameDropdown();
+  generateRows();
 }
 
 async function copyTableImage(){
@@ -367,9 +405,35 @@ async function copyTableImage(){
   });
 }
 
-setNow();
-initGameDropdown();
-generateRows();
+document.getElementById("dateInput").addEventListener("input", saveState);
+document.getElementById("scoreInput").addEventListener("input", saveState);
+
+document.addEventListener("keydown", function(e){
+  if(e.ctrlKey && e.key.toLowerCase() === "c"){
+    e.preventDefault();
+    copyTableImage();
+  }
+});
+
+const saved = loadState();
+
+if(saved.date){
+  document.getElementById("dateInput").value = saved.date;
+}else{
+  setNow();
+}
+
+if(saved.score){
+  document.getElementById("scoreInput").value = saved.score;
+}
+
+initGameDropdown(saved.game, saved.bet, saved.win);
+
+if(saved.tableHTML){
+  document.getElementById("logBody").innerHTML = saved.tableHTML;
+}else{
+  generateRows();
+}
 </script>
 
 </body>
