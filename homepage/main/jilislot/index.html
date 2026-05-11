@@ -36,21 +36,27 @@
     --list-active:#e6f4ff;
   }
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
-
 body{margin:0;background:var(--page-bg);font-family:'Source Sans Pro',Arial,sans-serif;font-size:14px;color:var(--page-text)}
 
-.row-top{
-  grid-template-columns:1.5fr 1fr 1.4fr 1.5fr auto;
-  padding:16px 10px 12px;
+.control-panel{
   display:grid;
   gap:8px;
 }
 
+.row-top{
+  grid-template-columns:1.5fr 1fr 1.4fr 1.5fr auto;
+  padding:16px 10px 0;
+}
+
 .row-mid{
-  grid-template-columns:1fr auto auto auto auto;
-  padding:0 12px;
-  display:grid;
-  gap:8px;
+  grid-template-columns:1fr;
+  padding:8px 12px 0;
+}
+
+.row-bottom{
+  grid-template-columns:auto auto auto auto;
+  justify-content:start;
+  padding:8px 10px 12px;
 }
 
 input{
@@ -61,6 +67,7 @@ input{
   color:var(--page-text);
   padding:4px 11px;
   box-sizing:border-box;
+  transition: all .3s ease;
 }
 input:hover{border-color:var(--blue-hover);}
 input:focus{border-color:var(--blue);}
@@ -73,6 +80,7 @@ button{
   border:1px solid transparent;
   padding:0px 15px;
   color:#fff;
+  transition: all .3s ease;
 }
 
 button:hover{background:#3c89e8}
@@ -173,6 +181,7 @@ a{color:#337ab7;text-decoration:none}
   justify-content:space-between;
   cursor:pointer;
   user-select:none;
+  transition: all .3s ease;
 }
 
 .cs-display:after{content:none}
@@ -194,7 +203,8 @@ a{color:#337ab7;text-decoration:none}
   padding:4px;
   box-shadow:0 8px 20px rgba(0,0,0,.35);
 }
-
+.cs-list:hover{border-color:var(--blue-hover);}
+.cs-list:focus{border-color:var(--blue);}
 .custom-select.open .cs-list{display:block}
 .cs-item{padding:5px 12px;color:var(--page-text);cursor:pointer;border-radius:4px}
 .cs-item:hover{background:rgba(255,255,255,0.25)}
@@ -259,7 +269,10 @@ select:focus-visible{
 </div>
 
 <div class="control-panel row-mid">
-  <input id="scoreInput" class="input-score" type="number" step="0.0001" value="1.0400" placeholder="Add Score">
+  <input id="scoreInput" class="input-score" type="number" placeholder="Add Score">
+</div>
+
+<div class="control-panel row-bottom">
   <button class="btn-change" onclick="changeLog()">Change</button>
   <button class="btn-add-score gray" onclick="addScoreRow()">Add Score Row</button>
   <button class="btn-copy" onclick="copyTableImage()">Copy Image</button>
