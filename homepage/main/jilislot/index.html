@@ -3,374 +3,263 @@
 <head>
 <meta charset="UTF-8">
 <title>JILI Game Log</title>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
 
-body {
-    margin: 0;
-    background: #ffffff;
-    font-family: 'Source Sans Pro', Arial, sans-serif;
-    font-size: 13px;
-    color: #333;
+body{
+  margin:0;
+  background:#fff;
+  font-family:'Source Sans Pro',Arial,sans-serif;
+  font-size:13px;
+  color:#333;
 }
 
-.table-wrap {
-    width: 100%;
-    overflow-x: auto;
+.control-panel{
+  background:#000;
+  padding:10px;
+  display:grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.4fr auto 1fr auto auto;
+  gap:8px;
 }
 
-.game-log-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
+.control-panel.second{
+  grid-template-columns: 1fr 1fr auto auto auto;
 }
 
-.game-log-table td {
-    padding: 8px;
-    line-height: 1.42857143;
-    vertical-align: top;
-    border-top: 1px solid #f1f1f1;
-    white-space: nowrap;
+input,select,button{
+  height:32px;
+  border-radius:6px;
+  border:1px solid #424242;
+  background:#141414;
+  color:#fff;
+  padding:0 10px;
+  box-sizing:border-box;
 }
 
-.game-log-table tr:hover {
-    background: #f9f9f9;
+button{
+  background:#1668dc;
+  border:none;
+  cursor:pointer;
 }
 
-a {
-    color: #337ab7;
-    text-decoration: none;
+button:hover{background:#3c89e8}
+.reset{background:red}
+.gray{background:#555}
+
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
 }
 
-a:hover {
-    text-decoration: underline;
+.game-log-table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
 }
 
-.badge {
-    display: inline-block;
-    min-width: 10px;
-    padding: 3px 7px;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1;
-    color: #fff;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    background-color: #777;
-    border-radius: 10px;
+.game-log-table td{
+  padding:8px;
+  line-height:1.42857143;
+  vertical-align:top;
+  border-top:1px solid #f1f1f1;
+  white-space:nowrap;
 }
 
-.badge-win {
-    background-color: #00a65a;
+.game-log-table tr:hover{background:#f9f9f9}
+
+a{
+  color:#337ab7;
+  text-decoration:none;
 }
 
-.badge-lose {
-    background-color: #dd4b39;
+.badge{
+  display:inline-block;
+  min-width:10px;
+  padding:3px 7px;
+  font-size:12px;
+  font-weight:700;
+  line-height:1;
+  color:#fff;
+  text-align:center;
+  white-space:nowrap;
+  vertical-align:middle;
+  background-color:#777;
+  border-radius:10px;
 }
 
-.badge-draw {
-    background-color: #777;
-}
-
-.badge-bet {
-    background-color: #3c8dbc;
-}
-
-.badge-transfer {
-    background-color: #777;
-}
-
-.badge-withdraw {
-    background-color: #00a65a;
-}
-
-.amount-negative {
-    color: #000;
-}
-
-.amount-positive {
-    color: #000;
-}
+.badge-win{background:#00a65a}
+.badge-lose{background:#dd4b39}
+.badge-draw{background:#777}
+.badge-bet{background:#3c8dbc}
+.badge-transfer{background:#777}
+.badge-withdraw{background:#00a65a}
 </style>
 </head>
 
 <body>
 
-<div class="table-wrap">
-<table class="game-log-table">
-<tbody>
+<div class="control-panel">
+  <input id="gameName" value="460_3 Charge Buffalo" placeholder="Game Name">
+  <input id="scoreInput" type="number" step="0.0001" value="1.0400" placeholder="Add Score">
+  <select id="betInput">
+    <option value="0.1000">0.1000</option>
+    <option value="0.2000">0.2000</option>
+    <option value="0.5000">0.5000</option>
+    <option value="1.0000">1.0000</option>
+  </select>
+  <select id="minWinInput">
+    <option value="0.0000">Min Win 0.0000</option>
+    <option value="0.0300">Min Win 0.0300</option>
+    <option value="0.1000">Min Win 0.1000</option>
+    <option value="0.1700">Min Win 0.1700</option>
+    <option value="0.2000">Min Win 0.2000</option>
+    <option value="0.4000">Min Win 0.4000</option>
+  </select>
+  <input id="dateInput" type="datetime-local">
+  <button onclick="setNow()">Now</button>
+  <button onclick="changeLog()">Change</button>
+  <button onclick="copyTableImage()">Copy Image</button>
+</div>
 
-<tr>
+<div class="control-panel second">
+  <input id="emailInput" value="585630940@api-385.game" placeholder="User Email">
+  <input id="rowInput" type="number" value="18" placeholder="Rows">
+  <button onclick="generateRows()">Generate Rows</button>
+  <button onclick="addScoreRow()" class="gray">Add Score Row</button>
+  <button onclick="resetTable()" class="reset">Reset Log</button>
+</div>
+
+<div class="table-wrap" id="captureArea">
+<table class="game-log-table">
+<tbody id="logBody"></tbody>
+</table>
+</div>
+
+<script>
+let balance = 1.0400;
+const gaps = [4,5,7,9,12,15,17,18];
+
+function pad(n){return String(n).padStart(2,'0')}
+
+function formatDate(d){
+  return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+
+  pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+}
+
+function setNow(){
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  document.getElementById("dateInput").value = d.toISOString().slice(0,16);
+}
+
+function getStartDate(){
+  const val = document.getElementById("dateInput").value;
+  return val ? new Date(val) : new Date();
+}
+
+function orderId(){
+  return "224183" + Math.floor(100000000000 + Math.random()*899999999999) + "0460";
+}
+
+function randomGap(){
+  return gaps[Math.floor(Math.random()*gaps.length)];
+}
+
+function createBetRow(time){
+  const game = document.getElementById("gameName").value || "460_3 Charge Buffalo";
+  const email = document.getElementById("emailInput").value || "585630940@api-385.game";
+  const bet = parseFloat(document.getElementById("betInput").value);
+  const minWin = parseFloat(document.getElementById("minWinInput").value);
+
+  const winList = [0, minWin, 0.0000, 0.0300, 0.1000, 0.1700, 0.2000, 0.4000];
+  const win = winList[Math.floor(Math.random()*winList.length)];
+
+  const profit = win - bet;
+  balance += profit;
+
+  let status = "Draw", badge = "badge-draw";
+  if(profit > 0){status="Win"; badge="badge-win"}
+  if(profit < 0){status="Lose"; badge="badge-lose"}
+
+  return `
+  <tr>
+    <td><span class="badge ${badge}">${status}</span></td>
+    <td><span class="badge badge-bet">Bet</span></td>
+    <td>${game}</td>
+    <td><a href="#">${email}</a></td>
+    <td><a href="#">${orderId()}</a></td>
+    <td>${formatDate(time)}</td>
+    <td>-${bet.toFixed(4)}</td>
+    <td>${win.toFixed(4)}</td>
+    <td>${profit.toFixed(4)}</td>
+    <td>${balance.toFixed(4)}</td>
+    <td>${formatDate(time)}</td>
+  </tr>`;
+}
+
+function generateRows(){
+  const tbody = document.getElementById("logBody");
+  tbody.innerHTML = "";
+  balance = parseFloat(document.getElementById("scoreInput").value || 0);
+
+  let rows = parseInt(document.getElementById("rowInput").value || 18);
+  let time = getStartDate();
+
+  for(let i=0;i<rows;i++){
+    tbody.insertAdjacentHTML("beforeend", createBetRow(new Date(time)));
+    time.setSeconds(time.getSeconds() - randomGap());
+  }
+}
+
+function changeLog(){
+  const tbody = document.getElementById("logBody");
+  const time = getStartDate();
+  tbody.insertAdjacentHTML("afterbegin", createBetRow(time));
+}
+
+function addScoreRow(){
+  const email = document.getElementById("emailInput").value;
+  const score = parseFloat(document.getElementById("scoreInput").value || 0);
+  balance = score;
+  const time = getStartDate();
+
+  const row = `
+  <tr>
     <td><span class="badge badge-transfer">TransferSucceed</span></td>
     <td><span class="badge badge-withdraw">WithDraw</span></td>
     <td></td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td>1778429505338242003</td>
-    <td>2026-05-11 00:42:33</td>
+    <td><a href="#">${email}</a></td>
+    <td>${Date.now()}</td>
+    <td>${formatDate(time)}</td>
     <td>0.0000</td>
-    <td>-0.0700</td>
-    <td>-0.0700</td>
-    <td>0.0000</td>
-    <td>2026-05-11 00:42:33</td>
-</tr>
+    <td>${score.toFixed(4)}</td>
+    <td>${score.toFixed(4)}</td>
+    <td>${balance.toFixed(4)}</td>
+    <td>${formatDate(time)}</td>
+  </tr>`;
+  document.getElementById("logBody").insertAdjacentHTML("afterbegin", row);
+}
 
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241832579000290460</a></td>
-    <td>2026-05-11 00:42:16</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.0700</td>
-    <td>2026-05-11 00:42:16</td>
-</tr>
+function resetTable(){
+  document.getElementById("logBody").innerHTML = "";
+}
 
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241832499001090460</a></td>
-    <td>2026-05-11 00:42:11</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.1700</td>
-    <td>2026-05-11 00:42:11</td>
-</tr>
+async function copyTableImage(){
+  const area = document.getElementById("captureArea");
+  const canvas = await html2canvas(area,{backgroundColor:"#ffffff",scale:2});
+  canvas.toBlob(async blob=>{
+    await navigator.clipboard.write([
+      new ClipboardItem({"image/png": blob})
+    ]);
+    alert("Table image copied bro");
+  });
+}
 
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241832369000310460</a></td>
-    <td>2026-05-11 00:42:03</td>
-    <td>-0.1000</td>
-    <td>0.0300</td>
-    <td>-0.0700</td>
-    <td>0.2700</td>
-    <td>2026-05-11 00:42:03</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241832225000920460</a></td>
-    <td>2026-05-11 00:41:54</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.3400</td>
-    <td>2026-05-11 00:41:54</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241832193000070460</a></td>
-    <td>2026-05-11 00:41:52</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.4400</td>
-    <td>2026-05-11 00:41:52</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-win">Win</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241832131000170460</a></td>
-    <td>2026-05-11 00:41:48</td>
-    <td>-0.1000</td>
-    <td>0.1700</td>
-    <td>0.0700</td>
-    <td>0.5400</td>
-    <td>2026-05-11 00:41:48</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-draw">Draw</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241832048001090460</a></td>
-    <td>2026-05-11 00:41:43</td>
-    <td>-0.1000</td>
-    <td>0.1000</td>
-    <td>0.0000</td>
-    <td>0.4700</td>
-    <td>2026-05-11 00:41:43</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-draw">Draw</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831987001240460</a></td>
-    <td>2026-05-11 00:41:39</td>
-    <td>-0.1000</td>
-    <td>0.1000</td>
-    <td>0.0000</td>
-    <td>0.4700</td>
-    <td>2026-05-11 00:41:39</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-win">Win</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831923000070460</a></td>
-    <td>2026-05-11 00:41:35</td>
-    <td>-0.1000</td>
-    <td>0.2000</td>
-    <td>0.1000</td>
-    <td>0.4700</td>
-    <td>2026-05-11 00:41:35</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831873000180460</a></td>
-    <td>2026-05-11 00:41:32</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.3700</td>
-    <td>2026-05-11 00:41:32</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831825000660460</a></td>
-    <td>2026-05-11 00:41:29</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.4700</td>
-    <td>2026-05-11 00:41:29</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-win">Win</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831745000040460</a></td>
-    <td>2026-05-11 00:41:24</td>
-    <td>-0.1000</td>
-    <td>0.2000</td>
-    <td>0.1000</td>
-    <td>0.5700</td>
-    <td>2026-05-11 00:41:24</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-win">Win</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831651001270460</a></td>
-    <td>2026-05-11 00:41:18</td>
-    <td>-0.1000</td>
-    <td>0.4000</td>
-    <td>0.3000</td>
-    <td>0.4700</td>
-    <td>2026-05-11 00:41:18</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831619000660460</a></td>
-    <td>2026-05-11 00:41:16</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.1700</td>
-    <td>2026-05-11 00:41:16</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831569001220460</a></td>
-    <td>2026-05-11 00:41:13</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.2700</td>
-    <td>2026-05-11 00:41:13</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831537000850460</a></td>
-    <td>2026-05-11 00:41:11</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.3700</td>
-    <td>2026-05-11 00:41:11</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831491000210460</a></td>
-    <td>2026-05-11 00:41:08</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.4700</td>
-    <td>2026-05-11 00:41:08</td>
-</tr>
-
-<tr>
-    <td><span class="badge badge-lose">Lose</span></td>
-    <td><span class="badge badge-bet">Bet</span></td>
-    <td>460_3 Charge Buffalo</td>
-    <td><a href="#">585630940@api-385.game</a></td>
-    <td><a href="#">2241831457000020460</a></td>
-    <td>2026-05-11 00:41:06</td>
-    <td>-0.1000</td>
-    <td>0.0000</td>
-    <td>-0.1000</td>
-    <td>0.5700</td>
-    <td>2026-05-11 00:41:06</td>
-</tr>
-
-</tbody>
-</table>
-</div>
+setNow();
+generateRows();
+</script>
 
 </body>
 </html>
