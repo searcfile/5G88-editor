@@ -318,7 +318,7 @@ function addScoreRow(){
   const score = Number(document.getElementById("scoreInput").value || 0);
   const scoreTime = getStartDate();
 
-  scoreTime.setSeconds(scoreTime.getSeconds() - randomScoreGap());
+  scoreTime.setSeconds(scoreTime.getSeconds() + randomScoreGap());
 
   const row = `
   <tr>
