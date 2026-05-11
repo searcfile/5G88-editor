@@ -8,12 +8,12 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
 
-body{margin:0;background:#fff;font-family:'Source Sans Pro',Arial,sans-serif;font-size:13px;color:#333}
+body{margin:0;background:#fff;font-family:'Source Sans Pro',Arial,sans-serif;font-size:14px;color:#333}
 .control-panel{background:#000;padding:10px;display:grid;grid-template-columns:1.5fr 1fr 1.4fr 1.5fr auto auto;gap:8px}
 .control-panel.second{grid-template-columns:1fr auto auto auto auto;gap:8px}
 
-input,button{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:0 10px;box-sizing:border-box}
-button{background:#1668dc;border:none;cursor:pointer;white-space:nowrap}
+input{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:4px 11px;box-sizing:border-box}
+button{background:#1668dc;cursor:pointer;white-space:nowrap;height:32px;border-radius:6px;border:1px solid transparent;padding:0px 15px;color:#fff;}
 button:hover{background:#3c89e8}
 .reset{background:red}.gray{background:#555}
 
@@ -71,10 +71,11 @@ a{color:#337ab7;text-decoration:none}
 .cs-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cs-arrow{width:14px;height:14px;fill:#aaa;flex:0 0 14px;margin-left:8px}
 .custom-select.open .cs-arrow{transform:rotate(180deg)}
-.cs-list{display:none;position:absolute;z-index:9999;top:34px;left:0;right:0;background:#1f1f1f;border-radius:8px;max-height:260px;overflow:auto;padding:4px;}
+.cs-list{display:none;position:absolute;z-index:9999;top:34px;left:0;right:0;background:#1f1f1f;border-radius:8px;max-height:260px;overflow:auto;padding:4px; box-shadow: 0 8px 20px rgba(0, 0, 0, .35);}
 .custom-select.open .cs-list{display:block}
-.cs-item{padding:5px 12px;color:#fff;cursor:pointer}
-.cs-item:hover,.cs-item.active{background:#1668dc}
+.cs-item{padding:5px 12px;color:#fff;cursor:pointer;border-radius:4px;}
+.cs-item:hover{background:rgba(255,255,255,0.25);}
+.cs-item.active{background:#111a2c;}
 </style>
 </head>
 
