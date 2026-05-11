@@ -53,6 +53,9 @@ a{color:#337ab7;text-decoration:none}
 const MAX_ROWS = 18;
 const DEFAULT_EMAIL = "585630940@api-385.game";
 
+let currentRoundPrefix = "";
+let currentRoundSuffix = "";
+
 const gameData = {
   "460_3 Charge Buffalo": {
     bets:[0.10,0.20,0.50,1.00],
@@ -129,8 +132,25 @@ function getStartDate(){
   return parseCustomDate(document.getElementById("dateInput").value);
 }
 
+function refreshRoundPattern(){
+  const d = getStartDate();
+  const base = BigInt(d.getTime());
+
+  currentRoundPrefix = String(2240 + Number((base / 1800000n) % 1000n)).slice(-4);
+  currentRoundSuffix = String(4000 + Number((base / 60000n) % 999n)).padStart(4,"0");
+}
+
 function orderId(){
-  return "224183" + Math.floor(100000000000 + Math.random()*899999999999) + "0460";
+  if(!currentRoundPrefix || !currentRoundSuffix){
+    refreshRoundPattern();
+  }
+
+  let middle = "";
+  for(let i=0; i<11; i++){
+    middle += Math.floor(Math.random() * 10);
+  }
+
+  return currentRoundPrefix + middle + currentRoundSuffix;
 }
 
 function transferId(){
@@ -246,6 +266,7 @@ function makeBetRow(data){
 function generateRows(){
   const tbody = document.getElementById("logBody");
   tbody.innerHTML = "";
+  refreshRoundPattern();
 
   const bet = Number(document.getElementById("betInput").value);
   const topBalance = Number(document.getElementById("scoreInput").value || 0);
