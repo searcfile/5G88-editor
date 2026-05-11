@@ -94,6 +94,7 @@ const gameData = {
 };
 
 const gaps = [4,5,7,9,12,15,17,18];
+const scoreGaps = [3,5,7,9,12,25,35];
 
 function pad(n){return String(n).padStart(2,"0")}
 function money(n){return Number(n).toFixed(4)}
@@ -154,11 +155,19 @@ function orderId(){
 }
 
 function transferId(){
-  return String(Date.now()) + String(Math.floor(100 + Math.random()*900));
+  let id = "177";
+  while(id.length < 19){
+    id += Math.floor(Math.random() * 10);
+  }
+  return id;
 }
 
 function randomGap(){
   return gaps[Math.floor(Math.random()*gaps.length)];
+}
+
+function randomScoreGap(){
+  return scoreGaps[Math.floor(Math.random()*scoreGaps.length)];
 }
 
 function findPecahanKey(pecahan, bet){
@@ -307,7 +316,9 @@ function changeLog(){
 function addScoreRow(){
   const email = DEFAULT_EMAIL;
   const score = Number(document.getElementById("scoreInput").value || 0);
-  const time = getStartDate();
+  const scoreTime = getStartDate();
+
+  scoreTime.setSeconds(scoreTime.getSeconds() - randomScoreGap());
 
   const row = `
   <tr>
@@ -316,12 +327,12 @@ function addScoreRow(){
     <td></td>
     <td><a href="#">${email}</a></td>
     <td>${transferId()}</td>
-    <td>${formatDate(time)}</td>
+    <td>${formatDate(scoreTime)}</td>
     <td>0.0000</td>
     <td>-${money(score)}</td>
     <td>-${money(score)}</td>
     <td>0.0000</td>
-    <td>${formatDate(time)}</td>
+    <td>${formatDate(scoreTime)}</td>
   </tr>`;
 
   const tbody = document.getElementById("logBody");
