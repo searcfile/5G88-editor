@@ -323,13 +323,13 @@ select:focus-visible{
 }
   .cs-search{
   width:calc(100% - 8px);
-  height:32px;
+  height:30px;
   margin:4px;
   border-radius:6px;
   border:1px solid var(--blue);
   background:var(--page-input);
   color:var(--page-text);
-  padding:4px 10px;
+  padding:4px 11px;
   box-sizing:border-box;
 }
 
@@ -1169,44 +1169,36 @@ function updateWinDropdown(savedWin){
   }, "Select Win");
 }
 
-function randomizeWin(value){
-  // 5% chance baru ada cent detail
-  const hasCents = Math.random() < 0.05;
+function randomizeWin(value, bet){
+  const centChance = 0.0025; // 0.25% saja
 
-  if(hasCents){
+  if(Math.random() < centChance){
     return Math.round(value * 10000) / 10000;
   }
 
-  // 50% jadi integer
-  if(Math.random() < 0.5){
-    return Math.round(value);
-  }
-
-  // selebihnya 1 decimal sahaja
-  return Math.round(value * 10) / 10;
+  return Math.round(value);
 }
 
 function splitTotalWin(totalWin, rows){
   let wins = Array(rows).fill(0);
-
   if(totalWin <= 0) return wins;
 
+  const bet = Number(selectedBet || 0);
   let winRows = Math.max(2, Math.floor(rows * 0.45));
-  let remain = totalWin;
+
+  let remain = Math.round(Number(totalWin));
 
   for(let i=0; i<winRows-1; i++){
-    let max = remain / 2;
+    let max = Math.floor(remain / 2);
+    let part = Math.floor(Math.random() * (max + 1));
 
-    let part = Math.random() * max;
-
-    // 🔥 realistic rounding
-    part = randomizeWin(part);
+    part = randomizeWin(part, bet);
 
     wins[i] = part;
     remain -= part;
   }
 
-  wins[winRows-1] = randomizeWin(remain);
+  wins[winRows-1] = randomizeWin(remain, bet);
 
   for(let i=wins.length-1; i>0; i--){
     let j = Math.floor(Math.random() * (i+1));
