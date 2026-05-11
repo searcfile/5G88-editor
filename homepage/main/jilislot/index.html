@@ -244,7 +244,7 @@ function generateRows(){
   tbody.innerHTML = "";
 
   const bet = Number(document.getElementById("betInput").value);
-  const startBalance = Number(document.getElementById("scoreInput").value || 0);
+  const topBalance = Number(document.getElementById("scoreInput").value || 0);
   const totalWin = Number(document.getElementById("totalWinInput").value || 0);
   const wins = splitTotalWin(totalWin, MAX_ROWS);
 
@@ -252,26 +252,25 @@ function generateRows(){
   let rowsData = [];
 
   for(let i=0; i<MAX_ROWS; i++){
+    const win = Number(wins[i]);
+    const profit = win - bet;
+
     rowsData.push({
       time: new Date(time),
-      win: wins[i],
+      win: win,
+      profit: profit,
       balanceAfter: 0
     });
 
     time.setSeconds(time.getSeconds() - randomGap());
   }
 
-  rowsData.reverse();
+  let runningBalance = topBalance;
 
-  let runningBalance = startBalance;
-
-  rowsData.forEach(row=>{
-    const profit = Number(row.win) - bet;
-    runningBalance += profit;
-    row.balanceAfter = runningBalance;
-  });
-
-  rowsData.reverse();
+  for(let i=0; i<rowsData.length; i++){
+    rowsData[i].balanceAfter = runningBalance;
+    runningBalance -= rowsData[i].profit;
+  }
 
   tbody.innerHTML = rowsData.map(row => makeBetRow(row)).join("");
 }
