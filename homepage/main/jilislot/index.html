@@ -32,7 +32,7 @@ button:hover{background:#3c89e8}
   min-width:max-content;
   border-collapse:collapse;
   background:#fff;
-  table-layout:auto;
+  table-layout:fixed;
 }
 
 .game-log-table td{
@@ -45,16 +45,17 @@ button:hover{background:#3c89e8}
 }
 
 .game-log-table td:nth-child(1){width:122px}
-.game-log-table td:nth-child(2){width:110px}
-.game-log-table td:nth-child(3){width:142px}
-.game-log-table td:nth-child(4){width:173px}
-.game-log-table td:nth-child(5){width:151px}
-.game-log-table td:nth-child(6){width:134px}
+.game-log-table td:nth-child(2){width:126px}
+.game-log-table td:nth-child(3){width:150px}
+.game-log-table td:nth-child(4){width:185px}
+.game-log-table td:nth-child(5){width:160px}
+.game-log-table td:nth-child(6){width:145px}
 .game-log-table td:nth-child(7){width:78px}
-.game-log-table td:nth-child(8){width:78px}
-.game-log-table td:nth-child(9){width:116px}
-.game-log-table td:nth-child(10){width:66px}
-.game-log-table td:nth-child(11){width:134px}
+.game-log-table td:nth-child(8){width:120px}
+.game-log-table td:nth-child(9){width:78px}
+.game-log-table td:nth-child(10){width:70px}
+.game-log-table td:nth-child(11){width:115px}
+.game-log-table td:nth-child(12){width:140px}
 
 .game-log-table tr:hover{background:#f9f9f9}
 a{color:#337ab7;text-decoration:none}
@@ -63,7 +64,6 @@ a{color:#337ab7;text-decoration:none}
 .badge-win{background:#00a65a}.badge-lose{background:#dd4b39}.badge-draw{background:#777}.badge-bet{background:#3c8dbc}.badge-transfer{background:#777}.badge-withdraw{background:#00a65a}
 .round-id{color:#999!important}
 
-/* custom dropdown */
 .custom-select{position:relative;height:32px}
 .cs-display{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:0 10px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
 .cs-display:after{content:none}
@@ -102,21 +102,17 @@ a{color:#337ab7;text-decoration:none}
 </div>
 
 <script>
-const MAX_ROWS =23;
+const MAX_ROWS = 23;
 const DEFAULT_EMAIL = "585630940@api-385.game";
 const STORAGE_KEY = "jili_game_log_state_v1";
 
 let currentRoundPrefix = "";
 let currentRoundSuffix = "";
-
 let selectedGame = "";
 let selectedBet = 0;
 let selectedTotalWin = 0;
 
-const ARROW_SVG = `
-<svg class="cs-arrow" viewBox="0 0 1024 1024">
-  <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
-</svg>`;
+const ARROW_SVG = `<svg class="cs-arrow" viewBox="0 0 1024 1024"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path></svg>`;
 
 const gameData = {
   "460_3 Charge Buffalo": {
@@ -336,6 +332,7 @@ function makeBetRow(data){
     <td>${money(win)}</td>
     <td>${money(profit)}</td>
     <td>${money(data.balanceAfter)}</td>
+    <td></td>
     <td>${formatDate(data.time)}</td>
   </tr>`;
 }
@@ -393,6 +390,7 @@ function addScoreRow(){
     <td>-${money(score)}</td>
     <td>-${money(score)}</td>
     <td>0.0000</td>
+    <td></td>
     <td>${formatDate(scoreTime)}</td>
   </tr>`;
 
