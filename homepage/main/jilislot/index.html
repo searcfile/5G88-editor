@@ -95,6 +95,10 @@ const gaps = [4,5,7,9,12,15,17,18];
 
 function pad(n){return String(n).padStart(2,"0")}
 
+function money(n){
+  return Number(n).toFixed(4);
+}
+
 function formatDate(d){
   return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+
          pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
@@ -106,7 +110,6 @@ function setNow(){
 
 function parseCustomDate(value){
   if(!value) return new Date();
-
   value = value.trim();
 
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
@@ -116,14 +119,14 @@ function parseCustomDate(value){
     return new Date();
   }
 
-  const y = Number(match[1]);
-  const m = Number(match[2]) - 1;
-  const d = Number(match[3]);
-  const h = Number(match[4]);
-  const min = Number(match[5]);
-  const s = Number(match[6] || 0);
-
-  return new Date(y, m, d, h, min, s);
+  return new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+    Number(match[4]),
+    Number(match[5]),
+    Number(match[6] || 0)
+  );
 }
 
 function getStartDate(){
@@ -136,6 +139,10 @@ function orderId(){
 
 function randomGap(){
   return gaps[Math.floor(Math.random()*gaps.length)];
+}
+
+function findPecahanKey(pecahan, bet){
+  return Object.keys(pecahan).find(key => Number(key) === Number(bet));
 }
 
 function initGameDropdown(){
@@ -155,10 +162,11 @@ function initGameDropdown(){
 function updateBetDropdown(){
   const game = document.getElementById("gameSelect").value;
   const betInput = document.getElementById("betInput");
+
   betInput.innerHTML = "";
 
   gameData[game].bets.forEach(bet=>{
-    betInput.innerHTML += `<option value="${bet}">${bet.toFixed(4)}</option>`;
+    betInput.innerHTML += `<option value="${Number(bet)}">${money(bet)}</option>`;
   });
 
   updateWinDropdown();
@@ -166,12 +174,20 @@ function updateBetDropdown(){
 
 function updateWinDropdown(){
   const game = document.getElementById("gameSelect").value;
-  const bet = parseFloat(document.getElementById("betInput").value);
+  const bet = Number(document.getElementById("betInput").value);
   const totalWinInput = document.getElementById("totalWinInput");
+  const pecahan = gameData[game].pecahan;
+  const key = findPecahanKey(pecahan, bet);
 
   totalWinInput.innerHTML = "";
-  gameData[game].pecahan[bet].forEach(win=>{
-    totalWinInput.innerHTML += `<option value="${win}">Total Win ${win.toFixed(4)}</option>`;
+
+  if(!key){
+    totalWinInput.innerHTML = `<option value="0">Total Win 0.0000</option>`;
+    return;
+  }
+
+  pecahan[key].forEach(win=>{
+    totalWinInput.innerHTML += `<option value="${Number(win)}">Total Win ${money(win)}</option>`;
   });
 }
 
@@ -203,8 +219,8 @@ function splitTotalWin(totalWin, rows){
 function createBetRow(time, winAmount){
   const game = document.getElementById("gameSelect").value;
   const email = DEFAULT_EMAIL;
-  const bet = parseFloat(document.getElementById("betInput").value);
-  const win = parseFloat(winAmount);
+  const bet = Number(document.getElementById("betInput").value);
+  const win = Number(winAmount);
 
   const profit = win - bet;
   balance += profit;
@@ -221,10 +237,10 @@ function createBetRow(time, winAmount){
     <td><a href="#">${email}</a></td>
     <td><a href="#">${orderId()}</a></td>
     <td>${formatDate(time)}</td>
-    <td>-${bet.toFixed(4)}</td>
-    <td>${win.toFixed(4)}</td>
-    <td>${profit.toFixed(4)}</td>
-    <td>${balance.toFixed(4)}</td>
+    <td>-${money(bet)}</td>
+    <td>${money(win)}</td>
+    <td>${money(profit)}</td>
+    <td>${money(balance)}</td>
     <td>${formatDate(time)}</td>
   </tr>`;
 }
@@ -233,9 +249,9 @@ function generateRows(){
   const tbody = document.getElementById("logBody");
   tbody.innerHTML = "";
 
-  balance = parseFloat(document.getElementById("scoreInput").value || 0);
+  balance = Number(document.getElementById("scoreInput").value || 0);
 
-  const totalWin = parseFloat(document.getElementById("totalWinInput").value || 0);
+  const totalWin = Number(document.getElementById("totalWinInput").value || 0);
   const wins = splitTotalWin(totalWin, MAX_ROWS);
 
   let time = getStartDate();
@@ -252,7 +268,7 @@ function changeLog(){
 
 function addScoreRow(){
   const email = DEFAULT_EMAIL;
-  const score = parseFloat(document.getElementById("scoreInput").value || 0);
+  const score = Number(document.getElementById("scoreInput").value || 0);
   balance = score;
   const time = getStartDate();
 
@@ -265,9 +281,9 @@ function addScoreRow(){
     <td>${Date.now()}</td>
     <td>${formatDate(time)}</td>
     <td>0.0000</td>
-    <td>${score.toFixed(4)}</td>
-    <td>${score.toFixed(4)}</td>
-    <td>${balance.toFixed(4)}</td>
+    <td>${money(score)}</td>
+    <td>${money(score)}</td>
+    <td>${money(balance)}</td>
     <td>${formatDate(time)}</td>
   </tr>`;
 
