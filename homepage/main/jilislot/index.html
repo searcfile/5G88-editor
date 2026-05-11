@@ -40,7 +40,7 @@ a{color:#337ab7;text-decoration:none}
 
 <div class="control-panel second">
   <input id="emailInput" value="585630940@api-385.game" placeholder="User Email">
-  <input id="rowInput" type="number" value="18" placeholder="Rows">
+  <input id="rowInput" type="number" value="18" min="1" max="18" placeholder="Rows">
   <button onclick="changeLog()">Change</button>
   <button onclick="addScoreRow()" class="gray">Add Score Row</button>
   <button onclick="resetTable()" class="reset">Reset Log</button>
@@ -96,6 +96,7 @@ let balance = 1.0400;
 const gaps = [4,5,7,9,12,15,17,18];
 
 function pad(n){return String(n).padStart(2,"0")}
+
 function formatDate(d){
   return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+
          pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
@@ -118,6 +119,14 @@ function orderId(){
 
 function randomGap(){
   return gaps[Math.floor(Math.random()*gaps.length)];
+}
+
+function getMaxRows(){
+  let rows = parseInt(document.getElementById("rowInput").value || 18);
+  if(rows > 18) rows = 18;
+  if(rows < 1) rows = 1;
+  document.getElementById("rowInput").value = rows;
+  return rows;
 }
 
 function initGameDropdown(){
@@ -159,8 +168,10 @@ function updateWinDropdown(){
 
 function splitTotalWin(totalWin, rows){
   let wins = Array(rows).fill(0);
-  let winRows = Math.max(2, Math.floor(rows * 0.45));
 
+  if(totalWin <= 0) return wins;
+
+  let winRows = Math.max(2, Math.floor(rows * 0.45));
   let remain = totalWin;
 
   for(let i=0; i<winRows-1; i++){
@@ -216,7 +227,7 @@ function generateRows(){
 
   balance = parseFloat(document.getElementById("scoreInput").value || 0);
 
-  const rows = parseInt(document.getElementById("rowInput").value || 18);
+  const rows = getMaxRows();
   const totalWin = parseFloat(document.getElementById("totalWinInput").value || 0);
   const wins = splitTotalWin(totalWin, rows);
 
@@ -229,15 +240,7 @@ function generateRows(){
 }
 
 function changeLog(){
-  const totalWin = parseFloat(document.getElementById("totalWinInput").value || 0);
-  const rows = parseInt(document.getElementById("rowInput").value || 18);
-  const wins = splitTotalWin(totalWin, rows);
-  const win = wins[Math.floor(Math.random()*wins.length)];
-
-  document.getElementById("logBody").insertAdjacentHTML(
-    "afterbegin",
-    createBetRow(getStartDate(), win)
-  );
+  generateRows();
 }
 
 function addScoreRow(){
@@ -261,7 +264,12 @@ function addScoreRow(){
     <td>${formatDate(time)}</td>
   </tr>`;
 
-  document.getElementById("logBody").insertAdjacentHTML("afterbegin", row);
+  const tbody = document.getElementById("logBody");
+  tbody.insertAdjacentHTML("afterbegin", row);
+
+  while(tbody.children.length > 18){
+    tbody.removeChild(tbody.lastElementChild);
+  }
 }
 
 function resetTable(){
