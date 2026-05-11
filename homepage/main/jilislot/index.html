@@ -133,6 +133,10 @@ function orderId(){
   return "224183" + Math.floor(100000000000 + Math.random()*899999999999) + "0460";
 }
 
+function transferId(){
+  return String(Date.now()) + String(Math.floor(100 + Math.random()*900));
+}
+
 function randomGap(){
   return gaps[Math.floor(Math.random()*gaps.length)];
 }
@@ -290,12 +294,12 @@ function addScoreRow(){
     <td><span class="badge badge-withdraw">WithDraw</span></td>
     <td></td>
     <td><a href="#">${email}</a></td>
-    <td>${Date.now()}</td>
+    <td>${transferId()}</td>
     <td>${formatDate(time)}</td>
     <td>0.0000</td>
-    <td>${money(score)}</td>
-    <td>${money(score)}</td>
-    <td>${money(score)}</td>
+    <td>-${money(score)}</td>
+    <td>-${money(score)}</td>
+    <td>0.0000</td>
     <td>${formatDate(time)}</td>
   </tr>`;
 
