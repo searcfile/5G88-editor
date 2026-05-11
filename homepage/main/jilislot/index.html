@@ -256,7 +256,7 @@ function updateBetDropdown(savedBet, savedWin){
   const bets = gameData[selectedGame].bets.map(Number);
   selectedBet = savedBet && bets.some(b=>Number(b)===Number(savedBet)) ? Number(savedBet) : bets[0];
 
-  makeCustomSelect("betInput", bets, selectedBet, v => money(v), function(v){
+  makeCustomSelect("betInput", bets, selectedBet, v => "Total Bet " + money(v), function(v){
     selectedBet = Number(v);
     updateWinDropdown();
   });
@@ -316,7 +316,7 @@ function makeBetRow(data){
     <td><span class="badge badge-bet">Bet</span></td>
     <td>${game}</td>
     <td><a href="#">${email}</a></td>
-    <td><a href="#">${orderId()}</a>
+    <td><a href="#">${orderId()}</a></td>
     <td>${formatDate(data.time)}</td>
     <td>-${money(bet)}</td>
     <td>${money(win)}</td>
