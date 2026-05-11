@@ -90,14 +90,10 @@ const gameData = {
   }
 };
 
-let balance = 1.0400;
 const gaps = [4,5,7,9,12,15,17,18];
 
 function pad(n){return String(n).padStart(2,"0")}
-
-function money(n){
-  return Number(n).toFixed(4);
-}
+function money(n){return Number(n).toFixed(4)}
 
 function formatDate(d){
   return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+
@@ -216,14 +212,12 @@ function splitTotalWin(totalWin, rows){
   return wins;
 }
 
-function createBetRow(time, winAmount){
+function makeBetRow(data){
   const game = document.getElementById("gameSelect").value;
   const email = DEFAULT_EMAIL;
   const bet = Number(document.getElementById("betInput").value);
-  const win = Number(winAmount);
-
+  const win = Number(data.win);
   const profit = win - bet;
-  balance += profit;
 
   let status = "Draw", badge = "badge-draw";
   if(profit > 0){status="Win"; badge="badge-win"}
@@ -236,12 +230,12 @@ function createBetRow(time, winAmount){
     <td>${game}</td>
     <td><a href="#">${email}</a></td>
     <td><a href="#">${orderId()}</a></td>
-    <td>${formatDate(time)}</td>
+    <td>${formatDate(data.time)}</td>
     <td>-${money(bet)}</td>
     <td>${money(win)}</td>
     <td>${money(profit)}</td>
-    <td>${money(balance)}</td>
-    <td>${formatDate(time)}</td>
+    <td>${money(data.balanceAfter)}</td>
+    <td>${formatDate(data.time)}</td>
   </tr>`;
 }
 
@@ -249,17 +243,37 @@ function generateRows(){
   const tbody = document.getElementById("logBody");
   tbody.innerHTML = "";
 
-  balance = Number(document.getElementById("scoreInput").value || 0);
-
+  const bet = Number(document.getElementById("betInput").value);
+  const startBalance = Number(document.getElementById("scoreInput").value || 0);
   const totalWin = Number(document.getElementById("totalWinInput").value || 0);
   const wins = splitTotalWin(totalWin, MAX_ROWS);
 
   let time = getStartDate();
+  let rowsData = [];
 
   for(let i=0; i<MAX_ROWS; i++){
-    tbody.insertAdjacentHTML("beforeend", createBetRow(new Date(time), wins[i]));
+    rowsData.push({
+      time: new Date(time),
+      win: wins[i],
+      balanceAfter: 0
+    });
+
     time.setSeconds(time.getSeconds() - randomGap());
   }
+
+  rowsData.reverse();
+
+  let runningBalance = startBalance;
+
+  rowsData.forEach(row=>{
+    const profit = Number(row.win) - bet;
+    runningBalance += profit;
+    row.balanceAfter = runningBalance;
+  });
+
+  rowsData.reverse();
+
+  tbody.innerHTML = rowsData.map(row => makeBetRow(row)).join("");
 }
 
 function changeLog(){
@@ -269,7 +283,6 @@ function changeLog(){
 function addScoreRow(){
   const email = DEFAULT_EMAIL;
   const score = Number(document.getElementById("scoreInput").value || 0);
-  balance = score;
   const time = getStartDate();
 
   const row = `
@@ -283,7 +296,7 @@ function addScoreRow(){
     <td>0.0000</td>
     <td>${money(score)}</td>
     <td>${money(score)}</td>
-    <td>${money(balance)}</td>
+    <td>${money(score)}</td>
     <td>${formatDate(time)}</td>
   </tr>`;
 
