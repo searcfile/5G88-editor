@@ -192,7 +192,9 @@ a{color:#337ab7;text-decoration:none}
 .round-id{color:#999!important}
 
 .custom-select{position:relative;height:32px}
-
+.cs-placeholder{
+  color:var(--blur);
+}
 .cs-display{
   height:32px;
   border-radius:6px;
@@ -357,8 +359,8 @@ const STORAGE_KEY = "jili_game_log_state_v1";
 let currentRoundPrefix = "";
 let currentRoundSuffix = "";
 let selectedGame = "";
-let selectedBet = 0;
-let selectedTotalWin = 0;
+let selectedBet = "";
+let selectedTotalWin = "";
 
 const ARROW_SVG = `<svg class="cs-arrow" viewBox="0 0 1024 1024"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path></svg>`;
 
@@ -457,14 +459,19 @@ function findPecahanKey(pecahan, bet){
   return Object.keys(pecahan).find(key => Number(key) === Number(bet));
 }
 
-function makeCustomSelect(id, items, value, labelFn, onChange){
+function makeCustomSelect(id, items, value, labelFn, onChange, placeholder){
   const el = document.getElementById(id);
-  const selected = items.some(v => String(v) === String(value)) ? value : items[0];
+  const hasValue = value !== "" && value !== null && value !== undefined;
+  const selected = hasValue && items.some(v => String(v) === String(value)) ? value : "";
 
   el.dataset.value = selected;
+
+  const displayText = selected === "" ? placeholder : labelFn(selected);
+  const textClass = selected === "" ? "cs-text cs-placeholder" : "cs-text";
+
   el.innerHTML = `
     <div class="cs-display">
-      <span class="cs-text">${labelFn(selected)}</span>
+      <span class="${textClass}">${displayText}</span>
       ${ARROW_SVG}
     </div>
     <div class="cs-list">
@@ -483,6 +490,7 @@ function makeCustomSelect(id, items, value, labelFn, onChange){
     item.onclick = function(){
       el.dataset.value = this.dataset.value;
       el.querySelector(".cs-text").textContent = this.textContent;
+      el.querySelector(".cs-text").classList.remove("cs-placeholder");
       el.querySelectorAll(".cs-item").forEach(x=>x.classList.remove("active"));
       this.classList.add("active");
       el.classList.remove("open");
@@ -500,38 +508,42 @@ document.addEventListener("click", function(e){
 
 function initGameDropdown(savedGame, savedBet, savedWin){
   const games = Object.keys(gameData);
-  selectedGame = savedGame && gameData[savedGame] ? savedGame : games[0];
+  selectedGame = savedGame && gameData[savedGame] ? savedGame : "";
 
   makeCustomSelect("gameSelect", games, selectedGame, v => v, function(v){
     selectedGame = v;
-    updateBetDropdown();
-  });
+    updateBetDropdown("", "");
+  }, "Select Game");
 
   updateBetDropdown(savedBet, savedWin);
 }
 
 function updateBetDropdown(savedBet, savedWin){
-  const bets = gameData[selectedGame].bets.map(Number);
-  selectedBet = savedBet && bets.some(b=>Number(b)===Number(savedBet)) ? Number(savedBet) : bets[0];
+  const bets = selectedGame ? gameData[selectedGame].bets.map(Number) : [];
+  selectedBet = selectedGame && savedBet !== "" && savedBet !== undefined && bets.some(b=>Number(b)===Number(savedBet)) ? Number(savedBet) : "";
 
-  makeCustomSelect("betInput", bets, selectedBet, v => "Total Bet " + money(v), function(v){
+  makeCustomSelect("betInput", bets, selectedBet, v => money(v), function(v){
     selectedBet = Number(v);
-    updateWinDropdown();
-  });
+    updateWinDropdown("");
+  }, "Select Bet");
 
   updateWinDropdown(savedWin);
 }
 
 function updateWinDropdown(savedWin){
-  const pecahan = gameData[selectedGame].pecahan;
-  const key = findPecahanKey(pecahan, selectedBet);
-  const wins = key ? pecahan[key].map(Number) : [0];
+  let wins = [];
 
-  selectedTotalWin = savedWin && wins.some(w=>Number(w)===Number(savedWin)) ? Number(savedWin) : wins[0];
+  if(selectedGame && selectedBet !== ""){
+    const pecahan = gameData[selectedGame].pecahan;
+    const key = findPecahanKey(pecahan, selectedBet);
+    wins = key ? pecahan[key].map(Number) : [];
+  }
 
-  makeCustomSelect("totalWinInput", wins, selectedTotalWin, v => "Total Win " + money(v), function(v){
+  selectedTotalWin = selectedGame && selectedBet !== "" && savedWin !== "" && savedWin !== undefined && wins.some(w=>Number(w)===Number(savedWin)) ? Number(savedWin) : "";
+
+  makeCustomSelect("totalWinInput", wins, selectedTotalWin, v => money(v), function(v){
     selectedTotalWin = Number(v);
-  });
+  }, "Select Win");
 }
 
 function splitTotalWin(totalWin, rows){
@@ -586,6 +598,11 @@ function makeBetRow(data){
 }
 
 function generateRows(){
+  if(!selectedGame || selectedBet === "" || selectedTotalWin === ""){
+    alert("Pilih game, bet dan win dulu bro");
+    return;
+  }
+
   const tbody = document.getElementById("logBody");
   tbody.innerHTML = "";
   refreshRoundPattern();
@@ -674,6 +691,12 @@ function loadState(){
 function resetTable(){
   localStorage.removeItem(STORAGE_KEY);
 
+  selectedGame = "";
+  selectedBet = "";
+  selectedTotalWin = "";
+
+  initGameDropdown("", "", "");
+
   document.getElementById("logBody").innerHTML = `
     <tr class="no-data-row">
       <td colspan="12">No data</td>
@@ -728,7 +751,11 @@ initGameDropdown(saved.game, saved.bet, saved.win);
 if(saved.tableHTML){
   document.getElementById("logBody").innerHTML = saved.tableHTML;
 }else{
-  generateRows();
+  document.getElementById("logBody").innerHTML = `
+    <tr class="no-data-row">
+      <td colspan="12">No data</td>
+    </tr>
+  `;
 }
 (function () {
   const THEME_KEY = "siteTheme";
