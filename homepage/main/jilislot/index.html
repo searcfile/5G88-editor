@@ -1169,8 +1169,26 @@ function updateWinDropdown(savedWin){
   }, "Select Win");
 }
 
+function randomizeWin(value){
+  // 5% chance baru ada cent detail
+  const hasCents = Math.random() < 0.05;
+
+  if(hasCents){
+    return Math.round(value * 10000) / 10000;
+  }
+
+  // 50% jadi integer
+  if(Math.random() < 0.5){
+    return Math.round(value);
+  }
+
+  // selebihnya 1 decimal sahaja
+  return Math.round(value * 10) / 10;
+}
+
 function splitTotalWin(totalWin, rows){
   let wins = Array(rows).fill(0);
+
   if(totalWin <= 0) return wins;
 
   let winRows = Math.max(2, Math.floor(rows * 0.45));
@@ -1178,17 +1196,23 @@ function splitTotalWin(totalWin, rows){
 
   for(let i=0; i<winRows-1; i++){
     let max = remain / 2;
-    let part = Math.round((Math.random() * max) * 10000) / 10000;
+
+    let part = Math.random() * max;
+
+    // 🔥 realistic rounding
+    part = randomizeWin(part);
+
     wins[i] = part;
     remain -= part;
   }
 
-  wins[winRows-1] = Math.round(remain * 10000) / 10000;
+  wins[winRows-1] = randomizeWin(remain);
 
   for(let i=wins.length-1; i>0; i--){
     let j = Math.floor(Math.random() * (i+1));
     [wins[i], wins[j]] = [wins[j], wins[i]];
   }
+
   return wins;
 }
 
