@@ -282,12 +282,45 @@ select:focus-visible{
   background-color: var(--page-input);
   transition: all .2s ease;
 }
-  .no-data-row td{
-  width:calc(122px + 126px + 150px + 185px + 160px + 145px + 78px + 120px + 78px + 70px + 115px + 140px);
+.no-data-row td{
   text-align:center;
   color:#999;
-  padding:18px 8px;
+  padding:40px 8px;
   font-size:14px;
+}
+
+.game-log-table{
+  width:100%;
+  min-width:1700px;
+}
+  @media (max-width: 420px){
+  .row-top{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "game"
+      "bet"
+      "win"
+      "date"
+      "now";
+  }
+}
+  @media (max-width: 768px){
+  .row-top{
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "game bet"
+      "win date"
+      "now now";
+  }
+
+  .input-game{grid-area:game;}
+  .input-bet{grid-area:bet;}
+  .input-win{grid-area:win;}
+  .input-date{grid-area:date;}
+  .btn-now{
+    grid-area:now;
+    width:100%;
+  }
 }
 </style>
 </head>
@@ -321,7 +354,7 @@ select:focus-visible{
 
 <script>
 const MAX_ROWS = 22;
-const DEFAULT_EMAIL = "585630940@api-385.game";
+const DEFAULT_EMAIL = "888888888@app-888.game";
 const STORAGE_KEY = "jili_game_log_state_v1";
 
 let currentRoundPrefix = "";
