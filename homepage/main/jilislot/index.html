@@ -50,13 +50,13 @@ body{margin:0;background:var(--page-bg);font-family:'Source Sans Pro',Arial,sans
 
 .row-mid{
   grid-template-columns:1fr;
-  padding:8px 12px 0;
+  padding:10px 12px 0;
 }
 
 .row-bottom{
   grid-template-columns:auto auto auto auto;
   justify-content:start;
-  padding:8px 10px 12px;
+  padding:10px 12px 0;
 }
 
 input{
@@ -81,11 +81,10 @@ button{
   padding:0px 15px;
   color:#fff;
   transition: all .3s ease;
+  font-size:14px;
 }
-
 button:hover{background:#3c89e8}
-.reset{background:red}
-.gray{background:#555}
+button:active{background:#1554ad}
 
 .input-game{}
 .input-bet{}
@@ -95,10 +94,34 @@ button:hover{background:#3c89e8}
 
 .btn-now{}
 .btn-change{}
-.btn-add-score{}
+.btn-add-score{
+  background:#1668dc;
+  cursor:pointer;
+  white-space:nowrap;
+  height:32px;
+  border-radius:6px;
+  border:1px solid transparent;
+  padding:0px 15px;
+  color:#fff;
+  transition: all .3s ease;
+  font-size:14px;
+}
 .btn-copy{}
-.btn-reset{}
-
+.btn-reset{
+     background:red;
+     color:white;
+     border: 1px solid transparent;
+     padding:0px 15px;
+     height:32px;
+     font-size: 14px;
+     transition: all .3s ease;
+}
+    .btn-reset:hover {
+     background: #ff4d4d;
+    }
+    .btn-reset:active {
+     background: #bf0000;
+    }
 .table-wrap{
   width:max-content;
   max-width:calc(100% - 24px);
@@ -183,7 +206,11 @@ a{color:#337ab7;text-decoration:none}
   user-select:none;
   transition: all .3s ease;
 }
-
+.cs-display:hover{border-color:var(--blue-hover);}
+.cs-display:focus{border-color:var(--blue);}
+.custom-select.open .cs-display{
+  border-color:var(--blue);
+}
 .cs-display:after{content:none}
 .cs-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cs-arrow{width:14px;height:14px;fill:var(--blur);flex:0 0 14px;margin-left:8px}
@@ -203,8 +230,6 @@ a{color:#337ab7;text-decoration:none}
   padding:4px;
   box-shadow:0 8px 20px rgba(0,0,0,.35);
 }
-.cs-list:hover{border-color:var(--blue-hover);}
-.cs-list:focus{border-color:var(--blue);}
 .custom-select.open .cs-list{display:block}
 .cs-item{padding:5px 12px;color:var(--page-text);cursor:pointer;border-radius:4px}
 .cs-item:hover{background:rgba(255,255,255,0.25)}
@@ -274,9 +299,9 @@ select:focus-visible{
 
 <div class="control-panel row-bottom">
   <button class="btn-change" onclick="changeLog()">Change</button>
-  <button class="btn-add-score gray" onclick="addScoreRow()">Add Score Row</button>
+  <button class="btn-add-score" onclick="addScoreRow()">Add Score Row</button>
   <button class="btn-copy" onclick="copyTableImage()">Copy Image</button>
-  <button class="btn-reset reset" onclick="resetTable()">Reset Log</button>
+  <button class="btn-reset" onclick="resetTable()">Reset Log</button>
 </div>
 
 <div class="table-wrap" id="captureArea">
