@@ -321,6 +321,21 @@ select:focus-visible{
     width:100%;
   }
 }
+  .cs-search{
+  width:calc(100% - 8px);
+  height:32px;
+  margin:4px;
+  border-radius:6px;
+  border:1px solid var(--blue);
+  background:var(--page-input);
+  color:var(--page-text);
+  padding:4px 10px;
+  box-sizing:border-box;
+}
+
+input::placeholder{
+  color:var(--blur) !important;
+}
 </style>
 </head>
 
@@ -1041,6 +1056,7 @@ function makeCustomSelect(id, items, value, labelFn, onChange, placeholder){
   const el = document.getElementById(id);
   const hasValue = value !== "" && value !== null && value !== undefined;
   const selected = hasValue && items.some(v => String(v) === String(value)) ? value : "";
+  const isGameSelect = id === "gameSelect";
 
   el.dataset.value = selected;
 
@@ -1053,6 +1069,7 @@ function makeCustomSelect(id, items, value, labelFn, onChange, placeholder){
       ${ARROW_SVG}
     </div>
     <div class="cs-list">
+      ${isGameSelect ? `<input class="cs-search" type="text" placeholder="Search game...">` : ""}
       ${items.map(v => `<div class="cs-item ${String(v)===String(selected)?"active":""}" data-value="${v}">${labelFn(v)}</div>`).join("")}
     </div>
   `;
@@ -1062,7 +1079,30 @@ function makeCustomSelect(id, items, value, labelFn, onChange, placeholder){
       if(x !== el) x.classList.remove("open");
     });
     el.classList.toggle("open");
+
+    const search = el.querySelector(".cs-search");
+    if(search){
+      search.value = "";
+      el.querySelectorAll(".cs-item").forEach(item=>item.style.display = "block");
+      setTimeout(()=>search.focus(), 50);
+    }
   };
+
+  const searchInput = el.querySelector(".cs-search");
+  if(searchInput){
+    searchInput.addEventListener("click", function(e){
+      e.stopPropagation();
+    });
+
+    searchInput.addEventListener("input", function(){
+      const keyword = this.value.toLowerCase();
+
+      el.querySelectorAll(".cs-item").forEach(item=>{
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(keyword) ? "block" : "none";
+      });
+    });
+  }
 
   el.querySelectorAll(".cs-item").forEach(item=>{
     item.onclick = function(){
