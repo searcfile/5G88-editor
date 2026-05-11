@@ -9,21 +9,66 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
 
 body{margin:0;background:#fff;font-family:'Source Sans Pro',Arial,sans-serif;font-size:14px;color:#333}
-.control-panel{background:#000;padding:10px;display:grid;grid-template-columns:1.5fr 1fr 1.4fr 1.5fr auto auto;gap:8px}
-.control-panel.second{grid-template-columns:1fr auto auto auto auto;gap:8px}
 
-input{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:4px 11px;box-sizing:border-box}
-button{background:#1668dc;cursor:pointer;white-space:nowrap;height:32px;border-radius:6px;border:1px solid transparent;padding:0px 15px;color:#fff;}
+.control-panel{
+  background:#000;
+  padding:10px;
+  display:grid;
+  gap:8px;
+}
+
+.row-top{
+  grid-template-columns:1.5fr 1fr 1.4fr 1.5fr auto;
+}
+
+.row-mid{
+  grid-template-columns:1fr auto auto auto auto;
+}
+
+input{
+  height:32px;
+  border-radius:6px;
+  border:1px solid #424242;
+  background:#141414;
+  color:#fff;
+  padding:4px 11px;
+  box-sizing:border-box;
+}
+
+button{
+  background:#1668dc;
+  cursor:pointer;
+  white-space:nowrap;
+  height:32px;
+  border-radius:6px;
+  border:1px solid transparent;
+  padding:0px 15px;
+  color:#fff;
+}
+
 button:hover{background:#3c89e8}
-.reset{background:red}.gray{background:#555}
+.reset{background:red}
+.gray{background:#555}
+
+.input-game{}
+.input-bet{}
+.input-win{}
+.input-date{}
+.input-score{}
+
+.btn-now{}
+.btn-change{}
+.btn-add-score{}
+.btn-copy{}
+.btn-reset{}
 
 .table-wrap{
   width:max-content;
   max-width:calc(100% - 24px);
   margin:12px 12px 0;
   background:#fff;
-  border-top: 3px solid #d2d6de;
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  border-top:3px solid #d2d6de;
+  box-shadow:0 1px 1px rgba(0,0,0,0.1);
   overflow-x:auto;
   overflow-y:hidden;
 }
@@ -61,40 +106,89 @@ button:hover{background:#3c89e8}
 .game-log-table tr:hover{background:#f9f9f9}
 a{color:#337ab7;text-decoration:none}
 
-.badge{display:inline-block;min-width:10px;padding:3px 7px;font-size:12px;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:middle;background-color:#777;border-radius:10px}
-.badge-win{background:#00a65a}.badge-lose{background:#dd4b39}.badge-draw{background:#777}.badge-bet{background:#3c8dbc}.badge-transfer{background:#777}.badge-withdraw{background:#00a65a}
+.badge{
+  display:inline-block;
+  min-width:10px;
+  padding:3px 7px;
+  font-size:12px;
+  font-weight:700;
+  line-height:1;
+  color:#fff;
+  text-align:center;
+  white-space:nowrap;
+  vertical-align:middle;
+  background-color:#777;
+  border-radius:10px;
+}
+
+.badge-win{background:#00a65a}
+.badge-lose{background:#dd4b39}
+.badge-draw{background:#777}
+.badge-bet{background:#3c8dbc}
+.badge-transfer{background:#777}
+.badge-withdraw{background:#00a65a}
 .round-id{color:#999!important}
 
 .custom-select{position:relative;height:32px}
-.cs-display{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:4px 11px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+
+.cs-display{
+  height:32px;
+  border-radius:6px;
+  border:1px solid #424242;
+  background:#141414;
+  color:#fff;
+  padding:4px 11px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  user-select:none;
+}
+
 .cs-display:after{content:none}
 .cs-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cs-arrow{width:14px;height:14px;fill:#aaa;flex:0 0 14px;margin-left:8px}
 .custom-select.open .cs-arrow{transform:rotate(180deg)}
-.cs-list{display:none;position:absolute;z-index:9999;top:34px;left:0;right:0;background:#1f1f1f;border-radius:8px;max-height:260px;overflow:auto;padding:4px; box-shadow: 0 8px 20px rgba(0, 0, 0, .35);}
+
+.cs-list{
+  display:none;
+  position:absolute;
+  z-index:9999;
+  top:34px;
+  left:0;
+  right:0;
+  background:#1f1f1f;
+  border-radius:8px;
+  max-height:260px;
+  overflow:auto;
+  padding:4px;
+  box-shadow:0 8px 20px rgba(0,0,0,.35);
+}
+
 .custom-select.open .cs-list{display:block}
-.cs-item{padding:5px 12px;color:#fff;cursor:pointer;border-radius:4px;}
-.cs-item:hover{background:rgba(255,255,255,0.25);}
-.cs-item.active{background:#111a2c;}
+.cs-item{padding:5px 12px;color:#fff;cursor:pointer;border-radius:4px}
+.cs-item:hover{background:rgba(255,255,255,0.25)}
+.cs-item.active{background:#111a2c}
 </style>
 </head>
 
 <body>
 
-<div class="control-panel">
-  <div id="gameSelect" class="custom-select"></div>
-  <div id="betInput" class="custom-select"></div>
-  <div id="totalWinInput" class="custom-select"></div>
-  <input id="dateInput" type="text" placeholder="YYYY-MM-DD HH:mm:ss">
-  <button onclick="setNow()">Click Now</button>
+<div class="control-panel row-top">
+  <div id="gameSelect" class="custom-select input-game"></div>
+  <div id="betInput" class="custom-select input-bet"></div>
+  <div id="totalWinInput" class="custom-select input-win"></div>
+  <input id="dateInput" class="input-date" type="text" placeholder="YYYY-MM-DD HH:mm:ss">
+  <button class="btn-now" onclick="setNow()">Click Now</button>
 </div>
 
-<div class="control-panel second">
-  <input id="scoreInput" type="number" step="0.0001" value="1.0400" placeholder="Add Score">
-  <button onclick="changeLog()">Change</button>
-  <button onclick="addScoreRow()" class="gray">Add Score Row</button>
-  <button onclick="copyTableImage()">Copy Image</button>
-  <button onclick="resetTable()" class="reset">Reset Log</button>
+<div class="control-panel row-mid">
+  <input id="scoreInput" class="input-score" type="number" step="0.0001" value="1.0400" placeholder="Add Score">
+  <button class="btn-change" onclick="changeLog()">Change</button>
+  <button class="btn-add-score gray" onclick="addScoreRow()">Add Score Row</button>
+  <button class="btn-copy" onclick="copyTableImage()">Copy Image</button>
+  <button class="btn-reset reset" onclick="resetTable()">Reset Log</button>
 </div>
 
 <div class="table-wrap" id="captureArea">
