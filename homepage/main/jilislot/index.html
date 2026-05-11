@@ -8,144 +8,97 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
 
-body{
-  margin:0;
-  background:#fff;
-  font-family:'Source Sans Pro',Arial,sans-serif;
-  font-size:13px;
-  color:#333;
-}
-
-.control-panel{
-  background:#000;
-  padding:10px;
-  display:grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1.4fr auto 1fr auto auto;
-  gap:8px;
-}
-
-.control-panel.second{
-  grid-template-columns: 1fr 1fr auto auto auto;
-}
-
-input,select,button{
-  height:32px;
-  border-radius:6px;
-  border:1px solid #424242;
-  background:#141414;
-  color:#fff;
-  padding:0 10px;
-  box-sizing:border-box;
-}
-
-button{
-  background:#1668dc;
-  border:none;
-  cursor:pointer;
-}
-
+body{margin:0;background:#fff;font-family:'Source Sans Pro',Arial,sans-serif;font-size:13px;color:#333}
+.control-panel{background:#000;padding:10px;display:grid;grid-template-columns:1.5fr 1fr 1fr 1.4fr auto 1fr auto auto;gap:8px}
+.control-panel.second{grid-template-columns:1fr 1fr auto auto auto}
+input,select,button{height:32px;border-radius:6px;border:1px solid #424242;background:#141414;color:#fff;padding:0 10px;box-sizing:border-box}
+button{background:#1668dc;border:none;cursor:pointer}
 button:hover{background:#3c89e8}
-.reset{background:red}
-.gray{background:#555}
-
-.table-wrap{
-  width:100%;
-  overflow-x:auto;
-}
-
-.game-log-table{
-  width:100%;
-  border-collapse:collapse;
-  background:#fff;
-}
-
-.game-log-table td{
-  padding:8px;
-  line-height:1.42857143;
-  vertical-align:top;
-  border-top:1px solid #f1f1f1;
-  white-space:nowrap;
-}
-
+.reset{background:red}.gray{background:#555}
+.table-wrap{width:100%;overflow-x:auto}
+.game-log-table{width:100%;border-collapse:collapse;background:#fff}
+.game-log-table td{padding:8px;line-height:1.42857143;vertical-align:top;border-top:1px solid #f1f1f1;white-space:nowrap}
 .game-log-table tr:hover{background:#f9f9f9}
-
-a{
-  color:#337ab7;
-  text-decoration:none;
-}
-
-.badge{
-  display:inline-block;
-  min-width:10px;
-  padding:3px 7px;
-  font-size:12px;
-  font-weight:700;
-  line-height:1;
-  color:#fff;
-  text-align:center;
-  white-space:nowrap;
-  vertical-align:middle;
-  background-color:#777;
-  border-radius:10px;
-}
-
-.badge-win{background:#00a65a}
-.badge-lose{background:#dd4b39}
-.badge-draw{background:#777}
-.badge-bet{background:#3c8dbc}
-.badge-transfer{background:#777}
-.badge-withdraw{background:#00a65a}
+a{color:#337ab7;text-decoration:none}
+.badge{display:inline-block;min-width:10px;padding:3px 7px;font-size:12px;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:middle;background-color:#777;border-radius:10px}
+.badge-win{background:#00a65a}.badge-lose{background:#dd4b39}.badge-draw{background:#777}.badge-bet{background:#3c8dbc}.badge-transfer{background:#777}.badge-withdraw{background:#00a65a}
 </style>
 </head>
 
 <body>
 
 <div class="control-panel">
-  <input id="gameName" value="460_3 Charge Buffalo" placeholder="Game Name">
+  <select id="gameSelect"></select>
   <input id="scoreInput" type="number" step="0.0001" value="1.0400" placeholder="Add Score">
-  <select id="betInput">
-    <option value="0.1000">0.1000</option>
-    <option value="0.2000">0.2000</option>
-    <option value="0.5000">0.5000</option>
-    <option value="1.0000">1.0000</option>
-  </select>
-  <select id="minWinInput">
-    <option value="0.0000">Min Win 0.0000</option>
-    <option value="0.0300">Min Win 0.0300</option>
-    <option value="0.1000">Min Win 0.1000</option>
-    <option value="0.1700">Min Win 0.1700</option>
-    <option value="0.2000">Min Win 0.2000</option>
-    <option value="0.4000">Min Win 0.4000</option>
-  </select>
+  <select id="betInput"></select>
+  <select id="totalWinInput"></select>
   <input id="dateInput" type="datetime-local">
   <button onclick="setNow()">Now</button>
-  <button onclick="changeLog()">Change</button>
+  <button onclick="generateRows()">Generate Rows</button>
   <button onclick="copyTableImage()">Copy Image</button>
 </div>
 
 <div class="control-panel second">
   <input id="emailInput" value="585630940@api-385.game" placeholder="User Email">
   <input id="rowInput" type="number" value="18" placeholder="Rows">
-  <button onclick="generateRows()">Generate Rows</button>
+  <button onclick="changeLog()">Change</button>
   <button onclick="addScoreRow()" class="gray">Add Score Row</button>
   <button onclick="resetTable()" class="reset">Reset Log</button>
 </div>
 
 <div class="table-wrap" id="captureArea">
-<table class="game-log-table">
-<tbody id="logBody"></tbody>
-</table>
+  <table class="game-log-table">
+    <tbody id="logBody"></tbody>
+  </table>
 </div>
 
 <script>
+const gameData = {
+  "460_3 Charge Buffalo": {
+    bets:[0.10,0.20,0.50,1.00],
+    pecahan:{
+      0.10:[0.00,0.30,0.50,1.00,2.00,5.00,10.00,20.00],
+      0.20:[0.00,0.60,1.00,2.00,4.00,10.00,20.00,30.00],
+      0.50:[0.00,1.50,2.50,5.00,10.00,20.00,30.00,50.00],
+      1.00:[0.00,3.00,5.00,10.00,20.00,30.00,50.00,100.00]
+    }
+  },
+
+  "IrishLuck": {
+    bets:[1.20,1.50,1.80,2.10,2.40,2.70,3.00,6.00,7.50,15.00],
+    pecahan:{
+      1.20:[50.00,80.00,100.00,150.00],
+      1.50:[80.00,100.00,130.00,180.00],
+      1.80:[50.00,100.00,200.00,300.00],
+      2.10:[50.00,100.00,200.00,300.00],
+      2.40:[50.00,100.00,200.00,300.00],
+      2.70:[50.00,100.00,200.00,300.00],
+      3.00:[50.00,100.00,200.00,300.00],
+      6.00:[50.00,100.00,200.00,300.00],
+      7.50:[80.00,100.00,200.00,400.00],
+      15.00:[100.00,300.00,500.00,750.00]
+    }
+  },
+
+  "FootBall": {
+    bets:[1.00,1.50,3.00,5.00,15.00],
+    pecahan:{
+      1.00:[30.00,60.00,100.00,130.00],
+      1.50:[60.00,90.00,110.00,150.00],
+      3.00:[90.00,120.00,150.00,180.00],
+      5.00:[120.00,150.00,180.00,210.00],
+      15.00:[100.00,150.00,200.00,500.00]
+    }
+  }
+};
+
 let balance = 1.0400;
 const gaps = [4,5,7,9,12,15,17,18];
 
-function pad(n){return String(n).padStart(2,'0')}
-
+function pad(n){return String(n).padStart(2,"0")}
 function formatDate(d){
   return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+" "+
-  pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+         pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
 }
 
 function setNow(){
@@ -167,14 +120,72 @@ function randomGap(){
   return gaps[Math.floor(Math.random()*gaps.length)];
 }
 
-function createBetRow(time){
-  const game = document.getElementById("gameName").value || "460_3 Charge Buffalo";
+function initGameDropdown(){
+  const gameSelect = document.getElementById("gameSelect");
+  gameSelect.innerHTML = "";
+
+  Object.keys(gameData).forEach(game=>{
+    gameSelect.innerHTML += `<option value="${game}">${game}</option>`;
+  });
+
+  gameSelect.addEventListener("change", updateBetDropdown);
+  document.getElementById("betInput").addEventListener("change", updateWinDropdown);
+
+  updateBetDropdown();
+}
+
+function updateBetDropdown(){
+  const game = document.getElementById("gameSelect").value;
+  const betInput = document.getElementById("betInput");
+  betInput.innerHTML = "";
+
+  gameData[game].bets.forEach(bet=>{
+    betInput.innerHTML += `<option value="${bet}">${bet.toFixed(4)}</option>`;
+  });
+
+  updateWinDropdown();
+}
+
+function updateWinDropdown(){
+  const game = document.getElementById("gameSelect").value;
+  const bet = parseFloat(document.getElementById("betInput").value);
+  const totalWinInput = document.getElementById("totalWinInput");
+
+  totalWinInput.innerHTML = "";
+  gameData[game].pecahan[bet].forEach(win=>{
+    totalWinInput.innerHTML += `<option value="${win}">Total Win ${win.toFixed(4)}</option>`;
+  });
+}
+
+function splitTotalWin(totalWin, rows){
+  let wins = Array(rows).fill(0);
+  let winRows = Math.max(2, Math.floor(rows * 0.45));
+
+  let remain = totalWin;
+
+  for(let i=0; i<winRows-1; i++){
+    let max = remain / 2;
+    let part = Math.random() * max;
+    part = Math.round(part * 10000) / 10000;
+    wins[i] = part;
+    remain -= part;
+  }
+
+  wins[winRows-1] = Math.round(remain * 10000) / 10000;
+
+  for(let i=wins.length-1; i>0; i--){
+    let j = Math.floor(Math.random() * (i+1));
+    [wins[i], wins[j]] = [wins[j], wins[i]];
+  }
+
+  return wins;
+}
+
+function createBetRow(time, winAmount){
+  const game = document.getElementById("gameSelect").value;
   const email = document.getElementById("emailInput").value || "585630940@api-385.game";
   const bet = parseFloat(document.getElementById("betInput").value);
-  const minWin = parseFloat(document.getElementById("minWinInput").value);
-
-  const winList = [0, minWin, 0.0000, 0.0300, 0.1000, 0.1700, 0.2000, 0.4000];
-  const win = winList[Math.floor(Math.random()*winList.length)];
+  const win = parseFloat(winAmount);
 
   const profit = win - bet;
   balance += profit;
@@ -202,25 +213,35 @@ function createBetRow(time){
 function generateRows(){
   const tbody = document.getElementById("logBody");
   tbody.innerHTML = "";
+
   balance = parseFloat(document.getElementById("scoreInput").value || 0);
 
-  let rows = parseInt(document.getElementById("rowInput").value || 18);
+  const rows = parseInt(document.getElementById("rowInput").value || 18);
+  const totalWin = parseFloat(document.getElementById("totalWinInput").value || 0);
+  const wins = splitTotalWin(totalWin, rows);
+
   let time = getStartDate();
 
-  for(let i=0;i<rows;i++){
-    tbody.insertAdjacentHTML("beforeend", createBetRow(new Date(time)));
+  for(let i=0; i<rows; i++){
+    tbody.insertAdjacentHTML("beforeend", createBetRow(new Date(time), wins[i]));
     time.setSeconds(time.getSeconds() - randomGap());
   }
 }
 
 function changeLog(){
-  const tbody = document.getElementById("logBody");
-  const time = getStartDate();
-  tbody.insertAdjacentHTML("afterbegin", createBetRow(time));
+  const totalWin = parseFloat(document.getElementById("totalWinInput").value || 0);
+  const rows = parseInt(document.getElementById("rowInput").value || 18);
+  const wins = splitTotalWin(totalWin, rows);
+  const win = wins[Math.floor(Math.random()*wins.length)];
+
+  document.getElementById("logBody").insertAdjacentHTML(
+    "afterbegin",
+    createBetRow(getStartDate(), win)
+  );
 }
 
 function addScoreRow(){
-  const email = document.getElementById("emailInput").value;
+  const email = document.getElementById("emailInput").value || "585630940@api-385.game";
   const score = parseFloat(document.getElementById("scoreInput").value || 0);
   balance = score;
   const time = getStartDate();
@@ -239,6 +260,7 @@ function addScoreRow(){
     <td>${balance.toFixed(4)}</td>
     <td>${formatDate(time)}</td>
   </tr>`;
+
   document.getElementById("logBody").insertAdjacentHTML("afterbegin", row);
 }
 
@@ -249,15 +271,22 @@ function resetTable(){
 async function copyTableImage(){
   const area = document.getElementById("captureArea");
   const canvas = await html2canvas(area,{backgroundColor:"#ffffff",scale:2});
+
   canvas.toBlob(async blob=>{
-    await navigator.clipboard.write([
-      new ClipboardItem({"image/png": blob})
-    ]);
-    alert("Table image copied bro");
+    try{
+      await navigator.clipboard.write([new ClipboardItem({"image/png":blob})]);
+      alert("Table image copied bro");
+    }catch(e){
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/png");
+      a.download = "jili-game-log.png";
+      a.click();
+    }
   });
 }
 
 setNow();
+initGameDropdown();
 generateRows();
 </script>
 
