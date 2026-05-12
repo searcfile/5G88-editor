@@ -512,7 +512,7 @@ function parseCustomDate(value){
   value = value.trim();
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
   if(!match){
-    showToast("Format masa salah bro. Pakai format: 2026-05-11 13:56:22", "error");
+    showToast("Please follow the format: 2026-05-11 13:56:22.", "error");
     return new Date();
   }
   return new Date(Number(match[1]),Number(match[2])-1,Number(match[3]),Number(match[4]),Number(match[5]),Number(match[6]||0));
@@ -781,7 +781,7 @@ function toggleAutoScore(){
 }
 function generateRows(){
   if(!selectedGame || selectedBet === "" || selectedTotalWin === ""){
-   showToast("Pilih game, bet dan win dulu bro", "error");
+   showToast("Please Select game first.", "error");
     return;
   }
 
@@ -856,7 +856,7 @@ function setRandomWin(){
   const amount = Number(document.getElementById("manualWinInput").value || 0);
 
   if(amount <= 0){
-    showToast("Masukkan Win Amount dulu bro", "info");
+    showToast("Please fill the win amount.", "info");
     return;
   }
 
@@ -867,7 +867,7 @@ function setRandomWin(){
   });
 
   if(rows.length === 0){
-    showToast("Table belum ada bet row bro", "error");
+    showToast("Table row not exist.", "error");
     return;
   }
 
@@ -951,7 +951,7 @@ async function copyTableImage(){
   canvas.toBlob(async blob=>{
     try{
       await navigator.clipboard.write([new ClipboardItem({"image/png":blob})]);
-      showToast("Table image copied bro", "success");
+      showToast("Image copied successfuly.", "success");
     }catch(e){
       const a = document.createElement("a");
       a.href = canvas.toDataURL("image/png");
