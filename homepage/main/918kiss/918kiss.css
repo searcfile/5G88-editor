@@ -142,9 +142,8 @@ border-radius:4px;
 .cs-search input:hover {border-color: var(--blue-hover);}
 .cs-search input:focus {border-color: var(--blue);}
 .cs-items{
-  max-height: 260px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
+  max-height: none;
 }
 .top-note-row,
 .form-row {
@@ -608,5 +607,8 @@ select:focus-visible{
   left: 0;
   right: 0;
   z-index: 999999;
-  overflow: hidden !important;
+
+  max-height: 260px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
