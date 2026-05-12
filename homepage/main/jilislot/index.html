@@ -609,10 +609,15 @@ function updateBetDropdown(savedBet, savedWin){
   const bets = selectedGame ? gameData[selectedGame].bets.map(Number) : [];
   selectedBet = selectedGame && savedBet !== "" && savedBet !== undefined && bets.some(b=>Number(b)===Number(savedBet)) ? Number(savedBet) : "";
 
-  makeCustomSelect("betInput", bets, selectedBet, v => money(v), function(v){
-    selectedBet = Number(v);
-    updateWinDropdown("");
-  }, "Select Bet");
+makeCustomSelect("betInput", bets, selectedBet, v => money(v), function(v){
+  selectedBet = Number(v);
+
+  const pecahan = gameData[selectedGame].pecahan;
+  const key = findPecahanKey(pecahan, selectedBet);
+  const firstWin = key ? pecahan[key][0] : "";
+
+  updateWinDropdown(firstWin);
+}, "Select Bet");
 
   updateWinDropdown(savedWin);
 }
