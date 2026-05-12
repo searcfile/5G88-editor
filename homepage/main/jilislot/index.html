@@ -351,6 +351,32 @@ select:focus-visible{
 input::placeholder{
   color:var(--blur) !important;
 }
+  .toast{
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#1e293b;
+  color:#cbd5e1;
+  padding:12px 20px;
+  border-radius:8px;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.35);
+  opacity:0;
+  transition:opacity .35s ease;
+  z-index:999999;
+  max-width:90%;
+}
+.toast.show{opacity:1}
+.toast.success .icon{color:#22c55e}
+.toast.error .icon{color:#F87171}
+.toast.info .icon{color:#60A5FA}
+.toast .close{margin-left:8px;cursor:pointer;color:#aaa;font-size:16px}
+.toast .close:hover{color:#fff}
+.toast .icon svg{width:20px;height:20px;display:block}
 </style>
 </head>
 
@@ -398,7 +424,34 @@ let currentUserEmail = DEFAULT_EMAIL;
 let autoScoreEnabled = false;
 
 const ARROW_SVG = `<svg class="cs-arrow" viewBox="0 0 1024 1024"><path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path></svg>`;
+function showToast(message, type = "success"){
+  const icons = {
+    success:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M7 12l3 3 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>`,
+    error:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9 9l6 6M15 9l-6 6" stroke-linecap="round"></path></svg>`,
+    info:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8h.01M11 11h2v5h-2" stroke-linecap="round"></path></svg>`
+  };
 
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  el.innerHTML = `
+    <span class="icon">${icons[type] || icons.success}</span>
+    <span class="msg">${message}</span>
+    <span class="close">&times;</span>
+  `;
+
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add("show"));
+
+  el.querySelector(".close").onclick = ()=>{
+    el.classList.remove("show");
+    setTimeout(()=>el.remove(),350);
+  };
+
+  setTimeout(()=>{
+    el.classList.remove("show");
+    setTimeout(()=>el.remove(),350);
+  },3500);
+}
 const gameData = {
   "49_Super Ace": {
     bets:[0.10,1.00,2.00,3.00,5.00,10.00,20.00,30.00,40.00,50.00,80.00,100.00,200.00],
@@ -459,7 +512,7 @@ function parseCustomDate(value){
   value = value.trim();
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
   if(!match){
-    alert("Format masa salah bro. Pakai format: 2026-05-11 13:56:22");
+    showToast("Format masa salah bro. Pakai format: 2026-05-11 13:56:22", "error");
     return new Date();
   }
   return new Date(Number(match[1]),Number(match[2])-1,Number(match[3]),Number(match[4]),Number(match[5]),Number(match[6]||0));
@@ -728,7 +781,7 @@ function toggleAutoScore(){
 }
 function generateRows(){
   if(!selectedGame || selectedBet === "" || selectedTotalWin === ""){
-    alert("Pilih game, bet dan win dulu bro");
+   showToast("Pilih game, bet dan win dulu bro", "error");
     return;
   }
 
@@ -803,7 +856,7 @@ function setRandomWin(){
   const amount = Number(document.getElementById("manualWinInput").value || 0);
 
   if(amount <= 0){
-    alert("Masukkan Win Amount dulu bro");
+    showToast("Masukkan Win Amount dulu bro", "info");
     return;
   }
 
@@ -814,7 +867,7 @@ function setRandomWin(){
   });
 
   if(rows.length === 0){
-    alert("Table belum ada bet row bro");
+    showToast("Table belum ada bet row bro", "error");
     return;
   }
 
@@ -898,7 +951,7 @@ async function copyTableImage(){
   canvas.toBlob(async blob=>{
     try{
       await navigator.clipboard.write([new ClipboardItem({"image/png":blob})]);
-      alert("Table image copied bro");
+      showToast("Table image copied bro", "success");
     }catch(e){
       const a = document.createElement("a");
       a.href = canvas.toDataURL("image/png");
@@ -923,7 +976,7 @@ const saved = loadState();
 if(saved.date){
   document.getElementById("dateInput").value = saved.date;
 }else{
-  setNow();
+  document.getElementById("dateInput").value = "";
 }
 
 if(saved.score){
