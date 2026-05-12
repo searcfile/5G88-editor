@@ -847,6 +847,7 @@ function saveState(){
     win:selectedTotalWin,
     date:document.getElementById("dateInput").value,
     score:document.getElementById("scoreInput").value,
+    autoScoreEnabled:autoScoreEnabled,
     tableHTML:document.getElementById("logBody").innerHTML
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -866,7 +867,7 @@ function resetTable(){
   selectedGame = "";
   selectedBet = "";
   selectedTotalWin = "";
-
+  autoScoreEnabled = false;
   initGameDropdown("", "", "");
 
   document.getElementById("dateInput").value = "";
@@ -877,7 +878,11 @@ function resetTable(){
       <td colspan="12">No data</td>
     </tr>
   `;
-
+const autoBtn = document.getElementById("autoScoreBtn");
+if(autoBtn){
+  autoBtn.textContent = "AUTO OFF";
+  autoBtn.classList.remove("auto-on");
+}
   saveState();
 }
 
@@ -919,7 +924,15 @@ if(saved.date){
 if(saved.score){
   document.getElementById("scoreInput").value = saved.score;
 }
+if(saved.autoScoreEnabled){
+  autoScoreEnabled = true;
 
+  const btn = document.getElementById("autoScoreBtn");
+  if(btn){
+    btn.textContent = "AUTO ON";
+    btn.classList.add("auto-on");
+  }
+}
 initGameDropdown(saved.game, saved.bet, saved.win);
 
 if(saved.tableHTML){
