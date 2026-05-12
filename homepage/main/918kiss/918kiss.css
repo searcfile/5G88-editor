@@ -247,7 +247,7 @@ body{
   width:100%;
   max-width:100%;
   overflow-x:auto;
-  overflow-y:hidden;
+  overflow-y:visible !important;
   -webkit-overflow-scrolling:touch;
   margin:10px 12px 10px;
   padding-bottom:4px;
@@ -574,15 +574,18 @@ select:focus-visible{
   transition: all .2s ease;
 }
 /* dropdown custom mesti atas table */
-.form-row-top{
+.form-row-top,
+.form-row-middle,
+.form-row-bottom{
   position: relative;
-  z-index: 9999;
+  z-index: 99999;
   overflow: visible !important;
 }
 
 .cs-wrap{
   position: relative;
-  z-index: 9999;
+  z-index: 99999;
+  overflow: visible !important;
 }
 
 .cs-wrap.open{
@@ -599,3 +602,7 @@ select:focus-visible{
   position: relative;
   z-index: 1;
 }
+
+
+
+
