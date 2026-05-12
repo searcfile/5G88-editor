@@ -51,8 +51,14 @@ body{margin:0;background:var(--page-bg);font-family:'Source Sans Pro',Arial,sans
 }
 
 .row-mid{
-  grid-template-columns:1fr;
+  grid-template-columns:1fr 240px auto;
   padding:10px 12px 0;
+}
+
+@media (max-width: 768px){
+  .row-mid{
+    grid-template-columns:1fr;
+  }
 }
 
 .row-bottom{
@@ -351,6 +357,8 @@ input::placeholder{
 
 <div class="control-panel row-mid">
   <input id="scoreInput" class="input-score" type="number" placeholder="Add Score">
+  <input id="manualWinInput" class="input-manual-win" type="number" step="0.0001" placeholder="Win Amount">
+  <button class="btn-set-win" onclick="setRandomWin()">Set Win</button>
 </div>
 
 <div class="control-panel row-bottom">
@@ -751,7 +759,52 @@ function addScoreRow(){
   }
   saveState();
 }
+function setRandomWin(){
+  const amount = Number(document.getElementById("manualWinInput").value || 0);
 
+  if(amount <= 0){
+    alert("Masukkan Win Amount dulu bro");
+    return;
+  }
+
+  const tbody = document.getElementById("logBody");
+  const rows = [...tbody.querySelectorAll("tr")].filter(row => {
+    return !row.classList.contains("no-data-row") &&
+           row.querySelector(".badge-bet");
+  });
+
+  if(rows.length === 0){
+    alert("Table belum ada bet row bro");
+    return;
+  }
+
+  const row = rows[Math.floor(Math.random() * rows.length)];
+  const bet = Number(selectedBet || 0);
+  const profit = amount - bet;
+
+  row.children[0].innerHTML = `<span class="badge badge-win">Win</span>`;
+  row.children[7].textContent = money(amount);
+  row.children[8].textContent = money(profit);
+
+  recalcBalanceFromBottom();
+  saveState();
+}
+
+function recalcBalanceFromBottom(){
+  const tbody = document.getElementById("logBody");
+  const rows = [...tbody.querySelectorAll("tr")].filter(row => {
+    return !row.classList.contains("no-data-row") &&
+           row.querySelector(".badge-bet");
+  });
+
+  let runningBalance = Number(document.getElementById("scoreInput").value || 0);
+
+  rows.forEach(row => {
+    const profit = Number(row.children[8].textContent || 0);
+    row.children[9].textContent = money(runningBalance);
+    runningBalance -= profit;
+  });
+}
 function saveState(){
   const state = {
     game:selectedGame,
