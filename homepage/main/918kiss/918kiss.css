@@ -247,11 +247,13 @@ body{
   width:100%;
   max-width:100%;
   overflow-x:auto;
-  overflow-y:visible !important;
+  overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
   margin:10px 12px 10px;
   padding-bottom:4px;
   scroll-behavior:smooth;
+  position: relative;
+  z-index: 1;
 }
 
 /* bagi table boleh scroll kiri kanan */
@@ -573,13 +575,17 @@ select:focus-visible{
   background-color: var(--page-input);
   transition: all .2s ease;
 }
-/* dropdown custom mesti atas table */
-.form-row-top,
-.form-row-middle,
-.form-row-bottom{
+/* ===== FIX DROPDOWN ATAS TABLE ===== */
+.form-row-top{
   position: relative;
   z-index: 99999;
   overflow: visible !important;
+}
+
+.form-row-middle,
+.form-row-bottom{
+  position: relative;
+  z-index: 10;
 }
 
 .cs-wrap{
@@ -589,20 +595,16 @@ select:focus-visible{
 }
 
 .cs-wrap.open{
-  z-index: 99999;
+  z-index: 999999;
 }
 
 .cs-list{
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
   z-index: 999999;
-  overflow: visible !important;
+  max-height: 185px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
-
-/* table jangan tindih dropdown */
-.table-wrap{
-  position: relative;
-  z-index: 1;
-}
-
-
-
-
