@@ -377,6 +377,17 @@ input::placeholder{
 .toast .close{margin-left:8px;cursor:pointer;color:#aaa;font-size:16px}
 .toast .close:hover{color:#fff}
 .toast .icon svg{width:20px;height:20px;display:block}
+/* Buang spin arrow input number - Chrome, Edge, Safari */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Buang spin arrow - Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 </style>
 </head>
 
