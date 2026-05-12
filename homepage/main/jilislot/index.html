@@ -476,7 +476,19 @@ function randomUserEmail(){
     id += Math.floor(Math.random() * 10);
   }
 
-  return id + "@app-888.game";
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+  let text = "";
+  for(let i=0; i<3; i++){
+    text += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  let numbers = "";
+  for(let i=0; i<3; i++){
+    numbers += Math.floor(Math.random() * 10);
+  }
+
+  return id + "@" + text + "-" + numbers + ".game";
 }
 function randomGap(){return gaps[Math.floor(Math.random()*gaps.length)]}
 function randomScoreGap(){return scoreGaps[Math.floor(Math.random()*scoreGaps.length)]}
