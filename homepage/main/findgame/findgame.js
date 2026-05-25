@@ -6625,11 +6625,24 @@ function applyListMaxHeight(visibleRows = 10){
 
 // Render list
 function renderList(){
-  const q = (elQ.value||'').trim().toLowerCase();
-  sessionStorage.setItem('fg.q', elQ.value||'');
-  const filtered = games.filter(g=>{
-    const kw = g.name.toLowerCase().includes(q) || (g.alias||'').toLowerCase().includes(q);
-    const platOK = selectedPlatform==="All" || (g.tags||[]).some(t=>t.toLowerCase()===selectedPlatform.toLowerCase());
+  const q = (elQ.value || '').trim().toLowerCase();
+  sessionStorage.setItem('fg.q', elQ.value || '');
+
+  const filtered = games.filter(g => {
+    const nameMatch = g.name.toLowerCase().includes(q);
+    const aliasMatch = (g.alias || '').toLowerCase().includes(q);
+
+    // ✅ search ikut payline sahaja, bukan bet
+    const paylineMatch = String(g.payline || '').includes(q);
+
+    const kw = !q || nameMatch || aliasMatch || paylineMatch;
+
+    const platOK =
+      selectedPlatform === "All" ||
+      (g.tags || []).some(t =>
+        t.toLowerCase() === selectedPlatform.toLowerCase()
+      );
+
     return kw && platOK;
   });
 
