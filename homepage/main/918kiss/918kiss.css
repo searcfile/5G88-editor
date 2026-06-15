@@ -561,14 +561,13 @@ select:focus-visible{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
 
+  width:78px;      /* width tetap */
   height:32px;
-  min-width:90px;
 
-  padding:0 12px;
-
+  padding:0;
   border-radius:20px;
+
   background:#333;
   border:1px solid #444;
 
@@ -577,6 +576,7 @@ select:focus-visible{
   user-select:none;
 
   transition:.25s;
+  overflow:hidden;
 }
 
 .toggle-switch input{
@@ -585,17 +585,23 @@ select:focus-visible{
 
 .toggle-slider{
   position:absolute;
+  top:4px;
   left:4px;
+
   width:22px;
   height:22px;
+
   background:#fff;
   border-radius:50%;
-  transition:.25s;
+
+  transition:transform .25s ease;
 }
 
 .toggle-text{
-  font-size:13px;
+  font-size:12px;
   font-weight:600;
+  padding-left:18px;
+  transition:.25s;
 }
 
 .toggle-switch.active{
@@ -604,5 +610,10 @@ select:focus-visible{
 }
 
 .toggle-switch.active .toggle-slider{
-  transform:translateX(58px);
+  transform:translateX(46px);
+}
+
+.toggle-switch.active .toggle-text{
+  padding-left:0;
+  padding-right:18px;
 }
