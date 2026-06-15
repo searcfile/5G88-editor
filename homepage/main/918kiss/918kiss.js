@@ -152,14 +152,14 @@ function updateAutoAddScoreButtonUI() {
   const btn = document.getElementById("autoAddScoreBtn");
   if (!btn) return;
 
+  const text = btn.querySelector(".toggle-text");
+
   if (autoAddScoreOn) {
-    btn.textContent = "AUTO ON";
-    btn.style.background = "#22c55e";
-    btn.style.borderColor = "#22c55e";
+    btn.classList.add("active");
+    if (text) text.textContent = "AUTO ON";
   } else {
-    btn.textContent = "AUTO OFF";
-    btn.style.background = "#555";
-    btn.style.borderColor = "#555";
+    btn.classList.remove("active");
+    if (text) text.textContent = "AUTO OFF";
   }
 }
   let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
@@ -509,17 +509,17 @@ if (!isNaN(beginMoney)) {
   });
 }
 function updateAutoFreeGameButtonUI() {
-  const autoBtn = document.getElementById('autoFreeGameBtn');
-  if (!autoBtn) return;
+  const btn = document.getElementById("autoFreeGameBtn");
+  if (!btn) return;
+
+  const text = btn.querySelector(".toggle-text");
 
   if (autoFreeGameOn) {
-    autoBtn.textContent = 'AUTO ON';
-    autoBtn.style.background = '#22c55e';
-    autoBtn.style.borderColor = '#22c55e';
+    btn.classList.add("active");
+    if (text) text.textContent = "AUTO ON";
   } else {
-    autoBtn.textContent = 'AUTO OFF';
-    autoBtn.style.background = '#555';
-    autoBtn.style.borderColor = '#555';
+    btn.classList.remove("active");
+    if (text) text.textContent = "AUTO OFF";
   }
 }
 //  FREE GAME HELPERS
@@ -634,16 +634,29 @@ document.getElementById('setFreeGameBtn').addEventListener('click', function(){
   applyFreeGame();
 });
 // tombol AUTO Free Game
-const autoBtn = document.getElementById('autoFreeGameBtn');
-autoBtn.addEventListener('click', () => {
-  autoFreeGameOn = !autoFreeGameOn;
-  localStorage.setItem('autoFreeGameOn918kiss', autoFreeGameOn ? '1' : '0');
+document.getElementById("autoFreeGameToggle")
+?.addEventListener("change", function(){
+
+  autoFreeGameOn = this.checked;
+
+  localStorage.setItem(
+    "autoFreeGameOn918kiss",
+    autoFreeGameOn ? "1" : "0"
+  );
+
   updateAutoFreeGameButtonUI();
 });
 // ✅ tombol AUTO AddScore
-document.getElementById("autoAddScoreBtn")?.addEventListener("click", () => {
-  autoAddScoreOn = !autoAddScoreOn;
-  localStorage.setItem("autoAddScoreOn918kiss", autoAddScoreOn ? "1" : "0");
+document.getElementById("autoAddScoreToggle")
+?.addEventListener("change", function(){
+
+  autoAddScoreOn = this.checked;
+
+  localStorage.setItem(
+    "autoAddScoreOn918kiss",
+    autoAddScoreOn ? "1" : "0"
+  );
+
   updateAutoAddScoreButtonUI();
 });
 function generateLog() {
@@ -1063,11 +1076,23 @@ function resetLog() {
   // reset AUTO Free Game
   localStorage.removeItem("autoFreeGameOn918kiss");
   autoFreeGameOn = false;
+  const fgToggle =
+document.getElementById("autoFreeGameToggle");
+
+if(fgToggle){
+  fgToggle.checked = false;
+}
   updateAutoFreeGameButtonUI();
 
   // reset AUTO AddScore
   localStorage.removeItem("autoAddScoreOn918kiss");
   autoAddScoreOn = false;
+  const addToggle =
+document.getElementById("autoAddScoreToggle");
+
+if(addToggle){
+  addToggle.checked = false;
+}
   updateAutoAddScoreButtonUI();
 
   // reset state lain
@@ -1079,11 +1104,22 @@ window.addEventListener("DOMContentLoaded", () => {
   const savedAuto = localStorage.getItem("autoFreeGameOn918kiss");
   autoFreeGameOn = (savedAuto === "1");
   updateAutoFreeGameButtonUI();
+  const fgToggle =
+document.getElementById("autoFreeGameToggle");
+
+if(fgToggle){
+  fgToggle.checked = autoFreeGameOn;
+}
 
   const savedAutoAdd = localStorage.getItem("autoAddScoreOn918kiss");
   autoAddScoreOn = (savedAutoAdd === "1");
   updateAutoAddScoreButtonUI();
+ const addToggle =
+document.getElementById("autoAddScoreToggle");
 
+if(addToggle){
+  addToggle.checked = autoAddScoreOn;
+}
   const saved = localStorage.getItem("gameLogData918kiss");
   if (!saved) return;
 
