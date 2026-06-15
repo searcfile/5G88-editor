@@ -573,3 +573,53 @@ select:focus-visible{
   background-color: var(--page-input);
   transition: all .2s ease;
 }
+.toggle-switch{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  height:32px;
+  min-width:90px;
+
+  padding:0 12px;
+
+  border-radius:20px;
+  background:#333;
+  border:1px solid #444;
+
+  color:#fff;
+  cursor:pointer;
+  user-select:none;
+
+  transition:.25s;
+}
+
+.toggle-switch input{
+  display:none;
+}
+
+.toggle-slider{
+  position:absolute;
+  left:4px;
+  width:22px;
+  height:22px;
+  background:#fff;
+  border-radius:50%;
+  transition:.25s;
+}
+
+.toggle-text{
+  font-size:13px;
+  font-weight:600;
+}
+
+.toggle-switch.active{
+  background:#1677ff;
+  border-color:#1677ff;
+}
+
+.toggle-switch.active .toggle-slider{
+  transform:translateX(58px);
+}
