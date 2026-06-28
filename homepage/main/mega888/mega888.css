@@ -332,33 +332,55 @@ border-radius:4px;
 }
 
 .switch-btn{
+  position:relative;
   height:32px !important;
-  min-width:92px;
-  padding:0 7px 0 14px !important;
+  width:96px;
+  min-width:96px;
+  padding:0 !important;
   border-radius:18px !important;
   border:1px solid #555 !important;
   background:#3a3a3a !important;
   color:#fff !important;
-  display:inline-flex !important;
+  display:flex !important;
   align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  font-size:14px;
+  cursor:pointer;
+  overflow:hidden !important;
+}
+
+.switch-text{
+  position:absolute;
+  left:30px;
+  right:8px;
+  text-align:center;
+  font-size:13px;
   font-weight:700;
-  line-height:1;
+  z-index:2;
 }
 
 .switch-circle{
+  position:absolute;
+  top:5px;
+  left:6px;
   width:20px;
   height:20px;
   border-radius:50%;
   background:#fff;
-  flex:0 0 20px;
+  transition:.25s;
+  z-index:3;
 }
 
 .switch-btn.active{
   background:#1668dc !important;
   border-color:#1668dc !important;
+}
+
+.switch-btn.active .switch-circle{
+  left:70px;
+}
+
+.switch-btn.active .switch-text{
+  left:10px;
+  right:30px;
 }
 
 .switch-btn.inactive{
