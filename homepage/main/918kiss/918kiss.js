@@ -152,15 +152,12 @@ function updateAutoAddScoreButtonUI() {
   const btn = document.getElementById("autoAddScoreBtn");
   if (!btn) return;
 
-  if (autoAddScoreOn) {
-    btn.textContent = "AUTO ON";
-    btn.style.background = "#22c55e";
-    btn.style.borderColor = "#22c55e";
-  } else {
-    btn.textContent = "AUTO OFF";
-    btn.style.background = "#555";
-    btn.style.borderColor = "#555";
-  }
+  const text = btn.querySelector(".switch-text");
+
+  btn.classList.toggle("active", autoAddScoreOn);
+  btn.classList.toggle("inactive", !autoAddScoreOn);
+
+  if (text) text.textContent = autoAddScoreOn ? "Active" : "Inactive";
 }
   let jackpotInsertedMap = JSON.parse(localStorage.getItem("jackpotInsertedMap")) || {};
 function saveCurrentSelectionOnly() {
@@ -509,18 +506,15 @@ if (!isNaN(beginMoney)) {
   });
 }
 function updateAutoFreeGameButtonUI() {
-  const autoBtn = document.getElementById('autoFreeGameBtn');
-  if (!autoBtn) return;
+  const btn = document.getElementById("autoFreeGameBtn");
+  if (!btn) return;
 
-  if (autoFreeGameOn) {
-    autoBtn.textContent = 'AUTO ON';
-    autoBtn.style.background = '#22c55e';
-    autoBtn.style.borderColor = '#22c55e';
-  } else {
-    autoBtn.textContent = 'AUTO OFF';
-    autoBtn.style.background = '#555';
-    autoBtn.style.borderColor = '#555';
-  }
+  const text = btn.querySelector(".switch-text");
+
+  btn.classList.toggle("active", autoFreeGameOn);
+  btn.classList.toggle("inactive", !autoFreeGameOn);
+
+  if (text) text.textContent = autoFreeGameOn ? "Active" : "Inactive";
 }
 //  FREE GAME HELPERS
 // =====================
