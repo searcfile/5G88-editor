@@ -378,22 +378,87 @@ border-radius:4px;
   color: var(--page-text);
 }
 
-.btn-auto-off {
-  height: 32px;
-  padding: 0px 15px;
-  font-size: 14px;
-  background: #555;
-  color: #fff;
-  border-color: #555;
+.switch-btn{
+  position:relative !important;
+  height:32px !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  padding:0 !important;
+  border-radius:18px !important;
+  border:1px solid #555 !important;
+  background:#3a3a3a !important;
+  color:#fff !important;
+  display:flex !important;
+  align-items:center;
+  cursor:pointer;
+  overflow:hidden !important;
+  transition: all 0.3s;
 }
 
-.btn-auto-on {
-  height: 32px;
-  padding: 0px 15px;
-  font-size: 14px;
-  background: #1e7e34;
-  color: #fff;
-  border-color: #1e7e34;
+.switch-text{
+  position:absolute;
+  font-size:13px;
+  font-weight:700;
+  z-index:2;
+  text-align:center;
+  transition: all 0.3s;
+}
+
+.switch-circle{
+  position:absolute !important;
+  top:5px !important;
+  left:6px !important;
+  width:20px !important;
+  height:20px !important;
+  border-radius:50%;
+  background:#fff;
+  transition:left .28s cubic-bezier(.4,0,.2,1), transform .18s ease;
+  z-index:3;
+}
+.switch-btn:active .switch-circle{
+  transform:scale(.9);
+}
+.switch-btn.active .switch-circle{
+  left:72px !important;
+  right:auto !important;
+}
+
+.switch-btn.inactive .switch-circle{
+  left:6px !important;
+  right:auto !important;
+}
+
+.switch-btn.active{
+  background:#1668dc !important;
+  border-color:#1668dc !important;
+  transition: all 0.3s;
+}
+
+.switch-btn.inactive{
+  background:#3a3a3a !important;
+  border-color:#555 !important;
+  transition: all 0.3s;
+}
+
+.switch-btn.active .switch-text{
+  left:10px;
+  right:30px;
+  transition: all 0.3s;
+}
+
+.switch-btn.inactive .switch-text{
+  left:30px;
+  right:8px;
+  transition: all 0.3s;
+}
+
+.form-row-top #autoFreeGameBtn,
+.form-row-middle #autoAddScoreBtn{
+  width:98px !important;
+  min-width:98px !important;
+  max-width:98px !important;
+  padding:0 !important;
 }
 *{
   scrollbar-width:thin;
