@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telegram Multi Bot Manager</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">🤖</div>
+        <div>
+          <h2>Bot Manager</h2>
+          <p>Multi Telegram Panel</p>
+        </div>
+      </div>
+
+      <button class="nav active" data-page="dashboard">📊 Dashboard</button>
+      <button class="nav" data-page="bots">🤖 Bots</button>
+      <button class="nav" data-page="settings">⚙️ Settings</button>
+      <button class="nav" data-page="promos">🎁 Promos</button>
+      <button class="nav" data-page="buttons">🔘 Buttons</button>
+      <button class="nav" data-page="users">👥 Users</button>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="activeBotLabel">No bot selected</p>
+        </div>
+        <button class="primary" onclick="openCreateBot()">+ Create New Bot</button>
+      </header>
+
+      <section id="dashboard" class="page active">
+        <div class="cards">
+          <div class="card"><h3>Total Bots</h3><b id="statBots">0</b></div>
+          <div class="card"><h3>Total Users</h3><b id="statUsers">0</b></div>
+          <div class="card"><h3>Total Promos</h3><b id="statPromos">0</b></div>
+        </div>
+      </section>
+
+      <section id="bots" class="page">
+        <div class="panel">
+          <h2>🤖 Bot List</h2>
+          <div id="botList" class="bot-grid"></div>
+        </div>
+      </section>
+
+      <section id="settings" class="page">
+        <div class="panel">
+          <h2>⚙️ Bot Settings</h2>
+
+          <label>Main Banner URL</label>
+          <input id="mainBannerUrl" placeholder="https://res.cloudinary.com/..." />
+
+          <label>Welcome Text</label>
+          <textarea id="welcomeText" rows="7">👋 Welcome {username}
+🆔 Your ID: {user_id}
+
+Welcome to Promotion Center 🔥
+Choose action below:</textarea>
+
+          <label>About Text</label>
+          <textarea id="aboutText" rows="5">📌 About Us
+
+Fast Withdraw | 24/7 Support</textarea>
+
+          <label>Register URL</label>
+          <input id="registerUrl" placeholder="https://yourwebsite.com" />
+
+          <label>Telegram Support URL</label>
+          <input id="telegramSupport" placeholder="https://t.me/your_support" />
+
+          <label>WhatsApp URL</label>
+          <input id="whatsappUrl" placeholder="https://wa.me/60123456789" />
+
+          <button class="primary" onclick="saveSettings()">💾 Save Settings</button>
+        </div>
+
+        <div class="panel">
+          <h2>🖼️ Upload Banner Cloudinary</h2>
+          <input type="file" id="uploadFile" />
+          <button class="primary" onclick="uploadImage()">Upload Image</button>
+          <p id="uploadResult"></p>
+        </div>
+      </section>
+
+      <section id="promos" class="page">
+        <div class="panel">
+          <h2>🎁 Add Promo</h2>
+          <input id="promoTitle" placeholder="Promo title" />
+          <input id="promoImageUrl" placeholder="Image URL" />
+          <textarea id="promoCaption" rows="5" placeholder="Caption"></textarea>
+          <button class="primary" onclick="addPromo()">Add Promo</button>
+        </div>
+
+        <div class="panel">
+          <h2>📋 Promo List</h2>
+          <div id="promoList"></div>
+        </div>
+      </section>
+
+      <section id="buttons" class="page">
+        <div class="panel">
+          <h2>🔘 Banner Buttons</h2>
+          <input id="btnText" placeholder="Button Text example: 🚀 Register" />
+          <input id="btnUrl" placeholder="Button URL optional" />
+          <input id="btnCallback" placeholder="Callback Data optional example: open_menu" />
+          <button class="primary" onclick="addButton()">Add Button</button>
+        </div>
+
+        <div class="panel">
+          <h2>Current Buttons</h2>
+          <div id="buttonList"></div>
+        </div>
+      </section>
+
+      <section id="users" class="page">
+        <div class="panel">
+          <h2>👥 Telegram Users</h2>
+          <div id="userList"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="botModal" class="modal">
+    <div class="modal-box">
+      <h2>Create New Bot</h2>
+      <label>Telegram Bot Token</label>
+      <input id="botToken" placeholder="123456:ABCDEF..." />
+      <div class="row">
+        <button class="primary" onclick="createBot()">Save Bot</button>
+        <button class="danger" onclick="closeCreateBot()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
