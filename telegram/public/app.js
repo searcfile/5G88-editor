@@ -1,7 +1,7 @@
 let selectedBotId = localStorage.getItem("selectedBotId") || "";
 let selectedBotName = "";
 
-const API_BASE = "/api";
+const API_BASE = "https://blurphp.web.app/api";
 
 const $ = (id) => document.getElementById(id);
 
