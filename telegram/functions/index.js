@@ -21,14 +21,22 @@ api.get("/bots", async (req, res) => {
   }
 });
 
-api.post("/bots", async (req, res) => {
+api.get(["/bots", "/api/bots"], async (req, res) => {
+  try {
+    const snap = await db.collection("bots").orderBy("createdAt", "desc").get();
+    const bots = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), token: undefined }));
+    res.json({ bots });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+api.post(["/bots", "/api/bots"], async (req, res) => {
   try {
     const { token } = req.body;
     if (!token) return res.status(400).json({ error: "Token required" });
 
     const tg = await axios.get(`https://api.telegram.org/bot${token}/getMe`);
-    if (!tg.data.ok) return res.status(400).json({ error: "Invalid token" });
-
     const bot = tg.data.result;
 
     const ref = await db.collection("bots").add({
@@ -45,7 +53,7 @@ api.post("/bots", async (req, res) => {
   }
 });
 
-api.delete("/bots/:botId", async (req, res) => {
+api.delete(["/bots/:botId", "/api/bots/:botId"], async (req, res) => {
   try {
     await db.collection("bots").doc(req.params.botId).delete();
     res.json({ success: true });
